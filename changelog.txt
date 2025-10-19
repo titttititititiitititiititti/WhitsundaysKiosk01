@@ -1,0 +1,49 @@
+# Changelog
+
+- [INIT-001] Project initialized. Created 'prompt and glossary.txt' with project purpose and workflow description. 
+- [SCRAPE-001] Created 'scrape_tours.py' with initial structure for scraping tour data and saving to CSV. 
+- [SCRAPE-002] Added custom parsing for oceanrafting.com.au homepage tours in 'scrape_tours.py'. 
+- [SCRAPE-003] Added subpage scraping for tour prices and price_source_url column in 'scrape_tours.py'. 
+- [SCRAPE-004] Refactored 'scrape_tours.py' to output a company-specific CSV (e.g., tours_redcat.csv) for each scrape, skipping tours already present in that file (by id). Images are now saved in static/tour_images/<company>/<tour_name>/. Company is auto-detected from the URL. This enables modular, non-destructive database building for each operator. 
+- [CHAT-001] Created Flask backend (app.py) to serve chatbot UI, connect tours.csv to GPT-4o, and handle /chat endpoint. 
+- [CHAT-002] Updated app.py to load environment variables from .env using python-dotenv for OpenAI API key. 
+- [SCRAPE-005] Improved company name extraction in 'scrape_tours.py' to handle .com.au and similar domains, ensuring CSVs are named after the actual operator.
+- [SCRAPE-006] Overhauled tour link discovery in 'scrape_tours.py': conservative exclusion list (href only), debug output for exclusions, auto/manual approval based on keywords, and unique link handling.
+- [SCRAPE-007] Each company's tours are now saved to a separate CSV file (tours_<company_name>.csv) for better organization and modularity. 
+- [UI-001] Implemented dynamic multi-company tour grid with unique keys and no duplicates.
+- [UI-002] Added 'Load More' button with backend paging and duplicate prevention.
+- [UI-003] Added thumbnail extension fallback and placeholder support for missing images. 
+- [SCRAPE-008] Enhanced extract_tour_info with robust rule-based extraction and AI fallback using OpenAI API for missing fields (hybrid extraction approach). 
+- [SCRAPE-008] Improved junk filtering in the scraper: removed short, duplicate, and technical lines, and filtered out words with both numbers and letters. Added tour start/end markers to raw_text for clear chunking.
+- [SCRAPE-009] Ensured one row per tour in the CSV, joining all relevant content into a single field per tour.
+- [POST-001] Added robust AI post-processing: chunked by tour, extracted and cleaned JSON from AI responses, handled lists/nulls, and cleaned all output fields for user-facing clarity.
+- [POST-002] Removed raw_html from the final output CSV for a clean, production-ready file.
+- [POST-003] AI postprocessor now receives price information (price_adult, price_child, price_tiers) from the CSV and includes it in the prompt, ensuring the AI can extract and use price data even if not in raw_text.
+- [SCRAPE-010] Implemented URL-based hash IDs (MD5) for stable tour identification across re-scrapes, ensuring image paths remain valid even when tour names change.
+- [SCRAPE-011] Auto-run AI postprocessor after scraping: scrape_tours.py now automatically runs ai_postprocess_csv.py on each company CSV after scraping completes.
+- [SCRAPE-012] Phase 1 upgrades: Added auto-Selenium detection (uses browser automation when no price found in static HTML), JSON-LD structured data extraction (schema.org metadata), and duration/time pattern matching (regex for "5 Hours", "9:30 AM", etc.).
+- [SCRAPE-013] Phase 2 upgrades: Added CSS selector targeting for prices and details (targets span.price, .quick-details, etc. before general text scraping), smart parsing of adult/child price labels (parses "AdultA$159ChildA$149" format), and improved price extraction with multiple fallback layers.
+- [UI-004] Updated tour result boxes to sharp-corner, full-image style with bottom-left overlay for tour type and name (removed rounded corners, full-bleed images).
+- [EDIT-001] Created edit_tours_csv.py: interactive terminal-based editor to review, edit, or delete tours in CSVs without re-scraping.
+- [CLEAN-001] Created clean_cruisewhitsundays_csv.py: filters CSV to only valid tour links and keeps best-quality row per tour (deduplicates by scoring completeness).
+- [SCRAPE-014] Fixed price extraction bug: disabled old regex that was picking up JavaScript code ("$,") instead of real prices, allowing CSS selector targeting to work correctly.
+- [UTIL-001] Created merge_cleaned_to_media.py: automatically merges updated data from _cleaned.csv files into _with_media.csv files while preserving image paths.
+- [SCRAPE-015] Auto-run merge script after AI postprocessing: scrape_tours.py now automatically runs merge_cleaned_to_media.py after cleaning, creating a fully automated workflow (scrape → clean → merge).
+- [SCRAPE-016] Fixed critical price overwriting bug: CSS selector prices were being overwritten by extract_price_tiers(). Now uses prices from extract_tour_info() first, preserving CSS selector and child price extractions.
+- [UTIL-002] Enhanced merge script to handle ID format changes: now matches by URL when old name-based IDs don't match new hash-based IDs, and removes Unicode characters for Windows terminal compatibility.
+- [SCRAPE-017] Reverted to AI postprocessor in automated pipeline: fast_postprocess was skipping description extraction. AI postprocessor now runs automatically after scraping to extract descriptions, highlights, includes from raw_text using GPT-4o.
+- [WORKFLOW] Confirmed complete automated pipeline: scrape_tours.py → ai_postprocess_csv.py → merge_cleaned_to_media.py → app loads _with_media.csv files with full data.
+- [SCRAPE-018] Fixed all RedCat tour URLs: corrected Thundercat URL, fixed "Purrrfect" spelling (3 r's), corrected snorkel tour URL, added private charters.
+- [UI-005] Tour cards now display company name instead of activity_type: helps differentiate tours from different operators on main page.
+- [APP-001] Added company display name mapping: tour cards now show "Red Cat Adventures" instead of "redcatadventures" for better readability.
+- [APP-002] Fixed broken image paths in galleries: added validation to filter out non-existent images, added placeholder.jpg fallback for missing thumbnails.
+- [APP-003] Fixed company name display in tour detail modal: now shows formatted company names ("Red Cat Adventures") instead of raw CSV names ("redcatadventures").
+- [APP-004] Added smart image folder matching: find_thumbnail now uses keyword matching to find correct image folders even when folder names don't exactly match tour IDs (handles legacy folders with different naming conventions).
+- [UI-006] Redesigned tour detail buttons: "Book Now" and "More Info" buttons now appear side-by-side with equal width for better layout.
+- [UI-007] Removed all rounded corners: changed all border-radius to 0 for sharp, modern design (except circular elements like arrows/indicators).
+- [UI-008] Hidden chat widget: commented out Tour Chat Assistant widget and related JavaScript for cleaner interface (can be re-enabled later).
+- [APP-005] Added display names for new tour companies: Airlie Beach Diving, Crocodile Safari, Explore Group, Explore Whitsundays, Ocean Dynamics, OzSail, Pioneer Adventures, ProSail.
+- [FIX-001] Fixed ChromeDriver version mismatch in download_tour_media.py: now explicitly uses ChromeDriver 140 to match Chrome browser version.
+- [FIX-002] Fixed duration filter logic: improved parse_duration() to correctly categorize tours by checking multi-day first, then parsing hour ranges (<=4 hours = half day, >4 hours = full day), preventing "2 days" from showing in "full day" results.
+- [FIX-003] Fixed activity type filter logic: reordered parse_activity_type() to check most specific categories first (Whitehaven > Reef > Scenic/Adventure > Island Tours), added more specific keywords like "jet boat", "thundercat", preventing reef tours from being miscategorized as island tours.
+- [FIX-004] Improved Great Barrier Reef filter accuracy: now requires BOTH reef-specific keywords ("outer reef", "coral reef") AND water activity keywords ("snorkel", "dive") to prevent false positives like "Crocodile Safari" from appearing in reef results.

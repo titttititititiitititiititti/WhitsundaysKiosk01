@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tour Chat Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    body {
+      font-family: 'Inter', 'Roboto', 'Open Sans', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    #main-layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+    }
+    
+    /* Top filter panel for touchscreen */
+    #filter-panel {
+      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      color: white;
+      padding: 40px 40px 50px 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    
+    #filter-panel h1 {
+      font-size: 3.5em;
+      margin: 0 0 20px 0;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .filter-progress {
+      font-size: 1.3em;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    /* Progress bar */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: #fff;
+      transition: width 0.4s ease;
+      border-radius: 10px;
+    }
+    
+    .filter-question {
+      display: none;
+      animation: fadeIn 0.4s ease;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .filter-question.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .question-text {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 30px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    
+    .filter-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .filter-option {
+      padding: 30px 35px;
+      border: 3px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      font-size: 1.5em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      user-select: none;
+      color: white;
+      border-radius: 12px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .filter-option:active {
+      transform: scale(0.97);
+      background: rgba(255,255,255,0.25);
+    }
+    
+    .filter-option.selected {
+      background: white;
+      color: #0077b6;
+      border-color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* Budget Slider Styles */
+    .budget-slider-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 30px;
+    }
+    
+    .budget-label-display {
+      font-size: 2em;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .budget-slider {
+      width: 100%;
+      height: 20px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      outline: none;
+      margin: 30px 0;
+      cursor: pointer;
+    }
+    
+    /* Slider Track */
+    .budget-slider::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 20px;
+      background: linear-gradient(to right, 
+        #4ade80 0%, 
+        #4ade80 25%, 
+        #fbbf24 25%, 
+        #fbbf24 50%, 
+        #fb923c 50%, 
+        #fb923c 75%, 
+        #ef4444 75%, 
+        #ef4444 100%);
+      border-radius: 10px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .budget-slider::-moz-range-track {
+      width: 100%;
+      height: 20px;
+      background: linear-gradient(to right, 
+        #4ade80 0%, 
+        #4ade80 25%, 
+        #fbbf24 25%, 
+        #fbbf24 50%, 
+        #fb923c 50%, 
+        #fb923c 75%, 
+        #ef4444 75%, 
+        #ef4444 100%);
+      border-radius: 10px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    /* Slider Thumb */
+    .budget-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 60px;
+      height: 60px;
+      background: white;
+      border: 5px solid #0077b6;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      margin-top: -20px;
+    }
+    
+    .budget-slider::-moz-range-thumb {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border: 5px solid #0077b6;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+    
+    .budget-slider:active::-webkit-slider-thumb {
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    
+    .budget-slider:active::-moz-range-thumb {
+      transform: scale(1.15);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    
+    .budget-markers {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding: 0 5px;
+    }
+    
+    .budget-marker {
+      font-size: 1.3em;
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+    
+    .budget-action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 40px;
+    }
+    
+    .confirm-budget-btn {
+      width: 100%;
+      padding: 25px;
+      background: white;
+      color: #0077b6;
+      border: none;
+      font-size: 1.6em;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+    
+    .confirm-budget-btn:active {
+      background: #e0eafc;
+      transform: scale(0.98);
+    }
+    
+    .skip-budget-btn {
+      width: 100%;
+      padding: 20px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 3px solid rgba(255,255,255,0.4);
+      font-size: 1.4em;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .skip-budget-btn:active {
+      background: rgba(255,255,255,0.25);
+      transform: scale(0.98);
+    }
+    
+    .filter-summary {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 25px 30px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .filter-summary-title {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .filter-summary-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .filter-summary-item {
+      font-size: 1.1em;
+      color: white;
+      background: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    
+    .clear-filters-btn {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      padding: 18px 35px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      font-size: 1.3em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .clear-filters-btn:active {
+      background: rgba(255,255,255,0.35);
+      transform: scale(0.97);
+    }
+    
+    /* Content area - tours grid */
+    #content-area {
+      flex: 1;
+      padding: 50px 40px;
+      background: #f5f9fc;
+    }
+    
+    #tour-grid-header {
+      font-size: 2.8em;
+      font-weight: 700;
+      color: #0077b6;
+      margin: 0 0 15px 0;
+      text-align: center;
+    }
+    
+    .results-info {
+      text-align: center;
+      margin: 0 0 40px 0;
+      font-size: 1.6em;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    #tour-placeholder-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 450px;
+      gap: 30px;
+      padding-bottom: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* --- Touchscreen-optimized Tour Card Styles --- */
+    .tour-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      overflow: hidden;
+      margin: 0;
+      border-radius: 16px;
+      background: #eee;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .tour-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    
+    .tour-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 16px;
+    }
+    
+    .tour-overlay {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      padding: 30px;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.0) 100%);
+      color: #fff;
+      box-sizing: border-box;
+    }
+    
+    .tour-type {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    
+    .tour-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 8px;
+      line-height: 1.3;
+    }
+    
+    .tour-rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .stars {
+      color: #fbbf24;
+      display: flex;
+      gap: 2px;
+    }
+    
+    .review-count {
+      opacity: 0.9;
+      font-weight: 400;
+      font-size: 1.1rem;
+    }
+    /* Chat widget styles */
+    #chat-widget {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 340px;
+      max-width: 90vw;
+      background: #fff;
+      border-radius: 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #chat-header {
+      background: #0077b6;
+      color: #fff;
+      font-weight: 600;
+      padding: 16px 20px;
+      font-size: 1.1em;
+    }
+    #chatbox {
+      height: 200px;
+      overflow-y: auto;
+      padding: 16px 20px;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+    }
+    .chat-message {
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .user-message {
+      text-align: right;
+      color: #0077b6;
+      font-weight: 500;
+    }
+    .assistant-message {
+      text-align: left;
+      color: #333;
+    }
+    #input-area {
+      display: flex;
+      padding: 16px 20px;
+      background: #fff;
+      position: relative;
+    }
+    #userInput {
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 0;
+      padding: 12px 16px;
+      outline: none;
+      font-size: 0.95em;
+      margin-right: 12px;
+    }
+    #userInput:focus {
+      border-color: #0077b6;
+    }
+    #sendBtn {
+      background: #0077b6;
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    #sendBtn:hover {
+      background: #005a8b;
+    }
+    #spinner {
+      display: none;
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    /* Load More Button */
+    .load-more-container {
+      width: 100%;
+      text-align: center;
+      margin: 40px 0;
+    }
+    
+    .load-more-btn {
+      padding: 25px 60px;
+      font-size: 1.6em;
+      border-radius: 12px;
+      background: #0077b6;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,119,182,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .load-more-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 10px rgba(0,119,182,0.3);
+    }
+    
+    /* Responsive adjustments for smaller vertical screens */
+    @media (max-width: 768px) {
+      #filter-panel h1 {
+        font-size: 2.5em;
+      }
+      
+      .question-text {
+        font-size: 1.8em;
+      }
+      
+      .filter-option {
+        font-size: 1.3em;
+        padding: 25px 30px;
+      }
+      
+      #tour-placeholder-row {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 400px;
+      }
+      
+      .clear-filters-btn {
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        font-size: 1.1em;
+      }
+    }
+    #tour-detail-page {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background: #fff;
+      z-index: 200;
+      transform: translateX(100vw);
+      transition: transform 0.5s cubic-bezier(.77,0,.18,1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    #tour-detail-page.active {
+      transform: translateX(0);
+    }
+    #back-arrow {
+      position: fixed;
+      top: 40px;
+      left: 40px;
+      font-size: 2.8em;
+      color: #0077b6;
+      background: #fff;
+      border-radius: 50%;
+      width: 70px; height: 70px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      cursor: pointer;
+      z-index: 210;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    #back-arrow:active {
+      transform: scale(0.95);
+      background: #e0eafc;
+    }
+    #detail-content {
+      max-width: 1000px;
+      margin: 120px auto 60px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 50px 40px 40px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #detail-title {
+      font-size: 2.8em;
+      font-weight: 700;
+      color: #0077b6;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    #detail-company {
+      font-size: 1.5em;
+      color: #666;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    #detail-summary {
+      font-size: 1.4em;
+      color: #222;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    #detail-description {
+      color: #444;
+      margin-bottom: 24px;
+      font-size: 1.2em;
+      line-height: 1.6;
+    }
+    #detail-info {
+      margin-bottom: 24px;
+      color: #333;
+      font-size: 1.2em;
+      line-height: 1.8;
+    }
+    #detail-info ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #detail-info li {
+      margin-bottom: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    #detail-info b {
+      color: #0077b6;
+      font-weight: 600;
+    }
+    #detail-gallery {
+      width: 100%;
+      margin: 32px 0 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .carousel {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
+      margin-bottom: 24px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f0f0f0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 60px; height: 60px;
+      font-size: 2em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .carousel-arrow:active {
+      transform: translateY(-50%) scale(0.9);
+      background: rgba(255,255,255,1);
+    }
+    .carousel-arrow.left { left: 20px; }
+    .carousel-arrow.right { right: 20px; }
+    .carousel-indicators {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .carousel-indicator {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #ddd;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .carousel-indicator:active {
+      transform: scale(0.9);
+    }
+    .carousel-indicator.active {
+      background: #0077b6;
+      border-color: #0077b6;
+      transform: scale(1.2);
+    }
+    
+    /* Booking Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 300;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 700px;
+      width: 100%;
+      padding: 50px 40px;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      animation: slideUp 0.4s ease;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 1.8em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+    }
+    
+    .modal-close:active {
+      background: #e0e0e0;
+      transform: scale(0.95);
+    }
+    
+    .modal-title {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: #0077b6;
+      margin: 0 0 15px 0;
+      text-align: center;
+    }
+    
+    .modal-subtitle {
+      font-size: 1.3em;
+      color: #666;
+      margin: 0 0 30px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 18px 20px;
+      font-size: 1.2em;
+      border: 3px solid #ddd;
+      border-radius: 12px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0077b6;
+      background: #f8fbff;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .form-actions {
+      margin-top: 30px;
+    }
+    
+    .submit-booking-btn {
+      width: 100%;
+      padding: 25px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.6em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,119,182,0.3);
+    }
+    
+    .submit-booking-btn:active {
+      background: #005a8b;
+      transform: scale(0.98);
+    }
+    
+    .submit-booking-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .form-note {
+      text-align: center;
+      font-size: 0.95em;
+      color: #666;
+      margin-top: 15px;
+    }
+    
+    .booking-success {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4em;
+      color: white;
+      margin: 0 auto 30px;
+      animation: scaleIn 0.5s ease;
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    
+    .booking-success h3 {
+      font-size: 2em;
+      color: #0077b6;
+      margin-bottom: 15px;
+    }
+    
+    .booking-success p {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .success-close-btn {
+      padding: 18px 50px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.4em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+      .success-close-btn:active {
+      background: #005a8b;
+      transform: scale(0.98);
+    }
+    
+    /* Review Section Styles */
+    .reviews-section {
+      width: 100%;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+    }
+    
+    .reviews-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .reviews-title {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #0077b6;
+    }
+    
+    .reviews-summary {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .overall-rating {
+      font-size: 3em;
+      font-weight: 700;
+      color: #0077b6;
+    }
+    
+    .stars-large {
+      color: #fbbf24;
+      font-size: 2em;
+      display: flex;
+      gap: 4px;
+    }
+    
+    .review-source {
+      font-size: 1em;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .review-card {
+      background: #f8f9fa;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border-left: 4px solid #0077b6;
+    }
+    
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .review-author {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.2em;
+    }
+    
+    .review-stars {
+      color: #fbbf24;
+      font-size: 1.1em;
+    }
+    
+    .review-date {
+      color: #999;
+      font-size: 0.95em;
+      margin-top: 4px;
+    }
+    
+    .review-title {
+      font-weight: 600;
+      color: #0077b6;
+      font-size: 1.15em;
+      margin-bottom: 10px;
+    }
+    
+    .review-text {
+      color: #444;
+      line-height: 1.6;
+      font-size: 1.05em;
+    }
+    
+    .no-reviews {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 1.2em;
+    }
+    
+    @media (max-width: 768px) {
+      .modal-content {
+        padding: 40px 25px;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .reviews-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="main-layout">
+    <!-- Top Filter Panel - Progressive Questions -->
+    <div id="filter-panel">
+      <button class="clear-filters-btn" onclick="clearFilters()">↻ Start Over</button>
+      
+      <h1>🏝️ Find Your Perfect Tour</h1>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar" style="width: 20%;"></div>
+      </div>
+      
+      <div class="filter-progress" id="filter-progress">Question 1 of 5</div>
+      
+      <!-- Filter Summary (shows selected answers) -->
+      <div id="filter-summary" class="filter-summary" style="display: none;">
+        <div class="filter-summary-title">Your Preferences:</div>
+        <div id="filter-summary-content" class="filter-summary-content"></div>
+      </div>
+      
+      <!-- Question 1: Duration -->
+      <div class="filter-question active" data-question="1" data-filter="duration">
+        <div class="question-text">⏰ How long can you be away?</div>
+        <div class="filter-options">
+          <div class="filter-option" data-value="half_day">Half Day<br>(2-4 hours)</div>
+          <div class="filter-option" data-value="full_day">Full Day<br>(5-8 hours)</div>
+          <div class="filter-option" data-value="multi_day">Multi-day<br>Adventure</div>
+          <div class="filter-option" data-value="">No preference</div>
+        </div>
+      </div>
+      
+      <!-- Question 2: Family -->
+      <div class="filter-question" data-question="2" data-filter="family">
+        <div class="question-text">👨‍👩‍👧‍👦 Who's going on this tour?</div>
+        <div class="filter-options">
+          <div class="filter-option" data-value="true">Family with kids</div>
+          <div class="filter-option" data-value="false">Adults only</div>
+          <div class="filter-option" data-value="">No preference</div>
+        </div>
+      </div>
+      
+      <!-- Question 3: Budget (Slider) -->
+      <div class="filter-question" data-question="3" data-filter="price">
+        <div class="question-text">💰 What's your budget per person?</div>
+        <div class="budget-slider-container">
+          <div class="budget-label-display" id="budget-label-display">Move the slider to explore tours</div>
+          <input type="range" id="budget-slider" class="budget-slider" min="0" max="4" value="0" step="1">
+          <div class="budget-markers">
+            <span class="budget-marker">$0</span>
+            <span class="budget-marker">$100</span>
+            <span class="budget-marker">$250</span>
+            <span class="budget-marker">$500</span>
+            <span class="budget-marker">$1000+</span>
+          </div>
+          <div class="budget-action-buttons">
+            <button class="confirm-budget-btn" id="confirm-budget-btn" style="display:none;">Continue ➜</button>
+            <button class="skip-budget-btn" id="skip-budget-btn">Skip (No Preference)</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Question 4: Activity Type -->
+      <div class="filter-question" data-question="4" data-filter="activity">
+        <div class="question-text">🎯 What interests you most?</div>
+        <div class="filter-options">
+          <div class="filter-option" data-value="great_barrier_reef">Great Barrier Reef</div>
+          <div class="filter-option" data-value="whitehaven_beach">Whitehaven Beach</div>
+          <div class="filter-option" data-value="island_tours">Island Cruises</div>
+          <div class="filter-option" data-value="scenic_adventure">Scenic & Adventure</div>
+          <div class="filter-option" data-value="">No preference</div>
+        </div>
+      </div>
+      
+      <!-- Question 5: Inclusions -->
+      <div class="filter-question" data-question="5" data-filter="inclusions">
+        <div class="question-text">🍽️ What would you like included?</div>
+        <div class="filter-options">
+          <div class="filter-option" data-value="meals">Meals Included</div>
+          <div class="filter-option" data-value="equipment">Equipment Provided</div>
+          <div class="filter-option" data-value="both">Both Meals & Equipment</div>
+          <div class="filter-option" data-value="">No preference</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content Area - Tours Grid -->
+    <div id="content-area">
+      <div id="tour-grid-header">Available Tours</div>
+      <div class="results-info" id="results-info">Tap an option above to start filtering</div>
+      
+      <div id="tour-placeholder-row">
+        {% for tour in tours %}
+        <div class="tour-card" data-key="{{ tour.key }}">
+          <img src="{{ tour.thumbnail }}" alt="{{ tour.name }}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">{{ tour.company_name|replace('_',' ')|title }}</div>
+            <div class="tour-title">{{ tour.name }}</div>
+            {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
+            <div class="tour-rating">
+              <span class="stars">
+                {% set full_stars = (tour.review_rating|int) %}
+                {% set has_half = (tour.review_rating % 1 >= 0.5) %}
+                {% for i in range(full_stars) %}★{% endfor %}{% if has_half %}☆{% endif %}{% for i in range(5 - full_stars - (1 if has_half else 0)) %}☆{% endfor %}
+              </span>
+              <span class="review-count">({{ tour.review_count }})</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="load-more-container">
+        <button id="load-more-btn" class="load-more-btn">Load More Tours</button>
+      </div>
+    </div>
+  </div>
+  <script id="initial-shown-keys" type="application/json">{{ shown_keys|tojson|safe }}</script>
+  <!-- Chat Widget - Commented out for now, can re-enable later
+  <div id="chat-widget">
+    <div id="chat-header">Tour Chat Assistant</div>
+    <div id="chatbox"></div>
+    <form id="input-area" onsubmit="sendMessage(); return false;">
+      <input type="text" id="userInput" placeholder="Ask a tour question..." autocomplete="off" />
+      <button id="sendBtn" type="submit">Send</button>
+      <div id="spinner">
+        <svg width="28" height="28" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="#0077b6" stroke-width="5" stroke-linecap="round" stroke-dasharray="31.415, 31.415" transform="rotate(72.5041 25 25)"><animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 25 25;360 25 25" keyTimes="0;1"></animateTransform></circle></svg>
+      </div>
+    </form>
+  </div>
+  -->
+  <div id="tour-detail-page">
+    <button id="back-arrow" title="Back">&#8592;</button>
+    <div id="detail-content">
+      <div id="detail-title"></div>
+      <div id="detail-company"></div>
+      <div id="detail-summary"></div>
+      <div id="detail-description"></div>
+      <div id="detail-gallery"></div>
+      <div id="detail-info"></div>
+    </div>
+  </div>
+  
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="close-booking-modal">✕</button>
+      <h2 class="modal-title">📬 Book Your Tour</h2>
+      <p class="modal-subtitle" id="booking-tour-name"></p>
+      
+      <form id="booking-form">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="guest-name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="guest-email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="guest-phone" name="phone" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Adults *</label>
+            <input type="number" id="guest-adults" name="adults" min="1" value="2" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Children</label>
+            <input type="number" id="guest-children" name="children" min="0" value="0">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Preferred Date *</label>
+          <input type="date" id="guest-date" name="date" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Message / Special Requests</label>
+          <textarea id="guest-message" name="message" rows="4" placeholder="Any questions or special requirements..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="submit-booking-btn" id="submit-booking-btn">
+            Send Inquiry ✉️
+          </button>
+        </div>
+        
+        <p class="form-note">* Required fields. Your inquiry will be sent directly to the tour operator.</p>
+      </form>
+      
+      <div id="booking-success" class="booking-success" style="display:none;">
+        <div class="success-icon">✓</div>
+        <h3>Inquiry Sent Successfully!</h3>
+        <p>The tour operator will contact you shortly at the email address provided.</p>
+        <button class="success-close-btn" onclick="closeBookingModal()">Done</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Helper function to generate star display
+    function generateStars(rating, fullOnly = false) {
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = !fullOnly && (rating % 1 >= 0.5);
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      
+      let html = '';
+      for (let i = 0; i < fullStars; i++) {
+        html += '★';
+      }
+      if (hasHalfStar) {
+        html += '☆';
+      }
+      for (let i = 0; i < emptyStars; i++) {
+        html += '☆';
+      }
+      return html;
+    }
+    
+    // Progressive filter functionality
+    let activeFilters = {};
+    let currentQuestion = 1;
+    const totalQuestions = 5;
+    
+    const filterLabels = {
+      duration: {
+        half_day: 'Half Day',
+        full_day: 'Full Day', 
+        multi_day: 'Multi-day'
+      },
+      family: {
+        true: 'Family-friendly',
+        false: 'Adults only'
+      },
+      price: {
+        budget: 'Under $100',
+        mid_range: '$100 - $250',
+        premium: '$250 - $500',
+        luxury: '$500+'
+      },
+      activity: {
+        great_barrier_reef: 'Great Barrier Reef',
+        whitehaven_beach: 'Whitehaven Beach',
+        island_tours: 'Island Tours',
+        scenic_adventure: 'Scenic & Adventure'
+      },
+      meals: {
+        true: 'Meals included'
+      },
+      equipment: {
+        true: 'Equipment provided'
+      }
+    };
+    
+    function updateFilterSummary() {
+      const summaryContent = document.getElementById('filter-summary-content');
+      const summary = document.getElementById('filter-summary');
+      
+      let html = '';
+      let hasFilters = false;
+      
+      if (activeFilters.duration) {
+        html += `<div class="filter-summary-item">⏰ ${filterLabels.duration[activeFilters.duration]}</div>`;
+        hasFilters = true;
+      }
+      if (activeFilters.family) {
+        html += `<div class="filter-summary-item">👨‍👩‍👧‍👦 ${filterLabels.family[activeFilters.family]}</div>`;
+        hasFilters = true;
+      }
+      if (activeFilters.price) {
+        html += `<div class="filter-summary-item">💰 ${filterLabels.price[activeFilters.price]}</div>`;
+        hasFilters = true;
+      }
+      if (activeFilters.activity) {
+        html += `<div class="filter-summary-item">🎯 ${filterLabels.activity[activeFilters.activity]}</div>`;
+        hasFilters = true;
+      }
+      if (activeFilters.meals) {
+        html += `<div class="filter-summary-item">🍽️ Meals included</div>`;
+        hasFilters = true;
+      }
+      if (activeFilters.equipment) {
+        html += `<div class="filter-summary-item">🎒 Equipment provided</div>`;
+        hasFilters = true;
+      }
+      
+      summaryContent.innerHTML = html;
+      summary.style.display = hasFilters ? 'block' : 'none';
+    }
+    
+    function applyFilters() {
+      const params = new URLSearchParams();
+      
+      // Handle the inclusions question specially (question 5)
+      if (activeFilters.inclusions) {
+        const val = activeFilters.inclusions;
+        if (val === 'meals') {
+          params.append('meals', 'true');
+        } else if (val === 'equipment') {
+          params.append('equipment', 'true');
+        } else if (val === 'both') {
+          params.append('meals', 'true');
+          params.append('equipment', 'true');
+        }
+      } else {
+        // Add regular filters
+        if (activeFilters.meals) params.append('meals', activeFilters.meals);
+        if (activeFilters.equipment) params.append('equipment', activeFilters.equipment);
+      }
+      
+      // Add other filters
+      for (const [key, value] of Object.entries(activeFilters)) {
+        if (key !== 'inclusions' && key !== 'meals' && key !== 'equipment' && value) {
+          params.append(key, value);
+        }
+      }
+      
+      document.getElementById('results-info').innerHTML = '🔍 Searching for tours...';
+      
+      fetch(`/filter-tours?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+          displayFilteredTours(data.tours);
+          document.getElementById('results-info').innerHTML = 
+            `Found ${data.total_found} tour${data.total_found !== 1 ? 's' : ''} matching your preferences`;
+        })
+        .catch(error => {
+          console.error('Filter error:', error);
+          document.getElementById('results-info').innerHTML = 'Error filtering tours. Please try again.';
+        });
+    }
+    
+    function nextQuestion() {
+      if (currentQuestion < totalQuestions) {
+        // Hide current question
+        document.querySelector(`.filter-question[data-question="${currentQuestion}"]`).classList.remove('active');
+        
+        // Show next question
+        currentQuestion++;
+        document.querySelector(`.filter-question[data-question="${currentQuestion}"]`).classList.add('active');
+        
+        // Update progress bar
+        const progressPercent = (currentQuestion / totalQuestions) * 100;
+        document.getElementById('progress-bar').style.width = progressPercent + '%';
+        
+        // Update progress text
+        if (currentQuestion === totalQuestions) {
+          document.getElementById('filter-progress').textContent = 'Almost done! Last question...';
+        } else {
+          document.getElementById('filter-progress').textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+        }
+        
+        // Scroll to top of filter panel smoothly
+        document.getElementById('filter-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // All questions answered - scroll to results
+        document.getElementById('content-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    
+    function clearFilters() {
+      activeFilters = {};
+      currentQuestion = 1;
+      budgetSelected = false;
+      
+      // Clear budget slider
+      const budgetSliderEl = document.getElementById('budget-slider');
+      const budgetLabelEl = document.getElementById('budget-label-display');
+      const confirmBudgetBtnEl = document.getElementById('confirm-budget-btn');
+      if (budgetSliderEl) {
+        budgetSliderEl.value = 0;
+      }
+      if (budgetLabelEl) {
+        budgetLabelEl.textContent = 'Move the slider to explore tours';
+      }
+      if (confirmBudgetBtnEl) {
+        confirmBudgetBtnEl.style.display = 'none';
+      }
+      
+      // Clear all filter options
+      document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('selected'));
+      document.querySelectorAll('.filter-question').forEach(q => q.classList.remove('active'));
+      document.querySelector('.filter-question[data-question="1"]').classList.add('active');
+      document.getElementById('filter-progress').textContent = 'Question 1 of 5';
+      document.getElementById('progress-bar').style.width = '20%';
+      document.getElementById('filter-summary').style.display = 'none';
+      document.getElementById('results-info').innerHTML = 'Tap an option above to start filtering';
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Reload to show all tours
+      location.reload();
+    }
+    
+    function displayFilteredTours(tours) {
+      const grid = document.getElementById('tour-placeholder-row');
+      grid.innerHTML = '';
+      
+      tours.forEach(tour => {
+        const card = document.createElement('div');
+        card.className = 'tour-card';
+        card.setAttribute('data-key', tour.key);
+        
+        // Generate rating display
+        let ratingHtml = '';
+        if (tour.review_rating && tour.review_rating > 0 && tour.review_count && tour.review_count > 0) {
+          ratingHtml = `
+            <div class="tour-rating">
+              <span class="stars">${generateStars(tour.review_rating)}</span>
+              <span class="review-count">(${tour.review_count})</span>
+            </div>
+          `;
+        }
+        
+        card.innerHTML = `
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
+          </div>
+        `;
+        card.onclick = () => openTourDetail(tour.key);
+        grid.appendChild(card);
+      });
+      
+      // Hide load more button when filtering
+      document.getElementById('load-more-btn').style.display = 'none';
+    }
+    
+    // Budget slider configuration
+    const budgetRanges = [
+      { value: 0, label: 'Any Budget', category: '' },
+      { value: 1, label: 'Under $100', category: 'budget' },
+      { value: 2, label: '$100 - $250', category: 'mid_range' },
+      { value: 3, label: '$250 - $500', category: 'premium' },
+      { value: 4, label: '$500+', category: 'luxury' }
+    ];
+    
+    let budgetSliderTimer = null;
+    let budgetSelected = false;
+    
+    // Budget slider handlers
+    const budgetSlider = document.getElementById('budget-slider');
+    const budgetLabel = document.getElementById('budget-label-display');
+    const skipBudgetBtn = document.getElementById('skip-budget-btn');
+    const confirmBudgetBtn = document.getElementById('confirm-budget-btn');
+    
+    if (budgetSlider) {
+      // Update label and filter in real-time as slider moves
+      budgetSlider.addEventListener('input', (e) => {
+        const sliderValue = parseInt(e.target.value);
+        const range = budgetRanges[sliderValue];
+        
+        // Update display label
+        budgetLabel.textContent = range.label;
+        
+        // Update filter in real-time
+        if (range.category) {
+          activeFilters.price = range.category;
+        } else {
+          delete activeFilters.price;
+        }
+        
+        // Update summary
+        updateFilterSummary();
+        
+        // Apply filters immediately for live feedback
+        applyFilters();
+        
+        // Show/hide confirm button based on slider position
+        if (confirmBudgetBtn) {
+          if (sliderValue > 0) {
+            confirmBudgetBtn.style.display = 'block';
+          } else {
+            confirmBudgetBtn.style.display = 'none';
+          }
+        }
+      });
+      
+      // When user releases the slider, scroll to show results
+      budgetSlider.addEventListener('change', (e) => {
+        budgetSelected = true;
+        
+        // Brief scroll to peek at results
+        setTimeout(() => {
+          const contentArea = document.getElementById('content-area');
+          const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+          const contentTop = contentArea.offsetTop;
+          
+          if (currentScroll < contentTop - 100) {
+            window.scrollTo({ 
+              top: Math.min(currentScroll + 200, contentTop - 50), 
+              behavior: 'smooth' 
+            });
+          }
+        }, 200);
+      });
+      
+      // Confirm button - proceed to next question
+      if (confirmBudgetBtn) {
+        confirmBudgetBtn.onclick = () => {
+          setTimeout(() => {
+            nextQuestion();
+          }, 300);
+        };
+      }
+      
+      // Skip button for budget
+      if (skipBudgetBtn) {
+        skipBudgetBtn.onclick = () => {
+          delete activeFilters.price;
+          budgetSlider.value = 0;
+          budgetLabel.textContent = 'Move the slider to explore tours';
+          confirmBudgetBtn.style.display = 'none';
+          updateFilterSummary();
+          applyFilters();
+          
+          setTimeout(() => {
+            nextQuestion();
+          }, 400);
+        };
+      }
+    }
+    
+    // Add click handlers to filter options (for non-slider questions)
+    document.querySelectorAll('.filter-option').forEach(option => {
+      option.onclick = () => {
+        const question = option.closest('.filter-question');
+        const filterType = question.getAttribute('data-filter');
+        const value = option.getAttribute('data-value');
+        
+        // Remove selected class from all options in this question
+        question.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('selected'));
+        
+        // Mark this option as selected
+        option.classList.add('selected');
+        
+        // Update active filters
+        if (value) {
+          activeFilters[filterType] = value;
+        } else {
+          delete activeFilters[filterType];
+        }
+        
+        // Update summary
+        updateFilterSummary();
+        
+        // Apply filters immediately
+        applyFilters();
+        
+        // Brief scroll to peek at results (touchscreen feedback)
+        setTimeout(() => {
+          const contentArea = document.getElementById('content-area');
+          const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+          const contentTop = contentArea.offsetTop;
+          
+          // If user is at top, scroll down a bit to show results are updating
+          if (currentScroll < contentTop - 100) {
+            window.scrollTo({ 
+              top: Math.min(currentScroll + 200, contentTop - 50), 
+              behavior: 'smooth' 
+            });
+          }
+        }, 200);
+        
+        // Move to next question after a delay
+        setTimeout(() => {
+          nextQuestion();
+        }, 600);
+      };
+    });
+
+    /* Chat logic - Commented out for now
+    const chatbox = document.getElementById('chatbox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const spinner = document.getElementById('spinner');
+    function addMessage(text, isUser) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = isUser ? 'chat-message user-message' : 'chat-message assistant-message';
+      messageDiv.textContent = text;
+      chatbox.appendChild(messageDiv);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+      addMessage(message, true);
+      userInput.value = '';
+      sendBtn.style.display = 'none';
+      spinner.style.display = 'block';
+      fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        addMessage(data.response, false);
+      })
+      .catch(error => {
+        addMessage('Sorry, there was an error. Please try again.', false);
+      })
+      .finally(() => {
+        sendBtn.style.display = 'block';
+        spinner.style.display = 'none';
+      });
+    }
+    */
+    // Load more tours logic
+    const initialShownKeys = JSON.parse(document.getElementById('initial-shown-keys').textContent || '[]');
+    let loadedCount = initialShownKeys.length;
+    let shownKeys = new Set(initialShownKeys);
+    document.getElementById('load-more-btn').onclick = async function() {
+      const exclude = Array.from(shownKeys).join(',');
+      const res = await fetch(`/more-tours?offset=${loadedCount}&count=12&exclude=${exclude}`);
+      const tours = await res.json();
+      loadedCount += tours.length;
+      const grid = document.getElementById('tour-placeholder-row');
+      for (const tour of tours) {
+        const card = document.createElement('div');
+        card.className = 'tour-card';
+        card.setAttribute('data-key', tour.key);
+        
+        // Generate rating display
+        let ratingHtml = '';
+        if (tour.review_rating && tour.review_rating > 0 && tour.review_count && tour.review_count > 0) {
+          ratingHtml = `
+            <div class="tour-rating">
+              <span class="stars">${generateStars(tour.review_rating)}</span>
+              <span class="review-count">(${tour.review_count})</span>
+            </div>
+          `;
+        }
+        
+        card.innerHTML = `
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
+          </div>
+        `;
+        card.onclick = () => openTourDetail(tour.key);
+        grid.appendChild(card);
+        shownKeys.add(tour.key);
+      }
+      if (tours.length < 12) {
+        document.getElementById('load-more-btn').style.display = 'none';
+      }
+    };
+    // Add click handler to initial cards
+    document.querySelectorAll('.tour-card').forEach(card => {
+      const key = card.getAttribute('data-key');
+      card.onclick = () => openTourDetail(key);
+    });
+    // Tour detail logic
+    function openTourDetail(key) {
+      fetch(`/tour-detail/${key}`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('detail-title').textContent = data.name;
+          document.getElementById('detail-company').textContent = data.company;
+          document.getElementById('detail-summary').textContent = data.summary;
+          document.getElementById('detail-description').textContent = data.description;
+          let info = '<ul style="list-style:none;padding:0;margin:0;">';
+          info += `<li><b>Price (Adult):</b> ${data.price_adult || 'N/A'}</li>`;
+          info += `<li><b>Price (Child):</b> ${data.price_child || 'N/A'}</li>`;
+          if (data.price_tiers) {
+            info += `<li><b>Group Prices:</b><br><span style='white-space:pre-line'>${data.price_tiers.replace(/;/g, '<br>')}</span></li>`;
+          }
+          info += `<li><b>Duration:</b> ${data.duration || 'N/A'}</li>`;
+          info += `<li><b>Duration (hours):</b> ${data.duration_hours || 'N/A'}</li>`;
+          info += `<li><b>Departs:</b> ${data.departure_location || 'N/A'}</li>`;
+          info += `<li><b>Times:</b> ${data.departure_times || 'N/A'}</li>`;
+          info += `<li><b>Includes:</b> ${data.includes || 'N/A'}</li>`;
+          info += `<li><b>Highlights:</b> ${data.highlights || 'N/A'}</li>`;
+          info += '</ul>';
+          // Add action buttons side-by-side (touchscreen-optimized)
+          info += '<div style="display:flex;gap:20px;margin-top:32px;justify-content:center;flex-wrap:wrap;">';
+          info += `<button onclick='openBookingModal("${key}", "${data.name.replace(/'/g, "\\'")}","${data.company.replace(/'/g, "\\'")}")' style='color:#fff;background:#0077b6;padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(0,119,182,0.3);cursor:pointer;'>Book Now 📬</button>`;
+          if (data.link_more_info) info += `<a href='${data.link_more_info}' target='_blank' style='color:#0077b6;background:#e0eafc;padding:22px 45px;text-decoration:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;border:3px solid #0077b6;'>More Info</a>`;
+          info += '</div>';
+          
+          // Add reviews section (only if there are actual reviews)
+          if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
+            info += '<div class="reviews-section">';
+            info += '<div class="reviews-header">';
+            info += '<div class="reviews-title">Customer Reviews</div>';
+            info += '<div class="reviews-summary">';
+            info += `<div class="overall-rating">${data.reviews.overall_rating.toFixed(1)}</div>`;
+            info += '<div>';
+            info += `<div class="stars-large">${generateStars(data.reviews.overall_rating, true)}</div>`;
+            info += `<div class="review-source">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
+            info += '</div>';
+            info += '</div>';
+            info += '</div>';
+            
+            // Individual reviews
+            if (data.reviews.reviews && data.reviews.reviews.length > 0) {
+              data.reviews.reviews.forEach(review => {
+                info += '<div class="review-card">';
+                info += '<div class="review-header">';
+                info += '<div>';
+                info += `<div class="review-author">${review.author || 'Anonymous'}</div>`;
+                if (review.date) {
+                  info += `<div class="review-date">${review.date}</div>`;
+                }
+                info += '</div>';
+                if (review.rating) {
+                  info += `<div class="review-stars">${generateStars(review.rating, true)}</div>`;
+                }
+                info += '</div>';
+                if (review.title) {
+                  info += `<div class="review-title">${review.title}</div>`;
+                }
+                if (review.text) {
+                  info += `<div class="review-text">${review.text}</div>`;
+                }
+                info += '</div>';
+              });
+            }
+            
+            // Link to more reviews if available
+            if (data.reviews.source_url) {
+              info += '<div style="text-align:center;margin-top:30px;">';
+              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.2em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
+              info += '</div>';
+            }
+            
+            info += '</div>';
+          }
+          // Don't show "No reviews available" message - just omit the section entirely
+          
+          document.getElementById('detail-info').innerHTML = info;
+          // Carousel
+          let gallery = data.gallery || [];
+          let carouselHtml = '';
+          if (gallery.length) {
+            carouselHtml = '<div class="carousel"><img id="carousel-img" src="' + gallery[0] + '" alt="Tour image"><button class="carousel-arrow left">&#8249;</button><button class="carousel-arrow right">&#8250;</button></div><div class="carousel-indicators">';
+            for (let i = 0; i < gallery.length; i++) {
+              carouselHtml += `<div class='carousel-indicator${i===0?' active':''}' data-idx='${i}'></div>`;
+            }
+            carouselHtml += '</div>';
+          }
+          document.getElementById('detail-gallery').innerHTML = carouselHtml;
+          let currentIdx = 0;
+          function showImg(idx) {
+            currentIdx = idx;
+            document.getElementById('carousel-img').src = gallery[idx];
+            document.querySelectorAll('.carousel-indicator').forEach((el, i) => {
+              el.classList.toggle('active', i === idx);
+            });
+          }
+          if (gallery.length) {
+            document.querySelector('.carousel-arrow.left').onclick = e => { e.stopPropagation(); showImg((currentIdx-1+gallery.length)%gallery.length); };
+            document.querySelector('.carousel-arrow.right').onclick = e => { e.stopPropagation(); showImg((currentIdx+1)%gallery.length); };
+            document.querySelectorAll('.carousel-indicator').forEach((el, i) => {
+              el.onclick = e => { e.stopPropagation(); showImg(i); };
+            });
+          }
+          document.getElementById('tour-detail-page').classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+    }
+    document.getElementById('back-arrow').onclick = function() {
+      document.getElementById('tour-detail-page').classList.remove('active');
+      document.body.style.overflow = '';
+    };
+    
+    // Booking Modal Functions
+    let currentTourForBooking = null;
+    
+    function openBookingModal(tourKey, tourName, tourCompany) {
+      currentTourForBooking = { key: tourKey, name: tourName, company: tourCompany };
+      document.getElementById('booking-tour-name').textContent = tourName;
+      document.getElementById('booking-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('guest-date').setAttribute('min', today);
+    }
+    
+    function closeBookingModal() {
+      document.getElementById('booking-modal').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('booking-form').reset();
+      document.getElementById('booking-form').style.display = 'block';
+      document.getElementById('booking-success').style.display = 'none';
+      currentTourForBooking = null;
+    }
+    
+    // Close modal when clicking X or outside
+    document.getElementById('close-booking-modal').onclick = closeBookingModal;
+    document.getElementById('booking-modal').onclick = function(e) {
+      if (e.target === this) {
+        closeBookingModal();
+      }
+    };
+    
+    // Handle booking form submission
+    document.getElementById('booking-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-booking-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      
+      const formData = {
+        tour_key: currentTourForBooking.key,
+        tour_name: currentTourForBooking.name,
+        tour_company: currentTourForBooking.company,
+        guest_name: document.getElementById('guest-name').value,
+        guest_email: document.getElementById('guest-email').value,
+        guest_phone: document.getElementById('guest-phone').value,
+        adults: document.getElementById('guest-adults').value,
+        children: document.getElementById('guest-children').value,
+        preferred_date: document.getElementById('guest-date').value,
+        message: document.getElementById('guest-message').value
+      };
+      
+      try {
+        const response = await fetch('/submit-booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show success screen
+          document.getElementById('booking-form').style.display = 'none';
+          document.getElementById('booking-success').style.display = 'block';
+        } else {
+          alert('There was an error sending your inquiry. Please try again or contact us directly.');
+        }
+      } catch (error) {
+        console.error('Booking error:', error);
+        alert('There was an error sending your inquiry. Please try again or contact us directly.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Inquiry ✉️';
+      }
+    });
+  </script>
+</body>
+</html>
