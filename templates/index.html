@@ -2363,6 +2363,53 @@
         padding: 10px 8px 12px 8px;
       }
       
+      /* Budget Slider - Much smaller to fit on screen */
+      .budget-slider-container {
+        padding: 15px 10px !important;
+        max-width: 100% !important;
+      }
+      
+      .budget-label-display {
+        font-size: 0.9em !important;
+        margin-bottom: 12px !important;
+      }
+      
+      .budget-slider {
+        height: 12px !important;
+      }
+      
+      .budget-slider::-webkit-slider-runnable-track {
+        height: 12px !important;
+      }
+      
+      .budget-slider::-moz-range-track {
+        height: 12px !important;
+      }
+      
+      .budget-slider::-webkit-slider-thumb {
+        width: 45px !important;
+        height: 45px !important;
+        margin-top: -17px !important;
+        border-width: 4px !important;
+      }
+      
+      .budget-slider::-moz-range-thumb {
+        width: 45px !important;
+        height: 45px !important;
+        border-width: 4px !important;
+      }
+      
+      .budget-markers {
+        margin-top: 25px !important;
+        gap: 5px !important;
+      }
+      
+      .budget-marker {
+        font-size: 0.7em !important;
+        padding: 5px 3px !important;
+        line-height: 1.2 !important;
+      }
+      
       #filter-panel h1 {
         font-size: 1.2em !important;
         margin: 0 0 8px 0;
@@ -2394,19 +2441,41 @@
       #tour-placeholder-row {
         padding: 8px;
         gap: 8px;
-        grid-template-columns: repeat(2, 1fr) !important;
-        grid-auto-rows: 280px;
+        grid-template-columns: 1fr !important;
+        grid-auto-rows: auto;
       }
       
+      /* Horizontal tour cards (landscape) */
       .tour-card {
         max-width: 100%;
-        padding: 6px;
+        padding: 8px;
         border-radius: 8px;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch;
+        height: auto !important;
+        min-height: 100px;
+      }
+      
+      .tour-card img {
+        width: 120px !important;
+        height: 100px !important;
+        min-width: 120px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin-right: 10px;
+      }
+      
+      .tour-card > div {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       
       .tour-card h3 {
-        font-size: 0.75em;
-        margin-bottom: 3px;
+        font-size: 0.8em;
+        margin-bottom: 4px;
         line-height: 1.1;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -2417,31 +2486,27 @@
       
       .tour-card p {
         font-size: 0.65em;
-        margin-bottom: 3px;
+        margin-bottom: 4px;
         line-height: 1.2;
-        display: none; /* Hide description on mobile for compactness */
+        display: none; /* Hide description on mobile */
       }
       
-      .tour-price {
-        font-size: 0.75em;
-        margin-top: 3px;
-        font-weight: bold;
+      .tour-rating {
+        font-size: 0.7em;
+        margin: 2px 0;
       }
       
       .tour-duration, .tour-location {
         font-size: 0.6em;
         padding: 2px 5px;
-        margin: 2px;
+        margin: 2px 2px 2px 0;
+        display: inline-block;
       }
       
-      .tour-card img {
-        height: 100px;
-        border-radius: 6px;
-      }
-      
-      .tour-rating {
-        font-size: 0.7em;
-        margin: 3px 0;
+      .tour-price {
+        font-size: 0.8em;
+        margin-top: 4px;
+        font-weight: bold;
       }
       
       /* Tour Detail Page - Much more compact */
@@ -2580,6 +2645,11 @@
         display: none !important;
       }
       
+      /* Hide top button bar (language/currency) on mobile - moved to hamburger */
+      .top-button-bar {
+        display: none !important;
+      }
+      
       /* Hamburger Menu Button */
       .mobile-menu-btn {
         display: flex !important;
@@ -2610,8 +2680,10 @@
         border-radius: 12px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         z-index: 1000;
-        min-width: 180px;
-        overflow: hidden;
+        min-width: 200px;
+        max-width: 280px;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
       }
       
       .mobile-menu-dropdown.active {
@@ -2643,6 +2715,21 @@
       
       .mobile-menu-item span:first-child {
         font-size: 1.2em;
+      }
+      
+      /* Submenu items */
+      .mobile-submenu {
+        background: #f9f9f9;
+      }
+      
+      .mobile-submenu-item {
+        font-size: 0.85em !important;
+        padding: 10px 15px 10px 35px !important;
+        background: #f9f9f9 !important;
+      }
+      
+      .mobile-submenu-item:active {
+        background: #eeeeee !important;
       }
       
       /* Chat Interface - Much more compact */
@@ -2833,56 +2920,49 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Compact with circular collapsed button */
-      .weather-widget {
+      /* Weather Widget - Circular button exactly like voice chat */
+      .weather-widget.collapsed {
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
+        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
+        border: none !important;
+        padding: 0 !important;
+        bottom: 70px !important;
+        right: 8px !important;
+        left: auto !important;
+        overflow: hidden;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .weather-widget.collapsed * {
+        display: none !important;
+      }
+      
+      .weather-widget.collapsed::before {
+        content: "🌤️";
+        font-size: 1.8em;
+        display: block !important;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* When expanded */
+      .weather-widget:not(.collapsed) {
         bottom: 70px !important;
         right: 8px !important;
         left: auto !important;
         max-width: 280px !important;
         font-size: 0.75em;
+        border-radius: 12px !important;
       }
       
-      /* When collapsed, make it circular like microphone button */
-      .weather-widget.collapsed {
-        width: 50px !important;
-        height: 50px !important;
-        border-radius: 50% !important;
-        background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%) !important;
-        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .weather-widget.collapsed .weather-header {
-        padding: 0 !important;
-        background: transparent !important;
-        border-radius: 50% !important;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .weather-widget.collapsed .weather-header h4 {
-        display: none !important;
-      }
-      
-      .weather-widget.collapsed .weather-toggle {
-        display: none !important;
-      }
-      
-      .weather-widget.collapsed .weather-header::before {
-        content: "☀️";
-        font-size: 1.8em;
-      }
-      
-      /* When expanded */
       .weather-widget:not(.collapsed) .weather-header {
         padding: 8px 10px !important;
-        border-radius: 8px 8px 0 0 !important;
+        border-radius: 12px 12px 0 0 !important;
       }
       
       .weather-widget:not(.collapsed) .weather-header h4 {
@@ -3031,10 +3111,84 @@
         <span id="mobile-menu-map-icon">🗺️</span>
         <span id="mobile-menu-map-text">Map View</span>
       </button>
-      <button class="mobile-menu-item" onclick="toggleLanguageMenu(); toggleMobileMenu();">
-        <span>🌐</span>
-        <span>Language</span>
+      <button class="mobile-menu-item" onclick="toggleMobileLanguageMenu()">
+        <span id="mobile-menu-lang-flag">🇬🇧</span>
+        <span id="mobile-menu-lang-text">EN</span>
+        <span style="margin-left: auto; font-size: 0.8em;">▶</span>
       </button>
+      <div class="mobile-submenu" id="mobile-lang-submenu" style="display: none;">
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('en'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇬🇧</span>
+          <span>English</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('zh'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇨🇳</span>
+          <span>中文</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('ja'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇯🇵</span>
+          <span>日本語</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('ko'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇰🇷</span>
+          <span>한국어</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('es'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇪🇸</span>
+          <span>Español</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('fr'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇫🇷</span>
+          <span>Français</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('de'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇩🇪</span>
+          <span>Deutsch</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeLanguage('hi'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>🇮🇳</span>
+          <span>हिन्दी</span>
+        </button>
+      </div>
+      <button class="mobile-menu-item" onclick="toggleMobileCurrencyMenu()">
+        <span>💱</span>
+        <span id="mobile-menu-currency-text">AUD</span>
+        <span style="margin-left: auto; font-size: 0.8em;">▶</span>
+      </button>
+      <div class="mobile-submenu" id="mobile-currency-submenu" style="display: none;">
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('AUD'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>A$</span>
+          <span>AUD</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('USD'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>$</span>
+          <span>USD</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('EUR'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>€</span>
+          <span>EUR</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('GBP'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>£</span>
+          <span>GBP</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('JPY'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>¥</span>
+          <span>JPY</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('CNY'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>¥</span>
+          <span>CNY</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('KRW'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>₩</span>
+          <span>KRW</span>
+        </button>
+        <button class="mobile-menu-item mobile-submenu-item" onclick="changeCurrency('INR'); toggleMobileMenu();" style="padding-left: 35px;">
+          <span>₹</span>
+          <span>INR</span>
+        </button>
+      </div>
       <button class="mobile-menu-item" onclick="goBack(); toggleMobileMenu();">
         <span>←</span>
         <span>Back</span>
@@ -4961,6 +5115,61 @@
     function toggleMobileMenu() {
       const menu = document.getElementById('mobile-menu');
       menu.classList.toggle('active');
+      // Close submenus when closing main menu
+      if (!menu.classList.contains('active')) {
+        document.getElementById('mobile-lang-submenu').style.display = 'none';
+        document.getElementById('mobile-currency-submenu').style.display = 'none';
+      }
+    }
+    
+    // Toggle language submenu in mobile menu
+    function toggleMobileLanguageMenu() {
+      const submenu = document.getElementById('mobile-lang-submenu');
+      const currencySubmenu = document.getElementById('mobile-currency-submenu');
+      const isVisible = submenu.style.display === 'block';
+      
+      // Close currency menu if open
+      currencySubmenu.style.display = 'none';
+      
+      // Toggle language menu
+      submenu.style.display = isVisible ? 'none' : 'block';
+    }
+    
+    // Toggle currency submenu in mobile menu
+    function toggleMobileCurrencyMenu() {
+      const submenu = document.getElementById('mobile-currency-submenu');
+      const langSubmenu = document.getElementById('mobile-lang-submenu');
+      const isVisible = submenu.style.display === 'block';
+      
+      // Close language menu if open
+      langSubmenu.style.display = 'none';
+      
+      // Toggle currency menu
+      submenu.style.display = isVisible ? 'none' : 'block';
+    }
+    
+    // Wrapper function for mobile menu language change
+    function changeLanguage(langCode) {
+      switchLanguage(langCode);
+    }
+    
+    // Wrapper function for mobile menu currency change
+    function changeCurrency(currencyCode) {
+      // Update display
+      currentCurrency = currencyCode;
+      if (document.getElementById('currency-btn-text')) {
+        document.getElementById('currency-btn-text').textContent = currencyCode;
+      }
+      if (document.getElementById('mobile-menu-currency-text')) {
+        document.getElementById('mobile-menu-currency-text').textContent = currencyCode;
+      }
+      
+      // Close currency menu
+      const menu = document.getElementById('currency-menu');
+      if (menu) menu.classList.remove('active');
+      
+      // Re-render tour cards with new currency
+      applyFilters();
     }
     
     // Close mobile menu if clicking outside
@@ -4969,6 +5178,9 @@
       const menuBtn = document.querySelector('.mobile-menu-btn');
       if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
         menu.classList.remove('active');
+        // Close submenus
+        document.getElementById('mobile-lang-submenu').style.display = 'none';
+        document.getElementById('mobile-currency-submenu').style.display = 'none';
       }
     });
     
@@ -5130,6 +5342,12 @@
       // Update language selector button
       document.getElementById('current-language-flag').textContent = lang.flag;
       document.getElementById('current-language-code').textContent = lang.code.toUpperCase();
+      
+      // Update mobile menu language display
+      const mobileLangFlag = document.getElementById('mobile-menu-lang-flag');
+      const mobileLangText = document.getElementById('mobile-menu-lang-text');
+      if (mobileLangFlag) mobileLangFlag.textContent = lang.flag;
+      if (mobileLangText) mobileLangText.textContent = lang.code.toUpperCase();
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
