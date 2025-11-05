@@ -2349,6 +2349,11 @@
       }
     }
     
+    /* Hide mobile menu on desktop */
+    .mobile-menu-btn, .mobile-menu-dropdown {
+      display: none;
+    }
+    
     /* ===========================
        COMPREHENSIVE MOBILE STYLES
        =========================== */
@@ -2395,33 +2400,48 @@
       
       .tour-card {
         max-width: 100%;
-        padding: 8px;
+        padding: 6px;
+        border-radius: 8px;
       }
       
       .tour-card h3 {
-        font-size: 0.85em;
-        margin-bottom: 4px;
-        line-height: 1.2;
+        font-size: 0.75em;
+        margin-bottom: 3px;
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
       
       .tour-card p {
-        font-size: 0.7em;
-        margin-bottom: 4px;
-        line-height: 1.3;
+        font-size: 0.65em;
+        margin-bottom: 3px;
+        line-height: 1.2;
+        display: none; /* Hide description on mobile for compactness */
       }
       
       .tour-price {
-        font-size: 0.8em;
-        margin-top: 4px;
+        font-size: 0.75em;
+        margin-top: 3px;
+        font-weight: bold;
       }
       
       .tour-duration, .tour-location {
-        font-size: 0.65em;
-        padding: 3px 6px;
+        font-size: 0.6em;
+        padding: 2px 5px;
+        margin: 2px;
       }
       
       .tour-card img {
-        height: 120px;
+        height: 100px;
+        border-radius: 6px;
+      }
+      
+      .tour-rating {
+        font-size: 0.7em;
+        margin: 3px 0;
       }
       
       /* Tour Detail Page - Much more compact */
@@ -2510,9 +2530,15 @@
         border-radius: 4px !important;
       }
       
-      /* Override inline styles for info sections */
+      /* Force includes/highlights to stack vertically (1 column) on mobile */
       #detail-content > div[style*="display: grid"] {
-        gap: 8px !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      
+      #detail-content > div > div[style*="background"] {
+        padding: 15px !important;
+        border-radius: 8px !important;
       }
       
       /* Image Gallery - Smaller */
@@ -2545,23 +2571,78 @@
         padding: 12px 20px;
       }
       
-      /* Navigation Buttons - Much smaller */
+      /* Hide top navigation buttons on mobile - replace with hamburger menu */
+      .clear-filters-btn, .view-toggle-btn {
+        display: none !important;
+      }
+      
       .nav-buttons {
-        gap: 4px;
-        top: 6px;
-        left: 6px;
+        display: none !important;
       }
       
-      .nav-btn, .clear-filters-btn {
-        padding: 6px 10px !important;
-        font-size: 0.7em !important;
+      /* Hamburger Menu Button */
+      .mobile-menu-btn {
+        display: flex !important;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.5em;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1001;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
       }
       
-      .view-toggle-btn {
-        top: 6px !important;
-        right: 6px !important;
-        padding: 6px 10px !important;
-        font-size: 0.7em !important;
+      /* Mobile Menu Dropdown */
+      .mobile-menu-dropdown {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 10px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        z-index: 1000;
+        min-width: 180px;
+        overflow: hidden;
+      }
+      
+      .mobile-menu-dropdown.active {
+        display: block !important;
+      }
+      
+      .mobile-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        font-size: 0.9em;
+        background: white;
+        border: none;
+        width: 100%;
+        text-align: left;
+        transition: background 0.2s;
+      }
+      
+      .mobile-menu-item:last-child {
+        border-bottom: none;
+      }
+      
+      .mobile-menu-item:active {
+        background: #f5f5f5;
+      }
+      
+      .mobile-menu-item span:first-child {
+        font-size: 1.2em;
       }
       
       /* Chat Interface - Much more compact */
@@ -2752,7 +2833,7 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Compact, not full screen */
+      /* Weather Widget - Compact with circular collapsed button */
       .weather-widget {
         bottom: 70px !important;
         right: 8px !important;
@@ -2761,17 +2842,55 @@
         font-size: 0.75em;
       }
       
-      .weather-header {
+      /* When collapsed, make it circular like microphone button */
+      .weather-widget.collapsed {
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%) !important;
+        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .weather-widget.collapsed .weather-header {
+        padding: 0 !important;
+        background: transparent !important;
+        border-radius: 50% !important;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .weather-widget.collapsed .weather-header h4 {
+        display: none !important;
+      }
+      
+      .weather-widget.collapsed .weather-toggle {
+        display: none !important;
+      }
+      
+      .weather-widget.collapsed .weather-header::before {
+        content: "☀️";
+        font-size: 1.8em;
+      }
+      
+      /* When expanded */
+      .weather-widget:not(.collapsed) .weather-header {
         padding: 8px 10px !important;
         border-radius: 8px 8px 0 0 !important;
       }
       
-      .weather-header h4 {
+      .weather-widget:not(.collapsed) .weather-header h4 {
         font-size: 0.9em !important;
         margin: 0 !important;
       }
       
-      .weather-toggle {
+      .weather-widget:not(.collapsed) .weather-toggle {
         font-size: 0.9em !important;
       }
       
@@ -2901,6 +3020,31 @@
 </head>
 <body>
   <div id="main-layout">
+    <!-- Mobile Hamburger Menu (Mobile Only) -->
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    <div class="mobile-menu-dropdown" id="mobile-menu">
+      <button class="mobile-menu-item" onclick="clearFilters(); toggleMobileMenu();">
+        <span>↻</span>
+        <span>Start Over</span>
+      </button>
+      <button class="mobile-menu-item" onclick="toggleView(); toggleMobileMenu();">
+        <span id="mobile-menu-map-icon">🗺️</span>
+        <span id="mobile-menu-map-text">Map View</span>
+      </button>
+      <button class="mobile-menu-item" onclick="toggleLanguageMenu(); toggleMobileMenu();">
+        <span>🌐</span>
+        <span>Language</span>
+      </button>
+      <button class="mobile-menu-item" onclick="goBack(); toggleMobileMenu();">
+        <span>←</span>
+        <span>Back</span>
+      </button>
+      <button class="mobile-menu-item" onclick="goHome(); toggleMobileMenu();">
+        <span>🏠</span>
+        <span>Home</span>
+      </button>
+    </div>
+    
     <!-- Top Filter Panel - Progressive Questions -->
     <div id="filter-panel">
       <!-- Navigation buttons (shown when filtering by company) -->
@@ -4813,6 +4957,21 @@
     
     // This function is now at the end of createMapMarkers
     
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('active');
+    }
+    
+    // Close mobile menu if clicking outside
+    document.addEventListener('click', function(event) {
+      const menu = document.getElementById('mobile-menu');
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+      if (menu && menuBtn && !menu.contains(event.target) && !menuBtn.contains(event.target)) {
+        menu.classList.remove('active');
+      }
+    });
+    
     // Toggle between grid and map view
     function toggleView() {
       isMapView = !isMapView;
@@ -4835,6 +4994,12 @@
         header.textContent = 'Tour Locations';
         resultsInfo.innerHTML = '<strong>📍 Click a pin to see tours departing from that location</strong><br><em style="color: #666;">💡 Tip: Click the map to enable scroll zoom • Use + / - buttons or pinch to zoom</em>';
         
+        // Update mobile menu icon
+        const mobileMenuIcon = document.getElementById('mobile-menu-map-icon');
+        const mobileMenuText = document.getElementById('mobile-menu-map-text');
+        if (mobileMenuIcon) mobileMenuIcon.textContent = '📋';
+        if (mobileMenuText) mobileMenuText.textContent = 'Grid View';
+        
         // Initialize map if not already done
         initializeMap();
         
@@ -4851,6 +5016,12 @@
         toggleText.textContent = 'Map View';
         header.textContent = 'Available Tours';
         resultsInfo.textContent = 'Tap an option above to start filtering';
+        
+        // Update mobile menu icon
+        const mobileMenuIcon = document.getElementById('mobile-menu-map-icon');
+        const mobileMenuText = document.getElementById('mobile-menu-map-text');
+        if (mobileMenuIcon) mobileMenuIcon.textContent = '🗺️';
+        if (mobileMenuText) mobileMenuText.textContent = 'Map View';
       }
     }
     
