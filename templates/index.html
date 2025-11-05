@@ -2445,69 +2445,93 @@
         grid-auto-rows: auto;
       }
       
-      /* Horizontal tour cards (landscape) */
+      /* Horizontal tour cards with background image */
       .tour-card {
         max-width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: stretch;
-        height: auto !important;
-        min-height: 110px;
+        padding: 0 !important;
+        border-radius: 12px;
+        display: block !important;
+        position: relative;
+        height: 140px !important;
+        min-height: 140px !important;
+        overflow: hidden;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+      }
+      
+      .tour-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        z-index: 1;
       }
       
       .tour-card img {
-        width: 130px !important;
-        height: 110px !important;
-        min-width: 130px;
-        object-fit: cover !important;
-        object-position: center !important;
-        border-radius: 8px;
-        margin-right: 10px;
+        display: none !important;
       }
       
       .tour-card > div {
-        flex: 1;
+        position: relative;
+        z-index: 2;
+        padding: 8px 10px;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        color: white !important;
+      }
+      
+      .tour-card .tour-company {
+        font-size: 0.6em !important;
+        opacity: 0.9;
+        margin-bottom: 2px;
+        font-weight: normal;
       }
       
       .tour-card h3 {
-        font-size: 0.7em;
-        margin-bottom: 3px;
-        line-height: 1.15;
+        font-size: 0.8em !important;
+        margin-bottom: 4px;
+        line-height: 1.1;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+        color: white !important;
+        font-weight: bold;
       }
       
       .tour-card p {
-        font-size: 0.6em;
-        margin-bottom: 3px;
-        line-height: 1.2;
-        display: none; /* Hide description on mobile */
+        display: none !important;
       }
       
       .tour-rating {
-        font-size: 0.65em;
-        margin: 2px 0;
+        font-size: 0.65em !important;
+        margin: 2px 0 4px 0;
+        color: white !important;
       }
       
       .tour-duration, .tour-location {
-        font-size: 0.55em;
-        padding: 2px 4px;
+        font-size: 0.55em !important;
+        padding: 2px 5px;
         margin: 2px 2px 2px 0;
         display: inline-block;
+        background: rgba(255,255,255,0.25) !important;
+        color: white !important;
+        border-radius: 4px;
       }
       
       .tour-price {
-        font-size: 0.75em;
-        margin-top: 4px;
+        font-size: 0.85em !important;
+        margin-top: auto;
         font-weight: bold;
+        color: white !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
       }
       
       /* Tour Detail Page - Much more compact */
@@ -2677,12 +2701,13 @@
         display: none !important;
       }
       
-      /* Hamburger Menu Button */
+      /* Hamburger Menu Button - Moved to right */
       .mobile-menu-btn {
         display: flex !important;
         position: fixed;
         top: 10px;
-        left: 10px;
+        right: 10px !important;
+        left: auto !important;
         width: 45px;
         height: 45px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -2697,12 +2722,13 @@
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
       }
       
-      /* Mobile Menu Dropdown */
+      /* Mobile Menu Dropdown - Positioned from right */
       .mobile-menu-dropdown {
         display: none;
         position: fixed;
         top: 60px;
-        left: 10px;
+        right: 10px !important;
+        left: auto !important;
         background: white;
         border-radius: 12px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.2);
@@ -2761,21 +2787,37 @@
       
       /* Chat Interface - Much more compact */
       .chat-button {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5em;
-        bottom: 15px;
-        right: 15px;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 1.6em !important;
+        bottom: 8px !important;
+        left: 8px !important;
+        right: auto !important;
+        background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
+        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
+        border-radius: 50% !important;
+        aspect-ratio: 1 / 1 !important;
+      }
+      
+      .chat-button::before {
+        content: "🎤" !important;
+      }
+      
+      .chat-button img {
+        display: none !important;
       }
       
       #chat-interface {
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 0;
-        bottom: 0;
-        right: 0;
+        width: 85vw;
+        height: 50vh;
+        max-width: 85vw;
+        max-height: 50vh;
+        border-radius: 12px;
+        bottom: 65px;
+        left: 8px;
+        right: auto;
       }
       
       .chat-header {
@@ -2947,7 +2989,7 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Perfect circle exactly like voice chat button */
+      /* Weather Widget - Perfect circle EXACT same as microphone button */
       .weather-widget.collapsed {
         width: 50px !important;
         height: 50px !important;
@@ -2960,7 +3002,7 @@
         box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
         border: none !important;
         padding: 0 !important;
-        bottom: 70px !important;
+        bottom: 8px !important;
         right: 8px !important;
         left: auto !important;
         overflow: hidden !important;
@@ -2976,7 +3018,7 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 1.6em;
+        font-size: 1.6em !important;
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -3222,10 +3264,6 @@
           <span>INR</span>
         </button>
       </div>
-      <button class="mobile-menu-item" onclick="goBack(); toggleMobileMenu();">
-        <span>←</span>
-        <span>Back</span>
-      </button>
       <button class="mobile-menu-item" onclick="goHome(); toggleMobileMenu();">
         <span>🏠</span>
         <span>Home</span>
@@ -5839,8 +5877,9 @@
         // Open chat ENLARGED immediately
         chatInterface.classList.add('enlarged');
         
-        const input = document.getElementById('chat-input');
-        input.focus();
+        // DON'T auto-focus input to prevent keyboard popup on mobile
+        // const input = document.getElementById('chat-input');
+        // input.focus();
         
         // Speak welcome message on first open
         if (!hasSpokenWelcome && window.voiceChat && window.voiceChat.autoSpeak) {
@@ -6201,14 +6240,32 @@
         `;
       }
       
-      card.innerHTML = `
-        <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-        <div class="tour-overlay">
-          <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-          <div class="tour-title">${tour.name}</div>
-          ${ratingHtml}
-        </div>
-      `;
+      // Set background image on mobile
+      if (window.innerWidth <= 768) {
+        card.style.backgroundImage = `url('${tour.thumbnail}')`;
+        card.innerHTML = `
+          <div>
+            <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+            <h3>${tour.name}</h3>
+            ${ratingHtml}
+            <div>
+              ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+              ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+            </div>
+            <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+          </div>
+        `;
+      } else {
+        // Desktop layout
+        card.innerHTML = `
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
+          </div>
+        `;
+      }
       
       return card;
     }
