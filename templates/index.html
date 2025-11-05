@@ -2355,66 +2355,73 @@
     @media (max-width: 768px) {
       /* Filter Panel - much more compact */
       #filter-panel {
-        padding: 12px 10px 15px 10px;
+        padding: 10px 8px 12px 8px;
       }
       
       #filter-panel h1 {
-        font-size: 1.4em !important;
-        margin: 0 0 10px 0;
+        font-size: 1.2em !important;
+        margin: 0 0 8px 0;
       }
       
       .filter-progress {
-        font-size: 0.85em;
-        margin-bottom: 8px;
+        font-size: 0.75em;
+        margin-bottom: 6px;
       }
       
       .progress-bar-container {
-        height: 4px;
-        margin-bottom: 12px;
+        height: 3px;
+        margin-bottom: 8px;
       }
       
       .question-text {
-        font-size: 1.1em !important;
-        margin-bottom: 12px;
+        font-size: 0.95em !important;
+        margin-bottom: 10px;
       }
       
       .filter-option {
-        font-size: 0.9em !important;
-        padding: 12px 10px !important;
-        min-height: 50px;
+        font-size: 0.8em !important;
+        padding: 10px 8px !important;
+        min-height: 45px;
         border-width: 2px;
       }
       
-      /* Tour Grid - More compact */
+      /* Tour Grid - 2 COLUMNS on mobile! */
       #tour-placeholder-row {
-        padding: 10px;
-        gap: 10px;
-        grid-template-columns: 1fr !important;
-        grid-auto-rows: 300px;
+        padding: 8px;
+        gap: 8px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 280px;
       }
       
       .tour-card {
         max-width: 100%;
-        padding: 12px;
+        padding: 8px;
       }
       
       .tour-card h3 {
-        font-size: 1em;
-        margin-bottom: 6px;
+        font-size: 0.85em;
+        margin-bottom: 4px;
+        line-height: 1.2;
       }
       
       .tour-card p {
-        font-size: 0.85em;
-        margin-bottom: 6px;
+        font-size: 0.7em;
+        margin-bottom: 4px;
+        line-height: 1.3;
       }
       
       .tour-price {
-        font-size: 0.95em;
+        font-size: 0.8em;
+        margin-top: 4px;
       }
       
       .tour-duration, .tour-location {
-        font-size: 0.75em;
-        padding: 4px 8px;
+        font-size: 0.65em;
+        padding: 3px 6px;
+      }
+      
+      .tour-card img {
+        height: 120px;
       }
       
       /* Tour Detail Page - Much more compact */
@@ -2454,19 +2461,58 @@
       }
       
       #detail-info {
-        font-size: 0.85em;
-        margin-bottom: 10px;
+        font-size: 0.75em;
+        margin-bottom: 8px;
+      }
+      
+      #detail-info ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
       }
       
       #detail-info li {
-        padding: 6px;
-        margin-bottom: 5px;
+        padding: 4px 8px;
+        margin-bottom: 0;
+        display: inline-flex;
+        align-items: center;
+        flex: 0 1 auto;
       }
       
       .detail-section-title {
-        font-size: 1em;
-        margin-top: 12px;
-        margin-bottom: 8px;
+        font-size: 0.9em;
+        margin-top: 10px;
+        margin-bottom: 6px;
+      }
+      
+      /* Make includes/highlights/etc display inline/horizontal */
+      #detail-content > div > div {
+        padding: 12px !important;
+      }
+      
+      #detail-content h3 {
+        font-size: 1em !important;
+        margin: 0 0 8px 0 !important;
+      }
+      
+      #detail-content ul {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        font-size: 0.8em !important;
+      }
+      
+      #detail-content ul li {
+        display: inline-block !important;
+        padding: 4px 8px !important;
+        margin: 0 !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-radius: 4px !important;
+      }
+      
+      /* Override inline styles for info sections */
+      #detail-content > div[style*="display: grid"] {
+        gap: 8px !important;
       }
       
       /* Image Gallery - Smaller */
@@ -2499,16 +2545,23 @@
         padding: 12px 20px;
       }
       
-      /* Navigation Buttons - More compact */
+      /* Navigation Buttons - Much smaller */
       .nav-buttons {
-        gap: 5px;
-        top: 8px;
-        left: 8px;
+        gap: 4px;
+        top: 6px;
+        left: 6px;
       }
       
       .nav-btn, .clear-filters-btn {
-        padding: 8px 12px !important;
-        font-size: 0.8em !important;
+        padding: 6px 10px !important;
+        font-size: 0.7em !important;
+      }
+      
+      .view-toggle-btn {
+        top: 6px !important;
+        right: 6px !important;
+        padding: 6px 10px !important;
+        font-size: 0.7em !important;
       }
       
       /* Chat Interface - Much more compact */
@@ -2699,27 +2752,74 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Much smaller */
+      /* Weather Widget - Compact, not full screen */
       .weather-widget {
-        bottom: 75px;
-        right: 10px;
-        padding: 6px 8px;
-        font-size: 0.7em;
-        min-width: 120px;
-        max-width: 140px;
+        bottom: 70px !important;
+        right: 8px !important;
+        left: auto !important;
+        max-width: 280px !important;
+        font-size: 0.75em;
       }
       
-      .weather-widget h4 {
-        font-size: 0.85em;
-        margin-bottom: 4px;
+      .weather-header {
+        padding: 8px 10px !important;
+        border-radius: 8px 8px 0 0 !important;
+      }
+      
+      .weather-header h4 {
+        font-size: 0.9em !important;
+        margin: 0 !important;
+      }
+      
+      .weather-toggle {
+        font-size: 0.9em !important;
+      }
+      
+      .weather-content {
+        padding: 8px !important;
+      }
+      
+      .current-weather {
+        padding: 8px !important;
       }
       
       .weather-icon {
-        font-size: 1.2em;
+        font-size: 2em !important;
       }
       
       .weather-temp {
-        font-size: 1em;
+        font-size: 1.8em !important;
+      }
+      
+      .forecast-container {
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 4px !important;
+        padding: 8px 0 !important;
+      }
+      
+      .forecast-day {
+        padding: 4px 2px !important;
+      }
+      
+      .forecast-day h5 {
+        font-size: 0.7em !important;
+      }
+      
+      .forecast-temp {
+        font-size: 0.75em !important;
+      }
+      
+      .best-time-card {
+        padding: 8px !important;
+        margin: 8px 0 !important;
+      }
+      
+      .best-time-card h4 {
+        font-size: 0.85em !important;
+      }
+      
+      .best-time-card p {
+        font-size: 0.75em !important;
       }
       
       /* Language Selector */
