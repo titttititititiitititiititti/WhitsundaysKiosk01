@@ -2456,23 +2456,10 @@
         min-height: 120px !important;
         overflow: hidden;
         cursor: pointer;
+        /* Background set via inline style in JS */
       }
       
-      /* Background image layer */
-      .tour-card::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        z-index: 0;
-      }
-      
-      /* Dark overlay */
+      /* Dark overlay for readability */
       .tour-card::before {
         content: "";
         position: absolute;
@@ -2482,6 +2469,7 @@
         bottom: 0;
         background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%);
         z-index: 1;
+        pointer-events: none;
       }
       
       .tour-card img {
@@ -3538,13 +3526,13 @@
     </div>
     
     <!-- Weather Widget -->
-    <div class="weather-widget" id="weather-widget" style="display:none;">
-      <div class="weather-header" onclick="toggleWeatherWidget()">
+    <div class="weather-widget" id="weather-widget" style="display:none;" onclick="toggleWeatherWidget()">
+      <div class="weather-header">
         <div class="weather-title">
           <span>🌤️</span>
           <span>Airlie Beach Weather</span>
         </div>
-        <button class="weather-toggle">▼</button>
+        <button class="weather-toggle" onclick="event.stopPropagation(); toggleWeatherWidget();">▼</button>
       </div>
       
       <div class="weather-content">
@@ -6275,13 +6263,12 @@
         `;
       }
       
-      // Set background image on mobile using ::after pseudo-element
+      // Set background image directly on mobile
       if (window.innerWidth <= 768) {
-        card.setAttribute('data-bg-image', tour.thumbnail);
-        // Apply inline style to ::after via style tag
-        const style = document.createElement('style');
-        style.textContent = `.tour-card[data-bg-image="${tour.thumbnail}"]::after { background-image: url('${tour.thumbnail}'); }`;
-        document.head.appendChild(style);
+        // Set background directly as inline style
+        card.style.backgroundImage = `url('${tour.thumbnail}')`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
         
         card.innerHTML = `
           <div>
