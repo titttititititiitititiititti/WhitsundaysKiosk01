@@ -19,19 +19,37 @@ import os
 import re
 import csv
 import glob
+import sys
 from urllib.parse import quote_plus
 
 REVIEWS_DIR = 'tour_reviews'
 
-def discover_companies():
-    """Auto-detect all companies that have tours"""
+def discover_companies(specified_csvs=None):
+    """Auto-detect all companies that have tours, optionally filtered by specified CSVs"""
     companies = []
-    csv_files = glob.glob('tours_*_cleaned_with_media.csv')
+    
+    if specified_csvs:
+        # Use only the specified CSV files
+        csv_files = []
+        for csv_file in specified_csvs:
+            # Try both cleaned and cleaned_with_media versions
+            if os.path.exists(csv_file):
+                csv_files.append(csv_file)
+            elif os.path.exists(csv_file.replace('_cleaned.csv', '_cleaned_with_media.csv')):
+                csv_files.append(csv_file.replace('_cleaned.csv', '_cleaned_with_media.csv'))
+            elif os.path.exists(csv_file.replace('.csv', '_with_media.csv')):
+                csv_files.append(csv_file.replace('.csv', '_with_media.csv'))
+            else:
+                print(f"⚠️  Warning: {csv_file} not found, skipping...")
+    else:
+        # Auto-discover all companies
+        csv_files = glob.glob('tours_*_cleaned_with_media.csv')
     
     for csv_file in csv_files:
         # Extract company name from filename
         # "tours_cruisewhitsundays_cleaned_with_media.csv" -> "cruisewhitsundays"
-        company = csv_file.replace('tours_', '').replace('_cleaned_with_media.csv', '')
+        # "tours_cruisewhitsundays_cleaned.csv" -> "cruisewhitsundays"
+        company = csv_file.replace('tours_', '').replace('_cleaned_with_media.csv', '').replace('_cleaned.csv', '').replace('.csv', '')
         
         # Check if it has actual tours
         try:
@@ -101,6 +119,30 @@ def extract_reviews_from_page(driver, page_html):
             # Basic quality checks
             words = text.split()
             if len(words) >= 10:  # At least 10 words
+                # FILTER: Skip truncated reviews that end with "...more" or similar
+                truncation_patterns = [
+                    '...more',
+                    '… more',
+                    '... More',
+                    '…More',
+                    '...show more',
+                    '... read more',
+                    '…read more',
+                    '(more)',
+                    '... (more)',
+                ]
+                
+                # Check if review ends with any truncation pattern
+                is_truncated = any(text.endswith(pattern) for pattern in truncation_patterns)
+                
+                # Also check for common truncation in the middle followed by "more"
+                if not is_truncated:
+                    is_truncated = bool(re.search(r'\.\.\.\s*more\s*$', text, re.I))
+                
+                if is_truncated:
+                    # Skip this truncated review
+                    continue
+                
                 seen_texts.add(text)
                 
                 # Try to extract rating from nearby star emojis
@@ -266,6 +308,9 @@ def get_company_display_name(company):
         'whitsunday-catamarans': 'Whitsunday Catamarans',
         'whitsundaydiveadventures': 'Whitsunday Dive Adventures',
         'whitsundaystanduppaddle': 'Whitsunday Stand Up Paddle',
+        'whitsundaybullet': 'Whitsunday Bullet',
+        'matadorwhitsundays': 'Matador Whitsundays',
+        'sailing-whitsundays': 'Sailing Whitsundays',
     }
     return names.get(company, company.replace('_', ' ').replace('-', ' ').title())
 
@@ -282,9 +327,18 @@ def main():
     print("  4. Script scrapes whatever is visible")
     print()
     
-    # Discover all companies with tours
+    # Check for command-line arguments (CSV files)
+    specified_csvs = None
+    if len(sys.argv) > 1:
+        specified_csvs = sys.argv[1:]
+        print(f"📋 You specified {len(specified_csvs)} CSV file(s) to process:")
+        for csv in specified_csvs:
+            print(f"   - {csv}")
+        print()
+    
+    # Discover companies with tours (filtered by specified CSVs if provided)
     print("🔍 Discovering companies with tours...")
-    companies_to_scrape = discover_companies()
+    companies_to_scrape = discover_companies(specified_csvs)
     print(f"\n📊 Found {len(companies_to_scrape)} companies with tours\n")
     
     if not companies_to_scrape:

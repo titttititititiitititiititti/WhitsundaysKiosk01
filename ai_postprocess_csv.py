@@ -237,34 +237,110 @@ for row in reader:
         continue
     for tour_name, chunk in extract_tour_chunks(raw_text):
         filtered_text = clean_and_dedup_text(chunk)
-        filtered_text = filtered_text[:2000]  # Truncate to 2000 chars for testing
+        filtered_text = filtered_text[:8000]  # Increased from 2000 to preserve more details
         # Add price info to the prompt so the AI can see it
         price_info = ""
         if row.get('price_adult'):
-            price_info += f"Adult Price: {row['price_adult']}\n"
+            price_info += f"SCRAPED PRICE DATA (may contain multiple options): {row['price_adult']}\n"
         if row.get('price_child'):
             price_info += f"Child Price: {row['price_child']}\n"
         if row.get('price_tiers'):
             price_info += f"Price Tiers: {row['price_tiers']}\n"
-        prompt = f"""
-You are extracting tour information from a webpage. Return a JSON object with these fields:
+        prompt = f"""You are organizing tour information from a webpage. Your job is to PRESERVE and STRUCTURE content, not shorten it.
+
+Return a JSON object with these fields:
+
+CRITICAL RULES:
+1. EXTRACT THE ACTUAL TOUR NAME - Look for the tour/product name on the page. Common patterns: boat names (e.g., "Summer Jo", "Waltzing Matilda"), experience names (e.g., "Whitehaven Beach Day Trip"). DO NOT invent educational or generic names. If you see "Great Barrier Reef Education Experience Program" but the boat is called "Summer Jo", use "Summer Jo 2D/2N" or similar.
+2. PRESERVE details in SEPARATE FIELDS - itineraries go in 'itinerary', menus go in 'menu', inclusions go in 'includes'
+3. Keep DESCRIPTION focused on the experience and vibe - NOT a repeat of other fields
+4. PARSE PRICING CAREFULLY - the SCRAPED PRICE DATA field may contain multiple pricing options mashed together. Your job is to separate them!
 
 REQUIRED FIELDS:
-- is_tour: true/false (Is this a real tour offering?)
-- name: Tour name
-- description: 2-3 sentence engaging description for customers
-- price_adult: Adult price (format: "A$XXX" or "FROM A$XXX"). ALWAYS include if mentioned in PRICE INFO or text.
-- price_child: Child price (format: "A$XXX"). Include if mentioned.
-- duration: How long the tour lasts (e.g., "Full day", "5 hours", "2 days"). Extract from text even if vague.
-- times: Departure/return times if mentioned
-- includes: What's included (as comma-separated string or short list)
-- highlights: Key attractions/activities (as array or comma-separated string)
+- is_tour: (boolean) Is this a real bookable tour?
+- name: (string) The ACTUAL tour name from the webpage. Look for boat names, tour titles, product names. Examples: "Summer Jo 3D/3N", "Waltzing Matilda Sunset Cruise", "Whitehaven Beach Full Day". Do NOT use generic educational descriptions.
+- description: (string) SHORT, engaging 2-4 paragraph overview focused on:
+  * The experience and vibe (luxury? adventure? relaxation?)
+  * What makes this tour unique
+  * Who would love it
+  * DO NOT repeat menu items, inclusions list, or highlights here - those have separate fields
+  * DO NOT include "Includes:" sections - use the 'includes' field
+  * Keep it concise and marketing-focused, NOT an information dump
+- price_adult: Extract the LOWEST or STANDARD adult price (format: "A$XXX" or "FROM A$XXX")
+- price_child: Child price if mentioned separately
+- price_tiers: (string) PARSE ALL pricing options from SCRAPED PRICE DATA with MEANINGFUL DESCRIPTIVE NAMES. 
+  
+  PRICING TIER RULES:
+  * Each tier MUST have a unique descriptive name (NOT just "Adult", "Child", "Senior")
+  * LOOK FOR PACKAGE/OPTION DESCRIPTIONS in HTML tables, dropdowns, or lists
+  * Common package types: meal options ("with Marina Tavern lunch"), transfer options ("with coach transfers"), cabin types, activity bundles
+  * If multiple prices for same category, add context: "Adult (Standard): A$269 | Adult (Premium): A$279"
+  * Look for cabin types, dates, options: "Single Bunk: A$490 | Private Double Cabin: A$1,125"
+  * If dates differ: "Adult (May-Oct): A$269 | Adult (Nov-Apr): A$279"
+  * If options differ: "Adult (with transfers): A$149 | Adult (no transfers): A$129"
+  * Package examples: "Day cruise with Marina Tavern lunch: A$152 | Day cruise with Popeye's lunch: A$135"
+  * ONLY use generic "Adult: A$X" if there's truly ONE price per category with no package description
+  * Format: "Tier Name: PRICE | Tier Name: PRICE" separated by pipe (|) 
+- duration: (string) MUST be a TIME AMOUNT. Valid examples: "2 Hours", "Half Day", "Full Day", "2 Days 1 Night", "3 Days 2 Nights". NEVER use "Evening", "Morning", "Sunset" - these are times, not durations. If unclear, return null.
+- times: Departure/return times (e.g., "Departs 9am, Returns 5pm"). If unclear, return null.
+- includes: Everything included (be thorough)
+- highlights: Key features (5-10 points if possible)
+- itinerary: (optional) Day-by-day breakdown if present. Use **Day 1:**, **Day 2:**, etc. as bold headings. If no clear itinerary, return null.
+- menu: (optional) Food menu if mentioned. Use **Menu:** or **Day 1 Menu:**, **Day 2 Menu:** as bold headings for each section. If no menu details, return null.
+- age_requirements: (string) Age restrictions. Valid examples: "All ages welcome", "Ages 12+", "Adults only (18+)", "Minimum age 8". NEVER use vague phrases like "Ages 12 and under" - be specific about minimum/maximum. If unclear, return null.
+- ideal_for: Who this tour suits
 
-IMPORTANT RULES:
-1. If PRICE INFO section has prices, YOU MUST include them in your response
-2. For duration: Look for hours, days, "full day", "half day", "morning", etc. NEVER leave as "N/A" if any time info exists
-3. For times: Include departure times, return times, or duration spans (e.g., "10:30am - 3:30pm")
-4. Fill ALL fields you can from the text - incomplete data is better than missing data
+DATA QUALITY RULES - CRITICAL:
+[!] If you cannot extract clear, accurate information, return null - do NOT guess or make up data
+[!] Duration MUST be a time amount ("2 Hours", "Full Day", "3 Days 2 Nights") - NOT "Evening" or "Sunset"
+[!] Age requirements MUST be specific ("Ages 12+", "All ages") - NOT vague like "Ages 12 and under"
+[!] Times should be departure/return times ("9am", "5pm") - NOT durations
+[!] When in doubt, return null - empty is better than wrong
+
+DESCRIPTION EXAMPLE (what to do):
+"Experience the Whitsundays in style aboard Summer Jo, a luxurious mega yacht offering intimate small-group adventures. Perfect for couples, families, and divers seeking connection with nature and fellow travelers.
+
+Cruise through crystal-clear waters, explore hidden coves, and witness stunning sunsets. This 3-day journey combines adventure with comfort, featuring world-class diving opportunities and gourmet meals prepared fresh onboard."
+
+DESCRIPTION ANTI-PATTERNS (what NOT to do):
+[X] "Includes: crew, meals, equipment..." (use 'includes' field)
+[X] Listing the entire menu (use 'menu' field)
+[X] Repeating highlights (use 'highlights' field)
+[X] Day-by-day itinerary (use 'itinerary' field)
+
+FORMATTING in separate fields (itinerary, menu):
+- Use **bold** for day headings: **Day 1:**, **Day 2:**
+- Use **bold** for meal sections: **Breakfast:**, **Dinner:**
+- Add blank lines between sections
+- Use bullet points for lists
+
+PRESERVE DETAILS - Customers want to know:
+- Daily itineraries with bold day headings
+- Meal details with bold menu sections
+- Exact inclusions with bullet points
+- All pricing tiers (handled separately)
+- Age requirements
+- What makes this tour special
+
+PRICING PARSING EXAMPLES:
+
+Example 1 - Cabin types (GOOD):
+SCRAPED: "Private Double Cabin with Ensuite A$1,879.06 | Share Single A$826.26 | Share Double A$1,598"
+OUTPUT: "Single Bunk: A$826.26 | Share Double: A$1,598 (for 2 people) | Private Double Cabin: A$1,879.06 (for 2 people)"
+
+Example 2 - Package/Meal options (CRITICAL FOR CRUISE WHITSUNDAYS):
+SCRAPED: HTML shows pricing table with rows like "Day cruise with Marina Tavern lunch" = $152, "Day cruise with Popeye's Fish & Chips lunch" = $135
+OUTPUT: "Adult - Day cruise with Marina Tavern lunch: A$152 | Adult - Day cruise with Popeye's Fish & Chips lunch: A$135 | Senior - Day cruise with Marina Tavern lunch: A$143 | Senior - Day cruise with Popeye's Fish & Chips lunch: A$130"
+
+Example 3 - Multiple prices for same category (REQUIRES CONTEXT):
+SCRAPED: "Adult A$269 Adult A$279 Senior A$239 Senior A$249"
+BAD OUTPUT: "Adult: A$269 | Adult: A$279 | Senior: A$239 | Senior: A$249"  [X] TOO VAGUE
+GOOD OUTPUT: "Adult (Standard): A$269 | Adult (Premium): A$279 | Senior (Standard): A$239 | Senior (Premium): A$249"
+OR if context is clear from text: "Adult (May-Oct): A$269 | Adult (Nov-Apr): A$279"
+
+Example 3 - Simple single-tier pricing (OKAY to be generic):
+SCRAPED: "Adult A$149 Child A$79"
+OUTPUT: "Adult: A$149 | Child (4-14): A$79"
 
 PRICE INFO (from scraper):
 {price_info}
@@ -280,8 +356,8 @@ RAW TEXT:
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=500,
-                temperature=0.7
+                max_tokens=2000,  # Increased from 500 to allow detailed responses
+                temperature=0.5   # Lower temperature for more consistent extraction
             )
             import json
             raw_response = response.choices[0].message.content.strip()
@@ -299,10 +375,16 @@ RAW TEXT:
                     new_row['description'] = clean_field(ai_data.get('description', ''))
                     new_row['price_adult'] = clean_field(ai_data.get('price_adult', ''))
                     new_row['price_child'] = clean_field(ai_data.get('price_child', ''))
+                    new_row['price_tiers'] = clean_field(ai_data.get('price_tiers', ''))
                     new_row['duration'] = clean_field(ai_data.get('duration', ''))
                     new_row['departure_times'] = clean_field(ai_data.get('times', ''))
                     new_row['includes'] = clean_field(ai_data.get('includes', ''))
                     new_row['highlights'] = clean_field(ai_data.get('highlights', ''))
+                    # New detailed fields
+                    new_row['itinerary'] = clean_field(ai_data.get('itinerary', ''))
+                    new_row['menu'] = clean_field(ai_data.get('menu', ''))
+                    new_row['age_requirements'] = clean_field(ai_data.get('age_requirements', ''))
+                    new_row['ideal_for'] = clean_field(ai_data.get('ideal_for', ''))
                     new_row['raw_text'] = ''
                     # Normalized derived fields
                     combined_text = " ".join([
@@ -342,7 +424,8 @@ if 'raw_html' in fieldnames:
 # Ensure new normalized fields exist in fieldnames
 extra_fields = [
     'duration_hours','duration_days','duration_category','tour_type','locations',
-    'tags','audience','intensity_level'
+    'tags','audience','intensity_level',
+    'itinerary','menu','age_requirements','ideal_for'
 ]
 for f in extra_fields:
     if f not in fieldnames:

@@ -26,30 +26,22 @@ import json
 
 # === Paste your tour links here ===
 TOUR_LINKS = [ 
-    
+    "https://sailing-whitsundays.com/whitsundays/big-fury",
+    "https://www.magicwhitsundays.com/habibi-whitsundays-sailing-tour/",
+    "https://www.magicwhitsundays.com/big-fury-whitsundays/",
+    "https://oceanrafting.com.au/tours/northern-exposure/",
+    "https://oceanrafting.com.au/tours/fly-and-raft/",
+    "https://oceanrafting.com.au/tours/southern-lights/",
+    "https://oceanrafting.com.au/tours/fly-and-raft-south/",
+    "https://oceanrafting.com.au/tours/heart-reef-scenic-flight/",
+    "https://www.summertime-whitsundays.com/2day-1night-tour/",
+    "https://www.wings.com.au/airlie-beach-sunset-sail-in-style-cruise/",
+    "https://www.wings.com.au/whitsunday-islands-sail-snorkel-and-sup-tour/",
 ]  
 # =================================
 
 # === Paste your tour homepages here (fallback) ===
 TOUR_HOME_PAGES = [
-"https://zigzagwhitsundays.com.au" 
-"https://www.pioneeradventures.com.au",
-"https://iconicwhitsunday.com.au/viper-jet-boat-tours/",
-\
-"https://prosail.com.au/",
-
-"https://www.ozsail.com.au/",
-
-
-"https://whitsundaybullet.com.au/",
-
-
-"https://www.sealink.com.au/whitsundays/",
-"https://www.exploregroup.com.au/",
-
-"https://www.saltydog.com.au/",
-"
-"https://www.whitsundaystanduppaddle.com.au/",
 
 
     # "https://oceanrafting.com.au"
@@ -401,12 +393,50 @@ def extract_tour_info(html, url):
     }
 
 def append_to_csv(tour, csv_path):
+    """
+    Add or update a tour in the CSV file.
+    If a tour with the same ID exists, it will be overwritten.
+    If the CSV doesn't exist, it will be created.
+    """
     file_exists = os.path.isfile(csv_path)
-    with open(csv_path, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-        if not file_exists:
+    
+    if file_exists:
+        # Read existing tours
+        existing_tours = []
+        with open(csv_path, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                existing_tours.append(row)
+        
+        # Check if this tour already exists (by ID)
+        tour_updated = False
+        for i, existing_tour in enumerate(existing_tours):
+            if existing_tour.get('id') == tour.get('id'):
+                # Overwrite the existing tour
+                existing_tours[i] = tour
+                tour_updated = True
+                print(f"  [UPDATE] Overwriting existing tour: {tour['name']}")
+                break
+        
+        if not tour_updated:
+            # New tour, append it
+            existing_tours.append(tour)
+            print(f"  [NEW] Adding new tour: {tour['name']}")
+        
+        # Write all tours back to CSV
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
             writer.writeheader()
-        writer.writerow(tour)
+            for tour_row in existing_tours:
+                writer.writerow(tour_row)
+    else:
+        # Create new CSV file
+        print(f"  [NEW CSV] Creating new file: {csv_path}")
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+            writer.writeheader()
+            writer.writerow(tour)
+        print(f"  [NEW] Adding new tour: {tour['name']}")
 
 def discover_tour_links(homepage_url):
     try:
@@ -567,6 +597,18 @@ def main():
     else:
         print("Please paste your tour homepages in the TOUR_HOME_PAGES list or tour links in the TOUR_LINKS list at the top of the script.")
         return
+    
+    # Deduplicate URLs before scraping (prevents duplicate tours in CSV)
+    print(f"\nTotal links before deduplication: {len(tour_links)}")
+    seen_urls = set()
+    unique_tour_links = []
+    for homepage, url in tour_links:
+        if url not in seen_urls:
+            seen_urls.add(url)
+            unique_tour_links.append((homepage, url))
+    tour_links = unique_tour_links
+    print(f"Unique tours to scrape: {len(tour_links)}\n")
+    
     # Save each company's tours to a separate CSV
     company_csvs = {}
     all_tours = [] # Collect all tours for summary
@@ -709,21 +751,86 @@ def main():
             except Exception as e:
                 print(f"  [ERROR] Failed to run AI postprocessor on {csv_path}: {e}\n")
     
-    # Auto-run merge script to update _with_media.csv files
+    # Auto-run merge script to update _with_media.csv files (ONLY for scraped companies)
     print("\n=== Merging Cleaned Data to Media Files ===")
+    print(f"Processing only the {len(company_csvs)} companies that were scraped...\n")
     try:
-        import subprocess
-        result = subprocess.run(['python', 'merge_cleaned_to_media.py'], 
-                              capture_output=True, text=True, timeout=60)
-        if result.returncode == 0:
-            # Print the output from merge script
-            if result.stdout:
-                print(result.stdout)
+        # Import the merge function directly and run only on scraped companies
+        from merge_cleaned_to_media import merge_cleaned_to_media
+        
+        # Get list of cleaned files for companies we just scraped
+        scraped_cleaned_files = [csv_path.replace('.csv', '_cleaned.csv') for csv_path in company_csvs.keys()]
+        
+        # Filter to only process the files we just scraped
+        import glob
+        all_cleaned_files = glob.glob('*_cleaned.csv')
+        files_to_merge = [f for f in all_cleaned_files if f in scraped_cleaned_files]
+        
+        if files_to_merge:
+            print(f"Found {len(files_to_merge)} cleaned CSV files from this scraping session:\n")
+            
+            for cleaned_file in files_to_merge:
+                # Derive the corresponding _with_media.csv filename
+                base_name = cleaned_file.replace('_cleaned.csv', '')
+                media_file = f"{base_name}_cleaned_with_media.csv"
+                
+                # Check if _with_media.csv exists
+                if not os.path.exists(media_file):
+                    print(f"[SKIP] {cleaned_file}")
+                    print(f"       {media_file} does not exist - this appears to be a new company!")
+                    print(f"       Creating initial _with_media.csv file...")
+                    # Copy the cleaned file as the initial _with_media file
+                    import shutil
+                    shutil.copy(cleaned_file, media_file)
+                    print(f"       [OK] Created {media_file}\n")
+                    continue
+                
+                try:
+                    # Load both CSVs
+                    df_cleaned = pd.read_csv(cleaned_file)
+                    df_media = pd.read_csv(media_file)
+                    
+                    print(f"[OK] {cleaned_file}")
+                    print(f"     Merging into {media_file}")
+                    
+                    # Get columns that should be updated from cleaned (exclude image columns)
+                    update_cols = [col for col in df_cleaned.columns 
+                                  if col not in ['image_url', 'image_urls'] and col in df_media.columns]
+                    
+                    # Try to match by URL (most reliable for new scrapes)
+                    url_to_cleaned = {}
+                    for _, row in df_cleaned.iterrows():
+                        url = row.get('link_booking', '')
+                        if url and url not in url_to_cleaned:
+                            url_to_cleaned[url] = row.to_dict()
+                    
+                    updated_count = 0
+                    for idx, row in df_media.iterrows():
+                        url = row.get('link_booking', '')
+                        if url in url_to_cleaned:
+                            cleaned_data = url_to_cleaned[url]
+                            for col in update_cols:
+                                if col in cleaned_data:
+                                    df_media.at[idx, col] = cleaned_data[col]
+                            # Also update the ID to the new hash-based ID
+                            if 'id' in cleaned_data:
+                                df_media.at[idx, 'id'] = cleaned_data['id']
+                            updated_count += 1
+                    
+                    # Save updated media file
+                    df_media.to_csv(media_file, index=False)
+                    print(f"     Updated {updated_count} tours")
+                    print(f"     Preserved image paths for all tours")
+                    print()
+                    
+                except Exception as e:
+                    print(f"[ERROR] {cleaned_file}: {e}")
+                    print()
         else:
-            print(f"  [ERROR] Error running merge script:")
-            print(result.stderr)
+            print("No cleaned files found for the scraped companies.")
+        
     except Exception as e:
-        print(f"  [ERROR] Failed to run merge script: {e}")
+        print(f"  [ERROR] Failed to run merge: {e}")
     
     print("\n=== Scraping, Cleaning, and Merging Complete ===")
     
