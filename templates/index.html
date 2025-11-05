@@ -2448,21 +2448,22 @@
       /* Horizontal tour cards (landscape) */
       .tour-card {
         max-width: 100%;
-        padding: 8px;
-        border-radius: 8px;
+        padding: 10px;
+        border-radius: 10px;
         display: flex !important;
         flex-direction: row !important;
         align-items: stretch;
         height: auto !important;
-        min-height: 100px;
+        min-height: 110px;
       }
       
       .tour-card img {
-        width: 120px !important;
-        height: 100px !important;
-        min-width: 120px;
-        object-fit: cover;
-        border-radius: 6px;
+        width: 130px !important;
+        height: 110px !important;
+        min-width: 130px;
+        object-fit: cover !important;
+        object-position: center !important;
+        border-radius: 8px;
         margin-right: 10px;
       }
       
@@ -2474,9 +2475,9 @@
       }
       
       .tour-card h3 {
-        font-size: 0.8em;
-        margin-bottom: 4px;
-        line-height: 1.1;
+        font-size: 0.7em;
+        margin-bottom: 3px;
+        line-height: 1.15;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
@@ -2485,26 +2486,26 @@
       }
       
       .tour-card p {
-        font-size: 0.65em;
-        margin-bottom: 4px;
+        font-size: 0.6em;
+        margin-bottom: 3px;
         line-height: 1.2;
         display: none; /* Hide description on mobile */
       }
       
       .tour-rating {
-        font-size: 0.7em;
+        font-size: 0.65em;
         margin: 2px 0;
       }
       
       .tour-duration, .tour-location {
-        font-size: 0.6em;
-        padding: 2px 5px;
+        font-size: 0.55em;
+        padding: 2px 4px;
         margin: 2px 2px 2px 0;
         display: inline-block;
       }
       
       .tour-price {
-        font-size: 0.8em;
+        font-size: 0.75em;
         margin-top: 4px;
         font-weight: bold;
       }
@@ -2596,14 +2597,40 @@
       }
       
       /* Force includes/highlights to stack vertically (1 column) on mobile */
-      #detail-content > div[style*="display: grid"] {
+      #detail-content > div[style*="display"],
+      #detail-content > div[style*="grid"],
+      #detail-content div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
         grid-template-columns: 1fr !important;
-        gap: 10px !important;
+        gap: 12px !important;
       }
       
-      #detail-content > div > div[style*="background"] {
+      #detail-content > div > div[style*="background"],
+      #detail-content div[style*="padding:25px"] {
         padding: 15px !important;
         border-radius: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Better text wrapping in detail sections */
+      #detail-content div[style*="background"] * {
+        word-wrap: break-word !important;
+        word-break: normal !important;
+        hyphens: auto !important;
+      }
+      
+      #detail-content div[style*="background"] h3,
+      #detail-content div[style*="background"] h4 {
+        font-size: 1em !important;
+        margin-bottom: 8px !important;
+      }
+      
+      #detail-content div[style*="background"] p,
+      #detail-content div[style*="background"] li {
+        font-size: 0.85em !important;
+        line-height: 1.5 !important;
       }
       
       /* Image Gallery - Smaller */
@@ -2920,10 +2947,14 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Circular button exactly like voice chat */
+      /* Weather Widget - Perfect circle exactly like voice chat button */
       .weather-widget.collapsed {
         width: 50px !important;
         height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        max-width: 50px !important;
+        max-height: 50px !important;
         border-radius: 50% !important;
         background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
         box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
@@ -2932,10 +2963,11 @@
         bottom: 70px !important;
         right: 8px !important;
         left: auto !important;
-        overflow: hidden;
+        overflow: hidden !important;
         display: flex !important;
-        align-items: center;
-        justify-content: center;
+        align-items: center !important;
+        justify-content: center !important;
+        aspect-ratio: 1 / 1 !important;
       }
       
       .weather-widget.collapsed * {
@@ -2944,10 +2976,11 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 1.8em;
+        font-size: 1.6em;
         display: block !important;
-        margin: 0;
-        padding: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
       }
       
       /* When expanded */
