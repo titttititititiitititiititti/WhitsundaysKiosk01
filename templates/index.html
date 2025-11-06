@@ -2456,8 +2456,8 @@
         min-height: 120px !important;
         overflow: hidden;
         cursor: pointer;
-        /* Background set via inline style in JS - NO !important so JS can override */
-        background-color: #333;
+        /* Background set via inline style in JS - RED shows if images fail to load */
+        background-color: red;
       }
       
       /* OVERLAY REMOVED TO DEBUG - we'll add back if images show */
@@ -6274,6 +6274,7 @@
               ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
             </div>
             <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            <div style="font-size: 8px; opacity: 0.7;">IMG: ${thumbnailUrl.substring(0, 40)}</div>
           </div>
         `;
       } else {
