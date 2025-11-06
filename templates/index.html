@@ -2488,7 +2488,7 @@
       }
       
       .tour-card .tour-company {
-        font-size: 9px !important;
+        font-size: 7px !important;
         opacity: 0.95;
         margin-bottom: 1px;
         font-weight: 500;
@@ -2496,7 +2496,7 @@
       }
       
       .tour-card h3 {
-        font-size: 11px !important;
+        font-size: 8px !important;
         margin-bottom: 2px;
         line-height: 1.1;
         overflow: hidden;
@@ -2513,23 +2513,23 @@
       }
       
       .tour-rating {
-        font-size: 9px !important;
+        font-size: 7px !important;
         margin: 1px 0 2px 0;
         color: white !important;
         line-height: 1;
       }
       
       .tour-rating .stars {
-        font-size: 10px !important;
+        font-size: 8px !important;
       }
       
       .tour-rating .review-count {
-        font-size: 9px !important;
+        font-size: 7px !important;
         margin-left: 1px;
       }
       
       .tour-duration, .tour-location {
-        font-size: 8px !important;
+        font-size: 6px !important;
         padding: 2px 3px;
         margin: 2px 2px 0 0;
         display: inline-block;
@@ -2540,7 +2540,7 @@
       }
       
       .tour-price {
-        font-size: 12px !important;
+        font-size: 9px !important;
         margin-top: 2px;
         font-weight: 700;
         color: white !important;
@@ -6265,10 +6265,13 @@
       
       // Set background image directly on mobile
       if (window.innerWidth <= 768) {
-        // Set background directly as inline style
-        card.style.backgroundImage = `url('${tour.thumbnail}')`;
+        // Set background directly as inline style with fallback
+        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+        console.log(`Setting background for ${tour.name}: ${thumbnailUrl}`);
+        card.style.backgroundImage = `url('${thumbnailUrl}')`;
         card.style.backgroundSize = 'cover';
         card.style.backgroundPosition = 'center';
+        card.style.backgroundRepeat = 'no-repeat';
         
         card.innerHTML = `
           <div>
