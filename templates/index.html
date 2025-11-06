@@ -3573,21 +3573,31 @@
     
     <div id="tour-placeholder-row">
       {% for tour in tours %}
-      <div class="tour-card" data-key="{{ tour.key }}" data-departure="{{ tour.departure_location }}">
-        <img src="{{ tour.thumbnail }}" alt="{{ tour.name }}" class="tour-image">
-        <div class="tour-overlay">
-          <div class="tour-type">{{ tour.company_name|replace('_',' ')|title }}</div>
-          <div class="tour-title">{{ tour.name }}</div>
-            {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
-            <div class="tour-rating">
-              <span class="stars">
-                {% set full_stars = (tour.review_rating|int) %}
-                {% set has_half = (tour.review_rating % 1 >= 0.5) %}
-                {% for i in range(full_stars) %}★{% endfor %}{% if has_half %}☆{% endif %}{% for i in range(5 - full_stars - (1 if has_half else 0)) %}☆{% endfor %}
-              </span>
-              <span class="review-count">({{ tour.review_count }})</span>
-            </div>
-            {% endif %}
+      <div class="tour-card" data-key="{{ tour.key }}" data-departure="{{ tour.departure_location }}" style="background-image: url('{{ tour.thumbnail or '/static/placeholder.jpg' }}') !important; background-size: cover !important; background-position: center !important;">
+        <div>
+          <div style="font-size: 12px; color: lime; font-weight: bold; background: black; padding: 2px;">
+            SERVER-RENDERED CARD
+          </div>
+          <div class="tour-company">{{ tour.company_name|replace('_',' ')|title }}</div>
+          <h3>{{ tour.name }}</h3>
+          {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
+          <div class="tour-rating">
+            <span class="stars">
+              {% set full_stars = (tour.review_rating|int) %}
+              {% set has_half = (tour.review_rating % 1 >= 0.5) %}
+              {% for i in range(full_stars) %}★{% endfor %}{% if has_half %}☆{% endif %}{% for i in range(5 - full_stars - (1 if has_half else 0)) %}☆{% endfor %}
+            </span>
+            <span class="review-count">({{ tour.review_count }})</span>
+          </div>
+          {% endif %}
+          <div>
+            {% if tour.duration %}<span class="tour-duration">⏱️ {{ tour.duration }}</span>{% endif %}
+            {% if tour.departure_location %}<span class="tour-location">📍 {{ tour.departure_location }}</span>{% endif %}
+          </div>
+          <div class="tour-price">{{ tour.price_adult or 'Contact for price' }}</div>
+          <div style="font-size: 11px; color: yellow; font-weight: bold; background: rgba(0,0,0,0.8); padding: 3px; margin-top: 2px; word-break: break-all;">
+            IMG: {{ tour.thumbnail or '/static/placeholder.jpg' }}
+          </div>
         </div>
       </div>
       {% endfor %}
