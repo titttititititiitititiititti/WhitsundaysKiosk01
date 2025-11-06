@@ -6254,42 +6254,35 @@
         `;
       }
       
-      // Set background image directly on mobile
-      if (window.innerWidth <= 768) {
-        // Set background directly as inline style with fallback
-        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-        
-        card.innerHTML = `
+      // ALWAYS use mobile layout for debugging - remove width check
+      const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+      const isMobile = window.innerWidth <= 768;
+      
+      card.innerHTML = `
+        <div>
+          <div style="font-size: 12px; color: lime; font-weight: bold; background: black; padding: 2px;">
+            DEBUG: Width=${window.innerWidth} Mobile=${isMobile}
+          </div>
+          <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+          <h3>${tour.name}</h3>
+          ${ratingHtml}
           <div>
-            <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-            <h3>${tour.name}</h3>
-            ${ratingHtml}
-            <div>
-              ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
-              ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
-            </div>
-            <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
-            <div style="font-size: 10px; color: yellow; font-weight: bold;">IMG: ${thumbnailUrl}</div>
+            ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+            ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
           </div>
-        `;
-        
-        // Set background AFTER innerHTML so it doesn't get cleared
-        console.log(`Setting background for ${tour.name}: ${thumbnailUrl}`);
-        card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
-        card.style.setProperty('background-size', 'cover', 'important');
-        card.style.setProperty('background-position', 'center', 'important');
-        card.style.setProperty('background-repeat', 'no-repeat', 'important');
-      } else {
-        // Desktop layout
-        card.innerHTML = `
-          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-          <div class="tour-overlay">
-            <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-            <div class="tour-title">${tour.name}</div>
-            ${ratingHtml}
+          <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+          <div style="font-size: 11px; color: yellow; font-weight: bold; background: rgba(0,0,0,0.8); padding: 3px; margin-top: 2px; word-break: break-all;">
+            IMG: ${thumbnailUrl}
           </div>
-        `;
-      }
+        </div>
+      `;
+      
+      // ALWAYS try to set background for debugging
+      console.log(`[DEBUG] Window width: ${window.innerWidth}, Setting bg for ${tour.name}: ${thumbnailUrl}`);
+      card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
+      card.style.setProperty('background-size', 'cover', 'important');
+      card.style.setProperty('background-position', 'center', 'important');
+      card.style.setProperty('background-repeat', 'no-repeat', 'important');
       
       return card;
     }
