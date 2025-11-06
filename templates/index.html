@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS and JS for maps -->
@@ -3286,6 +3289,11 @@
     
     <!-- Top Filter Panel - Progressive Questions -->
     <div id="filter-panel">
+      <!-- VERSION INDICATOR - VISIBLE EVEN IF JS FAILS -->
+      <div style="position: fixed; top: 0; left: 0; background: lime; color: black; padding: 4px 8px; font-size: 12px; font-weight: bold; z-index: 99999;">
+        v212b45e-DEBUG3
+      </div>
+      
       <!-- Navigation buttons (shown when filtering by company) -->
       <div class="nav-buttons" id="nav-buttons">
         <button class="nav-btn" id="back-btn" onclick="goBack()">← Back</button>
