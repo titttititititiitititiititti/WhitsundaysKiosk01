@@ -4,9 +4,6 @@
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS and JS for maps -->
@@ -1951,14 +1948,12 @@
     .audio-visualizer {
       display: flex;
       height: 40px;
-      min-height: 40px;
-      max-height: 40px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 10px 20px;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      overflow: hidden;
+      transition: height 0.3s ease;
     }
     
     /* Bars stay flat when idle */
@@ -1967,7 +1962,7 @@
       height: 15%;
       background: rgba(255, 255, 255, 0.4);
       border-radius: 2px;
-      flex-shrink: 0;
+      transition: height 0.2s ease, opacity 0.2s ease, background 0.2s ease;
     }
     
     /* Bars animate when active (speaking) */
@@ -2370,10 +2365,8 @@
       
       /* Budget Slider - Much smaller to fit on screen */
       .budget-slider-container {
-        padding: 15px 5% !important;
+        padding: 15px 10px !important;
         max-width: 100% !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
       }
       
       .budget-label-display {
@@ -2394,29 +2387,27 @@
       }
       
       .budget-slider::-webkit-slider-thumb {
-        width: 38px !important;
-        height: 38px !important;
-        margin-top: -13px !important;
-        border-width: 3px !important;
+        width: 45px !important;
+        height: 45px !important;
+        margin-top: -17px !important;
+        border-width: 4px !important;
       }
       
       .budget-slider::-moz-range-thumb {
-        width: 38px !important;
-        height: 38px !important;
-        border-width: 3px !important;
+        width: 45px !important;
+        height: 45px !important;
+        border-width: 4px !important;
       }
       
       .budget-markers {
-        margin-top: 18px !important;
-        gap: 2px !important;
-        padding: 0 !important;
+        margin-top: 25px !important;
+        gap: 5px !important;
       }
       
       .budget-marker {
-        font-size: 0.65em !important;
-        padding: 3px 1px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap;
+        font-size: 0.7em !important;
+        padding: 5px 3px !important;
+        line-height: 1.2 !important;
       }
       
       #filter-panel h1 {
@@ -2465,10 +2456,10 @@
         min-height: 120px !important;
         overflow: hidden;
         cursor: pointer;
-        background-color: transparent;
+        /* Background set via inline style in JS */
       }
       
-      /* Subtle dark overlay for text readability */
+      /* Dark overlay for readability */
       .tour-card::before {
         content: "";
         position: absolute;
@@ -2476,7 +2467,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+        background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%);
         z-index: 1;
         pointer-events: none;
       }
@@ -2488,36 +2479,33 @@
       .tour-card > div {
         position: relative;
         z-index: 2;
-        padding: 8px 10px;
+        padding: 6px 8px;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         color: white !important;
-        text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 2px 8px rgba(0,0,0,0.8);
-        box-sizing: border-box;
       }
       
       .tour-card .tour-company {
-        font-size: 8px !important;
-        opacity: 0.9;
-        margin-bottom: 2px;
+        font-size: 7px !important;
+        opacity: 0.95;
+        margin-bottom: 1px;
         font-weight: 500;
         line-height: 1;
       }
       
       .tour-card h3 {
-        font-size: 11px !important;
-        margin-bottom: 3px;
-        line-height: 1.2;
+        font-size: 8px !important;
+        margin-bottom: 2px;
+        line-height: 1.1;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         color: white !important;
-        font-weight: 700;
-        max-height: 26px;
+        font-weight: 600;
       }
       
       .tour-card p {
@@ -2525,44 +2513,39 @@
       }
       
       .tour-rating {
-        font-size: 8px !important;
-        margin: 0 0 3px 0;
+        font-size: 7px !important;
+        margin: 1px 0 2px 0;
         color: white !important;
         line-height: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
       
       .tour-rating .stars {
-        font-size: 9px !important;
+        font-size: 8px !important;
       }
       
       .tour-rating .review-count {
-        font-size: 8px !important;
-        margin-left: 2px;
+        font-size: 7px !important;
+        margin-left: 1px;
       }
       
       .tour-duration, .tour-location {
-        font-size: 7px !important;
-        padding: 2px 4px;
-        margin: 0 3px 3px 0;
+        font-size: 6px !important;
+        padding: 2px 3px;
+        margin: 2px 2px 0 0;
         display: inline-block;
-        background: rgba(255,255,255,0.25) !important;
+        background: rgba(255,255,255,0.3) !important;
         color: white !important;
         border-radius: 3px;
         line-height: 1;
-        white-space: nowrap;
       }
       
       .tour-price {
-        font-size: 11px !important;
-        margin-top: 0;
+        font-size: 9px !important;
+        margin-top: 2px;
         font-weight: 700;
         color: white !important;
         text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         line-height: 1;
-        white-space: nowrap;
       }
       
       /* Tour Detail Page - Much more compact */
@@ -2841,192 +2824,79 @@
       }
       
       #chat-interface {
-        width: 90vw !important;
-        height: 70vh !important;
-        max-width: 90vw !important;
-        max-height: 70vh !important;
+        width: 85vw;
+        height: 50vh;
+        max-width: 85vw;
+        max-height: 50vh;
         border-radius: 12px;
         bottom: 65px;
-        left: 50% !important;
-        transform: translateX(-50%);
+        left: 8px;
         right: auto;
       }
       
       .chat-header {
-        padding: 6px 8px !important;
-        min-height: 32px;
+        padding: 4px 6px !important;
       }
       
       .chat-header h3 {
-        font-size: 13px !important;
-        margin: 0;
+        font-size: 11px !important;
       }
       
       .chat-close, .chat-restart {
-        width: 24px !important;
-        height: 24px !important;
-        min-width: 24px !important;
-        min-height: 24px !important;
-        font-size: 13px !important;
-        padding: 0 !important;
-        line-height: 24px;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 12px !important;
       }
       
       #chat-messages {
-        padding: 8px !important;
-        font-size: 13px !important;
-        flex: 1;
-        overflow-y: auto;
-        min-height: 200px;
+        padding: 4px !important;
+        font-size: 10px !important;
       }
       
       .chat-message {
-        padding: 6px 10px !important;
-        font-size: 13px !important;
-        max-width: 80%;
-        margin-bottom: 6px !important;
-        line-height: 1.4;
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+        max-width: 85%;
+        margin-bottom: 4px !important;
       }
       
       .chat-message.system {
-        font-size: 12px !important;
+        font-size: 9px !important;
       }
       
       .tour-card-in-chat {
-        padding: 6px !important;
-        font-size: 12px !important;
+        padding: 4px !important;
       }
       
       .tour-card-in-chat h4 {
-        font-size: 13px !important;
-        margin-bottom: 4px;
+        font-size: 10px !important;
       }
       
       .tour-card-in-chat .tour-price {
-        font-size: 12px !important;
+        font-size: 10px !important;
       }
       
       #chat-input-container {
-        padding: 6px !important;
-        gap: 4px !important;
-        display: flex;
-        align-items: center;
+        padding: 4px !important;
+        gap: 3px !important;
       }
       
       #chat-input {
-        font-size: 12px !important;
-        padding: 6px 10px !important;
-        min-height: 28px !important;
-        height: 28px !important;
-        border-radius: 14px;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
       }
       
-      #chat-send {
-        width: auto !important;
-        min-width: 45px !important;
-        height: 28px !important;
-        min-height: 28px !important;
-        font-size: 12px !important;
-        padding: 0 10px !important;
-        flex-shrink: 0;
-      }
-      
-      #chat-voice {
-        width: 28px !important;
-        height: 28px !important;
-        min-width: 28px !important;
-        min-height: 28px !important;
-        font-size: 13px !important;
-        padding: 0 !important;
-        flex-shrink: 0;
+      #chat-send, #chat-voice {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 11px !important;
       }
       
       /* Send to Phone Button - More compact */
       .send-to-phone-btn {
-        font-size: 12px !important;
-        padding: 8px 12px !important;
-        margin: 8px 8px 0 8px !important;
-        min-height: 36px !important;
-      }
-      
-      /* Voice UI Elements - Mobile Optimized */
-      .mic-button {
-        padding: 8px 12px !important;
-        font-size: 13px !important;
-        gap: 6px !important;
-        border-radius: 16px !important;
-        min-height: 32px !important;
-      }
-      
-      .mic-text {
-        font-size: 13px !important;
-      }
-      
-      .voice-status {
-        padding: 6px 10px !important;
-        margin-top: 6px !important;
-        font-size: 11px !important;
-        gap: 6px !important;
-        border-radius: 8px !important;
-      }
-      
-      .voice-status .status-text {
-        font-size: 11px !important;
-      }
-      
-      .voice-indicator {
-        width: 10px !important;
-        height: 10px !important;
-      }
-      
-      .voice-indicator .pulse {
-        width: 10px !important;
-        height: 10px !important;
-      }
-      
-      .interim-text {
-        padding: 6px 10px !important;
-        margin-top: 6px !important;
-        font-size: 11px !important;
-        border-radius: 6px !important;
-      }
-      
-      .auto-speak-toggle {
-        font-size: 11px !important;
-        padding: 6px 0 !important;
-      }
-      
-      /* Voice animation banner - fixed height to prevent shaking */
-      .chat-interface .voice-animation {
-        height: 35px !important;
-        min-height: 35px !important;
-        max-height: 35px !important;
-        padding: 8px 0 !important;
-        overflow: hidden;
-      }
-      
-      /* Audio visualizer - fixed height on mobile */
-      .audio-visualizer {
-        height: 30px !important;
-        min-height: 30px !important;
-        max-height: 30px !important;
-        padding: 6px 10px !important;
-        overflow: hidden !important;
-      }
-      
-      .visualizer-bar {
-        width: 3px !important;
-        flex-shrink: 0 !important;
-      }
-      
-      /* Hide OR section on mobile to save space */
-      .voice-divider {
-        display: none !important;
-      }
-      
-      .voice-controls {
-        margin-top: 6px !important;
-        padding-top: 0 !important;
+        font-size: 9px !important;
+        padding: 5px 8px !important;
+        margin: 4px 0 !important;
       }
       
       /* QR Modal - More compact */
@@ -3292,11 +3162,11 @@
       }
       
       .tour-card h3 {
-        font-size: 11px !important;
+        font-size: 0.95em;
       }
       
       .tour-card {
-        padding: 0 !important;
+        padding: 10px;
       }
       
       .chat-message {
@@ -3704,25 +3574,21 @@
     
     <div id="tour-placeholder-row">
       {% for tour in tours %}
-      <div class="tour-card" data-key="{{ tour.key }}" data-departure="{{ tour.departure_location }}" style="background-image: url('{{ tour.thumbnail or '/static/placeholder.jpg' }}') !important; background-size: cover !important; background-position: center !important;">
-        <div>
-          <div class="tour-company">{{ tour.company_name|replace('_',' ')|title }}</div>
-          <h3>{{ tour.name }}</h3>
-          {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
-          <div class="tour-rating">
-            <span class="stars">
-              {% set full_stars = (tour.review_rating|int) %}
-              {% set has_half = (tour.review_rating % 1 >= 0.5) %}
-              {% for i in range(full_stars) %}★{% endfor %}{% if has_half %}☆{% endif %}{% for i in range(5 - full_stars - (1 if has_half else 0)) %}☆{% endfor %}
-            </span>
-            <span class="review-count">({{ tour.review_count }})</span>
-          </div>
-          {% endif %}
-          <div>
-            {% if tour.duration %}<span class="tour-duration">⏱️ {{ tour.duration }}</span>{% endif %}
-            {% if tour.departure_location %}<span class="tour-location">📍 {{ tour.departure_location }}</span>{% endif %}
-          </div>
-          <div class="tour-price">{{ tour.price_adult or 'Contact for price' }}</div>
+      <div class="tour-card" data-key="{{ tour.key }}" data-departure="{{ tour.departure_location }}">
+        <img src="{{ tour.thumbnail }}" alt="{{ tour.name }}" class="tour-image">
+        <div class="tour-overlay">
+          <div class="tour-type">{{ tour.company_name|replace('_',' ')|title }}</div>
+          <div class="tour-title">{{ tour.name }}</div>
+            {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
+            <div class="tour-rating">
+              <span class="stars">
+                {% set full_stars = (tour.review_rating|int) %}
+                {% set has_half = (tour.review_rating % 1 >= 0.5) %}
+                {% for i in range(full_stars) %}★{% endfor %}{% if has_half %}☆{% endif %}{% for i in range(5 - full_stars - (1 if has_half else 0)) %}☆{% endfor %}
+              </span>
+              <span class="review-count">({{ tour.review_count }})</span>
+            </div>
+            {% endif %}
         </div>
       </div>
       {% endfor %}
@@ -4039,7 +3905,6 @@
     function displayFilteredTours(tours) {
       const grid = document.getElementById('tour-placeholder-row');
       grid.innerHTML = '';
-      const isMobile = window.innerWidth <= 768;
       
       tours.forEach(tour => {
         const card = document.createElement('div');
@@ -4058,40 +3923,14 @@
           `;
         }
         
-        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-        
-        if (isMobile) {
-          // Mobile: Use background image
-          card.innerHTML = `
-            <div>
-              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-              <h3>${tour.name}</h3>
-              ${ratingHtml}
-              <div>
-                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
-                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
-              </div>
-              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
-            </div>
-          `;
-          
-          // Set background image
-          card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
-          card.style.setProperty('background-size', 'cover', 'important');
-          card.style.setProperty('background-position', 'center', 'important');
-          card.style.setProperty('background-repeat', 'no-repeat', 'important');
-        } else {
-          // Desktop: Use img tag
-          card.innerHTML = `
-            <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
-            <div class="tour-overlay">
-              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-              <div class="tour-title">${tour.name}</div>
-              ${ratingHtml}
-            </div>
-          `;
-        }
-        
+        card.innerHTML = `
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
+          </div>
+        `;
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
       });
@@ -4297,8 +4136,6 @@
       const tours = await res.json();
       loadedCount += tours.length;
       const grid = document.getElementById('tour-placeholder-row');
-      const isMobile = window.innerWidth <= 768;
-      
       for (const tour of tours) {
         const card = document.createElement('div');
         card.className = 'tour-card';
@@ -4316,40 +4153,14 @@
           `;
         }
         
-        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-        
-        if (isMobile) {
-          // Mobile: Use background image
-          card.innerHTML = `
-            <div>
-              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-              <h3>${tour.name}</h3>
-              ${ratingHtml}
-              <div>
-                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
-                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
-              </div>
-              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
-            </div>
-          `;
-          
-          // Set background image
-          card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
-          card.style.setProperty('background-size', 'cover', 'important');
-          card.style.setProperty('background-position', 'center', 'important');
-          card.style.setProperty('background-repeat', 'no-repeat', 'important');
-        } else {
-          // Desktop: Use img tag
-          card.innerHTML = `
-            <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
-            <div class="tour-overlay">
-              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-              <div class="tour-title">${tour.name}</div>
-              ${ratingHtml}
-            </div>
-          `;
-        }
-        
+        card.innerHTML = `
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
+          </div>
+        `;
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
         shownKeys.add(tour.key);
@@ -6452,11 +6263,16 @@
         `;
       }
       
-      // Mobile-optimized card layout
-      const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-      const isMobile = window.innerWidth <= 768;
-      
-      if (isMobile) {
+      // Set background image directly on mobile
+      if (window.innerWidth <= 768) {
+        // Set background directly as inline style with fallback
+        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+        console.log(`Setting background for ${tour.name}: ${thumbnailUrl}`);
+        card.style.backgroundImage = `url('${thumbnailUrl}')`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+        card.style.backgroundRepeat = 'no-repeat';
+        
         card.innerHTML = `
           <div>
             <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
@@ -6469,16 +6285,10 @@
             <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
           </div>
         `;
-        
-        // Set background image with !important
-        card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
-        card.style.setProperty('background-size', 'cover', 'important');
-        card.style.setProperty('background-position', 'center', 'important');
-        card.style.setProperty('background-repeat', 'no-repeat', 'important');
       } else {
         // Desktop layout
         card.innerHTML = `
-          <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
+          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
           <div class="tour-overlay">
             <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
             <div class="tour-title">${tour.name}</div>
