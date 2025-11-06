@@ -1951,12 +1951,14 @@
     .audio-visualizer {
       display: flex;
       height: 40px;
+      min-height: 40px;
+      max-height: 40px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 10px 20px;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: height 0.3s ease;
+      overflow: hidden;
     }
     
     /* Bars stay flat when idle */
@@ -1965,7 +1967,7 @@
       height: 15%;
       background: rgba(255, 255, 255, 0.4);
       border-radius: 2px;
-      transition: height 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+      flex-shrink: 0;
     }
     
     /* Bars animate when active (speaking) */
@@ -3003,6 +3005,20 @@
         overflow: hidden;
       }
       
+      /* Audio visualizer - fixed height on mobile */
+      .audio-visualizer {
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        padding: 6px 10px !important;
+        overflow: hidden !important;
+      }
+      
+      .visualizer-bar {
+        width: 3px !important;
+        flex-shrink: 0 !important;
+      }
+      
       /* Hide OR section on mobile to save space */
       .voice-divider {
         display: none !important;
@@ -4023,6 +4039,7 @@
     function displayFilteredTours(tours) {
       const grid = document.getElementById('tour-placeholder-row');
       grid.innerHTML = '';
+      const isMobile = window.innerWidth <= 768;
       
       tours.forEach(tour => {
         const card = document.createElement('div');
@@ -4041,14 +4058,40 @@
           `;
         }
         
-        card.innerHTML = `
-          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-          <div class="tour-overlay">
-            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-            <div class="tour-title">${tour.name}</div>
-            ${ratingHtml}
-          </div>
-        `;
+        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+        
+        if (isMobile) {
+          // Mobile: Use background image
+          card.innerHTML = `
+            <div>
+              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+              <h3>${tour.name}</h3>
+              ${ratingHtml}
+              <div>
+                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+              </div>
+              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            </div>
+          `;
+          
+          // Set background image
+          card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
+          card.style.setProperty('background-size', 'cover', 'important');
+          card.style.setProperty('background-position', 'center', 'important');
+          card.style.setProperty('background-repeat', 'no-repeat', 'important');
+        } else {
+          // Desktop: Use img tag
+          card.innerHTML = `
+            <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
+            <div class="tour-overlay">
+              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+              <div class="tour-title">${tour.name}</div>
+              ${ratingHtml}
+            </div>
+          `;
+        }
+        
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
       });
