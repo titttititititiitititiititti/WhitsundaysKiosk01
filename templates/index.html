@@ -2368,8 +2368,10 @@
       
       /* Budget Slider - Much smaller to fit on screen */
       .budget-slider-container {
-        padding: 15px 10px !important;
+        padding: 15px 5% !important;
         max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
       
       .budget-label-display {
@@ -2390,27 +2392,29 @@
       }
       
       .budget-slider::-webkit-slider-thumb {
-        width: 45px !important;
-        height: 45px !important;
-        margin-top: -17px !important;
-        border-width: 4px !important;
+        width: 38px !important;
+        height: 38px !important;
+        margin-top: -13px !important;
+        border-width: 3px !important;
       }
       
       .budget-slider::-moz-range-thumb {
-        width: 45px !important;
-        height: 45px !important;
-        border-width: 4px !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-width: 3px !important;
       }
       
       .budget-markers {
-        margin-top: 25px !important;
-        gap: 5px !important;
+        margin-top: 18px !important;
+        gap: 2px !important;
+        padding: 0 !important;
       }
       
       .budget-marker {
-        font-size: 0.7em !important;
-        padding: 5px 3px !important;
-        line-height: 1.2 !important;
+        font-size: 0.65em !important;
+        padding: 3px 1px !important;
+        line-height: 1.1 !important;
+        white-space: nowrap;
       }
       
       #filter-panel h1 {
@@ -2990,11 +2994,13 @@
         padding: 6px 0 !important;
       }
       
-      /* Voice animation banner - MUCH thinner */
+      /* Voice animation banner - fixed height to prevent shaking */
       .chat-interface .voice-animation {
-        height: 30px !important;
-        min-height: 30px !important;
-        padding: 4px 0 !important;
+        height: 35px !important;
+        min-height: 35px !important;
+        max-height: 35px !important;
+        padding: 8px 0 !important;
+        overflow: hidden;
       }
       
       /* Hide OR section on mobile to save space */
@@ -4248,6 +4254,8 @@
       const tours = await res.json();
       loadedCount += tours.length;
       const grid = document.getElementById('tour-placeholder-row');
+      const isMobile = window.innerWidth <= 768;
+      
       for (const tour of tours) {
         const card = document.createElement('div');
         card.className = 'tour-card';
@@ -4265,14 +4273,40 @@
           `;
         }
         
-        card.innerHTML = `
-          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-          <div class="tour-overlay">
-            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-            <div class="tour-title">${tour.name}</div>
-            ${ratingHtml}
-          </div>
-        `;
+        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+        
+        if (isMobile) {
+          // Mobile: Use background image
+          card.innerHTML = `
+            <div>
+              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+              <h3>${tour.name}</h3>
+              ${ratingHtml}
+              <div>
+                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+              </div>
+              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            </div>
+          `;
+          
+          // Set background image
+          card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
+          card.style.setProperty('background-size', 'cover', 'important');
+          card.style.setProperty('background-position', 'center', 'important');
+          card.style.setProperty('background-repeat', 'no-repeat', 'important');
+        } else {
+          // Desktop: Use img tag
+          card.innerHTML = `
+            <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
+            <div class="tour-overlay">
+              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+              <div class="tour-title">${tour.name}</div>
+              ${ratingHtml}
+            </div>
+          `;
+        }
+        
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
         shownKeys.add(tour.key);
