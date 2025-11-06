@@ -2457,11 +2457,10 @@
         overflow: hidden;
         cursor: pointer;
         /* Background set via inline style in JS */
-        background-color: purple !important;
-        border: 3px solid yellow !important;
+        background-color: #1a1a1a !important;
       }
       
-      /* Dark overlay for readability */
+      /* Lighter overlay for readability - less obtrusive */
       .tour-card::before {
         content: "";
         position: absolute;
@@ -2469,7 +2468,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%);
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%);
         z-index: 1;
         pointer-events: none;
       }
