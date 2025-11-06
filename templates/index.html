@@ -2459,11 +2459,21 @@
         min-height: 120px !important;
         overflow: hidden;
         cursor: pointer;
-        /* Background set via inline style in JS - RED shows if images fail to load */
-        background-color: red;
+        background-color: #333;
       }
       
-      /* OVERLAY REMOVED TO DEBUG - we'll add back if images show */
+      /* Subtle dark overlay for text readability */
+      .tour-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+        z-index: 1;
+        pointer-events: none;
+      }
       
       .tour-card img {
         display: none !important;
@@ -3289,11 +3299,6 @@
     
     <!-- Top Filter Panel - Progressive Questions -->
     <div id="filter-panel">
-      <!-- VERSION INDICATOR - VISIBLE EVEN IF JS FAILS -->
-      <div style="position: fixed; top: 0; left: 0; background: lime; color: black; padding: 4px 8px; font-size: 12px; font-weight: bold; z-index: 99999;">
-        v212b45e-DEBUG3
-      </div>
-      
       <!-- Navigation buttons (shown when filtering by company) -->
       <div class="nav-buttons" id="nav-buttons">
         <button class="nav-btn" id="back-btn" onclick="goBack()">← Back</button>
@@ -3575,9 +3580,6 @@
       {% for tour in tours %}
       <div class="tour-card" data-key="{{ tour.key }}" data-departure="{{ tour.departure_location }}" style="background-image: url('{{ tour.thumbnail or '/static/placeholder.jpg' }}') !important; background-size: cover !important; background-position: center !important;">
         <div>
-          <div style="font-size: 12px; color: lime; font-weight: bold; background: black; padding: 2px;">
-            SERVER-RENDERED CARD
-          </div>
           <div class="tour-company">{{ tour.company_name|replace('_',' ')|title }}</div>
           <h3>{{ tour.name }}</h3>
           {% if tour.review_rating and tour.review_rating > 0 and tour.review_count and tour.review_count > 0 %}
@@ -3595,9 +3597,6 @@
             {% if tour.departure_location %}<span class="tour-location">📍 {{ tour.departure_location }}</span>{% endif %}
           </div>
           <div class="tour-price">{{ tour.price_adult or 'Contact for price' }}</div>
-          <div style="font-size: 11px; color: yellow; font-weight: bold; background: rgba(0,0,0,0.8); padding: 3px; margin-top: 2px; word-break: break-all;">
-            IMG: {{ tour.thumbnail or '/static/placeholder.jpg' }}
-          </div>
         </div>
       </div>
       {% endfor %}
@@ -6272,35 +6271,40 @@
         `;
       }
       
-      // ALWAYS use mobile layout for debugging - remove width check
+      // Mobile-optimized card layout
       const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
       const isMobile = window.innerWidth <= 768;
       
-      card.innerHTML = `
-        <div>
-          <div style="font-size: 12px; color: lime; font-weight: bold; background: black; padding: 2px;">
-            DEBUG: Width=${window.innerWidth} Mobile=${isMobile}
-          </div>
-          <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-          <h3>${tour.name}</h3>
-          ${ratingHtml}
+      if (isMobile) {
+        card.innerHTML = `
           <div>
-            ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
-            ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+            <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+            <h3>${tour.name}</h3>
+            ${ratingHtml}
+            <div>
+              ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+              ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+            </div>
+            <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
           </div>
-          <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
-          <div style="font-size: 11px; color: yellow; font-weight: bold; background: rgba(0,0,0,0.8); padding: 3px; margin-top: 2px; word-break: break-all;">
-            IMG: ${thumbnailUrl}
+        `;
+        
+        // Set background image with !important
+        card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
+        card.style.setProperty('background-size', 'cover', 'important');
+        card.style.setProperty('background-position', 'center', 'important');
+        card.style.setProperty('background-repeat', 'no-repeat', 'important');
+      } else {
+        // Desktop layout
+        card.innerHTML = `
+          <img src="${thumbnailUrl}" alt="${tour.name}" class="tour-image">
+          <div class="tour-overlay">
+            <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+            <div class="tour-title">${tour.name}</div>
+            ${ratingHtml}
           </div>
-        </div>
-      `;
-      
-      // ALWAYS try to set background for debugging
-      console.log(`[DEBUG] Window width: ${window.innerWidth}, Setting bg for ${tour.name}: ${thumbnailUrl}`);
-      card.style.setProperty('background-image', `url('${thumbnailUrl}')`, 'important');
-      card.style.setProperty('background-size', 'cover', 'important');
-      card.style.setProperty('background-position', 'center', 'important');
-      card.style.setProperty('background-repeat', 'no-repeat', 'important');
+        `;
+      }
       
       return card;
     }
