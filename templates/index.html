@@ -3923,14 +3923,40 @@
           `;
         }
         
-        card.innerHTML = `
-          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-          <div class="tour-overlay">
-            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-            <div class="tour-title">${tour.name}</div>
-            ${ratingHtml}
-          </div>
-        `;
+        // Check if mobile
+        if (window.innerWidth <= 768) {
+          // Mobile: Set innerHTML first
+          card.innerHTML = `
+            <div>
+              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+              <h3>${tour.name}</h3>
+              ${ratingHtml}
+              <div>
+                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+              </div>
+              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            </div>
+          `;
+          
+          // Then set background image AFTER innerHTML
+          const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+          card.style.backgroundImage = `url('${thumbnailUrl}')`;
+          card.style.backgroundSize = 'cover';
+          card.style.backgroundPosition = 'center';
+          card.style.backgroundRepeat = 'no-repeat';
+        } else {
+          // Desktop
+          card.innerHTML = `
+            <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+            <div class="tour-overlay">
+              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+              <div class="tour-title">${tour.name}</div>
+              ${ratingHtml}
+            </div>
+          `;
+        }
+        
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
       });
@@ -4153,14 +4179,40 @@
           `;
         }
         
-        card.innerHTML = `
-          <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-          <div class="tour-overlay">
-            <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-            <div class="tour-title">${tour.name}</div>
-            ${ratingHtml}
-          </div>
-        `;
+        // Check if mobile
+        if (window.innerWidth <= 768) {
+          // Mobile: Set innerHTML first
+          card.innerHTML = `
+            <div>
+              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
+              <h3>${tour.name}</h3>
+              ${ratingHtml}
+              <div>
+                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
+                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
+              </div>
+              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            </div>
+          `;
+          
+          // Then set background image AFTER innerHTML
+          const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+          card.style.backgroundImage = `url('${thumbnailUrl}')`;
+          card.style.backgroundSize = 'cover';
+          card.style.backgroundPosition = 'center';
+          card.style.backgroundRepeat = 'no-repeat';
+        } else {
+          // Desktop
+          card.innerHTML = `
+            <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
+            <div class="tour-overlay">
+              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
+              <div class="tour-title">${tour.name}</div>
+              ${ratingHtml}
+            </div>
+          `;
+        }
+        
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
         shownKeys.add(tour.key);
@@ -6265,14 +6317,7 @@
       
       // Set background image directly on mobile
       if (window.innerWidth <= 768) {
-        // Set background directly as inline style with fallback
-        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-        console.log(`Setting background for ${tour.name}: ${thumbnailUrl}`);
-        card.style.backgroundImage = `url('${thumbnailUrl}')`;
-        card.style.backgroundSize = 'cover';
-        card.style.backgroundPosition = 'center';
-        card.style.backgroundRepeat = 'no-repeat';
-        
+        // Mobile: Set innerHTML FIRST
         card.innerHTML = `
           <div>
             <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
@@ -6285,6 +6330,14 @@
             <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
           </div>
         `;
+        
+        // Then set background image AFTER innerHTML (so it doesn't get wiped out)
+        const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
+        console.log(`Setting background for ${tour.name}: ${thumbnailUrl}`);
+        card.style.backgroundImage = `url('${thumbnailUrl}')`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+        card.style.backgroundRepeat = 'no-repeat';
       } else {
         // Desktop layout
         card.innerHTML = `
