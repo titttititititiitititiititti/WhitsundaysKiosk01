@@ -454,7 +454,9 @@
       padding: 30px 50px;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     
     .header-left {
@@ -5744,19 +5746,39 @@
       const homePage = document.querySelector('.home-page');
       if (!homePage) return;
       
+      // Listen to both home page scroll and window scroll (for mobile)
+      const checkScroll = () => {
+        if (isLoadingMoreTours || !homePageHasMore) return;
+        
+        // Check if home page is visible
+        if (homePage.style.display === 'none') return;
+        
+        // Check window scroll position
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
+        
+        // Load more when user is 500px from bottom
+        if (scrollPosition >= scrollHeight - 500) {
+          loadMoreHomePageTours();
+        }
+      };
+      
+      // Listen to home page scroll (for desktop with scrollable container)
       homePage.addEventListener('scroll', () => {
         if (isLoadingMoreTours || !homePageHasMore) return;
         
         const scrollPosition = homePage.scrollTop + homePage.clientHeight;
         const scrollHeight = homePage.scrollHeight;
         
-        // Load more when user is 500px from bottom
         if (scrollPosition >= scrollHeight - 500) {
           loadMoreHomePageTours();
         }
       });
       
-      console.log('Infinite scroll setup complete');
+      // Listen to window scroll (for mobile and when home page fills viewport)
+      window.addEventListener('scroll', checkScroll);
+      
+      console.log('Infinite scroll setup complete (window + home page)');
     }
     
     // Load initial featured tours for home page
