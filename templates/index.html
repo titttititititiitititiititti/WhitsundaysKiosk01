@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
-  <meta name="viewport" content="width=1440, initial-scale=0.4, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes">
+  <meta name="viewport" content="width=1920, initial-scale=0.35, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS and JS for maps -->
@@ -5675,8 +5675,18 @@
       // Hide new home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.style.display = 'none';
+        homePage.classList.remove('active');
+        homePage.style.display = 'none !important';
       }
+      
+      // Show old layout elements
+      const mainLayout = document.getElementById('main-layout');
+      const filterPanel = document.getElementById('filter-panel');
+      const contentArea = document.getElementById('content-area');
+      
+      if (mainLayout) mainLayout.style.display = 'flex';
+      if (filterPanel) filterPanel.style.display = 'block';
+      if (contentArea) contentArea.style.display = 'block';
       
       // Apply current filters to show tours in the old UI
       applyFilters();
@@ -6289,20 +6299,35 @@
       // Clear selected states
       document.querySelectorAll('.duration-pill').forEach(p => p.classList.remove('selected'));
       
+      // Hide tour detail page
+      const tourDetailPage = document.querySelector('.page.tour-detail-page');
+      if (tourDetailPage) {
+        tourDetailPage.classList.remove('active');
+        tourDetailPage.style.display = 'none !important';
+      }
+      
       // Hide tour list page
       const tourListPage = document.getElementById('tour-list-page');
       if (tourListPage) {
         tourListPage.style.display = 'none';
       }
       
+      // Hide old layout elements
+      const mainLayout = document.getElementById('main-layout');
+      const filterPanel = document.getElementById('filter-panel');
+      const mapContainer = document.getElementById('map-container');
+      if (mainLayout) mainLayout.style.display = 'none';
+      if (filterPanel) filterPanel.style.display = 'none';
+      if (mapContainer) mapContainer.style.display = 'none';
+      
       // Show home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.style.display = 'block';
+        homePage.style.display = 'flex !important';
+        homePage.classList.add('active');
       }
       
       // Reset featured tours to initial state
-      // You might want to reload the page or fetch initial tours
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
@@ -7486,9 +7511,17 @@
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
           
+          // Hide home page first
+          const homePage = document.querySelector('.home-page');
+          if (homePage) {
+            homePage.classList.remove('active');
+            homePage.style.display = 'none !important';
+          }
+          
           // Show the NEW modern tour detail page
           const tourDetailPage = document.querySelector('.page.tour-detail-page');
           if (tourDetailPage) {
+            tourDetailPage.style.display = 'flex !important';
             tourDetailPage.classList.add('active');
             tourDetailPage.setAttribute('data-current-tour-key', key);
           }
@@ -7600,6 +7633,7 @@
       const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage) {
         tourDetailPage.classList.remove('active');
+        tourDetailPage.style.display = 'none !important';
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
@@ -7622,6 +7656,13 @@
           setTimeout(() => {
             if (map) map.invalidateSize();
           }, 100);
+        }
+      } else {
+        // Return to home page
+        const homePage = document.querySelector('.home-page');
+        if (homePage) {
+          homePage.style.display = 'flex !important';
+          homePage.classList.add('active');
         }
       }
     };
