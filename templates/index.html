@@ -438,15 +438,13 @@
     .page.home-page {
       min-height: 100vh;
       height: 100vh;
-      display: none;
+      display: flex;
       flex-direction: column;
       background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
       overflow-y: auto;
       overflow-x: hidden;
-    }
-    
-    .page.home-page.active {
-      display: flex !important;
+      position: relative;
+      z-index: 1;
     }
     
     /* Kiosk Header */
@@ -876,21 +874,21 @@
     }
     
     /* Hide old elements when using new home layout */
-    body:has(.home-page.active) #weather-widget,
-    body:has(.home-page.active) #content-area,
-    body:has(.home-page.active) #filter-panel,
-    body:has(.home-page.active) .top-button-bar {
+    body:has(.home-page) #weather-widget,
+    body:has(.home-page) #content-area,
+    body:has(.home-page) #filter-panel,
+    body:has(.home-page) .top-button-bar {
       display: none !important;
     }
     
     /* Also hide mobile menu and chat interface when home page is visible */
-    body:has(.home-page.active) .mobile-menu-btn,
-    body:has(.home-page.active) .chat-interface {
+    body:has(.home-page) .mobile-menu-btn,
+    body:has(.home-page) .chat-interface {
       display: none !important;
     }
     
     /* Make main-layout transparent when home page is visible */
-    body:has(.home-page.active) #main-layout {
+    body:has(.home-page) #main-layout {
       background: transparent;
     }
     
@@ -1042,8 +1040,10 @@
       background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%) !important;
       display: none !important;
       flex-direction: column;
-      z-index: 99999 !important;
+      z-index: 10000 !important;
       overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
       visibility: hidden !important;
@@ -1060,6 +1060,7 @@
       visibility: visible !important;
       opacity: 1 !important;
       pointer-events: auto !important;
+      transform: translateX(0) !important;
     }
     
     /* Ensure all child sections within tour detail are transparent unless styled */
@@ -1543,7 +1544,7 @@
       }
     }
     
-    /* Hide all old layout when tour detail is open */
+    /* Hide only old layout elements when tour detail is open (keep home page underneath) */
     body:has(.tour-detail-page.active) #weather-widget,
     body:has(.tour-detail-page.active) #main-layout,
     body:has(.tour-detail-page.active) #content-area,
@@ -1551,7 +1552,6 @@
     body:has(.tour-detail-page.active) .top-button-bar,
     body:has(.tour-detail-page.active) #tour-placeholder-row,
     body:has(.tour-detail-page.active) #map-container,
-    body:has(.tour-detail-page.active) .home-page,
     body:has(.tour-detail-page.active) .tour-list-page {
       display: none !important;
       visibility: hidden !important;
@@ -4607,7 +4607,7 @@
     </div>
     
     <!-- Home Page - Modern Kiosk Layout -->
-    <div class="page home-page active">
+    <div class="page home-page" style="display: flex !important;">
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
@@ -5676,12 +5676,11 @@
     function showMapFromHome() {
       console.log('🗺️ Switching to map view...');
       
-      // Hide new home page
+      // Temporarily hide home page to show old layout
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.classList.remove('active');
-        homePage.style.display = 'none !important';
-        console.log('✅ Home page hidden for map view');
+        homePage.style.zIndex = '-1';
+        console.log('✅ Home page moved to background');
       }
       
       // Show old layout elements
@@ -5695,6 +5694,7 @@
       
       if (mainLayout) {
         mainLayout.style.display = 'flex';
+        mainLayout.style.zIndex = '100';
         console.log('✅ Main layout shown');
       }
       if (filterPanel) {
@@ -6323,7 +6323,9 @@
       const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage) {
         tourDetailPage.classList.remove('active');
-        tourDetailPage.style.display = 'none !important';
+        setTimeout(() => {
+          tourDetailPage.style.display = 'none';
+        }, 300);
       }
       
       // Hide tour list page
@@ -6332,19 +6334,21 @@
         tourListPage.style.display = 'none';
       }
       
-      // Hide old layout elements
+      // Hide old layout elements and bring home page to front
       const mainLayout = document.getElementById('main-layout');
       const filterPanel = document.getElementById('filter-panel');
       const mapContainer = document.getElementById('map-container');
-      if (mainLayout) mainLayout.style.display = 'none';
+      if (mainLayout) {
+        mainLayout.style.display = 'none';
+        mainLayout.style.zIndex = '';
+      }
       if (filterPanel) filterPanel.style.display = 'none';
       if (mapContainer) mapContainer.style.display = 'none';
       
-      // Show home page
+      // Bring home page to front
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.style.display = 'flex !important';
-        homePage.classList.add('active');
+        homePage.style.zIndex = '1';
       }
       
       // Reset featured tours to initial state
@@ -7534,27 +7538,18 @@
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
           
-          // Hide home page first
-          console.log('👋 Hiding home page...');
-          const homePage = document.querySelector('.home-page');
-          if (homePage) {
-            homePage.classList.remove('active');
-            homePage.style.display = 'none !important';
-            console.log('✅ Home page hidden');
-          } else {
-            console.log('⚠️ Home page not found');
-          }
-          
-          // Show the NEW modern tour detail page
+          // Show the NEW modern tour detail page (it will overlay on top)
           console.log('🎬 Showing tour detail page...');
           const tourDetailPage = document.querySelector('.page.tour-detail-page');
           console.log('📍 Tour detail page element:', tourDetailPage);
           if (tourDetailPage) {
-            tourDetailPage.style.display = 'flex !important';
-            tourDetailPage.classList.add('active');
+            tourDetailPage.style.display = 'flex';
+            // Use setTimeout to ensure display change happens before transform
+            setTimeout(() => {
+              tourDetailPage.classList.add('active');
+            }, 10);
             tourDetailPage.setAttribute('data-current-tour-key', key);
             console.log('✅ Tour detail page shown with classes:', tourDetailPage.className);
-            console.log('✅ Tour detail page display style:', tourDetailPage.style.display);
           } else {
             console.log('❌ ERROR: Tour detail page element not found!');
           }
@@ -7667,7 +7662,10 @@
       const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage) {
         tourDetailPage.classList.remove('active');
-        tourDetailPage.style.display = 'none !important';
+        // Wait for slide animation to complete before hiding
+        setTimeout(() => {
+          tourDetailPage.style.display = 'none';
+        }, 300);
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
@@ -7691,14 +7689,8 @@
             if (map) map.invalidateSize();
           }, 100);
         }
-      } else {
-        // Return to home page
-        const homePage = document.querySelector('.home-page');
-        if (homePage) {
-          homePage.style.display = 'flex !important';
-          homePage.classList.add('active');
-        }
       }
+      // Home page is already visible underneath, no need to show it
     };
     
     // Booking Modal Functions
