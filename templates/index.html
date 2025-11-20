@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
-  <meta name="viewport" content="width=1920, initial-scale=0.35, minimum-scale=0.2, maximum-scale=3.0, user-scalable=yes">
+  <meta name="viewport" content="width=1080, initial-scale=1.0, minimum-scale=0.5, maximum-scale=3.0, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS and JS for maps -->
@@ -5670,13 +5670,14 @@
     
     // Show map view from home page
     function showMapFromHome() {
-      console.log('Switching to map view...');
+      console.log('🗺️ Switching to map view...');
       
       // Hide new home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
         homePage.classList.remove('active');
         homePage.style.display = 'none !important';
+        console.log('✅ Home page hidden for map view');
       }
       
       // Show old layout elements
@@ -5684,16 +5685,31 @@
       const filterPanel = document.getElementById('filter-panel');
       const contentArea = document.getElementById('content-area');
       
-      if (mainLayout) mainLayout.style.display = 'flex';
-      if (filterPanel) filterPanel.style.display = 'block';
-      if (contentArea) contentArea.style.display = 'block';
+      console.log('📍 Main layout:', mainLayout);
+      console.log('📍 Filter panel:', filterPanel);
+      console.log('📍 Content area:', contentArea);
+      
+      if (mainLayout) {
+        mainLayout.style.display = 'flex';
+        console.log('✅ Main layout shown');
+      }
+      if (filterPanel) {
+        filterPanel.style.display = 'block';
+        console.log('✅ Filter panel shown');
+      }
+      if (contentArea) {
+        contentArea.style.display = 'block';
+        console.log('✅ Content area shown');
+      }
       
       // Apply current filters to show tours in the old UI
+      console.log('🔄 Applying filters...');
       applyFilters();
       
       // Enable map view after a brief delay
       setTimeout(() => {
         if (!isMapView) {
+          console.log('🗺️ Toggling map view...');
           toggleMapView();
         }
       }, 200);
@@ -7036,6 +7052,8 @@
     
     // Tour detail logic
     function openTourDetail(key) {
+      console.log('🎯 openTourDetail called with key:', key);
+      
       // Remember if we were in map view
       wasInMapView = isMapView;
       
@@ -7048,6 +7066,7 @@
       // Reset selected pricing tier when opening a new tour
       selectedPricingTier = null;
       
+      console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
         .then(res => res.json())
         .then(data => {
@@ -7512,21 +7531,32 @@
           reorganizeDetailPageContent(data, key);
           
           // Hide home page first
+          console.log('👋 Hiding home page...');
           const homePage = document.querySelector('.home-page');
           if (homePage) {
             homePage.classList.remove('active');
             homePage.style.display = 'none !important';
+            console.log('✅ Home page hidden');
+          } else {
+            console.log('⚠️ Home page not found');
           }
           
           // Show the NEW modern tour detail page
+          console.log('🎬 Showing tour detail page...');
           const tourDetailPage = document.querySelector('.page.tour-detail-page');
+          console.log('📍 Tour detail page element:', tourDetailPage);
           if (tourDetailPage) {
             tourDetailPage.style.display = 'flex !important';
             tourDetailPage.classList.add('active');
             tourDetailPage.setAttribute('data-current-tour-key', key);
+            console.log('✅ Tour detail page shown with classes:', tourDetailPage.className);
+            console.log('✅ Tour detail page display style:', tourDetailPage.style.display);
+          } else {
+            console.log('❌ ERROR: Tour detail page element not found!');
           }
           document.body.style.overflow = 'hidden';
           document.body.classList.add('tour-detail-open');
+          console.log('✅ Body classes:', document.body.className);
           
           // Add click handler to company name to filter by company
           const companyClickElement = document.getElementById('detail-company');
