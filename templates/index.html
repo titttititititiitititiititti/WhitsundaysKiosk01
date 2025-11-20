@@ -4614,8 +4614,28 @@
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       </div>
         <div class="header-right">
-          <button class="chip" id="header-language-btn" onclick="toggleLanguageMenu()">EN</button>
-          <button class="chip" id="header-currency-btn" onclick="toggleCurrencyMenu()">AUD</button>
+          <div class="language-selector" style="position: relative; display: inline-block;">
+            <button class="chip" id="header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
+            <div class="language-menu" id="home-language-menu" style="position: absolute; top: 100%; right: 0; margin-top: 10px;">
+              <div class="language-option" data-lang="en" onclick="selectHomeLanguage('en')"><span>🇬🇧</span> English</div>
+              <div class="language-option" data-lang="zh" onclick="selectHomeLanguage('zh')"><span>🇨🇳</span> 中文</div>
+              <div class="language-option" data-lang="ja" onclick="selectHomeLanguage('ja')"><span>🇯🇵</span> 日本語</div>
+              <div class="language-option" data-lang="ko" onclick="selectHomeLanguage('ko')"><span>🇰🇷</span> 한국어</div>
+              <div class="language-option" data-lang="de" onclick="selectHomeLanguage('de')"><span>🇩🇪</span> Deutsch</div>
+              <div class="language-option" data-lang="fr" onclick="selectHomeLanguage('fr')"><span>🇫🇷</span> Français</div>
+            </div>
+          </div>
+          <div class="currency-selector" style="position: relative; display: inline-block;">
+            <button class="chip" id="header-currency-btn" onclick="toggleHomeCurrencyMenu(event)">AUD</button>
+            <div class="currency-menu" id="home-currency-menu" style="position: absolute; top: 100%; right: 0; margin-top: 10px;">
+              <div class="currency-option" data-currency="AUD" onclick="selectHomeCurrency('AUD')"><span>A$</span> AUD</div>
+              <div class="currency-option" data-currency="USD" onclick="selectHomeCurrency('USD')"><span>$</span> USD</div>
+              <div class="currency-option" data-currency="EUR" onclick="selectHomeCurrency('EUR')"><span>€</span> EUR</div>
+              <div class="currency-option" data-currency="GBP" onclick="selectHomeCurrency('GBP')"><span>£</span> GBP</div>
+              <div class="currency-option" data-currency="CNY" onclick="selectHomeCurrency('CNY')"><span>¥</span> CNY</div>
+              <div class="currency-option" data-currency="JPY" onclick="selectHomeCurrency('JPY')"><span>¥</span> JPY</div>
+            </div>
+          </div>
           <button class="chip chip-outline" onclick="showMapFromHome()">Map view</button>
         </div>
       </header>
@@ -5676,11 +5696,11 @@
     function showMapFromHome() {
       console.log('🗺️ Switching to map view...');
       
-      // Temporarily hide home page to show old layout
+      // HIDE home page completely (override inline style)
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.style.zIndex = '-1';
-        console.log('✅ Home page moved to background');
+        homePage.style.display = 'none';
+        console.log('✅ Home page hidden');
       }
       
       // Show old layout elements
@@ -5694,7 +5714,6 @@
       
       if (mainLayout) {
         mainLayout.style.display = 'flex';
-        mainLayout.style.zIndex = '100';
         console.log('✅ Main layout shown');
       }
       if (filterPanel) {
@@ -8291,6 +8310,34 @@
       return key; // Return key if no translation found
     }
     
+    // Home page language menu
+    function toggleHomeLanguageMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('home-language-menu');
+      menu.classList.toggle('active');
+      
+      if (menu.classList.contains('active')) {
+        setTimeout(() => {
+          document.addEventListener('click', closeHomeLanguageMenuOutside);
+        }, 100);
+      }
+    }
+    
+    function closeHomeLanguageMenuOutside(e) {
+      const menu = document.getElementById('home-language-menu');
+      const selector = menu.closest('.language-selector');
+      
+      if (selector && !selector.contains(e.target)) {
+        menu.classList.remove('active');
+        document.removeEventListener('click', closeHomeLanguageMenuOutside);
+      }
+    }
+    
+    function selectHomeLanguage(lang) {
+      switchLanguage(lang);
+      document.getElementById('home-language-menu').classList.remove('active');
+    }
+    
     // Toggle language menu
     function toggleLanguageMenu() {
       const menu = document.getElementById('language-menu');
@@ -8655,6 +8702,34 @@
       if (currencyBtn) {
         currencyBtn.textContent = currentCurrency;
       }
+    }
+    
+    // Home page currency menu
+    function toggleHomeCurrencyMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('home-currency-menu');
+      menu.classList.toggle('active');
+      
+      if (menu.classList.contains('active')) {
+        setTimeout(() => {
+          document.addEventListener('click', closeHomeCurrencyMenuOutside);
+        }, 100);
+      }
+    }
+    
+    function closeHomeCurrencyMenuOutside(e) {
+      const menu = document.getElementById('home-currency-menu');
+      const selector = menu.closest('.currency-selector');
+      
+      if (selector && !selector.contains(e.target)) {
+        menu.classList.remove('active');
+        document.removeEventListener('click', closeHomeCurrencyMenuOutside);
+      }
+    }
+    
+    function selectHomeCurrency(curr) {
+      switchCurrency(curr);
+      document.getElementById('home-currency-menu').classList.remove('active');
     }
     
     function toggleCurrencyMenu() {
