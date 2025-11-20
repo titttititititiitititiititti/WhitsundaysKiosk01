@@ -874,22 +874,22 @@
       50% { opacity: 1; }
     }
     
-    /* Hide old elements when using new home layout */
-    body:has(.home-page) #weather-widget,
-    body:has(.home-page) #content-area,
-    body:has(.home-page) #filter-panel,
-    body:has(.home-page) .top-button-bar {
+    /* Hide old elements when using new home layout (but not when in map view) */
+    body:has(.home-page):not(.map-view-active) #weather-widget,
+    body:has(.home-page):not(.map-view-active) #content-area,
+    body:has(.home-page):not(.map-view-active) #filter-panel,
+    body:has(.home-page):not(.map-view-active) .top-button-bar {
       display: none !important;
     }
     
     /* Also hide mobile menu and chat interface when home page is visible */
-    body:has(.home-page) .mobile-menu-btn,
-    body:has(.home-page) .chat-interface {
+    body:has(.home-page):not(.map-view-active) .mobile-menu-btn,
+    body:has(.home-page):not(.map-view-active) .chat-interface {
       display: none !important;
     }
     
     /* Make main-layout transparent when home page is visible */
-    body:has(.home-page) #main-layout {
+    body:has(.home-page):not(.map-view-active) #main-layout {
       background: transparent;
     }
     
@@ -5696,6 +5696,9 @@
     function showMapFromHome() {
       console.log('🗺️ Switching to map view...');
       
+      // Add map-view-active class to body to override CSS hiding rules
+      document.body.classList.add('map-view-active');
+      
       // HIDE home page completely (override inline style)
       const homePage = document.querySelector('.home-page');
       if (homePage) {
@@ -6355,6 +6358,9 @@
       // Clear all filters
       activeFilters = {};
       
+      // Remove map view class
+      document.body.classList.remove('map-view-active');
+      
       // Clear selected states
       document.querySelectorAll('.duration-pill').forEach(p => p.classList.remove('selected'));
       
@@ -6376,21 +6382,20 @@
         tourListPage.style.display = 'none';
       }
       
-      // Hide old layout elements and bring home page to front
+      // Hide old layout elements
       const mainLayout = document.getElementById('main-layout');
       const filterPanel = document.getElementById('filter-panel');
       const mapContainer = document.getElementById('map-container');
-      if (mainLayout) {
-        mainLayout.style.display = 'none';
-        mainLayout.style.zIndex = '';
-      }
+      const contentArea = document.getElementById('content-area');
+      if (mainLayout) mainLayout.style.display = 'none';
       if (filterPanel) filterPanel.style.display = 'none';
       if (mapContainer) mapContainer.style.display = 'none';
+      if (contentArea) contentArea.style.display = 'none';
       
-      // Bring home page to front
+      // Show home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
-        homePage.style.zIndex = '1';
+        homePage.style.display = 'flex';
       }
       
       // Reset featured tours to initial state
