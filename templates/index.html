@@ -1038,29 +1038,27 @@
       width: 100% !important;
       height: 100% !important;
       background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%) !important;
-      display: none !important;
+      display: none;
       flex-direction: column;
       z-index: 10000 !important;
       overflow-y: auto;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
-      visibility: hidden !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
     }
     
     .page.tour-detail-page::-webkit-scrollbar {
       display: none; /* Chrome, Safari, Opera */
     }
     
-    .tour-detail-page.active {
+    .page.tour-detail-page.active {
       display: flex !important;
       visibility: visible !important;
       opacity: 1 !important;
       pointer-events: auto !important;
-      transform: translateX(0) !important;
+      z-index: 999999 !important;
     }
     
     /* Ensure all child sections within tour detail are transparent unless styled */
@@ -1544,7 +1542,8 @@
       }
     }
     
-    /* Hide only old layout elements when tour detail is open (keep home page underneath) */
+    /* Hide ALL other pages when tour detail is open */
+    body:has(.tour-detail-page.active) .page.home-page,
     body:has(.tour-detail-page.active) #weather-widget,
     body:has(.tour-detail-page.active) #main-layout,
     body:has(.tour-detail-page.active) #content-area,
@@ -5007,7 +5006,7 @@
   </div>
   -->
   <!-- Tour Detail Page - Modern Kiosk Layout -->
-  <div class="page tour-detail-page" id="tour-detail-page">
+  <div class="page tour-detail-page">
     <!-- Kiosk Header -->
     <header class="kiosk-header">
       <button class="back-button" id="back-arrow">←</button>
@@ -6325,6 +6324,9 @@
         tourDetailPage.classList.remove('active');
         setTimeout(() => {
           tourDetailPage.style.display = 'none';
+          tourDetailPage.style.visibility = 'hidden';
+          tourDetailPage.style.opacity = '0';
+          tourDetailPage.style.pointerEvents = 'none';
         }, 300);
       }
       
@@ -7542,20 +7544,54 @@
           console.log('🎬 Showing tour detail page...');
           const tourDetailPage = document.querySelector('.page.tour-detail-page');
           console.log('📍 Tour detail page element:', tourDetailPage);
+          
           if (tourDetailPage) {
+            // Set display and visibility
             tourDetailPage.style.display = 'flex';
+            tourDetailPage.style.visibility = 'visible';
+            tourDetailPage.style.opacity = '1';
+            tourDetailPage.style.pointerEvents = 'auto';
+            tourDetailPage.style.zIndex = '999999';
+            tourDetailPage.style.backgroundColor = 'red'; // DEBUG: make it red
+            
             // Use setTimeout to ensure display change happens before transform
             setTimeout(() => {
-              tourDetailPage.classList.add('active');
-            }, 10);
-            tourDetailPage.setAttribute('data-current-tour-key', key);
-            console.log('✅ Tour detail page shown with classes:', tourDetailPage.className);
+          tourDetailPage.classList.add('active');
+              console.log('✅ Active class added');
+              
+              // Debug: Check computed styles
+              const computed = window.getComputedStyle(tourDetailPage);
+              console.log('🔍 COMPUTED STYLES:');
+              console.log('  - display:', computed.display);
+              console.log('  - visibility:', computed.visibility);
+              console.log('  - opacity:', computed.opacity);
+              console.log('  - z-index:', computed.zIndex);
+              console.log('  - position:', computed.position);
+              console.log('  - width:', computed.width);
+              console.log('  - height:', computed.height);
+              console.log('  - background:', computed.backgroundColor);
+              console.log('  - top:', computed.top);
+              console.log('  - left:', computed.left);
+              
+              // Check if home page is still visible
+              const homePage = document.querySelector('.page.home-page');
+              if (homePage) {
+                const homeComputed = window.getComputedStyle(homePage);
+                console.log('🏠 HOME PAGE STYLES:');
+                console.log('  - display:', homeComputed.display);
+                console.log('  - z-index:', homeComputed.zIndex);
+              }
+            }, 50);
+            
+          tourDetailPage.setAttribute('data-current-tour-key', key);
+            console.log('✅ Tour detail page styles set - display:', tourDetailPage.style.display);
+            console.log('✅ Tour detail page visibility:', tourDetailPage.style.visibility);
           } else {
             console.log('❌ ERROR: Tour detail page element not found!');
           }
           document.body.style.overflow = 'hidden';
           document.body.classList.add('tour-detail-open');
-          console.log('✅ Body classes:', document.body.className);
+          console.log('✅ Body overflow hidden');
           
           // Add click handler to company name to filter by company
           const companyClickElement = document.getElementById('detail-company');
@@ -7581,6 +7617,12 @@
       const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage) {
         tourDetailPage.classList.remove('active');
+        setTimeout(() => {
+          tourDetailPage.style.display = 'none';
+          tourDetailPage.style.visibility = 'hidden';
+          tourDetailPage.style.opacity = '0';
+          tourDetailPage.style.pointerEvents = 'none';
+        }, 300);
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
@@ -7659,12 +7701,17 @@
     }
     
     document.getElementById('back-arrow').onclick = function() {
+      console.log('⬅️ Back button clicked');
       const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage) {
         tourDetailPage.classList.remove('active');
         // Wait for slide animation to complete before hiding
         setTimeout(() => {
           tourDetailPage.style.display = 'none';
+          tourDetailPage.style.visibility = 'hidden';
+          tourDetailPage.style.opacity = '0';
+          tourDetailPage.style.pointerEvents = 'none';
+          console.log('✅ Tour detail page hidden');
         }, 300);
       }
       document.body.style.overflow = '';
