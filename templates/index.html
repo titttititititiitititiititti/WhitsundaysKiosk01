@@ -879,8 +879,9 @@
       display: none !important;
     }
     
-    /* Also hide mobile menu when home page is visible */
-    body:has(.home-page) .mobile-menu-btn {
+    /* Also hide mobile menu and chat interface when home page is visible */
+    body:has(.home-page) .mobile-menu-btn,
+    body:has(.home-page) .chat-interface {
       display: none !important;
     }
     
@@ -7485,9 +7486,12 @@
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
           
-          const tourDetailPage = document.getElementById('tour-detail-page');
-          tourDetailPage.classList.add('active');
-          tourDetailPage.setAttribute('data-current-tour-key', key);
+          // Show the NEW modern tour detail page
+          const tourDetailPage = document.querySelector('.page.tour-detail-page');
+          if (tourDetailPage) {
+            tourDetailPage.classList.add('active');
+            tourDetailPage.setAttribute('data-current-tour-key', key);
+          }
           document.body.style.overflow = 'hidden';
           document.body.classList.add('tour-detail-open');
           
@@ -7512,7 +7516,10 @@
       });
       
       // Close the detail page
-      document.getElementById('tour-detail-page').classList.remove('active');
+      const tourDetailPage = document.querySelector('.page.tour-detail-page');
+      if (tourDetailPage) {
+        tourDetailPage.classList.remove('active');
+      }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
       
@@ -7590,7 +7597,10 @@
     }
     
     document.getElementById('back-arrow').onclick = function() {
-      document.getElementById('tour-detail-page').classList.remove('active');
+      const tourDetailPage = document.querySelector('.page.tour-detail-page');
+      if (tourDetailPage) {
+        tourDetailPage.classList.remove('active');
+      }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
       
