@@ -893,6 +893,16 @@
       background: transparent;
     }
     
+    /* Restore main layout background when in map view */
+    body.map-view-active #main-layout {
+      background: linear-gradient(135deg, #006ba6 0%, #0077b6 50%, #00b4d8 100%) !important;
+    }
+    
+    body.map-view-active #filter-panel,
+    body.map-view-active #content-area {
+      display: block !important;
+    }
+    
     /* ===================================================================
        MODERN KIOSK LAYOUT - Tour List Page
        =================================================================== */
