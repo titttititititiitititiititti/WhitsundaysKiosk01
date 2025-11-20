@@ -438,11 +438,15 @@
     .page.home-page {
       min-height: 100vh;
       height: 100vh;
-      display: flex;
+      display: none;
       flex-direction: column;
       background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
       overflow-y: auto;
       overflow-x: hidden;
+    }
+    
+    .page.home-page.active {
+      display: flex !important;
     }
     
     /* Kiosk Header */
@@ -872,21 +876,21 @@
     }
     
     /* Hide old elements when using new home layout */
-    body:has(.home-page) #weather-widget,
-    body:has(.home-page) #content-area,
-    body:has(.home-page) #filter-panel,
-    body:has(.home-page) .top-button-bar {
+    body:has(.home-page.active) #weather-widget,
+    body:has(.home-page.active) #content-area,
+    body:has(.home-page.active) #filter-panel,
+    body:has(.home-page.active) .top-button-bar {
       display: none !important;
     }
     
     /* Also hide mobile menu and chat interface when home page is visible */
-    body:has(.home-page) .mobile-menu-btn,
-    body:has(.home-page) .chat-interface {
+    body:has(.home-page.active) .mobile-menu-btn,
+    body:has(.home-page.active) .chat-interface {
       display: none !important;
     }
     
     /* Make main-layout transparent when home page is visible */
-    body:has(.home-page) #main-layout {
+    body:has(.home-page.active) #main-layout {
       background: transparent;
     }
     
@@ -4603,7 +4607,7 @@
     </div>
     
     <!-- Home Page - Modern Kiosk Layout -->
-    <div class="page home-page" style="display: flex !important;">
+    <div class="page home-page active">
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
