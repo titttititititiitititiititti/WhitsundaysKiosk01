@@ -5704,60 +5704,33 @@
     
     // Show map view from home page
     function showMapFromHome() {
-      console.log('🗺️ Switching to map view...');
+      console.log('🗺️ Switching to map view from home...');
       
-      // Add map-view-active class to body to override CSS hiding rules
-      document.body.classList.add('map-view-active');
-      
-      // HIDE home page completely (override inline style)
+      // Hide home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
         homePage.style.display = 'none';
         console.log('✅ Home page hidden');
       }
       
-      // Show old layout elements with !important via setAttribute
-      const mainLayout = document.getElementById('main-layout');
-      const filterPanel = document.getElementById('filter-panel');
-      const contentArea = document.getElementById('content-area');
-      const tourPlaceholder = document.getElementById('tour-placeholder-row');
-      
-      console.log('📍 Main layout:', mainLayout);
-      console.log('📍 Filter panel:', filterPanel);
-      console.log('📍 Content area:', contentArea);
-      console.log('📍 Tour placeholder:', tourPlaceholder);
-      
-      if (mainLayout) {
-        mainLayout.style.setProperty('display', 'flex', 'important');
-        mainLayout.style.setProperty('visibility', 'visible', 'important');
-        console.log('✅ Main layout shown, display:', window.getComputedStyle(mainLayout).display);
-      }
-      if (filterPanel) {
-        filterPanel.style.setProperty('display', 'block', 'important');
-        filterPanel.style.setProperty('visibility', 'visible', 'important');
-        console.log('✅ Filter panel shown, display:', window.getComputedStyle(filterPanel).display);
-      }
-      if (contentArea) {
-        contentArea.style.setProperty('display', 'block', 'important');
-        contentArea.style.setProperty('visibility', 'visible', 'important');
-        console.log('✅ Content area shown, display:', window.getComputedStyle(contentArea).display);
-      }
-      if (tourPlaceholder) {
-        tourPlaceholder.style.setProperty('display', 'grid', 'important');
-        console.log('✅ Tour placeholder shown');
+      // Show tour list page
+      const tourListPage = document.getElementById('tour-list-page');
+      if (tourListPage) {
+        tourListPage.style.display = 'flex';
+        console.log('✅ Tour list page shown');
       }
       
-      // Apply current filters to show tours in the old UI
-      console.log('🔄 Applying filters...');
+      // Apply filters to load tours
+      console.log('🔄 Loading tours...');
       applyFilters();
       
-      // Enable map view after a brief delay
+      // Enable map view after a brief delay to allow tours to load
       setTimeout(() => {
         if (!isMapView) {
-          console.log('🗺️ Toggling map view...');
+          console.log('🗺️ Activating map view...');
           toggleMapView();
         }
-      }, 200);
+      }, 300);
     }
     
     // Track home page state
