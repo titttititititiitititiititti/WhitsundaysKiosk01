@@ -5716,26 +5716,35 @@
         console.log('✅ Home page hidden');
       }
       
-      // Show old layout elements
+      // Show old layout elements with !important via setAttribute
       const mainLayout = document.getElementById('main-layout');
       const filterPanel = document.getElementById('filter-panel');
       const contentArea = document.getElementById('content-area');
+      const tourPlaceholder = document.getElementById('tour-placeholder-row');
       
       console.log('📍 Main layout:', mainLayout);
       console.log('📍 Filter panel:', filterPanel);
       console.log('📍 Content area:', contentArea);
+      console.log('📍 Tour placeholder:', tourPlaceholder);
       
       if (mainLayout) {
-        mainLayout.style.display = 'flex';
-        console.log('✅ Main layout shown');
+        mainLayout.style.setProperty('display', 'flex', 'important');
+        mainLayout.style.setProperty('visibility', 'visible', 'important');
+        console.log('✅ Main layout shown, display:', window.getComputedStyle(mainLayout).display);
       }
       if (filterPanel) {
-        filterPanel.style.display = 'block';
-        console.log('✅ Filter panel shown');
+        filterPanel.style.setProperty('display', 'block', 'important');
+        filterPanel.style.setProperty('visibility', 'visible', 'important');
+        console.log('✅ Filter panel shown, display:', window.getComputedStyle(filterPanel).display);
       }
       if (contentArea) {
-        contentArea.style.display = 'block';
-        console.log('✅ Content area shown');
+        contentArea.style.setProperty('display', 'block', 'important');
+        contentArea.style.setProperty('visibility', 'visible', 'important');
+        console.log('✅ Content area shown, display:', window.getComputedStyle(contentArea).display);
+      }
+      if (tourPlaceholder) {
+        tourPlaceholder.style.setProperty('display', 'grid', 'important');
+        console.log('✅ Tour placeholder shown');
       }
       
       // Apply current filters to show tours in the old UI
