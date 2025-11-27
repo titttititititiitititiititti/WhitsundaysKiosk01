@@ -9736,6 +9736,7 @@
     }
     
     function selectLanguageFromDetail(langCode) {
+      console.log('🌍 Changing language from tour detail page to:', langCode);
       switchLanguage(langCode);
       const menu = document.getElementById('detail-language-menu');
       if (menu) menu.classList.remove('active');
@@ -9747,7 +9748,7 @@
       localStorage.setItem('preferred_language', langCode);
       
       // Check if we're on a tour detail page - if so, save the tour key to reopen it after reload
-      const tourDetailPage = document.getElementById('tour-detail-page');
+      const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // Find the current tour key from the detail page
         const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
@@ -9784,6 +9785,10 @@
       const mobileLangText = document.getElementById('mobile-menu-lang-text');
       if (mobileLangFlag) mobileLangFlag.textContent = lang.flag;
       if (mobileLangText) mobileLangText.textContent = lang.code.toUpperCase();
+      
+      // Update tour detail page language button
+      const detailLangBtn = document.getElementById('detail-language-btn');
+      if (detailLangBtn) detailLangBtn.textContent = lang.code.toUpperCase();
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
@@ -10128,9 +10133,15 @@
     }
     
     function selectCurrencyFromDetail(currency) {
-      selectCurrency(currency);
+      switchCurrency(currency);
       const menu = document.getElementById('detail-currency-menu');
       if (menu) menu.classList.remove('active');
+      
+      // Update the detail page currency button
+      const detailCurrencyBtn = document.getElementById('detail-currency-btn');
+      if (detailCurrencyBtn) {
+        detailCurrencyBtn.textContent = currency;
+      }
     }
     
     // =====================================================================
