@@ -2233,6 +2233,57 @@
         top: 0;
         z-index: 10001;
       }
+      
+      /* Tour detail page width and overflow fixes */
+      .tour-detail-main {
+        padding: 40px 40px 120px 40px !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      
+      /* Ensure all child elements respect width */
+      .tour-detail-page * {
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      
+      /* Ensure images don't overflow */
+      .tour-detail-page img {
+        max-width: 100% !important;
+        height: auto !important;
+      }
+      
+      /* Info cards - single column on mobile with floating appearance */
+      .info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 25px !important;
+        margin: 25px 0 !important;
+      }
+      
+      /* Maintain beautiful floating card design on mobile */
+      .info-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        padding: 35px 30px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+      }
+      
+      .info-card h3 {
+        font-size: 2em !important;
+        margin-bottom: 20px !important;
+      }
+      
+      .info-card ul {
+        gap: 12px !important;
+      }
+      
+      .info-card li {
+        font-size: 1.4em !important;
+        line-height: 1.6 !important;
+      }
     }
     
     /* Small phones - Scale down to 40% */
@@ -2243,7 +2294,17 @@
         -moz-transform: scale(0.4);
         -moz-transform-origin: 0 0;
       }
+      
+      /* Info cards - maintain single column and floating design */
+      .info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
       }
+      
+      .info-card {
+        padding: 30px 25px !important;
+      }
+    }
       
       .question-text {
         font-size: 1.8em;
