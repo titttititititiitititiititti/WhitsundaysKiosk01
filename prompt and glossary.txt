@@ -1,0 +1,185 @@
+[INIT-001] Project initialized. See changelog for details.
+in this project, my end goal is to have a working chatbot program that can answer and recommend questions about tours in the area i live in (Called "Airlie beach" or "the whitsundays") for now the first thing we need to do is build a big database that contains all of the information about as many tours as we can get, from there we will build a touch screen interface that can be used to communicate with the gpt and rag indexing so that we end up with a database that knows about all of the tours in the area that you can speak to. before we start  i want you to create a file called "prompt and glossary.txt" in this folder and keep this message inside of it so that every time we start a new session i can tell you to read this and you will understand and "remember" what the purpose of the project is. Every single change we make is to be logged in the changelog and each change should be labeled and locatable in the glossary, with every change we make you will tag the actual code with a brief description of the change and have it correlate to its position in the changelog so that if i tell you something like "we've already done this and now it's not working, find it in the changelog and fix it" you should be able to search for the tag in the changelog and find the actual code with ease. this prevents us from creating duplicate code and in turn saves you memory and saves me time. do you understand? 
+
+---
+
+# Glossary
+
+[INIT-001]: Project initialized. Created 'prompt and glossary.txt' with project purpose and workflow description.
+
+# (Add new tags and descriptions here as the project progresses)
+
+[INIT-001]: Project initialized. See changelog for details.
+in this project, my end goal is to have a working chatbot program that can answer and recommend questions about tours in the area i live in (Called "Airlie beach" or "the whitsundays") for now the first thing we need to do is build a big database that contains all of the information about as many tours as we can get, from there we will build a touch screen interface that can be used to communicate with the gpt and rag indexing so that we end up with a database that knows about all of the tours in the area that you can speak to. before we start  i want you to create a file called "prompt and glossary.txt" in this folder and keep this message inside of it so that every time we start a new session i can tell you to read this and you will understand and "remember" what the purpose of the project is. Every single change we make is to be logged in the changelog and each change should be labeled and locatable in the glossary, with every change we make you will tag the actual code with a brief description of the change and have it correlate to its position in the changelog so that if i tell you something like "we've already done this and now it's not working, find it in the changelog and fix it" you should be able to search for the tag in the changelog and find the actual code with ease. this prevents us from creating duplicate code and in turn saves you memory and saves me time. do you understand? 
+
+[SCRAPE-001]: Created 'scrape_tours.py' with initial structure for scraping tour data and saving to CSV.
+
+[SCRAPE-002]: Added custom parsing for oceanrafting.com.au homepage tours in 'scrape_tours.py'.
+
+[CHAT-001]: Created Flask backend (app.py) to serve chatbot UI, connect tours.csv to GPT-4o, and handle /chat endpoint.
+
+[CHAT-002]: Updated app.py to load environment variables from .env using python-dotenv for OpenAI API key.
+
+[SCRAPE-004]: Refactored 'scrape_tours.py' to output a company-specific CSV (e.g., tours_redcat.csv) for each scrape, skipping tours already present in that file (by id). Images are now saved in static/tour_images/<company>/<tour_name>/. Company is auto-detected from the URL. This enables modular, non-destructive database building for each operator.
+
+[SCRAPE-005]: Improved company name extraction in 'scrape_tours.py' to handle .com.au and similar domains, ensuring CSVs are named after the actual operator.
+
+[SCRAPE-006]: Overhauled tour link discovery in 'scrape_tours.py':
+- Uses a conservative exclusion list (EXCLUDE_LINK_KEYWORDS) that only checks the link (href), not the link text or page content.
+- Prints debug messages for excluded links and reasons.
+- Auto-approves links if either the URL or link text contains a tour-related keyword (TOUR_LINK_KEYWORDS).
+- Presents only remaining candidates for manual review, showing both link text and URL.
+- Only unique, valid links are considered.
+
+[SCRAPE-007]: Each company's tours are now saved to a separate CSV file (tours_<company_name>.csv) instead of a single combined file, for better organization and modularity.
+
+[UI-001]: Implemented a dynamic tour grid that loads tours from all *_with_media.csv files across multiple companies, assigns a unique key to each tour, and prevents duplicates on the frontend.
+[UI-002]: Added a 'Load More' button that fetches additional tours from the backend in batches, supporting paging and no repeats.
+[UI-003]: Backend now checks for thumbnail images with any common extension (.jpg, .jpeg, .png, etc.) and uses a placeholder if none found.
+
+[SCRAPE-008]: Enhanced extract_tour_info with robust rule-based extraction and AI fallback using OpenAI API for missing fields (hybrid extraction approach).
+[SCRAPE-008]: Improved junk filtering in the scraper: removed short, duplicate, and technical lines, and filtered out words with both numbers and letters. Added tour start/end markers to raw_text for clear chunking.
+[SCRAPE-009]: Ensured one row per tour in the CSV, joining all relevant content into a single field per tour.
+
+[POST-001]: Added robust AI post-processing: chunked by tour, extracted and cleaned JSON from AI responses, handled lists/nulls, and cleaned all output fields for user-facing clarity.
+
+[POST-002]: Removed raw_html from the final output CSV for a clean, production-ready file.
+
+[POST-003]: AI postprocessor now receives price information (price_adult, price_child, price_tiers) from the CSV and includes it in the prompt, ensuring the AI can extract and use price data even if not in raw_text.
+- Location: ai_postprocess_csv.py, lines 92-102
+
+[SCRAPE-010]: Implemented URL-based hash IDs (MD5) for stable tour identification across re-scrapes, ensuring image paths remain valid even when tour names change.
+- Location: scrape_tours.py, extract_tour_info function, line 211-212 (url_hash generation)
+- Benefit: Same URL = same ID = image paths don't break on re-scrape
+
+[SCRAPE-011]: Auto-run AI postprocessor after scraping: scrape_tours.py now automatically runs ai_postprocess_csv.py on each company CSV after scraping completes.
+- Location: scrape_tours.py, main() function, end of script (lines 466-481)
+- One command now does: scrape → save raw CSV → auto-clean with AI → save cleaned CSV
+
+[SCRAPE-012]: Phase 1 scraper upgrades for better data extraction:
+- Auto-Selenium Detection: Automatically uses browser automation when no price found in static HTML
+  - Location: scrape_tours.py, main() function, lines 516-522
+- JSON-LD Structured Data Extraction: Extracts clean data from schema.org metadata (name, description, price, duration)
+  - Location: scrape_tours.py, extract_json_ld_data function, lines 138-178
+- Duration & Time Pattern Matching: Regex patterns to extract tour duration and departure times
+  - Location: scrape_tours.py, extract_duration_and_times function, lines 180-216
+
+[SCRAPE-013]: Phase 2 scraper upgrades for targeted extraction:
+- CSS Selector Targeting: Targets specific HTML elements (span.price, .quick-details, etc.) before general text scraping
+  - Location: scrape_tours.py, extract_tour_info function, lines 217-244
+- Smart Adult/Child Price Parsing: Parses "AdultAges 15+A$159ChildAges 4 - 14A$149" format
+  - Location: scrape_tours.py, extract_tour_info function, lines 324-339
+- Multiple Fallback Layers: CSS selectors → JSON-LD → regex patterns → deep HTML scan
+  - Ensures maximum data extraction quality
+
+[UI-004]: Updated tour result boxes to sharp-corner, full-image style with bottom-left overlay for tour type and name.
+- Location: templates/index.html, CSS styles for .tour-card, .tour-image, .tour-overlay
+- Style: Removed rounded corners, full-bleed images, gradient overlay at bottom
+
+[EDIT-001]: Created edit_tours_csv.py: interactive terminal-based editor to review, edit, or delete tours in CSVs without re-scraping.
+- Features: Step through tours, edit any field, delete tours, auto-backup
+- Usage: python edit_tours_csv.py
+
+[CLEAN-001]: Created clean_cruisewhitsundays_csv.py: filters CSV to only valid tour links and keeps best-quality row per tour.
+- Features: Link validation, deduplication by scoring completeness, keeps best row per tour
+- Usage: python clean_cruisewhitsundays_csv.py
+
+[SCRAPE-014]: Fixed price extraction bug: disabled old regex that was picking up JavaScript code ("$,") instead of real prices.
+- Location: scrape_tours.py, lines 294-299 (commented out old regex)
+- Problem: Old regex found "$," in JavaScript before CSS selectors could find real prices
+- Solution: Disabled old simple regex, allowing CSS selector targeting to work correctly
+
+[UTIL-001]: Created merge_cleaned_to_media.py: automatically merges updated data from _cleaned.csv files into _with_media.csv files.
+- Preserves: image_url, image_urls (doesn't overwrite image paths)
+- Updates: All other fields (prices, duration, description, etc.)
+- Usage: python merge_cleaned_to_media.py (or automatically after scraping)
+
+[SCRAPE-015]: Auto-run merge script after AI postprocessing: scrape_tours.py now automatically runs merge_cleaned_to_media.py.
+- Location: scrape_tours.py, main() function, lines 678-693
+- Full workflow: Scrape → AI clean → Merge → Done!
+- One command does everything: python scrape_tours.py
+
+[SCRAPE-016]: Fixed critical price overwriting bug: prices extracted by extract_tour_info() are now used first, preventing them from being overwritten by extract_price_tiers().
+- Location: scrape_tours.py, main() function
+- Problem: Fallback price extraction was overwriting good prices from CSS selectors
+- Solution: Initialize price_adult/price_child from tour dict before running fallbacks
+
+[SCRAPE-017]: Reverted to AI postprocessor in automated pipeline: scrape_tours.py now calls ai_postprocess_csv.py directly with visible output.
+- Location: scrape_tours.py, main() function, lines 755-775
+- Replaces: fast_postprocess_csv.py (which only copied data without AI extraction)
+- Reason: AI processing is essential for extracting descriptions, highlights, and removing junk
+
+[SCRAPE-018]: Fixed all RedCat tour URLs: corrected Thundercat URL, fixed "Purrrfect" spelling (3 r's), corrected snorkel tour URL, added private charters.
+- Location: scrape_tours.py, TOUR_LINKS list
+- URLs corrected:
+  - /package/thundercat/ (was /all-inclusive-day-tour/)
+  - /package/the-purrrfect-3-days/ (was /the-purrfect-3-days/)
+  - /package/outer-reef-snorkeling-adventure/ (was /great-barrier-reef-snorkel-adventure/)
+  - Added: /package/private-charters/
+
+[UI-005]: Tour cards now display company name instead of activity_type: helps differentiate tours from different operators on main page.
+- Location: templates/index.html, tour card overlay
+- Changed: tour.activity_type → tour.company_name in both server-rendered and dynamically loaded cards
+
+[UI-006]: Redesigned tour detail buttons: "Book Now" and "More Info" buttons now appear side-by-side with equal width for better layout.
+- Location: templates/index.html, tour detail modal JavaScript (lines 690-697)
+- Style: Flexbox layout with gap, equal width (flex:1), larger padding and font size
+
+[UI-007]: Removed all rounded corners: changed all border-radius to 0 for sharp, modern design (except circular elements like arrows/indicators).
+- Location: templates/index.html, CSS styles
+- Changed: Filter interface, buttons, chat widget, input fields, modal content, carousel
+- Kept: 50% border-radius for circular elements (arrows, indicators)
+
+[UI-008]: Hidden chat widget: commented out Tour Chat Assistant widget and related JavaScript for cleaner interface (can be re-enabled later).
+- Location: templates/index.html
+- HTML: Lines 495-507 (chat widget markup)
+- JavaScript: Lines 601-637 (sendMessage function and chat logic)
+- Status: All preserved in comments for easy restoration
+
+[APP-001]: Added company display name mapping: tour cards now show "Red Cat Adventures" instead of "redcatadventures" for better readability.
+- Location: app.py, COMPANY_DISPLAY_NAMES dictionary (lines 21-30)
+- Applied in: load_all_tours function when populating tour_data['company_name']
+
+[APP-002]: Fixed broken image paths in galleries: added validation to filter out non-existent images, added placeholder.jpg fallback for missing thumbnails.
+- Location: app.py
+- find_thumbnail function: Returns "/static/placeholder.jpg" if no image found
+- tour_detail route: Filters image_urls by checking os.path.exists() before adding to gallery
+
+[APP-003]: Fixed company name display in tour detail modal: now shows formatted company names ("Red Cat Adventures") instead of raw CSV names ("redcatadventures").
+- Location: app.py, tour_detail route
+- Uses: COMPANY_DISPLAY_NAMES.get() to format company name in JSON response
+
+[APP-004]: Added smart image folder matching: find_thumbnail now uses keyword matching to find correct image folders even when folder names don't exactly match tour IDs.
+- Location: app.py, find_thumbnail function (lines 60-105)
+- Method: Extracts keywords from tour name, scores folders by matching keywords, uses best match (≥2 keywords)
+- Handles: Legacy folders with different naming conventions (e.g., multiple underscores)
+
+[APP-005]: Added display names for new tour companies: Airlie Beach Diving, Crocodile Safari, Explore Group, Explore Whitsundays, Ocean Dynamics, OzSail, Pioneer Adventures, ProSail.
+- Location: app.py, COMPANY_DISPLAY_NAMES dictionary (lines 30-37)
+- Provides: Human-readable names for all newly scraped companies
+
+[FIX-001]: Fixed ChromeDriver version mismatch in download_tour_media.py: now explicitly uses ChromeDriver 140 to match Chrome browser version.
+- Location: download_tour_media.py, main() function (lines 165-168)
+- Problem: Selenium was trying to use ChromeDriver 141 with Chrome 140
+- Solution: Hardcoded path to ChromeDriver 140 using Service()
+
+[FIX-002]: Fixed duration filter logic: improved parse_duration() to correctly categorize tours by checking multi-day first, then parsing hour ranges (≤4 hours = half day, >4 hours = full day).
+- Location: app.py, parse_duration function (lines 119-150)
+- Improvements:
+  - Check multi-day first (most specific): "overnight", "2 day", "3 day", "night"
+  - Check explicit "half day" or "half-day"
+  - Parse hour ranges with regex: "2-4 hours" → extract max hours → categorize
+  - Check "full day" before generic "day"
+  - Prevent "2 days" from matching as "full day"
+
+[FIX-003]: Fixed activity type filter logic: reordered parse_activity_type() to check most specific categories first (Whitehaven > Reef > Scenic/Adventure > Island Tours).
+- Location: app.py, parse_activity_type function (lines 170-199)
+- Order: Whitehaven (most specific) → Reef → Scenic/Adventure → Island Tours (most general)
+- Added keywords: "jet boat", "thundercat", "fast boat", "heli", "snorkeling", "snorkelling"
+- Prevents: Reef tours from being miscategorized as island tours due to "boat" or "sailing"
+
+[FIX-004]: Improved Great Barrier Reef filter accuracy: now requires BOTH reef-specific keywords AND water activity keywords to prevent false positives.
+- Location: app.py, parse_activity_type function (lines 179-186)
+- Logic: has_reef ("outer reef", "coral reef") OR (has_water_activity ("snorkel", "dive") AND "reef" in text)
+- Prevents: "Crocodile Safari" and similar non-reef tours from appearing in reef results
+- Ensures: Only genuine reef tours with snorkeling/diving activities are matched

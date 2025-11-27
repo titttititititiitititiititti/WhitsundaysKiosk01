@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ tour.name }} - Tour Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
+  
+  <!-- Open Graph meta tags for sharing -->
+  <meta property="og:title" content="{{ tour.name }}" />
+  <meta property="og:description" content="{{ tour.summary or tour.description[:200] }}" />
+  <meta property="og:image" content="{{ request.url_root.rstrip('/') }}{{ tour.thumbnail }}" />
+  <meta property="og:url" content="{{ tour_url }}" />
+  <meta property="og:type" content="website" />
+  
+  <!-- Twitter Card meta tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ tour.name }}" />
+  <meta name="twitter:description" content="{{ tour.summary or tour.description[:200] }}" />
+  <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}{{ tour.thumbnail }}" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', 'Roboto', 'Open Sans', Arial, sans-serif;
+      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .back-btn {
+      background: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #005fa3;
+      font-weight: 600;
+    }
+    
+    .back-btn:hover {
+      background: #f0f0f0;
+    }
+    
+    .tour-header {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+    
+    .tour-gallery {
+      width: 100%;
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .tour-info {
+      padding: 30px;
+    }
+    
+    .tour-title {
+      font-size: 2.5em;
+      color: #005fa3;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    
+    .tour-company {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .tour-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1em;
+    }
+    
+    .meta-icon {
+      font-size: 1.3em;
+    }
+    
+    .tour-summary {
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+    
+    .tour-description {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 30px;
+      line-height: 1.8;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background: #0077b6;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #005a8b;
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #0077b6;
+      border: 2px solid #0077b6;
+    }
+    
+    .btn-secondary:hover {
+      background: #f0f8ff;
+    }
+    
+    .share-section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+    
+    .share-title {
+      font-size: 1.5em;
+      color: #005fa3;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    
+    .share-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .qr-code-container {
+      text-align: center;
+      padding: 20px;
+      background: #f8f8f8;
+      border-radius: 8px;
+      display: none;
+    }
+    
+    .qr-code-container.active {
+      display: block;
+    }
+    
+    .qr-code-container img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    
+    .qr-code-text {
+      margin-top: 15px;
+      font-size: 1em;
+      color: #666;
+    }
+    
+    /* Minimal responsive - keep desktop layout */
+    @media (max-width: 1024px) {
+      .container {
+        padding: 18px;
+      }
+      
+      .tour-title {
+        font-size: 2.3em;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .tour-title {
+        font-size: 2em;
+      }
+      
+      .tour-gallery {
+        height: 350px;
+      }
+      
+      .tour-info {
+        padding: 25px;
+      }
+      
+      .tour-meta {
+        gap: 18px;
+      }
+      
+      /* Keep buttons side-by-side */
+      .action-buttons {
+        gap: 12px;
+      }
+      
+      .btn {
+        padding: 15px 28px;
+        font-size: 1.05em;
+      }
+      
+      .share-section {
+        padding: 25px;
+      }
+      
+      .share-title {
+        font-size: 1.4em;
+      }
+      
+      /* Keep share buttons horizontal */
+      .share-buttons {
+        gap: 8px;
+      }
+      
+      .share-btn {
+        padding: 11px 20px;
+        font-size: 0.95em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-btn">
+      <span>←</span>
+      <span>Back to Tours</span>
+    </a>
+    
+    <div class="tour-header">
+      <div class="tour-gallery" style="background-image: url('{{ tour.thumbnail }}');"></div>
+      
+      <div class="tour-info">
+        <h1 class="tour-title">{{ tour.name }}</h1>
+        <p class="tour-company">by {{ tour.company }}</p>
+        
+        <div class="tour-meta">
+          {% if tour.duration %}
+          <div class="meta-item">
+            <span class="meta-icon">⏱️</span>
+            <span>{{ tour.duration }}</span>
+          </div>
+          {% endif %}
+          
+          {% if tour.price_adult %}
+          <div class="meta-item">
+            <span class="meta-icon">💰</span>
+            <span>{{ tour.price_adult }}</span>
+          </div>
+          {% endif %}
+          
+          {% if tour.departure_location %}
+          <div class="meta-item">
+            <span class="meta-icon">📍</span>
+            <span>{{ tour.departure_location }}</span>
+          </div>
+          {% endif %}
+        </div>
+        
+        {% if tour.summary %}
+        <p class="tour-summary">{{ tour.summary }}</p>
+        {% endif %}
+        
+        {% if tour.description %}
+        <div class="tour-description">{{ tour.description | safe }}</div>
+        {% endif %}
+        
+        <div class="action-buttons">
+          {% if tour.link_booking %}
+          <a href="{{ tour.link_booking }}" target="_blank" class="btn btn-primary">Book Now</a>
+          {% endif %}
+          
+          {% if tour.link_more_info %}
+          <a href="{{ tour.link_more_info }}" target="_blank" class="btn btn-secondary">More Info</a>
+          {% endif %}
+          
+          <button onclick="toggleQRCode()" class="btn btn-secondary">📱 Continue on iPhone</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="share-section">
+      <h2 class="share-title">Share This Tour</h2>
+      
+      <div class="share-buttons">
+        <button onclick="copyLink()" class="share-btn" style="background: #4CAF50; color: white;">
+          <span>🔗</span>
+          <span>Copy Link</span>
+        </button>
+        
+        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25D366; color: white;">
+          <span>💬</span>
+          <span>WhatsApp</span>
+        </button>
+        
+        <button onclick="shareEmail()" class="share-btn" style="background: #EA4335; color: white;">
+          <span>✉️</span>
+          <span>Email</span>
+        </button>
+      </div>
+      
+      <div id="qr-code-container" class="qr-code-container">
+        <img id="qr-code-img" src="/api/generate-tour-qr/{{ tour.key }}?lang={{ current_language }}" alt="QR Code" />
+        <p class="qr-code-text">Scan with your phone to open this tour</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const tourUrl = "{{ tour_url }}";
+    const tourName = "{{ tour.name }}";
+    
+    function toggleQRCode() {
+      const container = document.getElementById('qr-code-container');
+      container.classList.toggle('active');
+    }
+    
+    function copyLink() {
+      navigator.clipboard.writeText(tourUrl).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        prompt('Copy this link:', tourUrl);
+      });
+    }
+    
+    function shareWhatsApp() {
+      const text = encodeURIComponent(`Check out this tour: ${tourName}\n${tourUrl}`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+    
+    function shareEmail() {
+      const subject = encodeURIComponent(`Check out this tour: ${tourName}`);
+      const body = encodeURIComponent(`I thought you might be interested in this tour:\n\n${tourName}\n${tourUrl}`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }
+    
+    // Web Share API support (mobile)
+    if (navigator.share) {
+      const nativeShareBtn = document.createElement('button');
+      nativeShareBtn.className = 'share-btn';
+      nativeShareBtn.style.background = '#0077b6';
+      nativeShareBtn.style.color = 'white';
+      nativeShareBtn.innerHTML = '<span>📤</span><span>Share</span>';
+      nativeShareBtn.onclick = async () => {
+        try {
+          await navigator.share({
+            title: tourName,
+            text: `Check out this tour: ${tourName}`,
+            url: tourUrl
+          });
+        } catch (err) {
+          console.log('Share cancelled or failed');
+        }
+      };
+      document.querySelector('.share-buttons').appendChild(nativeShareBtn);
+    }
+  </script>
+</body>
+</html>
+

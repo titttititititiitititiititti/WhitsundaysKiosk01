@@ -1,0 +1,73 @@
+📱 QR CODE TRANSFER - QUICK START
+================================
+
+🎉 WHAT YOU GOT:
+- Users can send AI tour recommendations to their phone
+- QR code generation + mobile-optimized page
+- Optional email delivery
+- Link sharing functionality
+
+⚡ QUICK SETUP (3 steps):
+
+1. Install QR Code Library:
+   pip install qrcode
+
+2. Restart Your Flask App:
+   python app.py
+
+3. Test It:
+   - Chat with AI at kiosk
+   - Get tour recommendations
+   - Click "📱 Send to My Phone" button
+   - Scan QR code with your phone!
+
+✅ FILES CREATED/MODIFIED:
+   ✅ app.py - Added 3 new routes
+   ✅ templates/recommendations.html - Mobile page (NEW)
+   ✅ templates/error.html - Error page (NEW)
+   ✅ templates/index.html - QR button integrated
+   ✅ requirements.txt - Added qrcode library
+   ✅ QR_CODE_TRANSFER_SETUP.md - Full documentation
+
+📱 HOW IT WORKS:
+   User chats with AI
+   → AI recommends tours
+   → "Send to My Phone" button appears
+   → Click → QR code pops up
+   → Scan with phone
+   → Beautiful mobile page with all recommendations
+   → Optional: Email to self or share with friends
+
+🎯 FEATURES:
+   ✅ Instant QR code generation
+   ✅ Mobile-optimized recommendations page
+   ✅ Preference summary displayed
+   ✅ Chat context preserved
+   ✅ Share button (native share)
+   ✅ Copy link functionality
+   ✅ Email delivery (optional)
+   ✅ Responsive design
+   ✅ No signup required
+
+🔧 OPTIONAL: Email Setup
+   Add to your .env file:
+   SENDGRID_API_KEY=your_key_here
+   SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+
+   (Without this, QR codes still work - email button just won't work)
+
+📖 FULL DOCS:
+   See QR_CODE_TRANSFER_SETUP.md for:
+   - Detailed setup instructions
+   - Customization options
+   - Database upgrade guide
+   - Security considerations
+   - Troubleshooting
+   - Analytics tracking
+
+🚀 READY TO USE!
+   Just install qrcode and restart Flask.
+   The feature will automatically appear when AI recommends tours!
+
+Questions? Check QR_CODE_TRANSFER_SETUP.md
+

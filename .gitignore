@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment variables
+.env
+.env.local
+
+# Debug files
+debug_*.html
+debug_*.txt
+*.log
+
+# Temporary files
+discovered_links.txt
+selenium_debug.html
+missing_price_*.html
+
+# Tour data (optional - uncomment if you want to keep this private)
+# tour_reviews/
+# tours_*.csv
+# static/tour_media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Leads data
+leads_log.csv
+

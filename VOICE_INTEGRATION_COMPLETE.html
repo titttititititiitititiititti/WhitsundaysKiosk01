@@ -1,0 +1,490 @@
+<!-- 
+================================================================
+VOICE CHAT INTEGRATION - Complete Copy-Paste Solution
+================================================================
+This file contains everything you need to add voice capabilities
+to your AI assistant. Follow the 3 steps below.
+================================================================
+-->
+
+<!-- 
+================================================================
+STEP 1: Add this RIGHT BEFORE the closing </head> tag
+================================================================
+-->
+
+<!-- Voice Chat Script -->
+<script src="{{ url_for('static', filename='voice-chat.js') }}"></script>
+
+<style>
+/* Voice Controls Styling */
+.voice-controls {
+  padding: 16px 20px;
+  border-top: 2px solid #e0e0e0;
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.mic-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.mic-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.mic-button:active {
+  transform: translateY(0);
+}
+
+.mic-button.listening {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  animation: pulse-button 1.5s ease-in-out infinite;
+}
+
+.mic-button.speaking {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  animation: glow-button 2s ease-in-out infinite;
+}
+
+@keyframes pulse-button {
+  0%, 100% { 
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 4px 30px rgba(245, 87, 108, 0.6);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes glow-button {
+  0%, 100% { 
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  }
+  50% { 
+    box-shadow: 0 4px 30px rgba(79, 172, 254, 0.6);
+  }
+}
+
+.mic-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.mic-text {
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.voice-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 2px solid #f5576c;
+}
+
+.voice-indicator {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #f5576c;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.pulse::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #f5576c;
+  animation: pulse-ring 1.5s ease-out infinite 0.3s;
+}
+
+.status-text {
+  font-weight: 700;
+  color: #f5576c;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+.voice-status.speaking {
+  border-color: #00f2fe;
+}
+
+.voice-status.speaking .pulse {
+  background: #00f2fe;
+}
+
+.voice-status.speaking .pulse::before {
+  background: #00f2fe;
+}
+
+.voice-status.speaking .status-text {
+  color: #00a8b5;
+}
+
+.interim-text {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auto-speak-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.auto-speak-toggle:hover {
+  color: #333;
+}
+
+.auto-speak-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.voice-divider {
+  text-align: center;
+  margin: 16px 0 12px 0;
+  position: relative;
+  color: #999;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.voice-divider::before,
+.voice-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.voice-divider::before {
+  left: 0;
+}
+
+.voice-divider::after {
+  right: 0;
+}
+
+/* Disabled state for mic button */
+.mic-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mic-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .voice-controls {
+    padding: 14px 16px;
+  }
+  
+  .mic-button {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  
+  .mic-text {
+    font-size: 14px;
+  }
+}
+</style>
+
+<!-- 
+================================================================
+STEP 2: Add this HTML RIGHT AFTER the chat-input-container div
+(Around line 2224 in your index.html - right after </div> for chat-input-container)
+================================================================
+-->
+
+<!-- Voice Controls for Chat -->
+<div class="voice-controls">
+  <div class="voice-divider">OR</div>
+  
+  <button id="micButton" class="mic-button" title="Click to speak your question">
+    <svg class="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+    </svg>
+    <span class="mic-text">🎤 Tap to Speak</span>
+  </button>
+  
+  <div class="voice-status" id="voiceStatus" style="display: none;">
+    <div class="voice-indicator">
+      <div class="pulse"></div>
+    </div>
+    <span class="status-text">Listening...</span>
+  </div>
+  
+  <div class="interim-text" id="interimText" style="display: none;"></div>
+  
+  <label class="auto-speak-toggle">
+    <input type="checkbox" id="autoSpeakToggle" checked>
+    <span>🔊 Speak responses aloud</span>
+  </label>
+</div>
+
+<!-- 
+================================================================
+STEP 3: Add this JavaScript RIGHT BEFORE the closing </script> tag
+(At the end of your main JavaScript section, around line 4800+)
+================================================================
+-->
+
+<script>
+// =====================================================================
+// VOICE CHAT INTEGRATION
+// =====================================================================
+
+let voiceChat = null;
+
+function initVoiceChat() {
+  console.log('🎤 Initializing voice chat...');
+  
+  voiceChat = new VoiceChat();
+  
+  // Set current language
+  voiceChat.setLanguage(currentLanguage);
+  
+  // Handle final speech results
+  voiceChat.onSpeechResult = (transcript) => {
+    console.log('✅ Voice input received:', transcript);
+    
+    // Hide interim text
+    document.getElementById('interimText').style.display = 'none';
+    
+    // Send to chat (reuse existing sendChatMessage function)
+    if (transcript.trim()) {
+      const input = document.getElementById('chat-input');
+      input.value = transcript;
+      sendChatMessage();
+    }
+  };
+  
+  // Show interim transcription
+  voiceChat.showInterimText = (text) => {
+    const interimEl = document.getElementById('interimText');
+    interimEl.textContent = `"${text}"`;
+    interimEl.style.display = 'block';
+  };
+  
+  // Update UI based on voice state
+  voiceChat.updateUI = (state) => {
+    const micBtn = document.getElementById('micButton');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const statusText = voiceStatus.querySelector('.status-text');
+    
+    // Remove all state classes
+    micBtn.classList.remove('listening', 'speaking');
+    voiceStatus.classList.remove('speaking');
+    
+    switch(state) {
+      case 'listening':
+        micBtn.classList.add('listening');
+        micBtn.querySelector('.mic-text').innerHTML = '🎤 Listening...';
+        voiceStatus.style.display = 'flex';
+        statusText.textContent = 'Listening...';
+        statusText.style.color = '#f5576c';
+        break;
+        
+      case 'speaking':
+        micBtn.classList.add('speaking');
+        micBtn.querySelector('.mic-text').innerHTML = '🔊 Speaking...';
+        voiceStatus.style.display = 'flex';
+        voiceStatus.classList.add('speaking');
+        statusText.textContent = 'Speaking...';
+        statusText.style.color = '#00a8b5';
+        break;
+        
+      case 'error':
+        voiceStatus.style.display = 'none';
+        document.getElementById('interimText').style.display = 'none';
+        // Fall through to idle
+        
+      case 'idle':
+      default:
+        micBtn.querySelector('.mic-text').innerHTML = '🎤 Tap to Speak';
+        voiceStatus.style.display = 'none';
+        document.getElementById('interimText').style.display = 'none';
+        break;
+    }
+  };
+  
+  // Show voice errors in chat
+  voiceChat.showError = (message) => {
+    addChatMessage(`⚠️ ${message}`, 'assistant');
+  };
+  
+  // Wire up mic button
+  const micButton = document.getElementById('micButton');
+  if (micButton) {
+    micButton.addEventListener('click', () => {
+      if (!voiceChat.isListening) {
+        voiceChat.startListening();
+      } else {
+        voiceChat.stopListening();
+      }
+    });
+  }
+  
+  // Wire up auto-speak toggle
+  const autoSpeakToggle = document.getElementById('autoSpeakToggle');
+  if (autoSpeakToggle) {
+    autoSpeakToggle.addEventListener('change', (e) => {
+      voiceChat.setAutoSpeak(e.target.checked);
+      console.log(`🔊 Auto-speak ${e.target.checked ? 'enabled' : 'disabled'}`);
+    });
+  }
+  
+  console.log('✅ Voice chat initialized successfully!');
+}
+
+// Enhanced addChatMessage to include voice output
+const originalAddChatMessage = addChatMessage;
+addChatMessage = function(message, role) {
+  // Call original function
+  originalAddChatMessage(message, role);
+  
+  // If it's an AI message and auto-speak is enabled
+  if (role === 'assistant' && voiceChat && voiceChat.autoSpeak) {
+    // Wait a moment for UI to update, then speak
+    setTimeout(() => {
+      voiceChat.speak(message);
+    }, 400);
+  }
+};
+
+// Update voice language when UI language changes
+// Add this to your existing language change handler
+const originalSetLanguage = setLanguage; // If you have this function
+if (typeof originalSetLanguage === 'function') {
+  setLanguage = function(lang) {
+    originalSetLanguage(lang);
+    if (voiceChat) {
+      voiceChat.setLanguage(lang);
+      console.log(`🌐 Voice language updated to: ${lang}`);
+    }
+  };
+}
+
+// Initialize voice chat when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait for page to fully load
+  setTimeout(() => {
+    initVoiceChat();
+  }, 500);
+});
+
+console.log('📜 Voice chat integration script loaded');
+</script>
+
+<!-- 
+================================================================
+THAT'S IT! Voice chat is now integrated.
+================================================================
+
+TESTING:
+1. Reload your page
+2. Open the chat assistant
+3. Click "Tap to Speak" button
+4. Allow microphone access if prompted
+5. Speak your question
+6. AI will respond with both text AND voice
+
+TROUBLESHOOTING:
+- If mic doesn't work: Check browser permissions (click 🔒 in address bar)
+- If voice doesn't play: Check device volume and toggle "Speak responses aloud"
+- If language is wrong: Change kiosk language - voice updates automatically
+
+SUPPORTED BROWSERS:
+✅ Chrome / Edge (best support)
+✅ Safari (good support)
+❌ Firefox (limited Speech Recognition support)
+
+================================================================
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+

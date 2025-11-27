@@ -1,0 +1,64 @@
+================================================================================
+QUICK RE-TRANSLATION GUIDE
+================================================================================
+
+Your translation system now translates these ADDITIONAL fields:
+✅ Duration (e.g., "Full Day" → "終日")
+✅ Departure Location (e.g., "Port of Airlie" → translated)
+✅ Departure Times (e.g., "Departs morning and afternoon" → translated)
+✅ Price Options (e.g., "Adult: A$149" → "大人: A$149")
+✅ "Customer Reviews" UI label → translated in all languages
+
+================================================================================
+FOR YOUR MEETING TOMORROW - QUICK OPTION
+================================================================================
+
+Re-translate ONLY Cruise Whitsundays (2-3 minutes):
+
+python translate_tours.py --company cruisewhitsundays --force
+
+================================================================================
+FULL RE-TRANSLATION (If you have time - 15-30 mins)
+================================================================================
+
+Re-translate ALL companies to ALL languages:
+
+python translate_tours.py --all --force
+
+================================================================================
+SPECIFIC LANGUAGES ONLY (Faster)
+================================================================================
+
+Re-translate to only Chinese, Japanese, Korean:
+
+python translate_tours.py --all --languages zh ja ko --force
+
+================================================================================
+AFTER RE-TRANSLATING
+================================================================================
+
+1. Restart your Flask app (if running)
+2. Test by switching languages in the kiosk
+3. Check a tour detail page to see translated:
+   - Duration
+   - Departure Location
+   - Departure Times
+   - Price tiers
+   - "Customer Reviews" heading
+
+================================================================================
+READY TO GO! 🎉
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+

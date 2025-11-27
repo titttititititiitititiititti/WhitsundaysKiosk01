@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Chat Test - Tour Kiosk</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1em;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .transcript-area {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 150px;
+      margin-bottom: 25px;
+      border: 2px dashed #dee2e6;
+    }
+    
+    .transcript-area h3 {
+      color: #495057;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+    
+    .transcript {
+      color: #212529;
+      line-height: 1.6;
+      font-size: 1.1em;
+    }
+    
+    .transcript.empty {
+      color: #adb5bd;
+      font-style: italic;
+    }
+    
+    .mic-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 18px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+      margin-bottom: 20px;
+    }
+    
+    .mic-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+    }
+    
+    .mic-button:active {
+      transform: translateY(0);
+    }
+    
+    .mic-button.listening {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      animation: pulse-button 1.5s ease-in-out infinite;
+    }
+    
+    .mic-button.speaking {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    @keyframes pulse-button {
+      0%, 100% { 
+        box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4);
+      }
+      50% { 
+        box-shadow: 0 8px 40px rgba(245, 87, 108, 0.7);
+      }
+    }
+    
+    .mic-icon {
+      width: 28px;
+      height: 28px;
+    }
+    
+    .voice-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 20px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .pulse-indicator {
+      width: 20px;
+      height: 20px;
+      background: #ffc107;
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+    
+    .status-text {
+      font-weight: 600;
+      color: #856404;
+      font-size: 15px;
+    }
+    
+    .language-selector {
+      margin-bottom: 25px;
+    }
+    
+    .language-selector label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .language-selector select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background: white;
+      transition: border-color 0.2s;
+    }
+    
+    .language-selector select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .test-speak {
+      padding: 12px 24px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 10px;
+    }
+    
+    .test-speak:hover {
+      background: #005a8b;
+      transform: translateY(-2px);
+    }
+    
+    .clear-btn {
+      padding: 12px 24px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .clear-btn:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+    
+    .instructions {
+      background: #e7f3ff;
+      border-left: 4px solid #0077b6;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 25px;
+    }
+    
+    .instructions h3 {
+      color: #0077b6;
+      margin-bottom: 12px;
+    }
+    
+    .instructions ol {
+      margin-left: 20px;
+      color: #495057;
+      line-height: 1.8;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎤 Voice Chat Test</h1>
+      <p>Test speech-to-text and text-to-speech</p>
+    </div>
+    
+    <div class="content">
+      <!-- Language Selector -->
+      <div class="language-selector">
+        <label for="language">🌐 Select Language:</label>
+        <select id="language">
+          <option value="en">English</option>
+          <option value="zh">中文 (Chinese)</option>
+          <option value="ja">日本語 (Japanese)</option>
+          <option value="ko">한국어 (Korean)</option>
+          <option value="de">Deutsch (German)</option>
+          <option value="fr">Français (French)</option>
+          <option value="es">Español (Spanish)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+        </select>
+      </div>
+      
+      <!-- Transcript Area -->
+      <div class="transcript-area">
+        <h3>📝 What you said:</h3>
+        <div class="transcript empty" id="transcript">
+          Click the microphone button and start speaking...
+        </div>
+      </div>
+      
+      <!-- Voice Status -->
+      <div class="voice-status" id="voiceStatus" style="display: none;">
+        <div class="pulse-indicator"></div>
+        <span class="status-text">Listening...</span>
+      </div>
+      
+      <!-- Microphone Button -->
+      <button id="micButton" class="mic-button">
+        <svg class="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+          <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+        </svg>
+        <span id="micText">Click to Speak</span>
+      </button>
+      
+      <!-- Test Buttons -->
+      <div style="text-align: center; margin-bottom: 20px;">
+        <button class="test-speak" onclick="testSpeak()">🔊 Test Voice Output</button>
+        <button class="clear-btn" onclick="clearTranscript()">🗑️ Clear</button>
+      </div>
+      
+      <!-- Instructions -->
+      <div class="instructions">
+        <h3>📋 How to Test:</h3>
+        <ol>
+          <li>Select your language from the dropdown</li>
+          <li>Click "Click to Speak" button</li>
+          <li>Allow microphone access if prompted</li>
+          <li>Speak clearly into your microphone</li>
+          <li>Your text will appear above</li>
+          <li>Click "Test Voice Output" to hear the AI speak</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Voice Chat Script -->
+  <script src="{{ url_for('static', filename='voice-chat.js') }}"></script>
+  
+  <script>
+    let voiceChat = null;
+    
+    // Initialize voice chat
+    function init() {
+      voiceChat = new VoiceChat();
+      
+      // Set initial language
+      const langSelect = document.getElementById('language');
+      voiceChat.setLanguage(langSelect.value);
+      
+      // Handle speech results
+      voiceChat.onSpeechResult = (transcript) => {
+        const transcriptEl = document.getElementById('transcript');
+        transcriptEl.textContent = transcript;
+        transcriptEl.classList.remove('empty');
+        
+        // Auto-speak back what was said
+        setTimeout(() => {
+          voiceChat.speak(`You said: ${transcript}`);
+        }, 500);
+      };
+      
+      // Update UI based on state
+      voiceChat.updateUI = (state) => {
+        const micBtn = document.getElementById('micButton');
+        const micText = document.getElementById('micText');
+        const voiceStatus = document.getElementById('voiceStatus');
+        const statusText = voiceStatus.querySelector('.status-text');
+        
+        micBtn.classList.remove('listening', 'speaking');
+        
+        switch(state) {
+          case 'listening':
+            micBtn.classList.add('listening');
+            micText.textContent = 'Listening... Speak now!';
+            voiceStatus.style.display = 'flex';
+            statusText.textContent = 'Listening...';
+            break;
+            
+          case 'speaking':
+            micBtn.classList.add('speaking');
+            micText.textContent = 'Speaking...';
+            voiceStatus.style.display = 'flex';
+            statusText.textContent = 'Speaking...';
+            statusText.style.color = '#0077b6';
+            break;
+            
+          case 'idle':
+          default:
+            micText.textContent = 'Click to Speak';
+            voiceStatus.style.display = 'none';
+            break;
+        }
+      };
+      
+      // Show errors
+      voiceChat.showError = (message) => {
+        alert(message);
+      };
+      
+      console.log('✅ Voice chat test initialized');
+    }
+    
+    // Mic button click
+    document.getElementById('micButton').addEventListener('click', () => {
+      if (voiceChat) {
+        voiceChat.startListening();
+      }
+    });
+    
+    // Language change
+    document.getElementById('language').addEventListener('change', (e) => {
+      if (voiceChat) {
+        voiceChat.setLanguage(e.target.value);
+        console.log('Language changed to:', e.target.value);
+      }
+    });
+    
+    // Test speak function
+    function testSpeak() {
+      if (!voiceChat) return;
+      
+      const lang = document.getElementById('language').value;
+      const messages = {
+        'en': 'Hello! I am your AI tour assistant. How can I help you today?',
+        'zh': '你好！我是你的AI旅游助手。今天我能帮你什么？',
+        'ja': 'こんにちは！私はあなたのAIツアーアシスタントです。今日はどのようにお手伝いしましょうか？',
+        'ko': '안녕하세요! 저는 AI 투어 어시스턴트입니다. 오늘 어떻게 도와드릴까요?',
+        'de': 'Hallo! Ich bin Ihr KI-Tourassistent. Wie kann ich Ihnen heute helfen?',
+        'fr': 'Bonjour! Je suis votre assistant touristique IA. Comment puis-je vous aider aujourd\'hui?',
+        'es': '¡Hola! Soy tu asistente turístico de IA. ¿Cómo puedo ayudarte hoy?',
+        'hi': 'नमस्ते! मैं आपका AI टूर सहायक हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?'
+      };
+      
+      voiceChat.speak(messages[lang] || messages['en']);
+    }
+    
+    // Clear transcript
+    function clearTranscript() {
+      const transcriptEl = document.getElementById('transcript');
+      transcriptEl.textContent = 'Click the microphone button and start speaking...';
+      transcriptEl.classList.add('empty');
+    }
+    
+    // Initialize when page loads
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
