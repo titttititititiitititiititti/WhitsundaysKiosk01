@@ -2233,57 +2233,6 @@
         top: 0;
         z-index: 10001;
       }
-      
-      /* Tour detail page width and overflow fixes */
-      .tour-detail-main {
-        padding: 40px 40px 120px 40px !important;
-        max-width: 100vw !important;
-        width: 100% !important;
-        overflow-x: hidden !important;
-      }
-      
-      /* Ensure all child elements respect width */
-      .tour-detail-page * {
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      /* Ensure images don't overflow */
-      .tour-detail-page img {
-        max-width: 100% !important;
-        height: auto !important;
-      }
-      
-      /* Info cards - single column on mobile with floating appearance */
-      .info-grid {
-        grid-template-columns: 1fr !important;
-        gap: 25px !important;
-        margin: 25px 0 !important;
-      }
-      
-      /* Maintain beautiful floating card design on mobile */
-      .info-card {
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        padding: 35px 30px !important;
-        border-radius: 20px !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
-      }
-      
-      .info-card h3 {
-        font-size: 2em !important;
-        margin-bottom: 20px !important;
-      }
-      
-      .info-card ul {
-        gap: 12px !important;
-      }
-      
-      .info-card li {
-        font-size: 1.4em !important;
-        line-height: 1.6 !important;
-      }
     }
     
     /* Small phones - Scale down to 40% */
@@ -2294,17 +2243,7 @@
         -moz-transform: scale(0.4);
         -moz-transform-origin: 0 0;
       }
-      
-      /* Info cards - maintain single column and floating design */
-      .info-grid {
-        grid-template-columns: 1fr !important;
-        gap: 20px !important;
       }
-      
-      .info-card {
-        padding: 30px 25px !important;
-      }
-    }
       
       .question-text {
         font-size: 1.8em;
@@ -2431,12 +2370,22 @@
       letter-spacing: 0.3px;
     }
     #detail-info {
-      display: none !important;
-      margin-bottom: 24px;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin: 32px 0;
       color: #333;
       font-size: 1.2em;
       line-height: 1.8;
     }
+    
+    /* Stack info cards on mobile */
+    @media (max-width: 900px) {
+      #detail-info {
+        grid-template-columns: 1fr !important;
+      }
+    }
+    
     #detail-info ul {
       list-style: none;
       padding: 0;
@@ -8124,15 +8073,15 @@
             info += `<div style="display:grid;grid-template-columns:${columns};gap:20px;margin-bottom:30px;">`;
             
             if (data.includes) {
-              info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;">';
-              info += '<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">✅ ' + t('whats_included') + '</h3>';
+              info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+              info += '<h3 style="color:#0077b6;">✅ ' + t('whats_included') + '</h3>';
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               info += `<div style="font-size:1.15em;line-height:1.8;">${formattedIncludes}</div>`;
               info += '</div>';
             }
             if (data.highlights) {
-              info += '<div style="background:#fff3e0;padding:25px;border-radius:12px;border-left:5px solid #ff9800;">';
-              info += '<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">⭐ ' + t('highlights') + '</h3>';
+              info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+              info += '<h3 style="color:#0077b6;">⭐ ' + t('highlights') + '</h3>';
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               info += `<div style="font-size:1.15em;line-height:1.8;">${formattedHighlights}</div>`;
               info += '</div>';
@@ -8142,8 +8091,8 @@
           
           // MENU SECTION (if available)
           if (data.menu && data.menu.trim() && data.menu !== 'N/A') {
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #d32f2f;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">🍽️ ' + t('menu') + '</h3>';
+            info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+            info += '<h3 style="color:#0077b6;">🍽️ ' + t('menu') + '</h3>';
             let formattedMenu = data.menu
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/\n/g, '<br>');
@@ -8153,8 +8102,8 @@
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:#fff8e1;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #ff9800;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⚠️ ' + t('important_information') + '</h3>';
+            info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+            info += '<h3 style="color:#0077b6;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedInfo}</div>`;
             info += '</div>';
@@ -8162,8 +8111,8 @@
           
           // WHAT TO BRING SECTION
           if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
-            info += '<div style="background:#e3f2fd;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2196f3;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#1976d2;font-size:1.8em;">🎒 ' + t('what_to_bring') + '</h3>';
+            info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+            info += '<h3 style="color:#0077b6;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedBring}</div>`;
             info += '</div>';
@@ -8171,8 +8120,8 @@
           
           // WHAT'S EXTRA SECTION
           if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
-            info += '<div style="background:#f3e5f5;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #9c27b0;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#7b1fa2;font-size:1.8em;">💰 ' + t('whats_extra') + '</h3>';
+            info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+            info += '<h3 style="color:#0077b6;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedExtra}</div>`;
             info += '</div>';
@@ -8180,8 +8129,8 @@
           
           // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:#ffebee;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #f44336;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">📋 ' + t('cancellation_policy') + '</h3>';
+            info += '<div class="info-card" style="background:rgba(255,255,255,0.95) !important;">';
+            info += '<h3 style="color:#0077b6;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedPolicy}</div>`;
             info += '</div>';
@@ -9797,7 +9746,6 @@
     }
     
     function selectLanguageFromDetail(langCode) {
-      console.log('🌍 Changing language from tour detail page to:', langCode);
       switchLanguage(langCode);
       const menu = document.getElementById('detail-language-menu');
       if (menu) menu.classList.remove('active');
@@ -9809,7 +9757,7 @@
       localStorage.setItem('preferred_language', langCode);
       
       // Check if we're on a tour detail page - if so, save the tour key to reopen it after reload
-      const tourDetailPage = document.querySelector('.page.tour-detail-page');
+      const tourDetailPage = document.getElementById('tour-detail-page');
       if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // Find the current tour key from the detail page
         const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
@@ -9846,10 +9794,6 @@
       const mobileLangText = document.getElementById('mobile-menu-lang-text');
       if (mobileLangFlag) mobileLangFlag.textContent = lang.flag;
       if (mobileLangText) mobileLangText.textContent = lang.code.toUpperCase();
-      
-      // Update tour detail page language button
-      const detailLangBtn = document.getElementById('detail-language-btn');
-      if (detailLangBtn) detailLangBtn.textContent = lang.code.toUpperCase();
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
@@ -10194,15 +10138,9 @@
     }
     
     function selectCurrencyFromDetail(currency) {
-      switchCurrency(currency);
+      selectCurrency(currency);
       const menu = document.getElementById('detail-currency-menu');
       if (menu) menu.classList.remove('active');
-      
-      // Update the detail page currency button
-      const detailCurrencyBtn = document.getElementById('detail-currency-btn');
-      if (detailCurrencyBtn) {
-        detailCurrencyBtn.textContent = currency;
-      }
     }
     
     // =====================================================================
