@@ -8069,17 +8069,19 @@
             const useSquares = avgLength < 50 && quickInfoItems.length >= 2; // Short content = squares in pairs
             
             const columns = useSquares ? '1fr 1fr' : '1fr'; // 2 columns for squares, 1 for rectangles
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:20px;margin-bottom:30px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin-bottom:30px;">`;
             
             quickInfoItems.forEach((item, index) => {
               // If odd number of items in square mode, make last one span full width
               const isLastOdd = useSquares && index === quickInfoItems.length - 1 && quickInfoItems.length % 2 === 1;
               const spanStyle = isLastOdd ? 'grid-column:1/-1;' : '';
               
-              info += `<div style="background:${item.color};padding:20px;border-radius:12px;${spanStyle}">`;
-              info += `<b style="color:${item.titleColor};font-size:1.2em;">${item.icon} ${item.title}</b><br>`;
-              info += `<span style="font-size:1.2em;">${item.content}</span>`;
-              info += '</div>';
+              // Each quick info item in a white floating card
+              info += `<div class="info-card" style="${spanStyle}">`;
+              info += `<div style="background:${item.color};padding:25px;border-radius:16px;border-left:5px solid ${item.titleColor};">`;
+              info += `<h3 style="margin:0 0 15px 0;color:${item.titleColor};font-size:1.6em;">${item.icon} ${item.title}</h3>`;
+              info += `<div style="font-size:1.2em;line-height:1.6;">${item.content}</div>`;
+              info += '</div></div>';
             });
             
             info += '</div>';
@@ -8087,13 +8089,14 @@
           
           // ITINERARY SECTION (if available)
           if (data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A') {
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2e7d32;">';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #2e7d32;">';
             info += '<h3 style="margin:0 0 20px 0;color:#2e7d32;font-size:1.8em;">📅 ' + t('itinerary') + '</h3>';
             let formattedItinerary = data.itinerary
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/\n/g, '<br>');
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedItinerary}</div>`;
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // INCLUDES & HIGHLIGHTS - Smart layout based on content length
@@ -8112,14 +8115,14 @@
             info += `<div style="display:grid;grid-template-columns:${columns};gap:20px;margin-bottom:30px;">`;
             
             if (data.includes) {
-              info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;">';
+              info += '<div style="background:#e8f5e9;padding:25px;border-radius:16px;border-left:5px solid #4caf50;">';
               info += '<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">✅ ' + t('whats_included') + '</h3>';
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               info += `<div style="font-size:1.15em;line-height:1.8;">${formattedIncludes}</div>`;
               info += '</div>';
             }
             if (data.highlights) {
-              info += '<div style="background:#fff3e0;padding:25px;border-radius:12px;border-left:5px solid #ff9800;">';
+              info += '<div style="background:#fff3e0;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">';
               info += '<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">⭐ ' + t('highlights') + '</h3>';
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               info += `<div style="font-size:1.15em;line-height:1.8;">${formattedHighlights}</div>`;
@@ -8182,12 +8185,14 @@
           
           // Add Cruise Whitsundays disclaimer (only for their tours)
           if (data.company && data.company.toLowerCase().includes('cruise whitsundays')) {
-            info += '<div style="background:#f9f9f9;padding:20px;border-radius:8px;margin-top:30px;margin-bottom:15px;border-left:3px solid #0077b6;">';
-            info += '<p style="font-size:0.85em;line-height:1.6;color:#555;margin:0;"><em>';
+            info += '<div class="info-card" style="margin-top:30px;margin-bottom:15px;">';
+            info += '<div style="background:#f9f9f9;padding:25px;border-radius:16px;border-left:5px solid #0077b6;">';
+            info += '<h3 style="margin:0 0 15px 0;color:#0077b6;font-size:1.4em;">ℹ️ Important Notice</h3>';
+            info += '<p style="font-size:1em;line-height:1.6;color:#555;margin:0;"><em>';
             info += '*Infants 0-3 years travel free of charge on all tours, however no infant meals are included. Rates applicable for bookings made from 15/1/2024.<br><br>';
             info += 'STANDARD/HIGH SEASON: High season dates are applicable for Great Barrier Reef Adventure & Whitehaven Beach products. High Season Dates (inclusive) 14/12-31/12/2024, 01/01-06/02/2025, 05/04-27/04/2025, 28/06-20/07/2025, 20/09-12/10/2025 & 13/12-31/12/2025.<br><br>';
             info += 'Great Barrier Reef Environmental Management Charge (EMC): Included in your cruise fare is a per head fee which goes to the Government. The money collected is used by the Great Barrier Reef Marine Park Authority (GBRMPA) for the management and protection of the Great Barrier Reef Marine Park.';
-            info += '</em></p></div>';
+            info += '</em></p></div></div>';
           }
           
           // ===== ACTION BUTTONS SECTION (Always visible on every tour) =====
@@ -8234,7 +8239,8 @@
           
           // Add departure location section (if available)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
+            info += '<div class="info-card" style="margin-top:30px;margin-bottom:30px;">';
+            info += '<div style="background:#f0f8ff;padding:30px;border-radius:16px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.2em;color:#666;line-height:1.7;margin-bottom:25px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -8247,7 +8253,7 @@
               window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
             }
             
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // Add reviews section (only if there are actual reviews)
