@@ -1344,13 +1344,13 @@
     /* Back Button */
     .back-button {
       padding: 0;
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       border: none;
       border-radius: 50%;
-      font-size: 2.5em;
+      font-size: 3.5em;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -1552,16 +1552,14 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
     
-    /* Direct child h3 of info-card (not nested in colored divs) */
-    .info-card > h3 {
-      font-size: 2.2em;
+    .info-card h3 {
+      font-size: max(2.2em, 24px);
       font-weight: 700;
       color: #0077b6;
       margin: 0 0 25px 0;
     }
     
-    .info-card > ul,
-    .info-card > div > ul {
+    .info-card ul {
       list-style: none;
       padding: 0;
       margin: 0;
@@ -1570,17 +1568,15 @@
       gap: 15px;
     }
     
-    .info-card > li,
-    .info-card > div > ul > li {
-      font-size: 1.25em;
+    .info-card li {
+      font-size: max(1.25em, 18px);
       color: #2c3e50;
       padding-left: 40px;
       position: relative;
       line-height: 1.6;
     }
     
-    .info-card > li::before,
-    .info-card > div > ul > li::before {
+    .info-card li::before {
       content: "✓";
       position: absolute;
       left: 0;
@@ -1715,17 +1711,7 @@
     
     /* Sticky Footer */
     .detail-footer {
-      position: sticky;
-      bottom: 0;
-      background: linear-gradient(to top, rgba(0, 95, 163, 0.98), rgba(0, 95, 163, 0.95));
-      backdrop-filter: blur(15px);
-      padding: 30px 80px;
-      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
+      display: none !important;
     }
     
     .btn-primary,
@@ -1804,6 +1790,13 @@
       /* Make sure buttons are tappable */
       button, a, .chip, .tour-card-large, .price-row {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Much larger back button on mobile */
+      .back-button {
+        width: 120px !important;
+        height: 120px !important;
+        font-size: 5em !important;
       }
     }
     
@@ -2374,24 +2367,21 @@
       letter-spacing: 0.3px;
     }
     #detail-info {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin: 32px 50px;
+      display: none !important;
+      margin-bottom: 24px;
       color: #333;
-      font-size: 1.2em;
+      font-size: max(1.2em, 16px);
       line-height: 1.8;
     }
     
-    /* Keep 2-column grid on ALL devices - just scale down */
-    #detail-info .info-card {
-      background: rgba(255, 255, 255, 0.95) !important;
-      backdrop-filter: blur(10px) !important;
-      padding: 40px 45px !important;
-      border-radius: 22px !important;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25) !important;
+    /* Ensure all section text is readable */
+    #detail-info h3 {
+      font-size: max(1.8em, 22px) !important;
     }
     
+    #detail-info div {
+      font-size: max(1.15em, 16px) !important;
+    }
     #detail-info ul {
       list-style: none;
       padding: 0;
@@ -7455,12 +7445,10 @@
             const heading = includesSection.querySelector('h3');
             const headingText = heading ? heading.textContent : 'What\'s Included';
             includesCard.innerHTML = `
-              <div style="background:#e8f5e9;padding:25px;border-radius:16px;border-left:5px solid #4caf50;">
-                <h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">${headingText}</h3>
-                <ul style="margin:0;padding:0;">
-                  ${extractListItems(includesSection.innerHTML)}
-                </ul>
-              </div>
+              <h3>${headingText}</h3>
+              <ul>
+                ${extractListItems(includesSection.innerHTML)}
+              </ul>
             `;
             infoGrid.appendChild(includesCard);
             includesSection.remove();
@@ -7473,12 +7461,10 @@
             const heading = highlightsSection.querySelector('h3');
             const headingText = heading ? heading.textContent : 'Highlights';
             highlightsCard.innerHTML = `
-              <div style="background:#fff3e0;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">
-                <h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">${headingText}</h3>
-                <ul style="margin:0;padding:0;">
-                  ${extractListItems(highlightsSection.innerHTML)}
-                </ul>
-              </div>
+              <h3>${headingText}</h3>
+              <ul>
+                ${extractListItems(highlightsSection.innerHTML)}
+              </ul>
             `;
             infoGrid.appendChild(highlightsCard);
             highlightsSection.remove();
@@ -8101,54 +8087,49 @@
           
           // MENU SECTION (if available)
           if (data.menu && data.menu.trim() && data.menu !== 'N/A') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;margin-bottom:30px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #d32f2f;">';
+            info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #d32f2f;">';
             info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">🍽️ ' + t('menu') + '</h3>';
             let formattedMenu = data.menu
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/\n/g, '<br>');
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedMenu}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;margin-bottom:30px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-            info += '<div style="background:#fff8e1;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">';
+            info += '<div style="background:#fff8e1;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #ff9800;">';
             info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedInfo}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // WHAT TO BRING SECTION
           if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;margin-bottom:30px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-            info += '<div style="background:#e3f2fd;padding:25px;border-radius:16px;border-left:5px solid #2196f3;">';
+            info += '<div style="background:#e3f2fd;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2196f3;">';
             info += '<h3 style="margin:0 0 20px 0;color:#1976d2;font-size:1.8em;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedBring}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // WHAT'S EXTRA SECTION
           if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;margin-bottom:30px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-            info += '<div style="background:#f3e5f5;padding:25px;border-radius:16px;border-left:5px solid #9c27b0;">';
+            info += '<div style="background:#f3e5f5;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #9c27b0;">';
             info += '<h3 style="margin:0 0 20px 0;color:#7b1fa2;font-size:1.8em;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedExtra}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;margin-bottom:30px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-            info += '<div style="background:#ffebee;padding:25px;border-radius:16px;border-left:5px solid #f44336;">';
+            info += '<div style="background:#ffebee;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #f44336;">';
             info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedPolicy}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // Add Cruise Whitsundays disclaimer (only for their tours)
