@@ -2388,7 +2388,7 @@
       display: block !important;
       margin-bottom: 24px;
       color: #333;
-      font-size: 1.2em;
+      font-size: 1em; /* Changed from 1.2em to not interfere with card font sizes */
       line-height: 1.8;
     }
     #detail-info ul {
@@ -4235,7 +4235,7 @@
       }
       
       #detail-info {
-        font-size: 0.75em;
+        font-size: 1em; /* Keep normal size - zoom handles scaling */
         margin-bottom: 8px;
       }
       
@@ -5459,9 +5459,9 @@
     <!-- Action Buttons Card (replaces sticky footer) -->
     <div class="info-card" style="margin: 30px 0; position: sticky; bottom: 20px; z-index: 999;">
       <div style="display: flex; gap: 15px; align-items: center; justify-content: center; padding: 20px;">
-        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">Book Now 🎫</button>
-        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">📱 Send to My Phone</button>
-        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">🔗 Share Tour</button>
+        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">📖 Book Now</button>
+        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">📲 Send to My Phone</button>
+        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">↗️ Share Tour</button>
       </div>
     </div>
   </div>
@@ -8134,38 +8134,37 @@
           
           // Add reviews section (only if there are actual reviews)
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
-            info += '<div class="reviews-section">';
-            info += '<div class="reviews-header">';
-            info += '<div class="reviews-title">Customer Reviews</div>';
-            info += '<div class="reviews-summary">';
-            info += `<div class="overall-rating" style="font-size: 5em !important; font-weight: 700;">${data.reviews.overall_rating.toFixed(1)}</div>`;
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #ffc107;">';
+            info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⭐ Customer Reviews</h3>';
+            info += '<div class="reviews-summary" style="display:flex;align-items:center;gap:30px;margin-bottom:25px;">';
+            info += `<div class="overall-rating" style="font-size: 4em; font-weight: 700;color:#f57c00;">${data.reviews.overall_rating.toFixed(1)}</div>`;
             info += '<div>';
-            info += `<div class="stars-large" style="font-size: 3em !important; display: flex; gap: 8px;">${generateStars(data.reviews.overall_rating, true)}</div>`;
-            info += `<div class="review-source" style="font-size: 1.8em !important;">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
-            info += '</div>';
+            info += `<div class="stars-large" style="font-size: 2em; display: flex; gap: 5px;margin-bottom:10px;">${generateStars(data.reviews.overall_rating, true)}</div>`;
+            info += `<div class="review-source" style="font-size: 1.3em;color:#666;">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
             info += '</div>';
             info += '</div>';
             
             // Individual reviews
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div class="review-card" style="padding: 45px !important; margin-bottom: 30px !important; border-radius: 20px !important; border-left: 6px solid #0077b6 !important;">';
-                info += '<div class="review-header">';
+                info += '<div style="background:white;padding: 20px; margin: 15px 0; border-radius: 12px; border-left: 4px solid #0077b6;box-shadow:0 2px 8px rgba(0,0,0,0.1);">';
+                info += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
                 info += '<div>';
-                info += `<div class="review-author" style="font-size: 2em !important; font-weight: 700;">${review.author || 'Anonymous'}</div>`;
+                info += `<div style="font-size: 1.4em; font-weight: 700;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
                 if (review.date) {
-                  info += `<div class="review-date" style="font-size: 1.5em !important;">${review.date}</div>`;
+                  info += `<div style="font-size: 1.1em;color:#888;">${review.date}</div>`;
                 }
                 info += '</div>';
                 if (review.rating) {
-                  info += `<div class="review-stars" style="font-size: 1.8em !important;">${generateStars(review.rating, true)}</div>`;
+                  info += `<div style="font-size: 1.3em;">${generateStars(review.rating, true)}</div>`;
                 }
                 info += '</div>';
                 if (review.title) {
-                  info += `<div class="review-title" style="font-size: 2em !important; font-weight: 600; margin-bottom: 15px;">${review.title}</div>`;
+                  info += `<div style="font-size: 1.3em; font-weight: 600; margin-bottom: 8px;color:#0077b6;">${review.title}</div>`;
                 }
                 if (review.text) {
-                  info += `<div class="review-text" style="font-size: 1.8em !important; line-height: 1.7;">${review.text}</div>`;
+                  info += `<div style="font-size: 1.2em; line-height: 1.6;color:#555;">${review.text}</div>`;
                 }
                 info += '</div>';
               });
@@ -8174,11 +8173,11 @@
             // Link to more reviews if available
             if (data.reviews.source_url) {
               info += '<div style="text-align:center;margin-top:30px;">';
-              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.2em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
+              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.5em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               info += '</div>';
             }
             
-            info += '</div>';
+            info += '</div></div>'; // Close colored box and info-card
           }
           // Don't show "No reviews available" message - just omit the section entirely
           
