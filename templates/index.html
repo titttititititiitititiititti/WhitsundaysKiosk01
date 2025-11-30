@@ -1545,14 +1545,6 @@
       border-radius: 22px;
       box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      margin: 30px 50px !important;
-      display: block !important;
-      clear: both !important;
-    }
-    
-    /* First card has no top margin */
-    #detail-info .info-card:first-child {
-      margin-top: 32px !important;
     }
     
     .info-card:hover {
@@ -1717,19 +1709,20 @@
       line-height: 1.7 !important;
     }
     
-    /* Sticky Footer */
+    /* Sticky Footer - No background box, just buttons */
     .detail-footer {
-      position: sticky;
-      bottom: 0;
-      background: linear-gradient(to top, rgba(0, 95, 163, 0.98), rgba(0, 95, 163, 0.95));
-      backdrop-filter: blur(15px);
-      padding: 30px 80px;
-      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+      padding: 0;
       display: flex;
       gap: 20px;
       justify-content: center;
       align-items: center;
-      z-index: 100;
+      z-index: 1000;
+      max-width: 90%;
     }
     
     .btn-primary,
@@ -1747,46 +1740,48 @@
     }
     
     .btn-primary {
-      background: white;
-      color: #0077b6;
+      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      color: white;
       flex: 2;
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.5);
       font-weight: 700;
-      font-size: 1.4em;
+      font-size: 1.5em;
     }
     
     .btn-primary:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4);
-      background: #f8f9fa;
+      box-shadow: 0 12px 35px rgba(0, 119, 182, 0.6);
+      background: linear-gradient(135deg, #0088cc 0%, #006699 100%);
     }
     
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.15);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      border: 3px solid rgba(255, 255, 255, 0.6);
+      border: none;
       flex: 1;
       font-weight: 600;
       font-size: 1.3em;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
     }
     
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: white;
+      background: linear-gradient(135deg, #7788ee 0%, #8855bb 100%);
       transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
     }
     
     .btn-tertiary {
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
       color: white;
-      border: 2px solid rgba(255, 255, 255, 0.5);
+      border: none;
       flex: 1;
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.5);
     }
     
     .btn-tertiary:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: white;
+      background: linear-gradient(135deg, #55cc88 0%, #44bb77 100%);
       transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(72, 187, 120, 0.6);
     }
     
     .btn-primary:active,
@@ -1798,13 +1793,6 @@
     /* ===================================================================
        MOBILE - Desktop View Scaled to Fit
        =================================================================== */
-    /* Hide Share Tour button on desktop/kiosk - show only on mobile */
-    @media (min-width: 769px) {
-      #share-tour-btn {
-        display: none !important;
-      }
-    }
-    
     /* Keep desktop layout on mobile, just let the browser zoom out */
     @media (max-width: 768px) {
       /* Ensure scrolling works on mobile */
@@ -1815,6 +1803,21 @@
       /* Make sure buttons are tappable */
       button, a, .chip, .tour-card-large, .price-row {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Adjust footer buttons for mobile */
+      .detail-footer {
+        bottom: 20px;
+        gap: 15px;
+        max-width: 95%;
+      }
+      
+      .btn-primary,
+      .btn-secondary,
+      .btn-tertiary {
+        padding: 18px 30px;
+        font-size: 1.2em;
+        min-height: 60px;
       }
     }
     
@@ -2385,13 +2388,26 @@
       letter-spacing: 0.3px;
     }
     #detail-info {
-      display: block !important;
+      display: none !important;
       margin-bottom: 24px;
+      color: #333;
+      font-size: 1.2em;
+      line-height: 1.8;
     }
-    
-    /* Don't style lists inside detail-info - let each card handle its own styling */
-    #detail-info * {
-      font-size: inherit !important;
+    #detail-info ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #detail-info li {
+      margin-bottom: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    #detail-info b {
+      color: #0077b6;
+      font-weight: 600;
     }
     #detail-gallery {
       width: 100%;
@@ -4221,6 +4237,25 @@
         margin-bottom: 12px;
       }
       
+      #detail-info {
+        font-size: 0.75em;
+        margin-bottom: 8px;
+      }
+      
+      #detail-info ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      
+      #detail-info li {
+        padding: 4px 8px;
+        margin-bottom: 0;
+        display: inline-flex;
+        align-items: center;
+        flex: 0 1 auto;
+      }
+      
       .detail-section-title {
         font-size: 0.9em;
         margin-top: 10px;
@@ -5414,24 +5449,42 @@
         <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
+      <!-- Info Grid (What's Included & Highlights) -->
+      <section class="info-grid" id="info-grid">
+        <!-- Cards will be populated by JavaScript -->
+      </section>
+
       <!-- Description & Details -->
       <section class="details-section">
         <h3>About This Tour</h3>
-        <div id="detail-description"></div>
+      <div id="detail-description"></div>
       </section>
 
-      <!-- Additional Info - ALL cards get added here -->
+      <!-- Additional Info -->
       <div id="detail-info"></div>
+
+      <!-- Fine Print -->
+      <section class="fine-print" id="fine-print">
+        <!-- Will be populated with terms, cancellation policy, etc. -->
+      </section>
+
+      <!-- Departure Section -->
+      <section class="departure-section" id="departure-section">
+        <!-- Map will be added here by JavaScript -->
+      </section>
+
+      <!-- Reviews Section -->
+      <section class="departure-section" id="reviews-section-detail">
+        <!-- Reviews will be added here by JavaScript -->
+      </section>
     </main>
 
-    <!-- Action Buttons Card (replaces sticky footer) -->
-    <div class="info-card" style="margin: 30px 0; position: sticky; bottom: 20px; z-index: 999;">
-      <div style="display: flex; gap: 15px; align-items: center; justify-content: center; padding: 20px;">
-        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">Book Now</button>
-        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">Send to My Phone</button>
-        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">Share Tour</button>
-      </div>
-    </div>
+    <!-- Sticky Footer -->
+    <footer class="detail-footer">
+      <button class="btn-primary" id="book-now-btn">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
+      <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
+    </footer>
   </div>
   
   <!-- QR Payment Modal -->
@@ -7545,9 +7598,11 @@
             })
             .filter(item => item.length > 0);
           
-          // Return as simple bullet points (no ul/li to avoid CSS conflicts)
+          // Return as bullet list
           if (items.length > 0) {
-            return items.map(item => `• ${item}`).join('<br>');
+            return '<ul style="margin:0;padding-left:20px;">' + 
+              items.map(item => `<li style="margin-bottom:8px;">${item}</li>`).join('') +
+              '</ul>';
           }
         } catch (e) {
           // If parsing fails, continue with normal formatting
@@ -7859,7 +7914,7 @@
           
           // Enhanced description with markdown-style formatting
           const descriptionDiv = document.getElementById('detail-description');
-          let formattedDesc = (data.description || '')
+          let formattedDesc = (data.description || 'N/A')
             .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#0077b6;font-weight:600;">$1</strong>')  // **bold** -> colored bold
             .replace(/\n/g, '<br>');  // newlines -> <br>
           descriptionDiv.innerHTML = formattedDesc;
@@ -7973,116 +8028,164 @@
           }
           
           // Smart layout: use 2 columns if all items are short, otherwise 1 column
-          // Each quick info item gets its own separate white floating card
           if (quickInfoItems.length > 0) {
-            quickInfoItems.forEach((item) => {
-              info += '<div class="info-card" style="margin-bottom:30px;">';
-              info += `<div style="background:${item.color};padding:25px;border-radius:16px;border-left:5px solid ${item.titleColor};">`;
-              info += `<h3 style="margin:0 0 15px 0;color:${item.titleColor};font-size:1.6em;">${item.icon} ${item.title}</h3>`;
-              info += `<div style="font-size:1.2em;line-height:1.6;">${item.content}</div>`;
-              info += '</div></div>';
+            const avgLength = quickInfoItems.reduce((sum, item) => sum + item.length, 0) / quickInfoItems.length;
+            const useSquares = avgLength < 50 && quickInfoItems.length >= 2; // Short content = squares in pairs
+            
+            const columns = useSquares ? '1fr 1fr' : '1fr'; // 2 columns for squares, 1 for rectangles
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:20px;margin-bottom:30px;">`;
+            
+            quickInfoItems.forEach((item, index) => {
+              // If odd number of items in square mode, make last one span full width
+              const isLastOdd = useSquares && index === quickInfoItems.length - 1 && quickInfoItems.length % 2 === 1;
+              const spanStyle = isLastOdd ? 'grid-column:1/-1;' : '';
+              
+              info += `<div style="background:${item.color};padding:20px;border-radius:12px;${spanStyle}">`;
+              info += `<b style="color:${item.titleColor};font-size:1.2em;">${item.icon} ${item.title}</b><br>`;
+              info += `<span style="font-size:1.2em;">${item.content}</span>`;
+              info += '</div>';
             });
+            
+            info += '</div>';
           }
           
           // ITINERARY SECTION (if available)
           if (data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #2e7d32;">';
+            info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2e7d32;">';
             info += '<h3 style="margin:0 0 20px 0;color:#2e7d32;font-size:1.8em;">📅 ' + t('itinerary') + '</h3>';
             let formattedItinerary = data.itinerary
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/\n/g, '<br>');
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedItinerary}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
-          // INCLUDES & HIGHLIGHTS - Each in its own white floating card
-          if (data.includes) {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#e8f5e9;padding:25px;border-radius:16px;border-left:5px solid #4caf50;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#2e7d32;font-size:1.8em;">✅ ' + t('whats_included') + '</h3>';
-            let formattedIncludes = cleanBracketFormatting(data.includes || '');
-            info += `<div style="font-size:1.3em;line-height:1.8;color:#2c3e50;">${formattedIncludes}</div>`;
-            info += '</div></div>';
-          }
-          
-          if (data.highlights) {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#fff3e0;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⭐ ' + t('highlights') + '</h3>';
-            let formattedHighlights = cleanBracketFormatting(data.highlights || '');
-            info += `<div style="font-size:1.3em;line-height:1.8;color:#2c3e50;">${formattedHighlights}</div>`;
-            info += '</div></div>';
+          // INCLUDES & HIGHLIGHTS - Smart layout based on content length
+          if (data.includes || data.highlights) {
+            // Calculate content lengths to determine layout
+            const includesLength = data.includes ? data.includes.length : 0;
+            const highlightsLength = data.highlights ? data.highlights.length : 0;
+            const bothExist = data.includes && data.highlights;
+            const avgLength = bothExist ? (includesLength + highlightsLength) / 2 : (includesLength || highlightsLength);
+            
+            // Use 2 columns (squares) if both exist and content is moderate length
+            // Otherwise use 1 column (full-width rectangles)
+            const useSquares = bothExist && avgLength < 400;
+            const columns = useSquares ? '1fr 1fr' : '1fr';
+            
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:20px;margin-bottom:30px;">`;
+            
+            if (data.includes) {
+              info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;">';
+              info += '<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">✅ ' + t('whats_included') + '</h3>';
+              let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+              info += `<div style="font-size:1.15em;line-height:1.8;">${formattedIncludes}</div>`;
+              info += '</div>';
+            }
+            if (data.highlights) {
+              info += '<div style="background:#fff3e0;padding:25px;border-radius:12px;border-left:5px solid #ff9800;">';
+              info += '<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">⭐ ' + t('highlights') + '</h3>';
+              let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+              info += `<div style="font-size:1.15em;line-height:1.8;">${formattedHighlights}</div>`;
+              info += '</div>';
+            }
+            info += '</div>';
           }
           
           // MENU SECTION (if available)
           if (data.menu && data.menu.trim() && data.menu !== 'N/A') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #d32f2f;">';
+            info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #d32f2f;">';
             info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">🍽️ ' + t('menu') + '</h3>';
             let formattedMenu = data.menu
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/\n/g, '<br>');
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedMenu}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#fff8e1;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">';
+            info += '<div style="background:#fff8e1;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #ff9800;">';
             info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedInfo}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // WHAT TO BRING SECTION
           if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#e3f2fd;padding:25px;border-radius:16px;border-left:5px solid #2196f3;">';
+            info += '<div style="background:#e3f2fd;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2196f3;">';
             info += '<h3 style="margin:0 0 20px 0;color:#1976d2;font-size:1.8em;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedBring}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // WHAT'S EXTRA SECTION
           if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f3e5f5;padding:25px;border-radius:16px;border-left:5px solid #9c27b0;">';
+            info += '<div style="background:#f3e5f5;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #9c27b0;">';
             info += '<h3 style="margin:0 0 20px 0;color:#7b1fa2;font-size:1.8em;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedExtra}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#ffebee;padding:25px;border-radius:16px;border-left:5px solid #f44336;">';
+            info += '<div style="background:#ffebee;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #f44336;">';
             info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedPolicy}</div>`;
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // Add Cruise Whitsundays disclaimer (only for their tours)
           if (data.company && data.company.toLowerCase().includes('cruise whitsundays')) {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f9f9f9;padding:25px;border-radius:16px;border-left:5px solid #0077b6;">';
-            info += '<h3 style="margin:0 0 15px 0;color:#0077b6;font-size:1.5em;">ℹ️ Important Pricing Information</h3>';
-            info += '<p style="font-size:1.1em;line-height:1.7;color:#555;margin:0;"><em>';
+            info += '<div style="background:#f9f9f9;padding:20px;border-radius:8px;margin-top:30px;margin-bottom:15px;border-left:3px solid #0077b6;">';
+            info += '<p style="font-size:0.85em;line-height:1.6;color:#555;margin:0;"><em>';
             info += '*Infants 0-3 years travel free of charge on all tours, however no infant meals are included. Rates applicable for bookings made from 15/1/2024.<br><br>';
             info += 'STANDARD/HIGH SEASON: High season dates are applicable for Great Barrier Reef Adventure & Whitehaven Beach products. High Season Dates (inclusive) 14/12-31/12/2024, 01/01-06/02/2025, 05/04-27/04/2025, 28/06-20/07/2025, 20/09-12/10/2025 & 13/12-31/12/2025.<br><br>';
             info += 'Great Barrier Reef Environmental Management Charge (EMC): Included in your cruise fare is a per head fee which goes to the Government. The money collected is used by the Great Barrier Reef Marine Park Authority (GBRMPA) for the management and protection of the Great Barrier Reef Marine Park.';
-            info += '</em></p></div></div>';
+            info += '</em></p></div>';
           }
+          
+          // Add action buttons side-by-side (touchscreen-optimized)
+          info += '<div style="display:flex;gap:20px;margin-top:32px;justify-content:center;flex-wrap:wrap;">';
+          
+          // Ocean Rafting Rezdy booking URL mapping
+          let rezdyUrl = null;
+          if (data.company && data.company.toLowerCase().includes('ocean rafting')) {
+            const tourName = data.name.toLowerCase();
+            
+            if (tourName.includes('fly raft') && tourName.includes('northern exposure')) {
+              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/266833/fly-raft-northern-exposure-package';
+            } else if (tourName.includes('fly raft') && tourName.includes('southern lights')) {
+              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/269177/fly-raft-southern-lights-package';
+            } else if (tourName.includes('60 minute') && tourName.includes('scenic flight')) {
+              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/269193/ocean-rafting-1-hour-scenic-flight';
+            } else if (tourName.includes('southern lights')) {
+              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/265683/southern-lights-tour';
+            } else if (tourName.includes('northern exposure')) {
+              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/265139/northern-exposure-tour';
+            }
+          }
+          
+          if (rezdyUrl) {
+            // Use Rezdy booking button for Ocean Rafting tours
+            info += `<button onclick='openRezdyBooking("${rezdyUrl}")' style='color:#fff;background:#0077b6;padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(0,119,182,0.3);cursor:pointer;'>${t('book_now')} 📬</button>`;
+          } else {
+            // Use regular booking modal for other tours
+            info += `<button onclick='openBookingModal("${key}", "${data.name.replace(/'/g, "\\'")}","${data.company.replace(/'/g, "\\'")}")' style='color:#fff;background:#0077b6;padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(0,119,182,0.3);cursor:pointer;'>${t('book_now')} 📬</button>`;
+          }
+          if (data.link_more_info) {
+            info += `<a href='${data.link_more_info}' target='_blank' style='color:#0077b6;background:#e0eafc;padding:22px 45px;text-decoration:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;border:3px solid #0077b6;'>${t('more_info')}</a>`;
+            info += `<button onclick='showQRCode("${data.link_more_info}", "${data.name.replace(/'/g, "\\'")}")' style='color:#fff;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(102,126,234,0.3);cursor:pointer;'>${t('view_on_phone')} 📱</button>`;
+          }
+          info += '</div>';
           
           // Add departure location section (if available)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f0f8ff;padding:30px;border-radius:16px;border-left:5px solid #0077b6;">';
+            info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.2em;color:#666;line-height:1.7;margin-bottom:25px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -8095,42 +8198,43 @@
               window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
             }
             
-            info += '</div></div>';
+            info += '</div>';
           }
           
           // Add reviews section (only if there are actual reviews)
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
-            info += '<div class="info-card" style="margin-bottom:30px;">';
-            info += '<div style="background:#f8f9fa;padding:25px;border-radius:16px;border-left:5px solid #ffc107;">';
-            info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⭐ Customer Reviews</h3>';
-            info += '<div class="reviews-summary" style="display:flex;align-items:center;gap:30px;margin-bottom:25px;">';
-            info += `<div class="overall-rating" style="font-size: 4em; font-weight: 700;color:#f57c00;">${data.reviews.overall_rating.toFixed(1)}</div>`;
+            info += '<div class="reviews-section">';
+            info += '<div class="reviews-header">';
+            info += '<div class="reviews-title">Customer Reviews</div>';
+            info += '<div class="reviews-summary">';
+            info += `<div class="overall-rating" style="font-size: 5em !important; font-weight: 700;">${data.reviews.overall_rating.toFixed(1)}</div>`;
             info += '<div>';
-            info += `<div class="stars-large" style="font-size: 2em; display: flex; gap: 5px;margin-bottom:10px;">${generateStars(data.reviews.overall_rating, true)}</div>`;
-            info += `<div class="review-source" style="font-size: 1.3em;color:#666;">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
+            info += `<div class="stars-large" style="font-size: 3em !important; display: flex; gap: 8px;">${generateStars(data.reviews.overall_rating, true)}</div>`;
+            info += `<div class="review-source" style="font-size: 1.8em !important;">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
+            info += '</div>';
             info += '</div>';
             info += '</div>';
             
             // Individual reviews
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div style="padding: 20px 0; margin: 15px 0; border-top: 2px solid rgba(0,0,0,0.1);">';
-                info += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+                info += '<div class="review-card" style="padding: 45px !important; margin-bottom: 30px !important; border-radius: 20px !important; border-left: 6px solid #0077b6 !important;">';
+                info += '<div class="review-header">';
                 info += '<div>';
-                info += `<div style="font-size: 1.4em; font-weight: 700;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
+                info += `<div class="review-author" style="font-size: 2em !important; font-weight: 700;">${review.author || 'Anonymous'}</div>`;
                 if (review.date) {
-                  info += `<div style="font-size: 1.1em;color:#666;">${review.date}</div>`;
+                  info += `<div class="review-date" style="font-size: 1.5em !important;">${review.date}</div>`;
                 }
                 info += '</div>';
                 if (review.rating) {
-                  info += `<div style="font-size: 1.3em;">${generateStars(review.rating, true)}</div>`;
+                  info += `<div class="review-stars" style="font-size: 1.8em !important;">${generateStars(review.rating, true)}</div>`;
                 }
                 info += '</div>';
                 if (review.title) {
-                  info += `<div style="font-size: 1.3em; font-weight: 600; margin-bottom: 8px;color:#2c3e50;">${review.title}</div>`;
+                  info += `<div class="review-title" style="font-size: 2em !important; font-weight: 600; margin-bottom: 15px;">${review.title}</div>`;
                 }
                 if (review.text) {
-                  info += `<div style="font-size: 1.2em; line-height: 1.6;color:#2c3e50;">${review.text}</div>`;
+                  info += `<div class="review-text" style="font-size: 1.8em !important; line-height: 1.7;">${review.text}</div>`;
                 }
                 info += '</div>';
               });
@@ -8139,11 +8243,11 @@
             // Link to more reviews if available
             if (data.reviews.source_url) {
               info += '<div style="text-align:center;margin-top:30px;">';
-              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.5em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
+              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.2em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               info += '</div>';
             }
             
-            info += '</div></div>'; // Close colored box and info-card
+            info += '</div>';
           }
           // Don't show "No reviews available" message - just omit the section entirely
           
