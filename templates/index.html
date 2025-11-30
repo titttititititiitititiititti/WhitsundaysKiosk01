@@ -1596,6 +1596,16 @@
       margin: 32px 50px;
     }
     
+    /* Hide empty sections to prevent white boxes */
+    .info-grid:empty,
+    .details-section:empty,
+    .fine-print:empty,
+    .departure-section:empty {
+      display: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
     .details-section h3 {
       font-size: 2.8em;
       font-weight: 700;
@@ -5438,34 +5448,8 @@
         <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
-      <!-- Info Grid (What's Included & Highlights) -->
-      <section class="info-grid" id="info-grid">
-        <!-- Cards will be populated by JavaScript -->
-      </section>
-
-      <!-- Description & Details -->
-      <section class="details-section">
-        <h3>About This Tour</h3>
-      <div id="detail-description"></div>
-      </section>
-
-      <!-- Additional Info -->
+      <!-- Additional Info - ALL content gets added here dynamically -->
       <div id="detail-info"></div>
-
-      <!-- Fine Print -->
-      <section class="fine-print" id="fine-print">
-        <!-- Will be populated with terms, cancellation policy, etc. -->
-      </section>
-
-      <!-- Departure Section -->
-      <section class="departure-section" id="departure-section">
-        <!-- Map will be added here by JavaScript -->
-      </section>
-
-      <!-- Reviews Section -->
-      <section class="departure-section" id="reviews-section-detail">
-        <!-- Reviews will be added here by JavaScript -->
-      </section>
     </main>
 
     <!-- Action Buttons Card (replaces sticky footer) -->
