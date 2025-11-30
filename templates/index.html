@@ -2387,24 +2387,11 @@
     #detail-info {
       display: block !important;
       margin-bottom: 24px;
-      color: #333;
-      font-size: 1em; /* Changed from 1.2em to not interfere with card font sizes */
-      line-height: 1.8;
     }
-    #detail-info ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    #detail-info li {
-      margin-bottom: 12px;
-      padding: 12px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-    #detail-info b {
-      color: #0077b6;
-      font-weight: 600;
+    
+    /* Don't style lists inside detail-info - let each card handle its own styling */
+    #detail-info * {
+      font-size: inherit !important;
     }
     #detail-gallery {
       width: 100%;
@@ -4234,25 +4221,6 @@
         margin-bottom: 12px;
       }
       
-      #detail-info {
-        font-size: 1em; /* Keep normal size - zoom handles scaling */
-        margin-bottom: 8px;
-      }
-      
-      #detail-info ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      
-      #detail-info li {
-        padding: 4px 8px;
-        margin-bottom: 0;
-        display: inline-flex;
-        align-items: center;
-        flex: 0 1 auto;
-      }
-      
       .detail-section-title {
         font-size: 0.9em;
         margin-top: 10px;
@@ -5459,9 +5427,9 @@
     <!-- Action Buttons Card (replaces sticky footer) -->
     <div class="info-card" style="margin: 30px 0; position: sticky; bottom: 20px; z-index: 999;">
       <div style="display: flex; gap: 15px; align-items: center; justify-content: center; padding: 20px;">
-        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">📖 Book Now</button>
-        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">📲 Send to My Phone</button>
-        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">↗️ Share Tour</button>
+        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">Book Now</button>
+        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">Send to My Phone</button>
+        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">Share Tour</button>
       </div>
     </div>
   </div>
@@ -7577,11 +7545,9 @@
             })
             .filter(item => item.length > 0);
           
-          // Return as bullet list
+          // Return as simple bullet points (no ul/li to avoid CSS conflicts)
           if (items.length > 0) {
-            return '<ul style="margin:0;padding-left:20px;">' + 
-              items.map(item => `<li style="margin-bottom:8px;">${item}</li>`).join('') +
-              '</ul>';
+            return items.map(item => `• ${item}`).join('<br>');
           }
         } catch (e) {
           // If parsing fails, continue with normal formatting
@@ -8034,18 +8000,18 @@
           if (data.includes) {
             info += '<div class="info-card" style="margin-bottom:30px;">';
             info += '<div style="background:#e8f5e9;padding:25px;border-radius:16px;border-left:5px solid #4caf50;">';
-            info += '<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">✅ ' + t('whats_included') + '</h3>';
-            let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-            info += `<div style="font-size:1.15em;line-height:1.8;">${formattedIncludes}</div>`;
+            info += '<h3 style="margin:0 0 20px 0;color:#2e7d32;font-size:1.8em;">✅ ' + t('whats_included') + '</h3>';
+            let formattedIncludes = cleanBracketFormatting(data.includes || '');
+            info += `<div style="font-size:1.3em;line-height:1.8;color:#2c3e50;">${formattedIncludes}</div>`;
             info += '</div></div>';
           }
           
           if (data.highlights) {
             info += '<div class="info-card" style="margin-bottom:30px;">';
             info += '<div style="background:#fff3e0;padding:25px;border-radius:16px;border-left:5px solid #ff9800;">';
-            info += '<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">⭐ ' + t('highlights') + '</h3>';
-            let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-            info += `<div style="font-size:1.15em;line-height:1.8;">${formattedHighlights}</div>`;
+            info += '<h3 style="margin:0 0 20px 0;color:#f57c00;font-size:1.8em;">⭐ ' + t('highlights') + '</h3>';
+            let formattedHighlights = cleanBracketFormatting(data.highlights || '');
+            info += `<div style="font-size:1.3em;line-height:1.8;color:#2c3e50;">${formattedHighlights}</div>`;
             info += '</div></div>';
           }
           
@@ -8148,12 +8114,12 @@
             // Individual reviews
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div style="background:white;padding: 20px; margin: 15px 0; border-radius: 12px; border-left: 4px solid #0077b6;box-shadow:0 2px 8px rgba(0,0,0,0.1);">';
+                info += '<div style="padding: 20px 0; margin: 15px 0; border-top: 2px solid rgba(0,0,0,0.1);">';
                 info += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
                 info += '<div>';
                 info += `<div style="font-size: 1.4em; font-weight: 700;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
                 if (review.date) {
-                  info += `<div style="font-size: 1.1em;color:#888;">${review.date}</div>`;
+                  info += `<div style="font-size: 1.1em;color:#666;">${review.date}</div>`;
                 }
                 info += '</div>';
                 if (review.rating) {
@@ -8161,10 +8127,10 @@
                 }
                 info += '</div>';
                 if (review.title) {
-                  info += `<div style="font-size: 1.3em; font-weight: 600; margin-bottom: 8px;color:#0077b6;">${review.title}</div>`;
+                  info += `<div style="font-size: 1.3em; font-weight: 600; margin-bottom: 8px;color:#2c3e50;">${review.title}</div>`;
                 }
                 if (review.text) {
-                  info += `<div style="font-size: 1.2em; line-height: 1.6;color:#555;">${review.text}</div>`;
+                  info += `<div style="font-size: 1.2em; line-height: 1.6;color:#2c3e50;">${review.text}</div>`;
                 }
                 info += '</div>';
               });
