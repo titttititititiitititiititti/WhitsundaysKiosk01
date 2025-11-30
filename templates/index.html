@@ -1790,6 +1790,13 @@
     /* ===================================================================
        MOBILE - Desktop View Scaled to Fit
        =================================================================== */
+    /* Hide Share Tour button on desktop/kiosk - show only on mobile */
+    @media (min-width: 769px) {
+      #share-tour-btn {
+        display: none !important;
+      }
+    }
+    
     /* Keep desktop layout on mobile, just let the browser zoom out */
     @media (max-width: 768px) {
       /* Ensure scrolling works on mobile */
@@ -5461,12 +5468,14 @@
       </section>
     </main>
 
-    <!-- Sticky Footer -->
-    <footer class="detail-footer">
-      <button class="btn-primary" id="book-now-btn">Book Now</button>
-      <button class="btn-secondary" id="more-info-btn">More Info</button>
-      <button class="btn-tertiary" id="continue-phone-btn">Continue on Phone</button>
-    </footer>
+    <!-- Action Buttons Card (replaces sticky footer) -->
+    <div class="info-card" style="margin: 30px 0; position: sticky; bottom: 20px; z-index: 999;">
+      <div style="display: flex; gap: 15px; align-items: center; justify-content: center; padding: 20px;">
+        <button class="btn-primary" id="book-now-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s;">Book Now 🎫</button>
+        <button class="btn-tertiary" id="continue-phone-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: 2px solid white; cursor: pointer; font-weight: 700; transition: all 0.3s;">📱 Send to My Phone</button>
+        <button class="btn-share" id="share-tour-btn" style="flex: 1; max-width: 300px; padding: 20px 30px; font-size: 1.3em; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: all 0.3s; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">🔗 Share Tour</button>
+      </div>
+    </div>
   </div>
   
   <!-- QR Payment Modal -->
@@ -7626,12 +7635,12 @@
       console.log('🔘 Setting up footer buttons for tour:', key);
       
       const bookNowBtn = document.getElementById('book-now-btn');
-      const moreInfoBtn = document.getElementById('more-info-btn');
       const continuePhoneBtn = document.getElementById('continue-phone-btn');
+      const shareTourBtn = document.getElementById('share-tour-btn');
       
       console.log('   Book Now button found:', !!bookNowBtn);
-      console.log('   More Info button found:', !!moreInfoBtn);
       console.log('   Continue Phone button found:', !!continuePhoneBtn);
+      console.log('   Share Tour button found:', !!shareTourBtn);
       
       if (bookNowBtn) {
         bookNowBtn.onclick = () => {
@@ -7657,20 +7666,6 @@
         };
       }
       
-      if (moreInfoBtn) {
-        moreInfoBtn.onclick = () => {
-          // Scroll to details section or open external link
-          if (data.link_more_info) {
-            window.open(data.link_more_info, '_blank');
-          } else {
-            const detailsSection = document.querySelector('.details-section');
-            if (detailsSection) {
-              detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        };
-      }
-      
       if (continuePhoneBtn) {
         continuePhoneBtn.onclick = () => {
           console.log('📱 Continue on Phone button clicked!');
@@ -7680,6 +7675,15 @@
         console.log('   ✓ Continue Phone button click handler attached');
       } else {
         console.error('   ❌ Continue Phone button not found!');
+      }
+      
+      if (shareTourBtn) {
+        shareTourBtn.onclick = () => {
+          console.log('🔗 Share Tour button clicked!');
+          const tourUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
+          shareTour(tourUrl, data.name);
+        };
+        console.log('   ✓ Share Tour button click handler attached');
       }
     }
     
@@ -8081,78 +8085,50 @@
           
           // WHAT TO BRING SECTION
           if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
-            info += '<div style="background:#e3f2fd;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #2196f3;">';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#e3f2fd;padding:25px;border-radius:16px;border-left:5px solid #2196f3;">';
             info += '<h3 style="margin:0 0 20px 0;color:#1976d2;font-size:1.8em;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedBring}</div>`;
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // WHAT'S EXTRA SECTION
           if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
-            info += '<div style="background:#f3e5f5;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #9c27b0;">';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#f3e5f5;padding:25px;border-radius:16px;border-left:5px solid #9c27b0;">';
             info += '<h3 style="margin:0 0 20px 0;color:#7b1fa2;font-size:1.8em;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedExtra}</div>`;
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:#ffebee;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #f44336;">';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#ffebee;padding:25px;border-radius:16px;border-left:5px solid #f44336;">';
             info += '<h3 style="margin:0 0 20px 0;color:#d32f2f;font-size:1.8em;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.15em;line-height:1.8;">${formattedPolicy}</div>`;
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // Add Cruise Whitsundays disclaimer (only for their tours)
           if (data.company && data.company.toLowerCase().includes('cruise whitsundays')) {
-            info += '<div style="background:#f9f9f9;padding:20px;border-radius:8px;margin-top:30px;margin-bottom:15px;border-left:3px solid #0077b6;">';
-            info += '<p style="font-size:0.85em;line-height:1.6;color:#555;margin:0;"><em>';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#f9f9f9;padding:25px;border-radius:16px;border-left:5px solid #0077b6;">';
+            info += '<h3 style="margin:0 0 15px 0;color:#0077b6;font-size:1.5em;">ℹ️ Important Pricing Information</h3>';
+            info += '<p style="font-size:1.1em;line-height:1.7;color:#555;margin:0;"><em>';
             info += '*Infants 0-3 years travel free of charge on all tours, however no infant meals are included. Rates applicable for bookings made from 15/1/2024.<br><br>';
             info += 'STANDARD/HIGH SEASON: High season dates are applicable for Great Barrier Reef Adventure & Whitehaven Beach products. High Season Dates (inclusive) 14/12-31/12/2024, 01/01-06/02/2025, 05/04-27/04/2025, 28/06-20/07/2025, 20/09-12/10/2025 & 13/12-31/12/2025.<br><br>';
             info += 'Great Barrier Reef Environmental Management Charge (EMC): Included in your cruise fare is a per head fee which goes to the Government. The money collected is used by the Great Barrier Reef Marine Park Authority (GBRMPA) for the management and protection of the Great Barrier Reef Marine Park.';
-            info += '</em></p></div>';
+            info += '</em></p></div></div>';
           }
-          
-          // Add action buttons side-by-side (touchscreen-optimized)
-          info += '<div style="display:flex;gap:20px;margin-top:32px;justify-content:center;flex-wrap:wrap;">';
-          
-          // Ocean Rafting Rezdy booking URL mapping
-          let rezdyUrl = null;
-          if (data.company && data.company.toLowerCase().includes('ocean rafting')) {
-            const tourName = data.name.toLowerCase();
-            
-            if (tourName.includes('fly raft') && tourName.includes('northern exposure')) {
-              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/266833/fly-raft-northern-exposure-package';
-            } else if (tourName.includes('fly raft') && tourName.includes('southern lights')) {
-              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/269177/fly-raft-southern-lights-package';
-            } else if (tourName.includes('60 minute') && tourName.includes('scenic flight')) {
-              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/269193/ocean-rafting-1-hour-scenic-flight';
-            } else if (tourName.includes('southern lights')) {
-              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/265683/southern-lights-tour';
-            } else if (tourName.includes('northern exposure')) {
-              rezdyUrl = 'https://whitsundayskiosk.rezdy.com/265139/northern-exposure-tour';
-            }
-          }
-          
-          if (rezdyUrl) {
-            // Use Rezdy booking button for Ocean Rafting tours
-            info += `<button onclick='openRezdyBooking("${rezdyUrl}")' style='color:#fff;background:#0077b6;padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(0,119,182,0.3);cursor:pointer;'>${t('book_now')} 📬</button>`;
-          } else {
-            // Use regular booking modal for other tours
-            info += `<button onclick='openBookingModal("${key}", "${data.name.replace(/'/g, "\\'")}","${data.company.replace(/'/g, "\\'")}")' style='color:#fff;background:#0077b6;padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(0,119,182,0.3);cursor:pointer;'>${t('book_now')} 📬</button>`;
-          }
-          if (data.link_more_info) {
-            info += `<a href='${data.link_more_info}' target='_blank' style='color:#0077b6;background:#e0eafc;padding:22px 45px;text-decoration:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;border:3px solid #0077b6;'>${t('more_info')}</a>`;
-            info += `<button onclick='showQRCode("${data.link_more_info}", "${data.name.replace(/'/g, "\\'")}")' style='color:#fff;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:22px 45px;border:none;font-weight:700;font-size:1.5em;flex:1;min-width:200px;text-align:center;transition:all 0.3s ease;border-radius:12px;box-shadow:0 4px 15px rgba(102,126,234,0.3);cursor:pointer;'>${t('view_on_phone')} 📱</button>`;
-          }
-          info += '</div>';
           
           // Add departure location section (if available)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
+            info += '<div class="info-card" style="margin-bottom:30px;">';
+            info += '<div style="background:#f0f8ff;padding:30px;border-radius:16px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.2em;color:#666;line-height:1.7;margin-bottom:25px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -8165,7 +8141,7 @@
               window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
             }
             
-            info += '</div>';
+            info += '</div></div>';
           }
           
           // Add reviews section (only if there are actual reviews)
