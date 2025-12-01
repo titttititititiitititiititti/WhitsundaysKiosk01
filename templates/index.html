@@ -1742,7 +1742,7 @@
     .btn-primary {
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
-      flex: 2;
+      flex: 1;
       box-shadow: 0 8px 25px rgba(0, 119, 182, 0.5);
       font-weight: 700;
       font-size: 1.5em;
@@ -1819,11 +1819,45 @@
         font-size: 1.2em;
         min-height: 60px;
       }
+      
+      /* Make back arrow 4x bigger on mobile */
+      .back-button {
+        width: 200px !important;
+        height: 200px !important;
+        font-size: 80px !important;
+      }
+      
+      /* Make voice assistant button 3x bigger on mobile */
+      #voice-assistant-btn {
+        width: 240px !important;
+        height: 240px !important;
+        font-size: 100px !important;
+      }
+      
+      /* Make weather widget 3x bigger on mobile */
+      .weather-widget.collapsed {
+        width: 150px !important;
+        height: 150px !important;
+        font-size: 70px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        left: auto !important;
+      }
+      
+      .weather-widget.collapsed .weather-header {
+        padding: 0 !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+      }
+      
+      .weather-widget.collapsed .weather-title span:last-child,
+      .weather-widget.collapsed .weather-toggle {
+        display: none !important;
+      }
     }
     
     /* Hide ALL other pages when tour detail is open */
     body:has(.tour-detail-page.active) .page.home-page,
-    body:has(.tour-detail-page.active) #weather-widget,
     body:has(.tour-detail-page.active) #main-layout,
     body:has(.tour-detail-page.active) #content-area,
     body:has(.tour-detail-page.active) #filter-panel,
@@ -4205,9 +4239,9 @@
       #back-arrow {
         top: 10px;
         left: 10px;
-        font-size: 1.4em;
-        width: 38px;
-        height: 38px;
+        font-size: 11.2em;
+        width: 280px;
+        height: 280px;
       }
       
       #detail-content {
@@ -4454,13 +4488,13 @@
       
       /* Chat Interface - Much more compact */
       .chat-button {
-        width: 50px !important;
-        height: 50px !important;
-        min-width: 50px !important;
-        min-height: 50px !important;
-        font-size: 1.6em !important;
-        bottom: 8px !important;
-        left: 8px !important;
+        width: 150px !important;
+        height: 150px !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        font-size: 4.8em !important;
+        bottom: 20px !important;
+        left: 20px !important;
         right: auto !important;
         background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
         box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
@@ -4658,19 +4692,23 @@
       
       /* Weather Widget - Perfect circle EXACT same as microphone button */
       .weather-widget.collapsed {
-        width: 50px !important;
-        height: 50px !important;
-        min-width: 50px !important;
-        min-height: 50px !important;
-        max-width: 50px !important;
-        max-height: 50px !important;
+        width: 150px !important;
+        height: 150px !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        max-width: 150px !important;
+        max-height: 150px !important;
         border-radius: 50% !important;
         background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
         box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 70px !important;
         border: none !important;
         padding: 0 !important;
-        bottom: 8px !important;
-        right: 8px !important;
+        bottom: 20px !important;
+        right: 20px !important;
         left: auto !important;
         overflow: hidden !important;
         display: flex !important;
@@ -4691,7 +4729,7 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 1.6em !important;
+        font-size: 4.8em !important;
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -4703,8 +4741,8 @@
       
       /* When expanded */
       .weather-widget:not(.collapsed) {
-        bottom: 70px !important;
-        right: 8px !important;
+        bottom: 190px !important;
+        right: 20px !important;
         left: auto !important;
         max-width: 280px !important;
         font-size: 0.75em;
@@ -5276,7 +5314,7 @@
     </div>
     
     <!-- Weather Widget -->
-    <div class="weather-widget" id="weather-widget" style="display:none;" onclick="toggleWeatherWidget()">
+    <div class="weather-widget collapsed" id="weather-widget" onclick="toggleWeatherWidget()">
       <div class="weather-header">
         <div class="weather-title">
           <span>🌤️</span>
@@ -5442,22 +5480,15 @@
         <div class="photo-carousel" id="detail-gallery"></div>
       </section>
 
-      <!-- Pricing Section -->
-      <section class="pricing-section" id="pricing-section">
-        <h2>Pricing</h2>
-        <p class="pricing-hint">Tap to select your pricing option.</p>
-        <div class="pricing-card" id="pricing-tiers-container"></div>
+      <!-- Description & Details -->
+      <section class="details-section">
+        <h3>About This Tour</h3>
+      <div id="detail-description"></div>
       </section>
 
       <!-- Info Grid (What's Included & Highlights) -->
       <section class="info-grid" id="info-grid">
         <!-- Cards will be populated by JavaScript -->
-      </section>
-
-      <!-- Description & Details -->
-      <section class="details-section">
-        <h3>About This Tour</h3>
-      <div id="detail-description"></div>
       </section>
 
       <!-- Additional Info -->
@@ -5471,6 +5502,13 @@
       <!-- Departure Section -->
       <section class="departure-section" id="departure-section">
         <!-- Map will be added here by JavaScript -->
+      </section>
+
+      <!-- Pricing Section -->
+      <section class="pricing-section" id="pricing-section">
+        <h2>Pricing</h2>
+        <p class="pricing-hint">Tap to select your pricing option.</p>
+        <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
       <!-- Reviews Section -->
@@ -7923,11 +7961,12 @@
           descriptionDiv.style.color = '#1a1a1a';
           
           let info = '';
+          let pricingHTML = '';  // Store pricing for later
           
           // PRICING SECTION - Enhanced with multiple tiers (wide rectangles, subtle blue tints) - SELECTABLE
-          info += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #0077b6;">';
-          info += '<h3 style="margin:0 0 10px 0;color:#0077b6;font-size:1.8em;">💰 ' + t('pricing') + '</h3>';
-          info += '<p style="color:#666;font-size:1.1em;margin:0 0 20px 0;font-style:italic;">' + t('tap_pricing') + '</p>';
+          pricingHTML += '<div style="background:#f8f9fa;padding:25px;border-radius:12px;margin-bottom:30px;border-left:5px solid #0077b6;">';
+          pricingHTML += '<h3 style="margin:0 0 10px 0;color:#0077b6;font-size:1.8em;">💰 ' + t('pricing') + '</h3>';
+          pricingHTML += '<p style="color:#666;font-size:1.1em;margin:0 0 20px 0;font-style:italic;">' + t('tap_pricing') + '</p>';
           
           // Extract company key for pricing features
           const companyKey = key.split('__')[0];
@@ -7940,7 +7979,7 @@
             const tiers = filteredPriceTiers.split('|').filter(t => t.trim());
             
             // Display as wide rectangles with subtle blue tints - SELECTABLE
-            info += '<div id="pricing-tiers-container" style="display:grid;gap:12px;grid-template-columns:1fr;">';
+            pricingHTML += '<div id="pricing-tiers-container" style="display:grid;gap:12px;grid-template-columns:1fr;">';
             tiers.forEach((tier, index) => {
               if (tier.trim()) {
                 // Alternate between two subtle blue-tinted whites
@@ -7951,29 +7990,29 @@
                 const originalPrice = priceMatch ? priceMatch[0] : '';
                 const convertedTier = originalPrice ? tier.replace(originalPrice, convertPrice(originalPrice)) : tier.trim();
                 
-                info += `<div class="pricing-tier-option" data-tier="${tier.trim()}" data-original-price="${originalPrice}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;font-weight:500;color:#2c3e50;border:3px solid #e0e7ee;cursor:pointer;transition:all 0.3s ease;user-select:none;">${convertedTier}</div>`;
+                pricingHTML += `<div class="pricing-tier-option" data-tier="${tier.trim()}" data-original-price="${originalPrice}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;font-weight:500;color:#2c3e50;border:3px solid #e0e7ee;cursor:pointer;transition:all 0.3s ease;user-select:none;">${convertedTier}</div>`;
               }
             });
-            info += '</div>';
+            pricingHTML += '</div>';
           } else {
-            info += '<div id="pricing-tiers-container" style="display:flex;gap:15px;flex-wrap:wrap;">';
+            pricingHTML += '<div id="pricing-tiers-container" style="display:flex;gap:15px;flex-wrap:wrap;">';
             if (data.price_adult && data.price_adult !== 'N/A') {
               const convertedAdultPrice = convertPrice(data.price_adult);
-              info += `<div class="pricing-tier-option" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:#f0f4f8;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('adult')}:</b> ${convertedAdultPrice}</div>`;
+              pricingHTML += `<div class="pricing-tier-option" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:#f0f4f8;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('adult')}:</b> ${convertedAdultPrice}</div>`;
             }
             if (data.price_child && data.price_child !== 'N/A') {
               const convertedChildPrice = convertPrice(data.price_child);
-              info += `<div class="pricing-tier-option" data-tier="${t('child')}: ${data.price_child}" data-original-price="${data.price_child}" style="background:#f5f8fa;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('child')}:</b> ${convertedChildPrice}</div>`;
+              pricingHTML += `<div class="pricing-tier-option" data-tier="${t('child')}: ${data.price_child}" data-original-price="${data.price_child}" style="background:#f5f8fa;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('child')}:</b> ${convertedChildPrice}</div>`;
             }
-            info += '</div>';
+            pricingHTML += '</div>';
           }
           
           // Add "prices are per person" note for Cruise Whitsundays
           if (companyKey === 'cruisewhitsundays') {
-            info += '<p style="color:#888;font-size:0.95em;margin:10px 0 0 0;font-style:italic;">' + t('prices_per_person') + '</p>';
+            pricingHTML += '<p style="color:#888;font-size:0.95em;margin:10px 0 0 0;font-style:italic;">' + t('prices_per_person') + '</p>';
           }
           
-          info += '</div>';
+          pricingHTML += '</div>';
           
           // QUICK INFO SECTION - Smart layout based on content length
           const quickInfoItems = [];
@@ -8183,8 +8222,10 @@
           }
           info += '</div>';
           
-          // Add departure location section (if available)
+          // DEPARTURE LOCATION SECTION (added later in order)
+          let departureHTML = '';
           if (data.departure_location && data.departure_location.trim()) {
+            departureHTML +=
             info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
@@ -8250,6 +8291,9 @@
             info += '</div>';
           }
           // Don't show "No reviews available" message - just omit the section entirely
+          
+          // NOW REORDER: Add departure location, then pricing, then reviews
+          // The order is now: Quick Info -> Itinerary -> Includes/Highlights -> Menu -> Important Info -> What To Bring -> What's Extra -> Cancellation -> Disclaimer -> Action Buttons -> DEPARTURE LOCATION -> PRICING -> REVIEWS
           
           document.getElementById('detail-info').innerHTML = info;
           
