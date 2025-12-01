@@ -876,7 +876,7 @@
     }
     
     /* Hide old elements when using new home layout (but not when in map view) */
-    body:has(.home-page):not(.map-view-active) #weather-widget,
+    body:has(.home-page):not(.map-view-active):not(:has(.tour-detail-page.active)) #weather-widget,
     body:has(.home-page):not(.map-view-active) #content-area,
     body:has(.home-page):not(.map-view-active) #filter-panel,
     body:has(.home-page):not(.map-view-active) .top-button-bar,
@@ -1020,8 +1020,8 @@
     }
     
     /* Hide elements when tour list page is active */
-    body:has(.tour-list-page[style*="display: block"]) .top-button-bar,
-    body:has(.tour-list-page[style*="display: block"]) #weather-widget,
+    body:has(.tour-list-page[style*="display: block"]):not(:has(.tour-detail-page.active)) .top-button-bar,
+    body:has(.tour-list-page[style*="display: block"]):not(:has(.tour-detail-page.active)) #weather-widget,
     body:has(.tour-list-page[style*="display: block"]) .mobile-menu-btn {
       display: none !important;
     }
@@ -4244,6 +4244,85 @@
         height: 280px;
       }
       
+      /* Tour Detail Main - Full width on mobile */
+      .tour-detail-main {
+        padding: 20px 0 120px 0 !important;
+        gap: 20px !important;
+        max-width: 100% !important;
+      }
+      
+      /* All sections full width on mobile */
+      .pricing-section,
+      .details-section,
+      .fine-print,
+      .departure-section {
+        margin: 0 !important;
+        padding: 20px 15px !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        border-bottom: 8px solid rgba(0, 119, 182, 0.1) !important;
+      }
+      
+      .pricing-section h2,
+      .details-section h3,
+      .fine-print h3,
+      .departure-section h3 {
+        font-size: 1.4em !important;
+        margin: 0 0 12px 0 !important;
+      }
+      
+      .pricing-hint {
+        font-size: 0.9em !important;
+        margin-bottom: 12px !important;
+      }
+      
+      .price-row {
+        padding: 15px 20px !important;
+        font-size: 1.1em !important;
+        min-height: 60px !important;
+        border-radius: 12px !important;
+      }
+      
+      .info-grid {
+        gap: 12px !important;
+        padding: 0 15px !important;
+        grid-template-columns: 1fr !important;
+      }
+      
+      .info-card {
+        padding: 15px !important;
+        border-radius: 12px !important;
+      }
+      
+      .info-card h3 {
+        font-size: 1.2em !important;
+        margin-bottom: 10px !important;
+      }
+      
+      .info-card ul {
+        font-size: 0.9em !important;
+      }
+      
+      .tour-hero {
+        padding: 0 15px !important;
+        gap: 15px !important;
+      }
+      
+      .tour-title {
+        font-size: 1.6em !important;
+        line-height: 1.3 !important;
+      }
+      
+      .operator-chip {
+        font-size: 0.9em !important;
+        padding: 6px 12px !important;
+      }
+      
+      .tour-summary {
+        font-size: 1em !important;
+        line-height: 1.5 !important;
+      }
+      
       #detail-content {
         margin: 60px 10px 20px 10px;
         padding: 15px 12px;
@@ -7443,6 +7522,8 @@
       if (detailInfo && pricingContainer) {
         // Find existing pricing tiers and convert them to price-row format
         const pricingTiers = detailInfo.querySelectorAll('.pricing-tier-option');
+        console.log(`📊 Found ${pricingTiers.length} pricing tiers to reorganize`);
+        
         if (pricingTiers.length > 0) {
           pricingContainer.innerHTML = '';
           pricingTiers.forEach((tier, index) => {
@@ -7454,7 +7535,11 @@
             
             const priceRow = document.createElement('button');
             priceRow.className = 'price-row';
-            if (index === 0) priceRow.classList.add('selected');
+            if (index === 0) {
+              priceRow.classList.add('selected');
+              selectedPricingTier = tier.getAttribute('data-tier');
+              console.log(`✅ Default pricing tier selected: ${selectedPricingTier}`);
+            }
             priceRow.setAttribute('data-tier', tier.getAttribute('data-tier'));
             priceRow.setAttribute('data-original-price', tier.getAttribute('data-original-price'));
             
@@ -7467,6 +7552,7 @@
               document.querySelectorAll('.price-row').forEach(r => r.classList.remove('selected'));
               this.classList.add('selected');
               selectedPricingTier = this.getAttribute('data-tier');
+              console.log(`💰 Pricing tier selected: ${selectedPricingTier}`);
             };
             
             pricingContainer.appendChild(priceRow);
@@ -7475,7 +7561,11 @@
           // Remove pricing from detail-info
           const pricingSection = detailInfo.querySelector('div[style*="border-left:5px solid #0077b6"]');
           if (pricingSection) pricingSection.remove();
+        } else {
+          console.warn('⚠️ No pricing tiers found in detail-info');
         }
+      } else {
+        console.warn('⚠️ Missing elements:', { detailInfo: !!detailInfo, pricingContainer: !!pricingContainer });
       }
       
       // Create info-grid cards for What's Included and Highlights
@@ -7979,7 +8069,7 @@
             const tiers = filteredPriceTiers.split('|').filter(t => t.trim());
             
             // Display as wide rectangles with subtle blue tints - SELECTABLE
-            pricingHTML += '<div id="pricing-tiers-container" style="display:grid;gap:12px;grid-template-columns:1fr;">';
+            pricingHTML += '<div id="pricing-tiers-source" style="display:grid;gap:12px;grid-template-columns:1fr;">';
             tiers.forEach((tier, index) => {
               if (tier.trim()) {
                 // Alternate between two subtle blue-tinted whites
@@ -7995,7 +8085,7 @@
             });
             pricingHTML += '</div>';
           } else {
-            pricingHTML += '<div id="pricing-tiers-container" style="display:flex;gap:15px;flex-wrap:wrap;">';
+            pricingHTML += '<div id="pricing-tiers-source" style="display:flex;gap:15px;flex-wrap:wrap;">';
             if (data.price_adult && data.price_adult !== 'N/A') {
               const convertedAdultPrice = convertPrice(data.price_adult);
               pricingHTML += `<div class="pricing-tier-option" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:#f0f4f8;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('adult')}:</b> ${convertedAdultPrice}</div>`;
