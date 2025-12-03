@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
@@ -14,6 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
+    /* Cache-bust: v2024-12-01-2350-FIXED - Removed zoom scaling, proper mobile styles */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1815,18 +1819,20 @@
       .btn-primary,
       .btn-secondary,
       .btn-tertiary {
-        padding: 25px 35px !important;
-        font-size: 1.3em !important;
-        min-height: 75px !important;
+        padding: 22px 25px !important;
+        font-size: 1.15em !important;
+        min-height: 70px !important;
         border-radius: 18px !important;
         flex: 1 !important;
         font-weight: 600 !important;
+        white-space: nowrap !important;
       }
       
       .detail-footer {
-        flex-direction: column !important;
+        flex-direction: row !important;
         width: calc(100% - 30px) !important;
-        gap: 12px !important;
+        gap: 10px !important;
+        flex-wrap: nowrap !important;
       }
       
       /* Make back arrow 4x bigger on mobile */
@@ -2268,17 +2274,6 @@
     
     /* Mobile - Scale down to 50% (everything half size) */
     @media (max-width: 768px) {
-      html {
-        font-size: 10px;
-      }
-      
-      body,
-      .page.tour-detail-page {
-        zoom: 0.5;
-        -moz-transform: scale(0.5);
-        -moz-transform-origin: 0 0;
-      }
-      
       /* Make header buttons sticky and always visible on mobile */
       .tour-detail-page .kiosk-header {
         position: -webkit-sticky;
@@ -2296,16 +2291,8 @@
       }
     }
     
-    /* Small phones - Scale down to 40% */
+    /* Small phones */
     @media (max-width: 480px) {
-      body,
-      .page.tour-detail-page {
-        zoom: 0.4;
-        -moz-transform: scale(0.4);
-        -moz-transform-origin: 0 0;
-      }
-      }
-      
       .question-text {
         font-size: 1.8em;
       }
