@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2415 - Width match + smaller weather emoji */
+    /* Cache-bust: v2024-12-01-2420 - Bigger weather/chat + mobile booking */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -4530,17 +4530,17 @@
       }
       
       .chat-header {
-        padding: 4px 6px !important;
+        padding: 15px 20px !important;
       }
       
       .chat-header h3 {
-        font-size: 11px !important;
+        font-size: 1.3em !important;
       }
       
       .chat-close, .chat-restart {
-        width: 20px !important;
-        height: 20px !important;
-        font-size: 12px !important;
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.8em !important;
       }
       
       #chat-messages {
@@ -4752,31 +4752,45 @@
         bottom: 190px !important;
         right: 20px !important;
         left: auto !important;
-        max-width: 280px !important;
-        font-size: 0.75em;
-        border-radius: 12px !important;
+        max-width: 450px !important;
+        font-size: 1.1em !important;
+        border-radius: 16px !important;
       }
       
       .weather-widget:not(.collapsed) .weather-header {
-        padding: 8px 10px !important;
-        border-radius: 12px 12px 0 0 !important;
+        padding: 15px 20px !important;
+        border-radius: 16px 16px 0 0 !important;
       }
       
       .weather-widget:not(.collapsed) .weather-header h4 {
-        font-size: 0.9em !important;
+        font-size: 1.3em !important;
         margin: 0 !important;
       }
       
       .weather-widget:not(.collapsed) .weather-toggle {
-        font-size: 0.9em !important;
+        font-size: 1.5em !important;
       }
       
       .weather-content {
-        padding: 8px !important;
+        padding: 20px !important;
+        font-size: 1.15em !important;
       }
       
       .current-weather {
-        padding: 8px !important;
+        padding: 15px !important;
+      }
+      
+      .weather-widget:not(.collapsed) .weather-icon-large {
+        font-size: 4em !important;
+      }
+      
+      .weather-widget:not(.collapsed) .temp-large {
+        font-size: 3em !important;
+      }
+      
+      .weather-widget:not(.collapsed) .forecast-day {
+        padding: 15px 10px !important;
+        font-size: 1.1em !important;
       }
       
       .weather-icon {
@@ -7755,6 +7769,16 @@
     
     // Show QR Payment Modal
     function showQRPaymentModal(checkoutUrl, tourName) {
+      // Check if we're on mobile - skip QR modal and go straight to booking
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        console.log('📱 Mobile detected - skipping QR modal, opening booking directly');
+        openRezdyBooking(checkoutUrl);
+        return;
+      }
+      
+      // Desktop/kiosk: Show QR modal
       const modal = document.getElementById('qr-payment-modal');
       const qrContainer = document.getElementById('qr-code-container');
       const continueBtn = document.getElementById('qr-continue-btn');
