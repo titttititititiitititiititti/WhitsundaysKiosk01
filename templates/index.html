@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2425 - Weather 2-row + audio check + input fix */
+    /* Cache-bust: v2024-12-01-2435 - Welcome audio + modal close fixes */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -3414,13 +3414,14 @@
       padding: 20px;
       border-top: 1px solid #e0e0e0;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
     }
     
     .chat-input {
       flex: 1;
       min-width: 0;
+      max-width: calc(100% - 120px);
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
@@ -3436,11 +3437,12 @@
     
     .chat-send {
       flex-shrink: 0;
-      min-width: 90px;
+      min-width: 100px;
+      width: 100px;
       background: #0077b6;
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 12px 15px;
       border-radius: 10px;
       font-size: 1em;
       font-weight: 600;
@@ -4820,14 +4822,17 @@
         justify-items: center !important;
       }
       
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(n+5) {
-        grid-column: span 1 !important;
+      /* Center the last 3 days in a new row */
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(5) {
+        grid-column: 2 / 3 !important;
       }
       
-      /* Center the last 3 days */
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(5) {
-        grid-column: 1 / 2 !important;
-        margin-left: 25% !important;
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(6) {
+        grid-column: 3 / 4 !important;
+      }
+      
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(7) {
+        grid-column: 4 / 5 !important;
       }
       
       .forecast-day {
@@ -6144,6 +6149,7 @@
     // Call this when language or currency changes
     document.addEventListener('DOMContentLoaded', () => {
       updateHeaderChips();
+      initWelcomeAudio(); // Initialize welcome audio
       
       // Auto-open tour if tour_to_open parameter is passed from Flask
       {% if tour_to_open %}
@@ -7859,16 +7865,24 @@
     
     // Close QR Payment Modal
     function closeQRModal() {
-      console.log('🚫 Closing QR modal');
-      const modal = document.getElementById('qr-payment-modal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.style.visibility = 'hidden';
-        modal.style.opacity = '0';
-        modal.style.pointerEvents = 'none';
+      console.log('🚫 Closing QR payment modal');
+      const paymentModal = document.getElementById('qr-payment-modal');
+      if (paymentModal) {
+        paymentModal.style.display = 'none';
+        paymentModal.style.visibility = 'hidden';
+        paymentModal.style.opacity = '0';
+        paymentModal.style.pointerEvents = 'none';
         // Re-enable body scroll
         document.body.style.overflow = '';
-        console.log('   ✅ Modal closed');
+        console.log('   ✅ QR Payment modal closed');
+      }
+      
+      // Also close the share QR modal if it exists
+      const shareModal = document.getElementById('qr-modal');
+      if (shareModal) {
+        shareModal.style.display = 'none';
+        shareModal.remove();
+        console.log('   ✅ QR Share modal closed');
       }
     }
     
@@ -7969,17 +7983,19 @@
           console.log('   ✓ Copy button configured');
         }
         
-        // Setup cancel button
-        const cancelBtn = document.getElementById('qr-cancel-btn');
-        if (cancelBtn) {
-          cancelBtn.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🚫 Cancel button clicked');
-            closeQRModal();
-          };
-          console.log('   ✓ Cancel button configured');
-        }
+        // Setup cancel button - ensure it's clickable
+        setTimeout(() => {
+          const cancelBtn = document.getElementById('qr-cancel-btn');
+          if (cancelBtn) {
+            cancelBtn.onclick = (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🚫 Cancel button clicked');
+              closeQRModal();
+            };
+            console.log('   ✓ Cancel button configured');
+          }
+        }, 100);
       }
     }
     
@@ -8710,22 +8726,47 @@
     }
     
     function closeBookingModal() {
-      document.getElementById('booking-modal').classList.remove('active');
+      console.log('🚫 Closing booking modal');
+      const modal = document.getElementById('booking-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
       document.body.style.overflow = '';
-      document.getElementById('booking-form').reset();
-      document.getElementById('booking-form').style.display = 'block';
-      document.getElementById('booking-success').style.display = 'none';
+      const form = document.getElementById('booking-form');
+      const success = document.getElementById('booking-success');
+      if (form) {
+        form.reset();
+        form.style.display = 'block';
+      }
+      if (success) {
+        success.style.display = 'none';
+      }
       currentTourForBooking = null;
-      // Note: We don't reset selectedPricingTier here so user can still see their selection
+      console.log('   ✅ Booking modal closed');
     }
     
-    // Close modal when clicking X or outside
-    document.getElementById('close-booking-modal').onclick = closeBookingModal;
-    document.getElementById('booking-modal').onclick = function(e) {
-      if (e.target === this) {
-        closeBookingModal();
+    // Close modal when clicking X or outside - set up after DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      const closeBtn = document.getElementById('close-booking-modal');
+      const modal = document.getElementById('booking-modal');
+      
+      if (closeBtn) {
+        closeBtn.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeBookingModal();
+        };
       }
-    };
+      
+      if (modal) {
+        modal.onclick = function(e) {
+          if (e.target === this) {
+            closeBookingModal();
+          }
+        };
+      }
+    });
     
     // Handle booking form submission
     document.getElementById('booking-form').addEventListener('submit', async function(e) {
@@ -8780,7 +8821,7 @@
   <!-- QR Code Modal -->
   <div id="qr-modal">
     <div class="qr-modal-content">
-      <button class="qr-modal-close" onclick="closeQRModal()">×</button>
+      <button class="qr-modal-close" onclick="closeShareQRModal()">×</button>
       <div class="qr-modal-title">📱 Scan to Book</div>
       <div class="qr-modal-subtitle" id="qr-tour-name"></div>
       <div class="qr-code-container">
@@ -8809,14 +8850,19 @@
       modal.style.display = 'flex';
     }
     
-    function closeQRModal() {
-      document.getElementById('qr-modal').style.display = 'none';
+    function closeShareQRModal() {
+      const modal = document.getElementById('qr-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.remove();
+      }
     }
     
     // Close modal when clicking outside
-    document.getElementById('qr-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeQRModal();
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('qr-modal');
+      if (modal && e.target === modal) {
+        closeShareQRModal();
       }
     });
     
@@ -10413,6 +10459,22 @@
     let chatHistory = [];
     let isChatting = false;
     let hasSpokenWelcome = false; // Track if we've spoken the welcome message
+    let isChatOpen = false; // Track if chat is currently open
+    let welcomeAudio = null; // Pre-recorded welcome audio
+    
+    // Initialize welcome audio
+    function initWelcomeAudio() {
+      welcomeAudio = new Audio('{{ url_for("static", filename="welcome.mp3") }}');
+      welcomeAudio.volume = 1.0;
+      
+      // If no pre-recorded audio, use text-to-speech fallback
+      welcomeAudio.onerror = () => {
+        console.log('⚠️ Welcome audio not available, will use TTS fallback');
+        welcomeAudio = null;
+      };
+      
+      console.log('🎵 Welcome audio initialized');
+    }
     
     function toggleChat() {
       console.log('💬 toggleChat() called');
@@ -10449,22 +10511,44 @@
         if (!hasSpokenWelcome && window.voiceChat && window.voiceChat.autoSpeak) {
           hasSpokenWelcome = true;
           
-          // Wait a moment for chat to open, then speak
+          // Wait a moment for chat to open, then play welcome
           setTimeout(() => {
             // Only speak if chat is still open
-            const chatInterface = document.getElementById('chat-interface');
-            if (chatInterface && chatInterface.style.display !== 'none') {
-              const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
-              window.voiceChat.speak(welcomeText);
+            if (isChatOpen) {
+              // Try to play pre-recorded audio first, fallback to TTS
+              if (welcomeAudio) {
+                console.log('🎵 Playing pre-recorded welcome message');
+                welcomeAudio.play().catch(err => {
+                  console.log('⚠️ Audio playback failed, using TTS:', err);
+                  const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
+                  if (isChatOpen && window.voiceChat) {
+                    window.voiceChat.speak(welcomeText);
+                  }
+                });
+              } else {
+                // Fallback to TTS
+                console.log('🔊 Using TTS for welcome message');
+                const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
+                if (isChatOpen && window.voiceChat) {
+                  window.voiceChat.speak(welcomeText);
+                }
+              }
             }
           }, 500);
         }
       } else {
         console.log('   Closing chat...');
+        isChatOpen = false;
         
         // Stop any playing voice
         if (window.voiceChat) {
           window.voiceChat.stopSpeaking();
+        }
+        
+        // Stop welcome audio if playing
+        if (welcomeAudio) {
+          welcomeAudio.pause();
+          welcomeAudio.currentTime = 0;
         }
         
         // Hide chat interface
@@ -10483,12 +10567,19 @@
     
     function closeChat() {
       console.log('❌ closeChat() called - forcing close');
+      isChatOpen = false;
       const chatInterface = document.getElementById('chat-interface');
       const chatButton = document.getElementById('chat-button');
       
       // Stop any playing voice
       if (window.voiceChat) {
         window.voiceChat.stopSpeaking();
+      }
+      
+      // Stop welcome audio if playing
+      if (welcomeAudio) {
+        welcomeAudio.pause();
+        welcomeAudio.currentTime = 0;
       }
       
       // Force remove all classes and hide
@@ -11143,8 +11234,7 @@
       
       // Voice output: speak AI responses (only if chat is open)
       if (role === 'assistant' && window.voiceChat && window.voiceChat.autoSpeak) {
-        const chatInterface = document.getElementById('chat-interface');
-        if (chatInterface && chatInterface.style.display !== 'none') {
+        if (isChatOpen) {
           window.voiceChat.speak(message);
         }
       }
@@ -11390,7 +11480,7 @@
               📋 Copy Link
             </button>
             
-            <button onclick="closeQRModal()" style="
+            <button onclick="closeShareQRModal()" style="
               flex: 1;
               background: #0077b6;
               color: white;
@@ -11414,16 +11504,9 @@
       // Close on background click
       modal.addEventListener('click', function(e) {
         if (e.target === modal) {
-          closeQRModal();
+          closeShareQRModal();
         }
       });
-    }
-    
-    function closeQRModal() {
-      const modal = document.getElementById('qr-modal');
-      if (modal) {
-        modal.remove();
-      }
     }
     
     function copyRecommendationLink(url) {
