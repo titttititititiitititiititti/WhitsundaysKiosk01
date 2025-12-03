@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2420 - Bigger weather/chat + mobile booking */
+    /* Cache-bust: v2024-12-01-2425 - Weather 2-row + audio check + input fix */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -3415,10 +3415,12 @@
       border-top: 1px solid #e0e0e0;
       display: flex;
       gap: 10px;
+      align-items: center;
     }
     
     .chat-input {
       flex: 1;
+      min-width: 0;
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
@@ -3433,14 +3435,18 @@
     }
     
     .chat-send {
+      flex-shrink: 0;
+      min-width: 90px;
       background: #0077b6;
       color: white;
       border: none;
       padding: 12px 20px;
       border-radius: 10px;
       font-size: 1em;
+      font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
+      white-space: nowrap;
     }
     
     .chat-send:hover {
@@ -4571,14 +4577,20 @@
         font-size: 10px !important;
       }
       
-      #chat-input-container {
-        padding: 4px !important;
-        gap: 3px !important;
+      .chat-input-container {
+        padding: 12px !important;
+        gap: 8px !important;
       }
       
-      #chat-input {
-        font-size: 10px !important;
-        padding: 4px 6px !important;
+      .chat-input {
+        font-size: 1em !important;
+        padding: 10px !important;
+      }
+      
+      .chat-send {
+        min-width: 70px !important;
+        padding: 10px 15px !important;
+        font-size: 0.95em !important;
       }
       
       #chat-send, #chat-voice {
@@ -4802,9 +4814,20 @@
       }
       
       .forecast-container {
-        grid-template-columns: repeat(7, 1fr) !important;
-        gap: 4px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
         padding: 8px 0 !important;
+        justify-items: center !important;
+      }
+      
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(n+5) {
+        grid-column: span 1 !important;
+      }
+      
+      /* Center the last 3 days */
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(5) {
+        grid-column: 1 / 2 !important;
+        margin-left: 25% !important;
       }
       
       .forecast-day {
@@ -10428,8 +10451,12 @@
           
           // Wait a moment for chat to open, then speak
           setTimeout(() => {
-            const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
-            window.voiceChat.speak(welcomeText);
+            // Only speak if chat is still open
+            const chatInterface = document.getElementById('chat-interface');
+            if (chatInterface && chatInterface.style.display !== 'none') {
+              const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
+              window.voiceChat.speak(welcomeText);
+            }
           }, 500);
         }
       } else {
@@ -11114,9 +11141,12 @@
       messagesContainer.appendChild(messageDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       
-      // Voice output: speak AI responses
+      // Voice output: speak AI responses (only if chat is open)
       if (role === 'assistant' && window.voiceChat && window.voiceChat.autoSpeak) {
-        window.voiceChat.speak(message);
+        const chatInterface = document.getElementById('chat-interface');
+        if (chatInterface && chatInterface.style.display !== 'none') {
+          window.voiceChat.speak(message);
+        }
       }
     }
     
