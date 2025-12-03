@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2435 - Welcome audio + modal close fixes */
+    /* Cache-bust: v2024-12-01-2440 - Chat open flag + input sizing + weather 2-row */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -3421,7 +3421,7 @@
     .chat-input {
       flex: 1;
       min-width: 0;
-      max-width: calc(100% - 120px);
+      max-width: calc(100% - 140px);
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
@@ -3437,12 +3437,12 @@
     
     .chat-send {
       flex-shrink: 0;
-      min-width: 100px;
-      width: 100px;
+      min-width: 120px;
+      width: 120px;
       background: #0077b6;
       color: white;
       border: none;
-      padding: 12px 15px;
+      padding: 12px 18px;
       border-radius: 10px;
       font-size: 1em;
       font-weight: 600;
@@ -3813,9 +3813,22 @@
     
     .forecast-container {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
       margin-bottom: 15px;
+    }
+    
+    /* Center the last 3 days in second row */
+    .forecast-day:nth-child(5) {
+      grid-column: 2 / 3;
+    }
+    
+    .forecast-day:nth-child(6) {
+      grid-column: 3 / 4;
+    }
+    
+    .forecast-day:nth-child(7) {
+      grid-column: 4 / 5;
     }
     
     .forecast-day {
@@ -3917,8 +3930,21 @@
       }
       
       .forecast-container {
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 5px;
+      }
+      
+      /* Center the last 3 days */
+      .forecast-day:nth-child(5) {
+        grid-column: 2 / 3;
+      }
+      
+      .forecast-day:nth-child(6) {
+        grid-column: 3 / 4;
+      }
+      
+      .forecast-day:nth-child(7) {
+        grid-column: 4 / 5;
       }
       
       .forecast-day {
@@ -4520,6 +4546,7 @@
       
       .chat-button::before {
         content: "🎤" !important;
+        font-size: 1.5em !important;
       }
       
       .chat-button img {
@@ -4587,12 +4614,14 @@
       .chat-input {
         font-size: 1em !important;
         padding: 10px !important;
+        max-width: calc(100% - 100px) !important;
       }
       
       .chat-send {
-        min-width: 70px !important;
-        padding: 10px 15px !important;
-        font-size: 0.95em !important;
+        min-width: 85px !important;
+        width: 85px !important;
+        padding: 10px 12px !important;
+        font-size: 0.9em !important;
       }
       
       #chat-send, #chat-voice {
@@ -10498,6 +10527,7 @@
         
         // Force display to flex
         chatInterface.style.display = 'flex';
+        isChatOpen = true;
         
         console.log('   Chat display:', window.getComputedStyle(chatInterface).display);
         console.log('   Chat z-index:', window.getComputedStyle(chatInterface).zIndex);
