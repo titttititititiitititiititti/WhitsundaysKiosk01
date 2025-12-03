@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2405 - Zoom desktop view + weather widget always visible */
+    /* Cache-bust: v2024-12-01-2410 - Separate cards + width fix + weather emoji */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1380,12 +1380,12 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 80px 120px 80px;
+      padding: 40px 40px 120px 40px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 40px;
-      max-width: 1400px;
+      max-width: 100%;
       margin: 0 auto;
       width: 100%;
       background: transparent !important;
@@ -1525,19 +1525,13 @@
       transform: scale(0.98);
     }
     
-    /* Info Grid - Two Cards Side by Side */
+    /* Info Grid - Single column for all cards */
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 30px;
       margin: 32px 50px;
       background: transparent !important;
-    }
-    
-    @media (max-width: 900px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
     }
     
     .info-card {
@@ -4743,7 +4737,7 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 4.8em !important;
+        font-size: 2.5em !important;
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -7547,11 +7541,8 @@
         }
       }
       
-      // Move remaining info sections to fine-print section (works in any language)
-      const finePrint = document.getElementById('fine-print');
-      if (finePrint && detailInfo) {
-        const finePrintContent = [];
-        
+      // Move remaining info sections to info-grid as separate cards
+      if (infoGrid && detailInfo) {
         // Find all sections with colored borders (these are info sections)
         const sections = detailInfo.querySelectorAll('div[style*="border-left"]');
         sections.forEach(section => {
@@ -7560,18 +7551,21 @@
             // Skip pricing (#0077b6), includes (#4caf50), and highlights (#ff9800) - they're handled elsewhere
             const style = section.getAttribute('style') || '';
             if (!style.includes('#0077b6') && !style.includes('#4caf50') && !style.includes('#ff9800')) {
-              finePrintContent.push(section.outerHTML);
+              // Create a card for this section
+              const card = document.createElement('article');
+              card.className = 'info-card';
+              card.innerHTML = section.innerHTML;
+              infoGrid.appendChild(card);
               section.remove();
             }
           }
         });
-        
-        if (finePrintContent.length > 0) {
-          finePrint.innerHTML = finePrintContent.join('');
-          finePrint.style.display = 'block';
-        } else {
-          finePrint.style.display = 'none';
-        }
+      }
+      
+      // Hide fine-print section since all content is now in cards
+      const finePrint = document.getElementById('fine-print');
+      if (finePrint) {
+        finePrint.style.display = 'none';
       }
       
       // Handle departure section (Map & Reviews) - works in any language
