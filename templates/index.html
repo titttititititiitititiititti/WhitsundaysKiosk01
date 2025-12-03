@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2410 - Separate cards + width fix + weather emoji */
+    /* Cache-bust: v2024-12-01-2415 - Width match + smaller weather emoji */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1380,7 +1380,7 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 40px 120px 40px;
+      padding: 40px 20px 120px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -1459,7 +1459,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 0;
     }
     
     .pricing-section h2 {
@@ -1530,7 +1530,7 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 30px;
-      margin: 32px 50px;
+      margin: 0;
       background: transparent !important;
     }
     
@@ -1589,7 +1589,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 0;
     }
     
     .details-section h3 {
@@ -1612,7 +1612,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 0;
     }
     
     .fine-print h3 {
@@ -1638,7 +1638,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px 100px 50px;
+      margin: 0;
     }
     
     .departure-section h3 {
@@ -4737,7 +4737,7 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 2.5em !important;
+        font-size: 1.5em !important;
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
