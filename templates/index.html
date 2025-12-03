@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2350-FIXED - Removed zoom scaling, proper mobile styles */
+    /* Cache-bust: v2024-12-01-2355 - Zoom on home, no zoom on tour detail */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -2274,6 +2274,24 @@
     
     /* Mobile - Scale down to 50% (everything half size) */
     @media (max-width: 768px) {
+      /* Apply zoom scaling to home page and other pages, but NOT tour detail page */
+      html:not(:has(.tour-detail-page.active)) {
+        font-size: 10px;
+      }
+      
+      body:not(:has(.tour-detail-page.active)),
+      .page:not(.tour-detail-page) {
+        zoom: 0.5;
+        -moz-transform: scale(0.5);
+        -moz-transform-origin: 0 0;
+      }
+      
+      /* Tour detail page stays at normal size with proper mobile styles */
+      .tour-detail-page.active {
+        zoom: 1 !important;
+        -moz-transform: none !important;
+      }
+      
       /* Make header buttons sticky and always visible on mobile */
       .tour-detail-page .kiosk-header {
         position: -webkit-sticky;
@@ -2293,6 +2311,20 @@
     
     /* Small phones */
     @media (max-width: 480px) {
+      /* Apply zoom scaling to home page and other pages, but NOT tour detail page */
+      body:not(:has(.tour-detail-page.active)),
+      .page:not(.tour-detail-page) {
+        zoom: 0.4;
+        -moz-transform: scale(0.4);
+        -moz-transform-origin: 0 0;
+      }
+      
+      /* Tour detail page stays at normal size with proper mobile styles */
+      .tour-detail-page.active {
+        zoom: 1 !important;
+        -moz-transform: none !important;
+      }
+      
       .question-text {
         font-size: 1.8em;
       }
