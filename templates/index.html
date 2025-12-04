@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2440 - Chat open flag + input sizing + weather 2-row */
+    /* Cache-bust: v2024-12-01-2450 - Welcome audio instant playback with visualizer */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -10495,14 +10495,44 @@
     function initWelcomeAudio() {
       welcomeAudio = new Audio('{{ url_for("static", filename="welcome.mp3") }}');
       welcomeAudio.volume = 1.0;
+      welcomeAudio.preload = 'auto'; // Preload for instant playback
       
-      // If no pre-recorded audio, use text-to-speech fallback
-      welcomeAudio.onerror = () => {
-        console.log('⚠️ Welcome audio not available, will use TTS fallback');
-        welcomeAudio = null;
+      // Activate visualizer when playing
+      welcomeAudio.onplay = () => {
+        console.log('🔊 Welcome audio: Playing...');
+        const visualizer = document.getElementById('audio-visualizer');
+        if (visualizer) {
+          visualizer.classList.add('active');
+        }
       };
       
-      console.log('🎵 Welcome audio initialized');
+      // Deactivate visualizer when finished
+      welcomeAudio.onended = () => {
+        console.log('🔊 Welcome audio: Finished');
+        const visualizer = document.getElementById('audio-visualizer');
+        if (visualizer) {
+          visualizer.classList.remove('active');
+        }
+      };
+      
+      // Handle playback errors
+      welcomeAudio.onerror = (err) => {
+        console.log('⚠️ Welcome audio error:', err);
+        const visualizer = document.getElementById('audio-visualizer');
+        if (visualizer) {
+          visualizer.classList.remove('active');
+        }
+      };
+      
+      // Handle load errors
+      welcomeAudio.addEventListener('error', function() {
+        console.log('⚠️ Welcome audio not available, will use TTS fallback');
+        welcomeAudio = null;
+      });
+      
+      // Force load the audio
+      welcomeAudio.load();
+      console.log('🎵 Welcome audio initialized and preloaded');
     }
     
     function toggleChat() {
@@ -10548,8 +10578,15 @@
               // Try to play pre-recorded audio first, fallback to TTS
               if (welcomeAudio) {
                 console.log('🎵 Playing pre-recorded welcome message');
+                welcomeAudio.currentTime = 0; // Reset to start
                 welcomeAudio.play().catch(err => {
                   console.log('⚠️ Audio playback failed, using TTS:', err);
+                  // Hide visualizer on error
+                  const visualizer = document.getElementById('audio-visualizer');
+                  if (visualizer) {
+                    visualizer.classList.remove('active');
+                  }
+                  // Fallback to TTS
                   const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
                   if (isChatOpen && window.voiceChat) {
                     window.voiceChat.speak(welcomeText);
@@ -10581,6 +10618,12 @@
           welcomeAudio.currentTime = 0;
         }
         
+        // Hide visualizer when closing
+        const visualizer = document.getElementById('audio-visualizer');
+        if (visualizer) {
+          visualizer.classList.remove('active');
+        }
+        
         // Hide chat interface
         chatInterface.style.display = 'none';
         
@@ -10610,6 +10653,12 @@
       if (welcomeAudio) {
         welcomeAudio.pause();
         welcomeAudio.currentTime = 0;
+      }
+      
+      // Hide visualizer when closing
+      const visualizer = document.getElementById('audio-visualizer');
+      if (visualizer) {
+        visualizer.classList.remove('active');
       }
       
       // Force remove all classes and hide
