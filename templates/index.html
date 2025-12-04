@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2515 - Map initialization after reorganize + language switcher fixed */
+    /* Cache-bust: v2024-12-01-2520 - Fixed map not showing + added fallback + debug logging */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -7684,15 +7684,21 @@
           if (locationName && !locationName.includes(headingText)) {
             departureHTML += `<p style="font-size: 1em; font-weight: 600; color: #2c3e50; margin-bottom: 12px;">${locationName}</p>`;
           }
+          departureHTML += '<p style="font-size: 1em; color: #666; line-height: 1.6; margin-bottom: 20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</p>';
           if (mapElement) {
             departureHTML += mapElement.outerHTML;
           }
           departureLocationSection.remove();
         } else if (data.departure_location) {
-          departureHTML += `
-            <h3>Departure Location</h3>
-            <p style="font-size: 1em; font-weight: 600; color: #2c3e50;">${data.departure_location}</p>
-          `;
+          // Fallback: create departure section even if not found in detail-info
+          departureHTML += `<h3>📍 Departure Location</h3>`;
+          departureHTML += `<p style="font-size: 1em; font-weight: 600; color: #2c3e50; margin-bottom: 12px;">${data.departure_location}</p>`;
+          departureHTML += '<p style="font-size: 1em; color: #666; line-height: 1.6; margin-bottom: 20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</p>';
+          
+          // Check if there's a pending map to add
+          if (window.pendingMiniMap) {
+            departureHTML += `<div id="${window.pendingMiniMap.elementId}" style="width:100%;height:500px;margin-top:25px;border-radius:18px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.2);"></div>`;
+          }
         }
         
         if (departureHTML) {
@@ -8409,10 +8415,8 @@
           }
           info += '</div>';
           
-          // DEPARTURE LOCATION SECTION (added later in order)
-          let departureHTML = '';
+          // DEPARTURE LOCATION SECTION (will be moved to departure-section by reorganizeDetailPageContent)
           if (data.departure_location && data.departure_location.trim()) {
-            departureHTML +=
             info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
@@ -8554,39 +8558,55 @@
             });
           }
           // Reorganize content for modern kiosk layout
+          console.log('🔧 Reorganizing content for modern kiosk layout...');
           reorganizeDetailPageContent(data, key);
           
           // Initialize mini map AFTER reorganizing (so element is in final location)
           if (window.pendingMiniMap) {
+            console.log('🗺️ pendingMiniMap found:', window.pendingMiniMap);
             setTimeout(() => {
               const { elementId, coords } = window.pendingMiniMap;
+              console.log('🔍 Looking for map element:', elementId);
               const mapElement = document.getElementById(elementId);
+              console.log('📍 Map element:', mapElement);
               
               if (mapElement) {
-                console.log('🗺️ Initializing map in departure section:', elementId);
-                // Create mini map
-                const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
-                
-                // Add map tiles
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                  attribution: '© OpenStreetMap contributors',
-                  maxZoom: 18
-                }).addTo(miniMap);
-                
-                // Add marker for departure location
-                const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
-                marker.bindPopup(`
-                  <div style="font-size:1.4em;line-height:1.6;padding:8px;">
-                    <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
-                    <span style="font-size:1.1em;color:#666;">Departure Point</span>
-                  </div>
-                `).openPopup();
+                console.log('✅ Map element found! Initializing Leaflet map...');
+                try {
+                  // Create mini map
+                  const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
+                  console.log('✅ Leaflet map created');
+                  
+                  // Add map tiles
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18
+                  }).addTo(miniMap);
+                  console.log('✅ Map tiles added');
+                  
+                  // Add marker for departure location
+                  const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
+                  marker.bindPopup(`
+                    <div style="font-size:1.4em;line-height:1.6;padding:8px;">
+                      <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
+                      <span style="font-size:1.1em;color:#666;">Departure Point</span>
+                    </div>
+                  `).openPopup();
+                  console.log('✅ Map marker added and map fully initialized!');
+                } catch (error) {
+                  console.error('❌ Error initializing map:', error);
+                }
               } else {
-                console.warn('⚠️ Map element not found:', elementId);
+                console.error('❌ Map element not found with ID:', elementId);
+                console.log('🔍 Checking if element exists anywhere in DOM...');
+                const allDivs = document.querySelectorAll('div[id^="detail-mini-map"]');
+                console.log('Found divs with detail-mini-map prefix:', allDivs.length, allDivs);
               }
               
               window.pendingMiniMap = null;
-            }, 200);
+            }, 300);
+          } else {
+            console.log('⚠️ No pendingMiniMap found - tour may not have coordinates');
           }
           
           // Show the NEW modern tour detail page (it will overlay on top)
