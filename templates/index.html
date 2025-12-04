@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2450 - Welcome audio instant playback with visualizer */
+    /* Cache-bust: v2024-12-01-2500 - Native share API + send button readable + lang persist */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -4614,14 +4614,16 @@
       .chat-input {
         font-size: 1em !important;
         padding: 10px !important;
-        max-width: calc(100% - 100px) !important;
+        max-width: calc(100% - 120px) !important;
+        flex: 1 !important;
       }
       
       .chat-send {
-        min-width: 85px !important;
-        width: 85px !important;
-        padding: 10px 12px !important;
-        font-size: 0.9em !important;
+        min-width: 105px !important;
+        width: 105px !important;
+        padding: 10px 15px !important;
+        font-size: 1em !important;
+        flex-shrink: 0 !important;
       }
       
       #chat-send, #chat-voice {
@@ -7819,10 +7821,66 @@
         shareTourBtn.onclick = () => {
           console.log('🔗 Share Tour button clicked!');
           const tourUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
-          shareTour(tourUrl, data.name);
+          shareTour(tourUrl, data.name, key);
         };
         console.log('   ✓ Share Tour button click handler attached');
       }
+    }
+    
+    // Share tour function with native mobile share
+    async function shareTour(tourUrl, tourName, tourKey) {
+      console.log('📤 Sharing tour:', tourName);
+      
+      // Check if Web Share API is supported (mobile devices)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: tourName,
+            text: `Check out this amazing tour: ${tourName}`,
+            url: tourUrl
+          });
+          console.log('✅ Tour shared successfully via native share');
+        } catch (error) {
+          // User cancelled or error occurred
+          if (error.name !== 'AbortError') {
+            console.error('Share error:', error);
+            // Fallback to QR code modal
+            generateShareQRCode(tourKey, tourName);
+          }
+        }
+      } else {
+        // Fallback for desktop - show QR code modal
+        console.log('📱 Web Share API not supported, showing QR code modal');
+        generateShareQRCode(tourKey, tourName);
+      }
+    }
+    
+    // Generate shareable QR code
+    function generateShareQRCode(key, tourName) {
+      const modal = document.getElementById('share-qr-modal');
+      if (!modal) {
+        console.error('Share QR modal not found');
+        return;
+      }
+      
+      const qrContainer = document.getElementById('share-qr-container');
+      const modalTitle = modal.querySelector('h2');
+      
+      if (modalTitle) {
+        modalTitle.textContent = `Share: ${tourName}`;
+      }
+      
+      // Generate QR code for shareable URL
+      const shareUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
+      const qrCodeUrl = `/api/generate-tour-qr/${key}?lang=${currentLanguage}`;
+      
+      qrContainer.innerHTML = `<img src="${qrCodeUrl}" alt="Share QR Code" style="width:100%;max-width:300px;height:auto;" />`;
+      
+      // Show modal
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      console.log('✅ Share QR modal displayed');
     }
     
     // Show QR Payment Modal
@@ -8863,6 +8921,19 @@
     </div>
   </div>
   
+  <!-- Share QR Code Modal -->
+  <div id="share-qr-modal" class="qr-overlay" style="display: none;">
+    <div class="qr-backdrop" onclick="closeShareQRModal()"></div>
+    <div class="qr-modal-content">
+      <button class="qr-modal-close" onclick="closeShareQRModal()">×</button>
+      <h2 class="qr-modal-title">🔗 Share This Tour</h2>
+      <div id="share-qr-container" class="qr-code-container"></div>
+      <div class="qr-modal-instruction">
+        Scan this QR code with your phone to open and share this tour.
+      </div>
+    </div>
+  </div>
+  
   <script>
     // QR Code functionality
     function showQRCode(tourUrl, tourName) {
@@ -8880,10 +8951,16 @@
     }
     
     function closeShareQRModal() {
-      const modal = document.getElementById('qr-modal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.remove();
+      const qrModal = document.getElementById('qr-modal');
+      const shareModal = document.getElementById('share-qr-modal');
+      
+      if (qrModal) {
+        qrModal.style.display = 'none';
+      }
+      
+      if (shareModal) {
+        shareModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
       }
     }
     
@@ -9941,6 +10018,8 @@
     
     // Switch language
     function switchLanguage(langCode) {
+      console.log('🌐 Switching language to:', langCode);
+      
       // Save preference
       localStorage.setItem('preferred_language', langCode);
       
@@ -9949,14 +10028,20 @@
       if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // Find the current tour key from the detail page
         const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
+        console.log('   Current tour key:', currentTourKey);
         if (currentTourKey) {
           localStorage.setItem('reopen_tour_after_reload', currentTourKey);
+          console.log('   ✓ Saved tour key for reopening after reload');
         }
+      } else {
+        console.log('   Not on tour detail page, clearing reopen flag');
+        localStorage.removeItem('reopen_tour_after_reload');
       }
       
       // Reload page with language parameter to get translated content
       const url = new URL(window.location.href);
       url.searchParams.set('lang', langCode);
+      console.log('   Reloading with URL:', url.toString());
       window.location.href = url.toString();
     }
     
