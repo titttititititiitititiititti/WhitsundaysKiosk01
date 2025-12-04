@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2510 - Back arrow in header + pricing display fixed + reordered */
+    /* Cache-bust: v2024-12-01-2515 - Map initialization after reorganize + language switcher fixed */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -8485,36 +8485,6 @@
           
           document.getElementById('detail-info').innerHTML = info;
           
-          // Initialize mini map if location exists
-          if (window.pendingMiniMap) {
-            setTimeout(() => {
-              const { elementId, coords } = window.pendingMiniMap;
-              const mapElement = document.getElementById(elementId);
-              
-              if (mapElement) {
-                // Create mini map
-                const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
-                
-                // Add map tiles
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                  attribution: '© OpenStreetMap contributors',
-                  maxZoom: 18
-                }).addTo(miniMap);
-                
-                // Add marker for departure location
-                const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
-                marker.bindPopup(`
-                  <div style="font-size:1.4em;line-height:1.6;padding:8px;">
-                    <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
-                    <span style="font-size:1.1em;color:#666;">Departure Point</span>
-                  </div>
-                `).openPopup();
-              }
-              
-              window.pendingMiniMap = null;
-            }, 100);
-          }
-          
           // Add click handlers for pricing tier selection
           setTimeout(() => {
             document.querySelectorAll('.pricing-tier-option').forEach(tierElement => {
@@ -8585,6 +8555,39 @@
           }
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
+          
+          // Initialize mini map AFTER reorganizing (so element is in final location)
+          if (window.pendingMiniMap) {
+            setTimeout(() => {
+              const { elementId, coords } = window.pendingMiniMap;
+              const mapElement = document.getElementById(elementId);
+              
+              if (mapElement) {
+                console.log('🗺️ Initializing map in departure section:', elementId);
+                // Create mini map
+                const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
+                
+                // Add map tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '© OpenStreetMap contributors',
+                  maxZoom: 18
+                }).addTo(miniMap);
+                
+                // Add marker for departure location
+                const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
+                marker.bindPopup(`
+                  <div style="font-size:1.4em;line-height:1.6;padding:8px;">
+                    <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
+                    <span style="font-size:1.1em;color:#666;">Departure Point</span>
+                  </div>
+                `).openPopup();
+              } else {
+                console.warn('⚠️ Map element not found:', elementId);
+              }
+              
+              window.pendingMiniMap = null;
+            }, 200);
+          }
           
           // Show the NEW modern tour detail page (it will overlay on top)
           console.log('🎬 Showing tour detail page...');
@@ -10043,7 +10046,7 @@
       localStorage.setItem('preferred_language', langCode);
       
       // Check if we're on a tour detail page - if so, save the tour key to reopen it after reload
-      const tourDetailPage = document.getElementById('tour-detail-page');
+      const tourDetailPage = document.querySelector('.page.tour-detail-page');
       if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // Find the current tour key from the detail page
         const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
