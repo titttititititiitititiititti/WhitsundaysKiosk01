@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2500 - Native share API + send button readable + lang persist */
+    /* Cache-bust: v2024-12-01-2510 - Back arrow in header + pricing display fixed + reordered */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1412,6 +1412,7 @@
       margin: 0 0 15px 0;
       line-height: 1.2;
       text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
     }
     
     .tour-hero .operator-chip {
@@ -1427,6 +1428,7 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      align-self: center;
     }
     
     .tour-hero .operator-chip:hover {
@@ -1827,11 +1829,11 @@
         flex-wrap: nowrap !important;
       }
       
-      /* Make back arrow 4x bigger on mobile */
+      /* Make back arrow bigger but fit in header on mobile */
       .back-button {
-        width: 200px !important;
-        height: 200px !important;
-        font-size: 80px !important;
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 3em !important;
       }
       
       /* Make voice assistant button 3x bigger on mobile */
@@ -2291,6 +2293,18 @@
         position: sticky;
         top: 0;
         z-index: 10001;
+      }
+      
+      /* Make tour title and company name larger on mobile to compensate for zoom */
+      .tour-title {
+        font-size: 6em !important;
+        margin-top: 80px !important;
+        margin-bottom: 25px !important;
+      }
+      
+      .tour-hero .operator-chip {
+        font-size: 2.2em !important;
+        padding: 20px 40px !important;
       }
     }
     
@@ -4621,9 +4635,13 @@
       .chat-send {
         min-width: 105px !important;
         width: 105px !important;
-        padding: 10px 15px !important;
+        padding: 14px 15px !important;
+        height: 48px !important;
         font-size: 1em !important;
         flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
       
       #chat-send, #chat-voice {
@@ -5580,16 +5598,16 @@
         <!-- Will be populated with terms, cancellation policy, etc. -->
       </section>
 
-      <!-- Departure Section -->
-      <section class="departure-section" id="departure-section">
-        <!-- Map will be added here by JavaScript -->
-      </section>
-
       <!-- Pricing Section -->
       <section class="pricing-section" id="pricing-section">
         <h2>Pricing</h2>
         <p class="pricing-hint">Tap to select your pricing option.</p>
         <div class="pricing-card" id="pricing-tiers-container"></div>
+      </section>
+
+      <!-- Departure Section -->
+      <section class="departure-section" id="departure-section">
+        <!-- Map will be added here by JavaScript -->
       </section>
 
       <!-- Reviews Section -->
@@ -8461,8 +8479,9 @@
           }
           // Don't show "No reviews available" message - just omit the section entirely
           
-          // NOW REORDER: Add departure location, then pricing, then reviews
-          // The order is now: Quick Info -> Itinerary -> Includes/Highlights -> Menu -> Important Info -> What To Bring -> What's Extra -> Cancellation -> Disclaimer -> Action Buttons -> DEPARTURE LOCATION -> PRICING -> REVIEWS
+          // NOW REORDER: Add pricing to info (CRITICAL: this was missing!)
+          // The order is now: Quick Info -> Itinerary -> Includes/Highlights -> Menu -> Important Info -> What To Bring -> What's Extra -> Cancellation -> Disclaimer -> Action Buttons -> PRICING
+          info += pricingHTML;
           
           document.getElementById('detail-info').innerHTML = info;
           
