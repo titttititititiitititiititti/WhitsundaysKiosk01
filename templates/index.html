@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2520 - Fixed map not showing + added fallback + debug logging */
+    /* Cache-bust: v2024-12-01-2525 - Welcome audio plays 0.3s after chat opens, no autoSpeak check */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -10694,41 +10694,41 @@
         // const input = document.getElementById('chat-input');
         // input.focus();
         
-        // Speak welcome message on first open
-        if (!hasSpokenWelcome && window.voiceChat && window.voiceChat.autoSpeak) {
+        // Play welcome message on first open (always, regardless of autoSpeak setting)
+        if (!hasSpokenWelcome) {
           hasSpokenWelcome = true;
           
-          // Wait a moment for chat to open, then play welcome
+          // Wait 0.3 seconds for chat to open, then play welcome
           setTimeout(() => {
-            // Only speak if chat is still open
+            // Only play if chat is still open
             if (isChatOpen) {
-              // Try to play pre-recorded audio first, fallback to TTS
+              // Always try to play pre-recorded audio first (faster and better quality)
               if (welcomeAudio) {
-                console.log('🎵 Playing pre-recorded welcome message');
+                console.log('🎵 Playing pre-recorded welcome message (0.3s delay)');
                 welcomeAudio.currentTime = 0; // Reset to start
                 welcomeAudio.play().catch(err => {
-                  console.log('⚠️ Audio playback failed, using TTS:', err);
+                  console.log('⚠️ Audio playback failed:', err);
                   // Hide visualizer on error
                   const visualizer = document.getElementById('audio-visualizer');
                   if (visualizer) {
                     visualizer.classList.remove('active');
                   }
-                  // Fallback to TTS
+                  // Fallback to TTS only if audio fails
                   const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
                   if (isChatOpen && window.voiceChat) {
                     window.voiceChat.speak(welcomeText);
                   }
                 });
               } else {
-                // Fallback to TTS
-                console.log('🔊 Using TTS for welcome message');
+                // Fallback to TTS if audio not loaded
+                console.log('⚠️ Welcome audio not loaded, using TTS');
                 const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
                 if (isChatOpen && window.voiceChat) {
                   window.voiceChat.speak(welcomeText);
                 }
               }
             }
-          }, 500);
+          }, 300); // 0.3 seconds as requested
         }
       } else {
         console.log('   Closing chat...');
