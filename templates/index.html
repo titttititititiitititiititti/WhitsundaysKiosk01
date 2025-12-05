@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
@@ -17,7 +14,6 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2535 - Faster welcome audio, footer order, logo restored, company filter */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -464,18 +460,10 @@
     }
     
     .header-left {
-      position: absolute;
-      left: 50px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .header-center {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 15px;
     }
     
     .header-right {
@@ -785,6 +773,24 @@
       background-position: center;
       transition: transform 0.5s ease;
     }
+
+/* Gold star for tours with working Rezdy booking */
+.tour-card-star {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle at 30% 30%, #ffe680, #f5c400 70%);
+  color: #8a5b00;
+  font-size: 1.8em;
+  line-height: 48px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  z-index: 6;
+  pointer-events: none;
+}
     
     .tour-card-large:hover .tour-card-image {
       transform: scale(1.05);
@@ -888,6 +894,7 @@
     }
     
     /* Hide old elements when using new home layout (but not when in map view) */
+    body:has(.home-page):not(.map-view-active) #weather-widget,
     body:has(.home-page):not(.map-view-active) #content-area,
     body:has(.home-page):not(.map-view-active) #filter-panel,
     body:has(.home-page):not(.map-view-active) .top-button-bar,
@@ -1031,7 +1038,8 @@
     }
     
     /* Hide elements when tour list page is active */
-    body:has(.tour-list-page[style*="display: block"]):not(:has(.tour-detail-page.active)) .top-button-bar,
+    body:has(.tour-list-page[style*="display: block"]) .top-button-bar,
+    body:has(.tour-list-page[style*="display: block"]) #weather-widget,
     body:has(.tour-list-page[style*="display: block"]) .mobile-menu-btn {
       display: none !important;
     }
@@ -1388,12 +1396,12 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 20px 120px 20px;
+      padding: 40px 80px 120px 80px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 40px;
-      max-width: 100%;
+      max-width: 1400px;
       margin: 0 auto;
       width: 100%;
       background: transparent !important;
@@ -1420,7 +1428,6 @@
       margin: 0 0 15px 0;
       line-height: 1.2;
       text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 0, 0, 0.5);
-      text-align: center;
     }
     
     .tour-hero .operator-chip {
@@ -1436,7 +1443,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      align-self: center;
     }
     
     .tour-hero .operator-chip:hover {
@@ -1469,7 +1475,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 0;
+      margin: 32px 50px;
     }
     
     .pricing-section h2 {
@@ -1535,13 +1541,19 @@
       transform: scale(0.98);
     }
     
-    /* Info Grid - Single column for all cards */
+    /* Info Grid - Two Cards Side by Side */
     .info-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, 1fr);
       gap: 30px;
-      margin: 0;
+      margin: 32px 50px;
       background: transparent !important;
+    }
+    
+    @media (max-width: 900px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
     }
     
     .info-card {
@@ -1599,7 +1611,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 0;
+      margin: 32px 50px;
     }
     
     .details-section h3 {
@@ -1622,7 +1634,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 0;
+      margin: 32px 50px;
     }
     
     .fine-print h3 {
@@ -1648,7 +1660,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 0;
+      margin: 32px 50px 100px 50px;
     }
     
     .departure-section h3 {
@@ -1736,24 +1748,21 @@
     .btn-tertiary {
       padding: 20px 45px;
       font-size: 1.4em;
-      font-weight: 700;
+      font-weight: 600;
       border: none;
       border-radius: 18px;
       cursor: pointer;
       transition: all 0.3s ease;
       min-height: 70px;
       user-select: none;
-      flex: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
     }
     
     .btn-primary {
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
+      flex: 1;
       box-shadow: 0 8px 25px rgba(0, 119, 182, 0.5);
+      font-weight: 700;
       font-size: 1.5em;
     }
     
@@ -1824,27 +1833,16 @@
       .btn-primary,
       .btn-secondary,
       .btn-tertiary {
-        padding: 22px 25px !important;
-        font-size: 1.15em !important;
-        min-height: 70px !important;
-        border-radius: 18px !important;
-        flex: 1 !important;
-        font-weight: 600 !important;
-        white-space: nowrap !important;
+        padding: 18px 30px;
+        font-size: 1.2em;
+        min-height: 60px;
       }
       
-      .detail-footer {
-        flex-direction: row !important;
-        width: calc(100% - 30px) !important;
-        gap: 10px !important;
-        flex-wrap: nowrap !important;
-      }
-      
-      /* Make back arrow bigger but fit in header on mobile */
+      /* Make back arrow 4x bigger on mobile */
       .back-button {
-        width: 80px !important;
-        height: 80px !important;
-        font-size: 3em !important;
+        width: 200px !important;
+        height: 200px !important;
+        font-size: 80px !important;
       }
       
       /* Make voice assistant button 3x bigger on mobile */
@@ -1878,6 +1876,7 @@
     
     /* Hide ALL other pages when tour detail is open */
     body:has(.tour-detail-page.active) .page.home-page,
+    body:has(.tour-detail-page.active) #weather-widget,
     body:has(.tour-detail-page.active) #main-layout,
     body:has(.tour-detail-page.active) #content-area,
     body:has(.tour-detail-page.active) #filter-panel,
@@ -2279,12 +2278,12 @@
     
     /* Mobile - Scale down to 50% (everything half size) */
     @media (max-width: 768px) {
-      /* Apply zoom scaling to ALL pages for consistent desktop view */
       html {
         font-size: 10px;
       }
       
-      body {
+      body,
+      .page.tour-detail-page {
         zoom: 0.5;
         -moz-transform: scale(0.5);
         -moz-transform-origin: 0 0;
@@ -2305,27 +2304,16 @@
         top: 0;
         z-index: 10001;
       }
-      
-      /* Make tour title and company name larger on mobile to compensate for zoom */
-      .tour-title {
-        font-size: 6em !important;
-        margin-top: 80px !important;
-        margin-bottom: 25px !important;
-      }
-      
-      .tour-hero .operator-chip {
-        font-size: 2.2em !important;
-        padding: 20px 40px !important;
-      }
     }
     
-    /* Small phones */
+    /* Small phones - Scale down to 40% */
     @media (max-width: 480px) {
-      /* Apply zoom scaling to ALL pages */
-      body {
+      body,
+      .page.tour-detail-page {
         zoom: 0.4;
         -moz-transform: scale(0.4);
         -moz-transform-origin: 0 0;
+      }
       }
       
       .question-text {
@@ -3153,7 +3141,7 @@
       position: fixed;
       bottom: 30px;
       left: 30px;
-      z-index: 9999999 !important;
+      z-index: 999999 !important;
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
       border: none;
@@ -3439,14 +3427,11 @@
       padding: 20px;
       border-top: 1px solid #e0e0e0;
       display: flex;
-      gap: 12px;
-      align-items: center;
+      gap: 10px;
     }
     
     .chat-input {
       flex: 1;
-      min-width: 0;
-      max-width: calc(100% - 140px);
       padding: 12px;
       border: 2px solid #e0e0e0;
       border-radius: 10px;
@@ -3461,19 +3446,14 @@
     }
     
     .chat-send {
-      flex-shrink: 0;
-      min-width: 120px;
-      width: 120px;
       background: #0077b6;
       color: white;
       border: none;
-      padding: 12px 18px;
+      padding: 12px 20px;
       border-radius: 10px;
       font-size: 1em;
-      font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
-      white-space: nowrap;
     }
     
     .chat-send:hover {
@@ -3739,7 +3719,7 @@
       border-radius: 16px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15);
       max-width: 400px;
-      z-index: 9999999;
+      z-index: 999;
       transition: all 0.3s ease;
     }
     
@@ -3838,22 +3818,9 @@
     
     .forecast-container {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(7, 1fr);
       gap: 8px;
       margin-bottom: 15px;
-    }
-    
-    /* Center the last 3 days in second row */
-    .forecast-day:nth-child(5) {
-      grid-column: 2 / 3;
-    }
-    
-    .forecast-day:nth-child(6) {
-      grid-column: 3 / 4;
-    }
-    
-    .forecast-day:nth-child(7) {
-      grid-column: 4 / 5;
     }
     
     .forecast-day {
@@ -3955,21 +3922,8 @@
       }
       
       .forecast-container {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(7, 1fr);
         gap: 5px;
-      }
-      
-      /* Center the last 3 days */
-      .forecast-day:nth-child(5) {
-        grid-column: 2 / 3;
-      }
-      
-      .forecast-day:nth-child(6) {
-        grid-column: 3 / 4;
-      }
-      
-      .forecast-day:nth-child(7) {
-        grid-column: 4 / 5;
       }
       
       .forecast-day {
@@ -4300,16 +4254,14 @@
         line-height: 1;
       }
       
-      /* Tour Detail Page - back arrow normal size since we're using zoom */
+      /* Tour Detail Page - Much more compact */
       #back-arrow {
         top: 10px;
         left: 10px;
-        font-size: 2.8em;
-        width: 70px;
-        height: 70px;
+        font-size: 1.4em;
+        width: 38px;
+        height: 38px;
       }
-      
-      /* Tour detail uses desktop layout with zoom, no mobile overrides needed */
       
       #detail-content {
         margin: 60px 10px 20px 10px;
@@ -4555,13 +4507,13 @@
       
       /* Chat Interface - Much more compact */
       .chat-button {
-        width: 150px !important;
-        height: 150px !important;
-        min-width: 150px !important;
-        min-height: 150px !important;
-        font-size: 4.8em !important;
-        bottom: 20px !important;
-        left: 20px !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        font-size: 1.6em !important;
+        bottom: 8px !important;
+        left: 8px !important;
         right: auto !important;
         background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
         box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
@@ -4571,7 +4523,6 @@
       
       .chat-button::before {
         content: "🎤" !important;
-        font-size: 1.5em !important;
       }
       
       .chat-button img {
@@ -4590,17 +4541,17 @@
       }
       
       .chat-header {
-        padding: 15px 20px !important;
+        padding: 4px 6px !important;
       }
       
       .chat-header h3 {
-        font-size: 1.3em !important;
+        font-size: 11px !important;
       }
       
       .chat-close, .chat-restart {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1.8em !important;
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 12px !important;
       }
       
       #chat-messages {
@@ -4631,28 +4582,14 @@
         font-size: 10px !important;
       }
       
-      .chat-input-container {
-        padding: 12px !important;
-        gap: 8px !important;
+      #chat-input-container {
+        padding: 4px !important;
+        gap: 3px !important;
       }
       
-      .chat-input {
-        font-size: 1em !important;
-        padding: 10px !important;
-        max-width: calc(100% - 120px) !important;
-        flex: 1 !important;
-      }
-      
-      .chat-send {
-        min-width: 105px !important;
-        width: 105px !important;
-        padding: 14px 15px !important;
-        height: 48px !important;
-        font-size: 1em !important;
-        flex-shrink: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+      #chat-input {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
       }
       
       #chat-send, #chat-voice {
@@ -4789,8 +4726,8 @@
         font-size: 70px !important;
         border: none !important;
         padding: 0 !important;
-        bottom: 20px !important;
-        right: 20px !important;
+        bottom: 8px !important;
+        right: 8px !important;
         left: auto !important;
         overflow: hidden !important;
         display: flex !important;
@@ -4798,7 +4735,7 @@
         justify-content: center !important;
         aspect-ratio: 1 / 1 !important;
         cursor: pointer !important;
-        z-index: 9999999 !important;
+        z-index: 999 !important;
       }
       
       .weather-widget.collapsed .weather-header,
@@ -4811,7 +4748,7 @@
       
       .weather-widget.collapsed::before {
         content: "🌤️";
-        font-size: 1.5em !important;
+        font-size: 1.6em !important;
         display: block !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -4823,48 +4760,34 @@
       
       /* When expanded */
       .weather-widget:not(.collapsed) {
-        bottom: 190px !important;
-        right: 20px !important;
+        bottom: 70px !important;
+        right: 8px !important;
         left: auto !important;
-        max-width: 450px !important;
-        font-size: 1.1em !important;
-        border-radius: 16px !important;
+        max-width: 280px !important;
+        font-size: 0.75em;
+        border-radius: 12px !important;
       }
       
       .weather-widget:not(.collapsed) .weather-header {
-        padding: 15px 20px !important;
-        border-radius: 16px 16px 0 0 !important;
+        padding: 8px 10px !important;
+        border-radius: 12px 12px 0 0 !important;
       }
       
       .weather-widget:not(.collapsed) .weather-header h4 {
-        font-size: 1.3em !important;
+        font-size: 0.9em !important;
         margin: 0 !important;
       }
       
       .weather-widget:not(.collapsed) .weather-toggle {
-        font-size: 1.5em !important;
+        font-size: 0.9em !important;
       }
       
       .weather-content {
-        padding: 20px !important;
-        font-size: 1.15em !important;
+        padding: 8px !important;
       }
       
       .current-weather {
-        padding: 15px !important;
-      }
-      
-      .weather-widget:not(.collapsed) .weather-icon-large {
-        font-size: 4em !important;
-      }
-      
-      .weather-widget:not(.collapsed) .temp-large {
-        font-size: 3em !important;
-      }
-      
-      .weather-widget:not(.collapsed) .forecast-day {
-        padding: 15px 10px !important;
-        font-size: 1.1em !important;
+        padding: 8px !important;
       }
       
       .weather-icon {
@@ -4876,22 +4799,9 @@
       }
       
       .forecast-container {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 4px !important;
         padding: 8px 0 !important;
-        justify-content: center !important;
-      }
-      
-      .forecast-day {
-        flex: 0 0 calc(25% - 6px) !important;
-        max-width: calc(25% - 6px) !important;
-      }
-      
-      /* Bottom 3 days centered with equal spacing */
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(n+5) {
-        flex: 0 0 calc(25% - 6px) !important;
-        max-width: calc(25% - 6px) !important;
       }
       
       .forecast-day {
@@ -5097,10 +5007,9 @@
     <div class="page home-page" style="display: flex !important;">
       <!-- Kiosk Header -->
       <header class="kiosk-header">
-        <div class="header-left"></div>
-        <div class="header-center">
+        <div class="header-left">
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
-        </div>
+      </div>
         <div class="header-right">
           <div class="language-selector" style="position: relative; display: inline-block;">
             <button class="chip" id="header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
@@ -5469,8 +5378,7 @@
     <div class="page tour-list-page" id="tour-list-page" style="display: none;">
       <!-- Kiosk Header (same as home) -->
       <header class="kiosk-header">
-        <div class="header-left"></div>
-        <div class="header-center">
+        <div class="header-left">
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
         </div>
         <div class="header-right">
@@ -5499,7 +5407,7 @@
                   {% if tour.review_rating and tour.review_rating > 0 and tour.review_count > 0 %}
                   <span class="rating">★ {{ "%.1f"|format(tour.review_rating) }} ({{ tour.review_count }})</span>
             {% endif %}
-                  <span class="price-badge">{{ tour.price_adult if 'FROM' in tour.price_adult or 'From' in tour.price_adult else 'FROM ' + tour.price_adult }}</span>
+                  <span class="price-badge">From {{ tour.price_adult }}</span>
         </div>
       </div>
             </article>
@@ -5551,12 +5459,8 @@
   <div class="page tour-detail-page">
     <!-- Kiosk Header -->
     <header class="kiosk-header">
-      <div class="header-left" style="display:flex;align-items:center;gap:18px;">
-        <button class="back-button" id="back-arrow">←</button>
-      </div>
-      <div class="header-center">
-        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" style="height:55px;">
-      </div>
+      <button class="back-button" id="back-arrow">←</button>
+      <div class="header-spacer"></div>
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
           <button class="chip" id="detail-language-btn" onclick="toggleDetailLanguageMenu(event)">EN</button>
@@ -5595,15 +5499,22 @@
         <div class="photo-carousel" id="detail-gallery"></div>
       </section>
 
-      <!-- Description & Details -->
-      <section class="details-section">
-        <h3>About This Tour</h3>
-      <div id="detail-description"></div>
+      <!-- Pricing Section -->
+      <section class="pricing-section" id="pricing-section">
+        <h2>Pricing</h2>
+        <p class="pricing-hint">Tap to select your pricing option.</p>
+        <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
       <!-- Info Grid (What's Included & Highlights) -->
       <section class="info-grid" id="info-grid">
         <!-- Cards will be populated by JavaScript -->
+      </section>
+
+      <!-- Description & Details -->
+      <section class="details-section">
+        <h3>About This Tour</h3>
+      <div id="detail-description"></div>
       </section>
 
       <!-- Additional Info -->
@@ -5612,13 +5523,6 @@
       <!-- Fine Print -->
       <section class="fine-print" id="fine-print">
         <!-- Will be populated with terms, cancellation policy, etc. -->
-      </section>
-
-      <!-- Pricing Section -->
-      <section class="pricing-section" id="pricing-section">
-        <h2>Pricing</h2>
-        <p class="pricing-hint">Tap to select your pricing option.</p>
-        <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
       <!-- Departure Section -->
@@ -5634,8 +5538,8 @@
 
     <!-- Sticky Footer -->
     <footer class="detail-footer">
-      <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
       <button class="btn-primary" id="book-now-btn">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
       <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
     </footer>
   </div>
@@ -5968,6 +5872,9 @@
       grid.innerHTML = '';
       
       tours.forEach(tour => {
+        // Skip Ocean Dynamics results
+        if (shouldHideTour(tour)) return;
+        
         const card = document.createElement('div');
         card.className = 'tour-card';
         card.setAttribute('data-key', tour.key);
@@ -6214,7 +6121,6 @@
     // Call this when language or currency changes
     document.addEventListener('DOMContentLoaded', () => {
       updateHeaderChips();
-      initWelcomeAudio(); // Initialize welcome audio
       
       // Auto-open tour if tour_to_open parameter is passed from Flask
       {% if tour_to_open %}
@@ -7126,6 +7032,10 @@
       grid.innerHTML = '';
       
       tours.forEach(tour => {
+        // Exclude Ocean Dynamics
+        if (shouldHideTour(tour)) return;
+        
+        const hasBooking = hasWorkingBooking(tour);
         const card = document.createElement('article');
         card.className = 'tour-card-large';
         card.setAttribute('data-key', tour.key);
@@ -7138,14 +7048,16 @@
           ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
         }
         
+        const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
         card.innerHTML = `
           <div class="tour-card-image" style="background-image: url('${tour.thumbnail}');"></div>
+          ${starHtml}
           <div class="tour-card-overlay">
             <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
             <h2 class="tour-name">${tour.name}</h2>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
+              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
             </div>
           </div>
         `;
@@ -7203,6 +7115,19 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
+    // Helper: should hide tour (e.g., exclude third-party resellers)
+    function shouldHideTour(tour) {
+      const company = (tour.company || tour.company_name || '').toLowerCase();
+      return company.includes('ocean dynamics');
+    }
+    
+    // Helper: does this tour have a working booking mapping (Rezdy or explicit link)?
+    function hasWorkingBooking(tour) {
+      const bookingUrl = tour.link_booking || tour.booking_link || tour.booking_url || tour.rezdy_url || tour.rezdy_booking_url;
+      if (bookingUrl) return true;
+      return !!getRezdyUrlForTour(tour.name, tour.company || tour.company_name);
+    }
+    
     // Display tours in the featured grid (for modern home page)
     function displayFeaturedTours(tours, append = false) {
       const grid = document.getElementById('featured-grid');
@@ -7217,15 +7142,30 @@
         homePageLoadedKeys = []; // Clear loaded keys when replacing
       }
       
-      console.log('Displaying featured tours:', tours.length, 'append:', append);
+      // Remove unwanted tours
+      const filteredTours = tours.filter(tour => !shouldHideTour(tour));
       
-      if (tours.length === 0 && !append) {
+      // Prioritize tours with working booking buttons
+      const prioritized = [];
+      const regular = [];
+      filteredTours.forEach(tour => {
+        if (hasWorkingBooking(tour)) {
+          prioritized.push(tour);
+        } else {
+          regular.push(tour);
+        }
+      });
+      const orderedTours = [...prioritized, ...regular];
+      
+      console.log('Displaying featured tours:', orderedTours.length, 'append:', append);
+      
+      if (orderedTours.length === 0 && !append) {
         grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; font-size: 1.5em;">No tours found matching your criteria. Please try different filters.</p>';
         return;
       }
       
       // Filter out duplicates based on keys we've already loaded
-      const uniqueTours = tours.filter(tour => {
+      const uniqueTours = orderedTours.filter(tour => {
         if (homePageLoadedKeys.includes(tour.key)) {
           console.log('Skipping duplicate tour:', tour.key);
           return false;
@@ -7234,9 +7174,10 @@
         return true;
       });
       
-      console.log(`Displaying ${uniqueTours.length} unique tours out of ${tours.length} returned`);
+      console.log(`Displaying ${uniqueTours.length} unique tours out of ${orderedTours.length} returned`);
       
       uniqueTours.forEach(tour => {
+        const hasBooking = hasWorkingBooking(tour);
         const card = document.createElement('article');
         card.className = 'tour-card-large';
         card.setAttribute('data-key', tour.key);
@@ -7248,14 +7189,16 @@
           ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
         }
         
+        const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
         card.innerHTML = `
           <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');"></div>
+          ${starHtml}
           <div class="tour-card-overlay">
             <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
             <h3 class="tour-name">${tour.name}</h3>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
+              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
             </div>
           </div>
         `;
@@ -7343,7 +7286,7 @@
               <h2 class="tour-name">${tour.name}</h2>
               <div class="tour-meta">
                 ${ratingHtml}
-                <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
+                <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
               </div>
             </div>
           `;
@@ -7559,8 +7502,6 @@
       if (detailInfo && pricingContainer) {
         // Find existing pricing tiers and convert them to price-row format
         const pricingTiers = detailInfo.querySelectorAll('.pricing-tier-option');
-        console.log(`📊 Found ${pricingTiers.length} pricing tiers to reorganize`);
-        
         if (pricingTiers.length > 0) {
           pricingContainer.innerHTML = '';
           pricingTiers.forEach((tier, index) => {
@@ -7572,11 +7513,7 @@
             
             const priceRow = document.createElement('button');
             priceRow.className = 'price-row';
-            if (index === 0) {
-              priceRow.classList.add('selected');
-              selectedPricingTier = tier.getAttribute('data-tier');
-              console.log(`✅ Default pricing tier selected: ${selectedPricingTier}`);
-            }
+            if (index === 0) priceRow.classList.add('selected');
             priceRow.setAttribute('data-tier', tier.getAttribute('data-tier'));
             priceRow.setAttribute('data-original-price', tier.getAttribute('data-original-price'));
             
@@ -7589,7 +7526,6 @@
               document.querySelectorAll('.price-row').forEach(r => r.classList.remove('selected'));
               this.classList.add('selected');
               selectedPricingTier = this.getAttribute('data-tier');
-              console.log(`💰 Pricing tier selected: ${selectedPricingTier}`);
             };
             
             pricingContainer.appendChild(priceRow);
@@ -7598,11 +7534,7 @@
           // Remove pricing from detail-info
           const pricingSection = detailInfo.querySelector('div[style*="border-left:5px solid #0077b6"]');
           if (pricingSection) pricingSection.remove();
-        } else {
-          console.warn('⚠️ No pricing tiers found in detail-info');
         }
-      } else {
-        console.warn('⚠️ Missing elements:', { detailInfo: !!detailInfo, pricingContainer: !!pricingContainer });
       }
       
       // Create info-grid cards for What's Included and Highlights
@@ -7649,8 +7581,11 @@
         }
       }
       
-      // Move remaining info sections to info-grid as separate cards
-      if (infoGrid && detailInfo) {
+      // Move remaining info sections to fine-print section (works in any language)
+      const finePrint = document.getElementById('fine-print');
+      if (finePrint && detailInfo) {
+        const finePrintContent = [];
+        
         // Find all sections with colored borders (these are info sections)
         const sections = detailInfo.querySelectorAll('div[style*="border-left"]');
         sections.forEach(section => {
@@ -7659,21 +7594,18 @@
             // Skip pricing (#0077b6), includes (#4caf50), and highlights (#ff9800) - they're handled elsewhere
             const style = section.getAttribute('style') || '';
             if (!style.includes('#0077b6') && !style.includes('#4caf50') && !style.includes('#ff9800')) {
-              // Create a card for this section
-              const card = document.createElement('article');
-              card.className = 'info-card';
-              card.innerHTML = section.innerHTML;
-              infoGrid.appendChild(card);
+              finePrintContent.push(section.outerHTML);
               section.remove();
             }
           }
         });
-      }
-      
-      // Hide fine-print section since all content is now in cards
-      const finePrint = document.getElementById('fine-print');
-      if (finePrint) {
-        finePrint.style.display = 'none';
+        
+        if (finePrintContent.length > 0) {
+          finePrint.innerHTML = finePrintContent.join('');
+          finePrint.style.display = 'block';
+        } else {
+          finePrint.style.display = 'none';
+        }
       }
       
       // Handle departure section (Map & Reviews) - works in any language
@@ -7700,21 +7632,15 @@
           if (locationName && !locationName.includes(headingText)) {
             departureHTML += `<p style="font-size: 1em; font-weight: 600; color: #2c3e50; margin-bottom: 12px;">${locationName}</p>`;
           }
-          departureHTML += '<p style="font-size: 1em; color: #666; line-height: 1.6; margin-bottom: 20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</p>';
           if (mapElement) {
             departureHTML += mapElement.outerHTML;
           }
           departureLocationSection.remove();
         } else if (data.departure_location) {
-          // Fallback: create departure section even if not found in detail-info
-          departureHTML += `<h3>📍 Departure Location</h3>`;
-          departureHTML += `<p style="font-size: 1em; font-weight: 600; color: #2c3e50; margin-bottom: 12px;">${data.departure_location}</p>`;
-          departureHTML += '<p style="font-size: 1em; color: #666; line-height: 1.6; margin-bottom: 20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</p>';
-          
-          // Check if there's a pending map to add
-          if (window.pendingMiniMap) {
-            departureHTML += `<div id="${window.pendingMiniMap.elementId}" style="width:100%;height:500px;margin-top:25px;border-radius:18px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.2);"></div>`;
-          }
+          departureHTML += `
+            <h3>Departure Location</h3>
+            <p style="font-size: 1em; font-weight: 600; color: #2c3e50;">${data.departure_location}</p>
+          `;
         }
         
         if (departureHTML) {
@@ -7810,6 +7736,30 @@
       return text || '<li>Details included</li>';
     }
     
+    // Map specific tours to Rezdy mobile booking URLs (for QR flow)
+    function getRezdyUrlForTour(name, company) {
+      const n = (name || '').toLowerCase();
+      const c = (company || '').toLowerCase();
+      
+      // Ocean Rafting (standard + fly/raft combos + scenic flight)
+      if (c.includes('ocean rafting')) {
+        if (n.includes('southern lights') && n.includes('fly')) return 'https://whitsundayskiosk.rezdy.com/269177/fly-raft-southern-lights-package';
+        if (n.includes('northern exposure') && n.includes('fly')) return 'https://whitsundayskiosk.rezdy.com/266833/fly-raft-northern-exposure-package';
+        if (n.includes('southern lights')) return 'https://whitsundayskiosk.rezdy.com/265683/southern-lights-tour';
+        if (n.includes('northern exposure')) return 'https://whitsundayskiosk.rezdy.com/265139/northern-exposure-tour';
+        if (n.includes('1 hour scenic flight') || n.includes('one hour scenic flight')) return 'https://whitsundayskiosk.rezdy.com/269193/ocean-rafting-1-hour-scenic-flight';
+      }
+      
+      // Whitsunday Jetski Tours
+      if (c.includes('jetski') || c.includes('jet ski') || n.includes('jetski')) {
+        if (n.includes('airlie adventure')) return 'https://whitsundayskiosk.rezdy.com/221593/airlie-adventure-jetski-tour';
+        if (n.includes('two island safari')) return 'https://whitsundayskiosk.rezdy.com/111977/two-island-safari-jetski-tour';
+        if (n.includes('ultimate island trek')) return 'https://whitsundayskiosk.rezdy.com/271543/ultimate-island-trek-jetski-tour';
+      }
+      
+      return null;
+    }
+    
     // Setup footer button handlers
     function setupFooterButtons(key, data) {
       console.log('🔘 Setting up footer buttons for tour:', key);
@@ -7824,24 +7774,46 @@
       
       if (bookNowBtn) {
         bookNowBtn.onclick = () => {
-          // Show QR payment modal with booking link
+          // Try to map to a Rezdy product by name/company
+          const rezdyUrl = getRezdyUrlForTour(data.name, data.company);
+          
+          if (rezdyUrl) {
+            console.log('🚤 Rezdy mapping found, showing QR for:', rezdyUrl);
+            showQRPaymentModal(rezdyUrl, data.name || 'Book Now');
+            
+            // Remove any existing injected script
+            const existingRezdy = document.getElementById('rezdy-mobile-booking');
+            if (existingRezdy) existingRezdy.remove();
+            
+            // Inject Rezdy mobile booking script as backup
+            const rezdyScript = document.createElement('script');
+            rezdyScript.id = 'rezdy-mobile-booking';
+            rezdyScript.defer = true;
+            rezdyScript.type = 'text/javascript';
+            rezdyScript.setAttribute('data-redirect-url', rezdyUrl);
+            rezdyScript.src = '//static.rezdy-production.com/0e7e54892b517064fb581c52789a2b1b37389d491470/themes/rezdyv2/js/mobile-booking-form.min.js';
+            document.body.appendChild(rezdyScript);
+            return;
+          }
+          
+          // Fallback: use provided booking link or open inquiry modal
           if (data.link_booking) {
             showQRPaymentModal(data.link_booking, data.name);
-          } else {
-            // Fallback: Open booking modal if no Rezdy link
-            const modal = document.getElementById('booking-modal');
-            if (modal) {
-              document.getElementById('booking-tour-name').textContent = data.name;
-              modal.style.display = 'flex';
-              
-              // Store current tour data for booking form
-              window.currentTourForBooking = {
-                name: data.name,
-                company: data.company,
-                key: key,
-                pricing: selectedPricingTier
-              };
-            }
+            return;
+          }
+          
+          const modal = document.getElementById('booking-modal');
+          if (modal) {
+            document.getElementById('booking-tour-name').textContent = data.name;
+            modal.style.display = 'flex';
+            
+            // Store current tour data for booking form
+            window.currentTourForBooking = {
+              name: data.name,
+              company: data.company,
+              key: key,
+              pricing: selectedPricingTier
+            };
           }
         };
       }
@@ -7861,80 +7833,14 @@
         shareTourBtn.onclick = () => {
           console.log('🔗 Share Tour button clicked!');
           const tourUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
-          shareTour(tourUrl, data.name, key);
+          shareTour(tourUrl, data.name);
         };
         console.log('   ✓ Share Tour button click handler attached');
       }
     }
     
-    // Share tour function with native mobile share
-    async function shareTour(tourUrl, tourName, tourKey) {
-      console.log('📤 Sharing tour:', tourName);
-      
-      // Check if Web Share API is supported (mobile devices)
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: tourName,
-            text: `Check out this amazing tour: ${tourName}`,
-            url: tourUrl
-          });
-          console.log('✅ Tour shared successfully via native share');
-        } catch (error) {
-          // User cancelled or error occurred
-          if (error.name !== 'AbortError') {
-            console.error('Share error:', error);
-            // Fallback to QR code modal
-            generateShareQRCode(tourKey, tourName);
-          }
-        }
-      } else {
-        // Fallback for desktop - show QR code modal
-        console.log('📱 Web Share API not supported, showing QR code modal');
-        generateShareQRCode(tourKey, tourName);
-      }
-    }
-    
-    // Generate shareable QR code
-    function generateShareQRCode(key, tourName) {
-      const modal = document.getElementById('share-qr-modal');
-      if (!modal) {
-        console.error('Share QR modal not found');
-        return;
-      }
-      
-      const qrContainer = document.getElementById('share-qr-container');
-      const modalTitle = modal.querySelector('h2');
-      
-      if (modalTitle) {
-        modalTitle.textContent = `Share: ${tourName}`;
-      }
-      
-      // Generate QR code for shareable URL
-      const shareUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
-      const qrCodeUrl = `/api/generate-tour-qr/${key}?lang=${currentLanguage}`;
-      
-      qrContainer.innerHTML = `<img src="${qrCodeUrl}" alt="Share QR Code" style="width:100%;max-width:300px;height:auto;" />`;
-      
-      // Show modal
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      
-      console.log('✅ Share QR modal displayed');
-    }
-    
     // Show QR Payment Modal
     function showQRPaymentModal(checkoutUrl, tourName) {
-      // Check if we're on mobile - skip QR modal and go straight to booking
-      const isMobile = window.innerWidth <= 768;
-      
-      if (isMobile) {
-        console.log('📱 Mobile detected - skipping QR modal, opening booking directly');
-        openRezdyBooking(checkoutUrl);
-        return;
-      }
-      
-      // Desktop/kiosk: Show QR modal
       const modal = document.getElementById('qr-payment-modal');
       const qrContainer = document.getElementById('qr-code-container');
       const continueBtn = document.getElementById('qr-continue-btn');
@@ -7992,24 +7898,16 @@
     
     // Close QR Payment Modal
     function closeQRModal() {
-      console.log('🚫 Closing QR payment modal');
-      const paymentModal = document.getElementById('qr-payment-modal');
-      if (paymentModal) {
-        paymentModal.style.display = 'none';
-        paymentModal.style.visibility = 'hidden';
-        paymentModal.style.opacity = '0';
-        paymentModal.style.pointerEvents = 'none';
+      console.log('🚫 Closing QR modal');
+      const modal = document.getElementById('qr-payment-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
         // Re-enable body scroll
         document.body.style.overflow = '';
-        console.log('   ✅ QR Payment modal closed');
-      }
-      
-      // Also close the share QR modal if it exists
-      const shareModal = document.getElementById('qr-modal');
-      if (shareModal) {
-        shareModal.style.display = 'none';
-        shareModal.remove();
-        console.log('   ✅ QR Share modal closed');
+        console.log('   ✅ Modal closed');
       }
     }
     
@@ -8110,19 +8008,17 @@
           console.log('   ✓ Copy button configured');
         }
         
-        // Setup cancel button - ensure it's clickable
-        setTimeout(() => {
-          const cancelBtn = document.getElementById('qr-cancel-btn');
-          if (cancelBtn) {
-            cancelBtn.onclick = (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('🚫 Cancel button clicked');
-              closeQRModal();
-            };
-            console.log('   ✓ Cancel button configured');
-          }
-        }, 100);
+        // Setup cancel button
+        const cancelBtn = document.getElementById('qr-cancel-btn');
+        if (cancelBtn) {
+          cancelBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🚫 Cancel button clicked');
+            closeQRModal();
+          };
+          console.log('   ✓ Cancel button configured');
+        }
       }
     }
     
@@ -8153,9 +8049,10 @@
           
           // Make company name clickable to filter by company
           const companyElement = document.getElementById('detail-company');
+          const slugFromCompany = (data.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+          const derivedCompanyKey = data.company_key || data.company_slug || key.split('__')[0] || slugFromCompany;
           companyElement.textContent = '🏢 ' + data.company + ' ›';
-          const derivedCompanyKey = data.company_key || key.split('__')[0];
-          companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key
+          companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key for filtering
           companyElement.title = 'Click to see all tours by ' + data.company;
           
           document.getElementById('detail-summary').textContent = data.summary;
@@ -8189,7 +8086,7 @@
             const tiers = filteredPriceTiers.split('|').filter(t => t.trim());
             
             // Display as wide rectangles with subtle blue tints - SELECTABLE
-            pricingHTML += '<div id="pricing-tiers-source" style="display:grid;gap:12px;grid-template-columns:1fr;">';
+            pricingHTML += '<div id="pricing-tiers-container" style="display:grid;gap:12px;grid-template-columns:1fr;">';
             tiers.forEach((tier, index) => {
               if (tier.trim()) {
                 // Alternate between two subtle blue-tinted whites
@@ -8205,7 +8102,7 @@
             });
             pricingHTML += '</div>';
           } else {
-            pricingHTML += '<div id="pricing-tiers-source" style="display:flex;gap:15px;flex-wrap:wrap;">';
+            pricingHTML += '<div id="pricing-tiers-container" style="display:flex;gap:15px;flex-wrap:wrap;">';
             if (data.price_adult && data.price_adult !== 'N/A') {
               const convertedAdultPrice = convertPrice(data.price_adult);
               pricingHTML += `<div class="pricing-tier-option" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:#f0f4f8;padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:#2c3e50;cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('adult')}:</b> ${convertedAdultPrice}</div>`;
@@ -8432,8 +8329,10 @@
           }
           info += '</div>';
           
-          // DEPARTURE LOCATION SECTION (will be moved to departure-section by reorganizeDetailPageContent)
+          // DEPARTURE LOCATION SECTION (added later in order)
+          let departureHTML = '';
           if (data.departure_location && data.departure_location.trim()) {
+            departureHTML +=
             info += '<div style="background:#f0f8ff;padding:30px;border-radius:12px;margin-top:30px;margin-bottom:30px;border-left:5px solid #0077b6;">';
             info += '<h3 style="margin:0 0 20px 0;color:#0077b6;font-size:2.2em;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.5em;font-weight:700;color:#2c3e50;margin-bottom:20px;">${data.departure_location}</div>`;
@@ -8500,11 +8399,40 @@
           }
           // Don't show "No reviews available" message - just omit the section entirely
           
-          // NOW REORDER: Add pricing to info (CRITICAL: this was missing!)
-          // The order is now: Quick Info -> Itinerary -> Includes/Highlights -> Menu -> Important Info -> What To Bring -> What's Extra -> Cancellation -> Disclaimer -> Action Buttons -> PRICING
-          info += pricingHTML;
+          // NOW REORDER: Add departure location, then pricing, then reviews
+          // The order is now: Quick Info -> Itinerary -> Includes/Highlights -> Menu -> Important Info -> What To Bring -> What's Extra -> Cancellation -> Disclaimer -> Action Buttons -> DEPARTURE LOCATION -> PRICING -> REVIEWS
           
           document.getElementById('detail-info').innerHTML = info;
+          
+          // Initialize mini map if location exists
+          if (window.pendingMiniMap) {
+            setTimeout(() => {
+              const { elementId, coords } = window.pendingMiniMap;
+              const mapElement = document.getElementById(elementId);
+              
+              if (mapElement) {
+                // Create mini map
+                const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
+                
+                // Add map tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '© OpenStreetMap contributors',
+                  maxZoom: 18
+                }).addTo(miniMap);
+                
+                // Add marker for departure location
+                const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
+                marker.bindPopup(`
+                  <div style="font-size:1.4em;line-height:1.6;padding:8px;">
+                    <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
+                    <span style="font-size:1.1em;color:#666;">Departure Point</span>
+                  </div>
+                `).openPopup();
+              }
+              
+              window.pendingMiniMap = null;
+            }, 100);
+          }
           
           // Add click handlers for pricing tier selection
           setTimeout(() => {
@@ -8575,56 +8503,7 @@
             });
           }
           // Reorganize content for modern kiosk layout
-          console.log('🔧 Reorganizing content for modern kiosk layout...');
           reorganizeDetailPageContent(data, key);
-          
-          // Initialize mini map AFTER reorganizing (so element is in final location)
-          if (window.pendingMiniMap) {
-            console.log('🗺️ pendingMiniMap found:', window.pendingMiniMap);
-            setTimeout(() => {
-              const { elementId, coords } = window.pendingMiniMap;
-              console.log('🔍 Looking for map element:', elementId);
-              const mapElement = document.getElementById(elementId);
-              console.log('📍 Map element:', mapElement);
-              
-              if (mapElement) {
-                console.log('✅ Map element found! Initializing Leaflet map...');
-                try {
-                  // Create mini map
-                  const miniMap = L.map(elementId).setView([coords.lat, coords.lng], 17);
-                  console.log('✅ Leaflet map created');
-                  
-                  // Add map tiles
-                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 18
-                  }).addTo(miniMap);
-                  console.log('✅ Map tiles added');
-                  
-                  // Add marker for departure location
-                  const marker = L.marker([coords.lat, coords.lng]).addTo(miniMap);
-                  marker.bindPopup(`
-                    <div style="font-size:1.4em;line-height:1.6;padding:8px;">
-                      <b style="font-size:1.3em;color:#0077b6;">${coords.display}</b><br>
-                      <span style="font-size:1.1em;color:#666;">Departure Point</span>
-                    </div>
-                  `).openPopup();
-                  console.log('✅ Map marker added and map fully initialized!');
-                } catch (error) {
-                  console.error('❌ Error initializing map:', error);
-                }
-              } else {
-                console.error('❌ Map element not found with ID:', elementId);
-                console.log('🔍 Checking if element exists anywhere in DOM...');
-                const allDivs = document.querySelectorAll('div[id^="detail-mini-map"]');
-                console.log('Found divs with detail-mini-map prefix:', allDivs.length, allDivs);
-              }
-              
-              window.pendingMiniMap = null;
-            }, 300);
-          } else {
-            console.log('⚠️ No pendingMiniMap found - tour may not have coordinates');
-          }
           
           // Show the NEW modern tour detail page (it will overlay on top)
           console.log('🎬 Showing tour detail page...');
@@ -8684,12 +8563,20 @@
           companyClickElement.onclick = function() {
             const companyKey = this.getAttribute('data-company-key');
             const companyName = this.textContent.replace('🏢 ', '').replace(' ›', '');
+            if (!companyKey) {
+              console.warn('No company key found for company filter click');
+              return;
+            }
             filterByCompany(companyKey, companyName);
           };
         });
     }
     
     function filterByCompany(companyKey, companyName) {
+      // Fallback: derive slug if missing
+      const fallbackKey = companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '') : '';
+      const finalKey = companyKey || fallbackKey;
+      
       // Save current state to history before navigating
       navigationHistory.push({
         view: currentView,
@@ -8727,7 +8614,13 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // Fetch tours by company
-      fetch(`/filter-tours?company=${companyKey}`)
+      const params = new URLSearchParams();
+      params.set('company', finalKey);
+      params.set('company_key', finalKey);
+      params.set('company_name', companyName);
+      params.set('lang', currentLanguage);
+      
+      fetch(`/filter-tours?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
           displayFilteredTours(data.tours);
@@ -8872,47 +8765,22 @@
     }
     
     function closeBookingModal() {
-      console.log('🚫 Closing booking modal');
-      const modal = document.getElementById('booking-modal');
-      if (modal) {
-        modal.classList.remove('active');
-        modal.style.display = 'none';
-      }
+      document.getElementById('booking-modal').classList.remove('active');
       document.body.style.overflow = '';
-      const form = document.getElementById('booking-form');
-      const success = document.getElementById('booking-success');
-      if (form) {
-        form.reset();
-        form.style.display = 'block';
-      }
-      if (success) {
-        success.style.display = 'none';
-      }
+      document.getElementById('booking-form').reset();
+      document.getElementById('booking-form').style.display = 'block';
+      document.getElementById('booking-success').style.display = 'none';
       currentTourForBooking = null;
-      console.log('   ✅ Booking modal closed');
+      // Note: We don't reset selectedPricingTier here so user can still see their selection
     }
     
-    // Close modal when clicking X or outside - set up after DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-      const closeBtn = document.getElementById('close-booking-modal');
-      const modal = document.getElementById('booking-modal');
-      
-      if (closeBtn) {
-        closeBtn.onclick = function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          closeBookingModal();
-        };
+    // Close modal when clicking X or outside
+    document.getElementById('close-booking-modal').onclick = closeBookingModal;
+    document.getElementById('booking-modal').onclick = function(e) {
+      if (e.target === this) {
+        closeBookingModal();
       }
-      
-      if (modal) {
-        modal.onclick = function(e) {
-          if (e.target === this) {
-            closeBookingModal();
-          }
-        };
-      }
-    });
+    };
     
     // Handle booking form submission
     document.getElementById('booking-form').addEventListener('submit', async function(e) {
@@ -8967,7 +8835,7 @@
   <!-- QR Code Modal -->
   <div id="qr-modal">
     <div class="qr-modal-content">
-      <button class="qr-modal-close" onclick="closeShareQRModal()">×</button>
+      <button class="qr-modal-close" onclick="closeQRModal()">×</button>
       <div class="qr-modal-title">📱 Scan to Book</div>
       <div class="qr-modal-subtitle" id="qr-tour-name"></div>
       <div class="qr-code-container">
@@ -8976,19 +8844,6 @@
       <div class="qr-modal-instruction">
         Open your phone's camera and point it at the QR code.<br>
         Tap the notification to view full details and book directly.
-      </div>
-    </div>
-  </div>
-  
-  <!-- Share QR Code Modal -->
-  <div id="share-qr-modal" class="qr-overlay" style="display: none;">
-    <div class="qr-backdrop" onclick="closeShareQRModal()"></div>
-    <div class="qr-modal-content">
-      <button class="qr-modal-close" onclick="closeShareQRModal()">×</button>
-      <h2 class="qr-modal-title">🔗 Share This Tour</h2>
-      <div id="share-qr-container" class="qr-code-container"></div>
-      <div class="qr-modal-instruction">
-        Scan this QR code with your phone to open and share this tour.
       </div>
     </div>
   </div>
@@ -9009,25 +8864,14 @@
       modal.style.display = 'flex';
     }
     
-    function closeShareQRModal() {
-      const qrModal = document.getElementById('qr-modal');
-      const shareModal = document.getElementById('share-qr-modal');
-      
-      if (qrModal) {
-        qrModal.style.display = 'none';
-      }
-      
-      if (shareModal) {
-        shareModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-      }
+    function closeQRModal() {
+      document.getElementById('qr-modal').style.display = 'none';
     }
     
     // Close modal when clicking outside
-    document.addEventListener('click', function(e) {
-      const modal = document.getElementById('qr-modal');
-      if (modal && e.target === modal) {
-        closeShareQRModal();
+    document.getElementById('qr-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeQRModal();
       }
     });
     
@@ -10077,30 +9921,22 @@
     
     // Switch language
     function switchLanguage(langCode) {
-      console.log('🌐 Switching language to:', langCode);
-      
       // Save preference
       localStorage.setItem('preferred_language', langCode);
       
       // Check if we're on a tour detail page - if so, save the tour key to reopen it after reload
-      const tourDetailPage = document.querySelector('.page.tour-detail-page');
+      const tourDetailPage = document.getElementById('tour-detail-page');
       if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // Find the current tour key from the detail page
         const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
-        console.log('   Current tour key:', currentTourKey);
         if (currentTourKey) {
           localStorage.setItem('reopen_tour_after_reload', currentTourKey);
-          console.log('   ✓ Saved tour key for reopening after reload');
         }
-      } else {
-        console.log('   Not on tour detail page, clearing reopen flag');
-        localStorage.removeItem('reopen_tour_after_reload');
       }
       
       // Reload page with language parameter to get translated content
       const url = new URL(window.location.href);
       url.searchParams.set('lang', langCode);
-      console.log('   Reloading with URL:', url.toString());
       window.location.href = url.toString();
     }
     
@@ -10632,53 +10468,6 @@
     let chatHistory = [];
     let isChatting = false;
     let hasSpokenWelcome = false; // Track if we've spoken the welcome message
-    let isChatOpen = false; // Track if chat is currently open
-    let welcomeAudio = null; // Pre-recorded welcome audio
-    
-    // Initialize welcome audio
-    function initWelcomeAudio() {
-      welcomeAudio = new Audio('{{ url_for("static", filename="welcome.mp3") }}');
-      welcomeAudio.volume = 1.0;
-      welcomeAudio.preload = 'auto'; // Preload for instant playback
-      welcomeAudio.load();
-      
-      // Activate visualizer when playing
-      welcomeAudio.onplay = () => {
-        console.log('🔊 Welcome audio: Playing...');
-        const visualizer = document.getElementById('audio-visualizer');
-        if (visualizer) {
-          visualizer.classList.add('active');
-        }
-      };
-      
-      // Deactivate visualizer when finished
-      welcomeAudio.onended = () => {
-        console.log('🔊 Welcome audio: Finished');
-        const visualizer = document.getElementById('audio-visualizer');
-        if (visualizer) {
-          visualizer.classList.remove('active');
-        }
-      };
-      
-      // Handle playback errors
-      welcomeAudio.onerror = (err) => {
-        console.log('⚠️ Welcome audio error:', err);
-        const visualizer = document.getElementById('audio-visualizer');
-        if (visualizer) {
-          visualizer.classList.remove('active');
-        }
-      };
-      
-      // Handle load errors
-      welcomeAudio.addEventListener('error', function() {
-        console.log('⚠️ Welcome audio not available, will use TTS fallback');
-        welcomeAudio = null;
-      });
-      
-      // Force load the audio
-      welcomeAudio.load();
-      console.log('🎵 Welcome audio initialized and preloaded');
-    }
     
     function toggleChat() {
       console.log('💬 toggleChat() called');
@@ -10702,7 +10491,6 @@
         
         // Force display to flex
         chatInterface.style.display = 'flex';
-        isChatOpen = true;
         
         console.log('   Chat display:', window.getComputedStyle(chatInterface).display);
         console.log('   Chat z-index:', window.getComputedStyle(chatInterface).zIndex);
@@ -10712,65 +10500,22 @@
         // const input = document.getElementById('chat-input');
         // input.focus();
         
-        // Play welcome message on first open (always, regardless of autoSpeak setting)
-        if (!hasSpokenWelcome) {
+        // Speak welcome message on first open
+        if (!hasSpokenWelcome && window.voiceChat && window.voiceChat.autoSpeak) {
           hasSpokenWelcome = true;
-          // Ensure audio object exists
-          if (!welcomeAudio) {
-            initWelcomeAudio();
-          }
           
-          // Wait 0.3 seconds for chat to open, then play welcome
+          // Wait a moment for chat to open, then speak
           setTimeout(() => {
-            // Only play if chat is still open
-            if (isChatOpen) {
-              // Always try to play pre-recorded audio first (faster and better quality)
-              if (welcomeAudio) {
-                console.log('🎵 Playing pre-recorded welcome message (0.3s delay)');
-                welcomeAudio.currentTime = 0; // Reset to start
-                welcomeAudio.play().catch(err => {
-                  console.log('⚠️ Audio playback failed:', err);
-                  // Hide visualizer on error
-                  const visualizer = document.getElementById('audio-visualizer');
-                  if (visualizer) {
-                    visualizer.classList.remove('active');
-                  }
-                  // Fallback to TTS only if audio fails
-                  const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
-                  if (isChatOpen && window.voiceChat) {
-                    window.voiceChat.speak(welcomeText);
-                  }
-                });
-              } else {
-                // Fallback to TTS if audio not loaded
-                console.log('⚠️ Welcome audio not loaded, using TTS');
-                const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
-                if (isChatOpen && window.voiceChat) {
-                  window.voiceChat.speak(welcomeText);
-                }
-              }
-            }
-          }, 300); // 0.3 seconds as requested
+            const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
+            window.voiceChat.speak(welcomeText);
+          }, 500);
         }
       } else {
         console.log('   Closing chat...');
-        isChatOpen = false;
         
         // Stop any playing voice
         if (window.voiceChat) {
           window.voiceChat.stopSpeaking();
-        }
-        
-        // Stop welcome audio if playing
-        if (welcomeAudio) {
-          welcomeAudio.pause();
-          welcomeAudio.currentTime = 0;
-        }
-        
-        // Hide visualizer when closing
-        const visualizer = document.getElementById('audio-visualizer');
-        if (visualizer) {
-          visualizer.classList.remove('active');
         }
         
         // Hide chat interface
@@ -10789,25 +10534,12 @@
     
     function closeChat() {
       console.log('❌ closeChat() called - forcing close');
-      isChatOpen = false;
       const chatInterface = document.getElementById('chat-interface');
       const chatButton = document.getElementById('chat-button');
       
       // Stop any playing voice
       if (window.voiceChat) {
         window.voiceChat.stopSpeaking();
-      }
-      
-      // Stop welcome audio if playing
-      if (welcomeAudio) {
-        welcomeAudio.pause();
-        welcomeAudio.currentTime = 0;
-      }
-      
-      // Hide visualizer when closing
-      const visualizer = document.getElementById('audio-visualizer');
-      if (visualizer) {
-        visualizer.classList.remove('active');
       }
       
       // Force remove all classes and hide
@@ -11460,11 +11192,9 @@
       messagesContainer.appendChild(messageDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
       
-      // Voice output: speak AI responses (only if chat is open)
+      // Voice output: speak AI responses
       if (role === 'assistant' && window.voiceChat && window.voiceChat.autoSpeak) {
-        if (isChatOpen) {
-          window.voiceChat.speak(message);
-        }
+        window.voiceChat.speak(message);
       }
     }
     
@@ -11708,7 +11438,7 @@
               📋 Copy Link
             </button>
             
-            <button onclick="closeShareQRModal()" style="
+            <button onclick="closeQRModal()" style="
               flex: 1;
               background: #0077b6;
               color: white;
@@ -11732,9 +11462,27 @@
       // Close on background click
       modal.addEventListener('click', function(e) {
         if (e.target === modal) {
-          closeShareQRModal();
+          closeQRModal();
         }
       });
+    }
+    
+    function closeQRModal() {
+      // Close booking QR modal
+      const paymentModal = document.getElementById('qr-payment-modal');
+      if (paymentModal) {
+        paymentModal.style.display = 'none';
+        paymentModal.style.visibility = 'hidden';
+        paymentModal.style.opacity = '0';
+        paymentModal.style.pointerEvents = 'none';
+        document.body.style.overflow = '';
+      }
+      
+      // Close/share QR modal (if present)
+      const shareModal = document.getElementById('qr-modal');
+      if (shareModal) {
+        shareModal.style.display = 'none';
+      }
     }
     
     function copyRecommendationLink(url) {
