@@ -17,7 +17,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    /* Cache-bust: v2024-12-01-2525 - Welcome audio plays 0.3s after chat opens, no autoSpeak check */
+    /* Cache-bust: v2024-12-01-2535 - Faster welcome audio, footer order, logo restored, company filter */
     * {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -1728,21 +1728,24 @@
     .btn-tertiary {
       padding: 20px 45px;
       font-size: 1.4em;
-      font-weight: 600;
+      font-weight: 700;
       border: none;
       border-radius: 18px;
       cursor: pointer;
       transition: all 0.3s ease;
       min-height: 70px;
       user-select: none;
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
     }
     
     .btn-primary {
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
-      flex: 1;
       box-shadow: 0 8px 25px rgba(0, 119, 182, 0.5);
-      font-weight: 700;
       font-size: 1.5em;
     }
     
@@ -4865,23 +4868,22 @@
       }
       
       .forecast-container {
-        grid-template-columns: repeat(4, 1fr) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
         gap: 8px !important;
         padding: 8px 0 !important;
-        justify-items: center !important;
+        justify-content: center !important;
       }
       
-      /* Center the last 3 days in a new row */
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(5) {
-        grid-column: 2 / 3 !important;
+      .forecast-day {
+        flex: 0 0 calc(25% - 6px) !important;
+        max-width: calc(25% - 6px) !important;
       }
       
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(6) {
-        grid-column: 3 / 4 !important;
-      }
-      
-      .weather-widget:not(.collapsed) .forecast-day:nth-child(7) {
-        grid-column: 4 / 5 !important;
+      /* Bottom 3 days centered with equal spacing */
+      .weather-widget:not(.collapsed) .forecast-day:nth-child(n+5) {
+        flex: 0 0 calc(25% - 6px) !important;
+        max-width: calc(25% - 6px) !important;
       }
       
       .forecast-day {
@@ -5487,7 +5489,7 @@
                   {% if tour.review_rating and tour.review_rating > 0 and tour.review_count > 0 %}
                   <span class="rating">★ {{ "%.1f"|format(tour.review_rating) }} ({{ tour.review_count }})</span>
             {% endif %}
-                  <span class="price-badge">From {{ tour.price_adult }}</span>
+                  <span class="price-badge">{{ tour.price_adult if 'FROM' in tour.price_adult or 'From' in tour.price_adult else 'FROM ' + tour.price_adult }}</span>
         </div>
       </div>
             </article>
@@ -5539,7 +5541,10 @@
   <div class="page tour-detail-page">
     <!-- Kiosk Header -->
     <header class="kiosk-header">
-      <button class="back-button" id="back-arrow">←</button>
+      <div class="header-left" style="display:flex;align-items:center;gap:18px;">
+        <button class="back-button" id="back-arrow">←</button>
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" style="height:55px;">
+      </div>
       <div class="header-spacer"></div>
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
@@ -5618,8 +5623,8 @@
 
     <!-- Sticky Footer -->
     <footer class="detail-footer">
-      <button class="btn-primary" id="book-now-btn">Book Now</button>
       <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
+      <button class="btn-primary" id="book-now-btn">Book Now</button>
       <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
     </footer>
   </div>
@@ -7129,7 +7134,7 @@
             <h2 class="tour-name">${tour.name}</h2>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+              <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
             </div>
           </div>
         `;
@@ -7239,7 +7244,7 @@
             <h3 class="tour-name">${tour.name}</h3>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+              <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
             </div>
           </div>
         `;
@@ -7327,7 +7332,7 @@
               <h2 class="tour-name">${tour.name}</h2>
               <div class="tour-meta">
                 ${ratingHtml}
-                <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+                <span class="price-badge">${tour.price_adult && (tour.price_adult.includes('FROM') || tour.price_adult.includes('From')) ? tour.price_adult : 'FROM ' + (tour.price_adult || 'Contact for price')}</span>
               </div>
             </div>
           `;
@@ -8138,7 +8143,8 @@
           // Make company name clickable to filter by company
           const companyElement = document.getElementById('detail-company');
           companyElement.textContent = '🏢 ' + data.company + ' ›';
-          companyElement.setAttribute('data-company-key', key.split('__')[0]); // Store company key from tour key
+          const derivedCompanyKey = data.company_key || key.split('__')[0];
+          companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key
           companyElement.title = 'Click to see all tours by ' + data.company;
           
           document.getElementById('detail-summary').textContent = data.summary;
@@ -10623,6 +10629,7 @@
       welcomeAudio = new Audio('{{ url_for("static", filename="welcome.mp3") }}');
       welcomeAudio.volume = 1.0;
       welcomeAudio.preload = 'auto'; // Preload for instant playback
+      welcomeAudio.load();
       
       // Activate visualizer when playing
       welcomeAudio.onplay = () => {
@@ -10697,6 +10704,10 @@
         // Play welcome message on first open (always, regardless of autoSpeak setting)
         if (!hasSpokenWelcome) {
           hasSpokenWelcome = true;
+          // Ensure audio object exists
+          if (!welcomeAudio) {
+            initWelcomeAudio();
+          }
           
           // Wait 0.3 seconds for chat to open, then play welcome
           setTimeout(() => {
