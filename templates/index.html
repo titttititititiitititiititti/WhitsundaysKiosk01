@@ -464,10 +464,18 @@
     }
     
     .header-left {
+      position: absolute;
+      left: 50px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .header-center {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      gap: 12px;
     }
     
     .header-right {
@@ -5089,9 +5097,10 @@
     <div class="page home-page" style="display: flex !important;">
       <!-- Kiosk Header -->
       <header class="kiosk-header">
-        <div class="header-left">
+        <div class="header-left"></div>
+        <div class="header-center">
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
-      </div>
+        </div>
         <div class="header-right">
           <div class="language-selector" style="position: relative; display: inline-block;">
             <button class="chip" id="header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
@@ -5460,7 +5469,8 @@
     <div class="page tour-list-page" id="tour-list-page" style="display: none;">
       <!-- Kiosk Header (same as home) -->
       <header class="kiosk-header">
-        <div class="header-left">
+        <div class="header-left"></div>
+        <div class="header-center">
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
         </div>
         <div class="header-right">
@@ -5543,9 +5553,10 @@
     <header class="kiosk-header">
       <div class="header-left" style="display:flex;align-items:center;gap:18px;">
         <button class="back-button" id="back-arrow">←</button>
+      </div>
+      <div class="header-center">
         <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" style="height:55px;">
       </div>
-      <div class="header-spacer"></div>
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
           <button class="chip" id="detail-language-btn" onclick="toggleDetailLanguageMenu(event)">EN</button>
