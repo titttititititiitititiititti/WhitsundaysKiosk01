@@ -1834,11 +1834,15 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
       
-      /* Adjust footer buttons for mobile */
+      /* Adjust footer buttons for mobile - KEEP STICKY */
       .detail-footer {
-        bottom: 20px;
+        position: fixed !important; /* Keep sticky on mobile */
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         gap: 15px;
         max-width: 95%;
+        z-index: 1000 !important;
       }
       
       .btn-primary,
@@ -8655,7 +8659,7 @@
               icon: '⏱️',
               title: t('duration'),
               content: data.duration,
-              color: '#e3f2fd',
+              color: 'rgba(255,255,255,0.95)',
               titleColor: '#0077b6',
               length: data.duration.length
             });
@@ -8666,8 +8670,8 @@
               icon: '🕐',
               title: t('times'),
               content: data.departure_times,
-              color: '#e8f5e9',
-              titleColor: '#2e7d32',
+              color: 'rgba(255,255,255,0.95)',
+              titleColor: '#0077b6',
               length: data.departure_times.length
             });
           }
@@ -8680,8 +8684,8 @@
               icon: '👥',
               title: t('ages'),
               content: data.age_requirements,
-              color: '#fff3e0',
-              titleColor: '#f57c00',
+              color: 'rgba(255,255,255,0.95)',
+              titleColor: '#0077b6',
               length: data.age_requirements.length
             });
           }
@@ -8691,8 +8695,8 @@
               icon: '🎯',
               title: t('ideal_for'),
               content: data.ideal_for,
-              color: '#f3e5f5',
-              titleColor: '#7b1fa2',
+              color: 'rgba(255,255,255,0.95)',
+              titleColor: '#0077b6',
               length: data.ideal_for.length
             });
           }
@@ -8710,9 +8714,10 @@
               const isLastOdd = useSquares && index === quickInfoItems.length - 1 && quickInfoItems.length % 2 === 1;
               const spanStyle = isLastOdd ? 'grid-column:1/-1;' : '';
               
-              info += `<div style="background:${item.color};padding:20px;border-radius:12px;${spanStyle}">`;
-              info += `<b style="color:${item.titleColor};font-size:1.2em;">${item.icon} ${item.title}</b><br>`;
-              info += `<span style="font-size:1.2em;">${item.content}</span>`;
+              // Use new white card style matching What To Bring / What's Extra
+              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);${spanStyle}">`;
+              info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
+              info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
               info += '</div>';
             });
             
@@ -8797,14 +8802,12 @@
             info += '</div>';
           }
           
-          // IMPORTANT INFORMATION SECTION (Separate card - full width)
+          // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:#ffffff;padding:30px;border-radius:15px;margin:40px 10px;border:2px solid #fff3e0;box-shadow:0 4px 12px rgba(0,0,0,0.08);flex-basis:100%;width:100%;">';
-            info += '<div style="background:#fff3e0;padding:15px 20px;border-radius:10px;margin:-30px -30px 20px -30px;border-bottom:2px solid #ff9800;">';
-            info += '<h3 style="margin:0;color:#f57c00;font-size:1.8em;">⚠️ ' + t('important_information') + '</h3>';
-            info += '</div>';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
-            info += `<div style="font-size:1.15em;line-height:1.8;color:#2c3e50;">${formattedInfo}</div>`;
+            info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
             info += '</div>';
           }
           
@@ -8854,14 +8857,12 @@
             }
           }
           
-          // CANCELLATION POLICY SECTION (Separate card - full width)
+          // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:#ffffff;padding:30px;border-radius:15px;margin:40px 10px;border:2px solid #ffebee;box-shadow:0 4px 12px rgba(0,0,0,0.08);flex-basis:100%;width:100%;">';
-            info += '<div style="background:#ffebee;padding:15px 20px;border-radius:10px;margin:-30px -30px 20px -30px;border-bottom:2px solid #f44336;">';
-            info += '<h3 style="margin:0;color:#d32f2f;font-size:1.8em;">📋 ' + t('cancellation_policy') + '</h3>';
-            info += '</div>';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
-            info += `<div style="font-size:1.15em;line-height:1.8;color:#2c3e50;">${formattedPolicy}</div>`;
+            info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
             info += '</div>';
           }
           
@@ -8877,11 +8878,9 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:#ffffff;padding:30px;border-radius:15px;margin:40px 10px;border:2px solid #e3f2fd;box-shadow:0 4px 12px rgba(0,0,0,0.08);flex-basis:100%;width:100%;">';
-            info += '<div style="background:#e3f2fd;padding:15px 20px;border-radius:10px;margin:-30px -30px 20px -30px;border-bottom:2px solid #0077b6;">';
-            info += '<h3 style="margin:0;color:#0077b6;font-size:1.8em;">📍 Departure Location</h3>';
-          info += '</div>';
-            info += `<div style="font-size:1.3em;font-weight:700;color:#0077b6;margin-bottom:15px;">${data.departure_location}</div>`;
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
+            info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
             
             // Add mini map if coordinates are available
