@@ -2312,17 +2312,13 @@
       }
     }
     
-    /* Mobile - Scale down to 50% (everything half size) */
+    /* Mobile - Proper responsive design */
     @media (max-width: 768px) {
-      html {
-        font-size: 10px;
-      }
-      
+      /* Remove zoom, use proper responsive design */
       body,
       .page.tour-detail-page {
-        zoom: 0.5;
-        -moz-transform: scale(0.5);
-        -moz-transform-origin: 0 0;
+        zoom: 1 !important;
+        -moz-transform: none !important;
       }
       
       /* Make header buttons sticky and always visible on mobile */
@@ -2340,16 +2336,71 @@
         top: 0;
         z-index: 10001;
       }
+      
+      /* Tour detail sections - full width on mobile with minimal side margins */
+      #detail-info {
+        margin: 0 !important;
+        padding: 20px 15px !important;
+      }
+      
+      /* Force all section grids to single column on mobile */
+      #detail-info > div[style*="display:grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+        margin: 0 !important;
+      }
+      
+      /* All white card sections full width with minimal margins */
+      #detail-info > div[style*="background:#fff"],
+      #detail-info > div > div[style*="background:#fff"] {
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Pricing section full width */
+      .tour-detail-page .pricing-section {
+        margin: 20px 15px !important;
+        width: calc(100% - 30px) !important;
+      }
+      
+      /* Photo gallery adjust for mobile */
+      .carousel {
+        margin: 20px 15px !important;
+      }
+      
+      /* Footer buttons - larger and properly sized on mobile */
+      .tour-detail-footer-buttons {
+        padding: 15px !important;
+        gap: 10px !important;
+      }
+      
+      .tour-detail-footer-buttons button {
+        width: calc(33.333% - 7px) !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 15px 10px !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+      }
     }
     
-    /* Small phones - Scale down to 40% */
+    /* Small phones - Proper responsive design */
     @media (max-width: 480px) {
       body,
       .page.tour-detail-page {
-        zoom: 0.4;
-        -moz-transform: scale(0.4);
-        -moz-transform-origin: 0 0;
+        zoom: 1 !important;
+        -moz-transform: none !important;
       }
+      
+      /* Even smaller margins for very small phones */
+      #detail-info {
+        padding: 15px 10px !important;
+      }
+      
+      .carousel {
+        margin: 15px 10px !important;
       }
       
       .question-text {
