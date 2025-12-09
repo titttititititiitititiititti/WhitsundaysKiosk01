@@ -1826,18 +1826,7 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
       
-      /* Adjust footer buttons for mobile - KEEP STICKY */
-      .detail-footer {
-        position: fixed !important; /* Keep sticky on mobile */
-        bottom: 20px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        gap: 15px;
-        max-width: 95%;
-        z-index: 1000 !important;
-      }
-      
-      /* Buttons inherit desktop width of 280px for consistency when scaled */
+      /* Footer buttons stay at desktop size - scaled by zoom */
       
       /* Make back arrow 4x bigger on mobile */
       .back-button {
@@ -1874,22 +1863,7 @@
         display: none !important;
       }
       
-      /* Mobile: Stack side-by-side tour detail sections vertically */
-      .detail-section-grid {
-        display: block !important;
-        grid-template-columns: 1fr !important;
-        margin: 0 20px 30px 20px !important; /* Reduce side margins on mobile */
-      }
-      
-      /* Ensure all detail section cards have proper spacing on mobile */
-      .detail-section-grid > div {
-        margin-bottom: 20px !important;
-      }
-      
-      /* Adjust single sections margin on mobile */
-      .tour-detail-page #detail-info > div[style*="margin:0 50px"] {
-        margin: 0 20px 30px 20px !important;
-      }
+      /* Tour detail sections inherit desktop styling - scaled by zoom */
     }
     
     /* Hide ALL other pages when tour detail is open */
