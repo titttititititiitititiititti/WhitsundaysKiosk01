@@ -368,6 +368,8 @@ def load_all_tours(language='en'):
                             # Review data
                             'review_rating': review_data.get('overall_rating', 0) if review_data else 0,
                             'review_count': review_data.get('review_count', 0) if review_data else 0,
+                            # Booking connection flag
+                            'booking_connected': row.get('booking_connected', '0'),
                         }
                         tours.append(tour_data)
         except (FileNotFoundError, IOError) as e:
@@ -692,18 +694,30 @@ def apply_filters(tours, criteria):
         filtered_tours = [t for t in filtered_tours if get_tour_price(t) <= max_price]
     
     if criteria.get('activity'):
-        selected_activity = criteria['activity']
+        selected_activities = criteria['activity']
         
-        # Handle activity filtering with hierarchical relationships
-        if selected_activity == 'island_tours':
-            # Island Tours is broad - include island_tours AND whitehaven_beach (since it's on an island)
-            filtered_tours = [t for t in filtered_tours if 
-                            'island_tours' in t['activity_type'] or 
-                            'whitehaven_beach' in t['activity_type']]
-        else:
-            # For specific activities (whitehaven_beach, great_barrier_reef, scenic_adventure),
-            # only show tours that explicitly have that activity
-            filtered_tours = [t for t in filtered_tours if selected_activity in t['activity_type']]
+        # Handle both single value and list (for multi-select with OR logic)
+        if isinstance(selected_activities, str):
+            selected_activities = [selected_activities]
+        
+        print(f"   🎯 Filtering by activities: {selected_activities}")
+        
+        # OR logic: Show tours that match ANY of the selected activities
+        def tour_matches_any_activity(tour):
+            for selected_activity in selected_activities:
+                # Handle activity filtering with hierarchical relationships
+                if selected_activity == 'island_tours':
+                    # Island Tours is broad - include island_tours AND whitehaven_beach
+                    if 'island_tours' in tour['activity_type'] or 'whitehaven_beach' in tour['activity_type']:
+                        return True
+                else:
+                    # For specific activities, check if tour has that activity
+                    if selected_activity in tour['activity_type']:
+                        return True
+            return False
+        
+        filtered_tours = [t for t in filtered_tours if tour_matches_any_activity(t)]
+        print(f"   ✅ After activity filter: {len(filtered_tours)} tours")
     
     if criteria.get('family') == True:
         filtered_tours = [t for t in filtered_tours if t['family_friendly']]
@@ -725,11 +739,13 @@ def filter_tours():
     language = request.args.get('lang', 'en')
     duration = request.args.get('duration', '')
     price = request.args.get('price', '')
-    activity = request.args.get('activity', '')
+    activities = request.args.getlist('activity')  # ✅ Get ALL selected activities
     family = request.args.get('family', '')
     meals = request.args.get('meals', '')
     equipment = request.args.get('equipment', '')
     company = request.args.get('company', '')
+    
+    print(f"🔍 Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}")
     
     # Load all tours in the specified language
     tours = load_all_tours(language)
@@ -739,7 +755,7 @@ def filter_tours():
     if company: criteria['company'] = company
     if duration: criteria['duration'] = duration
     if price: criteria['price'] = price
-    if activity: criteria['activity'] = activity
+    if activities: criteria['activity'] = activities  # Pass as list for OR logic
     if family: criteria['family'] = (family == 'true')
     if meals: criteria['meals'] = (meals == 'true')
     if equipment: criteria['equipment'] = (equipment == 'true')
@@ -842,6 +858,7 @@ def tour_detail(key):
                                 'duration_hours': row.get('duration_hours', ''),
                                 'link_booking': row.get('link_booking', ''),
                                 'link_more_info': row.get('link_more_info', ''),
+                                'booking_connected': row.get('booking_connected', '0'),
                                 'gallery': gallery,
                                 'important_information': row.get('important_information', ''),
                                 'what_to_bring': row.get('what_to_bring', ''),

@@ -254,3 +254,9 @@ Your tour kiosk now supports 8 languages with professional translations!
 
 
 
+
+
+
+
+
+

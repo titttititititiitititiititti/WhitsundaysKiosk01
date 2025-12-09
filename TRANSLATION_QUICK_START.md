@@ -152,3 +152,9 @@ python translate_tours.py --all --languages zh  # Re-translate
 
 
 
+
+
+
+
+
+
