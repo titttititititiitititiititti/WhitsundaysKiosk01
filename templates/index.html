@@ -1396,7 +1396,7 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 80px 120px 80px;
+      padding: 40px 20px 120px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -1840,15 +1840,7 @@
         z-index: 1000 !important;
       }
       
-      .btn-primary,
-      .btn-secondary,
-      .btn-tertiary {
-        padding: 18px 30px;
-        font-size: 1.2em;
-        min-height: 60px;
-        width: 180px;
-        flex-shrink: 0;
-      }
+      /* Buttons inherit desktop width of 280px for consistency when scaled */
       
       /* Make back arrow 4x bigger on mobile */
       .back-button {
@@ -4548,13 +4540,15 @@
         background: #eeeeee !important;
       }
       
-      /* Chat Interface - Much more compact */
+      /* Chat Interface - Same size as weather widget */
       .chat-button {
-        width: 50px !important;
-        height: 50px !important;
-        min-width: 50px !important;
-        min-height: 50px !important;
-        font-size: 1.6em !important;
+        width: 150px !important;
+        height: 150px !important;
+        min-width: 150px !important;
+        min-height: 150px !important;
+        max-width: 150px !important;
+        max-height: 150px !important;
+        font-size: 70px !important;
         bottom: 8px !important;
         left: 8px !important;
         right: auto !important;
@@ -4566,6 +4560,11 @@
       
       .chat-button::before {
         content: "🎤" !important;
+        font-size: 1.6em !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
       }
       
       .chat-button img {
