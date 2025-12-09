@@ -1472,10 +1472,10 @@
     .pricing-section {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 50px 20px;
+      padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 30px;
+      margin: 32px 50px;
     }
     
     .pricing-section h2 {
@@ -1555,7 +1555,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 30px;
-      margin: 32px 30px;
+      margin: 32px 50px;
       background: transparent !important;
     }
     
@@ -1617,10 +1617,10 @@
     .details-section {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 50px 20px;
+      padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 30px;
+      margin: 32px 50px;
     }
     
     .details-section h3 {
@@ -1640,10 +1640,10 @@
     .fine-print {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 50px 20px;
+      padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 30px;
+      margin: 32px 50px;
     }
     
     .fine-print h3 {
@@ -1666,10 +1666,10 @@
     .departure-section {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 50px 20px;
+      padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 30px 100px 30px;
+      margin: 32px 50px 100px 50px;
     }
     
     .departure-section h3 {
@@ -1761,8 +1761,8 @@
       height: 70px !important;
       min-height: 70px !important;
       max-height: 70px !important;
-      padding: 20px 30px !important;
-      font-size: 1.4em !important;
+      padding: 15px 20px !important;
+      font-size: 1.3em !important;
       font-weight: 600 !important;
       border: none !important;
       border-radius: 35px !important;
@@ -1777,6 +1777,9 @@
       text-align: center !important;
       box-sizing: border-box !important;
       line-height: 1.2 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
     }
     
     .btn-primary {
@@ -1841,6 +1844,36 @@
       }
       
       /* Footer buttons stay at desktop size - scaled by zoom */
+      
+      /* Reduce padding on mobile for tour detail sections */
+      .pricing-section,
+      .details-section,
+      .fine-print {
+        padding: 50px 30px !important;
+        margin-left: 40px !important;
+        margin-right: 40px !important;
+      }
+      
+      .departure-section {
+        padding: 50px 30px !important;
+        margin-left: 40px !important;
+        margin-right: 40px !important;
+      }
+      
+      .info-grid {
+        margin-left: 40px !important;
+        margin-right: 40px !important;
+      }
+      
+      /* Dynamically generated white card sections */
+      #detail-info > div[style*="padding:40px 45px"] {
+        padding: 40px 30px !important;
+      }
+      
+      #detail-info > div[style*="margin:0 50px"] {
+        margin-left: 40px !important;
+        margin-right: 40px !important;
+      }
       
       /* Make back arrow 4x bigger on mobile */
       .back-button {
@@ -8687,7 +8720,7 @@
               const spanStyle = isLastOdd ? 'grid-column:1/-1;' : '';
               
               // Use new white card style matching What To Bring / What's Extra
-              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);${spanStyle}">`;
+              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);${spanStyle}">`;
               info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
               info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
               info += '</div>';
@@ -8703,13 +8736,13 @@
           if (hasItinerary || hasMenu) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasItinerary && hasMenu) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 30px 30px 30px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
             }
             
             if (hasItinerary) {
               // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:0 30px 30px 30px;' : '';
-              info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
+              const itineraryMargin = !hasMenu ? 'margin:0 50px 30px 50px;' : '';
+              info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
               // Convert to list items with blue checkmarks
@@ -8723,8 +8756,8 @@
             
             if (hasMenu) {
               // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:0 30px 30px 30px;' : '';
-              info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
+              const menuMargin = !hasItinerary ? 'margin:0 50px 30px 50px;' : '';
+              info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
               let formattedMenu = cleanBracketFormatting(data.menu);
               // Convert to list items with blue checkmarks
@@ -8755,7 +8788,7 @@
             const useSquares = bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 30px 30px 30px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 50px 30px 50px;">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -8776,7 +8809,7 @@
           
           // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 30px 30px 30px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
@@ -8790,13 +8823,13 @@
           if (hasBring || hasExtra) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasBring && hasExtra) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 30px 30px 30px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
             }
             
             if (hasBring) {
               // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:0 30px 30px 30px;' : '';
-              info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
+              const bringMargin = !hasExtra ? 'margin:0 50px 30px 50px;' : '';
+              info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
               // Convert to list items with blue checkmarks
@@ -8810,8 +8843,8 @@
           
             if (hasExtra) {
               // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:0 30px 30px 30px;' : '';
-              info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
+              const extraMargin = !hasBring ? 'margin:0 50px 30px 50px;' : '';
+              info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
               // Convert to list items with blue checkmarks
@@ -8831,7 +8864,7 @@
           
           // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 30px 30px 30px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
@@ -8850,7 +8883,7 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 20px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 30px 30px 30px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
