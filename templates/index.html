@@ -1475,7 +1475,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 32px 15px;
     }
     
     .pricing-section h2 {
@@ -1555,7 +1555,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 30px;
-      margin: 32px 50px;
+      margin: 32px 15px;
       background: transparent !important;
     }
     
@@ -1620,7 +1620,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 32px 15px;
     }
     
     .details-section h3 {
@@ -1643,7 +1643,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px;
+      margin: 32px 15px;
     }
     
     .fine-print h3 {
@@ -1669,7 +1669,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px 50px 100px 50px;
+      margin: 32px 15px 100px 15px;
     }
     
     .departure-section h3 {
@@ -2312,13 +2312,14 @@
       }
     }
     
-    /* Mobile - Proper responsive design */
+    /* Mobile - Scale down desktop view to fit */
     @media (max-width: 768px) {
-      /* Remove zoom, use proper responsive design */
+      /* Zoom out to show desktop view scaled down */
       body,
       .page.tour-detail-page {
-        zoom: 1 !important;
-        -moz-transform: none !important;
+        zoom: 0.5;
+        -moz-transform: scale(0.5);
+        -moz-transform-origin: 0 0;
       }
       
       /* Make header buttons sticky and always visible on mobile */
@@ -2336,71 +2337,15 @@
         top: 0;
         z-index: 10001;
       }
-      
-      /* Tour detail sections - full width on mobile with minimal side margins */
-      #detail-info {
-        margin: 0 !important;
-        padding: 20px 15px !important;
-      }
-      
-      /* Force all section grids to single column on mobile */
-      #detail-info > div[style*="display:grid"] {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 20px !important;
-        margin: 0 !important;
-      }
-      
-      /* All white card sections full width with minimal margins */
-      #detail-info > div[style*="background:#fff"],
-      #detail-info > div > div[style*="background:#fff"] {
-        margin: 0 !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-      }
-      
-      /* Pricing section full width */
-      .tour-detail-page .pricing-section {
-        margin: 20px 15px !important;
-        width: calc(100% - 30px) !important;
-      }
-      
-      /* Photo gallery adjust for mobile */
-      .carousel {
-        margin: 20px 15px !important;
-      }
-      
-      /* Footer buttons - larger and properly sized on mobile */
-      .tour-detail-footer-buttons {
-        padding: 15px !important;
-        gap: 10px !important;
-      }
-      
-      .tour-detail-footer-buttons button {
-        width: calc(33.333% - 7px) !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        padding: 15px 10px !important;
-        font-size: 14px !important;
-        white-space: nowrap !important;
-      }
     }
     
-    /* Small phones - Proper responsive design */
+    /* Small phones - Scale down to 40% */
     @media (max-width: 480px) {
       body,
       .page.tour-detail-page {
-        zoom: 1 !important;
-        -moz-transform: none !important;
-      }
-      
-      /* Even smaller margins for very small phones */
-      #detail-info {
-        padding: 15px 10px !important;
-      }
-      
-      .carousel {
-        margin: 15px 10px !important;
+        zoom: 0.4;
+        -moz-transform: scale(0.4);
+        -moz-transform-origin: 0 0;
       }
       
       .question-text {
@@ -6925,9 +6870,9 @@
             value.forEach(item => params.append(key, item));
             filterCount++;
           } else {
-            console.log(`   Adding filter: ${key} = ${value}`);
-            params.append(key, value);
-            filterCount++;
+          console.log(`   Adding filter: ${key} = ${value}`);
+          params.append(key, value);
+          filterCount++;
           }
         }
       });
@@ -8782,12 +8727,12 @@
           if (hasItinerary || hasMenu) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasItinerary && hasMenu) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 15px 30px 15px;">';
             }
             
             if (hasItinerary) {
               // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:0 50px 30px 50px;' : '';
+              const itineraryMargin = !hasMenu ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
@@ -8797,12 +8742,12 @@
                 .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
                 .replace(/<\/li>/gi, '</li>');
               info += formattedItinerary;
-              info += '</div>';
+            info += '</div>';
             }
             
             if (hasMenu) {
               // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:0 50px 30px 50px;' : '';
+              const menuMargin = !hasItinerary ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
               let formattedMenu = cleanBracketFormatting(data.menu);
@@ -8834,7 +8779,7 @@
             const useSquares = bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 50px 30px 50px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 15px 30px 15px;">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -8855,7 +8800,7 @@
           
           // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
@@ -8869,39 +8814,39 @@
           if (hasBring || hasExtra) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasBring && hasExtra) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 15px 30px 15px;">';
             }
             
             if (hasBring) {
               // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:0 50px 30px 50px;' : '';
+              const bringMargin = !hasExtra ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
-              let formattedBring = cleanBracketFormatting(data.what_to_bring);
+            let formattedBring = cleanBracketFormatting(data.what_to_bring);
               // Convert to list items with blue checkmarks
               formattedBring = formattedBring
                 .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
                 .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
                 .replace(/<\/li>/gi, '</li>');
               info += formattedBring || '<div style="color:#666;font-size:1.15em;">No items specified</div>';
-              info += '</div>';
-            }
-            
+            info += '</div>';
+          }
+          
             if (hasExtra) {
               // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:0 50px 30px 50px;' : '';
+              const extraMargin = !hasBring ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
-              let formattedExtra = cleanBracketFormatting(data.whats_extra);
+            let formattedExtra = cleanBracketFormatting(data.whats_extra);
               // Convert to list items with blue checkmarks
               formattedExtra = formattedExtra
                 .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
                 .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
                 .replace(/<\/li>/gi, '</li>');
               info += formattedExtra || '<div style="color:#666;font-size:1.15em;">No extra costs specified</div>';
-              info += '</div>';
-            }
-            
+            info += '</div>';
+          }
+          
             // Close grid if both exist
             if (hasBring && hasExtra) {
               info += '</div>';
@@ -8910,7 +8855,7 @@
           
           // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
@@ -8929,7 +8874,7 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
