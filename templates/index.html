@@ -1397,13 +1397,15 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 0 120px 0;
+      padding: 40px 80px 120px 80px;
       overflow-y: auto;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       gap: 40px;
       width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
       background: transparent !important;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
@@ -1845,34 +1847,9 @@
       
       /* Footer buttons stay at desktop size - scaled by zoom */
       
-      /* Reduce padding on mobile for tour detail sections */
-      .pricing-section,
-      .details-section,
-      .fine-print {
-        padding: 50px 30px !important;
-        margin-left: 40px !important;
-        margin-right: 40px !important;
-      }
-      
-      .departure-section {
-        padding: 50px 30px !important;
-        margin-left: 40px !important;
-        margin-right: 40px !important;
-      }
-      
-      .info-grid {
-        margin-left: 40px !important;
-        margin-right: 40px !important;
-      }
-      
-      /* Dynamically generated white card sections */
-      #detail-info > div[style*="padding:40px 45px"] {
-        padding: 40px 30px !important;
-      }
-      
-      #detail-info > div[style*="margin:0 50px"] {
-        margin-left: 40px !important;
-        margin-right: 40px !important;
+      /* Reduce side padding on mobile so content has more room */
+      .tour-detail-main {
+        padding: 40px 20px 120px 20px !important;
       }
       
       /* Make back arrow 4x bigger on mobile */
