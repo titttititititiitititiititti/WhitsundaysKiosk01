@@ -1757,14 +1757,14 @@
     .btn-primary,
     .btn-secondary,
     .btn-tertiary {
-      width: 280px !important;
-      min-width: 280px !important;
-      max-width: 280px !important;
-      height: 70px !important;
-      min-height: 70px !important;
-      max-height: 70px !important;
-      padding: 15px 20px !important;
-      font-size: 1.3em !important;
+      width: 560px !important;
+      min-width: 560px !important;
+      max-width: 560px !important;
+      height: 140px !important;
+      min-height: 140px !important;
+      max-height: 140px !important;
+      padding: 30px 40px !important;
+      font-size: 2.6em !important;
       font-weight: 600 !important;
       border: none !important;
       border-radius: 35px !important;
@@ -1845,7 +1845,12 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
       
-      /* Footer buttons stay at desktop size - scaled by zoom */
+      /* Footer buttons stay at desktop size - scaled by zoom, but text stays smaller */
+      .btn-primary,
+      .btn-secondary,
+      .btn-tertiary {
+        font-size: 1.3em !important;
+      }
       
       /* Reduce side padding on mobile so content has more room */
       .tour-detail-main {
@@ -8052,70 +8057,15 @@
         }
       }
       
-      // Handle departure section (Map & Reviews) - works in any language
+      // Departure and reviews are now handled in the info variable, hide these template sections
       const departureSection = document.getElementById('departure-section');
-      if (departureSection && detailInfo) {
-        // Find departure section by looking for the map element or blue border with location icon
-        const departureDivs = Array.from(detailInfo.querySelectorAll('div[style*="border-left:5px solid #0077b6"]'));
-        const departureLocationSection = departureDivs.find(div => 
-          div.querySelector('div[id^="detail-mini-map"]') || div.textContent.includes('📍')
-        );
-        
-        const reviewsSection = detailInfo.querySelector('.reviews-section');
-        
-        let departureHTML = '';
-        
-        // Add departure location and map if exists
-        if (departureLocationSection) {
-          const heading = departureLocationSection.querySelector('h3');
-          const headingText = heading ? heading.textContent : 'Departure Location';
-          const locationName = departureLocationSection.querySelector('div[style*="font-weight:700"]')?.textContent || data.departure_location;
-          const mapElement = departureLocationSection.querySelector('div[id^="detail-mini-map"]');
-          
-          departureHTML += `<h3>${headingText}</h3>`;
-          if (locationName && !locationName.includes(headingText)) {
-            departureHTML += `<p style="font-size: 1em; font-weight: 600; color: #2c3e50; margin-bottom: 12px;">${locationName}</p>`;
-          }
-          if (mapElement) {
-            departureHTML += mapElement.outerHTML;
-          }
-          departureLocationSection.remove();
-        } else if (data.departure_location) {
-          departureHTML += `
-            <h3>Departure Location</h3>
-            <p style="font-size: 1em; font-weight: 600; color: #2c3e50;">${data.departure_location}</p>
-          `;
-        }
-        
-        if (departureHTML) {
-          departureSection.innerHTML = departureHTML;
-          departureSection.style.display = 'block';
-        } else {
-          departureSection.style.display = 'none';
-        }
-        
-        // Handle reviews section separately (preserve translated heading)
-        const reviewsSectionDetail = document.getElementById('reviews-section-detail');
-        if (reviewsSectionDetail && reviewsSection) {
-          // Try to find the translated reviews heading from the backend
-          const reviewsHeader = reviewsSection.querySelector('.reviews-header');
-          let reviewsHeading = 'Customer Reviews';
-          if (reviewsHeader) {
-            const title = reviewsHeader.querySelector('.reviews-title');
-            if (title && title.textContent.trim()) {
-              reviewsHeading = title.textContent.trim();
-            }
-          }
-          
-          reviewsSectionDetail.innerHTML = `
-            <h3>${reviewsHeading}</h3>
-            ${reviewsSection.innerHTML}
-          `;
-          reviewsSectionDetail.style.display = 'block';
-          reviewsSection.remove();
-        } else if (reviewsSectionDetail) {
-          reviewsSectionDetail.style.display = 'none';
-        }
+      if (departureSection) {
+        departureSection.style.display = 'none';
+      }
+      
+      const reviewsSectionDetail = document.getElementById('reviews-section-detail');
+      if (reviewsSectionDetail) {
+        reviewsSectionDetail.style.display = 'none';
       }
       
       // Set up footer button handlers
@@ -8687,7 +8637,7 @@
           if (quickInfoItems.length > 0) {
             quickInfoItems.forEach((item, index) => {
               // Each item is full width, aligned along left margin
-              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">`;
+              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">`;
               info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
               info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
               info += '</div>';
@@ -8701,12 +8651,12 @@
           if (hasItinerary || hasMenu) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasItinerary && hasMenu) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 15px 30px 15px;">';
             }
             
             if (hasItinerary) {
               // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:0 50px 30px 50px;' : '';
+              const itineraryMargin = !hasMenu ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
@@ -8721,7 +8671,7 @@
             
             if (hasMenu) {
               // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:0 50px 30px 50px;' : '';
+              const menuMargin = !hasItinerary ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
               let formattedMenu = cleanBracketFormatting(data.menu);
@@ -8753,7 +8703,7 @@
             const useSquares = bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 50px 30px 50px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 15px 30px 15px;">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -8774,7 +8724,7 @@
           
           // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
@@ -8788,12 +8738,12 @@
           if (hasBring || hasExtra) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasBring && hasExtra) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 50px 30px 50px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 15px 30px 15px;">';
             }
             
             if (hasBring) {
               // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:0 50px 30px 50px;' : '';
+              const bringMargin = !hasExtra ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
@@ -8808,7 +8758,7 @@
           
             if (hasExtra) {
               // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:0 50px 30px 50px;' : '';
+              const extraMargin = !hasBring ? 'margin:0 15px 30px 15px;' : '';
               info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
@@ -8829,7 +8779,7 @@
           
           // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
@@ -8848,7 +8798,7 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -8867,7 +8817,7 @@
           // REVIEWS SECTION - Header in floating box, each review in its own box
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
             // Reviews header box - matching other section styles
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⭐ Customer Reviews</h3>';
             info += '<div class="reviews-summary" style="display:flex;gap:15px;align-items:center;">';
             info += `<div class="overall-rating" style="font-size: 2.5em; font-weight: 700;color:#0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>`;
@@ -8881,7 +8831,7 @@
             // Individual reviews - each in its own white floating box
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;">';
+                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;">';
                 info += '<div class="review-header" style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px;">';
                 info += '<div>';
                 info += `<div class="review-author" style="font-size: 1.3em; font-weight: 600;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
@@ -8905,7 +8855,7 @@
             
             // Link to more reviews if available - in its own small box
             if (data.reviews.source_url) {
-              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 50px 30px 50px;text-align:center;">';
+              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 15px 30px 15px;text-align:center;">';
               info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               info += '</div>';
             }
