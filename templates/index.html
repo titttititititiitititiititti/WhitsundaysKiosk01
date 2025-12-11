@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  
+  <!-- Cache busting -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
+  <!-- Version indicator: v2.5px-margins -->
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS and JS for maps -->
@@ -457,6 +464,21 @@
       position: sticky;
       top: 0;
       z-index: 100;
+    }
+    
+    /* Version indicator (temporary for cache verification) */
+    .version-indicator {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 99999;
+      pointer-events: none;
     }
     
     .header-left {
@@ -4967,6 +4989,9 @@
   </style>
 </head>
 <body>
+  <!-- Version indicator for cache verification -->
+  <div class="version-indicator">v2.5-margins</div>
+  
   <div id="main-layout">
     <!-- Mobile Hamburger Menu (Mobile Only) -->
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
