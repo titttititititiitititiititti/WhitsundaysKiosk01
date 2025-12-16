@@ -5096,7 +5096,7 @@
     </div>
     
     <!-- Home Page - Modern Kiosk Layout -->
-    <div class="page home-page" style="display: flex !important;">
+    <div class="page home-page" id="home-page">
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
@@ -5131,8 +5131,61 @@
 
       <!-- Main Content -->
       <main class="home-main">
+        
+        <!-- Search Bar -->
+        <div style="margin-bottom: 20px; padding: 0 100px;">
+          <div style="max-width: 1600px; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center;">
+            <input type="text" id="home-search-input" placeholder="🔍 Search tours by name or company..." style="
+              width: 500px;
+              padding: 25px 30px;
+              font-size: 1.6em;
+              border: 3px solid #fff;
+              border-radius: 50px;
+              outline: none;
+              transition: all 0.3s;
+              background: rgba(255,255,255,0.95);
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+              color: #000;
+            " oninput="quickSearch(this.value)">
+            <button onclick="document.getElementById('home-search-input').value=''; quickSearch('');" style="
+              position: absolute;
+              left: 498px;
+              top: 50%;
+              transform: translateY(-50%);
+              background: rgba(0,0,0,0.1);
+              border: none;
+              border-color: rgba(0, 0, 0, 0);
+              border-image: none;
+              font-size: 1.6em;
+              cursor: pointer;
+              color: #666;
+              padding: 0;
+              border-radius: 50%;
+              width: 50px;
+              height: 50px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.2s;
+              z-index: 10;
+            " onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">✕</button>
+          </div>
+        </div>
+        
+        <!-- Company Filter Navigation (shown when filtering by company) -->
+        <section class="company-filter-nav" id="company-filter-nav" style="display: none; padding: 30px 50px; text-align: center;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto;">
+            <button class="duration-pill" onclick="goBackToTourDetail()" id="back-to-tour-btn">
+              ← Back to Previous Tour
+            </button>
+            <button class="duration-pill" onclick="clearFilters()">
+              🏠 Back to Home Page
+            </button>
+          </div>
+        </section>
+        
         <!-- Hero / Question Area -->
-        <section class="hero">
+        <section class="hero" id="hero-section">
           <h1 class="hero-title">Find Your Perfect Tour</h1>
 
           <!-- Filter Summary & Navigation -->
@@ -5254,10 +5307,10 @@
                 oninput="updateBudgetDisplay(this.value)"
               >
               <div class="budget-markers">
-                <span class="budget-marker">$0</span>
                 <span class="budget-marker">$100</span>
                 <span class="budget-marker">$250</span>
                 <span class="budget-marker">$500</span>
+                <span class="budget-marker">$1000</span>
                 <span class="budget-marker">Any</span>
               </div>
             </div>
@@ -5269,9 +5322,9 @@
         </section>
 
         <!-- Featured Tours - Always Visible -->
-        <section class="featured-tours" id="featured-tours-section">
-          <h2 id="home-tours-title">Available Tours</h2>
-          <p class="section-subtitle" id="home-tours-subtitle">
+        <section class="featured-tours" id="featured-tours-section" style="background: transparent;">
+          <h2 id="home-tours-title" style="color: white;">Tap Any Card For Booking and More Info</h2>
+          <p class="section-subtitle" id="home-tours-subtitle" style="color: rgba(255,255,255,0.9);">
             Showing all available tours
           </p>
 
@@ -5492,7 +5545,7 @@
     </div>
     
     <!-- Tour List Page - Modern Kiosk Layout -->
-    <div class="page tour-list-page" id="tour-list-page" style="display: none;">
+    <div class="page tour-list-page" id="tour-list-page">
       <!-- Kiosk Header (same as home) -->
       <header class="kiosk-header">
         <div class="header-left">
@@ -5810,11 +5863,10 @@
         false: 'Adults only'
       },
       price: {
-        budget_low: 'Up to $50',
         budget: 'Up to $100',
         mid_range: 'Up to $250',
         premium: 'Up to $500',
-        luxury: 'Any price'
+        luxury: 'Up to $1000'
       },
       activity: {
         great_barrier_reef: 'Great Barrier Reef',
@@ -5958,6 +6010,19 @@
       activeFilters = {};
       currentQuestion = 1;
       budgetSelected = false;
+      previousTourKey = null; // Clear the previous tour key
+      
+      // Show hero section and hide company filter nav
+      const heroSection = document.getElementById('hero-section');
+      const companyFilterNav = document.getElementById('company-filter-nav');
+      if (heroSection) heroSection.style.display = 'block';
+      if (companyFilterNav) companyFilterNav.style.display = 'none';
+      
+      // Reset tour titles
+      const title = document.getElementById('home-tours-title');
+      const subtitle = document.getElementById('home-tours-subtitle');
+      if (title) title.textContent = 'Tap Any Card For Booking and More Info';
+      if (subtitle) subtitle.textContent = 'Showing all available tours';
       
       // Clear budget slider
       const budgetSliderEl = document.getElementById('budget-slider');
@@ -5976,81 +6041,65 @@
       // Clear all filter options
       document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('selected'));
       document.querySelectorAll('.filter-question').forEach(q => q.classList.remove('active'));
-      document.querySelector('.filter-question[data-question="1"]').classList.add('active');
-      const progressText = t('question_of').replace('{current}', 1).replace('{total}', 5);
-      document.getElementById('filter-progress').textContent = progressText;
-      document.getElementById('progress-bar').style.width = '20%';
-      document.getElementById('filter-summary').style.display = 'none';
-      document.getElementById('results-info').innerHTML = 'Tap an option above to start filtering';
+      const firstQuestion = document.querySelector('.filter-question-card[data-question="1"]');
+      if (firstQuestion) firstQuestion.style.display = 'block';
+      
+      // Clear duration pills selection
+      document.querySelectorAll('.duration-pill').forEach(pill => pill.classList.remove('selected'));
       
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
-      // Reload to show all tours
-      location.reload();
+      // Reload all tours from scratch
+      loadInitialFeaturedTours();
     }
     
     function displayFilteredTours(tours) {
+      console.log('📋 displayFilteredTours called with', tours.length, 'tours');
       const grid = document.getElementById('tour-placeholder-row');
+      if (!grid) {
+        console.error('❌ Grid not found!');
+        return;
+      }
+      
       grid.innerHTML = '';
       
       tours.forEach(tour => {
         // Skip Ocean Dynamics results
         if (shouldHideTour(tour)) return;
         
-        const card = document.createElement('div');
-        card.className = 'tour-card';
+        const card = document.createElement('article');
+        card.className = 'tour-card-large';
         card.setAttribute('data-key', tour.key);
         card.setAttribute('data-departure', tour.departure_location || '');
+        
+        // Force visibility with inline styles
+        card.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; min-height: 400px !important; border-radius: 20px !important; overflow: hidden !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important; z-index: 5 !important;';
         
         // Generate rating display
         let ratingHtml = '';
         if (tour.review_rating && tour.review_rating > 0 && tour.review_count && tour.review_count > 0) {
-          ratingHtml = `
-            <div class="tour-rating">
-              <span class="stars">${generateStars(tour.review_rating)}</span>
-              <span class="review-count">(${tour.review_count})</span>
-            </div>
-          `;
+          ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
         }
         
-        // Check if mobile
-        if (window.innerWidth <= 768) {
-          // Mobile: Set innerHTML first
-          card.innerHTML = `
-            <div>
-              <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
-              <h3>${tour.name}</h3>
+        // Use tour-card-large format (matches template)
+        card.innerHTML = `
+          <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}'); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center;"></div>
+          <div class="tour-card-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 35px 30px; background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%); color: white;">
+            <span class="operator-chip" style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); border-radius: 20px; font-size: 0.9em; margin-bottom: 12px;">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</span>
+            <h2 class="tour-name" style="font-size: 1.8em; font-weight: 700; margin: 0 0 15px 0;">${tour.name}</h2>
+            <div class="tour-meta" style="display: flex; align-items: center; gap: 15px; font-size: 1.1em;">
               ${ratingHtml}
-              <div>
-                ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
-                ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
-              </div>
-              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+              <span class="price-badge" style="font-weight: 700; font-size: 1.2em;">From ${tour.price_adult || 'Contact for price'}</span>
             </div>
-          `;
-          
-          // Then set background image AFTER innerHTML
-          const thumbnailUrl = tour.thumbnail || '/static/placeholder.jpg';
-          card.style.backgroundImage = `url('${thumbnailUrl}')`;
-          card.style.backgroundSize = 'cover';
-          card.style.backgroundPosition = 'center';
-          card.style.backgroundRepeat = 'no-repeat';
-        } else {
-          // Desktop
-          card.innerHTML = `
-            <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
-            <div class="tour-overlay">
-              <div class="tour-type">${(tour.company_name || 'Tour Operator').replaceAll('_',' ').replace(/\b\w/g, c => c.toUpperCase())}</div>
-              <div class="tour-title">${tour.name}</div>
-              ${ratingHtml}
-            </div>
-          `;
-        }
+          </div>
+        `;
         
         card.onclick = () => openTourDetail(tour.key);
         grid.appendChild(card);
       });
+      
+      console.log('✅ Added', grid.children.length, 'cards to grid');
       
       // Hide load more button when filtering
       document.getElementById('load-more-btn').style.display = 'none';
@@ -6059,11 +6108,11 @@
     // Budget slider configuration (function to get translations)
     function getBudgetRanges() {
       return [
-        { value: 0, label: 'Move the slider to set your budget', category: '' },
-        { value: 1, label: 'Up to $100', category: 'budget' },
-        { value: 2, label: 'Up to $250', category: 'mid_range' },
-        { value: 3, label: 'Up to $500', category: 'premium' },
-        { value: 4, label: 'Any Price', category: 'luxury' }
+        { value: 0, label: '💰 Up to $100', category: 'budget' },
+        { value: 1, label: '💰 Up to $250', category: 'mid_range' },
+        { value: 2, label: '💰 Up to $500', category: 'premium' },
+        { value: 3, label: '💰 Up to $1000', category: 'luxury' },
+        { value: 4, label: 'Any Price', category: '' }
       ];
     }
     
@@ -6558,10 +6607,10 @@
         const display = document.getElementById('budget-display');
         if (slider && activeFilters.price) {
           const priceMap = {
-            'budget_low': 0,
-            'budget': 1,
-            'mid_range': 2,
-            'premium': 3,
+            'budget': 0,
+            'mid_range': 1,
+            'premium': 2,
+            'luxury': 3,
             '': 4
           };
           const value = priceMap[activeFilters.price] || 4;
@@ -6607,8 +6656,8 @@
     // Update budget display as slider moves
     function updateBudgetDisplay(value) {
       const display = document.getElementById('budget-display');
-      const labels = ['Up to $50', 'Up to $100', 'Up to $250', 'Up to $500', 'Any Price'];
-      const prices = ['budget_low', 'budget', 'mid_range', 'premium', ''];
+      const labels = ['💰 Up to $100', '💰 Up to $250', '💰 Up to $500', '💰 Up to $1000', 'Any Price'];
+      const prices = ['budget', 'mid_range', 'premium', 'luxury', ''];
       
       if (display) {
         display.textContent = labels[value];
@@ -6647,7 +6696,7 @@
     function confirmBudget() {
       const slider = document.getElementById('budget-slider');
       const value = slider ? slider.value : 4;
-      const prices = ['budget_low', 'budget', 'mid_range', 'premium', ''];
+      const prices = ['budget', 'mid_range', 'premium', 'luxury', ''];
       const priceFilter = prices[value];
       
       console.log('💰 Budget confirmed:', priceFilter);
@@ -6966,16 +7015,16 @@
         family: { 'true': 'Family with Kids', 'false': 'Adults Only' },
         family_friendly: { 'true': 'Family with Kids', 'false': 'Adults Only' },
         price: { 
-          budget_low: 'Up to $50',
           budget: 'Up to $100', 
           mid_range: 'Up to $250', 
-          premium: 'Up to $500' 
+          premium: 'Up to $500',
+          luxury: 'Up to $1000'
         },
         price_range: { 
-          budget_low: 'Up to $50',
           budget: 'Up to $100', 
           mid_range: 'Up to $250', 
-          premium: 'Up to $500' 
+          premium: 'Up to $500',
+          luxury: 'Up to $1000'
         },
         activity: { 
           great_barrier_reef: 'Great Barrier Reef', 
@@ -7160,7 +7209,7 @@
       // Update title
       const title = document.getElementById('home-tours-title');
       if (title) {
-        title.textContent = 'Available Tours';
+        title.textContent = 'Tap Any Card For Booking and More Info';
       }
       
       // Check which view we're in and refresh accordingly
@@ -7285,7 +7334,7 @@
             title.textContent = 'Filtered Tours';
           } else {
             subtitle.textContent = `Showing ${totalCount} tour${totalCount !== 1 ? 's' : ''}`;
-            title.textContent = 'Available Tours';
+            title.textContent = 'Tap Any Card For Booking and More Info';
           }
           
           // Store filtered tours in mapTourData for map view
@@ -7481,7 +7530,7 @@
           if (value === 'budget') text = 'Up to $100';
           else if (value === 'mid_range') text = 'Up to $250';
           else if (value === 'premium') text = 'Up to $500';
-          else if (value === 'luxury') text = 'Any Price';
+          else if (value === 'luxury') text = 'Up to $1000';
         } else if (key === 'meals') {
           text = 'Meals included';
         } else if (key === 'equipment') {
@@ -9113,15 +9162,18 @@
               console.warn('No company key found for company filter click');
               return;
             }
-            filterByCompany(companyKey, companyName);
+            filterByCompany(companyKey, companyName, key); // Pass the current tour key
           };
         });
     }
     
-    function filterByCompany(companyKey, companyName) {
+    function filterByCompany(companyKey, companyName, fromTourKey = null) {
       // Fallback: derive slug if missing
       const fallbackKey = companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '') : '';
       const finalKey = companyKey || fallbackKey;
+      
+      // Store the tour we came from
+      previousTourKey = fromTourKey;
       
       // Save current state to history before navigating
       navigationHistory.push({
@@ -9146,38 +9198,118 @@
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
       
-      // Update current view
-      currentView = 'company';
+      // Hide the hero section and show company filter nav
+      const heroSection = document.getElementById('hero-section');
+      const companyFilterNav = document.getElementById('company-filter-nav');
+      if (heroSection) heroSection.style.display = 'none';
+      if (companyFilterNav) companyFilterNav.style.display = 'block';
       
-      // Show navigation buttons
-      document.getElementById('nav-buttons').classList.add('active');
+      // UPDATE HOME PAGE INSTEAD OF SWITCHING PAGES
+      console.log('🏢 Filtering home page by company:', companyName, 'finalKey:', finalKey);
       
-      // Update the header and info
-      document.getElementById('tour-grid-header').textContent = `Tours by ${companyName}`;
-      document.getElementById('results-info').innerHTML = '🔍 Loading tours...';
+      // Update subtitle on home page
+      const subtitle = document.getElementById('home-tours-subtitle');
+      const title = document.getElementById('home-tours-title');
+      if (title) title.textContent = `Tours by ${companyName}`;
+      if (subtitle) subtitle.textContent = 'Loading...';
       
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // Fetch tours by company
       const params = new URLSearchParams();
-      params.set('company', finalKey);           // slug/key for backend match
-      params.set('company_key', finalKey);       // slug/key
-      params.set('company_slug', finalKey);      // alt key
-      params.set('company_name', companyName);   // readable name
+      params.set('company', finalKey);
       params.set('lang', currentLanguage);
       
       fetch(`/filter-tours?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-          displayFilteredTours(data.tours);
-          document.getElementById('results-info').innerHTML = 
-            `Found ${data.total_found} tour${data.total_found !== 1 ? 's' : ''} by ${companyName}`;
+          console.log(`✅ Loaded ${data.tours.length} tours for ${companyName}`);
+          
+          // Display company tours first (this will filter duplicates internally)
+          displayFeaturedTours(data.tours, false);
+          
+          // Count how many were actually displayed (only count tour-card-large elements)
+          const grid = document.getElementById('featured-grid');
+          const displayedCount = grid ? grid.querySelectorAll('.tour-card-large').length : 0;
+          
+          // Update subtitle with actual displayed count
+          if (subtitle) {
+            subtitle.textContent = `Showing ${displayedCount} tour${displayedCount !== 1 ? 's' : ''}`;
+          }
+          
+          // Now fetch and append ALL other tours
+          fetch(`/filter-tours?lang=${currentLanguage}`)
+            .then(response => response.json())
+            .then(allData => {
+              console.log(`✅ Loaded ${allData.tours.length} total tours, filtering out ${companyName}`);
+              
+              // Filter out tours from the selected company
+              // Check multiple variations of company key/name
+              const companyVariations = [
+                finalKey,
+                companyName,
+                companyName.toLowerCase(),
+                companyName.toLowerCase().replace(/\s+/g, ''),
+                companyName.toLowerCase().replace(/[^a-z0-9]+/g, '')
+              ];
+              
+              const otherTours = allData.tours.filter(tour => {
+                const tourCompanyKey = tour.company_key || (tour.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+                const tourCompany = (tour.company || '').toLowerCase();
+                const tourCompanyName = (tour.company_name || '').toLowerCase();
+                
+                // Exclude if any variation matches
+                return !companyVariations.some(variation => 
+                  tourCompanyKey === variation || 
+                  tourCompany === variation || 
+                  tourCompanyName === variation ||
+                  tourCompany.includes(variation) ||
+                  variation.includes(tourCompany)
+                );
+              });
+              
+              console.log(`   Filtered to ${otherTours.length} non-${companyName} tours`);
+              
+              // Insert divider and append other tours
+              if (otherTours.length > 0) {
+                const grid = document.getElementById('featured-grid');
+                if (grid) {
+                  // Create and insert divider
+                  const divider = document.createElement('div');
+                  divider.id = 'other-tours-divider';
+                  divider.style.cssText = 'grid-column: 1/-1; margin: 60px 0 40px 0; text-align: center;';
+                  divider.innerHTML = `
+                    <h2 style="color: white; font-size: 3em; font-weight: 700; margin: 0;">Other Tours You Might Like</h2>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 1.5em; margin: 15px 0 0 0;">Continue scrolling to explore all available tours</p>
+                  `;
+                  grid.appendChild(divider);
+                }
+                
+                displayFeaturedTours(otherTours, true); // append = true
+              }
+              
+              homePageHasMore = false; // Disable further infinite scroll
+            });
         })
         .catch(error => {
-          console.error('Filter error:', error);
-          document.getElementById('results-info').innerHTML = 'Error loading tours. Please try again.';
+          console.error('❌ Filter error:', error);
+          if (subtitle) subtitle.textContent = 'Error loading tours';
         });
+    }
+    
+    function goBackToTourDetail() {
+      if (previousTourKey) {
+        // Show the hero section again and hide company filter nav
+        const heroSection = document.getElementById('hero-section');
+        const companyFilterNav = document.getElementById('company-filter-nav');
+        if (heroSection) heroSection.style.display = 'block';
+        if (companyFilterNav) companyFilterNav.style.display = 'none';
+        
+        // Open the tour detail
+        openTourDetail(previousTourKey);
+        previousTourKey = null;
+      }
     }
     
     function goBack() {
@@ -9834,7 +9966,7 @@
         // Update button text
         if (mapToggleBtn) mapToggleBtn.textContent = 'Map view';
         
-        header.textContent = 'Available Tours';
+        header.textContent = 'Tap Any Card For Booking and More Info';
         resultsInfo.textContent = 'Tap an option above to start filtering';
         
         // Clear location filter from map view
@@ -9939,10 +10071,10 @@
             const priceMatch = tour.price_adult?.match(/[\d,]+/);
             if (priceMatch) {
               const price = parseFloat(priceMatch[0].replace(/,/g, ''));
-              if (priceFilter === 'budget_low' && price > 50) return false;
               if (priceFilter === 'budget' && price > 100) return false;
               if (priceFilter === 'mid_range' && price > 250) return false;
               if (priceFilter === 'premium' && price > 500) return false;
+              if (priceFilter === 'luxury' && price > 1000) return false;
             }
           }
           
@@ -10385,6 +10517,9 @@
     // Get current language from URL parameter or localStorage
     const urlParams = new URLSearchParams(window.location.search);
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
+    
+    // Store the tour key we came from when filtering by company
+    let previousTourKey = null;
     
     // Load translations from JSON file
     async function loadTranslations() {
@@ -11599,7 +11734,7 @@
           const subtitle = document.getElementById('home-tours-subtitle');
           
           if (title) {
-            title.textContent = 'Available Tours';
+            title.textContent = 'Tap Any Card For Booking and More Info';
             title.style.background = '';
             title.style.webkitBackgroundClip = '';
             title.style.webkitTextFillColor = '';
@@ -12210,6 +12345,69 @@
         }
       }, 500);
     });
+    
+    // Quick search function
+    let searchTimer = null;
+    async function quickSearch(query) {
+      clearTimeout(searchTimer);
+      
+      // If empty search, restore all tours
+      if (!query || query.trim().length === 0) {
+        const title = document.getElementById('home-tours-title');
+        const subtitle = document.getElementById('home-tours-subtitle');
+        if (title) title.textContent = 'Featured Tours';
+        if (subtitle) subtitle.textContent = 'Discover amazing experiences';
+        loadInitialFeaturedTours();
+        return;
+      }
+      
+      // If search is too short, wait for more input
+      if (query.trim().length < 2) return;
+      
+      searchTimer = setTimeout(async () => {
+        console.log('🔍 Quick search:', query);
+        
+        console.log('🔍 Searching:', query);
+        
+        // Update home page title/subtitle
+        const title = document.getElementById('home-tours-title');
+        const subtitle = document.getElementById('home-tours-subtitle');
+        if (title) title.textContent = 'Search Results';
+        if (subtitle) subtitle.textContent = 'Searching...';
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Fetch and filter tours
+        try {
+          const response = await fetch(`/filter-tours?lang=${currentLanguage}`);
+          const data = await response.json();
+          
+          const searchLower = query.toLowerCase();
+          const filtered = data.tours.filter(tour => {
+            return (tour.name || '').toLowerCase().includes(searchLower) ||
+                   (tour.company_name || '').toLowerCase().includes(searchLower);
+          });
+          
+          console.log(`✅ Found ${filtered.length} tours matching "${query}"`);
+          
+          // Update subtitle
+          if (subtitle) {
+            subtitle.textContent = `Found ${filtered.length} tour${filtered.length !== 1 ? 's' : ''} matching "${query}"`;
+          }
+          
+          // Disable infinite scroll (we're showing filtered results)
+          homePageHasMore = false;
+          homePageTotalCount = filtered.length;
+          
+          // Display in featured grid (home page grid)
+          displayFeaturedTours(filtered, false);
+        } catch (error) {
+          console.error('❌ Search error:', error);
+          if (subtitle) subtitle.textContent = 'Error searching tours';
+        }
+      }, 500);
+    }
     
   </script>
   
