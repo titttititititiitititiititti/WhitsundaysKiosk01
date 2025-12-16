@@ -2372,28 +2372,30 @@
         z-index: 10001;
       }
       
-      /* Reduce side margins for tour detail sections on mobile */
-      .tour-detail-page .pricing-section,
-      .tour-detail-page .info-grid,
-      .tour-detail-page .details-section,
-      .tour-detail-page .fine-print,
-      .tour-detail-page .departure-section {
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+      /* Reduce side margins for tour detail sections on mobile - AGGRESSIVE */
+      .page.tour-detail-page .pricing-section,
+      .page.tour-detail-page .info-grid,
+      .page.tour-detail-page .details-section,
+      .page.tour-detail-page .fine-print,
+      .page.tour-detail-page .departure-section,
+      .page.tour-detail-page section.pricing-section,
+      .page.tour-detail-page section.details-section,
+      .page.tour-detail-page .info-grid.info-grid {
+        margin: 32px 2px !important;
       }
       
       /* Override inline styles for dynamically generated sections */
-      .tour-detail-page #detail-info > div[style],
-      .tour-detail-page #detail-info div[style*="margin"],
-      .tour-detail-page .detail-section-grid[style],
-      .tour-detail-page .detail-section-grid > div[style],
-      .tour-detail-page .info-card[style],
-      .tour-detail-page div[style*="margin:0 15px 30px 15px"],
-      .tour-detail-page div[style*="margin:0 50px 30px 50px"],
-      .tour-detail-page div[style*="margin:0 5px 30px 5px"],
-      .tour-detail-page div[style*="margin:0 2px 30px 2px"] {
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+      .page.tour-detail-page #detail-info > div[style],
+      .page.tour-detail-page #detail-info div[style*="margin"],
+      .page.tour-detail-page .detail-section-grid[style],
+      .page.tour-detail-page .detail-section-grid > div[style],
+      .page.tour-detail-page .info-card[style],
+      .page.tour-detail-page div[style*="margin:0 15px 30px 15px"],
+      .page.tour-detail-page div[style*="margin:0 50px 30px 50px"],
+      .page.tour-detail-page div[style*="margin:0 5px 30px 5px"],
+      .page.tour-detail-page div[style*="margin:0 2px 30px 2px"] {
+        margin-left: 2px !important;
+        margin-right: 2px !important;
       }
     }
     
@@ -2446,28 +2448,30 @@
         font-size: 1.1em;
       }
       
-      /* Reduce side margins for tour detail sections on small phones */
-      .tour-detail-page .pricing-section,
-      .tour-detail-page .info-grid,
-      .tour-detail-page .details-section,
-      .tour-detail-page .fine-print,
-      .tour-detail-page .departure-section {
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+      /* Reduce side margins for tour detail sections on small phones - AGGRESSIVE */
+      .page.tour-detail-page .pricing-section,
+      .page.tour-detail-page .info-grid,
+      .page.tour-detail-page .details-section,
+      .page.tour-detail-page .fine-print,
+      .page.tour-detail-page .departure-section,
+      .page.tour-detail-page section.pricing-section,
+      .page.tour-detail-page section.details-section,
+      .page.tour-detail-page .info-grid.info-grid {
+        margin: 32px 2px !important;
       }
       
       /* Override inline styles for dynamically generated sections */
-      .tour-detail-page #detail-info > div[style],
-      .tour-detail-page #detail-info div[style*="margin"],
-      .tour-detail-page .detail-section-grid[style],
-      .tour-detail-page .detail-section-grid > div[style],
-      .tour-detail-page .info-card[style],
-      .tour-detail-page div[style*="margin:0 15px 30px 15px"],
-      .tour-detail-page div[style*="margin:0 50px 30px 50px"],
-      .tour-detail-page div[style*="margin:0 5px 30px 5px"],
-      .tour-detail-page div[style*="margin:0 2px 30px 2px"] {
-        margin-left: 5px !important;
-        margin-right: 5px !important;
+      .page.tour-detail-page #detail-info > div[style],
+      .page.tour-detail-page #detail-info div[style*="margin"],
+      .page.tour-detail-page .detail-section-grid[style],
+      .page.tour-detail-page .detail-section-grid > div[style],
+      .page.tour-detail-page .info-card[style],
+      .page.tour-detail-page div[style*="margin:0 15px 30px 15px"],
+      .page.tour-detail-page div[style*="margin:0 50px 30px 50px"],
+      .page.tour-detail-page div[style*="margin:0 5px 30px 5px"],
+      .page.tour-detail-page div[style*="margin:0 2px 30px 2px"] {
+        margin-left: 2px !important;
+        margin-right: 2px !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
