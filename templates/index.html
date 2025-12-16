@@ -1336,7 +1336,7 @@
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      background: red !important;
+      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%) !important;
       display: none;
       flex-direction: column;
       z-index: 10000 !important;
@@ -2419,6 +2419,36 @@
         margin-left: auto !important;
         margin-right: auto !important;
       }
+      
+      /* Make tour title and company much larger on mobile */
+      .page.tour-detail-page .tour-title {
+        font-size: 6em !important;
+      }
+      
+      .page.tour-detail-page .tour-hero .operator-chip {
+        font-size: 2em !important;
+        padding: 16px 35px !important;
+      }
+      
+      /* Increase all section text sizes by 4 sizes */
+      .page.tour-detail-page .pricing-section h2,
+      .page.tour-detail-page .details-section h3,
+      .page.tour-detail-page .info-card h3,
+      .page.tour-detail-page .fine-print h3 {
+        font-size: 3.2em !important;
+      }
+      
+      .page.tour-detail-page .pricing-hint,
+      .page.tour-detail-page .details-section #detail-description,
+      .page.tour-detail-page .info-card li,
+      .page.tour-detail-page .fine-print p,
+      .page.tour-detail-page .fine-print div {
+        font-size: 1.65em !important;
+      }
+      
+      .page.tour-detail-page .price-row {
+        font-size: 2em !important;
+      }
     }
     
     /* Small phones - Scale down to 40% */
@@ -2516,6 +2546,36 @@
         text-align: center !important;
         margin-left: auto !important;
         margin-right: auto !important;
+      }
+      
+      /* Make tour title and company much larger on small phones */
+      .page.tour-detail-page .tour-title {
+        font-size: 6em !important;
+      }
+      
+      .page.tour-detail-page .tour-hero .operator-chip {
+        font-size: 2em !important;
+        padding: 16px 35px !important;
+      }
+      
+      /* Increase all section text sizes by 4 sizes */
+      .page.tour-detail-page .pricing-section h2,
+      .page.tour-detail-page .details-section h3,
+      .page.tour-detail-page .info-card h3,
+      .page.tour-detail-page .fine-print h3 {
+        font-size: 3.2em !important;
+      }
+      
+      .page.tour-detail-page .pricing-hint,
+      .page.tour-detail-page .details-section #detail-description,
+      .page.tour-detail-page .info-card li,
+      .page.tour-detail-page .fine-print p,
+      .page.tour-detail-page .fine-print div {
+        font-size: 1.65em !important;
+      }
+      
+      .page.tour-detail-page .price-row {
+        font-size: 2em !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
