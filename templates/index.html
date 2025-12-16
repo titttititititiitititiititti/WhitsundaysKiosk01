@@ -2371,6 +2371,30 @@
         top: 0;
         z-index: 10001;
       }
+      
+      /* Reduce side margins for tour detail sections on mobile */
+      .pricing-section,
+      .info-grid,
+      .details-section,
+      .fine-print,
+      .departure-section {
+        margin-left: 20px !important;
+        margin-right: 20px !important;
+      }
+      
+      /* Override inline styles for dynamically generated sections */
+      #detail-info > div[style],
+      #detail-info div[style*="margin"],
+      .detail-section-grid[style],
+      .detail-section-grid > div[style],
+      .info-card[style],
+      div[style*="margin:0 15px 30px 15px"],
+      div[style*="margin:0 50px 30px 50px"],
+      div[style*="margin:0 5px 30px 5px"],
+      div[style*="margin:0 2px 30px 2px"] {
+        margin-left: 20px !important;
+        margin-right: 20px !important;
+      }
     }
     
     /* Small phones - Scale down to 40% */
@@ -2420,6 +2444,30 @@
       .nav-btn {
         padding: 15px 25px;
         font-size: 1.1em;
+      }
+      
+      /* Reduce side margins for tour detail sections on small phones */
+      .pricing-section,
+      .info-grid,
+      .details-section,
+      .fine-print,
+      .departure-section {
+        margin-left: 20px !important;
+        margin-right: 20px !important;
+      }
+      
+      /* Override inline styles for dynamically generated sections */
+      #detail-info > div[style],
+      #detail-info div[style*="margin"],
+      .detail-section-grid[style],
+      .detail-section-grid > div[style],
+      .info-card[style],
+      div[style*="margin:0 15px 30px 15px"],
+      div[style*="margin:0 50px 30px 50px"],
+      div[style*="margin:0 5px 30px 5px"],
+      div[style*="margin:0 2px 30px 2px"] {
+        margin-left: 20px !important;
+        margin-right: 20px !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
