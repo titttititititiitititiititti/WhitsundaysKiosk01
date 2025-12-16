@@ -2372,6 +2372,11 @@
         z-index: 10001;
       }
       
+      /* Force tour detail main to have no side padding on mobile */
+      .page.tour-detail-page .tour-detail-main {
+        padding: 40px 0px 120px 0px !important;
+      }
+      
       /* Reduce side margins for tour detail sections on mobile - AGGRESSIVE */
       .page.tour-detail-page .pricing-section,
       .page.tour-detail-page .info-grid,
@@ -2381,7 +2386,7 @@
       .page.tour-detail-page section.pricing-section,
       .page.tour-detail-page section.details-section,
       .page.tour-detail-page .info-grid.info-grid {
-        margin: 32px 2px !important;
+        margin: 32px 0px !important;
       }
       
       /* Override inline styles for dynamically generated sections */
@@ -2394,8 +2399,8 @@
       .page.tour-detail-page div[style*="margin:0 50px 30px 50px"],
       .page.tour-detail-page div[style*="margin:0 5px 30px 5px"],
       .page.tour-detail-page div[style*="margin:0 2px 30px 2px"] {
-        margin-left: 2px !important;
-        margin-right: 2px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
       }
     }
     
@@ -2448,6 +2453,11 @@
         font-size: 1.1em;
       }
       
+      /* Force tour detail main to have no side padding on small phones */
+      .page.tour-detail-page .tour-detail-main {
+        padding: 40px 0px 120px 0px !important;
+      }
+      
       /* Reduce side margins for tour detail sections on small phones - AGGRESSIVE */
       .page.tour-detail-page .pricing-section,
       .page.tour-detail-page .info-grid,
@@ -2457,7 +2467,7 @@
       .page.tour-detail-page section.pricing-section,
       .page.tour-detail-page section.details-section,
       .page.tour-detail-page .info-grid.info-grid {
-        margin: 32px 2px !important;
+        margin: 32px 0px !important;
       }
       
       /* Override inline styles for dynamically generated sections */
@@ -2470,8 +2480,8 @@
       .page.tour-detail-page div[style*="margin:0 50px 30px 50px"],
       .page.tour-detail-page div[style*="margin:0 5px 30px 5px"],
       .page.tour-detail-page div[style*="margin:0 2px 30px 2px"] {
-        margin-left: 2px !important;
-        margin-right: 2px !important;
+        margin-left: 0px !important;
+        margin-right: 0px !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
