@@ -2695,28 +2695,51 @@
       width: 100%;
       max-width: 100%;
       margin: 40px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       min-height: 500px;
       background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 50%, #0edfcc 100%);
       border-radius: 12px;
       overflow: hidden;
     }
+    .carousel-image-container {
+      position: relative;
+      width: 100%;
+      min-height: 500px;
+      overflow: hidden;
+    }
     .carousel img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: auto;
       min-height: 500px;
       max-height: 800px;
       object-fit: contain;
-      cursor: pointer;
       display: block;
       border-radius: 0;
       box-shadow: none;
-      transition: opacity 0.25s ease;
+      transition: transform 0.3s ease-out;
+      transform: translateX(0);
     }
-    .carousel img.fade-transition {
+    .carousel img.slide-out-left {
+      transform: translateX(-100%);
+    }
+    .carousel img.slide-out-right {
+      transform: translateX(100%);
+    }
+    .carousel img.slide-in-left {
+      transform: translateX(-100%);
+    }
+    .carousel img.slide-in-right {
+      transform: translateX(100%);
+    }
+    .carousel img.active {
+      transform: translateX(0);
+      z-index: 2;
+    }
+    .carousel img.preload {
       opacity: 0;
+      pointer-events: none;
     }
     .carousel-arrow {
       position: absolute;
@@ -9249,12 +9272,16 @@
               pricingOptions[0].click();
             }
           }, 100);
-          // Carousel with dot navigation and swipe support
+          // Carousel with dot navigation, swipe support, and preloading
           let gallery = data.gallery || [];
           let carouselHtml = '';
           if (gallery.length) {
             carouselHtml = '<div class="carousel">';
-            carouselHtml += '<img id="carousel-img" src="' + gallery[0] + '" alt="Tour image">';
+            carouselHtml += '<div class="carousel-image-container">';
+            carouselHtml += '<img id="carousel-img-prev" class="preload" alt="Previous">';
+            carouselHtml += '<img id="carousel-img-current" class="active" src="' + gallery[0] + '" alt="Current">';
+            carouselHtml += '<img id="carousel-img-next" class="preload" alt="Next">';
+            carouselHtml += '</div>';
             if (gallery.length > 1) {
               carouselHtml += '<button class="carousel-arrow left">&#8249;</button>';
               carouselHtml += '<button class="carousel-arrow right">&#8250;</button>';
@@ -9272,16 +9299,42 @@
           }
           document.getElementById('detail-gallery').innerHTML = carouselHtml;
           let currentIdx = 0;
+          
+          function preloadImages() {
+            const prevIdx = (currentIdx - 1 + gallery.length) % gallery.length;
+            const nextIdx = (currentIdx + 1) % gallery.length;
+            document.getElementById('carousel-img-prev').src = gallery[prevIdx];
+            document.getElementById('carousel-img-next').src = gallery[nextIdx];
+          }
+          
           function showImg(idx, direction = 'none') {
-            const img = document.getElementById('carousel-img');
+            if (idx === currentIdx) return;
             
-            // Fade out current image
-            img.classList.add('fade-transition');
+            const imgCurrent = document.getElementById('carousel-img-current');
+            const imgPrev = document.getElementById('carousel-img-prev');
+            const imgNext = document.getElementById('carousel-img-next');
             
-            // Wait for fade out, then change image and fade back in
+            let incomingImg = direction === 'left' ? imgNext : imgPrev;
+            
+            // Set up incoming image position
+            if (direction === 'left') {
+              incomingImg.classList.remove('preload');
+              incomingImg.classList.add('slide-in-right');
+              incomingImg.style.zIndex = '3';
+            } else if (direction === 'right') {
+              incomingImg.classList.remove('preload');
+              incomingImg.classList.add('slide-in-left');
+              incomingImg.style.zIndex = '3';
+            }
+            
+            // Trigger animation
             setTimeout(() => {
+              imgCurrent.classList.remove('active');
+              imgCurrent.classList.add(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
+              incomingImg.classList.remove('slide-in-left', 'slide-in-right');
+              incomingImg.classList.add('active');
+              
               currentIdx = idx;
-              img.src = gallery[idx];
               
               // Update dots and counter
               document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
@@ -9289,12 +9342,40 @@
               });
               const counter = document.getElementById('carousel-current');
               if (counter) counter.textContent = idx + 1;
+            }, 10);
+            
+            // Clean up after animation
+            setTimeout(() => {
+              // Reset all images
+              [imgCurrent, imgPrev, imgNext].forEach(img => {
+                img.classList.remove('active', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
+                img.classList.add('preload');
+                img.style.zIndex = '1';
+              });
               
-              // Fade back in
-              setTimeout(() => {
-                img.classList.remove('fade-transition');
-              }, 10);
-            }, 125);
+              // Set new current image
+              incomingImg.classList.remove('preload');
+              incomingImg.classList.add('active');
+              incomingImg.style.zIndex = '2';
+              incomingImg.id = 'carousel-img-current';
+              
+              // Reassign other images
+              if (direction === 'left') {
+                imgCurrent.id = 'carousel-img-prev';
+                imgPrev.id = 'carousel-img-next';
+              } else {
+                imgCurrent.id = 'carousel-img-next';
+                imgNext.id = 'carousel-img-prev';
+              }
+              
+              // Preload adjacent images
+              preloadImages();
+            }, 350);
+          }
+          
+          // Initial preload
+          if (gallery.length > 1) {
+            preloadImages();
           }
           if (gallery.length > 1) {
             document.querySelector('.carousel-arrow.left').onclick = e => { 
