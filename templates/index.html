@@ -2713,21 +2713,10 @@
       display: block;
       border-radius: 0;
       box-shadow: none;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: opacity 0.25s ease;
     }
-    .carousel img.slide-left {
-      animation: slideLeft 0.3s ease;
-    }
-    .carousel img.slide-right {
-      animation: slideRight 0.3s ease;
-    }
-    @keyframes slideLeft {
-      from { transform: translateX(100%); opacity: 0.5; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideRight {
-      from { transform: translateX(-100%); opacity: 0.5; }
-      to { transform: translateX(0); opacity: 1; }
+    .carousel img.fade-transition {
+      opacity: 0;
     }
     .carousel-arrow {
       position: absolute;
@@ -9286,29 +9275,26 @@
           function showImg(idx, direction = 'none') {
             const img = document.getElementById('carousel-img');
             
-            // Remove any existing animation classes first
-            img.classList.remove('slide-left', 'slide-right');
+            // Fade out current image
+            img.classList.add('fade-transition');
             
-            // Force reflow to restart animation
-            void img.offsetWidth;
-            
-            // Update image source
-            currentIdx = idx;
-            img.src = gallery[idx];
-            
-            // Add animation class after image src changes
-            if (direction === 'left') {
-              img.classList.add('slide-left');
-            } else if (direction === 'right') {
-              img.classList.add('slide-right');
-            }
-            
-            // Update dots and counter
-            document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
-              el.classList.toggle('active', i === idx);
-            });
-            const counter = document.getElementById('carousel-current');
-            if (counter) counter.textContent = idx + 1;
+            // Wait for fade out, then change image and fade back in
+            setTimeout(() => {
+              currentIdx = idx;
+              img.src = gallery[idx];
+              
+              // Update dots and counter
+              document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
+                el.classList.toggle('active', i === idx);
+              });
+              const counter = document.getElementById('carousel-current');
+              if (counter) counter.textContent = idx + 1;
+              
+              // Fade back in
+              setTimeout(() => {
+                img.classList.remove('fade-transition');
+              }, 10);
+            }, 125);
           }
           if (gallery.length > 1) {
             document.querySelector('.carousel-arrow.left').onclick = e => { 
