@@ -439,6 +439,309 @@
     }
     
     /* ===================================================================
+       VIDEO QUESTION PAGE - NEW PRIMARY FLOW
+       =================================================================== */
+    
+    .page.video-question-page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      object-fit: cover;
+      filter: blur(8px);
+    }
+    
+    .video-question-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1200px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .video-question-card {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      padding: 80px 100px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      animation: slideUpFadeIn 0.8s ease-out;
+      transform-origin: bottom center;
+    }
+    
+    @keyframes slideUpFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(100px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .vq-question {
+      font-size: 3.5em;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 60px 0;
+      line-height: 1.3;
+    }
+    
+    .vq-answers {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      width: 100%;
+    }
+    
+    .vq-answer-btn {
+      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 35px 50px;
+      font-size: 2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.4);
+      text-align: center;
+      width: 100%;
+    }
+    
+    .vq-answer-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 119, 182, 0.6);
+      background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+    }
+    
+    .vq-answer-btn:active {
+      transform: translateY(-2px);
+    }
+    
+    .vq-answer-btn.selected {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.6);
+    }
+    
+    /* ===================================================================
+       SWIPE RESULTS PAGE - TINDER-STYLE CARDS
+       =================================================================== */
+    
+    .page.swipe-results-page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+    }
+    
+    .swipe-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+    
+    .skip-to-list-btn {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50px;
+      padding: 20px 40px;
+      font-size: 1.4em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .skip-to-list-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(5px);
+    }
+    
+    .swipe-card-stack {
+      position: relative;
+      z-index: 10;
+      width: 500px;
+      height: 700px;
+      margin-bottom: 100px;
+    }
+    
+    .swipe-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      cursor: grab;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      user-select: none;
+    }
+    
+    .swipe-card.grabbing {
+      cursor: grabbing;
+    }
+    
+    .swipe-card.swiping-left {
+      animation: swipeLeft 0.4s ease-out forwards;
+    }
+    
+    .swipe-card.swiping-right {
+      animation: swipeRight 0.4s ease-out forwards;
+    }
+    
+    @keyframes swipeLeft {
+      to {
+        transform: translateX(-150%) rotate(-30deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes swipeRight {
+      to {
+        transform: translateX(150%) rotate(30deg);
+        opacity: 0;
+      }
+    }
+    
+    .swipe-card-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+    
+    .swipe-card-content {
+      padding: 40px;
+    }
+    
+    .swipe-card-title {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #0077b6;
+      margin: 0 0 15px 0;
+      line-height: 1.2;
+    }
+    
+    .swipe-card-company {
+      font-size: 1.3em;
+      color: #666;
+      margin: 0 0 20px 0;
+      font-weight: 500;
+    }
+    
+    .swipe-card-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .swipe-card-detail {
+      background: #f0f0f0;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    
+    .swipe-card-price {
+      font-size: 2em;
+      font-weight: 700;
+      color: #0077b6;
+      margin: 20px 0 0 0;
+    }
+    
+    .swipe-actions {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 40px;
+      z-index: 20;
+    }
+    
+    .swipe-btn {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      font-weight: 600;
+    }
+    
+    .swipe-btn-reject {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+    }
+    
+    .swipe-btn-reject:hover {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 20px 50px rgba(244, 67, 54, 0.5);
+    }
+    
+    .swipe-btn-accept {
+      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      color: white;
+    }
+    
+    .swipe-btn-accept:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 20px 50px rgba(76, 175, 80, 0.5);
+    }
+    
+    .swipe-btn-icon {
+      font-size: 3.5em;
+      line-height: 1;
+    }
+    
+    .swipe-btn-text {
+      font-size: 1.2em;
+    }
+    
+    /* ===================================================================
        MODERN KIOSK LAYOUT - Home Page
        =================================================================== */
     
@@ -5139,6 +5442,52 @@
         <span>🏠</span>
         <span>Home</span>
       </button>
+    </div>
+    
+    <!-- Video Question Page - NEW PRIMARY FLOW -->
+    <div class="page video-question-page active" id="video-question-page">
+      <!-- Full-screen video background -->
+      <video id="bg-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='b_roll/background.mp4') }}" type="video/mp4">
+      </video>
+      
+      <!-- Question Container -->
+      <div class="video-question-container" id="video-question-container">
+        <div class="video-question-card" id="vq-card">
+          <h2 class="vq-question" id="vq-question-text">How long can you be away?</h2>
+          <div class="vq-answers" id="vq-answers">
+            <!-- Buttons will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Swipe Results Page - TINDER-STYLE CARDS -->
+    <div class="page swipe-results-page" id="swipe-results-page">
+      <!-- Background gradient -->
+      <div class="swipe-bg"></div>
+      
+      <!-- Skip to full list button -->
+      <button class="skip-to-list-btn" id="skip-to-list-btn">
+        See All Tours →
+      </button>
+      
+      <!-- Card stack -->
+      <div class="swipe-card-stack" id="swipe-card-stack">
+        <!-- Cards will be inserted here dynamically -->
+      </div>
+      
+      <!-- Action buttons -->
+      <div class="swipe-actions">
+        <button class="swipe-btn swipe-btn-reject" id="reject-btn">
+          <span class="swipe-btn-icon">✕</span>
+          <span class="swipe-btn-text">Not For Me</span>
+        </button>
+        <button class="swipe-btn swipe-btn-accept" id="accept-btn">
+          <span class="swipe-btn-icon">→</span>
+          <span class="swipe-btn-text">Tell Me More</span>
+        </button>
+      </div>
     </div>
     
     <!-- Home Page - Modern Kiosk Layout -->
@@ -12454,6 +12803,373 @@
         }
       }, 500);
     }
+    
+    // ===================================================================
+    // VIDEO QUESTION FLOW - NEW PRIMARY EXPERIENCE
+    // ===================================================================
+    
+    const videoQuestions = [
+      {
+        question: "How long can you be away?",
+        answers: [
+          { text: "Half Day<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>", value: "half_day", filter: "duration" },
+          { text: "Full Day<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>", value: "full_day", filter: "duration" },
+          { text: "Multi-day Adventure", value: "multi_day", filter: "duration" },
+          { text: "No preference", value: "", filter: "duration" }
+        ]
+      },
+      {
+        question: "Who's coming along?",
+        answers: [
+          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
+          { text: "👥 Adults Only", value: "false", filter: "family_friendly" },
+          { text: "No preference", value: "", filter: "family_friendly" }
+        ]
+      },
+      {
+        question: "What interests you most?",
+        multiple: true,
+        answers: [
+          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
+          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
+          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
+          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
+          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
+          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
+          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
+          { text: "No preference", value: "", filter: "activities", isSkip: true }
+        ]
+      }
+    ];
+    
+    let currentVideoQuestion = 0;
+    let videoAnswers = {
+      duration: "",
+      family_friendly: "",
+      activities: []
+    };
+    
+    function initVideoQuestionFlow() {
+      renderVideoQuestion(0);
+    }
+    
+    function renderVideoQuestion(index) {
+      const question = videoQuestions[index];
+      const questionText = document.getElementById('vq-question-text');
+      const answersContainer = document.getElementById('vq-answers');
+      
+      questionText.textContent = question.question;
+      answersContainer.innerHTML = '';
+      
+      // Add subtitle for multiple choice
+      if (question.multiple) {
+        const subtitle = document.createElement('p');
+        subtitle.style.cssText = 'font-size: 1.2em; color: #90e0ef; margin: -40px 0 30px 0;';
+        subtitle.textContent = 'Select all that apply';
+        answersContainer.appendChild(subtitle);
+      }
+      
+      question.answers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.className = 'vq-answer-btn';
+        btn.innerHTML = answer.text;
+        btn.onclick = () => handleVideoAnswer(answer, question.multiple, question.filter);
+        answersContainer.appendChild(btn);
+      });
+      
+      // Trigger slide-up animation
+      const card = document.getElementById('vq-card');
+      card.style.animation = 'none';
+      setTimeout(() => {
+        card.style.animation = 'slideUpFadeIn 0.8s ease-out';
+      }, 10);
+    }
+    
+    function handleVideoAnswer(answer, isMultiple, filterType) {
+      if (isMultiple) {
+        // Handle multiple selection
+        if (answer.isSkip) {
+          // Skip to next question
+          videoAnswers[filterType] = [];
+          nextVideoQuestion();
+        } else {
+          // Toggle selection
+          const index = videoAnswers[filterType].indexOf(answer.value);
+          if (index > -1) {
+            videoAnswers[filterType].splice(index, 1);
+          } else {
+            videoAnswers[filterType].push(answer.value);
+          }
+          
+          // Update button appearance
+          event.target.classList.toggle('selected');
+          
+          // Show continue button after selecting at least one
+          if (videoAnswers[filterType].length > 0 && !document.getElementById('vq-continue-btn')) {
+            const continueBtn = document.createElement('button');
+            continueBtn.id = 'vq-continue-btn';
+            continueBtn.className = 'vq-answer-btn';
+            continueBtn.style.cssText = 'background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); margin-top: 20px;';
+            continueBtn.innerHTML = 'Continue →';
+            continueBtn.onclick = nextVideoQuestion;
+            document.getElementById('vq-answers').appendChild(continueBtn);
+          }
+        }
+      } else {
+        // Single selection - immediately proceed
+        videoAnswers[filterType] = answer.value;
+        nextVideoQuestion();
+      }
+    }
+    
+    function nextVideoQuestion() {
+      currentVideoQuestion++;
+      if (currentVideoQuestion < videoQuestions.length) {
+        renderVideoQuestion(currentVideoQuestion);
+      } else {
+        // All questions answered - show swipe results
+        showSwipeResults();
+      }
+    }
+    
+    // ===================================================================
+    // SWIPE RESULTS - TINDER-STYLE CARD INTERFACE
+    // ===================================================================
+    
+    let swipeCards = [];
+    let currentCardIndex = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    
+    async function showSwipeResults() {
+      // Hide video question page
+      document.querySelector('.video-question-page').classList.remove('active');
+      
+      // Show swipe results page
+      const swipePage = document.querySelector('.swipe-results-page');
+      swipePage.classList.add('active');
+      
+      // Fetch filtered tours
+      try {
+        const params = new URLSearchParams();
+        if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
+        if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
+        if (videoAnswers.activities.length > 0) {
+          videoAnswers.activities.forEach(act => params.append('activities', act));
+        }
+        
+        const response = await fetch(`/api/tours?${params.toString()}`);
+        const data = await response.json();
+        swipeCards = data.tours || [];
+        
+        if (swipeCards.length === 0) {
+          // No results - go to home page
+          alert('No tours match your preferences. Showing all tours.');
+          goToHomePage();
+          return;
+        }
+        
+        renderSwipeCards();
+      } catch (error) {
+        console.error('Error fetching tours:', error);
+        alert('Error loading tours. Showing all tours.');
+        goToHomePage();
+      }
+    }
+    
+    function renderSwipeCards() {
+      const stack = document.getElementById('swipe-card-stack');
+      stack.innerHTML = '';
+      
+      // Render top 3 cards in stack (for visual depth)
+      for (let i = 0; i < Math.min(3, swipeCards.length); i++) {
+        const card = createSwipeCard(swipeCards[i], i);
+        stack.appendChild(card);
+      }
+      
+      currentCardIndex = 0;
+      
+      // Set up swipe handlers on top card
+      if (swipeCards.length > 0) {
+        setupSwipeHandlers(stack.lastChild);
+      }
+    }
+    
+    function createSwipeCard(tour, index) {
+      const card = document.createElement('div');
+      card.className = 'swipe-card';
+      card.style.zIndex = 100 - index;
+      card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 10}px)`;
+      
+      const imageUrl = tour.image || tour.thumbnail_url || '/static/placeholder.jpg';
+      const price = tour.price_display || tour.price_from || 'Contact for pricing';
+      
+      card.innerHTML = `
+        <img src="${imageUrl}" alt="${tour.name}" class="swipe-card-image">
+        <div class="swipe-card-content">
+          <h3 class="swipe-card-title">${tour.name}</h3>
+          <p class="swipe-card-company">${tour.company || ''}</p>
+          <div class="swipe-card-details">
+            ${tour.duration ? `<span class="swipe-card-detail">⏱️ ${tour.duration}</span>` : ''}
+            ${tour.family_friendly ? `<span class="swipe-card-detail">👨‍👩‍👧‍👦 Family Friendly</span>` : ''}
+          </div>
+          <p class="swipe-card-price">${price}</p>
+        </div>
+      `;
+      
+      card.dataset.tourId = tour.id;
+      
+      return card;
+    }
+    
+    function setupSwipeHandlers(card) {
+      if (!card) return;
+      
+      // Mouse events
+      card.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', endDrag);
+      
+      // Touch events
+      card.addEventListener('touchstart', startDrag);
+      document.addEventListener('touchmove', drag);
+      document.addEventListener('touchend', endDrag);
+    }
+    
+    function startDrag(e) {
+      isDragging = true;
+      startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      e.currentTarget.classList.add('grabbing');
+    }
+    
+    function drag(e) {
+      if (!isDragging) return;
+      
+      currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      const diff = currentX - startX;
+      const card = document.querySelector('.swipe-card:last-child');
+      
+      if (card) {
+        const rotation = diff / 20;
+        card.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
+        card.style.transition = 'none';
+      }
+    }
+    
+    function endDrag(e) {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      const card = document.querySelector('.swipe-card:last-child');
+      
+      if (!card) return;
+      
+      card.classList.remove('grabbing');
+      const diff = currentX - startX;
+      
+      // Threshold for swipe action
+      if (Math.abs(diff) > 150) {
+        if (diff > 0) {
+          // Swiped right - Tell me more
+          acceptCard();
+        } else {
+          // Swiped left - Not for me
+          rejectCard();
+        }
+      } else {
+        // Snap back
+        card.style.transform = '';
+        card.style.transition = 'transform 0.3s ease';
+      }
+    }
+    
+    function rejectCard() {
+      const card = document.querySelector('.swipe-card:last-child');
+      if (!card) return;
+      
+      card.classList.add('swiping-left');
+      
+      setTimeout(() => {
+        card.remove();
+        nextCard();
+      }, 400);
+    }
+    
+    function acceptCard() {
+      const card = document.querySelector('.swipe-card:last-child');
+      if (!card) return;
+      
+      card.classList.add('swiping-right');
+      
+      setTimeout(() => {
+        const tourId = card.dataset.tourId;
+        goToTourDetail(tourId);
+      }, 400);
+    }
+    
+    function nextCard() {
+      currentCardIndex++;
+      
+      if (currentCardIndex >= swipeCards.length) {
+        // No more cards - go to home page
+        goToHomePage();
+        return;
+      }
+      
+      // Add new card to stack if available
+      const stack = document.getElementById('swipe-card-stack');
+      if (currentCardIndex + 2 < swipeCards.length) {
+        const newCard = createSwipeCard(swipeCards[currentCardIndex + 2], 2);
+        stack.insertBefore(newCard, stack.firstChild);
+      }
+      
+      // Update z-index and scale of remaining cards
+      const remainingCards = stack.querySelectorAll('.swipe-card');
+      remainingCards.forEach((card, index) => {
+        card.style.zIndex = 100 - index;
+        card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 10}px)`;
+        card.style.transition = 'transform 0.3s ease';
+      });
+      
+      // Set up handlers for new top card
+      if (remainingCards.length > 0) {
+        setupSwipeHandlers(remainingCards[remainingCards.length - 1]);
+      }
+    }
+    
+    function goToTourDetail(tourId) {
+      // Use existing function to show tour detail
+      showTourDetail(tourId);
+      
+      // Hide swipe page
+      document.querySelector('.swipe-results-page').classList.remove('active');
+    }
+    
+    function goToHomePage() {
+      // Clear all filters
+      filterState.duration = '';
+      filterState.family_friendly = '';
+      filterState.activities = [];
+      
+      // Hide swipe page
+      document.querySelector('.swipe-results-page').classList.remove('active');
+      
+      // Show home page
+      const homePage = document.querySelector('.home-page');
+      homePage.classList.add('active');
+      
+      // Load all tours
+      loadInitialFeaturedTours();
+    }
+    
+    // Button event listeners
+    document.getElementById('reject-btn').addEventListener('click', rejectCard);
+    document.getElementById('accept-btn').addEventListener('click', acceptCard);
+    document.getElementById('skip-to-list-btn').addEventListener('click', goToHomePage);
+    
+    // Initialize video question flow on page load
+    initVideoQuestionFlow();
     
   </script>
   
