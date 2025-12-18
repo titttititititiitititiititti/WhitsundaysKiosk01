@@ -478,14 +478,42 @@
     }
     
     .video-question-card {
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(20px);
-      border-radius: 40px;
+      background: transparent;
+      backdrop-filter: none;
+      border-radius: 0;
       padding: 80px 100px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      box-shadow: none;
       text-align: center;
       animation: slideUpFadeIn 0.8s ease-out;
       transform-origin: bottom center;
+    }
+    
+    .video-start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    
+    .video-start-text {
+      font-size: 3em;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
     }
     
     @keyframes slideUpFadeIn {
@@ -505,6 +533,36 @@
       color: #ffffff;
       margin: 0 0 60px 0;
       line-height: 1.3;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 2px 10px rgba(0, 0, 0, 0.9);
+    }
+    
+    .vq-subtitle {
+      font-size: 1.4em;
+      color: #90e0ef;
+      margin: -40px 0 40px 0;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+    }
+    
+    .vq-back-btn {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      font-size: 1.8em;
+      font-weight: 600;
+      padding: 20px 40px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 15;
+    }
+    
+    .vq-back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-5px);
     }
     
     .vq-answers {
@@ -517,7 +575,7 @@
     .vq-answer-btn {
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
-      border: none;
+      border: 3px solid transparent;
       border-radius: 25px;
       padding: 35px 50px;
       font-size: 2em;
@@ -541,7 +599,22 @@
     
     .vq-answer-btn.selected {
       background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.6);
+      box-shadow: 0 12px 35px rgba(72, 187, 120, 0.8);
+      border: 5px solid #ffffff;
+      transform: scale(1.08);
+    }
+    
+    .vq-continue-btn {
+      background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+      margin-top: 30px !important;
+      font-size: 2.2em !important;
+      animation: bounceIn 0.5s ease-out;
+    }
+    
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
     }
     
     /* ===================================================================
@@ -5451,8 +5524,16 @@
         <source src="{{ url_for('static', filename='b_roll/background.mp4') }}" type="video/mp4">
       </video>
       
+      <!-- Click to Start Screen -->
+      <div class="video-start-screen" id="video-start-screen">
+        <div class="video-start-text">Tap to Start</div>
+      </div>
+      
+      <!-- Back Button -->
+      <button class="vq-back-btn" id="vq-back-btn" style="display: none;">← Back</button>
+      
       <!-- Question Container -->
-      <div class="video-question-container" id="video-question-container">
+      <div class="video-question-container" id="video-question-container" style="display: none;">
         <div class="video-question-card" id="vq-card">
           <h2 class="vq-question" id="vq-question-text">How long can you be away?</h2>
           <div class="vq-answers" id="vq-answers">
@@ -12848,9 +12929,60 @@
       family_friendly: "",
       activities: []
     };
+    let inactivityTimer = null;
+    let hasStarted = false;
     
     function initVideoQuestionFlow() {
+      // Set up click to start
+      const startScreen = document.getElementById('video-start-screen');
+      startScreen.addEventListener('click', startVideoQuestions);
+      
+      // Set up back button
+      document.getElementById('vq-back-btn').addEventListener('click', goBackVideoQuestion);
+      
+      // Start inactivity timer
+      resetInactivityTimer();
+    }
+    
+    function startVideoQuestions() {
+      hasStarted = true;
+      document.getElementById('video-start-screen').style.display = 'none';
+      document.getElementById('video-question-container').style.display = 'flex';
+      document.getElementById('vq-back-btn').style.display = 'block';
       renderVideoQuestion(0);
+      resetInactivityTimer();
+    }
+    
+    function resetInactivityTimer() {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      
+      inactivityTimer = setTimeout(() => {
+        if (hasStarted) {
+          // Reset after 2 minutes of inactivity
+          resetVideoQuestionFlow();
+        }
+      }, 120000); // 2 minutes
+    }
+    
+    function resetVideoQuestionFlow() {
+      hasStarted = false;
+      currentVideoQuestion = 0;
+      videoAnswers = {
+        duration: "",
+        family_friendly: "",
+        activities: []
+      };
+      document.getElementById('video-start-screen').style.display = 'flex';
+      document.getElementById('video-question-container').style.display = 'none';
+      document.getElementById('vq-back-btn').style.display = 'none';
+    }
+    
+    function goBackVideoQuestion() {
+      if (currentVideoQuestion > 0) {
+        currentVideoQuestion--;
+        renderVideoQuestion(currentVideoQuestion);
+        resetInactivityTimer();
+      }
     }
     
     function renderVideoQuestion(index) {
@@ -12864,18 +12996,32 @@
       // Add subtitle for multiple choice
       if (question.multiple) {
         const subtitle = document.createElement('p');
-        subtitle.style.cssText = 'font-size: 1.2em; color: #90e0ef; margin: -40px 0 30px 0;';
+        subtitle.className = 'vq-subtitle';
         subtitle.textContent = 'Select all that apply';
         answersContainer.appendChild(subtitle);
       }
       
-      question.answers.forEach(answer => {
+      question.answers.forEach((answer, idx) => {
         const btn = document.createElement('button');
         btn.className = 'vq-answer-btn';
         btn.innerHTML = answer.text;
-        btn.onclick = () => handleVideoAnswer(answer, question.multiple, question.filter);
+        btn.dataset.index = idx;
+        btn.dataset.value = answer.value;
+        btn.dataset.isSkip = answer.isSkip || false;
+        
+        // Restore selected state if returning to this question
+        if (question.multiple && !answer.isSkip && videoAnswers[question.filter].includes(answer.value)) {
+          btn.classList.add('selected');
+        }
+        
+        btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, question.filter, e.target);
         answersContainer.appendChild(btn);
       });
+      
+      // Add continue button if selections exist and it's a multiple choice question
+      if (question.multiple && videoAnswers[question.filter].length > 0) {
+        addContinueButton();
+      }
       
       // Trigger slide-up animation
       const card = document.getElementById('vq-card');
@@ -12883,13 +13029,30 @@
       setTimeout(() => {
         card.style.animation = 'slideUpFadeIn 0.8s ease-out';
       }, 10);
+      
+      // Update back button visibility
+      document.getElementById('vq-back-btn').style.display = currentVideoQuestion > 0 ? 'block' : 'none';
     }
     
-    function handleVideoAnswer(answer, isMultiple, filterType) {
+    function addContinueButton() {
+      const answersContainer = document.getElementById('vq-answers');
+      if (document.getElementById('vq-continue-btn')) return; // Already exists
+      
+      const continueBtn = document.createElement('button');
+      continueBtn.id = 'vq-continue-btn';
+      continueBtn.className = 'vq-answer-btn vq-continue-btn';
+      continueBtn.innerHTML = 'Continue →';
+      continueBtn.onclick = nextVideoQuestion;
+      answersContainer.appendChild(continueBtn);
+    }
+    
+    function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
+      resetInactivityTimer();
+      
       if (isMultiple) {
         // Handle multiple selection
         if (answer.isSkip) {
-          // Skip to next question
+          // "No preference" - clear selections and proceed
           videoAnswers[filterType] = [];
           nextVideoQuestion();
         } else {
@@ -12897,22 +13060,22 @@
           const index = videoAnswers[filterType].indexOf(answer.value);
           if (index > -1) {
             videoAnswers[filterType].splice(index, 1);
+            btnElement.classList.remove('selected');
           } else {
             videoAnswers[filterType].push(answer.value);
+            btnElement.classList.add('selected');
           }
           
-          // Update button appearance
-          event.target.classList.toggle('selected');
-          
-          // Show continue button after selecting at least one
-          if (videoAnswers[filterType].length > 0 && !document.getElementById('vq-continue-btn')) {
-            const continueBtn = document.createElement('button');
-            continueBtn.id = 'vq-continue-btn';
-            continueBtn.className = 'vq-answer-btn';
-            continueBtn.style.cssText = 'background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); margin-top: 20px;';
-            continueBtn.innerHTML = 'Continue →';
-            continueBtn.onclick = nextVideoQuestion;
-            document.getElementById('vq-answers').appendChild(continueBtn);
+          // Show/hide continue button based on selections
+          const continueBtn = document.getElementById('vq-continue-btn');
+          if (videoAnswers[filterType].length > 0) {
+            if (!continueBtn) {
+              addContinueButton();
+            }
+          } else {
+            if (continueBtn) {
+              continueBtn.remove();
+            }
           }
         }
       } else {
@@ -12923,11 +13086,13 @@
     }
     
     function nextVideoQuestion() {
+      resetInactivityTimer();
       currentVideoQuestion++;
       if (currentVideoQuestion < videoQuestions.length) {
         renderVideoQuestion(currentVideoQuestion);
       } else {
         // All questions answered - show swipe results
+        clearTimeout(inactivityTimer); // Stop inactivity timer once we're in results
         showSwipeResults();
       }
     }
@@ -12943,6 +13108,8 @@
     let currentX = 0;
     
     async function showSwipeResults() {
+      console.log('🎯 Showing swipe results with answers:', videoAnswers);
+      
       // Hide video question page
       document.querySelector('.video-question-page').classList.remove('active');
       
@@ -12955,24 +13122,38 @@
         const params = new URLSearchParams();
         if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
         if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
-        if (videoAnswers.activities.length > 0) {
-          videoAnswers.activities.forEach(act => params.append('activities', act));
+        
+        // Only add activities if there are any selected
+        if (videoAnswers.activities && videoAnswers.activities.length > 0) {
+          videoAnswers.activities.forEach(act => {
+            if (act) params.append('activities', act); // Skip empty strings
+          });
         }
         
+        console.log('🔍 Fetching tours with params:', params.toString());
         const response = await fetch(`/api/tours?${params.toString()}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('📦 Received tours:', data);
+        
         swipeCards = data.tours || [];
         
         if (swipeCards.length === 0) {
           // No results - go to home page
+          console.log('⚠️ No matching tours found');
           alert('No tours match your preferences. Showing all tours.');
           goToHomePage();
           return;
         }
         
+        console.log('✅ Rendering', swipeCards.length, 'swipe cards');
         renderSwipeCards();
       } catch (error) {
-        console.error('Error fetching tours:', error);
+        console.error('❌ Error fetching tours:', error);
         alert('Error loading tours. Showing all tours.');
         goToHomePage();
       }
