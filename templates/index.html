@@ -1499,7 +1499,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 30px 50px;
+      margin: 32px 50px;
     }
     
     .pricing-section h2 {
@@ -1579,7 +1579,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 30px;
-      margin: 30px 50px;
+      margin: 32px 50px;
       background: transparent !important;
     }
     
@@ -1644,7 +1644,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 30px 50px;
+      margin: 32px 50px;
     }
     
     .details-section h3 {
@@ -1667,7 +1667,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 30px 50px;
+      margin: 32px 50px;
     }
     
     .fine-print h3 {
@@ -1693,7 +1693,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 30px 50px 100px 50px;
+      margin: 32px 50px 100px 50px;
     }
     
     .departure-section h3 {
@@ -1867,16 +1867,34 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
       
-      /* Footer buttons stay at desktop size - scaled by zoom, but text stays smaller */
+      /* Make buttons responsive on mobile - FIT TO SCREEN WIDTH */
       .btn-primary,
       .btn-secondary,
       .btn-tertiary {
+        width: calc(100% - 30px) !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        height: auto !important;
+        min-height: 80px !important;
+        max-height: unset !important;
         font-size: 1.3em !important;
+        padding: 20px 25px !important;
+        margin: 0 15px !important;
+        white-space: normal !important;
+      }
+      
+      /* Footer needs to stack buttons vertically or allow wrapping */
+      .detail-footer {
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+        padding: 15px 0 !important;
       }
       
       /* Reduce side padding on mobile so content has more room */
       .tour-detail-main {
         padding: 40px 2px 120px 2px !important;
+        max-width: 100% !important;
+        margin: 0 !important;
       }
       
       /* Make all detail sections much wider on mobile - override inline styles */
@@ -1890,10 +1908,10 @@
       }
       
       /* Target all divs with specific inline margin styles */
-      div[style*="margin:30px 15px"],
-      div[style*="margin:30px 50px"],
-      div[style*="margin:30px 5px"],
-      div[style*="margin:30px 2px"] {
+      div[style*="margin:0 15px 30px 15px"],
+      div[style*="margin:0 50px 30px 50px"],
+      div[style*="margin:0 5px 30px 5px"],
+      div[style*="margin:0 2px 30px 2px"] {
         margin-left: 2px !important;
         margin-right: 2px !important;
       }
@@ -2371,83 +2389,6 @@
         top: 0;
         z-index: 10001;
       }
-      
-      /* Force tour detail main to have no side padding on mobile */
-      .page.tour-detail-page .tour-detail-main {
-        padding: 40px 0px 120px 0px !important;
-        max-width: none !important;
-        margin: 0 !important;
-      }
-      
-      /* Reduce side margins for tour detail sections on mobile - AGGRESSIVE */
-      .page.tour-detail-page .pricing-section,
-      .page.tour-detail-page .info-grid,
-      .page.tour-detail-page .details-section,
-      .page.tour-detail-page .fine-print,
-      .page.tour-detail-page .departure-section,
-      .page.tour-detail-page section.pricing-section,
-      .page.tour-detail-page section.details-section,
-      .page.tour-detail-page .info-grid.info-grid {
-        margin: 30px 35px !important;
-        border-radius: 35px !important;
-      }
-      
-      /* Override inline styles for dynamically generated sections */
-      .page.tour-detail-page #detail-info > div[style],
-      .page.tour-detail-page #detail-info div[style*="margin"],
-      .page.tour-detail-page .detail-section-grid[style],
-      .page.tour-detail-page .detail-section-grid > div[style],
-      .page.tour-detail-page .info-card[style],
-      .page.tour-detail-page div[style*="margin:30px 15px"],
-      .page.tour-detail-page div[style*="margin:30px 50px"],
-      .page.tour-detail-page div[style*="margin:30px 5px"],
-      .page.tour-detail-page div[style*="margin:30px 2px"] {
-        margin: 30px 35px !important;
-        border-radius: 35px !important;
-      }
-      
-      /* Round corners on info cards */
-      .page.tour-detail-page .info-card {
-        border-radius: 35px !important;
-      }
-      
-      /* Center tour title and company on mobile */
-      .page.tour-detail-page .tour-title,
-      .page.tour-detail-page .operator-chip {
-        text-align: center !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-      }
-      
-      /* Make tour title and company slightly larger on mobile */
-      .page.tour-detail-page .tour-title {
-        font-size: 4.5em !important;
-      }
-      
-      .page.tour-detail-page .tour-hero .operator-chip {
-        font-size: 1.4em !important;
-        padding: 14px 28px !important;
-      }
-      
-      /* Slightly increase section text sizes */
-      .page.tour-detail-page .pricing-section h2,
-      .page.tour-detail-page .details-section h3,
-      .page.tour-detail-page .info-card h3,
-      .page.tour-detail-page .fine-print h3 {
-        font-size: 3em !important;
-      }
-      
-      .page.tour-detail-page .pricing-hint,
-      .page.tour-detail-page .details-section #detail-description,
-      .page.tour-detail-page .info-card li,
-      .page.tour-detail-page .fine-print p,
-      .page.tour-detail-page .fine-print div {
-        font-size: 1.35em !important;
-      }
-      
-      .page.tour-detail-page .price-row {
-        font-size: 1.7em !important;
-      }
     }
     
     /* Small phones - Scale down to 40% */
@@ -2499,81 +2440,32 @@
         font-size: 1.1em;
       }
       
-      /* Force tour detail main to have no side padding on small phones */
-      .page.tour-detail-page .tour-detail-main {
-        padding: 40px 0px 120px 0px !important;
-        max-width: none !important;
+      /* Make buttons responsive on smaller phones too */
+      .btn-primary,
+      .btn-secondary,
+      .btn-tertiary {
+        width: calc(100% - 30px) !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        height: auto !important;
+        min-height: 80px !important;
+        max-height: unset !important;
+        font-size: 1.3em !important;
+        padding: 20px 25px !important;
+        margin: 0 15px !important;
+        white-space: normal !important;
+      }
+      
+      .detail-footer {
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+        padding: 15px 0 !important;
+      }
+      
+      .tour-detail-main {
+        padding: 40px 2px 120px 2px !important;
+        max-width: 100% !important;
         margin: 0 !important;
-      }
-      
-      /* Reduce side margins for tour detail sections on small phones - AGGRESSIVE */
-      .page.tour-detail-page .pricing-section,
-      .page.tour-detail-page .info-grid,
-      .page.tour-detail-page .details-section,
-      .page.tour-detail-page .fine-print,
-      .page.tour-detail-page .departure-section,
-      .page.tour-detail-page section.pricing-section,
-      .page.tour-detail-page section.details-section,
-      .page.tour-detail-page .info-grid.info-grid {
-        margin: 30px 35px !important;
-        border-radius: 35px !important;
-      }
-      
-      /* Override inline styles for dynamically generated sections */
-      .page.tour-detail-page #detail-info > div[style],
-      .page.tour-detail-page #detail-info div[style*="margin"],
-      .page.tour-detail-page .detail-section-grid[style],
-      .page.tour-detail-page .detail-section-grid > div[style],
-      .page.tour-detail-page .info-card[style],
-      .page.tour-detail-page div[style*="margin:30px 15px"],
-      .page.tour-detail-page div[style*="margin:30px 50px"],
-      .page.tour-detail-page div[style*="margin:30px 5px"],
-      .page.tour-detail-page div[style*="margin:30px 2px"] {
-        margin: 30px 35px !important;
-        border-radius: 35px !important;
-      }
-      
-      /* Round corners on info cards */
-      .page.tour-detail-page .info-card {
-        border-radius: 35px !important;
-      }
-      
-      /* Center tour title and company on small phones */
-      .page.tour-detail-page .tour-title,
-      .page.tour-detail-page .operator-chip {
-        text-align: center !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-      }
-      
-      /* Make tour title and company slightly larger on small phones */
-      .page.tour-detail-page .tour-title {
-        font-size: 4.5em !important;
-      }
-      
-      .page.tour-detail-page .tour-hero .operator-chip {
-        font-size: 1.4em !important;
-        padding: 14px 28px !important;
-      }
-      
-      /* Slightly increase section text sizes */
-      .page.tour-detail-page .pricing-section h2,
-      .page.tour-detail-page .details-section h3,
-      .page.tour-detail-page .info-card h3,
-      .page.tour-detail-page .fine-print h3 {
-        font-size: 3em !important;
-      }
-      
-      .page.tour-detail-page .pricing-hint,
-      .page.tour-detail-page .details-section #detail-description,
-      .page.tour-detail-page .info-card li,
-      .page.tour-detail-page .fine-print p,
-      .page.tour-detail-page .fine-print div {
-        font-size: 1.35em !important;
-      }
-      
-      .page.tour-detail-page .price-row {
-        font-size: 1.7em !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
@@ -2694,139 +2586,92 @@
       position: relative;
       width: 100%;
       max-width: 100%;
-      margin: 40px 0;
-      min-height: 500px;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 50%, #0edfcc 100%);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .carousel-image-container {
-      position: relative;
-      width: 100%;
-      min-height: 500px;
-      overflow: hidden;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
     }
     .carousel img {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: auto;
-      min-height: 500px;
-      max-height: 800px;
+      max-height: 750px;
       object-fit: contain;
+      cursor: pointer;
       display: block;
       border-radius: 0;
       box-shadow: none;
-      transition: transform 0.3s ease-out;
-      transform: translateX(0);
-    }
-    .carousel img.slide-out-left {
-      transform: translateX(-100%);
-    }
-    .carousel img.slide-out-right {
-      transform: translateX(100%);
-    }
-    .carousel img.slide-in-left {
-      transform: translateX(-100%);
-    }
-    .carousel img.slide-in-right {
-      transform: translateX(100%);
-    }
-    .carousel img.active {
-      transform: translateX(0);
-      z-index: 2;
-    }
-    .carousel img.preload {
-      opacity: 0;
-      pointer-events: none;
+      outline: 5px solid #ffffff;
+      outline-offset: -10px;
     }
     .carousel-arrow {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.15) !important;
+      background: linear-gradient(135deg, #0cb4e7 0%, #00b4d8 100%) !important;
       backdrop-filter: blur(10px);
-      border: 4px solid #0cb4e7;
+      border: 2px solid rgba(255, 255, 255, 0.8);
       border-radius: 50%;
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       font-size: 2.5em;
       cursor: pointer;
-      color: #0cb4e7 !important;
+      color: #ffffff !important;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
       box-shadow: 0 4px 20px rgba(12, 180, 231, 0.6);
       font-weight: 700;
-      z-index: 15;
-      opacity: 1;
+      z-index: 10;
     }
     .carousel-arrow:hover {
-      transform: translateY(-50%) scale(1.15);
-      background: rgba(12, 180, 231, 0.3) !important;
+      transform: translateY(-50%) scale(1.1);
+      background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%) !important;
       box-shadow: 0 6px 30px rgba(12, 180, 231, 0.8);
-      border-color: #00b4d8;
-      color: #00b4d8 !important;
-      border-width: 5px;
     }
     .carousel-arrow:active {
       transform: translateY(-50%) scale(0.95);
     }
-    .carousel-arrow.left { left: 20px; }
-    .carousel-arrow.right { right: 20px; }
+    .carousel-arrow.left { left: 30px; }
+    .carousel-arrow.right { right: 30px; }
     .carousel-thumbnails {
       display: flex;
       gap: 15px;
       justify-content: center;
-      align-items: center;
-      padding: 20px 0;
+      flex-wrap: wrap;
+      padding: 0 20px;
       width: 100%;
-      position: relative;
-      z-index: 20;
+      overflow-x: visible;
+      overflow-y: hidden;
     }
     .carousel-thumbnail {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
+      width: 120px;
+      height: 80px;
+      border-radius: 0;
+      overflow: hidden;
       cursor: pointer;
       transition: all 0.3s ease;
-      border: 3px solid #0cb4e7;
+      border: none;
       flex-shrink: 0;
-      box-shadow: 0 3px 10px rgba(12, 180, 231, 0.4);
-      background: rgba(255, 255, 255, 0.3);
+      box-shadow: none;
+    }
+    .carousel-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .carousel-thumbnail:hover {
-      background: rgba(12, 180, 231, 0.5);
-      transform: scale(1.3);
-      border-color: #00b4d8;
-      box-shadow: 0 4px 15px rgba(12, 180, 231, 0.6);
+      transform: translateY(-4px);
+      box-shadow: none;
     }
     .carousel-thumbnail:active {
-      transform: scale(0.9);
+      transform: scale(0.95);
     }
     .carousel-thumbnail.active {
-      background: #0cb4e7;
-      width: 16px;
-      height: 16px;
-      border-color: #0cb4e7;
-      box-shadow: 0 4px 15px rgba(12, 180, 231, 0.7);
-    }
-    
-    .carousel-counter {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 1em;
-      font-weight: 600;
-      z-index: 20;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: none;
+      transform: scale(1.15);
     }
     
     /* Booking Modal Styles */
@@ -8936,7 +8781,7 @@
           if (quickInfoItems.length > 0) {
             quickInfoItems.forEach((item, index) => {
               // Each item is full width, aligned along left margin
-              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">`;
+              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">`;
               info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
               info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
               info += '</div>';
@@ -8950,12 +8795,12 @@
           if (hasItinerary || hasMenu) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasItinerary && hasMenu) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:30px 2px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 2px 30px 2px;">';
             }
             
             if (hasItinerary) {
               // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:30px 2px;' : '';
+              const itineraryMargin = !hasMenu ? 'margin:0 2px 30px 2px;' : '';
               info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
@@ -8970,7 +8815,7 @@
             
             if (hasMenu) {
               // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:30px 2px;' : '';
+              const menuMargin = !hasItinerary ? 'margin:0 2px 30px 2px;' : '';
               info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
               let formattedMenu = cleanBracketFormatting(data.menu);
@@ -9002,7 +8847,7 @@
             const useSquares = bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:30px 2px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 2px 30px 2px;">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -9023,7 +8868,7 @@
           
           // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
@@ -9037,12 +8882,12 @@
           if (hasBring || hasExtra) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasBring && hasExtra) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:30px 2px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 2px 30px 2px;">';
             }
             
             if (hasBring) {
               // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:30px 2px;' : '';
+              const bringMargin = !hasExtra ? 'margin:0 2px 30px 2px;' : '';
               info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
@@ -9057,7 +8902,7 @@
           
             if (hasExtra) {
               // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:30px 2px;' : '';
+              const extraMargin = !hasBring ? 'margin:0 2px 30px 2px;' : '';
               info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
@@ -9078,7 +8923,7 @@
           
           // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
@@ -9097,7 +8942,7 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -9116,7 +8961,7 @@
           // REVIEWS SECTION - Header in floating box, each review in its own box
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
             // Reviews header box - matching other section styles
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⭐ Customer Reviews</h3>';
             info += '<div class="reviews-summary" style="display:flex;gap:15px;align-items:center;">';
             info += `<div class="overall-rating" style="font-size: 2.5em; font-weight: 700;color:#0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>`;
@@ -9130,7 +8975,7 @@
             // Individual reviews - each in its own white floating box
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;">';
+                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
                 info += '<div class="review-header" style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px;">';
                 info += '<div>';
                 info += `<div class="review-author" style="font-size: 1.3em; font-weight: 600;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
@@ -9154,7 +8999,7 @@
             
             // Link to more reviews if available - in its own small box
             if (data.reviews.source_url) {
-              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:30px 2px;text-align:center;">';
+              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;text-align:center;">';
               info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               info += '</div>';
             }
@@ -9272,140 +9117,31 @@
               pricingOptions[0].click();
             }
           }, 100);
-          // Carousel with dot navigation, swipe support, and preloading
+          // Carousel with thumbnail navigation
           let gallery = data.gallery || [];
           let carouselHtml = '';
           if (gallery.length) {
-            carouselHtml = '<div class="carousel">';
-            carouselHtml += '<div class="carousel-image-container">';
-            carouselHtml += '<img id="carousel-img-prev" class="preload" alt="Previous">';
-            carouselHtml += '<img id="carousel-img-current" class="active" src="' + gallery[0] + '" alt="Current">';
-            carouselHtml += '<img id="carousel-img-next" class="preload" alt="Next">';
-            carouselHtml += '</div>';
-            if (gallery.length > 1) {
-              carouselHtml += '<button class="carousel-arrow left">&#8249;</button>';
-              carouselHtml += '<button class="carousel-arrow right">&#8250;</button>';
-              carouselHtml += '<div class="carousel-counter"><span id="carousel-current">1</span> / ' + gallery.length + '</div>';
+            carouselHtml = '<div class="carousel"><img id="carousel-img" src="' + gallery[0] + '" alt="Tour image"><button class="carousel-arrow left">&#8249;</button><button class="carousel-arrow right">&#8250;</button></div><div class="carousel-thumbnails">';
+            for (let i = 0; i < gallery.length; i++) {
+              carouselHtml += `<div class='carousel-thumbnail${i===0?' active':''}' data-idx='${i}'><img src='${gallery[i]}' alt='Thumbnail ${i+1}'></div>`;
             }
             carouselHtml += '</div>';
-            // Add dots OUTSIDE the carousel container
-            if (gallery.length > 1) {
-              carouselHtml += '<div class="carousel-thumbnails">';
-              for (let i = 0; i < gallery.length; i++) {
-                carouselHtml += `<div class='carousel-thumbnail${i===0?' active':''}' data-idx='${i}'></div>`;
-              }
-              carouselHtml += '</div>';
-            }
           }
           document.getElementById('detail-gallery').innerHTML = carouselHtml;
           let currentIdx = 0;
-          
-          function preloadImages() {
-            const prevIdx = (currentIdx - 1 + gallery.length) % gallery.length;
-            const nextIdx = (currentIdx + 1) % gallery.length;
-            document.getElementById('carousel-img-prev').src = gallery[prevIdx];
-            document.getElementById('carousel-img-next').src = gallery[nextIdx];
-          }
-          
-          function showImg(idx, direction = 'none') {
-            if (idx === currentIdx) return;
-            
-            const imgCurrent = document.getElementById('carousel-img-current');
-            const imgPrev = document.getElementById('carousel-img-prev');
-            const imgNext = document.getElementById('carousel-img-next');
-            
-            let incomingImg = direction === 'left' ? imgNext : imgPrev;
-            
-            // Set up incoming image position
-            if (direction === 'left') {
-              incomingImg.classList.remove('preload');
-              incomingImg.classList.add('slide-in-right');
-              incomingImg.style.zIndex = '3';
-            } else if (direction === 'right') {
-              incomingImg.classList.remove('preload');
-              incomingImg.classList.add('slide-in-left');
-              incomingImg.style.zIndex = '3';
-            }
-            
-            // Trigger animation
-            setTimeout(() => {
-              imgCurrent.classList.remove('active');
-              imgCurrent.classList.add(direction === 'left' ? 'slide-out-left' : 'slide-out-right');
-              incomingImg.classList.remove('slide-in-left', 'slide-in-right');
-              incomingImg.classList.add('active');
-              
-              currentIdx = idx;
-              
-              // Update dots and counter
-              document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
-                el.classList.toggle('active', i === idx);
-              });
-              const counter = document.getElementById('carousel-current');
-              if (counter) counter.textContent = idx + 1;
-            }, 10);
-            
-            // Clean up after animation
-            setTimeout(() => {
-              // Reset all images
-              [imgCurrent, imgPrev, imgNext].forEach(img => {
-                img.classList.remove('active', 'slide-out-left', 'slide-out-right', 'slide-in-left', 'slide-in-right');
-                img.classList.add('preload');
-                img.style.zIndex = '1';
-              });
-              
-              // Set new current image
-              incomingImg.classList.remove('preload');
-              incomingImg.classList.add('active');
-              incomingImg.style.zIndex = '2';
-              incomingImg.id = 'carousel-img-current';
-              
-              // Reassign other images
-              if (direction === 'left') {
-                imgCurrent.id = 'carousel-img-prev';
-                imgPrev.id = 'carousel-img-next';
-              } else {
-                imgCurrent.id = 'carousel-img-next';
-                imgNext.id = 'carousel-img-prev';
-              }
-              
-              // Preload adjacent images
-              preloadImages();
-            }, 350);
-          }
-          
-          // Initial preload
-          if (gallery.length > 1) {
-            preloadImages();
-          }
-          if (gallery.length > 1) {
-            document.querySelector('.carousel-arrow.left').onclick = e => { 
-              e.stopPropagation(); 
-              const newIdx = (currentIdx-1+gallery.length)%gallery.length;
-              showImg(newIdx, 'right');
-            };
-            document.querySelector('.carousel-arrow.right').onclick = e => { 
-              e.stopPropagation(); 
-              const newIdx = (currentIdx+1)%gallery.length;
-              showImg(newIdx, 'left');
-            };
+          function showImg(idx) {
+            currentIdx = idx;
+            document.getElementById('carousel-img').src = gallery[idx];
             document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
-              el.onclick = e => { 
-                e.stopPropagation(); 
-                const direction = i > currentIdx ? 'left' : 'right';
-                showImg(i, direction); 
-              };
+              el.classList.toggle('active', i === idx);
             });
-            
-            // Add swipe support for mobile
-            const carouselImg = document.getElementById('carousel-img');
-            let touchStartX = 0;
-            let touchEndX = 0;
-            carouselImg.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-            carouselImg.addEventListener('touchend', e => {
-              touchEndX = e.changedTouches[0].screenX;
-              if (touchStartX - touchEndX > 50) showImg((currentIdx+1)%gallery.length, 'left'); // Swipe left
-              if (touchEndX - touchStartX > 50) showImg((currentIdx-1+gallery.length)%gallery.length, 'right'); // Swipe right
-            }, { passive: true });
+          }
+          if (gallery.length) {
+            document.querySelector('.carousel-arrow.left').onclick = e => { e.stopPropagation(); showImg((currentIdx-1+gallery.length)%gallery.length); };
+            document.querySelector('.carousel-arrow.right').onclick = e => { e.stopPropagation(); showImg((currentIdx+1)%gallery.length); };
+            document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
+              el.onclick = e => { e.stopPropagation(); showImg(i); };
+            });
           }
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
