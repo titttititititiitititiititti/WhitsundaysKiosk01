@@ -6300,6 +6300,13 @@
   </div>
   
   <script>
+    // =====================================================================
+    // GLOBAL VARIABLES - Language & Currency
+    // =====================================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
+    let currentCurrency = 'AUD';
+    
     // Helper function to generate star display
     function generateStars(rating, fullOnly = false) {
       const fullStars = Math.floor(rating);
@@ -10990,10 +10997,6 @@
     
     let translations = {};
     
-    // Get current language from URL parameter or localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
-    
     // Store the tour key we came from when filtering by company
     let previousTourKey = null;
     
@@ -11318,7 +11321,6 @@
     // MULTI-CURRENCY SYSTEM
     // =====================================================================
     
-    let currentCurrency = 'AUD';
     let exchangeRates = {
       AUD: 1.0,
       USD: 0.65,
@@ -12929,7 +12931,6 @@
       family_friendly: "",
       activities: []
     };
-    let inactivityTimer = null;
     let hasStarted = false;
     
     function initVideoQuestionFlow() {
