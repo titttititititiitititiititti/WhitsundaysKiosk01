@@ -5525,7 +5525,7 @@
       </video>
       
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen">
+      <div class="video-start-screen" id="video-start-screen" onclick="window.startVideoQuestions && window.startVideoQuestions()">
         <div class="video-start-text">Tap to Start</div>
       </div>
       
@@ -12933,25 +12933,62 @@
     let hasStarted = false;
     
     function initVideoQuestionFlow() {
+      console.log('🔧 Setting up video question flow...');
+      
       // Set up click to start
       const startScreen = document.getElementById('video-start-screen');
-      startScreen.addEventListener('click', startVideoQuestions);
+      if (!startScreen) {
+        console.error('❌ Start screen element not found!');
+        return;
+      }
+      
+      console.log('✅ Start screen found:', startScreen);
+      startScreen.addEventListener('click', function(e) {
+        console.log('👆 Start screen clicked!');
+        startVideoQuestions();
+      });
       
       // Set up back button
-      document.getElementById('vq-back-btn').addEventListener('click', goBackVideoQuestion);
+      const backBtn = document.getElementById('vq-back-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', goBackVideoQuestion);
+        console.log('✅ Back button listener added');
+      }
       
       // Start inactivity timer
       resetInactivityTimer();
+      console.log('✅ Inactivity timer started');
     }
     
     function startVideoQuestions() {
+      console.log('🚀 Starting video questions!');
       hasStarted = true;
-      document.getElementById('video-start-screen').style.display = 'none';
-      document.getElementById('video-question-container').style.display = 'flex';
-      document.getElementById('vq-back-btn').style.display = 'block';
+      
+      const startScreen = document.getElementById('video-start-screen');
+      const questionContainer = document.getElementById('video-question-container');
+      const backBtn = document.getElementById('vq-back-btn');
+      
+      if (startScreen) {
+        startScreen.style.display = 'none';
+        console.log('✅ Start screen hidden');
+      }
+      
+      if (questionContainer) {
+        questionContainer.style.display = 'flex';
+        console.log('✅ Question container shown');
+      }
+      
+      if (backBtn) {
+        backBtn.style.display = 'block';
+        console.log('✅ Back button shown');
+      }
+      
       renderVideoQuestion(0);
       resetInactivityTimer();
     }
+    
+    // Make globally accessible for inline onclick
+    window.startVideoQuestions = startVideoQuestions;
     
     function resetInactivityTimer() {
       if (inactivityTimer) clearTimeout(inactivityTimer);
@@ -13344,13 +13381,32 @@
       loadInitialFeaturedTours();
     }
     
-    // Button event listeners
-    document.getElementById('reject-btn').addEventListener('click', rejectCard);
-    document.getElementById('accept-btn').addEventListener('click', acceptCard);
-    document.getElementById('skip-to-list-btn').addEventListener('click', goToHomePage);
+    // Initialize everything when DOM is ready
+    function initializeApp() {
+      console.log('🎬 Initializing video question flow');
+      
+      // Initialize video question flow
+      initVideoQuestionFlow();
+      
+      // Button event listeners for swipe page
+      const rejectBtn = document.getElementById('reject-btn');
+      const acceptBtn = document.getElementById('accept-btn');
+      const skipBtn = document.getElementById('skip-to-list-btn');
+      
+      if (rejectBtn) rejectBtn.addEventListener('click', rejectCard);
+      if (acceptBtn) acceptBtn.addEventListener('click', acceptCard);
+      if (skipBtn) skipBtn.addEventListener('click', goToHomePage);
+      
+      console.log('✅ Video flow initialized');
+    }
     
-    // Initialize video question flow on page load
-    initVideoQuestionFlow();
+    // Run initialization - handle both cases (before and after DOMContentLoaded)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      // DOM already loaded
+      initializeApp();
+    }
     
   </script>
   
