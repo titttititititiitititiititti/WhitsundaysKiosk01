@@ -435,6 +435,91 @@ def index():
     shown_keys = [t['key'] for t in initial_tours]
     return render_template('index.html', tours=initial_tours, shown_keys=shown_keys, current_language=language)
 
+@app.route('/api/tours')
+def get_tours():
+    """API endpoint to get filtered tours based on query parameters"""
+    language = request.args.get('lang', 'en')
+    
+    # Load all tours
+    tours = load_all_tours(language)
+    
+    # Get filter parameters
+    duration = request.args.get('duration', '')
+    family_friendly = request.args.get('family_friendly', '')
+    activities = request.args.getlist('activities')  # Can have multiple
+    
+    print(f"📋 API /api/tours called with filters:")
+    print(f"   - duration: {duration}")
+    print(f"   - family_friendly: {family_friendly}")
+    print(f"   - activities: {activities}")
+    print(f"   - Total tours before filtering: {len(tours)}")
+    
+    # Apply filters
+    filtered_tours = tours
+    
+    # Filter by duration
+    if duration and duration != '':
+        filtered_tours = [t for t in filtered_tours if t.get('duration_category') == duration]
+        print(f"   - After duration filter: {len(filtered_tours)} tours")
+    
+    # Filter by family friendly
+    if family_friendly and family_friendly != '':
+        is_family = family_friendly.lower() == 'true'
+        filtered_tours = [t for t in filtered_tours if t.get('family_friendly') == is_family]
+        print(f"   - After family_friendly filter: {len(filtered_tours)} tours")
+    
+    # Filter by activities (tour must have at least one matching activity)
+    if activities and len(activities) > 0 and activities[0] != '':
+        def tour_matches_activities(tour):
+            tour_activities = tour.get('activity_type', [])
+            if not isinstance(tour_activities, list):
+                tour_activities = [tour_activities] if tour_activities else []
+            # Tour matches if it has ANY of the requested activities
+            return any(act in tour_activities for act in activities if act)
+        
+        filtered_tours = [t for t in filtered_tours if tour_matches_activities(t)]
+        print(f"   - After activities filter: {len(filtered_tours)} tours")
+    
+    print(f"✅ Returning {len(filtered_tours)} filtered tours")
+    
+    # Format tours for frontend (include necessary fields)
+    formatted_tours = []
+    for tour in filtered_tours:
+        formatted_tours.append({
+            'id': tour.get('key'),
+            'name': tour.get('name'),
+            'company': tour.get('company_name'),
+            'thumbnail_url': tour.get('thumbnail'),
+            'image': tour.get('thumbnail'),
+            'price_display': format_price_display(tour),
+            'price_from': tour.get('price_adult', ''),
+            'duration': format_duration_display(tour.get('duration', '')),
+            'family_friendly': tour.get('family_friendly', False),
+            'highlights': tour.get('highlights', ''),
+            'key': tour.get('key')
+        })
+    
+    return jsonify({'tours': formatted_tours})
+
+def format_price_display(tour):
+    """Format price for display"""
+    price_adult = tour.get('price_adult', '')
+    if price_adult and price_adult != 'N/A':
+        try:
+            # Extract numeric price
+            price_num = ''.join(filter(lambda x: x.isdigit() or x == '.', price_adult))
+            if price_num:
+                return f"From ${float(price_num):.0f}"
+        except:
+            pass
+    return 'Contact for pricing'
+
+def format_duration_display(duration):
+    """Format duration for display"""
+    if not duration or duration == 'N/A':
+        return ''
+    return duration
+
 @app.route('/tour/<key>')
 def tour_page(key):
     """Load home page but with tour parameter - JavaScript will auto-open tour in modal"""
@@ -1584,4 +1669,4 @@ def email_recommendations():
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0') 
+    app.run(debug=True) 
