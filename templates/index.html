@@ -599,16 +599,34 @@
     
     .vq-answer-btn.selected {
       background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-      box-shadow: 0 12px 35px rgba(72, 187, 120, 0.8);
-      border: 5px solid #ffffff;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.9), 0 12px 35px rgba(72, 187, 120, 0.8);
+      border: 5px solid #ffffff !important;
       transform: scale(1.08);
     }
     
     .vq-continue-btn {
-      background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+      background: linear-gradient(135deg, #0cb4e7 0%, #0077b6 100%) !important;
       margin-top: 30px !important;
       font-size: 2.2em !important;
       animation: bounceIn 0.5s ease-out;
+      border: 3px solid #ffffff !important;
+      box-shadow: 0 0 20px rgba(12, 180, 231, 0.8) !important;
+    }
+    
+    .vq-tour-counter {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff4444;
+      font-size: 1.2em;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 25px;
+      border-radius: 20px;
+      z-index: 50;
+      backdrop-filter: blur(10px);
     }
     
     @keyframes bounceIn {
@@ -5540,6 +5558,11 @@
             <!-- Buttons will be inserted here -->
           </div>
         </div>
+      </div>
+      
+      <!-- Tour Counter (debug) -->
+      <div class="vq-tour-counter" id="vq-tour-counter" style="display: none;">
+        Loading...
       </div>
     </div>
     
@@ -12968,6 +12991,7 @@
       const startScreen = document.getElementById('video-start-screen');
       const questionContainer = document.getElementById('video-question-container');
       const backBtn = document.getElementById('vq-back-btn');
+      const tourCounter = document.getElementById('vq-tour-counter');
       
       if (startScreen) {
         startScreen.style.display = 'none';
@@ -12984,8 +13008,49 @@
         console.log('✅ Back button shown');
       }
       
+      if (tourCounter) {
+        tourCounter.style.display = 'block';
+        updateTourCounter();
+      }
+      
       renderVideoQuestion(0);
       resetInactivityTimer();
+    }
+    
+    // Update tour counter based on current filters
+    async function updateTourCounter() {
+      const counter = document.getElementById('vq-tour-counter');
+      if (!counter) return;
+      
+      try {
+        const params = new URLSearchParams();
+        if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
+        if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
+        
+        // Only add activities if there are any selected
+        if (videoAnswers.activities && videoAnswers.activities.length > 0) {
+          videoAnswers.activities.forEach(act => {
+            if (act) params.append('activities', act);
+          });
+        }
+        
+        console.log('🔢 Fetching tour count with params:', params.toString());
+        const response = await fetch(`/api/tours?${params.toString()}`);
+        
+        if (!response.ok) {
+          console.error('❌ Failed to fetch tours:', response.status);
+          counter.textContent = 'Error loading count';
+          return;
+        }
+        
+        const data = await response.json();
+        const count = data.tours ? data.tours.length : 0;
+        counter.textContent = `${count} tours match`;
+        console.log('✅ Tour count:', count);
+      } catch (error) {
+        console.error('❌ Error fetching tour count:', error);
+        counter.textContent = 'Error loading count';
+      }
     }
     
     // Make globally accessible for inline onclick
@@ -13013,12 +13078,14 @@
       document.getElementById('video-start-screen').style.display = 'flex';
       document.getElementById('video-question-container').style.display = 'none';
       document.getElementById('vq-back-btn').style.display = 'none';
+      document.getElementById('vq-tour-counter').style.display = 'none';
     }
     
-    function goBackVideoQuestion() {
+    async function goBackVideoQuestion() {
       if (currentVideoQuestion > 0) {
         currentVideoQuestion--;
         renderVideoQuestion(currentVideoQuestion);
+        await updateTourCounter();
         resetInactivityTimer();
       }
     }
@@ -13084,25 +13151,42 @@
       answersContainer.appendChild(continueBtn);
     }
     
-    function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
+    async function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
       resetInactivityTimer();
+      
+      console.log('📝 Handling answer:', answer, 'isMultiple:', isMultiple, 'filterType:', filterType);
       
       if (isMultiple) {
         // Handle multiple selection
         if (answer.isSkip) {
           // "No preference" - clear selections and proceed
+          console.log('⏩ Skipping (no preference)');
           videoAnswers[filterType] = [];
+          
+          // Remove selected class from all buttons
+          document.querySelectorAll('.vq-answer-btn.selected').forEach(btn => {
+            btn.classList.remove('selected');
+          });
+          
+          await updateTourCounter();
           nextVideoQuestion();
         } else {
           // Toggle selection
           const index = videoAnswers[filterType].indexOf(answer.value);
           if (index > -1) {
+            // Deselect
             videoAnswers[filterType].splice(index, 1);
             btnElement.classList.remove('selected');
+            console.log('❌ Deselected:', answer.value, 'Current:', videoAnswers[filterType]);
           } else {
+            // Select
             videoAnswers[filterType].push(answer.value);
             btnElement.classList.add('selected');
+            console.log('✅ Selected:', answer.value, 'Current:', videoAnswers[filterType]);
           }
+          
+          // Update tour counter
+          await updateTourCounter();
           
           // Show/hide continue button based on selections
           const continueBtn = document.getElementById('vq-continue-btn');
@@ -13119,6 +13203,8 @@
       } else {
         // Single selection - immediately proceed
         videoAnswers[filterType] = answer.value;
+        console.log('✅ Single selection:', filterType, '=', answer.value);
+        await updateTourCounter();
         nextVideoQuestion();
       }
     }
@@ -13148,8 +13234,12 @@
     async function showSwipeResults() {
       console.log('🎯 Showing swipe results with answers:', videoAnswers);
       
-      // Hide video question page
-      document.querySelector('.video-question-page').classList.remove('active');
+      // Hide video question page and counter
+      const videoPage = document.querySelector('.video-question-page');
+      const tourCounter = document.getElementById('vq-tour-counter');
+      
+      if (videoPage) videoPage.classList.remove('active');
+      if (tourCounter) tourCounter.style.display = 'none';
       
       // Show swipe results page
       const swipePage = document.querySelector('.swipe-results-page');
@@ -13158,18 +13248,29 @@
       // Fetch filtered tours
       try {
         const params = new URLSearchParams();
-        if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
-        if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
         
-        // Only add activities if there are any selected
-        if (videoAnswers.activities && videoAnswers.activities.length > 0) {
+        // Only add non-empty filter values
+        if (videoAnswers.duration && videoAnswers.duration !== '') {
+          params.append('duration', videoAnswers.duration);
+        }
+        if (videoAnswers.family_friendly && videoAnswers.family_friendly !== '') {
+          params.append('family_friendly', videoAnswers.family_friendly);
+        }
+        
+        // Only add activities if there are any selected (not empty array)
+        if (videoAnswers.activities && Array.isArray(videoAnswers.activities) && videoAnswers.activities.length > 0) {
           videoAnswers.activities.forEach(act => {
-            if (act) params.append('activities', act); // Skip empty strings
+            if (act && act !== '') {
+              params.append('activities', act);
+            }
           });
         }
         
         console.log('🔍 Fetching tours with params:', params.toString());
-        const response = await fetch(`/api/tours?${params.toString()}`);
+        const url = `/api/tours${params.toString() ? '?' + params.toString() : ''}`;
+        console.log('🌐 Full URL:', url);
+        
+        const response = await fetch(url);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
