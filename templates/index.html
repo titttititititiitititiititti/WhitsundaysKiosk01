@@ -13115,16 +13115,17 @@
         btn.dataset.isSkip = answer.isSkip || false;
         
         // Restore selected state if returning to this question
-        if (question.multiple && !answer.isSkip && videoAnswers[question.filter].includes(answer.value)) {
+        if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
           btn.classList.add('selected');
         }
         
-        btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, question.filter, e.target);
+        btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, answer.filter, e.target);
         answersContainer.appendChild(btn);
       });
       
       // Add continue button if selections exist and it's a multiple choice question
-      if (question.multiple && videoAnswers[question.filter].length > 0) {
+      const firstAnswer = question.answers[0];
+      if (question.multiple && firstAnswer && videoAnswers[firstAnswer.filter] && videoAnswers[firstAnswer.filter].length > 0) {
         addContinueButton();
       }
       
@@ -13467,20 +13468,23 @@
     }
     
     function goToHomePage() {
-      // Clear all filters
-      filterState.duration = '';
-      filterState.family_friendly = '';
-      filterState.activities = [];
+      // Hide video question page
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) videoPage.classList.remove('active');
       
       // Hide swipe page
-      document.querySelector('.swipe-results-page').classList.remove('active');
+      const swipePage = document.querySelector('.swipe-results-page');
+      if (swipePage) swipePage.classList.remove('active');
       
       // Show home page
       const homePage = document.querySelector('.home-page');
-      homePage.classList.add('active');
-      
-      // Load all tours
-      loadInitialFeaturedTours();
+      if (homePage) {
+        homePage.classList.add('active');
+        // Load all tours
+        if (typeof loadInitialFeaturedTours === 'function') {
+          loadInitialFeaturedTours();
+        }
+      }
     }
     
     // Initialize everything when DOM is ready

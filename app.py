@@ -448,7 +448,7 @@ def get_tours():
     family_friendly = request.args.get('family_friendly', '')
     activities = request.args.getlist('activities')  # Can have multiple
     
-    print(f"📋 API /api/tours called with filters:")
+    print(f"[API] /api/tours called with filters:")
     print(f"   - duration: {duration}")
     print(f"   - family_friendly: {family_friendly}")
     print(f"   - activities: {activities}")
@@ -480,7 +480,7 @@ def get_tours():
         filtered_tours = [t for t in filtered_tours if tour_matches_activities(t)]
         print(f"   - After activities filter: {len(filtered_tours)} tours")
     
-    print(f"✅ Returning {len(filtered_tours)} filtered tours")
+    print(f"[SUCCESS] Returning {len(filtered_tours)} filtered tours")
     
     # Format tours for frontend (include necessary fields)
     formatted_tours = []
