@@ -652,10 +652,12 @@
       width: 100%;
       height: 100vh;
       display: none;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 30;
       pointer-events: none;
+      padding: 40px 20px 20px 20px;
     }
     
     .swipe-results-overlay.active {
@@ -689,8 +691,65 @@
       position: relative;
       z-index: 10;
       width: 500px;
-      height: 700px;
-      margin-bottom: 100px;
+      height: 650px;
+      margin-bottom: 20px;
+    }
+    
+    .swipe-gallery-spread {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .swipe-gallery-image {
+      position: absolute;
+      width: 400px;
+      height: 500px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    
+    .swipe-gallery-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .swipe-gallery-image.left {
+      transform: translateX(-220px) scale(0.8) rotate(-5deg);
+      z-index: 1;
+      opacity: 0;
+      animation: slideOutLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+    }
+    
+    .swipe-gallery-image.right {
+      transform: translateX(220px) scale(0.8) rotate(5deg);
+      z-index: 1;
+      opacity: 0;
+      animation: slideOutRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+    }
+    
+    .swipe-gallery-image.center {
+      z-index: 2;
+    }
+    
+    @keyframes slideOutLeft {
+      to {
+        transform: translateX(-220px) scale(0.8) rotate(-5deg);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOutRight {
+      to {
+        transform: translateX(220px) scale(0.8) rotate(5deg);
+        opacity: 1;
+      }
     }
     
     .swipe-card {
@@ -796,13 +855,76 @@
       margin: 20px 0 0 0;
     }
     
-    .swipe-actions {
+    .swipe-info-sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      width: 900px;
+      margin: 30px 0 40px 0;
+      z-index: 15;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.8s forwards;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .swipe-info-box {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .swipe-info-box h3 {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: #0077b6;
+      margin: 0 0 15px 0;
+    }
+    
+    .swipe-info-box ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .swipe-info-box li {
+      font-size: 1.2em;
+      color: #2c3e50;
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+    
+    .swipe-info-box li:before {
+      content: '✓';
       position: absolute;
-      bottom: 60px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 0;
+      color: #48bb78;
+      font-weight: bold;
+    }
+    
+    .swipe-info-box p {
+      font-size: 1.2em;
+      color: #2c3e50;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .swipe-actions {
       display: flex;
-      gap: 40px;
+      gap: 50px;
+      margin-top: 40px;
       z-index: 20;
     }
     
@@ -812,18 +934,18 @@
     
     @keyframes slideUpButtons {
       0% {
-        transform: translateX(-50%) translateY(200px);
+        transform: translateY(100px);
         opacity: 0;
       }
       100% {
-        transform: translateX(-50%) translateY(0);
+        transform: translateY(0);
         opacity: 1;
       }
     }
     
     .swipe-btn {
-      width: 180px;
-      height: 180px;
+      width: 220px;
+      height: 220px;
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -831,39 +953,79 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      transition: all 0.3s ease;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-      font-weight: 600;
+      gap: 12px;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
+      position: relative;
+    }
+    
+    .swipe-btn:active {
+      transform: scale(0.95);
     }
     
     .swipe-btn-reject {
-      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      background: linear-gradient(135deg, #ff4757 0%, #ff3838 50%, #e84118 100%);
       color: white;
+    }
+    
+    .swipe-btn-reject:before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b7a, #ff4757);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      filter: blur(15px);
     }
     
     .swipe-btn-reject:hover {
-      transform: scale(1.1) rotate(-5deg);
-      box-shadow: 0 20px 50px rgba(244, 67, 54, 0.5);
+      transform: scale(1.15);
+      box-shadow: 0 25px 60px rgba(255, 71, 87, 0.6);
+    }
+    
+    .swipe-btn-reject:hover:before {
+      opacity: 0.7;
     }
     
     .swipe-btn-accept {
-      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      background: linear-gradient(135deg, #0cb4e7 0%, #00a8cc 50%, #0077b6 100%);
       color: white;
     }
     
+    .swipe-btn-accept:before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00d4ff, #0cb4e7);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      filter: blur(15px);
+    }
+    
     .swipe-btn-accept:hover {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 20px 50px rgba(76, 175, 80, 0.5);
+      transform: scale(1.15);
+      box-shadow: 0 25px 60px rgba(12, 180, 231, 0.6);
+    }
+    
+    .swipe-btn-accept:hover:before {
+      opacity: 0.7;
     }
     
     .swipe-btn-icon {
-      font-size: 3.5em;
+      font-size: 4.5em;
       line-height: 1;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
     .swipe-btn-text {
-      font-size: 1.2em;
+      font-size: 1.4em;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
     
     /* ===================================================================
@@ -5606,9 +5768,14 @@
           See All Tours →
         </button>
         
-        <!-- Card stack -->
+        <!-- Card stack with gallery spread -->
         <div class="swipe-card-stack" id="swipe-card-stack">
-          <!-- Cards will be inserted here dynamically -->
+          <!-- Gallery spread will be inserted here dynamically -->
+        </div>
+        
+        <!-- Info sections -->
+        <div class="swipe-info-sections" id="swipe-info-sections">
+          <!-- What's Included and Highlights will be inserted here -->
         </div>
         
         <!-- Action buttons -->
@@ -13357,50 +13524,119 @@
       }
     }
     
-    function renderSwipeCards() {
-      const stack = document.getElementById('swipe-card-stack');
-      stack.innerHTML = '';
-      
-      // Render top 3 cards in stack (for visual depth)
-      for (let i = 0; i < Math.min(3, swipeCards.length); i++) {
-        const card = createSwipeCard(swipeCards[i], i);
-        stack.appendChild(card);
-      }
+    async function renderSwipeCards() {
+      if (swipeCards.length === 0) return;
       
       currentCardIndex = 0;
+      await displayCurrentCard();
+    }
+    
+    async function displayCurrentCard() {
+      if (currentCardIndex >= swipeCards.length) {
+        goToHomePage();
+        return;
+      }
       
-      // Set up swipe handlers on top card
-      if (swipeCards.length > 0) {
-        setupSwipeHandlers(stack.lastChild);
+      const tour = swipeCards[currentCardIndex];
+      console.log('[CARD] Displaying tour:', tour.name);
+      
+      // Fetch full tour data to get gallery and details
+      const fullTourData = await fetchTourDetails(tour.key);
+      
+      // Render gallery spread
+      renderGallerySpread(fullTourData);
+      
+      // Render info sections
+      renderInfoSections(fullTourData);
+    }
+    
+    async function fetchTourDetails(tourKey) {
+      try {
+        const response = await fetch(`/tour-data/${tourKey}?lang=${currentLanguage}`);
+        if (!response.ok) throw new Error('Failed to fetch tour details');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('[ERROR] Failed to fetch tour details:', error);
+        return swipeCards[currentCardIndex]; // Fallback to basic data
       }
     }
     
-    function createSwipeCard(tour, index) {
-      const card = document.createElement('div');
-      card.className = 'swipe-card';
-      card.style.zIndex = 100 - index;
-      card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 10}px)`;
+    function renderGallerySpread(tour) {
+      const stack = document.getElementById('swipe-card-stack');
+      stack.innerHTML = '';
       
-      const imageUrl = tour.image || tour.thumbnail_url || '/static/placeholder.jpg';
-      const price = tour.price_display || tour.price_from || 'Contact for pricing';
+      const gallery = tour.gallery || [];
+      const images = gallery.length >= 3 ? gallery.slice(0, 3) : [tour.image, tour.image, tour.image];
       
-      card.innerHTML = `
-        <img src="${imageUrl}" alt="${tour.name}" class="swipe-card-image">
-        <div class="swipe-card-content">
-          <h3 class="swipe-card-title">${tour.name}</h3>
-          <p class="swipe-card-company">${tour.company || ''}</p>
-          <div class="swipe-card-details">
-            ${tour.duration ? `<span class="swipe-card-detail">⏱️ ${tour.duration}</span>` : ''}
-            ${tour.family_friendly ? `<span class="swipe-card-detail">👨‍👩‍👧‍👦 Family Friendly</span>` : ''}
-          </div>
-          <p class="swipe-card-price">${price}</p>
-        </div>
-      `;
+      // Create gallery spread container
+      const spreadContainer = document.createElement('div');
+      spreadContainer.className = 'swipe-gallery-spread';
       
-      card.dataset.tourId = tour.id;
+      // Left image
+      if (images[0]) {
+        const leftImg = document.createElement('div');
+        leftImg.className = 'swipe-gallery-image left';
+        leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+        spreadContainer.appendChild(leftImg);
+      }
       
-      return card;
+      // Center card (main)
+      const centerCard = document.createElement('div');
+      centerCard.className = 'swipe-gallery-image center';
+      centerCard.innerHTML = `<img src="${images[1] || tour.image}" alt="${tour.name}">`;
+      centerCard.dataset.tourId = tour.key;
+      spreadContainer.appendChild(centerCard);
+      
+      // Right image
+      if (images[2]) {
+        const rightImg = document.createElement('div');
+        rightImg.className = 'swipe-gallery-image right';
+        rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+        spreadContainer.appendChild(rightImg);
+      }
+      
+      stack.appendChild(spreadContainer);
+      
+      // Set up swipe handlers on center card
+      setupSwipeHandlers(centerCard);
     }
+    
+    function renderInfoSections(tour) {
+      const container = document.getElementById('swipe-info-sections');
+      container.innerHTML = '';
+      
+      // What's Included
+      if (tour.includes) {
+        const includesBox = document.createElement('div');
+        includesBox.className = 'swipe-info-box';
+        
+        const items = tour.includes.split('\n').filter(item => item.trim());
+        const itemsList = items.map(item => `<li>${item.replace(/^[-•✓]\s*/, '')}</li>`).join('');
+        
+        includesBox.innerHTML = `
+          <h3>✓ What's Included</h3>
+          <ul>${itemsList}</ul>
+        `;
+        container.appendChild(includesBox);
+      }
+      
+      // Highlights
+      if (tour.highlights) {
+        const highlightsBox = document.createElement('div');
+        highlightsBox.className = 'swipe-info-box';
+        
+        const highlights = tour.highlights.split('\n').filter(item => item.trim());
+        const highlightsList = highlights.map(item => `<li>${item.replace(/^[-•✓]\s*/, '')}</li>`).join('');
+        
+        highlightsBox.innerHTML = `
+          <h3>⭐ Highlights</h3>
+          <ul>${highlightsList}</ul>
+        `;
+        container.appendChild(highlightsBox);
+      }
+    }
+    
     
     function setupSwipeHandlers(card) {
       if (!card) return;
@@ -13427,12 +13663,12 @@
       
       currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
       const diff = currentX - startX;
-      const card = document.querySelector('.swipe-card:last-child');
+      const spread = document.querySelector('.swipe-gallery-spread');
       
-      if (card) {
-        const rotation = diff / 20;
-        card.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
-        card.style.transition = 'none';
+      if (spread) {
+        const rotation = diff / 30;
+        spread.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
+        spread.style.transition = 'none';
       }
     }
     
@@ -13440,11 +13676,10 @@
       if (!isDragging) return;
       
       isDragging = false;
-      const card = document.querySelector('.swipe-card:last-child');
+      const spread = document.querySelector('.swipe-gallery-spread');
       
-      if (!card) return;
+      if (!spread) return;
       
-      card.classList.remove('grabbing');
       const diff = currentX - startX;
       
       // Threshold for swipe action
@@ -13458,62 +13693,41 @@
         }
       } else {
         // Snap back
-        card.style.transform = '';
-        card.style.transition = 'transform 0.3s ease';
+        spread.style.transform = '';
+        spread.style.transition = 'transform 0.3s ease';
       }
     }
     
     function rejectCard() {
-      const card = document.querySelector('.swipe-card:last-child');
-      if (!card) return;
+      console.log('[ACTION] Rejecting tour');
       
-      card.classList.add('swiping-left');
+      const spread = document.querySelector('.swipe-gallery-spread');
+      if (!spread) return;
+      
+      // Animate out
+      spread.style.transition = 'all 0.4s ease-out';
+      spread.style.transform = 'translateX(-150%) rotate(-20deg)';
+      spread.style.opacity = '0';
+      
+      // Hide info sections
+      const infoSections = document.getElementById('swipe-info-sections');
+      if (infoSections) {
+        infoSections.style.transition = 'all 0.3s ease-out';
+        infoSections.style.opacity = '0';
+      }
       
       setTimeout(() => {
-        card.remove();
-        nextCard();
+        currentCardIndex++;
+        displayCurrentCard();
       }, 400);
     }
     
     function acceptCard() {
-      const card = document.querySelector('.swipe-card:last-child');
-      if (!card) return;
+      console.log('[ACTION] Accepting tour - going to detail page');
       
-      card.classList.add('swiping-right');
-      
-      setTimeout(() => {
-        const tourId = card.dataset.tourId;
-        goToTourDetail(tourId);
-      }, 400);
-    }
-    
-    function nextCard() {
-      currentCardIndex++;
-      
-      if (currentCardIndex >= swipeCards.length) {
-        // No more cards - go to home page
-        goToHomePage();
-        return;
-      }
-      
-      // Add new card to stack if available
-      const stack = document.getElementById('swipe-card-stack');
-      if (currentCardIndex + 2 < swipeCards.length) {
-        const newCard = createSwipeCard(swipeCards[currentCardIndex + 2], 2);
-        stack.insertBefore(newCard, stack.firstChild);
-      }
-      
-      // Update z-index and scale of remaining cards
-      const remainingCards = stack.querySelectorAll('.swipe-card');
-      remainingCards.forEach((card, index) => {
-        card.style.zIndex = 100 - index;
-        card.style.transform = `scale(${1 - index * 0.05}) translateY(${index * 10}px)`;
-        card.style.transition = 'transform 0.3s ease';
-      });
-      
-      // Set up handlers for new top card
-      if (remainingCards.length > 0) {
-        setupSwipeHandlers(remainingCards[remainingCards.length - 1]);
+      if (currentCardIndex < swipeCards.length) {
+        const tour = swipeCards[currentCardIndex];
+        goToTourDetail(tour.key);
       }
     }
     
