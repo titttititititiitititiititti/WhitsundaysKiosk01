@@ -485,7 +485,13 @@
       box-shadow: none;
       text-align: center;
       animation: slideUpFadeIn 0.8s ease-out;
-      transform-origin: bottom center;
+      transform-origin: center center;
+      transition: all 0.5s ease-out;
+    }
+    
+    .video-question-card.exit-animation {
+      transform: scale(0.8);
+      opacity: 0;
     }
     
     .video-start-screen {
@@ -636,27 +642,25 @@
     }
     
     /* ===================================================================
-       SWIPE RESULTS PAGE - TINDER-STYLE CARDS
+       SWIPE RESULTS OVERLAY - APPEARS ON TOP OF VIDEO PAGE
        =================================================================== */
     
-    .page.swipe-results-page {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
-    }
-    
-    .swipe-bg {
-      position: absolute;
+    .swipe-results-overlay {
+      position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 1;
+      width: 100%;
+      height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      pointer-events: none;
+    }
+    
+    .swipe-results-overlay.active {
+      display: flex;
+      pointer-events: auto;
     }
     
     .skip-to-list-btn {
@@ -702,6 +706,21 @@
       cursor: grab;
       transition: transform 0.3s ease, opacity 0.3s ease;
       user-select: none;
+    }
+    
+    .swipe-card.entering {
+      animation: slideUpCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes slideUpCard {
+      0% {
+        transform: translateY(150%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
     
     .swipe-card.grabbing {
@@ -785,6 +804,21 @@
       display: flex;
       gap: 40px;
       z-index: 20;
+    }
+    
+    .swipe-actions.entering {
+      animation: slideUpButtons 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+    }
+    
+    @keyframes slideUpButtons {
+      0% {
+        transform: translateX(-50%) translateY(200px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
     }
     
     .swipe-btn {
@@ -5564,33 +5598,30 @@
       <div class="vq-tour-counter" id="vq-tour-counter" style="display: none;">
         Loading...
       </div>
-    </div>
-    
-    <!-- Swipe Results Page - TINDER-STYLE CARDS -->
-    <div class="page swipe-results-page" id="swipe-results-page">
-      <!-- Background gradient -->
-      <div class="swipe-bg"></div>
       
-      <!-- Skip to full list button -->
-      <button class="skip-to-list-btn" id="skip-to-list-btn">
-        See All Tours →
-      </button>
-      
-      <!-- Card stack -->
-      <div class="swipe-card-stack" id="swipe-card-stack">
-        <!-- Cards will be inserted here dynamically -->
-      </div>
-      
-      <!-- Action buttons -->
-      <div class="swipe-actions">
-        <button class="swipe-btn swipe-btn-reject" id="reject-btn">
-          <span class="swipe-btn-icon">✕</span>
-          <span class="swipe-btn-text">Not For Me</span>
+      <!-- Swipe Results Overlay - APPEARS ON TOP OF VIDEO -->
+      <div class="swipe-results-overlay" id="swipe-results-overlay">
+        <!-- Skip to full list button -->
+        <button class="skip-to-list-btn" id="skip-to-list-btn">
+          See All Tours →
         </button>
-        <button class="swipe-btn swipe-btn-accept" id="accept-btn">
-          <span class="swipe-btn-icon">→</span>
-          <span class="swipe-btn-text">Tell Me More</span>
-        </button>
+        
+        <!-- Card stack -->
+        <div class="swipe-card-stack" id="swipe-card-stack">
+          <!-- Cards will be inserted here dynamically -->
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="swipe-actions" id="swipe-actions">
+          <button class="swipe-btn swipe-btn-reject" id="reject-btn">
+            <span class="swipe-btn-icon">✕</span>
+            <span class="swipe-btn-text">Not For Me</span>
+          </button>
+          <button class="swipe-btn swipe-btn-accept" id="accept-btn">
+            <span class="swipe-btn-icon">→</span>
+            <span class="swipe-btn-text">Tell Me More</span>
+          </button>
+        </div>
       </div>
     </div>
     
@@ -13233,20 +13264,30 @@
     let currentX = 0;
     
     async function showSwipeResults() {
-      console.log('🎯 Showing swipe results with answers:', videoAnswers);
+      console.log('[TRANSITION] Starting swipe results transition');
       
-      // Hide video question page and counter
-      const videoPage = document.querySelector('.video-question-page');
+      // Get elements
+      const questionCard = document.getElementById('vq-card');
+      const backBtn = document.getElementById('vq-back-btn');
       const tourCounter = document.getElementById('vq-tour-counter');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
       
-      if (videoPage) videoPage.classList.remove('active');
+      // Step 1: Start exit animation for questions (0.5s)
+      if (questionCard) questionCard.classList.add('exit-animation');
+      if (backBtn) backBtn.style.opacity = '0';
+      if (tourCounter) tourCounter.style.opacity = '0';
+      
+      console.log('[TRANSITION] Questions fading out...');
+      
+      // Wait for exit animation to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Step 2: Hide question elements completely
+      if (questionCard) questionCard.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'none';
       if (tourCounter) tourCounter.style.display = 'none';
       
-      // Show swipe results page
-      const swipePage = document.querySelector('.swipe-results-page');
-      swipePage.classList.add('active');
-      
-      // Fetch filtered tours
+      // Step 3: Fetch filtered tours
       try {
         const params = new URLSearchParams();
         
@@ -13267,9 +13308,8 @@
           });
         }
         
-        console.log('🔍 Fetching tours with params:', params.toString());
+        console.log('[API] Fetching tours with params:', params.toString());
         const url = `/api/tours${params.toString() ? '?' + params.toString() : ''}`;
-        console.log('🌐 Full URL:', url);
         
         const response = await fetch(url);
         
@@ -13278,22 +13318,40 @@
         }
         
         const data = await response.json();
-        console.log('📦 Received tours:', data);
+        console.log('[API] Received', data.tours ? data.tours.length : 0, 'tours');
         
         swipeCards = data.tours || [];
         
         if (swipeCards.length === 0) {
-          // No results - go to home page
-          console.log('⚠️ No matching tours found');
+          console.log('[WARNING] No matching tours found');
           alert('No tours match your preferences. Showing all tours.');
           goToHomePage();
           return;
         }
         
-        console.log('✅ Rendering', swipeCards.length, 'swipe cards');
+        // Step 4: Show overlay and render cards
+        console.log('[TRANSITION] Showing swipe overlay');
+        swipeOverlay.classList.add('active');
+        
         renderSwipeCards();
+        
+        // Step 5: Trigger entrance animations
+        setTimeout(() => {
+          const firstCard = document.querySelector('.swipe-card');
+          const actions = document.getElementById('swipe-actions');
+          
+          if (firstCard) {
+            firstCard.classList.add('entering');
+            console.log('[ANIMATION] Card sliding up');
+          }
+          if (actions) {
+            actions.classList.add('entering');
+            console.log('[ANIMATION] Buttons sliding up');
+          }
+        }, 50);
+        
       } catch (error) {
-        console.error('❌ Error fetching tours:', error);
+        console.error('[ERROR] Error fetching tours:', error);
         alert('Error loading tours. Showing all tours.');
         goToHomePage();
       }
@@ -13460,21 +13518,31 @@
     }
     
     function goToTourDetail(tourId) {
-      // Use existing function to show tour detail
-      showTourDetail(tourId);
+      console.log('[NAVIGATION] Going to tour detail:', tourId);
       
-      // Hide swipe page
-      document.querySelector('.swipe-results-page').classList.remove('active');
+      // Use existing function to show tour detail
+      if (typeof showTourDetail === 'function') {
+        showTourDetail(tourId);
+      }
+      
+      // Hide video page and swipe overlay
+      const videoPage = document.querySelector('.video-question-page');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      
+      if (videoPage) videoPage.classList.remove('active');
+      if (swipeOverlay) swipeOverlay.classList.remove('active');
     }
     
     function goToHomePage() {
+      console.log('[NAVIGATION] Going to home page');
+      
       // Hide video question page
       const videoPage = document.querySelector('.video-question-page');
       if (videoPage) videoPage.classList.remove('active');
       
-      // Hide swipe page
-      const swipePage = document.querySelector('.swipe-results-page');
-      if (swipePage) swipePage.classList.remove('active');
+      // Hide swipe overlay
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      if (swipeOverlay) swipeOverlay.classList.remove('active');
       
       // Show home page
       const homePage = document.querySelector('.home-page');
