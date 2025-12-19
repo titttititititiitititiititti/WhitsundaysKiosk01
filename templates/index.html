@@ -690,9 +690,39 @@
     .swipe-card-stack {
       position: relative;
       z-index: 10;
-      width: 500px;
-      height: 650px;
+      width: 100%;
+      max-width: 1300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-bottom: 20px;
+    }
+    
+    .swipe-card-header {
+      text-align: center;
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out 0.3s forwards;
+    }
+    
+    .swipe-card-header h2 {
+      font-size: 3em;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 15px 0;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+    }
+    
+    .swipe-card-header .company-chip {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 1.5em;
+      font-weight: 600;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
     
     .swipe-gallery-spread {
@@ -702,16 +732,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 40px;
     }
     
     .swipe-gallery-image {
-      position: absolute;
-      width: 400px;
-      height: 500px;
+      width: 350px;
+      height: 450px;
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
       transition: transform 0.3s ease;
+      flex-shrink: 0;
     }
     
     .swipe-gallery-image img {
@@ -721,33 +752,33 @@
     }
     
     .swipe-gallery-image.left {
-      transform: translateX(-220px) scale(0.8) rotate(-5deg);
-      z-index: 1;
+      transform: scale(0.9) rotate(-3deg);
       opacity: 0;
-      animation: slideOutLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+      animation: slideInLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
     }
     
     .swipe-gallery-image.right {
-      transform: translateX(220px) scale(0.8) rotate(5deg);
-      z-index: 1;
+      transform: scale(0.9) rotate(3deg);
       opacity: 0;
-      animation: slideOutRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+      animation: slideInRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
     }
     
     .swipe-gallery-image.center {
       z-index: 2;
+      width: 450px;
+      height: 550px;
     }
     
-    @keyframes slideOutLeft {
+    @keyframes slideInLeft {
       to {
-        transform: translateX(-220px) scale(0.8) rotate(-5deg);
+        transform: scale(0.9) rotate(-3deg);
         opacity: 1;
       }
     }
     
-    @keyframes slideOutRight {
+    @keyframes slideInRight {
       to {
-        transform: translateX(220px) scale(0.8) rotate(5deg);
+        transform: scale(0.9) rotate(3deg);
         opacity: 1;
       }
     }
@@ -13566,35 +13597,61 @@
       const stack = document.getElementById('swipe-card-stack');
       stack.innerHTML = '';
       
+      console.log('[GALLERY] Tour data:', tour);
+      console.log('[GALLERY] Gallery array:', tour.gallery);
+      
+      // Get 3 different images from gallery
       const gallery = tour.gallery || [];
-      const images = gallery.length >= 3 ? gallery.slice(0, 3) : [tour.image, tour.image, tour.image];
+      let images = [];
+      
+      if (gallery.length >= 3) {
+        // Use first 3 different images
+        images = [gallery[0], gallery[1], gallery[2]];
+      } else if (gallery.length === 2) {
+        // Use both + main image
+        images = [gallery[0], tour.image || tour.thumbnail_url, gallery[1]];
+      } else if (gallery.length === 1) {
+        // Use gallery image + main image twice
+        images = [tour.image || tour.thumbnail_url, gallery[0], tour.image || tour.thumbnail_url];
+      } else {
+        // Use main image 3 times as fallback
+        const mainImg = tour.image || tour.thumbnail_url || '/static/placeholder.jpg';
+        images = [mainImg, mainImg, mainImg];
+      }
+      
+      console.log('[GALLERY] Using images:', images);
+      
+      // Create header with title and company
+      const header = document.createElement('div');
+      header.className = 'swipe-card-header';
+      header.innerHTML = `
+        <h2>${tour.name}</h2>
+        <div class="company-chip">${tour.company_name || tour.company || ''}</div>
+      `;
+      stack.appendChild(header);
       
       // Create gallery spread container
       const spreadContainer = document.createElement('div');
       spreadContainer.className = 'swipe-gallery-spread';
       
       // Left image
-      if (images[0]) {
-        const leftImg = document.createElement('div');
-        leftImg.className = 'swipe-gallery-image left';
-        leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
-        spreadContainer.appendChild(leftImg);
-      }
+      const leftImg = document.createElement('div');
+      leftImg.className = 'swipe-gallery-image left';
+      leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+      spreadContainer.appendChild(leftImg);
       
       // Center card (main)
       const centerCard = document.createElement('div');
       centerCard.className = 'swipe-gallery-image center';
-      centerCard.innerHTML = `<img src="${images[1] || tour.image}" alt="${tour.name}">`;
+      centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
       centerCard.dataset.tourId = tour.key;
       spreadContainer.appendChild(centerCard);
       
       // Right image
-      if (images[2]) {
-        const rightImg = document.createElement('div');
-        rightImg.className = 'swipe-gallery-image right';
-        rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
-        spreadContainer.appendChild(rightImg);
-      }
+      const rightImg = document.createElement('div');
+      rightImg.className = 'swipe-gallery-image right';
+      rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+      spreadContainer.appendChild(rightImg);
       
       stack.appendChild(spreadContainer);
       
@@ -13606,35 +13663,85 @@
       const container = document.getElementById('swipe-info-sections');
       container.innerHTML = '';
       
+      console.log('[INFO] Rendering info sections');
+      console.log('[INFO] Tour includes:', tour.includes);
+      console.log('[INFO] Tour highlights:', tour.highlights);
+      
+      let sectionsAdded = 0;
+      
       // What's Included
-      if (tour.includes) {
+      if (tour.includes && tour.includes.trim() && tour.includes !== 'N/A') {
+        console.log('[INFO] Adding includes section');
         const includesBox = document.createElement('div');
         includesBox.className = 'swipe-info-box';
         
-        const items = tour.includes.split('\n').filter(item => item.trim());
-        const itemsList = items.map(item => `<li>${item.replace(/^[-•✓]\s*/, '')}</li>`).join('');
+        // Split by newlines or bullet points
+        let items = tour.includes.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
         
-        includesBox.innerHTML = `
-          <h3>✓ What's Included</h3>
-          <ul>${itemsList}</ul>
-        `;
-        container.appendChild(includesBox);
+        // If no newlines, try splitting by common separators
+        if (items.length === 1) {
+          items = tour.includes.split(/[;,]/).filter(item => item.trim());
+        }
+        
+        const itemsList = items.map(item => {
+          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+          return cleaned ? `<li>${cleaned}</li>` : '';
+        }).filter(item => item).join('');
+        
+        console.log('[INFO] Includes items:', itemsList);
+        
+        if (itemsList) {
+          includesBox.innerHTML = `
+            <h3>✓ What's Included</h3>
+            <ul>${itemsList}</ul>
+          `;
+          container.appendChild(includesBox);
+          sectionsAdded++;
+        }
+      } else {
+        console.log('[INFO] No includes data available');
       }
       
       // Highlights
-      if (tour.highlights) {
+      if (tour.highlights && tour.highlights.trim() && tour.highlights !== 'N/A') {
+        console.log('[INFO] Adding highlights section');
         const highlightsBox = document.createElement('div');
         highlightsBox.className = 'swipe-info-box';
         
-        const highlights = tour.highlights.split('\n').filter(item => item.trim());
-        const highlightsList = highlights.map(item => `<li>${item.replace(/^[-•✓]\s*/, '')}</li>`).join('');
+        // Split by newlines or bullet points
+        let highlights = tour.highlights.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
         
-        highlightsBox.innerHTML = `
-          <h3>⭐ Highlights</h3>
-          <ul>${highlightsList}</ul>
-        `;
-        container.appendChild(highlightsBox);
+        // If no newlines, try splitting by common separators
+        if (highlights.length === 1) {
+          highlights = tour.highlights.split(/[;,]/).filter(item => item.trim());
+        }
+        
+        const highlightsList = highlights.map(item => {
+          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+          return cleaned ? `<li>${cleaned}</li>` : '';
+        }).filter(item => item).join('');
+        
+        console.log('[INFO] Highlights items:', highlightsList);
+        
+        if (highlightsList) {
+          highlightsBox.innerHTML = `
+            <h3>⭐ Highlights</h3>
+            <ul>${highlightsList}</ul>
+          `;
+          container.appendChild(highlightsBox);
+          sectionsAdded++;
+        }
+      } else {
+        console.log('[INFO] No highlights data available');
       }
+      
+      // Adjust grid if only one section
+      if (sectionsAdded === 1) {
+        container.style.gridTemplateColumns = '1fr';
+        container.style.maxWidth = '600px';
+      }
+      
+      console.log('[INFO] Total sections added:', sectionsAdded);
     }
     
     
