@@ -2804,15 +2804,7 @@
         font-size: 100px !important;
       }
       
-      /* Make weather widget 3x bigger on mobile */
-      .weather-widget.collapsed {
-        width: 150px !important;
-        height: 150px !important;
-        font-size: 70px !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        left: auto !important;
-      }
+      /* Widget sizing moved to main responsive section below */
       
       .weather-widget.collapsed .weather-header {
         padding: 0 !important;
@@ -5666,34 +5658,7 @@
         line-height: 1.4;
       }
       
-      /* Weather Widget - Perfect circle EXACT same as microphone button */
-      .weather-widget.collapsed {
-        width: 150px !important;
-        height: 150px !important;
-        min-width: 150px !important;
-        min-height: 150px !important;
-        max-width: 150px !important;
-        max-height: 150px !important;
-        border-radius: 50% !important;
-        background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
-        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 70px !important;
-        border: none !important;
-        padding: 0 !important;
-        bottom: 8px !important;
-        right: 8px !important;
-        left: auto !important;
-        overflow: hidden !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        aspect-ratio: 1 / 1 !important;
-        cursor: pointer !important;
-        z-index: 999 !important;
-      }
+      /* Weather Widget - Removed fixed 150px size, using responsive sizing from main mobile section */
       
       .weather-widget.collapsed .weather-header,
       .weather-widget.collapsed .weather-content,
@@ -6021,29 +5986,67 @@
         flex-shrink: 0;
       }
       
-      /* Widgets - Much Smaller, Relative Sizing */
+      /* Widgets - Small, Proportional, Relative Sizing */
       .weather-widget.collapsed {
         position: fixed !important;
         bottom: clamp(0.5rem, 1.5vh, 1rem) !important;
         right: clamp(0.5rem, 2vw, 1rem) !important;
-        width: clamp(40px, 8vmin, 52px) !important;
-        height: clamp(40px, 8vmin, 52px) !important;
-        font-size: clamp(1.1rem, 4vmin, 1.4rem) !important;
+        width: clamp(35px, 6vmin, 48px) !important;
+        height: clamp(35px, 6vmin, 48px) !important;
+        min-width: 35px !important;
+        max-width: 48px !important;
+        min-height: 35px !important;
+        max-height: 48px !important;
+        border-radius: 50% !important;
         padding: 0 !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        border: 2px solid rgba(255, 255, 255, 0.25) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        z-index: 999 !important;
       }
       
       .weather-widget.collapsed::before {
-        font-size: 1.1em !important;
+        content: "🌤️" !important;
+        font-size: clamp(1rem, 3.5vmin, 1.3rem) !important;
+        display: block !important;
+        line-height: 1 !important;
+      }
+      
+      .weather-widget.collapsed .weather-header,
+      .weather-widget.collapsed .weather-content,
+      .weather-widget.collapsed .weather-toggle,
+      .weather-widget.collapsed h4,
+      .weather-widget.collapsed > * {
+        display: none !important;
       }
       
       .chat-toggle-btn {
         position: fixed !important;
         bottom: clamp(0.5rem, 1.5vh, 1rem) !important;
         left: clamp(0.5rem, 2vw, 1rem) !important;
-        width: clamp(40px, 8vmin, 52px) !important;
-        height: clamp(40px, 8vmin, 52px) !important;
-        font-size: clamp(1.1rem, 4vmin, 1.4rem) !important;
+        width: clamp(35px, 6vmin, 48px) !important;
+        height: clamp(35px, 6vmin, 48px) !important;
+        min-width: 35px !important;
+        max-width: 48px !important;
+        min-height: 35px !important;
+        max-height: 48px !important;
+        border-radius: 50% !important;
         padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 2px solid rgba(255, 255, 255, 0.25) !important;
+        z-index: 999 !important;
+      }
+      
+      .chat-toggle-btn i {
+        font-size: clamp(1rem, 3.5vmin, 1.3rem) !important;
       }
       
       /* Swipe Results - Proper Scrollable Container */
