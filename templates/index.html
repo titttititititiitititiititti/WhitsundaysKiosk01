@@ -4859,7 +4859,7 @@
       .weather-widget {
         bottom: 20px;
         right: 20px;
-        left: 20px;
+        left: auto !important;
         max-width: none;
       }
       
@@ -5448,22 +5448,7 @@
       }
       
       /* Chat Interface - Same size as weather widget */
-      .chat-button {
-        width: 150px !important;
-        height: 150px !important;
-        min-width: 150px !important;
-        min-height: 150px !important;
-        max-width: 150px !important;
-        max-height: 150px !important;
-        font-size: 70px !important;
-        bottom: 8px !important;
-        left: 8px !important;
-        right: auto !important;
-        background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%) !important;
-        box-shadow: 0 4px 12px rgba(0,119,182,0.4) !important;
-        border-radius: 50% !important;
-        aspect-ratio: 1 / 1 !important;
-      }
+      /* Old fixed 150px chat-button rule removed - using responsive sizing below */
       
       .chat-button::before {
         content: "🎤" !important;
@@ -5907,18 +5892,20 @@
         flex-shrink: 0;
       }
       
-      /* Answers Container - Compact */
+      /* Answers Container - Compact with proper overflow */
       .vq-answers,
       #vq-answers {
         display: flex !important;
         flex-direction: column !important;
         gap: clamp(0.5rem, 1.5vh, 0.875rem) !important;
         width: 100% !important;
-        padding: 0 !important;
+        padding: 0 0 clamp(1rem, 3vh, 2rem) 0 !important;
         margin: 0 !important;
         min-height: auto !important;
+        max-height: none !important;
         flex-shrink: 1;
-        overflow-y: auto;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch;
       }
       
@@ -5955,10 +5942,10 @@
       
       .vq-progress-container {
         position: fixed !important;
-        top: clamp(0.5rem, 1.5vh, 1rem) !important;
+        top: clamp(0.75rem, 2vh, 1.5rem) !important;
         right: clamp(0.5rem, 2vw, 1rem) !important;
         left: auto !important;
-        max-width: 45vw !important;
+        max-width: 40vw !important;
         z-index: 1000 !important;
       }
       
@@ -5971,7 +5958,7 @@
       #browse-all-tours-btn,
       .browse-all-tours-btn-questions {
         position: fixed !important;
-        top: clamp(3rem, 6vh, 4rem) !important;
+        top: clamp(4rem, 8vh, 5.5rem) !important;
         right: clamp(0.5rem, 2vw, 1rem) !important;
         font-size: clamp(0.7rem, 2.8vw, 0.9rem) !important;
         padding: clamp(0.4rem, 1.2vh, 0.7rem) clamp(0.6rem, 2.5vw, 1rem) !important;
@@ -5986,11 +5973,13 @@
         flex-shrink: 0;
       }
       
-      /* Widgets - Small, Proportional, Relative Sizing */
+      /* Widgets - Small, Proportional, Relative Sizing Using Percentages */
+      .weather-widget,
       .weather-widget.collapsed {
         position: fixed !important;
-        bottom: clamp(0.5rem, 1.5vh, 1rem) !important;
-        right: clamp(0.5rem, 2vw, 1rem) !important;
+        bottom: 2% !important;
+        right: 2% !important;
+        left: auto !important;
         width: clamp(35px, 6vmin, 48px) !important;
         height: clamp(35px, 6vmin, 48px) !important;
         min-width: 35px !important;
@@ -6026,10 +6015,12 @@
         display: none !important;
       }
       
+      .chat-button,
       .chat-toggle-btn {
         position: fixed !important;
-        bottom: clamp(0.5rem, 1.5vh, 1rem) !important;
-        left: clamp(0.5rem, 2vw, 1rem) !important;
+        bottom: 2% !important;
+        left: 2% !important;
+        right: auto !important;
         width: clamp(35px, 6vmin, 48px) !important;
         height: clamp(35px, 6vmin, 48px) !important;
         min-width: 35px !important;
@@ -6043,6 +6034,14 @@
         justify-content: center !important;
         border: 2px solid rgba(255, 255, 255, 0.25) !important;
         z-index: 999 !important;
+        font-size: clamp(1.2rem, 4vmin, 1.5rem) !important;
+      }
+      
+      .chat-button img,
+      .chat-toggle-btn img {
+        width: 60% !important;
+        height: 60% !important;
+        object-fit: contain !important;
       }
       
       .chat-toggle-btn i {
