@@ -6177,31 +6177,24 @@
         border-radius: calc(30 / 1920 * 100vw) !important;
         box-sizing: border-box !important;
         pointer-events: auto !important;
+        font-size: calc(400 / 1920 * 100vw) !important; /* Base = box width for em scaling */
       }
       
       .swipe-info-box h3 {
-        font-size: calc(32 / 1920 * 100vw) !important;
-        margin-bottom: calc(15 / 1920 * 100vw) !important;
+        font-size: 0.08em !important; /* 8% of box width = ~32px at desktop (400*0.08) */
+        margin-bottom: 0.0375em !important;
       }
       
       .swipe-info-box ul li {
-        font-size: calc(22 / 1920 * 100vw) !important;
-        padding: calc(8 / 1920 * 100vw) 0 !important;
-        padding-left: calc(25 / 1920 * 100vw) !important;
+        font-size: 0.055em !important; /* 5.5% of box width = ~22px at desktop (400*0.055) */
+        padding: 0.02em 0 !important;
+        padding-left: 0.0625em !important; /* 6.25% for padding */
       }
       
-      /* Action buttons - Desktop: 220px circles, ensure visibility */
-      .swipe-actions {
-        display: flex !important;
-        flex-direction: row !important;
-        gap: calc(50 / 1920 * 100vw) !important;
-        margin-top: calc(40 / 1920 * 100vw) !important;
-        margin-bottom: calc(60 / 1920 * 100vw) !important;
-        justify-content: center !important;
-        position: relative !important;
-        pointer-events: auto !important;
-      }
+      /* ========== CONTAINER-RELATIVE SCALING ========== */
+      /* Set base font-size on containers, children use em/percentages */
       
+      /* Swipe buttons - Desktop: 220px circles */
       .swipe-btn {
         width: calc(220 / 1920 * 100vw) !important;
         height: calc(220 / 1920 * 100vw) !important;
@@ -6210,14 +6203,15 @@
         min-height: calc(220 / 1920 * 100vw) !important;
         max-height: calc(220 / 1920 * 100vw) !important;
         pointer-events: auto !important;
+        font-size: calc(220 / 1920 * 100vw) !important; /* Base size = button size */
       }
       
       .swipe-btn-icon {
-        font-size: calc(72 / 1920 * 100vw) !important;
+        font-size: 0.33em !important; /* 33% of button = ~72px at desktop */
       }
       
       .swipe-btn-text {
-        font-size: calc(22 / 1920 * 100vw) !important;
+        font-size: 0.1em !important; /* 10% of button = ~22px at desktop */
       }
       
       /* Expanded details */
