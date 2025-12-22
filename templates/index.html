@@ -5902,44 +5902,46 @@
       
       /* Video question container - viewport relative */
       .video-question-container {
-        padding: 2vh 4vw;
-        max-width: 100vw;
-        min-height: 100vh;
-        box-sizing: border-box;
+        padding: 2vh 4vw !important;
+        max-width: 100vw !important;
+        min-height: 100vh !important;
+        box-sizing: border-box !important;
       }
       
       .video-question-card {
-        padding: 3vh 4vw;
-        max-width: 92vw;
-        width: 92vw;
-        margin: 0 auto;
-        box-sizing: border-box;
+        padding: 3vh 4vw !important;
+        max-width: 92vw !important;
+        width: 92vw !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
       }
       
-      .vq-card-content h1 {
+      /* Target the actual h2.vq-question element */
+      h2.vq-question,
+      #vq-question-text {
         font-size: clamp(1.2rem, 4.5vw, 1.8rem) !important;
         margin-bottom: 1.5vh !important;
         line-height: 1.2 !important;
       }
       
-      .vq-card-content p {
-        font-size: clamp(0.9rem, 3.2vw, 1.1rem) !important;
-        margin-bottom: 2vh !important;
+      /* Target the answers container */
+      .vq-answers,
+      #vq-answers {
+        gap: 1.5vh !important;
+        min-height: auto !important;
+        padding-bottom: 0 !important;
+        width: 100% !important;
       }
       
-      .vq-answers {
-        gap: 1.5vh;
-        min-height: auto;
-        padding-bottom: 0;
-        width: 100%;
-      }
-      
-      .vq-answer-btn {
+      /* Target all answer buttons */
+      .vq-answer-btn,
+      .vq-answers button,
+      #vq-answers button {
         font-size: clamp(0.95rem, 3.5vw, 1.1rem) !important;
         padding: 2vh 4vw !important;
         min-height: 6vh !important;
-        width: 100%;
-        box-sizing: border-box;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
       
       .vq-answer-btn.selected {
@@ -5953,47 +5955,48 @@
       }
       
       .vq-back-btn {
-        top: 1.5vh;
-        left: 3vw;
+        top: 1.5vh !important;
+        left: 3vw !important;
         font-size: clamp(0.85rem, 3vw, 1rem) !important;
         padding: 1.2vh 3vw !important;
-        z-index: 1000;
+        z-index: 1000 !important;
       }
       
       /* Progress indicator - compact positioning */
       .vq-progress-container {
-        top: 1.5vh;
-        right: 3vw;
-        left: auto;
-        width: auto;
-        z-index: 1000;
+        top: 1.5vh !important;
+        right: 3vw !important;
+        left: auto !important;
+        width: auto !important;
+        z-index: 1000 !important;
       }
       
       .vq-progress-text {
         font-size: clamp(0.75rem, 2.8vw, 0.9rem) !important;
-        white-space: nowrap;
+        white-space: nowrap !important;
         padding: 1vh 2.5vw !important;
       }
       
       .vq-progress-bar {
-        height: 0.4vh;
-        min-height: 3px;
+        height: 0.4vh !important;
+        min-height: 3px !important;
       }
       
       .vq-progress-fill {
-        height: 0.4vh;
-        min-height: 3px;
+        height: 0.4vh !important;
+        min-height: 3px !important;
       }
       
       /* Browse all tours button - below progress */
-      #browse-all-tours-btn {
+      #browse-all-tours-btn,
+      .browse-all-tours-btn-questions {
         top: 7vh !important;
         right: 3vw !important;
         left: auto !important;
         font-size: clamp(0.8rem, 2.8vw, 0.95rem) !important;
         padding: 1.2vh 3vw !important;
-        white-space: nowrap;
-        z-index: 1000;
+        white-space: nowrap !important;
+        z-index: 1000 !important;
       }
       
       /* Tour counter - compact */
@@ -6024,7 +6027,7 @@
         bottom: 14vh !important;
         right: 3vw !important;
         max-width: 70vw !important;
-        font-size: 0.7em;
+        font-size: 0.7em !important;
       }
       
       .chat-toggle-btn {
@@ -6041,28 +6044,28 @@
       
       /* Swipe results overlay - full viewport */
       .swipe-results-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        padding: 2vh 3vw;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        box-sizing: border-box;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 2vh 3vw !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        box-sizing: border-box !important;
       }
       
       .swipe-fixed-top {
-        position: relative;
-        width: 100%;
-        max-width: 100%;
-        padding: 0;
-        margin-bottom: 2vh;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin-bottom: 2vh !important;
       }
       
       /* Swipe card header */
       .swipe-card-header {
-        margin-bottom: 2vh;
+        margin-bottom: 2vh !important;
       }
       
       .swipe-card-header h2 {
@@ -6077,14 +6080,14 @@
       
       /* Gallery - single column, viewport relative */
       .swipe-gallery-wrapper {
-        height: auto;
-        margin-bottom: 2vh;
+        height: auto !important;
+        margin-bottom: 2vh !important;
       }
       
       .swipe-gallery-spread {
-        flex-direction: column;
-        gap: 1.5vh;
-        padding: 0;
+        flex-direction: column !important;
+        gap: 1.5vh !important;
+        padding: 0 !important;
       }
       
       .swipe-gallery-image {
@@ -6103,34 +6106,34 @@
       
       /* Gallery arrows - proportional */
       .gallery-nav-arrow {
-        width: 8vmin;
-        height: 8vmin;
-        min-width: 35px;
-        max-width: 45px;
-        min-height: 35px;
-        max-height: 45px;
-        font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+        width: 8vmin !important;
+        height: 8vmin !important;
+        min-width: 35px !important;
+        max-width: 45px !important;
+        min-height: 35px !important;
+        max-height: 45px !important;
+        font-size: clamp(1.1rem, 4.5vw, 1.4rem) !important;
       }
       
       .gallery-nav-arrow.left {
-        left: 2vw;
+        left: 2vw !important;
       }
       
       .gallery-nav-arrow.right {
-        right: 2vw;
+        right: 2vw !important;
       }
       
       /* Info sections - stack vertically */
       .swipe-info-sections {
-        flex-direction: column;
-        width: 100%;
-        gap: 1.5vh;
-        margin-bottom: 2vh;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 1.5vh !important;
+        margin-bottom: 2vh !important;
       }
       
       .swipe-info-box {
-        width: 100%;
-        padding: 2.5vh 4vw;
+        width: 100% !important;
+        padding: 2.5vh 4vw !important;
       }
       
       .swipe-info-box h3 {
@@ -6149,50 +6152,50 @@
       }
       
       .swipe-info-box ul li::before {
-        left: 0;
+        left: 0 !important;
         font-size: 1.2em !important;
       }
       
       /* Swipe actions - always visible at bottom */
       .swipe-actions {
-        position: relative;
-        width: 100%;
-        flex-direction: row;
-        gap: 3vw;
-        margin-top: 2vh;
-        padding: 0;
+        position: relative !important;
+        width: 100% !important;
+        flex-direction: row !important;
+        gap: 3vw !important;
+        margin-top: 2vh !important;
+        padding: 0 !important;
       }
       
       .swipe-btn {
         font-size: clamp(0.95rem, 3.8vw, 1.15rem) !important;
         padding: 2.2vh 4vw !important;
-        flex: 1;
-        min-height: 6vh;
+        flex: 1 !important;
+        min-height: 6vh !important;
       }
       
       .swipe-btn-reject,
       .swipe-btn-accept {
-        width: auto;
-        height: auto;
-        border-radius: 50px;
+        width: auto !important;
+        height: auto !important;
+        border-radius: 50px !important;
       }
       
       /* Scrollable content */
       .swipe-scrollable-content {
-        width: 100%;
-        max-width: 100%;
-        padding: 2vh 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 2vh 0 !important;
       }
       
       /* Expanded details */
       .swipe-expanded-details {
-        grid-template-columns: 1fr;
-        gap: 1.5vh;
-        padding: 2vh 0;
+        grid-template-columns: 1fr !important;
+        gap: 1.5vh !important;
+        padding: 2vh 0 !important;
       }
       
       .swipe-detail-section {
-        padding: 2.5vh 4vw;
+        padding: 2.5vh 4vw !important;
       }
       
       .swipe-detail-section h3 {
@@ -6215,14 +6218,14 @@
       
       /* Reviews grid - single column */
       .swipe-reviews-grid {
-        column-count: 1;
-        gap: 1.5vh;
+        column-count: 1 !important;
+        gap: 1.5vh !important;
       }
       
       .swipe-review-card {
-        width: 100%;
-        padding: 2vh 4vw;
-        margin-bottom: 1.5vh;
+        width: 100% !important;
+        padding: 2vh 4vw !important;
+        margin-bottom: 1.5vh !important;
       }
       
       .swipe-review-card strong {
@@ -6235,8 +6238,8 @@
       
       /* Skip to list button */
       .skip-to-list-btn {
-        top: 2vh;
-        right: 3vw;
+        top: 2vh !important;
+        right: 3vw !important;
         font-size: clamp(0.85rem, 3.2vw, 1rem) !important;
         padding: 1.2vh 3vw !important;
       }
@@ -6244,7 +6247,8 @@
     
     /* Extra small phones - further scale down */
     @media (max-width: 390px) {
-      .vq-card-content h1 {
+      h2.vq-question,
+      #vq-question-text {
         font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
       }
       
@@ -6252,7 +6256,9 @@
         font-size: clamp(1.1rem, 5vw, 1.4rem) !important;
       }
       
-      .vq-answer-btn {
+      .vq-answer-btn,
+      .vq-answers button,
+      #vq-answers button {
         font-size: clamp(0.9rem, 3.8vw, 1.05rem) !important;
         padding: 1.8vh 4vw !important;
       }
@@ -6269,7 +6275,7 @@
 </head>
 <body>
   <!-- Version indicator for cache verification -->
-  <div class="version-indicator">v-scaled-relative</div>
+  <div class="version-indicator">v-target-actual-elements</div>
   
   <div id="main-layout">
     <!-- Mobile Hamburger Menu (Mobile Only) -->
