@@ -5821,19 +5821,18 @@
        =================================================================== */
     
     @media (max-width: 768px) {
+      /* ONLY APPLY TO VIDEO QUESTIONNAIRE AND SWIPE INTERFACE - NOT TOUR DETAIL */
+      
       /* Hide version indicator */
       .version-indicator {
         display: none !important;
       }
       
-      /* Body - prevent overflow */
-      body {
+      /* Body - prevent overflow ONLY when in video flow */
+      body.video-bg-active {
         overflow-x: hidden;
         width: 100%;
         max-width: 100%;
-      }
-      
-      body.video-bg-active {
         overflow-y: auto;
       }
       
@@ -5923,6 +5922,8 @@
         text-align: center !important;
         line-height: 1.3 !important;
         flex-shrink: 0;
+        border: 3px solid transparent !important;
+        outline: none !important;
       }
       
       .vq-continue-btn {
@@ -5933,8 +5934,8 @@
       /* UI Controls - Compact Positioning */
       .vq-back-btn {
         position: fixed !important;
-        top: clamp(0.5rem, 1.5vh, 1rem) !important;
-        left: clamp(0.5rem, 2vw, 1rem) !important;
+        top: 10% !important;
+        left: 2% !important;
         font-size: clamp(0.75rem, 3.2vw, 0.9rem) !important;
         padding: clamp(0.4rem, 1.2vh, 0.7rem) clamp(0.6rem, 2.5vw, 1rem) !important;
         z-index: 1000 !important;
@@ -5942,8 +5943,8 @@
       
       .vq-progress-container {
         position: fixed !important;
-        top: clamp(0.75rem, 2vh, 1.5rem) !important;
-        right: clamp(0.5rem, 2vw, 1rem) !important;
+        top: 10% !important;
+        right: 2% !important;
         left: auto !important;
         max-width: 40vw !important;
         z-index: 1000 !important;
@@ -5958,8 +5959,8 @@
       #browse-all-tours-btn,
       .browse-all-tours-btn-questions {
         position: fixed !important;
-        top: clamp(4rem, 8vh, 5.5rem) !important;
-        right: clamp(0.5rem, 2vw, 1rem) !important;
+        top: 2% !important;
+        right: 2% !important;
         font-size: clamp(0.7rem, 2.8vw, 0.9rem) !important;
         padding: clamp(0.4rem, 1.2vh, 0.7rem) clamp(0.6rem, 2.5vw, 1rem) !important;
         z-index: 1000 !important;
@@ -6035,12 +6036,17 @@
         border: 2px solid rgba(255, 255, 255, 0.25) !important;
         z-index: 999 !important;
         font-size: clamp(1.2rem, 4vmin, 1.5rem) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        overflow: hidden !important;
       }
       
       .chat-button img,
       .chat-toggle-btn img {
-        width: 60% !important;
-        height: 60% !important;
+        width: 50% !important;
+        height: 50% !important;
         object-fit: contain !important;
       }
       
