@@ -436,89 +436,122 @@ def index():
     return render_template('index.html', tours=initial_tours, shown_keys=shown_keys, current_language=language)
 
 @app.route('/api/tours')
-def get_tours():
-    """API endpoint to get filtered tours based on query parameters"""
+def api_tours():
+    """API endpoint to fetch filtered tours for video question flow"""
     language = request.args.get('lang', 'en')
-    
-    # Load all tours
-    tours = load_all_tours(language)
     
     # Get filter parameters
     duration = request.args.get('duration', '')
     family_friendly = request.args.get('family_friendly', '')
-    activities = request.args.getlist('activities')  # Can have multiple
+    activities = request.args.getlist('activities')
     
-    print(f"[API] /api/tours called with filters:")
-    print(f"   - duration: {duration}")
-    print(f"   - family_friendly: {family_friendly}")
-    print(f"   - activities: {activities}")
-    print(f"   - Total tours before filtering: {len(tours)}")
+    print(f"[API] ========== TOUR FILTERING ==========")
+    print(f"[API] Duration filter: '{duration}'")
+    print(f"[API] Family friendly filter: '{family_friendly}'")
+    print(f"[API] Activities filter: {activities}")
     
-    # Apply filters
-    filtered_tours = tours
+    # Load all tours
+    tours = load_all_tours(language)
+    print(f"[API] Total tours loaded: {len(tours)}")
     
-    # Filter by duration
-    if duration and duration != '':
-        filtered_tours = [t for t in filtered_tours if t.get('duration_category') == duration]
-        print(f"   - After duration filter: {len(filtered_tours)} tours")
+    filtered_tours = []
+    duration_filtered = 0
+    family_filtered = 0
+    activities_filtered = 0
     
-    # Filter by family friendly
-    if family_friendly and family_friendly != '':
-        is_family = family_friendly.lower() == 'true'
-        filtered_tours = [t for t in filtered_tours if t.get('family_friendly') == is_family]
-        print(f"   - After family_friendly filter: {len(filtered_tours)} tours")
-    
-    # Filter by activities (tour must have at least one matching activity)
-    if activities and len(activities) > 0 and activities[0] != '':
-        def tour_matches_activities(tour):
-            tour_activities = tour.get('activity_type', [])
-            if not isinstance(tour_activities, list):
-                tour_activities = [tour_activities] if tour_activities else []
-            # Tour matches if it has ANY of the requested activities
-            return any(act in tour_activities for act in activities if act)
+    for tour in tours:
+        # Duration filter
+        if duration:
+            tour_duration = tour.get('duration_category', '').lower()
+            if duration == 'half_day' and tour_duration not in ['half_day', 'half day']:
+                duration_filtered += 1
+                continue
+            elif duration == 'full_day' and tour_duration not in ['full_day', 'full day']:
+                duration_filtered += 1
+                continue
+            elif duration == 'multi_day' and tour_duration not in ['multi_day', 'multi day', 'multiday']:
+                duration_filtered += 1
+                continue
         
-        filtered_tours = [t for t in filtered_tours if tour_matches_activities(t)]
-        print(f"   - After activities filter: {len(filtered_tours)} tours")
+        # Family friendly filter
+        # Only filter if "Family with Kids" is selected (true)
+        # "Adults Only" (adults_only) doesn't filter anything
+        if family_friendly and family_friendly == 'true':
+            is_family = str(tour.get('family_friendly', '')).lower() in ['true', 'yes', '1']
+            if not is_family:
+                family_filtered += 1
+                continue
+        
+        # Activities filter - more lenient matching with expanded keywords
+        if activities and len(activities) > 0:
+            tour_activities = tour.get('activities', '').lower()
+            tour_keywords = tour.get('keywords', '').lower()
+            tour_name = tour.get('name', '').lower()
+            tour_description = tour.get('description', '').lower()
+            
+            # Combine all searchable fields
+            searchable_text = f"{tour_activities} {tour_keywords} {tour_name} {tour_description}"
+            
+            has_match = False
+            for activity in activities:
+                if not activity:
+                    continue
+                    
+                # Convert underscore to space for matching
+                activity_search = activity.lower().replace('_', ' ')
+                
+                # Expanded keywords for swimming category
+                if activity == 'swimming':
+                    swimming_keywords = [
+                        'swimming', 'swim', 'snorkeling', 'snorkel', 'diving', 'dive', 
+                        'scuba', 'freedive', 'underwater', 'water activities', 
+                        'overnight sailing', 'liveaboard', 'sea', 'ocean', 'reef',
+                        'marine', 'coral', 'beach', 'lagoon', 'bay', 'sailing overnight'
+                    ]
+                    if any(keyword in searchable_text for keyword in swimming_keywords):
+                        has_match = True
+                        break
+                
+                # Try various matching strategies for other activities
+                if (activity_search in searchable_text or
+                    activity.replace('_', '') in searchable_text or
+                    any(word in searchable_text for word in activity_search.split())):
+                    has_match = True
+                    break
+            
+            if not has_match:
+                activities_filtered += 1
+                continue
+        
+        filtered_tours.append(tour)
     
-    print(f"[SUCCESS] Returning {len(filtered_tours)} filtered tours")
+    print(f"[API] ========== FILTERING RESULTS ==========")
+    print(f"[API] Filtered by duration: {duration_filtered}")
+    print(f"[API] Filtered by family: {family_filtered}")
+    print(f"[API] Filtered by activities: {activities_filtered}")
+    print(f"[API] Final matching tours: {len(filtered_tours)}")
+    print(f"[API] ========================================")
     
-    # Format tours for frontend (include necessary fields)
-    formatted_tours = []
+    # Add gallery, includes, and company_name to each tour
+    result_tours = []
     for tour in filtered_tours:
-        formatted_tours.append({
-            'id': tour.get('key'),
-            'name': tour.get('name'),
-            'company': tour.get('company_name'),
-            'thumbnail_url': tour.get('thumbnail'),
-            'image': tour.get('thumbnail'),
-            'price_display': format_price_display(tour),
-            'price_from': tour.get('price_adult', ''),
-            'duration': format_duration_display(tour.get('duration', '')),
-            'family_friendly': tour.get('family_friendly', False),
+        tour_data = {
+            'key': tour['key'],
+            'name': tour['name'],
+            'company': tour.get('company', ''),
+            'company_name': tour.get('company_name', tour.get('company', '')),
+            'image': tour.get('image', ''),
+            'thumbnail_url': tour.get('thumbnail_url', ''),
+            'duration': tour.get('duration', ''),
+            'price': tour.get('price', 0),
+            'rating': tour.get('rating', 0),
+            'includes': tour.get('includes', ''),
             'highlights': tour.get('highlights', ''),
-            'key': tour.get('key')
-        })
+            'gallery': tour.get('gallery', [])
+        }
+        result_tours.append(tour_data)
     
-    return jsonify({'tours': formatted_tours})
-
-def format_price_display(tour):
-    """Format price for display"""
-    price_adult = tour.get('price_adult', '')
-    if price_adult and price_adult != 'N/A':
-        try:
-            # Extract numeric price
-            price_num = ''.join(filter(lambda x: x.isdigit() or x == '.', price_adult))
-            if price_num:
-                return f"From ${float(price_num):.0f}"
-        except:
-            pass
-    return 'Contact for pricing'
-
-def format_duration_display(duration):
-    """Format duration for display"""
-    if not duration or duration == 'N/A':
-        return ''
-    return duration
+    return jsonify({'tours': result_tours})
 
 @app.route('/tour/<key>')
 def tour_page(key):

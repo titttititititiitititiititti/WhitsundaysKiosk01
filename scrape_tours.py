@@ -26,18 +26,11 @@ import json
 
 # === Paste your tour links here ===
 TOUR_LINKS = [ 
-    "https://sailing-whitsundays.com/whitsundays/big-fury",
-    "https://www.magicwhitsundays.com/habibi-whitsundays-sailing-tour/",
-    "https://www.magicwhitsundays.com/big-fury-whitsundays/",
-    "https://oceanrafting.com.au/tours/northern-exposure/",
-    "https://oceanrafting.com.au/tours/fly-and-raft/",
-    "https://oceanrafting.com.au/tours/southern-lights/",
-    "https://oceanrafting.com.au/tours/fly-and-raft-south/",
-    "https://oceanrafting.com.au/tours/heart-reef-scenic-flight/",
-    "https://www.summertime-whitsundays.com/2day-1night-tour/",
-    "https://www.wings.com.au/airlie-beach-sunset-sail-in-style-cruise/",
-    "https://www.wings.com.au/whitsunday-islands-sail-snorkel-and-sup-tour/",
-]  
+ "https://jetskitour.com.au/tour/airlie-adventure/"
+ "https://jetskitour.com.au/tour/two-island-safari/"
+ "https://jetskitour.com.au/tour/ultimate-island-trek/" ]
+
+    
 # =================================
 
 # === Paste your tour homepages here (fallback) ===
@@ -542,12 +535,24 @@ def extract_first_price_from_html(html):
         return f"${match.group(1)}"
     return ''
 
-def fetch_html_selenium(url, wait_time=10):
+def fetch_html_selenium(url, wait_time=10, expand_accordions=True):
+    """
+    Fetch HTML with Selenium, optionally expanding all accordion/dropdown sections
+    
+    Args:
+        url: URL to fetch
+        wait_time: How long to wait for page load
+        expand_accordions: If True, automatically clicks all FAQ/accordion buttons
+    """
     options = uc.ChromeOptions()
     # options.add_argument('--headless')  # Try with and without headless
     options.add_argument('--disable-gpu')
     driver = uc.Chrome(options=options)
     driver.get(url)
+    
+    # Wait for page to load
+    time.sleep(3)
+    
     try:
         # Try to click the 'PRICES' or 'PRICES & DEPARTURES' tab/button if present
         try:
@@ -556,21 +561,98 @@ def fetch_html_selenium(url, wait_time=10):
             )
             tab.click()
             print("Clicked on 'PRICES' or 'PRICES & DEPARTURES' tab.")
+            time.sleep(2)
             WebDriverWait(driver, wait_time).until(
                 EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '$')]"))
             )
         except Exception as e:
             print("Could not click 'PRICES' or 'PRICES & DEPARTURES' tab (may not exist):", e)
-            WebDriverWait(driver, wait_time).until(
-                EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '$')]"))
-            )
+        
+        # Expand all accordions/dropdowns if requested
+        if expand_accordions:
+            print("  🔽 Expanding all accordion sections...")
+            expanded_count = 0
+            
+            # Common accordion/dropdown selectors
+            accordion_selectors = [
+                # Generic patterns
+                "button[class*='accordion']",
+                "button[class*='expand']",
+                "button[class*='toggle']",
+                "button[class*='collapse']",
+                "div[class*='accordion']",
+                "div[class*='toggle']",
+                "[role='button']",
+                "summary",  # HTML5 <details> element
+                
+                # Bootstrap accordions
+                ".accordion-toggle",
+                ".accordion-button",
+                ".collapse-toggle",
+                
+                # Common custom classes
+                ".faq-question",
+                ".faq-toggle",
+                ".dropdown-toggle",
+                ".expand-button",
+                ".show-more",
+                ".read-more",
+                
+                # Text-based matching (case insensitive)
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'inclusions')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'what to bring')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'times')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'itinerary')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'details')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'more info')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'read more')]",
+                "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'show more')]",
+            ]
+            
+            for selector in accordion_selectors:
+                try:
+                    # Determine if it's XPath or CSS selector
+                    if selector.startswith('/'):
+                        elements = driver.find_elements(By.XPATH, selector)
+                    else:
+                        elements = driver.find_elements(By.CSS_SELECTOR, selector)
+                    
+                    for element in elements:
+                        try:
+                            # Check if element is visible and clickable
+                            if element.is_displayed() and element.is_enabled():
+                                # Scroll into view
+                                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+                                time.sleep(0.3)
+                                
+                                # Try to click
+                                element.click()
+                                expanded_count += 1
+                                time.sleep(0.5)  # Wait for content to expand
+                        except Exception:
+                            # Element not clickable or already expanded
+                            continue
+                except Exception:
+                    # Selector didn't match anything
+                    continue
+            
+            print(f"  ✓ Expanded {expanded_count} accordion sections")
+            
+            # Give the page time to fully render expanded content
+            time.sleep(2)
+        
     except Exception as e:
-        print("Timeout or error during Selenium interaction:", e)
+        print(f"  ⚠️ Error during page interaction: {e}")
+    
+    # Get the final HTML
     html = driver.page_source
     driver.quit()
+    
+    # Save for debugging
     with open('selenium_debug.html', 'w', encoding='utf-8') as f:
         f.write(html)
     print("Saved Selenium HTML to selenium_debug.html")
+    
     return html
 
 def main():

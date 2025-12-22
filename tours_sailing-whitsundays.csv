@@ -1,5 +1,5 @@
 id,name,company_name,summary,description,duration,departure_location,departure_times,price_adult,price_child,includes,highlights,keywords,duration_hours,link_booking,link_more_info,phone,image_url,image_urls,commission_rate,active,price_source_url,price_tiers,raw_text,raw_html
-438fc8538dbf1397,Deals,sailing-whitsundays,,,24 Hours,,"10:00 am, 5:00 pm",$209.00,,,,,,https://sailing-whitsundays.com/whitsundays/big-fury,https://sailing-whitsundays.com/whitsundays/big-fury,,,,,TRUE,https://sailing-whitsundays.com/whitsundays/big-fury,,"=== TOUR START: Deals ===
+438fc8538dbf1397,Deals,sailing-whitsundays,,,24 Hours,,"10:00 am, 5:00 pm",$219.00,,,,,,https://sailing-whitsundays.com/whitsundays/big-fury,https://sailing-whitsundays.com/whitsundays/big-fury,,,,,TRUE,https://sailing-whitsundays.com/whitsundays/big-fury,,"=== TOUR START: Deals ===
 Google Tag Manager (noscript)
 End Google Tag Manager (noscript)
 $(document).ready(function() {
@@ -82,20 +82,20 @@ Free Cancellations - Up To 24 Hours Before Departure
                          - Daily
 5:00 pm                         - Daily
 : Coral Sea Marina, Airlie Beach
-$209                                    AUD /
+$219                                    AUD /
 
 
                                                                         Person
-(Between: 15 Apr 2025 and 31 Mar 2026)
-$175                                    AUD /
-
-
-                                                                        Person
-- Child (3-14 Years)
+(Between: 01 Dec 2025 and 01 Dec 2026)
 $180                                    AUD /
 
 
                                                                         Person
+- Child (3-14 Years)
+$750                                    AUD /
+
+
+                                                                        Family
 Fast & Fun Vessel
 Friendly & Informative Crew
 Explore the Whitsundays in
@@ -884,22 +884,21 @@ $(document).ready(function() {
         $('.fu-view-all-thumbs-btn').trigger('click');
 
     });
-$209
-RRP $220
-$209                                    AUD /
+$219
+RRP $230
+$219                                    AUD /
 
 
                                                                         Person
-$175                                    AUD /
-
-
-                                                                        Person
-RRP $197.5
 $180                                    AUD /
 
 
                                                                         Person
-- Family (2A + 2C)                                                                    ($720 Total)
+RRP $810
+$750                                    AUD /
+
+
+                                                                        Family
 function starDisplaySuggested(starsID, rating) {
                                     let starPercentage = (rating / 5) * 100;
                                     let starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
@@ -916,17 +915,17 @@ function starDisplaySuggested(starsID, rating) {
                                     $('#' + starsID).css(""width"", starPercentageRounded);
                                 }
 
-                                starDisplaySuggested(""starsProd1"", 4.80);
-$199
+                                starDisplaySuggested(""starsProd1"", 4.82);
+$205
 NOW
-                                                    $195
+                                                    $201
 function starDisplaySuggested(starsID, rating) {
                                     let starPercentage = (rating / 5) * 100;
                                     let starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
                                     $('#' + starsID).css(""width"", starPercentageRounded);
                                 }
 
-                                starDisplaySuggested(""starsProd2"", 4.85);
+                                starDisplaySuggested(""starsProd2"", 4.86);
 $230
 NOW
                                                     $219
@@ -945,7 +944,7 @@ function starDisplaySuggested(starsID, rating) {
                                     $('#' + starsID).css(""width"", starPercentageRounded);
                                 }
 
-                                starDisplaySuggested(""starsProd4"", 4.94);
+                                starDisplaySuggested(""starsProd4"", 4.93);
 $249
 NOW
                                                     $239
@@ -956,17 +955,24 @@ function starDisplaySuggested(starsID, rating) {
                                 }
 
                                 starDisplaySuggested(""starsProd5"", 4.90);
-$319
+$329
 NOW
-                                                    $309
+                                                    $319
 let start = 0;
                         const limit = 4;
                         const productid = parseInt(1049);
                         let selectedStar = 0;
                         let selectedSorting = 'recommended';
 
+                        // document.querySelectorAll('video').forEach(v => {
+                        //     v.autoplay = true;
+                        //     v.play().catch(() => {
+                        //     });
+                        // });
+
                         $(document).ready(function () {
                             // Initial load
+
                             getReviews();
                         });
 
@@ -1259,185 +1265,181 @@ function onSubmitRhsForm(token) {
         }
     });
 var siteUrl = 'https://sailing-whitsundays.com/';
-    var depdate = '';
-    var currentDate = '';
-    var isQuantityEntered = false;
-    var hasLiveAvailWithBooking = false;
+        var depdate = '';
+        var currentDate = '';
+        var isQuantityEntered = false;
+        var hasLiveAvailWithBooking = false;
 
-    function enableSubmit(manifest) {
+        function enableSubmit(manifest) {
 
-        return new Promise(function(resolve, reject) {
-            var x = false;
-            if (!manifest) {
-                manifest = [];
-            } else {
-                x = true;
-            }
+            return new Promise(function (resolve, reject) {
+                var x = false;
+                if (!manifest) {
+                    manifest = [];
+                } else {
+                    x = true;
+                }
 
 
-            var avail = manifest['Availability'];
-            var opis = [];
-            if (manifest['Availability'] && manifest['Availability']['options']) {
-                opis = manifest['Availability']['options'];
-            }
+                var avail = manifest['Availability'];
+                var opis = [];
+                if (manifest['Availability'] && manifest['Availability']['options']) {
+                    opis = manifest['Availability']['options'];
+                }
 
-            var typeofaction = $(""#pricingform"").attr(""do_action"");
-            depdate = $('#depdate').val();
+                var typeofaction = $(""#pricingform"").attr(""do_action"");
+                depdate = $('#depdate').val();
 
-            // Load the pricing depending on the date selected
-            $('#view_pricing').html('<div class=\""loaderblack\""></div>');
-            $(""#btn_CheckAvailability"").addClass('booking-hide-button');
-            $('#btn_BookNow').addClass('booking-hide-button');
-            // which button was clicked
-            let button = $(document.activeElement).attr('id');
+                // Load the pricing depending on the date selected
+                $('#view_pricing').html('<div class=\""loaderblack\""></div>');
+                $(""#btn_CheckAvailability"").addClass('booking-hide-button');
+                $('#btn_BookNow').addClass('booking-hide-button');
+                // which button was clicked
+                let button = $(document.activeElement).attr('id');
 
-            var request = $.ajax({
-                url: siteUrl + 'product/get-price/',
-                type: ""post"",
-                data: {
-                    date: depdate,
-                    id: '1049',
-                    manifest: JSON.stringify(manifest)
-                },
-                timeout: 5000
-            });
+                var request = $.ajax({
+                    url: siteUrl + 'product/get-price/',
+                    type: ""post"",
+                    data: {
+                        date: depdate,
+                        id: '1049',
+                        manifest: JSON.stringify(manifest)
+                    },
+                    timeout: 5000
+                });
 
-            request.done(function(response) {
+                request.done(function (response) {
 
-                if (response) {
-                    console.log('running response');
-                    if ($('#depdate').val() == '' && $("".booking-title-gift"").hasClass(""booking-hide-button"")) {
-                        $('#view_pricing').html(""<div class='select-date-please'><p>Please select a Date of Travel above to view product options.</p></div>"");
-                    } else {
-                        $('#view_pricing').html(response)
-                    }
-                    //CHECKING ACTION BASED ON INITIAL BUTTON CLICK ON PREVIOUS SCREEN
-                    if (x !== true && typeofaction == 'check') {
-                        $('.availNote').css(""display"", ""inline-block"");
+                    if (response) {
+                        if ($('#depdate').val() == '' && $("".booking-title-gift"").hasClass(""booking-hide-button"")) {
+                            $('#view_pricing').html(""<div class='select-date-please'><p>Please select a Date of Travel above to view product options.</p></div>"");
+                        } else {
+                            $('#view_pricing').html(response)
+                        }
+                        //CHECKING ACTION BASED ON INITIAL BUTTON CLICK ON PREVIOUS SCREEN
+                        if (x !== true && typeofaction == 'check') {
+                            $('.availNote').css(""display"", ""inline-block"");
 
-                        hasLiveAvailWithBooking = true;
-                        $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
-                        $(""#btn_BookNow"").addClass('booking-hide-button');
+                            hasLiveAvailWithBooking = true;
+                            $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
+                            $(""#btn_BookNow"").addClass('booking-hide-button');
 
-                    } else if (x !== true && typeofaction == 'booking') {
-                                                    hasLiveAvailWithBooking = true;
+                        } else if (x !== true && typeofaction == 'booking') {
+                                                        hasLiveAvailWithBooking = true;
                             $('.availNote').css(""display"", ""inline-block"");
                             //   $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
                             $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
                             $(""#btn_BookNow"").addClass('booking-hide-button');
                             $(""#btn_BookGiftcard"").addClass('booking-hide-button');
 
-                                            } else if (x !== true && typeofaction == 'giftcard') {
-                        hasLiveAvailWithBooking = false;
-                        $(""#btn_CheckAvailability"").addClass('booking-hide-button');
-                        $(""#btn_BookNow"").addClass('booking-hide-button');
-                        $(""#btn_BookGiftcard"").removeClass('booking-hide-button');
-                        $(""#view_pricing"").removeClass('booking-hide-button');
-                    }
+                                                    } else if (x !== true && typeofaction == 'giftcard') {
+                            hasLiveAvailWithBooking = false;
+                            $(""#btn_CheckAvailability"").addClass('booking-hide-button');
+                            $(""#btn_BookNow"").addClass('booking-hide-button');
+                            $(""#btn_BookGiftcard"").removeClass('booking-hide-button');
+                            $(""#view_pricing"").removeClass('booking-hide-button');
+                        }
 
-                    resolve(true);
+                        resolve(true);
 
-                } else {
+                    } else {
 
-                    if (x !== true && typeofaction == 'check') {
-                        hasLiveAvailWithBooking = true;
-                        $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
-                        //   $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
-                        $(""#btn_BookNow"").addClass('booking-hide-button');
+                        if (x !== true && typeofaction == 'check') {
+                            hasLiveAvailWithBooking = true;
+                            $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
+                            //   $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
+                            $(""#btn_BookNow"").addClass('booking-hide-button');
 
-                    }
+                        }
 
-                    if (x !== true && typeofaction == 'booking') {
-                        hasLiveAvailWithBooking = false;
+                        if (x !== true && typeofaction == 'booking') {
+                            hasLiveAvailWithBooking = false;
 
-                                                    $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
+                                                        $(""#btn_CheckAvailability"").removeClass('booking-hide-button');
 
                             //   $(""#btn_CheckAvailability"").addClass('booking-hide-button').removeClass('disabled');
                             $(""#btn_BookNow"").addClass('booking-hide-button');
 
-                        
+                            
+                        }
+                        reject('failed')
                     }
-                    reject('failed')
-                }
 
-                //IF THERE IS NO QUANTITIES WE NEVER WANT TO ENABLE THE CHECK AVAIL BUTTON
-                isQuantityEntered = checkBookingQty(hasLiveAvailWithBooking);
-                $('.priceReview').addClass('booking-hide-button');
+                    //IF THERE IS NO QUANTITIES WE NEVER WANT TO ENABLE THE CHECK AVAIL BUTTON
+                    isQuantityEntered = checkBookingQty(hasLiveAvailWithBooking);
+                    $('.priceReview').addClass('booking-hide-button');
 
-                if (!isQuantityEntered) {
-                    console.log('qty entered');
-                    $(""#btn_CheckAvailability"").removeClass('disabled');
-                    $(""#btn_BookNow"").removeClass('disabled');
-                    $(""#btn_BookGiftcard"").removeClass('disabled');
-                    $(""#btn_BookNow"").addClass('booking-hide-button');
-                } else {
-                    console.log('qty not entered');
-                    $(""#btn_CheckAvailability"").addClass('disabled');
-                    $(""#btn_BookNow"").addClass('disabled');
-                    $(""#btn_BookGiftcard"").addClass('disabled');
-                }
+                    if (!isQuantityEntered) {
+                        $(""#btn_CheckAvailability"").removeClass('disabled');
+                        $(""#btn_BookNow"").removeClass('disabled');
+                        $(""#btn_BookGiftcard"").removeClass('disabled');
+                        $(""#btn_BookNow"").addClass('booking-hide-button');
+                    } else {
+                        $(""#btn_CheckAvailability"").addClass('disabled');
+                        $(""#btn_BookNow"").addClass('disabled');
+                        $(""#btn_BookGiftcard"").addClass('disabled');
+                    }
 
 
+                    if (avail && avail['pax_avail'] && parseInt(avail['pax_avail']) > 0) {
+                        $(""#btn_BookNow"").removeClass('booking-hide-button');
+                    }
 
-                if (avail && avail['pax_avail'] && parseInt(avail['pax_avail']) > 0) {
-                    $(""#btn_BookNow"").removeClass('booking-hide-button');
-                }
+                });
 
-            });
+                request.fail(function (response) {
+                    if (x !== true && typeofaction == 'check') {
+                        $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
+                        $(""#btn_BookNow"").addClass('booking-hide-button');
 
-            request.fail(function(response) {
-                if (x !== true && typeofaction == 'check') {
-                    $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
-                    $(""#btn_BookNow"").addClass('booking-hide-button');
+                    } else if (x !== true && typeofaction == 'booking') {
 
-                } else if (x !== true && typeofaction == 'booking') {
-
-                    
+                        
                         $(""#btn_CheckAvailability"").addClass('booking-hide-button').removeClass('disabled');
                         $(""#btn_BookNow"").addClass('booking-hide-button').addClass('disabled');
 
-                                    }
-                reject(response.statusText)
-            });
+                                            }
+                    reject(response.statusText)
+                });
 
-        })
+            })
 
-    }
-
-
-    // function called when check/giftcard/book button clicked 
-    function navigate(action) {
-
-
-        if (action == 'check') {
-            var button = 'btn_CheckAvailability';
-        } else if (action == 'giftcard') {
-            var button = 'btn_giftCard';
         }
 
-        // oliver intercept
-        var liveAvail = $('#liveAvail').val();
-        var ack = $('#ack:checked').val();
 
-        if (button == 'btn_CheckAvailability') {
-            $(""#pricingform"").attr(""action"", siteUrl + ""availability/check"");
-        } else {
-            //$(""#pricingform"").attr(""action"", siteUrl + ""booking/create"");
-        }
-        if (button == 'btn_giftCard') {
-            $(""#pricingform"").attr(""action"", siteUrl + ""booking/createGiftCard"");
-            $(""#btn_BookNow"").addClass(""booking-hide-button"");
-            $("".booking-title-book"").addClass(""booking-hide-button"");
-            $(""#btn_CheckAvailability"").addClass(""booking-hide-button"");
-            $("".booking-title-check"").addClass(""booking-hide-button"");
-            $("".booking-title-book"").addClass(""booking-hide-button"");
-            $("".travel-on"").addClass(""booking-hide-button"");
-            $("".booking-title-gift"").removeClass(""booking-hide-button"");
-            $(""#btn_BookGiftcard"").removeClass(""booking-hide-button"");
+        // function called when check/giftcard/book button clicked
+        function navigate(action) {
 
-        } else {
 
-            
+            if (action == 'check') {
+                var button = 'btn_CheckAvailability';
+            } else if (action == 'giftcard') {
+                var button = 'btn_giftCard';
+            }
+
+            // oliver intercept
+            var liveAvail = $('#liveAvail').val();
+            var ack = $('#ack:checked').val();
+
+            if (button == 'btn_CheckAvailability') {
+                $(""#pricingform"").attr(""action"", siteUrl + ""availability/check"");
+            } else {
+                //$(""#pricingform"").attr(""action"", siteUrl + ""booking/create"");
+            }
+            if (button == 'btn_giftCard') {
+                $(""#pricingform"").attr(""action"", siteUrl + ""booking/createGiftCard"");
+                $(""#btn_BookNow"").addClass(""booking-hide-button"");
+                $("".booking-title-book"").addClass(""booking-hide-button"");
+                $(""#btn_CheckAvailability"").addClass(""booking-hide-button"");
+                $("".booking-title-check"").addClass(""booking-hide-button"");
+                $("".booking-title-book"").addClass(""booking-hide-button"");
+                $("".travel-on"").addClass(""booking-hide-button"");
+                $("".booking-title-gift"").removeClass(""booking-hide-button"");
+                $(""#btn_BookGiftcard"").removeClass(""booking-hide-button"");
+
+            } else {
+
+                
                 if (button == 'btn_CheckAvailability') {
                     $(""#pricingform"").attr(""data-button"", button)
                 } else {
@@ -1448,88 +1450,86 @@ var siteUrl = 'https://sailing-whitsundays.com/';
                 $(""#btn_BookNow"").addClass(""disabled"");
                 $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
 
-                    }
+                            }
 
-        $(""#pricingform"").submit();
-    }
-
-    //FUNCTION RUNNING EVERY TIME A QUANTITY IS CHANGED 
-    function checkBookingQty(e) {
-
-        $('#resulttext').html('');
-        $('.isAvailableLabel').addClass('booking-hide-button');
-        var isNull = true;
-        var counter = 0;
-        //HIDE THE BOOK BUTTON BECAUSE WE HAVE CHANGED QUANTITIES AND NEED TO RECHECK
-        if (hasLiveAvailWithBooking) {
-            $('#btn_BookNow').addClass('booking-hide-button');
-            $('#btn_CheckAvailability').removeClass('booking-hide-button');
+            $(""#pricingform"").submit();
         }
-                    $('.availNote').removeClass('booking-hide-button');
-                $('.priceReview').addClass('booking-hide-button');
 
+        //FUNCTION RUNNING EVERY TIME A QUANTITY IS CHANGED
+        function checkBookingQty(e) {
 
-        document.getElementById(""results_row"").innerHTML = '';
-        document.getElementById(""bookingTickets"").innerHTML = '';
-
-        //SETUP THE GIFTCARD SCREEN AND REVIEW BOX WITH QUANTITIES
-        $('.item-booking-qty').each(function() {
-            var no = parseInt($(this).val());
-            if (!isNaN(no) && no > 0) {
-                isNull = false;
-                //add the divs to the modal
-                var checkout_qty_node = document.createElement(""h3"");
-                var review_qty_node = document.createElement(""p"");
-
-                checkout_qty_node.className = ""checkout_qty"";
-                review_qty_node.className = ""review_qty"";
-
-                var textnodeCheckout = document.createTextNode(parseInt($(this).val()) + ' x ' + $('#product' + counter).val());
-                var textnodeReview = document.createTextNode(parseInt($(this).val()) + ' x ' + $('#product' + counter).val() + "" @ $"" + $('#sell' + counter).val() + ' Per ' + $('#priceType' + counter).val());
-
-                checkout_qty_node.appendChild(textnodeCheckout);
-                review_qty_node.appendChild(textnodeReview);
-
-                document.getElementById(""results_row"").appendChild(checkout_qty_node);
-                document.getElementById(""bookingTickets"").appendChild(review_qty_node);
+            $('#resulttext').html('');
+            $('.isAvailableLabel').addClass('booking-hide-button');
+            var isNull = true;
+            var counter = 0;
+            //HIDE THE BOOK BUTTON BECAUSE WE HAVE CHANGED QUANTITIES AND NEED TO RECHECK
+            if (hasLiveAvailWithBooking) {
+                $('#btn_BookNow').addClass('booking-hide-button');
+                $('#btn_CheckAvailability').removeClass('booking-hide-button');
             }
-            counter++;
+                        $('.availNote').removeClass('booking-hide-button');
+                        $('.priceReview').addClass('booking-hide-button');
 
-        });
 
-        if ($('#depdate').val() == '' && $("".booking-title-gift"").hasClass(""booking-hide-button"")) {
-            isNull = true;
+            document.getElementById(""results_row"").innerHTML = '';
+            document.getElementById(""bookingTickets"").innerHTML = '';
+
+            //SETUP THE GIFTCARD SCREEN AND REVIEW BOX WITH QUANTITIES
+            $('.item-booking-qty').each(function () {
+                var no = parseInt($(this).val());
+                if (!isNaN(no) && no > 0) {
+                    isNull = false;
+                    //add the divs to the modal
+                    var checkout_qty_node = document.createElement(""h3"");
+                    var review_qty_node = document.createElement(""p"");
+
+                    checkout_qty_node.className = ""checkout_qty"";
+                    review_qty_node.className = ""review_qty"";
+
+                    var textnodeCheckout = document.createTextNode(parseInt($(this).val()) + ' x ' + $('#product' + counter).val());
+                    var textnodeReview = document.createTextNode(parseInt($(this).val()) + ' x ' + $('#product' + counter).val() + "" @ $"" + $('#sell' + counter).val() + ' Per ' + $('#priceType' + counter).val());
+
+                    checkout_qty_node.appendChild(textnodeCheckout);
+                    review_qty_node.appendChild(textnodeReview);
+
+                    document.getElementById(""results_row"").appendChild(checkout_qty_node);
+                    document.getElementById(""bookingTickets"").appendChild(review_qty_node);
+                }
+                counter++;
+
+            });
+
+            if ($('#depdate').val() == '' && $("".booking-title-gift"").hasClass(""booking-hide-button"")) {
+                isNull = true;
+            }
+
+            if (isNull) {
+                $('#btn_CheckAvailability, #btn_BookNow, #btn_BookGiftcard').addClass('disabled');
+            } else {
+                $('#btn_CheckAvailability, #btn_BookNow, #btn_BookGiftcard').removeClass('disabled');
+            }
+            return isNull;
         }
 
-        if (isNull) {
-            $('#btn_CheckAvailability, #btn_BookNow, #btn_BookGiftcard').addClass('disabled');
-        } else {
-            $('#btn_CheckAvailability, #btn_BookNow, #btn_BookGiftcard').removeClass('disabled');
-        }
-        return isNull;
-    }
+
+        $(document).ready(function () {
 
 
-    $(document).ready(function() {
+            $('#btn_CheckAvailability').on('click', function (event) {
+                navigate('check');
+            });
+
+            $('#btn_BookNow').on('click', function (event) {
+                navigate('booknow');
+            });
+
+            $('#btn_BookGiftcard_Checkout').on('click', function (event) {
+                navigate('giftcard');
+            });
 
 
-
-        $('#btn_CheckAvailability').on('click', function(event) {
-            navigate('check');
-        });
-
-        $('#btn_BookNow').on('click', function(event) {
-            navigate('booknow');
-        });
-
-        $('#btn_BookGiftcard_Checkout').on('click', function(event) {
-            navigate('giftcard');
-        });
-
-
-
-        //MAIN CALENDAR FUNCTION STARTS HERE FOR PRODUCTS WITH LIVE CHECKING FROM MANIFEST
-        var productDatesArray = [{""available"":31,""starter"":""2025-10-28"",""ender"":""2025-10-28"",""operatorid"":48},{""available"":21,""starter"":""2025-10-29"",""ender"":""2025-10-29"",""operatorid"":48},{""available"":11,""starter"":""2025-10-30"",""ender"":""2025-10-30"",""operatorid"":48},{""available"":26,""starter"":""2025-10-31"",""ender"":""2025-10-31"",""operatorid"":48},{""available"":31,""starter"":""2025-11-01"",""ender"":""2025-11-01"",""operatorid"":48},{""available"":33,""starter"":""2025-11-02"",""ender"":""2025-11-02"",""operatorid"":48},{""available"":22,""starter"":""2025-11-03"",""ender"":""2025-11-03"",""operatorid"":48},{""available"":33,""starter"":""2025-11-04"",""ender"":""2025-11-04"",""operatorid"":48},{""available"":35,""starter"":""2025-11-05"",""ender"":""2025-11-05"",""operatorid"":48},{""available"":35,""starter"":""2025-11-06"",""ender"":""2025-11-06"",""operatorid"":48},{""available"":30,""starter"":""2025-11-07"",""ender"":""2025-11-07"",""operatorid"":48},{""available"":33,""starter"":""2025-11-08"",""ender"":""2025-11-08"",""operatorid"":48},{""available"":33,""starter"":""2025-11-09"",""ender"":""2025-11-09"",""operatorid"":48},{""available"":35,""starter"":""2025-11-10"",""ender"":""2025-11-10"",""operatorid"":48},{""available"":27,""starter"":""2025-11-11"",""ender"":""2025-11-11"",""operatorid"":48},{""available"":27,""starter"":""2025-11-12"",""ender"":""2025-11-12"",""operatorid"":48},{""available"":33,""starter"":""2025-11-13"",""ender"":""2025-11-13"",""operatorid"":48},{""available"":30,""starter"":""2025-11-14"",""ender"":""2025-11-14"",""operatorid"":48},{""available"":33,""starter"":""2025-11-15"",""ender"":""2025-11-15"",""operatorid"":48},{""available"":33,""starter"":""2025-11-16"",""ender"":""2025-11-16"",""operatorid"":48},{""available"":26,""starter"":""2025-11-17"",""ender"":""2025-11-17"",""operatorid"":48},{""available"":33,""starter"":""2025-11-18"",""ender"":""2025-11-18"",""operatorid"":48},{""available"":29,""starter"":""2025-11-19"",""ender"":""2025-11-19"",""operatorid"":48},{""available"":28,""starter"":""2025-11-20"",""ender"":""2025-11-20"",""operatorid"":48},{""available"":26,""starter"":""2025-11-21"",""ender"":""2025-11-21"",""operatorid"":48},{""available"":26,""starter"":""2025-11-22"",""ender"":""2025-11-22"",""operatorid"":48},{""available"":23,""starter"":""2025-11-23"",""ender"":""2025-11-23"",""operatorid"":48},{""available"":29,""starter"":""2025-11-24"",""ender"":""2025-11-24"",""operatorid"":48},{""available"":31,""starter"":""2025-11-25"",""ender"":""2025-11-25"",""operatorid"":48},{""available"":29,""starter"":""2025-11-26"",""ender"":""2025-11-26"",""operatorid"":48},{""available"":31,""starter"":""2025-11-27"",""ender"":""2025-11-27"",""operatorid"":48},{""available"":33,""starter"":""2025-11-28"",""ender"":""2025-11-28"",""operatorid"":48},{""available"":33,""starter"":""2025-11-29"",""ender"":""2025-11-29"",""operatorid"":48},{""available"":32,""starter"":""2025-11-30"",""ender"":""2025-11-30"",""operatorid"":48},{""available"":24,""starter"":""2025-12-01"",""ender"":""2025-12-01"",""operatorid"":48},{""available"":25,""starter"":""2025-12-02"",""ender"":""2025-12-02"",""operatorid"":48},{""available"":26,""starter"":""2025-12-03"",""ender"":""2025-12-03"",""operatorid"":48},{""available"":35,""starter"":""2025-12-04"",""ender"":""2025-12-04"",""operatorid"":48},{""available"":33,""starter"":""2025-12-05"",""ender"":""2025-12-05"",""operatorid"":48},{""available"":35,""starter"":""2025-12-06"",""ender"":""2025-12-06"",""operatorid"":48},{""available"":31,""starter"":""2025-12-07"",""ender"":""2025-12-07"",""operatorid"":48},{""available"":33,""starter"":""2025-12-08"",""ender"":""2025-12-08"",""operatorid"":48},{""available"":35,""starter"":""2025-12-09"",""ender"":""2025-12-09"",""operatorid"":48},{""available"":32,""starter"":""2025-12-10"",""ender"":""2025-12-10"",""operatorid"":48},{""available"":30,""starter"":""2025-12-11"",""ender"":""2025-12-11"",""operatorid"":48},{""available"":31,""starter"":""2025-12-12"",""ender"":""2025-12-12"",""operatorid"":48},{""available"":31,""starter"":""2025-12-13"",""ender"":""2025-12-13"",""operatorid"":48},{""available"":31,""starter"":""2025-12-14"",""ender"":""2025-12-14"",""operatorid"":48},{""available"":31,""starter"":""2025-12-15"",""ender"":""2025-12-15"",""operatorid"":48},{""available"":33,""starter"":""2025-12-16"",""ender"":""2025-12-16"",""operatorid"":48},{""available"":31,""starter"":""2025-12-17"",""ender"":""2025-12-17"",""operatorid"":48},{""available"":31,""starter"":""2025-12-18"",""ender"":""2025-12-18"",""operatorid"":48},{""available"":31,""starter"":""2025-12-19"",""ender"":""2025-12-19"",""operatorid"":48},{""available"":29,""starter"":""2025-12-20"",""ender"":""2025-12-20"",""operatorid"":48},{""available"":26,""starter"":""2025-12-21"",""ender"":""2025-12-21"",""operatorid"":48},{""available"":29,""starter"":""2025-12-22"",""ender"":""2025-12-22"",""operatorid"":48},{""available"":33,""starter"":""2025-12-23"",""ender"":""2025-12-23"",""operatorid"":48},{""available"":28,""starter"":""2025-12-24"",""ender"":""2025-12-24"",""operatorid"":48},{""available"":35,""starter"":""2025-12-25"",""ender"":""2025-12-25"",""operatorid"":48},{""available"":0,""starter"":""2025-12-26"",""ender"":""2025-12-26"",""operatorid"":48},{""available"":33,""starter"":""2025-12-27"",""ender"":""2025-12-27"",""operatorid"":48},{""available"":30,""starter"":""2025-12-28"",""ender"":""2025-12-28"",""operatorid"":48},{""available"":28,""starter"":""2025-12-29"",""ender"":""2025-12-29"",""operatorid"":48},{""available"":22,""starter"":""2025-12-30"",""ender"":""2025-12-30"",""operatorid"":48},{""available"":35,""starter"":""2025-12-31"",""ender"":""2025-12-31"",""operatorid"":48},{""available"":33,""starter"":""2026-01-01"",""ender"":""2026-01-01"",""operatorid"":48},{""available"":16,""starter"":""2026-01-02"",""ender"":""2026-01-02"",""operatorid"":48},{""available"":32,""starter"":""2026-01-03"",""ender"":""2026-01-03"",""operatorid"":48},{""available"":35,""starter"":""2026-01-04"",""ender"":""2026-01-04"",""operatorid"":48},{""available"":34,""starter"":""2026-01-05"",""ender"":""2026-01-05"",""operatorid"":48},{""available"":31,""starter"":""2026-01-06"",""ender"":""2026-01-06"",""operatorid"":48},{""available"":33,""starter"":""2026-01-07"",""ender"":""2026-01-07"",""operatorid"":48},{""available"":31,""starter"":""2026-01-08"",""ender"":""2026-01-08"",""operatorid"":48},{""available"":33,""starter"":""2026-01-09"",""ender"":""2026-01-09"",""operatorid"":48},{""available"":35,""starter"":""2026-01-10"",""ender"":""2026-01-10"",""operatorid"":48},{""available"":35,""starter"":""2026-01-11"",""ender"":""2026-01-11"",""operatorid"":48},{""available"":35,""starter"":""2026-01-12"",""ender"":""2026-01-12"",""operatorid"":48},{""available"":28,""starter"":""2026-01-13"",""ender"":""2026-01-13"",""operatorid"":48},{""available"":33,""starter"":""2026-01-14"",""ender"":""2026-01-14"",""operatorid"":48},{""available"":30,""starter"":""2026-01-15"",""ender"":""2026-01-15"",""operatorid"":48},{""available"":35,""starter"":""2026-01-16"",""ender"":""2026-01-16"",""operatorid"":48},{""available"":33,""starter"":""2026-01-17"",""ender"":""2026-01-17"",""operatorid"":48},{""available"":35,""starter"":""2026-01-18"",""ender"":""2026-01-18"",""operatorid"":48},{""available"":35,""starter"":""2026-01-19"",""ender"":""2026-01-19"",""operatorid"":48},{""available"":33,""starter"":""2026-01-20"",""ender"":""2026-01-20"",""operatorid"":48},{""available"":35,""starter"":""2026-01-21"",""ender"":""2026-01-21"",""operatorid"":48},{""available"":35,""starter"":""2026-01-22"",""ender"":""2026-01-22"",""operatorid"":48},{""available"":35,""starter"":""2026-01-23"",""ender"":""2026-01-23"",""operatorid"":48},{""available"":35,""starter"":""2026-01-24"",""ender"":""2026-01-24"",""operatorid"":48},{""available"":35,""starter"":""2026-01-25"",""ender"":""2026-01-25"",""operatorid"":48},{""available"":35,""starter"":""2026-01-26"",""ender"":""2026-01-26"",""operatorid"":48},{""available"":35,""starter"":""2026-01-27"",""ender"":""2026-01-27"",""operatorid"":48},{""available"":33,""starter"":""2026-01-28"",""ender"":""2026-01-28"",""operatorid"":48},{""available"":35,""starter"":""2026-01-29"",""ender"":""2026-01-29"",""operatorid"":48},{""available"":35,""starter"":""2026-01-30"",""ender"":""2026-01-30"",""operatorid"":48},{""available"":35,""starter"":""2026-01-31"",""ender"":""2026-01-31"",""operatorid"":48},{""available"":35,""starter"":""2026-02-01"",""ender"":""2026-02-01"",""operatorid"":48},{""available"":35,""starter"":""2026-02-02"",""ender"":""2026-02-02"",""operatorid"":48},{""available"":35,""starter"":""2026-02-03"",""ender"":""2026-02-03"",""operatorid"":48},{""available"":35,""starter"":""2026-02-04"",""ender"":""2026-02-04"",""operatorid"":48},{""available"":35,""starter"":""2026-02-05"",""ender"":""2026-02-05"",""operatorid"":48},{""available"":35,""starter"":""2026-02-06"",""ender"":""2026-02-06"",""operatorid"":48},{""available"":35,""starter"":""2026-02-07"",""ender"":""2026-02-07"",""operatorid"":48},{""available"":35,""starter"":""2026-02-08"",""ender"":""2026-02-08"",""operatorid"":48},{""available"":33,""starter"":""2026-02-09"",""ender"":""2026-02-09"",""operatorid"":48},{""available"":35,""starter"":""2026-02-10"",""ender"":""2026-02-10"",""operatorid"":48},{""available"":35,""starter"":""2026-02-11"",""ender"":""2026-02-11"",""operatorid"":48},{""available"":35,""starter"":""2026-02-12"",""ender"":""2026-02-12"",""operatorid"":48},{""available"":35,""starter"":""2026-02-13"",""ender"":""2026-02-13"",""operatorid"":48},{""available"":35,""starter"":""2026-02-14"",""ender"":""2026-02-14"",""operatorid"":48},{""available"":35,""starter"":""2026-02-15"",""ender"":""2026-02-15"",""operatorid"":48},{""available"":35,""starter"":""2026-02-16"",""ender"":""2026-02-16"",""operatorid"":48},{""available"":35,""starter"":""2026-02-17"",""ender"":""2026-02-17"",""operatorid"":48},{""available"":35,""starter"":""2026-02-18"",""ender"":""2026-02-18"",""operatorid"":48},{""available"":35,""starter"":""2026-02-19"",""ender"":""2026-02-19"",""operatorid"":48},{""available"":35,""starter"":""2026-02-20"",""ender"":""2026-02-20"",""operatorid"":48},{""available"":35,""starter"":""2026-02-21"",""ender"":""2026-02-21"",""operatorid"":48},{""available"":35,""starter"":""2026-02-22"",""ender"":""2026-02-22"",""operatorid"":48},{""available"":35,""starter"":""2026-02-23"",""ender"":""2026-02-23"",""operatorid"":48},{""available"":33,""starter"":""2026-02-24"",""ender"":""2026-02-24"",""operatorid"":48},{""available"":35,""starter"":""2026-02-25"",""ender"":""2026-02-25"",""operatorid"":48},{""available"":33,""starter"":""2026-02-26"",""ender"":""2026-02-26"",""operatorid"":48},{""available"":35,""starter"":""2026-02-27"",""ender"":""2026-02-27"",""operatorid"":48},{""available"":35,""starter"":""2026-02-28"",""ender"":""2026-02-28"",""operatorid"":48},{""available"":35,""starter"":""2026-03-01"",""ender"":""2026-03-01"",""operatorid"":48},{""available"":33,""starter"":""2026-03-02"",""ender"":""2026-03-02"",""operatorid"":48},{""available"":35,""starter"":""2026-03-03"",""ender"":""2026-03-03"",""operatorid"":48},{""available"":31,""starter"":""2026-03-04"",""ender"":""2026-03-04"",""operatorid"":48},{""available"":35,""starter"":""2026-03-05"",""ender"":""2026-03-05"",""operatorid"":48},{""available"":35,""starter"":""2026-03-06"",""ender"":""2026-03-06"",""operatorid"":48},{""available"":35,""starter"":""2026-03-07"",""ender"":""2026-03-07"",""operatorid"":48},{""available"":35,""starter"":""2026-03-08"",""ender"":""2026-03-08"",""operatorid"":48},{""available"":35,""starter"":""2026-03-09"",""ender"":""2026-03-09"",""operatorid"":48},{""available"":35,""starter"":""2026-03-10"",""ender"":""2026-03-10"",""operatorid"":48},{""available"":29,""starter"":""2026-03-11"",""ender"":""2026-03-11"",""operatorid"":48},{""available"":35,""starter"":""2026-03-12"",""ender"":""2026-03-12"",""operatorid"":48},{""available"":35,""starter"":""2026-03-13"",""ender"":""2026-03-13"",""operatorid"":48},{""available"":35,""starter"":""2026-03-14"",""ender"":""2026-03-14"",""operatorid"":48},{""available"":35,""starter"":""2026-03-15"",""ender"":""2026-03-15"",""operatorid"":48},{""available"":35,""starter"":""2026-03-16"",""ender"":""2026-03-16"",""operatorid"":48},{""available"":35,""starter"":""2026-03-17"",""ender"":""2026-03-17"",""operatorid"":48},{""available"":35,""starter"":""2026-03-18"",""ender"":""2026-03-18"",""operatorid"":48},{""available"":35,""starter"":""2026-03-19"",""ender"":""2026-03-19"",""operatorid"":48},{""available"":35,""starter"":""2026-03-20"",""ender"":""2026-03-20"",""operatorid"":48},{""available"":35,""starter"":""2026-03-21"",""ender"":""2026-03-21"",""operatorid"":48},{""available"":35,""starter"":""2026-03-22"",""ender"":""2026-03-22"",""operatorid"":48},{""available"":31,""starter"":""2026-03-23"",""ender"":""2026-03-23"",""operatorid"":48},{""available"":35,""starter"":""2026-03-24"",""ender"":""2026-03-24"",""operatorid"":48},{""available"":33,""starter"":""2026-03-25"",""ender"":""2026-03-25"",""operatorid"":48},{""available"":35,""starter"":""2026-03-26"",""ender"":""2026-03-26"",""operatorid"":48},{""available"":35,""starter"":""2026-03-27"",""ender"":""2026-03-27"",""operatorid"":48},{""available"":35,""starter"":""2026-03-28"",""ender"":""2026-03-28"",""operatorid"":48},{""available"":35,""starter"":""2026-03-29"",""ender"":""2026-03-29"",""operatorid"":48},{""available"":35,""starter"":""2026-03-30"",""ender"":""2026-03-30"",""operatorid"":48},{""available"":35,""starter"":""2026-03-31"",""ender"":""2026-03-31"",""operatorid"":48},{""available"":35,""starter"":""2026-04-01"",""ender"":""2026-04-01"",""operatorid"":48},{""available"":35,""starter"":""2026-04-02"",""ender"":""2026-04-02"",""operatorid"":48},{""available"":33,""starter"":""2026-04-03"",""ender"":""2026-04-03"",""operatorid"":48},{""available"":35,""starter"":""2026-04-04"",""ender"":""2026-04-04"",""operatorid"":48},{""available"":35,""starter"":""2026-04-05"",""ender"":""2026-04-05"",""operatorid"":48},{""available"":35,""starter"":""2026-04-06"",""ender"":""2026-04-06"",""operatorid"":48},{""available"":35,""starter"":""2026-04-07"",""ender"":""2026-04-07"",""operatorid"":48},{""available"":35,""starter"":""2026-04-08"",""ender"":""2026-04-08"",""operatorid"":48},{""available"":35,""starter"":""2026-04-09"",""ender"":""2026-04-09"",""operatorid"":48},{""available"":35,""starter"":""2026-04-10"",""ender"":""2026-04-10"",""operatorid"":48},{""available"":35,""starter"":""2026-04-11"",""ender"":""2026-04-11"",""operatorid"":48},{""available"":35,""starter"":""2026-04-12"",""ender"":""2026-04-12"",""operatorid"":48},{""available"":35,""starter"":""2026-04-13"",""ender"":""2026-04-13"",""operatorid"":48},{""available"":35,""starter"":""2026-04-14"",""ender"":""2026-04-14"",""operatorid"":48},{""available"":35,""starter"":""2026-04-15"",""ender"":""2026-04-15"",""operatorid"":48},{""available"":35,""starter"":""2026-04-16"",""ender"":""2026-04-16"",""operatorid"":48},{""available"":35,""starter"":""2026-04-17"",""ender"":""2026-04-17"",""operatorid"":48},{""available"":35,""starter"":""2026-04-18"",""ender"":""2026-04-18"",""operatorid"":48},{""available"":35,""starter"":""2026-04-19"",""ender"":""2026-04-19"",""operatorid"":48},{""available"":35,""starter"":""2026-04-20"",""ender"":""2026-04-20"",""operatorid"":48},{""available"":35,""starter"":""2026-04-21"",""ender"":""2026-04-21"",""operatorid"":48},{""available"":35,""starter"":""2026-04-22"",""ender"":""2026-04-22"",""operatorid"":48},{""available"":35,""starter"":""2026-04-23"",""ender"":""2026-04-23"",""operatorid"":48},{""available"":35,""starter"":""2026-04-24"",""ender"":""2026-04-24"",""operatorid"":48},{""available"":35,""starter"":""2026-04-25"",""ender"":""2026-04-25"",""operatorid"":48},{""available"":35,""starter"":""2026-04-26"",""ender"":""2026-04-26"",""operatorid"":48},{""available"":35,""starter"":""2026-04-27"",""ender"":""2026-04-27"",""operatorid"":48},{""available"":35,""starter"":""2026-04-28"",""ender"":""2026-04-28"",""operatorid"":48},{""available"":35,""starter"":""2026-04-29"",""ender"":""2026-04-29"",""operatorid"":48},{""available"":35,""starter"":""2026-04-30"",""ender"":""2026-04-30"",""operatorid"":48},{""available"":35,""starter"":""2026-05-01"",""ender"":""2026-05-01"",""operatorid"":48},{""available"":35,""starter"":""2026-05-02"",""ender"":""2026-05-02"",""operatorid"":48},{""available"":35,""starter"":""2026-05-03"",""ender"":""2026-05-03"",""operatorid"":48},{""available"":35,""starter"":""2026-05-04"",""ender"":""2026-05-04"",""operatorid"":48},{""available"":35,""starter"":""2026-05-05"",""ender"":""2026-05-05"",""operatorid"":48},{""available"":35,""starter"":""2026-05-06"",""ender"":""2026-05-06"",""operatorid"":48},{""available"":35,""starter"":""2026-05-07"",""ender"":""2026-05-07"",""operatorid"":48},{""available"":35,""starter"":""2026-05-08"",""ender"":""2026-05-08"",""operatorid"":48},{""available"":35,""starter"":""2026-05-09"",""ender"":""2026-05-09"",""operatorid"":48},{""available"":35,""starter"":""2026-05-10"",""ender"":""2026-05-10"",""operatorid"":48},{""available"":35,""starter"":""2026-05-11"",""ender"":""2026-05-11"",""operatorid"":48},{""available"":35,""starter"":""2026-05-12"",""ender"":""2026-05-12"",""operatorid"":48},{""available"":35,""starter"":""2026-05-13"",""ender"":""2026-05-13"",""operatorid"":48},{""available"":35,""starter"":""2026-05-14"",""ender"":""2026-05-14"",""operatorid"":48},{""available"":35,""starter"":""2026-05-15"",""ender"":""2026-05-15"",""operatorid"":48},{""available"":35,""starter"":""2026-05-16"",""ender"":""2026-05-16"",""operatorid"":48},{""available"":35,""starter"":""2026-05-17"",""ender"":""2026-05-17"",""operatorid"":48},{""available"":35,""starter"":""2026-05-18"",""ender"":""2026-05-18"",""operatorid"":48},{""available"":35,""starter"":""2026-05-19"",""ender"":""2026-05-19"",""operatorid"":48},{""available"":35,""starter"":""2026-05-20"",""ender"":""2026-05-20"",""operatorid"":48},{""available"":35,""starter"":""2026-05-21"",""ender"":""2026-05-21"",""operatorid"":48},{""available"":35,""starter"":""2026-05-22"",""ender"":""2026-05-22"",""operatorid"":48},{""available"":35,""starter"":""2026-05-23"",""ender"":""2026-05-23"",""operatorid"":48},{""available"":35,""starter"":""2026-05-24"",""ender"":""2026-05-24"",""operatorid"":48},{""available"":35,""starter"":""2026-05-25"",""ender"":""2026-05-25"",""operatorid"":48},{""available"":35,""starter"":""2026-05-26"",""ender"":""2026-05-26"",""operatorid"":48},{""available"":32,""starter"":""2026-05-27"",""ender"":""2026-05-27"",""operatorid"":48},{""available"":35,""starter"":""2026-05-28"",""ender"":""2026-05-28"",""operatorid"":48},{""available"":35,""starter"":""2026-05-29"",""ender"":""2026-05-29"",""operatorid"":48},{""available"":35,""starter"":""2026-05-30"",""ender"":""2026-05-30"",""operatorid"":48},{""available"":35,""starter"":""2026-05-31"",""ender"":""2026-05-31"",""operatorid"":48},{""available"":35,""starter"":""2026-06-01"",""ender"":""2026-06-01"",""operatorid"":48},{""available"":35,""starter"":""2026-06-02"",""ender"":""2026-06-02"",""operatorid"":48},{""available"":35,""starter"":""2026-06-03"",""ender"":""2026-06-03"",""operatorid"":48},{""available"":35,""starter"":""2026-06-04"",""ender"":""2026-06-04"",""operatorid"":48},{""available"":35,""starter"":""2026-06-05"",""ender"":""2026-06-05"",""operatorid"":48},{""available"":35,""starter"":""2026-06-06"",""ender"":""2026-06-06"",""operatorid"":48},{""available"":35,""starter"":""2026-06-07"",""ender"":""2026-06-07"",""operatorid"":48},{""available"":35,""starter"":""2026-06-08"",""ender"":""2026-06-08"",""operatorid"":48},{""available"":35,""starter"":""2026-06-09"",""ender"":""2026-06-09"",""operatorid"":48},{""available"":35,""starter"":""2026-06-10"",""ender"":""2026-06-10"",""operatorid"":48},{""available"":35,""starter"":""2026-06-11"",""ender"":""2026-06-11"",""operatorid"":48},{""available"":35,""starter"":""2026-06-12"",""ender"":""2026-06-12"",""operatorid"":48},{""available"":35,""starter"":""2026-06-13"",""ender"":""2026-06-13"",""operatorid"":48},{""available"":35,""starter"":""2026-06-14"",""ender"":""2026-06-14"",""operatorid"":48},{""available"":35,""starter"":""2026-06-15"",""ender"":""2026-06-15"",""operatorid"":48},{""available"":35,""starter"":""2026-06-16"",""ender"":""2026-06-16"",""operatorid"":48},{""available"":35,""starter"":""2026-06-17"",""ender"":""2026-06-17"",""operatorid"":48},{""available"":35,""starter"":""2026-06-18"",""ender"":""2026-06-18"",""operatorid"":48},{""available"":35,""starter"":""2026-06-19"",""ender"":""2026-06-19"",""operatorid"":48},{""available"":35,""starter"":""2026-06-20"",""ender"":""2026-06-20"",""operatorid"":48},{""available"":35,""starter"":""2026-06-21"",""ender"":""2026-06-21"",""operatorid"":48},{""available"":35,""starter"":""2026-06-22"",""ender"":""2026-06-22"",""operatorid"":48},{""available"":35,""starter"":""2026-06-23"",""ender"":""2026-06-23"",""operatorid"":48},{""available"":35,""starter"":""2026-06-24"",""ender"":""2026-06-24"",""operatorid"":48},{""available"":35,""starter"":""2026-06-25"",""ender"":""2026-06-25"",""operatorid"":48},{""available"":35,""starter"":""2026-06-26"",""ender"":""2026-06-26"",""operatorid"":48},{""available"":35,""starter"":""2026-06-27"",""ender"":""2026-06-27"",""operatorid"":48},{""available"":35,""starter"":""2026-06-28"",""ender"":""2026-06-28"",""operatorid"":48},{""available"":35,""starter"":""2026-06-29"",""ender"":""2026-06-29"",""operatorid"":48},{""available"":35,""starter"":""2026-06-30"",""ender"":""2026-06-30"",""operatorid"":48},{""available"":35,""starter"":""2026-07-01"",""ender"":""2026-07-01"",""operatorid"":48},{""available"":35,""starter"":""2026-07-02"",""ender"":""2026-07-02"",""operatorid"":48},{""available"":35,""starter"":""2026-07-03"",""ender"":""2026-07-03"",""operatorid"":48},{""available"":35,""starter"":""2026-07-04"",""ender"":""2026-07-04"",""operatorid"":48},{""available"":35,""starter"":""2026-07-05"",""ender"":""2026-07-05"",""operatorid"":48},{""available"":35,""starter"":""2026-07-06"",""ender"":""2026-07-06"",""operatorid"":48},{""available"":35,""starter"":""2026-07-07"",""ender"":""2026-07-07"",""operatorid"":48},{""available"":35,""starter"":""2026-07-08"",""ender"":""2026-07-08"",""operatorid"":48},{""available"":35,""starter"":""2026-07-09"",""ender"":""2026-07-09"",""operatorid"":48},{""available"":35,""starter"":""2026-07-10"",""ender"":""2026-07-10"",""operatorid"":48},{""available"":35,""starter"":""2026-07-11"",""ender"":""2026-07-11"",""operatorid"":48},{""available"":35,""starter"":""2026-07-12"",""ender"":""2026-07-12"",""operatorid"":48},{""available"":35,""starter"":""2026-07-13"",""ender"":""2026-07-13"",""operatorid"":48},{""available"":35,""starter"":""2026-07-14"",""ender"":""2026-07-14"",""operatorid"":48},{""available"":34,""starter"":""2026-07-15"",""ender"":""2026-07-15"",""operatorid"":48},{""available"":35,""starter"":""2026-07-16"",""ender"":""2026-07-16"",""operatorid"":48},{""available"":35,""starter"":""2026-07-17"",""ender"":""2026-07-17"",""operatorid"":48},{""available"":35,""starter"":""2026-07-18"",""ender"":""2026-07-18"",""operatorid"":48},{""available"":35,""starter"":""2026-07-19"",""ender"":""2026-07-19"",""operatorid"":48},{""available"":35,""starter"":""2026-07-20"",""ender"":""2026-07-20"",""operatorid"":48},{""available"":35,""starter"":""2026-07-21"",""ender"":""2026-07-21"",""operatorid"":48},{""available"":35,""starter"":""2026-07-22"",""ender"":""2026-07-22"",""operatorid"":48},{""available"":35,""starter"":""2026-07-23"",""ender"":""2026-07-23"",""operatorid"":48},{""available"":35,""starter"":""2026-07-24"",""ender"":""2026-07-24"",""operatorid"":48},{""available"":35,""starter"":""2026-07-25"",""ender"":""2026-07-25"",""operatorid"":48},{""available"":35,""starter"":""2026-07-26"",""ender"":""2026-07-26"",""operatorid"":48},{""available"":35,""starter"":""2026-07-27"",""ender"":""2026-07-27"",""operatorid"":48},{""available"":33,""starter"":""2026-07-28"",""ender"":""2026-07-28"",""operatorid"":48},{""available"":35,""starter"":""2026-07-29"",""ender"":""2026-07-29"",""operatorid"":48},{""available"":35,""starter"":""2026-07-30"",""ender"":""2026-07-30"",""operatorid"":48},{""available"":35,""starter"":""2026-07-31"",""ender"":""2026-07-31"",""operatorid"":48},{""available"":35,""starter"":""2026-08-01"",""ender"":""2026-08-01"",""operatorid"":48},{""available"":35,""starter"":""2026-08-02"",""ender"":""2026-08-02"",""operatorid"":48},{""available"":35,""starter"":""2026-08-03"",""ender"":""2026-08-03"",""operatorid"":48},{""available"":35,""starter"":""2026-08-04"",""ender"":""2026-08-04"",""operatorid"":48},{""available"":35,""starter"":""2026-08-05"",""ender"":""2026-08-05"",""operatorid"":48},{""available"":35,""starter"":""2026-08-06"",""ender"":""2026-08-06"",""operatorid"":48},{""available"":35,""starter"":""2026-08-07"",""ender"":""2026-08-07"",""operatorid"":48},{""available"":35,""starter"":""2026-08-08"",""ender"":""2026-08-08"",""operatorid"":48},{""available"":35,""starter"":""2026-08-09"",""ender"":""2026-08-09"",""operatorid"":48},{""available"":35,""starter"":""2026-08-10"",""ender"":""2026-08-10"",""operatorid"":48},{""available"":35,""starter"":""2026-08-11"",""ender"":""2026-08-11"",""operatorid"":48},{""available"":35,""starter"":""2026-08-12"",""ender"":""2026-08-12"",""operatorid"":48},{""available"":35,""starter"":""2026-08-13"",""ender"":""2026-08-13"",""operatorid"":48},{""available"":35,""starter"":""2026-08-14"",""ender"":""2026-08-14"",""operatorid"":48},{""available"":35,""starter"":""2026-08-15"",""ender"":""2026-08-15"",""operatorid"":48},{""available"":35,""starter"":""2026-08-16"",""ender"":""2026-08-16"",""operatorid"":48},{""available"":35,""starter"":""2026-08-17"",""ender"":""2026-08-17"",""operatorid"":48},{""available"":35,""starter"":""2026-08-18"",""ender"":""2026-08-18"",""operatorid"":48},{""available"":35,""starter"":""2026-08-19"",""ender"":""2026-08-19"",""operatorid"":48},{""available"":35,""starter"":""2026-08-20"",""ender"":""2026-08-20"",""operatorid"":48},{""available"":35,""starter"":""2026-08-21"",""ender"":""2026-08-21"",""operatorid"":48},{""available"":35,""starter"":""2026-08-22"",""ender"":""2026-08-22"",""operatorid"":48},{""available"":35,""starter"":""2026-08-23"",""ender"":""2026-08-23"",""operatorid"":48},{""available"":35,""starter"":""2026-08-24"",""ender"":""2026-08-24"",""operatorid"":48},{""available"":35,""starter"":""2026-08-25"",""ender"":""2026-08-25"",""operatorid"":48},{""available"":35,""starter"":""2026-08-26"",""ender"":""2026-08-26"",""operatorid"":48},{""available"":35,""starter"":""2026-08-27"",""ender"":""2026-08-27"",""operatorid"":48},{""available"":35,""starter"":""2026-08-28"",""ender"":""2026-08-28"",""operatorid"":48},{""available"":35,""starter"":""2026-08-29"",""ender"":""2026-08-29"",""operatorid"":48},{""available"":35,""starter"":""2026-08-30"",""ender"":""2026-08-30"",""operatorid"":48},{""available"":35,""starter"":""2026-08-31"",""ender"":""2026-08-31"",""operatorid"":48},{""available"":35,""starter"":""2026-09-01"",""ender"":""2026-09-01"",""operatorid"":48},{""available"":35,""starter"":""2026-09-02"",""ender"":""2026-09-02"",""operatorid"":48},{""available"":35,""starter"":""2026-09-03"",""ender"":""2026-09-03"",""operatorid"":48},{""available"":35,""starter"":""2026-09-04"",""ender"":""2026-09-04"",""operatorid"":48},{""available"":35,""starter"":""2026-09-05"",""ender"":""2026-09-05"",""operatorid"":48},{""available"":35,""starter"":""2026-09-06"",""ender"":""2026-09-06"",""operatorid"":48},{""available"":35,""starter"":""2026-09-07"",""ender"":""2026-09-07"",""operatorid"":48},{""available"":35,""starter"":""2026-09-08"",""ender"":""2026-09-08"",""operatorid"":48},{""available"":35,""starter"":""2026-09-09"",""ender"":""2026-09-09"",""operatorid"":48},{""available"":35,""starter"":""2026-09-10"",""ender"":""2026-09-10"",""operatorid"":48},{""available"":35,""starter"":""2026-09-11"",""ender"":""2026-09-11"",""operatorid"":48},{""available"":35,""starter"":""2026-09-12"",""ender"":""2026-09-12"",""operatorid"":48},{""available"":35,""starter"":""2026-09-13"",""ender"":""2026-09-13"",""operatorid"":48},{""available"":35,""starter"":""2026-09-14"",""ender"":""2026-09-14"",""operatorid"":48},{""available"":35,""starter"":""2026-09-15"",""ender"":""2026-09-15"",""operatorid"":48},{""available"":35,""starter"":""2026-09-16"",""ender"":""2026-09-16"",""operatorid"":48},{""available"":35,""starter"":""2026-09-17"",""ender"":""2026-09-17"",""operatorid"":48},{""available"":35,""starter"":""2026-09-18"",""ender"":""2026-09-18"",""operatorid"":48},{""available"":35,""starter"":""2026-09-19"",""ender"":""2026-09-19"",""operatorid"":48},{""available"":35,""starter"":""2026-09-20"",""ender"":""2026-09-20"",""operatorid"":48},{""available"":35,""starter"":""2026-09-21"",""ender"":""2026-09-21"",""operatorid"":48},{""available"":35,""starter"":""2026-09-22"",""ender"":""2026-09-22"",""operatorid"":48},{""available"":35,""starter"":""2026-09-23"",""ender"":""2026-09-23"",""operatorid"":48},{""available"":35,""starter"":""2026-09-24"",""ender"":""2026-09-24"",""operatorid"":48},{""available"":35,""starter"":""2026-09-25"",""ender"":""2026-09-25"",""operatorid"":48},{""available"":35,""starter"":""2026-09-26"",""ender"":""2026-09-26"",""operatorid"":48},{""available"":35,""starter"":""2026-09-27"",""ender"":""2026-09-27"",""operatorid"":48},{""available"":35,""starter"":""2026-09-28"",""ender"":""2026-09-28"",""operatorid"":48},{""available"":35,""starter"":""2026-09-29"",""ender"":""2026-09-29"",""operatorid"":48},{""available"":35,""starter"":""2026-09-30"",""ender"":""2026-09-30"",""operatorid"":48},{""available"":35,""starter"":""2026-10-01"",""ender"":""2026-10-01"",""operatorid"":48},{""available"":35,""starter"":""2026-10-02"",""ender"":""2026-10-02"",""operatorid"":48},{""available"":35,""starter"":""2026-10-03"",""ender"":""2026-10-03"",""operatorid"":48},{""available"":35,""starter"":""2026-10-04"",""ender"":""2026-10-04"",""operatorid"":48},{""available"":35,""starter"":""2026-10-05"",""ender"":""2026-10-05"",""operatorid"":48},{""available"":35,""starter"":""2026-10-06"",""ender"":""2026-10-06"",""operatorid"":48},{""available"":35,""starter"":""2026-10-07"",""ender"":""2026-10-07"",""operatorid"":48},{""available"":35,""starter"":""2026-10-08"",""ender"":""2026-10-08"",""operatorid"":48},{""available"":35,""starter"":""2026-10-09"",""ender"":""2026-10-09"",""operatorid"":48},{""available"":35,""starter"":""2026-10-10"",""ender"":""2026-10-10"",""operatorid"":48},{""available"":35,""starter"":""2026-10-11"",""ender"":""2026-10-11"",""operatorid"":48},{""available"":35,""starter"":""2026-10-12"",""ender"":""2026-10-12"",""operatorid"":48},{""available"":35,""starter"":""2026-10-13"",""ender"":""2026-10-13"",""operatorid"":48},{""available"":35,""starter"":""2026-10-14"",""ender"":""2026-10-14"",""operatorid"":48},{""available"":35,""starter"":""2026-10-15"",""ender"":""2026-10-15"",""operatorid"":48},{""available"":35,""starter"":""2026-10-16"",""ender"":""2026-10-16"",""operatorid"":48},{""available"":35,""starter"":""2026-10-17"",""ender"":""2026-10-17"",""operatorid"":48},{""available"":35,""starter"":""2026-10-18"",""ender"":""2026-10-18"",""operatorid"":48},{""available"":35,""starter"":""2026-10-19"",""ender"":""2026-10-19"",""operatorid"":48},{""available"":35,""starter"":""2026-10-20"",""ender"":""2026-10-20"",""operatorid"":48},{""available"":35,""starter"":""2026-10-21"",""ender"":""2026-10-21"",""operatorid"":48},{""available"":35,""starter"":""2026-10-22"",""ender"":""2026-10-22"",""operatorid"":48}];
+            //MAIN CALENDAR FUNCTION STARTS HERE FOR PRODUCTS WITH LIVE CHECKING FROM MANIFEST
+            var productDatesArray = [{""available"":3,""starter"":""2025-12-22"",""ender"":""2025-12-22"",""operatorid"":48},{""available"":1,""starter"":""2025-12-23"",""ender"":""2025-12-23"",""operatorid"":48},{""available"":1,""starter"":""2025-12-24"",""ender"":""2025-12-24"",""operatorid"":48},{""available"":35,""starter"":""2025-12-25"",""ender"":""2025-12-25"",""operatorid"":48},{""available"":10,""starter"":""2025-12-26"",""ender"":""2025-12-26"",""operatorid"":48},{""available"":5,""starter"":""2025-12-27"",""ender"":""2025-12-27"",""operatorid"":48},{""available"":17,""starter"":""2025-12-28"",""ender"":""2025-12-28"",""operatorid"":48},{""available"":13,""starter"":""2025-12-29"",""ender"":""2025-12-29"",""operatorid"":48},{""available"":0,""starter"":""2025-12-30"",""ender"":""2025-12-30"",""operatorid"":48},{""available"":31,""starter"":""2025-12-31"",""ender"":""2025-12-31"",""operatorid"":48},{""available"":29,""starter"":""2026-01-01"",""ender"":""2026-01-01"",""operatorid"":48},{""available"":17,""starter"":""2026-01-02"",""ender"":""2026-01-02"",""operatorid"":48},{""available"":28,""starter"":""2026-01-03"",""ender"":""2026-01-03"",""operatorid"":48},{""available"":31,""starter"":""2026-01-04"",""ender"":""2026-01-04"",""operatorid"":48},{""available"":31,""starter"":""2026-01-05"",""ender"":""2026-01-05"",""operatorid"":48},{""available"":31,""starter"":""2026-01-06"",""ender"":""2026-01-06"",""operatorid"":48},{""available"":0,""starter"":""2026-01-07"",""ender"":""2026-01-07"",""operatorid"":48},{""available"":31,""starter"":""2026-01-08"",""ender"":""2026-01-08"",""operatorid"":48},{""available"":3,""starter"":""2026-01-09"",""ender"":""2026-01-09"",""operatorid"":48},{""available"":0,""starter"":""2026-01-10"",""ender"":""2026-01-10"",""operatorid"":48},{""available"":35,""starter"":""2026-01-11"",""ender"":""2026-01-11"",""operatorid"":48},{""available"":31,""starter"":""2026-01-12"",""ender"":""2026-01-12"",""operatorid"":48},{""available"":26,""starter"":""2026-01-13"",""ender"":""2026-01-13"",""operatorid"":48},{""available"":32,""starter"":""2026-01-14"",""ender"":""2026-01-14"",""operatorid"":48},{""available"":30,""starter"":""2026-01-15"",""ender"":""2026-01-15"",""operatorid"":48},{""available"":31,""starter"":""2026-01-16"",""ender"":""2026-01-16"",""operatorid"":48},{""available"":31,""starter"":""2026-01-17"",""ender"":""2026-01-17"",""operatorid"":48},{""available"":6,""starter"":""2026-01-18"",""ender"":""2026-01-18"",""operatorid"":48},{""available"":0,""starter"":""2026-01-19"",""ender"":""2026-01-19"",""operatorid"":48},{""available"":0,""starter"":""2026-01-20"",""ender"":""2026-01-20"",""operatorid"":48},{""available"":12,""starter"":""2026-01-21"",""ender"":""2026-01-21"",""operatorid"":48},{""available"":6,""starter"":""2026-01-22"",""ender"":""2026-01-22"",""operatorid"":48},{""available"":6,""starter"":""2026-01-23"",""ender"":""2026-01-23"",""operatorid"":48},{""available"":33,""starter"":""2026-01-24"",""ender"":""2026-01-24"",""operatorid"":48},{""available"":12,""starter"":""2026-01-25"",""ender"":""2026-01-25"",""operatorid"":48},{""available"":35,""starter"":""2026-01-26"",""ender"":""2026-01-26"",""operatorid"":48},{""available"":33,""starter"":""2026-01-27"",""ender"":""2026-01-27"",""operatorid"":48},{""available"":33,""starter"":""2026-01-28"",""ender"":""2026-01-28"",""operatorid"":48},{""available"":35,""starter"":""2026-01-29"",""ender"":""2026-01-29"",""operatorid"":48},{""available"":34,""starter"":""2026-01-30"",""ender"":""2026-01-30"",""operatorid"":48},{""available"":33,""starter"":""2026-01-31"",""ender"":""2026-01-31"",""operatorid"":48},{""available"":35,""starter"":""2026-02-01"",""ender"":""2026-02-01"",""operatorid"":48},{""available"":35,""starter"":""2026-02-02"",""ender"":""2026-02-02"",""operatorid"":48},{""available"":35,""starter"":""2026-02-03"",""ender"":""2026-02-03"",""operatorid"":48},{""available"":33,""starter"":""2026-02-04"",""ender"":""2026-02-04"",""operatorid"":48},{""available"":35,""starter"":""2026-02-05"",""ender"":""2026-02-05"",""operatorid"":48},{""available"":35,""starter"":""2026-02-06"",""ender"":""2026-02-06"",""operatorid"":48},{""available"":35,""starter"":""2026-02-07"",""ender"":""2026-02-07"",""operatorid"":48},{""available"":35,""starter"":""2026-02-08"",""ender"":""2026-02-08"",""operatorid"":48},{""available"":24,""starter"":""2026-02-09"",""ender"":""2026-02-09"",""operatorid"":48},{""available"":35,""starter"":""2026-02-10"",""ender"":""2026-02-10"",""operatorid"":48},{""available"":35,""starter"":""2026-02-11"",""ender"":""2026-02-11"",""operatorid"":48},{""available"":33,""starter"":""2026-02-12"",""ender"":""2026-02-12"",""operatorid"":48},{""available"":35,""starter"":""2026-02-13"",""ender"":""2026-02-13"",""operatorid"":48},{""available"":35,""starter"":""2026-02-14"",""ender"":""2026-02-14"",""operatorid"":48},{""available"":35,""starter"":""2026-02-15"",""ender"":""2026-02-15"",""operatorid"":48},{""available"":35,""starter"":""2026-02-16"",""ender"":""2026-02-16"",""operatorid"":48},{""available"":35,""starter"":""2026-02-17"",""ender"":""2026-02-17"",""operatorid"":48},{""available"":33,""starter"":""2026-02-18"",""ender"":""2026-02-18"",""operatorid"":48},{""available"":35,""starter"":""2026-02-19"",""ender"":""2026-02-19"",""operatorid"":48},{""available"":35,""starter"":""2026-02-20"",""ender"":""2026-02-20"",""operatorid"":48},{""available"":35,""starter"":""2026-02-21"",""ender"":""2026-02-21"",""operatorid"":48},{""available"":35,""starter"":""2026-02-22"",""ender"":""2026-02-22"",""operatorid"":48},{""available"":33,""starter"":""2026-02-23"",""ender"":""2026-02-23"",""operatorid"":48},{""available"":33,""starter"":""2026-02-24"",""ender"":""2026-02-24"",""operatorid"":48},{""available"":35,""starter"":""2026-02-25"",""ender"":""2026-02-25"",""operatorid"":48},{""available"":27,""starter"":""2026-02-26"",""ender"":""2026-02-26"",""operatorid"":48},{""available"":33,""starter"":""2026-02-27"",""ender"":""2026-02-27"",""operatorid"":48},{""available"":35,""starter"":""2026-02-28"",""ender"":""2026-02-28"",""operatorid"":48},{""available"":35,""starter"":""2026-03-01"",""ender"":""2026-03-01"",""operatorid"":48},{""available"":33,""starter"":""2026-03-02"",""ender"":""2026-03-02"",""operatorid"":48},{""available"":35,""starter"":""2026-03-03"",""ender"":""2026-03-03"",""operatorid"":48},{""available"":31,""starter"":""2026-03-04"",""ender"":""2026-03-04"",""operatorid"":48},{""available"":32,""starter"":""2026-03-05"",""ender"":""2026-03-05"",""operatorid"":48},{""available"":33,""starter"":""2026-03-06"",""ender"":""2026-03-06"",""operatorid"":48},{""available"":35,""starter"":""2026-03-07"",""ender"":""2026-03-07"",""operatorid"":48},{""available"":35,""starter"":""2026-03-08"",""ender"":""2026-03-08"",""operatorid"":48},{""available"":35,""starter"":""2026-03-09"",""ender"":""2026-03-09"",""operatorid"":48},{""available"":33,""starter"":""2026-03-10"",""ender"":""2026-03-10"",""operatorid"":48},{""available"":29,""starter"":""2026-03-11"",""ender"":""2026-03-11"",""operatorid"":48},{""available"":35,""starter"":""2026-03-12"",""ender"":""2026-03-12"",""operatorid"":48},{""available"":35,""starter"":""2026-03-13"",""ender"":""2026-03-13"",""operatorid"":48},{""available"":35,""starter"":""2026-03-14"",""ender"":""2026-03-14"",""operatorid"":48},{""available"":35,""starter"":""2026-03-15"",""ender"":""2026-03-15"",""operatorid"":48},{""available"":35,""starter"":""2026-03-16"",""ender"":""2026-03-16"",""operatorid"":48},{""available"":35,""starter"":""2026-03-17"",""ender"":""2026-03-17"",""operatorid"":48},{""available"":35,""starter"":""2026-03-18"",""ender"":""2026-03-18"",""operatorid"":48},{""available"":35,""starter"":""2026-03-19"",""ender"":""2026-03-19"",""operatorid"":48},{""available"":29,""starter"":""2026-03-20"",""ender"":""2026-03-20"",""operatorid"":48},{""available"":35,""starter"":""2026-03-21"",""ender"":""2026-03-21"",""operatorid"":48},{""available"":35,""starter"":""2026-03-22"",""ender"":""2026-03-22"",""operatorid"":48},{""available"":31,""starter"":""2026-03-23"",""ender"":""2026-03-23"",""operatorid"":48},{""available"":35,""starter"":""2026-03-24"",""ender"":""2026-03-24"",""operatorid"":48},{""available"":33,""starter"":""2026-03-25"",""ender"":""2026-03-25"",""operatorid"":48},{""available"":35,""starter"":""2026-03-26"",""ender"":""2026-03-26"",""operatorid"":48},{""available"":35,""starter"":""2026-03-27"",""ender"":""2026-03-27"",""operatorid"":48},{""available"":35,""starter"":""2026-03-28"",""ender"":""2026-03-28"",""operatorid"":48},{""available"":35,""starter"":""2026-03-29"",""ender"":""2026-03-29"",""operatorid"":48},{""available"":35,""starter"":""2026-03-30"",""ender"":""2026-03-30"",""operatorid"":48},{""available"":35,""starter"":""2026-03-31"",""ender"":""2026-03-31"",""operatorid"":48},{""available"":35,""starter"":""2026-04-01"",""ender"":""2026-04-01"",""operatorid"":48},{""available"":35,""starter"":""2026-04-02"",""ender"":""2026-04-02"",""operatorid"":48},{""available"":33,""starter"":""2026-04-03"",""ender"":""2026-04-03"",""operatorid"":48},{""available"":32,""starter"":""2026-04-04"",""ender"":""2026-04-04"",""operatorid"":48},{""available"":35,""starter"":""2026-04-05"",""ender"":""2026-04-05"",""operatorid"":48},{""available"":35,""starter"":""2026-04-06"",""ender"":""2026-04-06"",""operatorid"":48},{""available"":35,""starter"":""2026-04-07"",""ender"":""2026-04-07"",""operatorid"":48},{""available"":35,""starter"":""2026-04-08"",""ender"":""2026-04-08"",""operatorid"":48},{""available"":35,""starter"":""2026-04-09"",""ender"":""2026-04-09"",""operatorid"":48},{""available"":35,""starter"":""2026-04-10"",""ender"":""2026-04-10"",""operatorid"":48},{""available"":35,""starter"":""2026-04-11"",""ender"":""2026-04-11"",""operatorid"":48},{""available"":35,""starter"":""2026-04-12"",""ender"":""2026-04-12"",""operatorid"":48},{""available"":29,""starter"":""2026-04-13"",""ender"":""2026-04-13"",""operatorid"":48},{""available"":35,""starter"":""2026-04-14"",""ender"":""2026-04-14"",""operatorid"":48},{""available"":35,""starter"":""2026-04-15"",""ender"":""2026-04-15"",""operatorid"":48},{""available"":35,""starter"":""2026-04-16"",""ender"":""2026-04-16"",""operatorid"":48},{""available"":35,""starter"":""2026-04-17"",""ender"":""2026-04-17"",""operatorid"":48},{""available"":35,""starter"":""2026-04-18"",""ender"":""2026-04-18"",""operatorid"":48},{""available"":35,""starter"":""2026-04-19"",""ender"":""2026-04-19"",""operatorid"":48},{""available"":35,""starter"":""2026-04-20"",""ender"":""2026-04-20"",""operatorid"":48},{""available"":35,""starter"":""2026-04-21"",""ender"":""2026-04-21"",""operatorid"":48},{""available"":35,""starter"":""2026-04-22"",""ender"":""2026-04-22"",""operatorid"":48},{""available"":35,""starter"":""2026-04-23"",""ender"":""2026-04-23"",""operatorid"":48},{""available"":35,""starter"":""2026-04-24"",""ender"":""2026-04-24"",""operatorid"":48},{""available"":35,""starter"":""2026-04-25"",""ender"":""2026-04-25"",""operatorid"":48},{""available"":35,""starter"":""2026-04-26"",""ender"":""2026-04-26"",""operatorid"":48},{""available"":35,""starter"":""2026-04-27"",""ender"":""2026-04-27"",""operatorid"":48},{""available"":35,""starter"":""2026-04-28"",""ender"":""2026-04-28"",""operatorid"":48},{""available"":35,""starter"":""2026-04-29"",""ender"":""2026-04-29"",""operatorid"":48},{""available"":35,""starter"":""2026-04-30"",""ender"":""2026-04-30"",""operatorid"":48},{""available"":35,""starter"":""2026-05-01"",""ender"":""2026-05-01"",""operatorid"":48},{""available"":35,""starter"":""2026-05-02"",""ender"":""2026-05-02"",""operatorid"":48},{""available"":35,""starter"":""2026-05-03"",""ender"":""2026-05-03"",""operatorid"":48},{""available"":35,""starter"":""2026-05-04"",""ender"":""2026-05-04"",""operatorid"":48},{""available"":35,""starter"":""2026-05-05"",""ender"":""2026-05-05"",""operatorid"":48},{""available"":35,""starter"":""2026-05-06"",""ender"":""2026-05-06"",""operatorid"":48},{""available"":35,""starter"":""2026-05-07"",""ender"":""2026-05-07"",""operatorid"":48},{""available"":35,""starter"":""2026-05-08"",""ender"":""2026-05-08"",""operatorid"":48},{""available"":35,""starter"":""2026-05-09"",""ender"":""2026-05-09"",""operatorid"":48},{""available"":35,""starter"":""2026-05-10"",""ender"":""2026-05-10"",""operatorid"":48},{""available"":35,""starter"":""2026-05-11"",""ender"":""2026-05-11"",""operatorid"":48},{""available"":35,""starter"":""2026-05-12"",""ender"":""2026-05-12"",""operatorid"":48},{""available"":35,""starter"":""2026-05-13"",""ender"":""2026-05-13"",""operatorid"":48},{""available"":35,""starter"":""2026-05-14"",""ender"":""2026-05-14"",""operatorid"":48},{""available"":35,""starter"":""2026-05-15"",""ender"":""2026-05-15"",""operatorid"":48},{""available"":35,""starter"":""2026-05-16"",""ender"":""2026-05-16"",""operatorid"":48},{""available"":35,""starter"":""2026-05-17"",""ender"":""2026-05-17"",""operatorid"":48},{""available"":35,""starter"":""2026-05-18"",""ender"":""2026-05-18"",""operatorid"":48},{""available"":35,""starter"":""2026-05-19"",""ender"":""2026-05-19"",""operatorid"":48},{""available"":35,""starter"":""2026-05-20"",""ender"":""2026-05-20"",""operatorid"":48},{""available"":35,""starter"":""2026-05-21"",""ender"":""2026-05-21"",""operatorid"":48},{""available"":35,""starter"":""2026-05-22"",""ender"":""2026-05-22"",""operatorid"":48},{""available"":35,""starter"":""2026-05-23"",""ender"":""2026-05-23"",""operatorid"":48},{""available"":35,""starter"":""2026-05-24"",""ender"":""2026-05-24"",""operatorid"":48},{""available"":35,""starter"":""2026-05-25"",""ender"":""2026-05-25"",""operatorid"":48},{""available"":35,""starter"":""2026-05-26"",""ender"":""2026-05-26"",""operatorid"":48},{""available"":32,""starter"":""2026-05-27"",""ender"":""2026-05-27"",""operatorid"":48},{""available"":35,""starter"":""2026-05-28"",""ender"":""2026-05-28"",""operatorid"":48},{""available"":35,""starter"":""2026-05-29"",""ender"":""2026-05-29"",""operatorid"":48},{""available"":35,""starter"":""2026-05-30"",""ender"":""2026-05-30"",""operatorid"":48},{""available"":35,""starter"":""2026-05-31"",""ender"":""2026-05-31"",""operatorid"":48},{""available"":35,""starter"":""2026-06-01"",""ender"":""2026-06-01"",""operatorid"":48},{""available"":35,""starter"":""2026-06-02"",""ender"":""2026-06-02"",""operatorid"":48},{""available"":35,""starter"":""2026-06-03"",""ender"":""2026-06-03"",""operatorid"":48},{""available"":35,""starter"":""2026-06-04"",""ender"":""2026-06-04"",""operatorid"":48},{""available"":35,""starter"":""2026-06-05"",""ender"":""2026-06-05"",""operatorid"":48},{""available"":35,""starter"":""2026-06-06"",""ender"":""2026-06-06"",""operatorid"":48},{""available"":35,""starter"":""2026-06-07"",""ender"":""2026-06-07"",""operatorid"":48},{""available"":35,""starter"":""2026-06-08"",""ender"":""2026-06-08"",""operatorid"":48},{""available"":35,""starter"":""2026-06-09"",""ender"":""2026-06-09"",""operatorid"":48},{""available"":35,""starter"":""2026-06-10"",""ender"":""2026-06-10"",""operatorid"":48},{""available"":35,""starter"":""2026-06-11"",""ender"":""2026-06-11"",""operatorid"":48},{""available"":35,""starter"":""2026-06-12"",""ender"":""2026-06-12"",""operatorid"":48},{""available"":35,""starter"":""2026-06-13"",""ender"":""2026-06-13"",""operatorid"":48},{""available"":35,""starter"":""2026-06-14"",""ender"":""2026-06-14"",""operatorid"":48},{""available"":35,""starter"":""2026-06-15"",""ender"":""2026-06-15"",""operatorid"":48},{""available"":35,""starter"":""2026-06-16"",""ender"":""2026-06-16"",""operatorid"":48},{""available"":35,""starter"":""2026-06-17"",""ender"":""2026-06-17"",""operatorid"":48},{""available"":35,""starter"":""2026-06-18"",""ender"":""2026-06-18"",""operatorid"":48},{""available"":35,""starter"":""2026-06-19"",""ender"":""2026-06-19"",""operatorid"":48},{""available"":35,""starter"":""2026-06-20"",""ender"":""2026-06-20"",""operatorid"":48},{""available"":35,""starter"":""2026-06-21"",""ender"":""2026-06-21"",""operatorid"":48},{""available"":35,""starter"":""2026-06-22"",""ender"":""2026-06-22"",""operatorid"":48},{""available"":35,""starter"":""2026-06-23"",""ender"":""2026-06-23"",""operatorid"":48},{""available"":35,""starter"":""2026-06-24"",""ender"":""2026-06-24"",""operatorid"":48},{""available"":35,""starter"":""2026-06-25"",""ender"":""2026-06-25"",""operatorid"":48},{""available"":35,""starter"":""2026-06-26"",""ender"":""2026-06-26"",""operatorid"":48},{""available"":35,""starter"":""2026-06-27"",""ender"":""2026-06-27"",""operatorid"":48},{""available"":35,""starter"":""2026-06-28"",""ender"":""2026-06-28"",""operatorid"":48},{""available"":35,""starter"":""2026-06-29"",""ender"":""2026-06-29"",""operatorid"":48},{""available"":35,""starter"":""2026-06-30"",""ender"":""2026-06-30"",""operatorid"":48},{""available"":35,""starter"":""2026-07-01"",""ender"":""2026-07-01"",""operatorid"":48},{""available"":35,""starter"":""2026-07-02"",""ender"":""2026-07-02"",""operatorid"":48},{""available"":35,""starter"":""2026-07-03"",""ender"":""2026-07-03"",""operatorid"":48},{""available"":35,""starter"":""2026-07-04"",""ender"":""2026-07-04"",""operatorid"":48},{""available"":35,""starter"":""2026-07-05"",""ender"":""2026-07-05"",""operatorid"":48},{""available"":35,""starter"":""2026-07-06"",""ender"":""2026-07-06"",""operatorid"":48},{""available"":35,""starter"":""2026-07-07"",""ender"":""2026-07-07"",""operatorid"":48},{""available"":35,""starter"":""2026-07-08"",""ender"":""2026-07-08"",""operatorid"":48},{""available"":35,""starter"":""2026-07-09"",""ender"":""2026-07-09"",""operatorid"":48},{""available"":35,""starter"":""2026-07-10"",""ender"":""2026-07-10"",""operatorid"":48},{""available"":35,""starter"":""2026-07-11"",""ender"":""2026-07-11"",""operatorid"":48},{""available"":35,""starter"":""2026-07-12"",""ender"":""2026-07-12"",""operatorid"":48},{""available"":35,""starter"":""2026-07-13"",""ender"":""2026-07-13"",""operatorid"":48},{""available"":35,""starter"":""2026-07-14"",""ender"":""2026-07-14"",""operatorid"":48},{""available"":34,""starter"":""2026-07-15"",""ender"":""2026-07-15"",""operatorid"":48},{""available"":35,""starter"":""2026-07-16"",""ender"":""2026-07-16"",""operatorid"":48},{""available"":35,""starter"":""2026-07-17"",""ender"":""2026-07-17"",""operatorid"":48},{""available"":35,""starter"":""2026-07-18"",""ender"":""2026-07-18"",""operatorid"":48},{""available"":35,""starter"":""2026-07-19"",""ender"":""2026-07-19"",""operatorid"":48},{""available"":35,""starter"":""2026-07-20"",""ender"":""2026-07-20"",""operatorid"":48},{""available"":35,""starter"":""2026-07-21"",""ender"":""2026-07-21"",""operatorid"":48},{""available"":35,""starter"":""2026-07-22"",""ender"":""2026-07-22"",""operatorid"":48},{""available"":35,""starter"":""2026-07-23"",""ender"":""2026-07-23"",""operatorid"":48},{""available"":35,""starter"":""2026-07-24"",""ender"":""2026-07-24"",""operatorid"":48},{""available"":35,""starter"":""2026-07-25"",""ender"":""2026-07-25"",""operatorid"":48},{""available"":35,""starter"":""2026-07-26"",""ender"":""2026-07-26"",""operatorid"":48},{""available"":35,""starter"":""2026-07-27"",""ender"":""2026-07-27"",""operatorid"":48},{""available"":33,""starter"":""2026-07-28"",""ender"":""2026-07-28"",""operatorid"":48},{""available"":35,""starter"":""2026-07-29"",""ender"":""2026-07-29"",""operatorid"":48},{""available"":35,""starter"":""2026-07-30"",""ender"":""2026-07-30"",""operatorid"":48},{""available"":35,""starter"":""2026-07-31"",""ender"":""2026-07-31"",""operatorid"":48},{""available"":35,""starter"":""2026-08-01"",""ender"":""2026-08-01"",""operatorid"":48},{""available"":35,""starter"":""2026-08-02"",""ender"":""2026-08-02"",""operatorid"":48},{""available"":35,""starter"":""2026-08-03"",""ender"":""2026-08-03"",""operatorid"":48},{""available"":35,""starter"":""2026-08-04"",""ender"":""2026-08-04"",""operatorid"":48},{""available"":35,""starter"":""2026-08-05"",""ender"":""2026-08-05"",""operatorid"":48},{""available"":35,""starter"":""2026-08-06"",""ender"":""2026-08-06"",""operatorid"":48},{""available"":35,""starter"":""2026-08-07"",""ender"":""2026-08-07"",""operatorid"":48},{""available"":35,""starter"":""2026-08-08"",""ender"":""2026-08-08"",""operatorid"":48},{""available"":35,""starter"":""2026-08-09"",""ender"":""2026-08-09"",""operatorid"":48},{""available"":35,""starter"":""2026-08-10"",""ender"":""2026-08-10"",""operatorid"":48},{""available"":35,""starter"":""2026-08-11"",""ender"":""2026-08-11"",""operatorid"":48},{""available"":35,""starter"":""2026-08-12"",""ender"":""2026-08-12"",""operatorid"":48},{""available"":35,""starter"":""2026-08-13"",""ender"":""2026-08-13"",""operatorid"":48},{""available"":35,""starter"":""2026-08-14"",""ender"":""2026-08-14"",""operatorid"":48},{""available"":35,""starter"":""2026-08-15"",""ender"":""2026-08-15"",""operatorid"":48},{""available"":35,""starter"":""2026-08-16"",""ender"":""2026-08-16"",""operatorid"":48},{""available"":35,""starter"":""2026-08-17"",""ender"":""2026-08-17"",""operatorid"":48},{""available"":35,""starter"":""2026-08-18"",""ender"":""2026-08-18"",""operatorid"":48},{""available"":35,""starter"":""2026-08-19"",""ender"":""2026-08-19"",""operatorid"":48},{""available"":35,""starter"":""2026-08-20"",""ender"":""2026-08-20"",""operatorid"":48},{""available"":35,""starter"":""2026-08-21"",""ender"":""2026-08-21"",""operatorid"":48},{""available"":35,""starter"":""2026-08-22"",""ender"":""2026-08-22"",""operatorid"":48},{""available"":35,""starter"":""2026-08-23"",""ender"":""2026-08-23"",""operatorid"":48},{""available"":35,""starter"":""2026-08-24"",""ender"":""2026-08-24"",""operatorid"":48},{""available"":35,""starter"":""2026-08-25"",""ender"":""2026-08-25"",""operatorid"":48},{""available"":35,""starter"":""2026-08-26"",""ender"":""2026-08-26"",""operatorid"":48},{""available"":35,""starter"":""2026-08-27"",""ender"":""2026-08-27"",""operatorid"":48},{""available"":35,""starter"":""2026-08-28"",""ender"":""2026-08-28"",""operatorid"":48},{""available"":35,""starter"":""2026-08-29"",""ender"":""2026-08-29"",""operatorid"":48},{""available"":35,""starter"":""2026-08-30"",""ender"":""2026-08-30"",""operatorid"":48},{""available"":35,""starter"":""2026-08-31"",""ender"":""2026-08-31"",""operatorid"":48},{""available"":35,""starter"":""2026-09-01"",""ender"":""2026-09-01"",""operatorid"":48},{""available"":35,""starter"":""2026-09-02"",""ender"":""2026-09-02"",""operatorid"":48},{""available"":35,""starter"":""2026-09-03"",""ender"":""2026-09-03"",""operatorid"":48},{""available"":35,""starter"":""2026-09-04"",""ender"":""2026-09-04"",""operatorid"":48},{""available"":35,""starter"":""2026-09-05"",""ender"":""2026-09-05"",""operatorid"":48},{""available"":35,""starter"":""2026-09-06"",""ender"":""2026-09-06"",""operatorid"":48},{""available"":35,""starter"":""2026-09-07"",""ender"":""2026-09-07"",""operatorid"":48},{""available"":35,""starter"":""2026-09-08"",""ender"":""2026-09-08"",""operatorid"":48},{""available"":35,""starter"":""2026-09-09"",""ender"":""2026-09-09"",""operatorid"":48},{""available"":35,""starter"":""2026-09-10"",""ender"":""2026-09-10"",""operatorid"":48},{""available"":35,""starter"":""2026-09-11"",""ender"":""2026-09-11"",""operatorid"":48},{""available"":35,""starter"":""2026-09-12"",""ender"":""2026-09-12"",""operatorid"":48},{""available"":35,""starter"":""2026-09-13"",""ender"":""2026-09-13"",""operatorid"":48},{""available"":35,""starter"":""2026-09-14"",""ender"":""2026-09-14"",""operatorid"":48},{""available"":35,""starter"":""2026-09-15"",""ender"":""2026-09-15"",""operatorid"":48},{""available"":35,""starter"":""2026-09-16"",""ender"":""2026-09-16"",""operatorid"":48},{""available"":35,""starter"":""2026-09-17"",""ender"":""2026-09-17"",""operatorid"":48},{""available"":35,""starter"":""2026-09-18"",""ender"":""2026-09-18"",""operatorid"":48},{""available"":35,""starter"":""2026-09-19"",""ender"":""2026-09-19"",""operatorid"":48},{""available"":35,""starter"":""2026-09-20"",""ender"":""2026-09-20"",""operatorid"":48},{""available"":35,""starter"":""2026-09-21"",""ender"":""2026-09-21"",""operatorid"":48},{""available"":35,""starter"":""2026-09-22"",""ender"":""2026-09-22"",""operatorid"":48},{""available"":35,""starter"":""2026-09-23"",""ender"":""2026-09-23"",""operatorid"":48},{""available"":35,""starter"":""2026-09-24"",""ender"":""2026-09-24"",""operatorid"":48},{""available"":35,""starter"":""2026-09-25"",""ender"":""2026-09-25"",""operatorid"":48},{""available"":35,""starter"":""2026-09-26"",""ender"":""2026-09-26"",""operatorid"":48},{""available"":35,""starter"":""2026-09-27"",""ender"":""2026-09-27"",""operatorid"":48},{""available"":35,""starter"":""2026-09-28"",""ender"":""2026-09-28"",""operatorid"":48},{""available"":35,""starter"":""2026-09-29"",""ender"":""2026-09-29"",""operatorid"":48},{""available"":35,""starter"":""2026-09-30"",""ender"":""2026-09-30"",""operatorid"":48},{""available"":35,""starter"":""2026-10-01"",""ender"":""2026-10-01"",""operatorid"":48},{""available"":35,""starter"":""2026-10-02"",""ender"":""2026-10-02"",""operatorid"":48},{""available"":35,""starter"":""2026-10-03"",""ender"":""2026-10-03"",""operatorid"":48},{""available"":35,""starter"":""2026-10-04"",""ender"":""2026-10-04"",""operatorid"":48},{""available"":35,""starter"":""2026-10-05"",""ender"":""2026-10-05"",""operatorid"":48},{""available"":35,""starter"":""2026-10-06"",""ender"":""2026-10-06"",""operatorid"":48},{""available"":35,""starter"":""2026-10-07"",""ender"":""2026-10-07"",""operatorid"":48},{""available"":35,""starter"":""2026-10-08"",""ender"":""2026-10-08"",""operatorid"":48},{""available"":35,""starter"":""2026-10-09"",""ender"":""2026-10-09"",""operatorid"":48},{""available"":35,""starter"":""2026-10-10"",""ender"":""2026-10-10"",""operatorid"":48},{""available"":35,""starter"":""2026-10-11"",""ender"":""2026-10-11"",""operatorid"":48},{""available"":35,""starter"":""2026-10-12"",""ender"":""2026-10-12"",""operatorid"":48},{""available"":35,""starter"":""2026-10-13"",""ender"":""2026-10-13"",""operatorid"":48},{""available"":35,""starter"":""2026-10-14"",""ender"":""2026-10-14"",""operatorid"":48},{""available"":35,""starter"":""2026-10-15"",""ender"":""2026-10-15"",""operatorid"":48},{""available"":35,""starter"":""2026-10-16"",""ender"":""2026-10-16"",""operatorid"":48},{""available"":35,""starter"":""2026-10-17"",""ender"":""2026-10-17"",""operatorid"":48},{""available"":35,""starter"":""2026-10-18"",""ender"":""2026-10-18"",""operatorid"":48},{""available"":33,""starter"":""2026-10-19"",""ender"":""2026-10-19"",""operatorid"":48},{""available"":35,""starter"":""2026-10-20"",""ender"":""2026-10-20"",""operatorid"":48},{""available"":35,""starter"":""2026-10-21"",""ender"":""2026-10-21"",""operatorid"":48},{""available"":35,""starter"":""2026-10-22"",""ender"":""2026-10-22"",""operatorid"":48},{""available"":35,""starter"":""2026-10-23"",""ender"":""2026-10-23"",""operatorid"":48},{""available"":35,""starter"":""2026-10-24"",""ender"":""2026-10-24"",""operatorid"":48},{""available"":35,""starter"":""2026-10-25"",""ender"":""2026-10-25"",""operatorid"":48},{""available"":35,""starter"":""2026-10-26"",""ender"":""2026-10-26"",""operatorid"":48},{""available"":35,""starter"":""2026-10-27"",""ender"":""2026-10-27"",""operatorid"":48},{""available"":35,""starter"":""2026-10-28"",""ender"":""2026-10-28"",""operatorid"":48},{""available"":35,""starter"":""2026-10-29"",""ender"":""2026-10-29"",""operatorid"":48},{""available"":35,""starter"":""2026-10-30"",""ender"":""2026-10-30"",""operatorid"":48},{""available"":35,""starter"":""2026-10-31"",""ender"":""2026-10-31"",""operatorid"":48},{""available"":35,""starter"":""2026-11-01"",""ender"":""2026-11-01"",""operatorid"":48},{""available"":35,""starter"":""2026-11-02"",""ender"":""2026-11-02"",""operatorid"":48},{""available"":35,""starter"":""2026-11-03"",""ender"":""2026-11-03"",""operatorid"":48},{""available"":35,""starter"":""2026-11-04"",""ender"":""2026-11-04"",""operatorid"":48},{""available"":35,""starter"":""2026-11-05"",""ender"":""2026-11-05"",""operatorid"":48},{""available"":35,""starter"":""2026-11-06"",""ender"":""2026-11-06"",""operatorid"":48},{""available"":35,""starter"":""2026-11-07"",""ender"":""2026-11-07"",""operatorid"":48},{""available"":35,""starter"":""2026-11-08"",""ender"":""2026-11-08"",""operatorid"":48},{""available"":35,""starter"":""2026-11-09"",""ender"":""2026-11-09"",""operatorid"":48},{""available"":35,""starter"":""2026-11-10"",""ender"":""2026-11-10"",""operatorid"":48},{""available"":35,""starter"":""2026-11-11"",""ender"":""2026-11-11"",""operatorid"":48},{""available"":35,""starter"":""2026-11-12"",""ender"":""2026-11-12"",""operatorid"":48},{""available"":35,""starter"":""2026-11-13"",""ender"":""2026-11-13"",""operatorid"":48},{""available"":35,""starter"":""2026-11-14"",""ender"":""2026-11-14"",""operatorid"":48},{""available"":35,""starter"":""2026-11-15"",""ender"":""2026-11-15"",""operatorid"":48},{""available"":35,""starter"":""2026-11-16"",""ender"":""2026-11-16"",""operatorid"":48},{""available"":35,""starter"":""2026-11-17"",""ender"":""2026-11-17"",""operatorid"":48},{""available"":35,""starter"":""2026-11-18"",""ender"":""2026-11-18"",""operatorid"":48},{""available"":35,""starter"":""2026-11-19"",""ender"":""2026-11-19"",""operatorid"":48},{""available"":35,""starter"":""2026-11-20"",""ender"":""2026-11-20"",""operatorid"":48},{""available"":35,""starter"":""2026-11-21"",""ender"":""2026-11-21"",""operatorid"":48},{""available"":35,""starter"":""2026-11-22"",""ender"":""2026-11-22"",""operatorid"":48},{""available"":35,""starter"":""2026-11-23"",""ender"":""2026-11-23"",""operatorid"":48},{""available"":35,""starter"":""2026-11-24"",""ender"":""2026-11-24"",""operatorid"":48},{""available"":35,""starter"":""2026-11-25"",""ender"":""2026-11-25"",""operatorid"":48},{""available"":35,""starter"":""2026-11-26"",""ender"":""2026-11-26"",""operatorid"":48},{""available"":35,""starter"":""2026-11-27"",""ender"":""2026-11-27"",""operatorid"":48},{""available"":35,""starter"":""2026-11-28"",""ender"":""2026-11-28"",""operatorid"":48},{""available"":35,""starter"":""2026-11-29"",""ender"":""2026-11-29"",""operatorid"":48},{""available"":35,""starter"":""2026-11-30"",""ender"":""2026-11-30"",""operatorid"":48},{""available"":35,""starter"":""2026-12-01"",""ender"":""2026-12-01"",""operatorid"":48},{""available"":35,""starter"":""2026-12-02"",""ender"":""2026-12-02"",""operatorid"":48},{""available"":35,""starter"":""2026-12-03"",""ender"":""2026-12-03"",""operatorid"":48},{""available"":35,""starter"":""2026-12-04"",""ender"":""2026-12-04"",""operatorid"":48},{""available"":35,""starter"":""2026-12-05"",""ender"":""2026-12-05"",""operatorid"":48},{""available"":35,""starter"":""2026-12-06"",""ender"":""2026-12-06"",""operatorid"":48},{""available"":35,""starter"":""2026-12-07"",""ender"":""2026-12-07"",""operatorid"":48},{""available"":35,""starter"":""2026-12-08"",""ender"":""2026-12-08"",""operatorid"":48},{""available"":35,""starter"":""2026-12-09"",""ender"":""2026-12-09"",""operatorid"":48},{""available"":35,""starter"":""2026-12-10"",""ender"":""2026-12-10"",""operatorid"":48},{""available"":35,""starter"":""2026-12-11"",""ender"":""2026-12-11"",""operatorid"":48},{""available"":35,""starter"":""2026-12-12"",""ender"":""2026-12-12"",""operatorid"":48},{""available"":35,""starter"":""2026-12-13"",""ender"":""2026-12-13"",""operatorid"":48},{""available"":35,""starter"":""2026-12-14"",""ender"":""2026-12-14"",""operatorid"":48},{""available"":35,""starter"":""2026-12-15"",""ender"":""2026-12-15"",""operatorid"":48},{""available"":35,""starter"":""2026-12-16"",""ender"":""2026-12-16"",""operatorid"":48}];
             var startDays = [];
             var endDays = [];
             var availability = [];
@@ -1545,7 +1545,7 @@ var siteUrl = 'https://sailing-whitsundays.com/';
             }
             //OUR MAIN CALENDAR - FOR ALL PRODUCTS THAT HAVE LIVE MANIFEST DATES 
             //CLASS NAMES IN THE RETURN LINK TO CSS CLASSES WITH COLOR CODES
-            $(function() {
+            $(function () {
                 $("".calendar"").datepicker({
                     format: 'D dd M yyyy',
                     todayHighlight: true,
@@ -1554,9 +1554,10 @@ var siteUrl = 'https://sailing-whitsundays.com/';
                     ignoreReadonly: true,
                     startDate: new Date(),
 
-                    onChangeMonthYear: function(month, year, dp) {},
+                    onChangeMonthYear: function (month, year, dp) {
+                    },
 
-                    beforeShowDay: function(date) {
+                    beforeShowDay: function (date) {
                         if (startDays.indexOf(formatDate(date)) < 0) {
 
                             var selectable = false;
@@ -1613,209 +1614,204 @@ var siteUrl = 'https://sailing-whitsundays.com/';
             });
 
 
-
-
-            //THESE CALENDARS ARE FOR PRODUCTS WITHOUT LIVE DATE CHECKING 
+            //THESE CALENDARS ARE FOR PRODUCTS WITHOUT LIVE DATE CHECKING
             //HOWEVER THESE PRODUCTS MAY STILL HAVE LIVE AVAILABILITY CHECKS
+                    });
+
+
+        //FUNCTION TO MATCH ARRAY LIVE DAYS TO CALENDAR DAYS
+        function formatDate(d) {
+            var day = String(d.getDate())
+            //add leading zero if day is is single digit
+            if (day.length == 1)
+                day = '0' + day
+            var month = String((d.getMonth() + 1))
+            //add leading zero if month is is single digit
+            if (month.length == 1)
+                month = '0' + month
+            return d.getFullYear() + ""-"" + month + ""-"" + day;
+
+        }
+$(function () {
+            // olli -> cleaning up the mess
+
+            // start status for the modal buttons
+            $(""#btn_CheckAvailability"").removeClass('booking-hide-button').addClass('disabled');
+            $('#btn_BookNow').addClass(""booking-hide-button"");
+            $('#btn_BookGiftcard').addClass(""booking-hide-button"");
+            $('.isAvailableLabel').addClass('booking-hide-button');
+
+            // EVENT TRIGEGRS
+            // change quantity fields
+            $('#modal_booking_form').on('change', '.item-booking-qty', checkBookingQty);
+
+            // click book now button and open modal
+            $("".product-booknowbutton"").click(function () {
+                $('#btn_BookGiftcard').addClass(""booking-hide-button"");
+                // Hide all buttons when date not selected.
+                // live booking is enabled
+                                // date was already changed previous
+                if ($('.col-quantity').length > 0) {
+                    $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
+                }
+                
+                // product options are already available, make sure button is enabled
+                if ($('.col-quantity').length > 0) {
+                    $(""#btn_BookNow"").removeClass('booking-hide-button').removeClass('disabled');
+                } else {
+                    $(""#btn_BookNow"").removeClass(""booking-hide-button"").addClass(""disabled"");
+                }
+
+                // Show/hide titles
+                $("".booking-title-check"").addClass(""booking-hide-button"");
+                $("".booking-title-gift"").addClass(""booking-hide-button"");
+                $("".booking-title-book"").removeClass(""booking-hide-button"");
+                $("".booking-title-check-offline"").addClass(""booking-hide-button"");
+                $("".travel-on"").removeClass(""booking-hide-button"");
+                $(""#view_pricing"").removeClass(""booking-hide-button"");
+                $(""#pricingform"").attr(""do_action"", ""booking"");
+
+                if ($('#depdate').val() == '') {
+                                    }
+
+            });
+
+            // this is the Check Availability button that opens the modal window
+            $("".product-checkbutton"").click(function () {
+                hasLiveAvailWithBooking = true;
+                //   $('#resulttext').html('');
+                $('#btn_BookGiftcard').addClass(""booking-hide-button"");
+                // Hide all buttons when date not selected.
+                $("".booking-title-book"").addClass(""booking-hide-button"");
+                $("".booking-title-gift"").addClass(""booking-hide-button"");
+
+                                $("".booking-title-check"").removeClass(""booking-hide-button"");
+                $("".booking-title-check-offline"").addClass(""booking-hide-button"");
+                                //   $(""#btn_CheckAvailability"").removeClass('booking-hide-button').addClass('disabled');
+
+                $(""#btn_BookNow"").addClass(""booking-hide-button"");
+                $(""#btn_BookGiftcard"").addClass(""booking-hide-button"");
+                $("".travel-on"").removeClass(""booking-hide-button"");
+                checkBookingQty(hasLiveAvailWithBooking);
+
+                //only do this if giftcard was selected last.
+                if ($('#depdate').val() == '') {
+                    $('#view_pricing').html(""<div class='select-date-please'><p>Please select a Date of Travel above to view product options.</p></div>"");
+                }
+
+                $(""#view_pricing"").removeClass(""booking-hide-button"");
+                $(""#pricingform"").attr(""do_action"", ""check"");
+            });
+
+            // this is the Gift Card button that opens the modal window
+            $("".product-giftcardbutton"").click(function () {
+                $("".booking-title-gift"").removeClass(""booking-hide-button"");
+                $(""#btn_BookNow"").addClass(""booking-hide-button"");
+                $("".booking-title-book"").addClass(""booking-hide-button"");
+                $(""#btn_CheckAvailability"").addClass(""booking-hide-button"");
+                $("".booking-title-check"").addClass(""booking-hide-button"");
+                $("".booking-title-check-offline"").addClass(""booking-hide-button"");
+                $("".booking-title-book"").addClass(""booking-hide-button"");
+                $("".travel-on"").addClass(""booking-hide-button"");
+                $(""#view_pricing"").addClass(""booking-hide-button"");
+
+                $("".booking-title-gift"").removeClass(""booking-hide-button"");
+                $(""#btn_BookGiftcard"").removeClass(""booking-hide-button"");
+                $(""#pricingform"").attr(""do_action"", ""giftcard"");
+
+                enableSubmit()
+                    .then(function (response) {
+                    })
+
+            });
+            $(""#btn_BookGiftcard"").click(function () {
+                var col = $('.col-quantity');
+                var tempoption = 0;
+                var qtySelected = false;
+
+                col.each(function (index) {
+                    tempoption = $('input[name^=""option[' + index + '][qty]""]').val();
+                    if (tempoption > 0) {
+                        qtySelected = true;
+                    }
+                })
+
+                if (qtySelected) {
+                    $('#myModal').modal('hide');
+                    $('#checkoutModal').modal('show');
+                    $('#resulttext').html('');
+                } else {
+                    $('#resulttext').html('Please Enter A Quantity...');
+                }
             });
 
 
-    //FUNCTION TO MATCH ARRAY LIVE DAYS TO CALENDAR DAYS 
-    function formatDate(d) {
-        var day = String(d.getDate())
-        //add leading zero if day is is single digit
-        if (day.length == 1)
-            day = '0' + day
-        var month = String((d.getMonth() + 1))
-        //add leading zero if month is is single digit
-        if (month.length == 1)
-            month = '0' + month
-        return d.getFullYear() + ""-"" + month + ""-"" + day;
-
-    }
-$(function() {
-        // olli -> cleaning up the mess
-
-        // start status for the modal buttons
-        $(""#btn_CheckAvailability"").removeClass('booking-hide-button').addClass('disabled');
-        $('#btn_BookNow').addClass(""booking-hide-button"");
-        $('#btn_BookGiftcard').addClass(""booking-hide-button"");
-        $('.isAvailableLabel').addClass('booking-hide-button');
-
-        // EVENT TRIGEGRS
-        // change quantity fields
-        $('#modal_booking_form').on('change', '.item-booking-qty', checkBookingQty);
-
-        // click book now button and open modal
-        $("".product-booknowbutton"").click(function() {
-            $('#btn_BookGiftcard').addClass(""booking-hide-button"");
-            // Hide all buttons when date not selected.
-            // live booking is enabled
-                            // date was already changed previous
-                if ($('.col-quantity').length > 0) {
-                    console.log('changed before?');
-                    $(""#btn_CheckAvailability"").removeClass('booking-hide-button').removeClass('disabled');
-                }
-            
-            // product options are already available, make sure button is enabled
-            if ($('.col-quantity').length > 0) {
-                $(""#btn_BookNow"").removeClass('booking-hide-button').removeClass('disabled');
-            } else {
-                $(""#btn_BookNow"").removeClass(""booking-hide-button"").addClass(""disabled"");
-            }
-
-            // Show/hide titles
-            $("".booking-title-check"").addClass(""booking-hide-button"");
-            $("".booking-title-gift"").addClass(""booking-hide-button"");
-            $("".booking-title-book"").removeClass(""booking-hide-button"");
-            $("".booking-title-check-offline"").addClass(""booking-hide-button"");
-            $("".travel-on"").removeClass(""booking-hide-button"");
-            $(""#view_pricing"").removeClass(""booking-hide-button"");
-            $(""#pricingform"").attr(""do_action"", ""booking"");
-
-            if ($('#depdate').val() == '') {
-                            }
-
-        });
-
-        // this is the Check Availability button that opens the modal window
-        $("".product-checkbutton"").click(function() {
-            hasLiveAvailWithBooking = true;
-            //   $('#resulttext').html('');
-            $('#btn_BookGiftcard').addClass(""booking-hide-button"");
-            // Hide all buttons when date not selected.
-            $("".booking-title-book"").addClass(""booking-hide-button"");
-            $("".booking-title-gift"").addClass(""booking-hide-button"");
-
-                            $("".booking-title-check"").removeClass(""booking-hide-button"");
-                $("".booking-title-check-offline"").addClass(""booking-hide-button"");
-                        //   $(""#btn_CheckAvailability"").removeClass('booking-hide-button').addClass('disabled');
-
-            $(""#btn_BookNow"").addClass(""booking-hide-button"");
-            $(""#btn_BookGiftcard"").addClass(""booking-hide-button"");
-            $("".travel-on"").removeClass(""booking-hide-button"");
-            checkBookingQty(hasLiveAvailWithBooking);
-
-            //only do this if giftcard was selected last.
-            if ($('#depdate').val() == '') {
-                $('#view_pricing').html(""<div class='select-date-please'><p>Please select a Date of Travel above to view product options.</p></div>"");
-            }
-
-            $(""#view_pricing"").removeClass(""booking-hide-button"");
-            $(""#pricingform"").attr(""do_action"", ""check"");
-        });
-
-        // this is the Gift Card button that opens the modal window
-        $("".product-giftcardbutton"").click(function() {
-            $("".booking-title-gift"").removeClass(""booking-hide-button"");
-            $(""#btn_BookNow"").addClass(""booking-hide-button"");
-            $("".booking-title-book"").addClass(""booking-hide-button"");
-            $(""#btn_CheckAvailability"").addClass(""booking-hide-button"");
-            $("".booking-title-check"").addClass(""booking-hide-button"");
-            $("".booking-title-check-offline"").addClass(""booking-hide-button"");
-            $("".booking-title-book"").addClass(""booking-hide-button"");
-            $("".travel-on"").addClass(""booking-hide-button"");
-            $(""#view_pricing"").addClass(""booking-hide-button"");
-
-            $("".booking-title-gift"").removeClass(""booking-hide-button"");
-            $(""#btn_BookGiftcard"").removeClass(""booking-hide-button"");
-            $(""#pricingform"").attr(""do_action"", ""giftcard"");
-
-            enableSubmit()
-                .then(function(response) {})
-
-        });
-        $(""#btn_BookGiftcard"").click(function() {
-            var col = $('.col-quantity');
-            var tempoption = 0;
-            var qtySelected = false;
-
-            col.each(function(index) {
-                tempoption = $('input[name^=""option[' + index + '][qty]""]').val();
-                if (tempoption > 0) {
-                    qtySelected = true;
-                }
-            })
-
-            if (qtySelected) {
-                $('#myModal').modal('hide');
-                $('#checkoutModal').modal('show');
-                $('#resulttext').html('');
-            } else {
-                $('#resulttext').html('Please Enter A Quantity...');
-            }
-        });
+            if ($(""#pricingform"").attr(""do_action"") != ""giftcard"") {
+                // remove red border from input box
+                $('#ack').on('click', function () {
+                    if ($(this).hasClass('roteZora')) {
+                        $(this).removeClass('roteZora')
+                    }
+                })
 
 
-        if ($(""#pricingform"").attr(""do_action"") != ""giftcard"") {
-            // remove red border from input box
-            $('#ack').on('click', function() {
-                if ($(this).hasClass('roteZora')) {
-                    $(this).removeClass('roteZora')
-                }
-            })
-
-
-            //BOOTSTRAP CALENDAR BUG FIX - SAVES LAST DATE SO WE DONT HIDE THE PRODUCT OPTIONS AGAIN
-            $('.calendar').on('show', function(event) {
-                currentDate = $(this).datepicker('getFormattedDate');
-                
+                //BOOTSTRAP CALENDAR BUG FIX - SAVES LAST DATE SO WE DONT HIDE THE PRODUCT OPTIONS AGAIN
+                $('.calendar').on('show', function (event) {
+                    currentDate = $(this).datepicker('getFormattedDate');
+                    
                     if ($("".datepicker-dropdown"").children("".keyDiv"").length == 0) {
-                        $("".datepicker-dropdown"").append(""<div class='keyDiv'> <div class='availKeyDiv'> <span class='box availBox'> </span>Available </div></div>"");
+                        $("".datepicker-dropdown"").append(""<div class='keyDiv'> </div>"");
                         $("".keyDiv"").append(""<div class='lowAvailKeyDiv'> <span class='box lowAvailBox'> </span> Almost Gone! </div>"");
                         $("".keyDiv"").append(""<div class='notAvailKeyDiv'> <span class='box notAvailBox'> </span>Not Available </div>"");
                     }
-                                $('.prev').html('&#xf137;');
-                $('.next').html('&#xf138;');
-                $('.next, .prev').css('font-family', ""'Font Awesome 5 Free'"");
-            });
+                                        $('.prev').html('&#xf137;');
+                    $('.next').html('&#xf138;');
+                    $('.next, .prev').css('font-family', ""'Font Awesome 5 Free'"");
+                });
 
-            $('.calendar').on('changeDate', function(event) {
-                var productid = $('#ProductID').val();
-                console.log('in here 1');
-                console.log('currentDate -> ', $(this).val());
+                $('.calendar').on('changeDate', function (event) {
+                    var productid = $('#ProductID').val();
 
-                if ($(this).val() === '' || $(this).val() === null) {
-                    $(this).val(currentDate).datepicker('update');
-                }
+                    if ($(this).val() === '' || $(this).val() === null) {
+                        $(this).val(currentDate).datepicker('update');
+                    }
 
-                // olli fix to fill the hidden date field with correct formatted date
-                var currentDate = new Date($(this).val());
-                var dateWanted = moment(currentDate).format('YYYY-MM-DD');
-                $('#value-depdate').val(dateWanted);
+                    // olli fix to fill the hidden date field with correct formatted date
+                    var currentDate = new Date($(this).val());
+                    var dateWanted = moment(currentDate).format('YYYY-MM-DD');
+                    $('#value-depdate').val(dateWanted);
 
 
-                $('#view_pricing').html('<div class=\""loaderblack\""></div>');
+                    $('#view_pricing').html('<div class=\""loaderblack\""></div>');
 
-                // call the function to process availability, kind of in review
-                enableSubmit()
-                    .then(function(response) {})
-            });
-        } else {
-            console.log($(""#pricingform"").attr(""do_action""));
+                    // call the function to process availability, kind of in review
+                    enableSubmit()
+                        .then(function (response) {
+                        })
+                });
+            } else {
+                // console.log($(""#pricingform"").attr(""do_action""));
+            }
+
+        })
+
+
+        var dynamicCSSRules = [];
+
+        function addCSSRule(rule) {
+            if ($.inArray(rule, dynamicCSSRules) == -1) {
+                $('head').append('<style>' + rule + '</style>');
+                dynamicCSSRules.push(rule);
+            }
         }
-
-    })
-
-
-
-    var dynamicCSSRules = [];
-
-    function addCSSRule(rule) {
-        if ($.inArray(rule, dynamicCSSRules) == -1) {
-            $('head').append('<style>' + rule + '</style>');
-            dynamicCSSRules.push(rule);
-        }
-    }
 // current live availability
-        $(function() {
+        $(function () {
 
-            $('#toggler').on('click', function(event) {
+            $('#toggler').on('click', function (event) {
                 $('#toggle-details').toggle();
             });
 
             $('form#pricingform').on('submit', (event) => {
-                console.log(""submitted form"");
                 $("".minus, .plus"").css(""pointer-events"", ""none"");
                 $("".minus, .plus"").css(""opacity"", ""0.3"");
 
@@ -1833,7 +1829,7 @@ $(function() {
                     var options = [];
                     var tempoption;
 
-                    col.each(function(index) {
+                    col.each(function (index) {
 
                         tempoption = $('input[name^=""option[' + index + '][qty]""]').val();
                         optionid = $('input[name^=""option[' + index + '][optionid]""]').val();
@@ -1887,7 +1883,8 @@ $(function() {
                                 $('.isAvailableLabel').addClass('booking-hide-button');
                             }
                         })
-                        .catch(error => {})
+                        .catch(error => {
+                        })
                 }
 
 
@@ -2206,7 +2203,7 @@ function clickStar(selectedID) {
             reviewCount = 3;
             displayGraph(reviewCount, counter);
                         counter++;
-            reviewCount = 60;
+            reviewCount = 66;
             displayGraph(reviewCount, counter);
             
             function starDisplay() {
@@ -2218,7 +2215,6 @@ function clickStar(selectedID) {
 
             function displayGraph(reviewCount, index) {
                 let starPercentage = (reviewCount / 2) * 100;
-                console.log(reviewCount);
                 $("".bar-"" + index).css(""width"", starPercentage + ""%"");
             }
 
@@ -2405,9 +2401,6 @@ $(window).scroll(function(){
 <li><a class=""pa-click-record"" data-id=""464"" href=""https://sailing-whitsundays.com/tours/last-minute-overnight-tours"">
                                         Last Minute Overnight Tours                                    </a>
 </li>
-<li><a class=""pa-click-record"" data-id=""135"" href=""https://sailing-whitsundays.com/tours/east-coast"">
-                                        East Coast Itineraries                                    </a>
-</li>
 <li><a class=""pa-click-record"" data-id=""436"" href=""https://sailing-whitsundays.com/tours/last-minute-day-tours"">
                                         Last Minute Day Tours                                    </a>
 </li>
@@ -2415,4 +2408,7 @@ $(window).scroll(function(){
                                         Day Tour Deals                                    </a>
 </li>
 <li><a class=""pa-click-record"" data-id=""240"" href=""https://sailing-whitsundays.com/tours/overnight-tour-deals"">
-                                        Overnight Tour Deals                 "
+                                        Overnight Tour Deals                                    </a>
+</li>
+<li><a class=""pa-click-record"" data-id=""135"" href=""https://sailing-whitsundays.com/tours/east-coast"">
+                                        East Coast Itineraries                 "

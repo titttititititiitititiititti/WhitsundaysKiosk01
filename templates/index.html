@@ -450,20 +450,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 10; /* Above video background */
     }
     
     #bg-video {
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
       min-width: 100%;
       min-height: 100%;
       width: auto;
       height: auto;
-      transform: translate(-50%, -50%);
-      z-index: 1;
+      transform: translate(-50%, -50%) rotate(90deg); /* Rotate for vertical kiosk */
+      z-index: -1; /* Behind all pages */
       object-fit: cover;
       filter: blur(8px);
+      display: none; /* Hidden by default */
+      pointer-events: none; /* Don't block clicks */
+    }
+    
+    /* Show video when body has video-bg-active class */
+    body.video-bg-active #bg-video {
+      display: block !important;
+      z-index: 1 !important; /* Bring above body but below home page */
+    }
+    
+    /* Hide home page when video is active */
+    body.video-bg-active .home-page {
+      display: none !important;
     }
     
     .video-question-container {
@@ -501,10 +515,11 @@
       width: 100%;
       height: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 40px;
       z-index: 20;
-      cursor: pointer;
       background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(5px);
     }
@@ -515,6 +530,104 @@
       color: white;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
       animation: pulse 2s ease-in-out infinite;
+      cursor: pointer;
+      padding: 20px 40px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .video-start-text:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    
+    .browse-all-tours-btn {
+      padding: 25px 60px;
+      font-size: 1.8em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, rgba(255, 140, 0, 0.8) 0%, rgba(255, 100, 0, 0.9) 50%, rgba(255, 69, 0, 0.85) 100%);
+      backdrop-filter: blur(10px);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(255, 100, 0, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1000;
+    }
+    
+    .browse-all-tours-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 160, 0, 0.9) 0%, rgba(255, 120, 0, 1) 50%, rgba(255, 89, 0, 0.95) 100%);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 40px rgba(255, 100, 0, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Browse All Tours button during questions (top right) */
+    .browse-all-tours-btn-questions {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      padding: 18px 40px;
+      font-size: 1.3em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, rgba(255, 140, 0, 0.8) 0%, rgba(255, 100, 0, 0.9) 50%, rgba(255, 69, 0, 0.85) 100%);
+      backdrop-filter: blur(10px);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 25px rgba(255, 100, 0, 0.5), 0 3px 12px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+    
+    .browse-all-tours-btn-questions:hover {
+      background: linear-gradient(135deg, rgba(255, 160, 0, 0.9) 0%, rgba(255, 120, 0, 1) 50%, rgba(255, 89, 0, 0.95) 100%);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 10px 35px rgba(255, 100, 0, 0.6), 0 5px 18px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Progress Indicator */
+    .vq-progress-container {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+    }
+    
+    .vq-progress-text {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 25px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .vq-progress-bar {
+      width: 300px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .vq-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00d084, #0cb4e7);
+      border-radius: 10px;
+      transition: width 0.4s ease;
     }
     
     @keyframes pulse {
@@ -576,6 +689,8 @@
       flex-direction: column;
       gap: 25px;
       width: 100%;
+      min-height: 550px; /* Prevent layout shift when continue button appears */
+      padding-bottom: 80px; /* Reserve space for continue button */
     }
     
     .vq-answer-btn {
@@ -654,10 +769,53 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      z-index: 30;
+      justify-content: flex-start;
+      z-index: 10; /* Above video background */
       pointer-events: none;
-      padding: 40px 20px 20px 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 60px; /* Space for buttons at bottom */
+    }
+    
+    .swipe-fixed-top {
+      flex-shrink: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 35px 20px 35px;
+      overflow: visible;
+    }
+    
+    .swipe-scrollable-content {
+      flex-shrink: 0;
+      width: 100%;
+      padding: 0 35px 20px 35px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .swipe-scrollable-content:empty {
+      display: none;
+    }
+    
+    .swipe-scrollable-content::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .swipe-scrollable-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    .swipe-scrollable-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+    
+    .swipe-scrollable-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
     }
     
     .swipe-results-overlay.active {
@@ -695,7 +853,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
     
     .swipe-card-header {
@@ -706,7 +864,7 @@
     }
     
     .swipe-card-header h2 {
-      font-size: 3em;
+      font-size: 3.5em;
       font-weight: 700;
       color: #ffffff;
       margin: 0 0 15px 0;
@@ -719,10 +877,60 @@
       backdrop-filter: blur(10px);
       color: white;
       padding: 12px 30px;
-      border-radius: 25px;
-      font-size: 1.5em;
+      border-radius: 30px;
+      font-size: 1.8em;
       font-weight: 600;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .swipe-gallery-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .gallery-nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 36px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+    }
+    
+    .gallery-nav-arrow:hover {
+      background: white;
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .gallery-nav-arrow:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    
+    .gallery-nav-arrow.left {
+      left: 20px;
+    }
+    
+    .gallery-nav-arrow.right {
+      right: 20px;
     }
     
     .swipe-gallery-spread {
@@ -733,12 +941,33 @@
       align-items: center;
       justify-content: center;
       gap: 40px;
+      transition: transform 0.3s ease;
+    }
+    
+    .swipe-gallery-spread.rotating-right {
+      animation: rotateRight 0.3s ease;
+    }
+    
+    .swipe-gallery-spread.rotating-left {
+      animation: rotateLeft 0.3s ease;
+    }
+    
+    @keyframes rotateRight {
+      0% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(-30px); opacity: 0.7; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes rotateLeft {
+      0% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(30px); opacity: 0.7; }
+      100% { transform: translateX(0); opacity: 1; }
     }
     
     .swipe-gallery-image {
-      width: 350px;
-      height: 450px;
-      border-radius: 20px;
+      width: 400px;
+      height: 500px;
+      border-radius: 30px;
       overflow: hidden;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
       transition: transform 0.3s ease;
@@ -765,8 +994,8 @@
     
     .swipe-gallery-image.center {
       z-index: 2;
-      width: 450px;
-      height: 550px;
+      width: 550px;
+      height: 650px;
     }
     
     @keyframes slideInLeft {
@@ -783,118 +1012,134 @@
       }
     }
     
-    .swipe-card {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      border-radius: 30px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      cursor: grab;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      user-select: none;
-    }
-    
-    .swipe-card.entering {
-      animation: slideUpCard 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    
-    @keyframes slideUpCard {
-      0% {
-        transform: translateY(150%);
-        opacity: 0;
-      }
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-    
-    .swipe-card.grabbing {
-      cursor: grabbing;
-    }
-    
-    .swipe-card.swiping-left {
-      animation: swipeLeft 0.4s ease-out forwards;
-    }
-    
-    .swipe-card.swiping-right {
-      animation: swipeRight 0.4s ease-out forwards;
-    }
-    
-    @keyframes swipeLeft {
-      to {
-        transform: translateX(-150%) rotate(-30deg);
-        opacity: 0;
-      }
-    }
-    
-    @keyframes swipeRight {
-      to {
-        transform: translateX(150%) rotate(30deg);
-        opacity: 0;
-      }
-    }
-    
-    .swipe-card-image {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-    }
-    
-    .swipe-card-content {
-      padding: 40px;
-    }
-    
-    .swipe-card-title {
-      font-size: 2.2em;
-      font-weight: 700;
-      color: #0077b6;
-      margin: 0 0 15px 0;
-      line-height: 1.2;
-    }
-    
-    .swipe-card-company {
-      font-size: 1.3em;
-      color: #666;
-      margin: 0 0 20px 0;
-      font-weight: 500;
-    }
-    
-    .swipe-card-details {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    
-    .swipe-card-detail {
-      background: #f0f0f0;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 1.1em;
-      color: #333;
-    }
-    
-    .swipe-card-price {
-      font-size: 2em;
-      font-weight: 700;
-      color: #0077b6;
-      margin: 20px 0 0 0;
-    }
-    
     .swipe-info-sections {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 25px;
+      gap: 30px;
       width: 900px;
-      margin: 30px 0 40px 0;
+      margin: 0 0 0 0;
       z-index: 15;
       opacity: 0;
       animation: fadeInUp 0.6s ease-out 0.8s forwards;
+      transition: all 0.3s ease;
+    }
+    
+    .swipe-expanded-details {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      padding: 20px 0;
+      opacity: 1;
+      animation: fadeInUp 0.4s ease-out;
+      margin-bottom: 20px;
+    }
+    
+    /* Make full-width sections span all columns */
+    .swipe-expanded-details .description-section {
+      grid-column: 1 / -1;
+    }
+    
+    /* Reviews grid - Multi-column masonry layout */
+    .swipe-reviews-grid {
+      column-count: 2;
+      column-gap: 25px;
+      margin-top: 20px;
+    }
+    
+    .swipe-review-card {
+      background: rgba(240, 248, 255, 0.8);
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid rgba(0, 119, 182, 0.1);
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 25px;
+      break-inside: avoid;
+      transition: all 0.3s ease;
+    }
+    
+    .swipe-review-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-color: rgba(0, 119, 182, 0.3);
+    }
+    
+    .swipe-detail-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px 45px;
+      border-radius: 22px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      animation: slideUpFadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    
+    /* Stagger animations for each section */
+    .swipe-detail-section:nth-child(1) { animation-delay: 0.1s; }
+    .swipe-detail-section:nth-child(2) { animation-delay: 0.2s; }
+    .swipe-detail-section:nth-child(3) { animation-delay: 0.3s; }
+    .swipe-detail-section:nth-child(4) { animation-delay: 0.4s; }
+    .swipe-detail-section:nth-child(5) { animation-delay: 0.5s; }
+    .swipe-detail-section:nth-child(6) { animation-delay: 0.6s; }
+    .swipe-detail-section:nth-child(7) { animation-delay: 0.7s; }
+    .swipe-detail-section:nth-child(8) { animation-delay: 0.8s; }
+    .swipe-detail-section:nth-child(9) { animation-delay: 0.9s; }
+    .swipe-detail-section:nth-child(10) { animation-delay: 1.0s; }
+    
+    .swipe-detail-section.description-section {
+      grid-column: 1 / -1;
+    }
+    
+    .swipe-detail-section h3 {
+      margin: 0 0 25px 0;
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #0077b6;
+    }
+    
+    .swipe-detail-section p,
+    .swipe-detail-section div {
+      margin: 0;
+      line-height: 1.6;
+      color: #2c3e50;
+      white-space: pre-wrap;
+      font-size: 1.25em;
+    }
+    
+    .swipe-detail-section ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .swipe-detail-section li {
+      margin-bottom: 0;
+      color: #2c3e50;
+      line-height: 1.6;
+      font-size: 1.25em;
+      padding-left: 40px;
+      position: relative;
+    }
+    
+    .swipe-detail-section li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #00b4d8;
+      font-weight: 900;
+      font-size: 1.4em;
+      top: 1px;
+    }
+    
+    .pricing-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0077b6;
     }
     
     @keyframes fadeInUp {
@@ -912,12 +1157,12 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       padding: 30px;
-      border-radius: 20px;
+      border-radius: 30px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
     
     .swipe-info-box h3 {
-      font-size: 1.8em;
+      font-size: 2em;
       font-weight: 700;
       color: #0077b6;
       margin: 0 0 15px 0;
@@ -930,7 +1175,7 @@
     }
     
     .swipe-info-box li {
-      font-size: 1.2em;
+      font-size: 1.4em;
       color: #2c3e50;
       padding: 8px 0;
       padding-left: 25px;
@@ -946,17 +1191,21 @@
     }
     
     .swipe-info-box p {
-      font-size: 1.2em;
+      font-size: 1.4em;
       color: #2c3e50;
       line-height: 1.6;
       margin: 0;
     }
     
     .swipe-actions {
+      position: relative;
+      margin: 40px auto;
       display: flex;
       gap: 50px;
-      margin-top: 40px;
-      z-index: 20;
+      z-index: 100;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      justify-content: center;
     }
     
     .swipe-actions.entering {
@@ -1043,6 +1292,16 @@
       box-shadow: 0 25px 60px rgba(12, 180, 231, 0.6);
     }
     
+    /* Enhanced styling when button shows "Book Now" */
+    .swipe-btn-accept.booking-mode {
+      background: linear-gradient(135deg, #00d084 0%, #00b872 50%, #009960 100%);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .swipe-btn-accept.booking-mode:hover {
+      box-shadow: 0 25px 60px rgba(0, 208, 132, 0.6);
+    }
+    
     .swipe-btn-accept:hover:before {
       opacity: 0.7;
     }
@@ -1071,7 +1330,7 @@
       overflow-y: auto;
       overflow-x: hidden;
       position: relative;
-      z-index: 1;
+      z-index: 2; /* Above video background */
     }
     
     /* Kiosk Header */
@@ -1957,10 +2216,10 @@
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%) !important;
+      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
       display: none;
       flex-direction: column;
-      z-index: 10000 !important;
+      z-index: 10 !important; /* Above video (z-index 1) */
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: none; /* Firefox */
@@ -1968,6 +2227,11 @@
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
+    }
+    
+    /* Make background transparent when in video flow */
+    body.video-bg-active .page.tour-detail-page {
+      background: transparent !important;
     }
     
     .page.tour-detail-page::-webkit-scrollbar {
@@ -2052,6 +2316,8 @@
       background: transparent !important;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
+      position: relative;
+      z-index: 10; /* Above video background */
     }
     
     .tour-detail-main::-webkit-scrollbar {
@@ -2488,34 +2754,16 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
       }
       
-      /* Make buttons responsive on mobile - FIT TO SCREEN WIDTH */
+      /* Footer buttons stay at desktop size - scaled by zoom, but text stays smaller */
       .btn-primary,
       .btn-secondary,
       .btn-tertiary {
-        width: calc(100% - 30px) !important;
-        min-width: unset !important;
-        max-width: unset !important;
-        height: auto !important;
-        min-height: 80px !important;
-        max-height: unset !important;
         font-size: 1.3em !important;
-        padding: 20px 25px !important;
-        margin: 0 15px !important;
-        white-space: normal !important;
-      }
-      
-      /* Footer needs to stack buttons vertically or allow wrapping */
-      .detail-footer {
-        flex-wrap: wrap !important;
-        gap: 15px !important;
-        padding: 15px 0 !important;
       }
       
       /* Reduce side padding on mobile so content has more room */
       .tour-detail-main {
         padding: 40px 2px 120px 2px !important;
-        max-width: 100% !important;
-        margin: 0 !important;
       }
       
       /* Make all detail sections much wider on mobile - override inline styles */
@@ -3059,34 +3307,6 @@
       .nav-btn {
         padding: 15px 25px;
         font-size: 1.1em;
-      }
-      
-      /* Make buttons responsive on smaller phones too */
-      .btn-primary,
-      .btn-secondary,
-      .btn-tertiary {
-        width: calc(100% - 30px) !important;
-        min-width: unset !important;
-        max-width: unset !important;
-        height: auto !important;
-        min-height: 80px !important;
-        max-height: unset !important;
-        font-size: 1.3em !important;
-        padding: 20px 25px !important;
-        margin: 0 15px !important;
-        white-space: normal !important;
-      }
-      
-      .detail-footer {
-        flex-wrap: wrap !important;
-        gap: 15px !important;
-        padding: 15px 0 !important;
-      }
-      
-      .tour-detail-main {
-        padding: 40px 2px 120px 2px !important;
-        max-width: 100% !important;
-        margin: 0 !important;
       }
     }
     /* Old tour detail page styles - now using .page.tour-detail-page instead */
@@ -5762,16 +5982,28 @@
       </button>
     </div>
     
+    <!-- Global Video Background - Visible on video flow and tour detail pages -->
+    <video id="bg-video" autoplay muted loop playsinline>
+      <source src="{{ url_for('static', filename='b_roll/background.mp4') }}" type="video/mp4">
+    </video>
+    
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
-      <!-- Full-screen video background -->
-      <video id="bg-video" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='b_roll/background.mp4') }}" type="video/mp4">
-      </video>
-      
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen" onclick="window.startVideoQuestions && window.startVideoQuestions()">
+      <div class="video-start-screen" id="video-start-screen" onclick="handleStartScreenClick(event)">
         <div class="video-start-text">Tap to Start</div>
+        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
+      </div>
+      
+      <!-- Browse All Tours Button (Always visible during questions) -->
+      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: none;" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
+      
+      <!-- Progress Indicator -->
+      <div class="vq-progress-container" id="vq-progress-container" style="display: none;">
+        <div class="vq-progress-text" id="vq-progress-text">Question 1 of 3</div>
+        <div class="vq-progress-bar">
+          <div class="vq-progress-fill" id="vq-progress-fill" style="width: 33.33%;"></div>
+        </div>
       </div>
       
       <!-- Back Button -->
@@ -5799,17 +6031,25 @@
           See All Tours →
         </button>
         
-        <!-- Card stack with gallery spread -->
-        <div class="swipe-card-stack" id="swipe-card-stack">
-          <!-- Gallery spread will be inserted here dynamically -->
+        <!-- Fixed Top Section -->
+        <div class="swipe-fixed-top" id="swipe-fixed-top">
+          <!-- Card stack with gallery spread -->
+          <div class="swipe-card-stack" id="swipe-card-stack">
+            <!-- Gallery spread will be inserted here dynamically -->
+          </div>
+          
+          <!-- Info sections (Highlights & What's Included) -->
+          <div class="swipe-info-sections" id="swipe-info-sections">
+            <!-- What's Included and Highlights will be inserted here -->
+          </div>
         </div>
         
-        <!-- Info sections -->
-        <div class="swipe-info-sections" id="swipe-info-sections">
-          <!-- What's Included and Highlights will be inserted here -->
+        <!-- Scrollable Content Area (for expanded details) -->
+        <div class="swipe-scrollable-content" id="swipe-scrollable-content">
+          <!-- Expanded details will be inserted here -->
         </div>
         
-        <!-- Action buttons -->
+        <!-- Fixed Action buttons -->
         <div class="swipe-actions" id="swipe-actions">
           <button class="swipe-btn swipe-btn-reject" id="reject-btn">
             <span class="swipe-btn-icon">✕</span>
@@ -6553,11 +6793,1067 @@
   
   <script>
     // =====================================================================
-    // GLOBAL VARIABLES - Language & Currency
+    // GLOBAL VARIABLES - Inactivity Timer & Language
     // =====================================================================
+    let inactivityTimer;
     const urlParams = new URLSearchParams(window.location.search);
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
+    
+    // =====================================================================
+    // VIDEO QUESTION FLOW - NEW PRIMARY EXPERIENCE
+    // =====================================================================
+    
+    const videoQuestions = [
+      {
+        question: "How long can you be away?",
+        answers: [
+          { text: "Half Day<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>", value: "half_day", filter: "duration" },
+          { text: "Full Day<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>", value: "full_day", filter: "duration" },
+          { text: "Multi-day Adventure", value: "multi_day", filter: "duration" },
+          { text: "No preference", value: "", filter: "duration" }
+        ]
+      },
+      {
+        question: "Who's coming along?",
+        answers: [
+          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
+          { text: "👥 Adults Only", value: "adults_only", filter: "family_friendly" },
+          { text: "No preference", value: "", filter: "family_friendly" }
+        ]
+      },
+      {
+        question: "What interests you most?",
+        multiple: true,
+        answers: [
+          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
+          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
+          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
+          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
+          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
+          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
+          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
+          { text: "No preference", value: "", filter: "activities", isSkip: true }
+        ]
+      }
+    ];
+    
+    let currentVideoQuestion = 0;
+    let videoAnswers = {
+      duration: "",
+      family_friendly: "",
+      activities: []
+    };
+    let hasStarted = false;
+    
+    function handleStartScreenClick(event) {
+      // Don't start if clicking on buttons or interactive elements
+      const target = event.target;
+      if (target.tagName === 'BUTTON' || 
+          target.closest('button') || 
+          target.closest('.browse-all-tours-btn') ||
+          target.closest('.language-selector') ||
+          target.closest('.mobile-menu-btn') ||
+          target.closest('.voice-chat-container')) {
+        return; // Let the button handle its own click
+      }
+      
+      // Start the questions
+      if (window.startVideoQuestions) {
+        window.startVideoQuestions();
+      }
+    }
+    
+    function initVideoQuestionFlow() {
+      console.log('🔧 Setting up video question flow...');
+      
+      const startScreen = document.getElementById('video-start-screen');
+      if (!startScreen) {
+        console.error('❌ Start screen element not found!');
+        return;
+      }
+      
+      console.log('✅ Start screen found');
+      
+      const backBtn = document.getElementById('vq-back-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', goBackVideoQuestion);
+      }
+      
+      resetInactivityTimer();
+      console.log('✅ Inactivity timer started');
+    }
+    
+    window.startVideoQuestions = function() {
+      console.log('🚀 Starting video questions!');
+      hasStarted = true;
+      isInVideoFlow = true; // Mark that we're in video flow
+      
+      // Show video background
+      document.body.classList.add('video-bg-active');
+      
+      const startScreen = document.getElementById('video-start-screen');
+      const questionContainer = document.getElementById('video-question-container');
+      const backBtn = document.getElementById('vq-back-btn');
+      const tourCounter = document.getElementById('vq-tour-counter');
+      const browseBtnQuestions = document.getElementById('browse-all-tours-questions');
+      const progressContainer = document.getElementById('vq-progress-container');
+      
+      if (startScreen) startScreen.style.display = 'none';
+      if (questionContainer) questionContainer.style.display = 'flex';
+      if (backBtn) backBtn.style.display = 'block';
+      if (tourCounter) {
+        tourCounter.style.display = 'block';
+        updateTourCounter();
+      }
+      if (browseBtnQuestions) browseBtnQuestions.style.display = 'block';
+      if (progressContainer) {
+        progressContainer.style.display = 'flex';
+        updateProgressIndicator();
+      }
+      
+      renderVideoQuestion(0);
+      resetInactivityTimer();
+    }
+    
+    async function updateTourCounter() {
+      const counter = document.getElementById('vq-tour-counter');
+      if (!counter) return;
+      
+      try {
+        const params = new URLSearchParams();
+        if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
+        if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
+        
+        if (videoAnswers.activities && videoAnswers.activities.length > 0) {
+          videoAnswers.activities.forEach(act => {
+            if (act) params.append('activities', act);
+          });
+        }
+        
+        const response = await fetch(`/api/tours?${params.toString()}`);
+        if (!response.ok) {
+          counter.textContent = 'Error loading count';
+          return;
+        }
+        
+        const data = await response.json();
+        const count = data.tours ? data.tours.length : 0;
+        counter.textContent = `${count} tours match`;
+      } catch (error) {
+        console.error('Error fetching tour count:', error);
+        counter.textContent = 'Error loading count';
+      }
+    }
+    
+    function resetInactivityTimer() {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      
+      inactivityTimer = setTimeout(() => {
+        if (hasStarted) {
+          resetVideoQuestionFlow();
+        }
+      }, 120000);
+    }
+    
+    function resetVideoQuestionFlow() {
+      hasStarted = false;
+      currentVideoQuestion = 0;
+      videoAnswers = {
+        duration: "",
+        family_friendly: "",
+        activities: []
+      };
+      document.getElementById('video-start-screen').style.display = 'flex';
+      document.getElementById('video-question-container').style.display = 'none';
+      document.getElementById('vq-back-btn').style.display = 'none';
+      document.getElementById('vq-tour-counter').style.display = 'none';
+    }
+    
+    async function goBackVideoQuestion() {
+      if (currentVideoQuestion > 0) {
+        currentVideoQuestion--;
+        renderVideoQuestion(currentVideoQuestion);
+        updateProgressIndicator();
+        await updateTourCounter();
+        resetInactivityTimer();
+      }
+    }
+    
+    function updateProgressIndicator() {
+      const progressText = document.getElementById('vq-progress-text');
+      const progressFill = document.getElementById('vq-progress-fill');
+      
+      if (progressText) {
+        progressText.textContent = `Question ${currentVideoQuestion + 1} of 3`;
+      }
+      if (progressFill) {
+        const percentage = ((currentVideoQuestion + 1) / 3) * 100;
+        progressFill.style.width = `${percentage}%`;
+      }
+    }
+    
+    function renderVideoQuestion(index) {
+      const question = videoQuestions[index];
+      const questionText = document.getElementById('vq-question-text');
+      const answersContainer = document.getElementById('vq-answers');
+      
+      questionText.textContent = question.question;
+      answersContainer.innerHTML = '';
+      
+      // Update progress indicator
+      updateProgressIndicator();
+      
+      if (question.multiple) {
+        const subtitle = document.createElement('p');
+        subtitle.className = 'vq-subtitle';
+        subtitle.textContent = 'Select all that apply';
+        answersContainer.appendChild(subtitle);
+      }
+      
+      question.answers.forEach((answer, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'vq-answer-btn';
+        btn.innerHTML = answer.text;
+        btn.dataset.index = idx;
+        btn.dataset.value = answer.value;
+        btn.dataset.isSkip = answer.isSkip || false;
+        
+        if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
+          btn.classList.add('selected');
+        }
+        
+        btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, answer.filter, e.target);
+        answersContainer.appendChild(btn);
+      });
+      
+      const firstAnswer = question.answers[0];
+      if (question.multiple && firstAnswer && videoAnswers[firstAnswer.filter] && videoAnswers[firstAnswer.filter].length > 0) {
+        addContinueButton();
+      }
+      
+      const card = document.getElementById('vq-card');
+      card.style.animation = 'none';
+      setTimeout(() => {
+        card.style.animation = 'slideUpFadeIn 0.8s ease-out';
+      }, 10);
+      
+      document.getElementById('vq-back-btn').style.display = currentVideoQuestion > 0 ? 'block' : 'none';
+    }
+    
+    function addContinueButton() {
+      const answersContainer = document.getElementById('vq-answers');
+      if (document.getElementById('vq-continue-btn')) return;
+      
+      const continueBtn = document.createElement('button');
+      continueBtn.id = 'vq-continue-btn';
+      continueBtn.className = 'vq-answer-btn vq-continue-btn';
+      continueBtn.innerHTML = 'Continue →';
+      continueBtn.onclick = nextVideoQuestion;
+      continueBtn.style.opacity = '0';
+      continueBtn.style.transform = 'translateY(20px)';
+      answersContainer.appendChild(continueBtn);
+      
+      // Animate in after a tiny delay to prevent layout shift
+      setTimeout(() => {
+        continueBtn.style.transition = 'all 0.3s ease';
+        continueBtn.style.opacity = '1';
+        continueBtn.style.transform = 'translateY(0)';
+      }, 10);
+    }
+    
+    async function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
+      resetInactivityTimer();
+      
+      if (isMultiple) {
+        if (answer.isSkip) {
+          videoAnswers[filterType] = [];
+          document.querySelectorAll('.vq-answer-btn.selected').forEach(btn => {
+            btn.classList.remove('selected');
+          });
+          await updateTourCounter();
+          nextVideoQuestion();
+        } else {
+          const index = videoAnswers[filterType].indexOf(answer.value);
+          if (index > -1) {
+            videoAnswers[filterType].splice(index, 1);
+            btnElement.classList.remove('selected');
+          } else {
+            videoAnswers[filterType].push(answer.value);
+            btnElement.classList.add('selected');
+          }
+          
+          await updateTourCounter();
+          
+          const continueBtn = document.getElementById('vq-continue-btn');
+          if (videoAnswers[filterType].length > 0) {
+            if (!continueBtn) addContinueButton();
+          } else {
+            if (continueBtn) continueBtn.remove();
+          }
+        }
+      } else {
+        videoAnswers[filterType] = answer.value;
+        await updateTourCounter();
+        nextVideoQuestion();
+      }
+    }
+    
+    function nextVideoQuestion() {
+      resetInactivityTimer();
+      currentVideoQuestion++;
+      if (currentVideoQuestion < videoQuestions.length) {
+        renderVideoQuestion(currentVideoQuestion);
+        updateProgressIndicator();
+      } else {
+        clearTimeout(inactivityTimer);
+        
+        // Hide progress bar and browse button when showing results
+        const progressContainer = document.getElementById('vq-progress-container');
+        const browseBtnQuestions = document.getElementById('browse-all-tours-questions');
+        if (progressContainer) progressContainer.style.display = 'none';
+        if (browseBtnQuestions) browseBtnQuestions.style.display = 'none';
+        
+        showSwipeResults();
+      }
+    }
+    
+    // ===================================================================
+    // SWIPE RESULTS - TINDER-STYLE CARD INTERFACE
+    // ===================================================================
+    
+    let swipeCards = [];
+    let currentCardIndex = 0;
+    let isDragging = false;
+    let startX = 0;
+    let currentX = 0;
+    let isInVideoFlow = false; // Track if we're in the video question flow
+    
+    async function showSwipeResults() {
+      console.log('[TRANSITION] Starting swipe results transition');
+      
+      const questionCard = document.getElementById('vq-card');
+      const backBtn = document.getElementById('vq-back-btn');
+      const tourCounter = document.getElementById('vq-tour-counter');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      
+      if (questionCard) questionCard.classList.add('exit-animation');
+      if (backBtn) backBtn.style.opacity = '0';
+      if (tourCounter) tourCounter.style.opacity = '0';
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      if (questionCard) questionCard.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'none';
+      if (tourCounter) tourCounter.style.display = 'none';
+      
+      try {
+        const params = new URLSearchParams();
+        
+        if (videoAnswers.duration && videoAnswers.duration !== '') {
+          params.append('duration', videoAnswers.duration);
+        }
+        if (videoAnswers.family_friendly && videoAnswers.family_friendly !== '') {
+          params.append('family_friendly', videoAnswers.family_friendly);
+        }
+        
+        if (videoAnswers.activities && Array.isArray(videoAnswers.activities) && videoAnswers.activities.length > 0) {
+          videoAnswers.activities.forEach(act => {
+            if (act && act !== '') {
+              params.append('activities', act);
+            }
+          });
+        }
+        
+        const url = `/api/tours${params.toString() ? '?' + params.toString() : ''}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        swipeCards = data.tours || [];
+        
+        if (swipeCards.length === 0) {
+          console.log('[WARNING] No matching tours found');
+          window.goToHomePage();
+          return;
+        }
+        
+        swipeOverlay.classList.add('active');
+        renderSwipeCards();
+        
+        setTimeout(() => {
+          const firstCard = document.querySelector('.swipe-card');
+          const actions = document.getElementById('swipe-actions');
+          
+          if (firstCard) firstCard.classList.add('entering');
+          if (actions) actions.classList.add('entering');
+        }, 50);
+        
+      } catch (error) {
+        console.error('[ERROR] Error fetching tours:', error);
+        window.goToHomePage();
+      }
+    }
+    
+    async function renderSwipeCards() {
+      if (swipeCards.length === 0) return;
+      
+      currentCardIndex = 0;
+      await displayCurrentCard();
+    }
+    
+    async function displayCurrentCard() {
+      if (currentCardIndex >= swipeCards.length) {
+        console.log('[SWIPE] No more tours to show');
+        window.goToHomePage();
+        return;
+      }
+      
+      const tour = swipeCards[currentCardIndex];
+      const fullTourData = await fetchTourDetails(tour.key);
+      
+      renderGallerySpread(fullTourData);
+      renderInfoSections(fullTourData);
+    }
+    
+    async function fetchTourDetails(tourKey) {
+      try {
+        const response = await fetch(`/tour-detail/${tourKey}?lang=${currentLanguage}`);
+        if (!response.ok) throw new Error('Failed to fetch tour details');
+        const data = await response.json();
+        console.log('[FETCH] Tour details received:', data);
+        return data;
+      } catch (error) {
+        console.error('[ERROR] Failed to fetch tour details:', error);
+        return swipeCards[currentCardIndex];
+      }
+    }
+    
+    let currentGalleryIndex = 0;
+    let currentTourGallery = [];
+    
+    function renderGallerySpread(tour) {
+      const stack = document.getElementById('swipe-card-stack');
+      stack.innerHTML = '';
+      
+      console.log('[GALLERY] Tour object:', tour);
+      console.log('[GALLERY] Tour image:', tour.image);
+      console.log('[GALLERY] Tour thumbnail:', tour.thumbnail_url);
+      console.log('[GALLERY] Tour gallery array:', tour.gallery);
+      
+      currentTourGallery = tour.gallery || [];
+      currentGalleryIndex = 0;
+      
+      const gallery = tour.gallery || [];
+      let images = [];
+      
+      // Get the main image from gallery (first item) or fallback
+      const mainImage = (gallery && gallery.length > 0) ? gallery[0] : '/static/placeholder.jpg';
+      console.log('[GALLERY] Main image URL:', mainImage);
+      
+      if (gallery.length >= 3) {
+        // Use first 3 gallery images
+        images = [gallery[0], gallery[1], gallery[2]];
+      } else if (gallery.length === 2) {
+        // Use both gallery images and the first one again
+        images = [gallery[0], gallery[1], gallery[0]];
+      } else if (gallery.length === 1) {
+        // Use the one gallery image 3 times
+        images = [gallery[0], gallery[0], gallery[0]];
+      } else {
+        // No gallery images, use placeholder
+        images = [mainImage, mainImage, mainImage];
+      }
+      
+      console.log('[GALLERY] Final images array:', images);
+      
+      const header = document.createElement('div');
+      header.className = 'swipe-card-header';
+      header.innerHTML = `
+        <h2>${tour.name}</h2>
+        <div class="company-chip">${tour.company_name || tour.company || ''}</div>
+      `;
+      stack.appendChild(header);
+      
+      const galleryWrapper = document.createElement('div');
+      galleryWrapper.className = 'swipe-gallery-wrapper';
+      
+      // Always show left arrow
+      const leftArrow = document.createElement('button');
+      leftArrow.className = 'gallery-nav-arrow left';
+      leftArrow.innerHTML = '‹';
+      leftArrow.onclick = (e) => {
+        e.stopPropagation();
+        rotateGallery('left', tour);
+      };
+      galleryWrapper.appendChild(leftArrow);
+      
+      const spreadContainer = document.createElement('div');
+      spreadContainer.className = 'swipe-gallery-spread';
+      spreadContainer.id = 'swipe-gallery-spread';
+      
+      const leftImg = document.createElement('div');
+      leftImg.className = 'swipe-gallery-image left';
+      leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+      spreadContainer.appendChild(leftImg);
+      
+      const centerCard = document.createElement('div');
+      centerCard.className = 'swipe-gallery-image center';
+      centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
+      centerCard.dataset.tourId = tour.key;
+      spreadContainer.appendChild(centerCard);
+      
+      const rightImg = document.createElement('div');
+      rightImg.className = 'swipe-gallery-image right';
+      rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+      spreadContainer.appendChild(rightImg);
+      
+      galleryWrapper.appendChild(spreadContainer);
+      
+      // Always show right arrow
+      const rightArrow = document.createElement('button');
+      rightArrow.className = 'gallery-nav-arrow right';
+      rightArrow.innerHTML = '›';
+      rightArrow.onclick = (e) => {
+        e.stopPropagation();
+        rotateGallery('right', tour);
+      };
+      galleryWrapper.appendChild(rightArrow);
+      
+      stack.appendChild(galleryWrapper);
+      setupSwipeHandlers(centerCard);
+    }
+    
+    function rotateGallery(direction, tour) {
+      const gallery = currentTourGallery;
+      if (!gallery || gallery.length === 0) return;
+      
+      const spreadContainer = document.getElementById('swipe-gallery-spread');
+      if (!spreadContainer) return;
+      
+      // Update index based on direction
+      if (direction === 'right') {
+        currentGalleryIndex = (currentGalleryIndex + 1) % gallery.length;
+      } else {
+        currentGalleryIndex = (currentGalleryIndex - 1 + gallery.length) % gallery.length;
+      }
+      
+      // Get the 3 images to display (wrapping around if needed)
+      const img1 = gallery[currentGalleryIndex];
+      const img2 = gallery[(currentGalleryIndex + 1) % gallery.length];
+      const img3 = gallery[(currentGalleryIndex + 2) % gallery.length];
+      
+      // Add rotation animation
+      spreadContainer.classList.add(`rotating-${direction}`);
+      
+      // Update images after brief delay for animation
+      setTimeout(() => {
+        const images = spreadContainer.querySelectorAll('.swipe-gallery-image');
+        if (images[0]) images[0].querySelector('img').src = img1;
+        if (images[1]) images[1].querySelector('img').src = img2;
+        if (images[2]) images[2].querySelector('img').src = img3;
+        
+        // Remove animation class
+        spreadContainer.classList.remove(`rotating-${direction}`);
+      }, 50);
+    }
+    
+    function renderInfoSections(tour) {
+      const container = document.getElementById('swipe-info-sections');
+      container.innerHTML = '';
+      
+      let sectionsAdded = 0;
+      
+      if (tour.includes && tour.includes.trim() && tour.includes !== 'N/A') {
+        const includesBox = document.createElement('div');
+        includesBox.className = 'swipe-info-box';
+        
+        let items = tour.includes.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+        
+        if (items.length === 1) {
+          items = tour.includes.split(/[;,]/).filter(item => item.trim());
+        }
+        
+        const itemsList = items.map(item => {
+          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+          return cleaned ? `<li>${cleaned}</li>` : '';
+        }).filter(item => item).join('');
+        
+        if (itemsList) {
+          includesBox.innerHTML = `
+            <h3>✓ What's Included</h3>
+            <ul>${itemsList}</ul>
+          `;
+          container.appendChild(includesBox);
+          sectionsAdded++;
+        }
+      }
+      
+      if (tour.highlights && tour.highlights.trim() && tour.highlights !== 'N/A') {
+        const highlightsBox = document.createElement('div');
+        highlightsBox.className = 'swipe-info-box';
+        
+        let highlights = tour.highlights.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+        
+        if (highlights.length === 1) {
+          highlights = tour.highlights.split(/[;,]/).filter(item => item.trim());
+        }
+        
+        const highlightsList = highlights.map(item => {
+          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+          return cleaned ? `<li>${cleaned}</li>` : '';
+        }).filter(item => item).join('');
+        
+        if (highlightsList) {
+          highlightsBox.innerHTML = `
+            <h3>⭐ Highlights</h3>
+            <ul>${highlightsList}</ul>
+          `;
+          container.appendChild(highlightsBox);
+          sectionsAdded++;
+        }
+      }
+      
+      if (sectionsAdded === 1) {
+        container.style.gridTemplateColumns = '1fr';
+        container.style.maxWidth = '600px';
+      }
+    }
+    
+    function setupSwipeHandlers(card) {
+      if (!card) return;
+      
+      card.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', endDrag);
+      
+      card.addEventListener('touchstart', startDrag);
+      document.addEventListener('touchmove', drag);
+      document.addEventListener('touchend', endDrag);
+    }
+    
+    function startDrag(e) {
+      isDragging = true;
+      startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      e.currentTarget.classList.add('grabbing');
+    }
+    
+    function drag(e) {
+      if (!isDragging) return;
+      
+      currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+      const diff = currentX - startX;
+      const spread = document.querySelector('.swipe-gallery-spread');
+      
+      if (spread) {
+        const rotation = diff / 30;
+        spread.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
+        spread.style.transition = 'none';
+      }
+    }
+    
+    function endDrag(e) {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      const spread = document.querySelector('.swipe-gallery-spread');
+      
+      if (!spread) return;
+      
+      const diff = currentX - startX;
+      
+      if (Math.abs(diff) > 150) {
+        if (diff > 0) {
+          acceptCard();
+        } else {
+          rejectCard();
+        }
+      } else {
+        spread.style.transform = '';
+        spread.style.transition = 'transform 0.3s ease';
+      }
+    }
+    
+    function rejectCard() {
+      console.log('[ACTION] Rejecting tour');
+      
+      const spread = document.querySelector('.swipe-gallery-spread');
+      if (!spread) return;
+      
+      spread.style.transition = 'all 0.4s ease-out';
+      spread.style.transform = 'translateX(-150%) rotate(-20deg)';
+      spread.style.opacity = '0';
+      
+      const infoSections = document.getElementById('swipe-info-sections');
+      if (infoSections) {
+        infoSections.style.transition = 'all 0.3s ease-out';
+        infoSections.style.opacity = '0';
+      }
+      
+      setTimeout(() => {
+        currentCardIndex++;
+        displayCurrentCard();
+      }, 400);
+    }
+    
+    function acceptCard() {
+      console.log('[ACTION] Expanding tour details on swipe page');
+      
+      if (currentCardIndex < swipeCards.length) {
+        const tour = swipeCards[currentCardIndex];
+        console.log('[ACTION] Expanding details for tour:', tour.key);
+        
+        // Stop inactivity timer
+        if (inactivityTimer) {
+          clearTimeout(inactivityTimer);
+        }
+        
+        // Keep video background active
+        document.body.classList.add('video-bg-active');
+        
+        // Expand tour details on the same page with animations
+        expandTourDetails(tour);
+      }
+    }
+    
+    async function expandTourDetails(tour) {
+      const fullTourData = await fetchTourDetails(tour.key);
+      
+      const scrollableContent = document.getElementById('swipe-scrollable-content');
+      if (!scrollableContent) {
+        console.error('[EXPAND] ERROR: scrollable content element not found!');
+        return;
+      }
+      
+      const acceptBtn = document.getElementById('accept-btn');
+      if (acceptBtn) {
+        acceptBtn.querySelector('.swipe-btn-text').textContent = 'Book Now';
+        acceptBtn.querySelector('.swipe-btn-icon').textContent = '✓';
+        acceptBtn.classList.add('booking-mode');
+        acceptBtn.onclick = () => window.location.href = `/tour/${tour.key}?lang=${currentLanguage}`;
+      }
+      
+      const rejectBtn = document.getElementById('reject-btn');
+      if (rejectBtn) {
+        rejectBtn.querySelector('.swipe-btn-text').textContent = '← Back';
+        rejectBtn.querySelector('.swipe-btn-icon').textContent = '←';
+        rejectBtn.onclick = () => window.collapseDetails();
+      }
+      
+      let detailsHtml = '<div class="swipe-expanded-details">';
+      
+      // Times, Ages, and Ideal For sections
+      const hasTimeInfo = fullTourData.departure_times && fullTourData.departure_times.trim();
+      const hasAgeInfo = fullTourData.age_requirements && fullTourData.age_requirements.trim() && !/\band\s+under\b/i.test(fullTourData.age_requirements);
+      const hasIdealFor = fullTourData.ideal_for && fullTourData.ideal_for.trim();
+      
+      if (hasTimeInfo) {
+        // Times section always spans full width for better visibility
+        const cleanedTimes = cleanBracketFormatting(fullTourData.departure_times);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>🕐 Times</h3>
+            <div>${cleanedTimes}</div>
+          </div>
+        `;
+      }
+      
+      if (hasAgeInfo) {
+        // If ages is alone (no ideal for), make it full width
+        const ageClass = !hasIdealFor ? 'description-section' : '';
+        const cleanedAges = cleanBracketFormatting(fullTourData.age_requirements);
+        detailsHtml += `
+          <div class="swipe-detail-section ${ageClass}">
+            <h3>👥 Ages</h3>
+            <div>${cleanedAges}</div>
+          </div>
+        `;
+      }
+      
+      if (hasIdealFor) {
+        // If ideal for is alone (no ages), make it full width
+        const idealClass = !hasAgeInfo ? 'description-section' : '';
+        const cleanedIdealFor = cleanBracketFormatting(fullTourData.ideal_for);
+        detailsHtml += `
+          <div class="swipe-detail-section ${idealClass}">
+            <h3>🎯 Ideal For</h3>
+            <div>${cleanedIdealFor}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.description) {
+        const cleanedDescription = cleanBracketFormatting(fullTourData.description);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>📝 About This Tour</h3>
+            <div>${cleanedDescription}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.itinerary && fullTourData.itinerary.trim() && fullTourData.itinerary !== 'N/A') {
+        const formattedItinerary = cleanBracketFormatting(fullTourData.itinerary);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>📅 Itinerary</h3>
+            <div>${formattedItinerary}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.menu && fullTourData.menu.trim() && fullTourData.menu !== 'N/A') {
+        const formattedMenu = cleanBracketFormatting(fullTourData.menu);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>🍽️ Menu</h3>
+            <div>${formattedMenu}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.important_information && fullTourData.important_information.trim() && fullTourData.important_information !== 'N/A' && fullTourData.important_information !== 'null') {
+        const formattedInfo = cleanBracketFormatting(fullTourData.important_information);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>⚠️ Important Information</h3>
+            <div>${formattedInfo}</div>
+          </div>
+        `;
+      }
+      
+      const hasBring = fullTourData.what_to_bring && fullTourData.what_to_bring.trim() && fullTourData.what_to_bring !== 'N/A' && fullTourData.what_to_bring !== 'null';
+      const hasExtra = fullTourData.whats_extra && fullTourData.whats_extra.trim() && fullTourData.whats_extra !== 'N/A' && fullTourData.whats_extra !== 'null';
+      
+      if (hasBring) {
+        const formattedBring = cleanBracketFormatting(fullTourData.what_to_bring);
+        // If bring is alone (no extra), make it full width
+        const bringClass = !hasExtra ? 'description-section' : '';
+        detailsHtml += `
+          <div class="swipe-detail-section ${bringClass}">
+            <h3>🎒 What to Bring</h3>
+            <div>${formattedBring}</div>
+          </div>
+        `;
+      }
+      
+      if (hasExtra) {
+        const formattedExtra = cleanBracketFormatting(fullTourData.whats_extra);
+        // If extra is alone (no bring), make it full width
+        const extraClass = !hasBring ? 'description-section' : '';
+        detailsHtml += `
+          <div class="swipe-detail-section ${extraClass}">
+            <h3>💰 What's Extra</h3>
+            <div>${formattedExtra}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.cancellation_policy && fullTourData.cancellation_policy.trim() && fullTourData.cancellation_policy !== 'N/A' && fullTourData.cancellation_policy !== 'null') {
+        const formattedPolicy = cleanBracketFormatting(fullTourData.cancellation_policy);
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>📋 Cancellation Policy</h3>
+            <div>${formattedPolicy}</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.departure_location && fullTourData.departure_location.trim()) {
+        // Extract coordinates if available
+        const lat = fullTourData.latitude || fullTourData.lat || -20.2781;
+        const lng = fullTourData.longitude || fullTourData.lng || 148.7064;
+        
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>📍 Departure Location</h3>
+            <div style="font-weight: 600; margin-bottom: 20px; color: #2c3e50; font-size: 1.15em;">${fullTourData.departure_location}</div>
+            <div style="width: 100%; height: 400px; border-radius: 15px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                style="border:0" 
+                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullTourData.departure_location)}&zoom=16"
+                allowfullscreen>
+              </iframe>
+            </div>
+            <div style="color: #2c3e50; font-size: 1.05em;">Please arrive at least 15 minutes before departure time.</div>
+          </div>
+        `;
+      }
+      
+      if (fullTourData.reviews && fullTourData.reviews.overall_rating > 0 && fullTourData.reviews.review_count > 0) {
+        detailsHtml += `
+          <div class="swipe-detail-section description-section">
+            <h3>⭐ Customer Reviews</h3>
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+              <div style="font-size: 2.2em; font-weight: 700; color: #0077b6;">${fullTourData.reviews.overall_rating.toFixed(1)}</div>
+              <div>
+                <div style="font-size: 1.3em; color: #ffa500; margin-bottom: 3px;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
+                <div style="color: #2c3e50; font-size: 1em;">Based on ${fullTourData.reviews.review_count} review${fullTourData.reviews.review_count !== 1 ? 's' : ''}</div>
+              </div>
+            </div>
+            <div class="swipe-reviews-grid">
+        `;
+        
+        if (fullTourData.reviews.reviews && fullTourData.reviews.reviews.length > 0) {
+          // Show all reviews (up to 10) with horizontal scrolling - no truncation, let them wrap
+          fullTourData.reviews.reviews.slice(0, 10).forEach(review => {
+            detailsHtml += `
+              <div class="swipe-review-card">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                  <strong style="font-size: 1.15em; color: #2c3e50;">${review.author || 'Customer'}</strong>
+                  ${review.rating ? `<span style="color: #ffa500; font-size: 1.3em; white-space: nowrap; margin-left: 10px;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
+                </div>
+                ${review.title ? `<div style="font-weight: 600; color: #0077b6; margin-bottom: 10px; font-size: 1.1em; line-height: 1.3;">${review.title}</div>` : ''}
+                ${review.text ? `<p style="margin: 0 0 10px 0; color: #2c3e50; line-height: 1.6; font-size: 1.05em;">${review.text}</p>` : ''}
+                ${review.date ? `<div style="font-size: 0.9em; color: #999; margin-top: auto;">${review.date}</div>` : ''}
+              </div>
+            `;
+          });
+        }
+        
+        detailsHtml += '</div></div>';
+      }
+      
+      detailsHtml += '</div>';
+      
+      scrollableContent.innerHTML = detailsHtml;
+      scrollableContent.style.display = 'flex';
+      
+      // Smooth scroll to show the new sections
+      setTimeout(() => {
+        const swipeOverlay = document.getElementById('swipe-results-overlay');
+        if (swipeOverlay) {
+          swipeOverlay.scrollTo({ 
+            top: 300, 
+            behavior: 'smooth' 
+          });
+        }
+      }, 100);
+      
+      console.log('[EXPAND] Tour details expanded with all sections');
+    }
+    
+    window.collapseDetails = function() {
+      const scrollableContent = document.getElementById('swipe-scrollable-content');
+      
+      if (scrollableContent) {
+        scrollableContent.innerHTML = '';
+        scrollableContent.scrollTop = 0;
+      }
+      
+      const acceptBtn = document.getElementById('accept-btn');
+      if (acceptBtn) {
+        acceptBtn.querySelector('.swipe-btn-text').textContent = 'Tell Me More';
+        acceptBtn.querySelector('.swipe-btn-icon').textContent = '→';
+        acceptBtn.classList.remove('booking-mode');
+        acceptBtn.onclick = () => acceptCard();
+      }
+      
+      const rejectBtn = document.getElementById('reject-btn');
+      if (rejectBtn) {
+        rejectBtn.querySelector('.swipe-btn-text').textContent = 'Not For Me';
+        rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
+        rejectBtn.onclick = () => rejectCard();
+      }
+    }
+    
+    window.goToHomePage = function() {
+      console.log('🏠 Going to regular home page');
+      
+      activeFilters = {};
+      isInVideoFlow = false; // Exit video flow
+      
+      // Hide video background
+      document.body.classList.remove('video-bg-active');
+      
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) {
+        videoPage.classList.remove('active');
+        videoPage.style.display = 'none';
+      }
+      
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      if (swipeOverlay) {
+        swipeOverlay.classList.remove('active');
+        swipeOverlay.style.display = 'none';
+      }
+      
+      const homePage = document.querySelector('.home-page');
+      if (homePage) {
+        homePage.classList.add('active');
+        homePage.style.display = 'flex';
+        
+        // Show hero section
+        const heroSection = document.getElementById('hero-section');
+        if (heroSection) heroSection.style.display = 'block';
+        
+        // Hide company filter nav
+        const companyFilterNav = document.getElementById('company-filter-nav');
+        if (companyFilterNav) companyFilterNav.style.display = 'none';
+        
+        // Reload tours
+        if (typeof loadInitialFeaturedTours === 'function') {
+          loadInitialFeaturedTours();
+        }
+      }
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      
+      resetVideoQuestionFlow();
+      
+      console.log('✅ Home page active, video flow exited');
+    }
+    
+    function initializeApp() {
+      console.log('🎬 Initializing video question flow');
+      
+      // Show video background on initial load
+      document.body.classList.add('video-bg-active');
+      
+      initVideoQuestionFlow();
+      
+      const rejectBtn = document.getElementById('reject-btn');
+      const acceptBtn = document.getElementById('accept-btn');
+      const skipBtn = document.getElementById('skip-to-list-btn');
+      
+      if (rejectBtn) {
+        rejectBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          rejectCard();
+        });
+      }
+      if (acceptBtn) {
+        acceptBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('[CLICK] Accept button clicked');
+          acceptCard();
+        });
+      }
+      if (skipBtn) {
+        skipBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.goToHomePage();
+        });
+      }
+      
+      console.log('✅ Video flow initialized');
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
     
     // Helper function to generate star display
     function generateStars(rating, fullOnly = false) {
@@ -7032,9 +8328,18 @@
       // Auto-open tour if tour_to_open parameter is passed from Flask
       {% if tour_to_open %}
       console.log('🎯 Auto-opening tour from shared link:', '{{ tour_to_open }}');
-      setTimeout(() => {
-        openTourDetail('{{ tour_to_open }}');
-      }, 500); // Small delay to ensure page is fully loaded
+      
+      // Check if video page is active - if so, don't auto-open (user is in video flow)
+      const videoPage = document.querySelector('.video-question-page');
+      const isVideoActive = videoPage && videoPage.classList.contains('active');
+      
+      if (!isVideoActive) {
+        setTimeout(() => {
+          openTourDetail('{{ tour_to_open }}');
+        }, 500); // Small delay to ensure page is fully loaded
+      } else {
+        console.log('🚫 Skipping auto-open because video page is active');
+      }
       {% endif %}
     });
     
@@ -9317,6 +10622,8 @@
     // Tour detail logic
     function openTourDetail(key) {
       console.log('🎯 openTourDetail called with key:', key);
+      console.log('   isInVideoFlow:', isInVideoFlow);
+      console.log('   video-bg-active class present:', document.body.classList.contains('video-bg-active'));
       
       // Remember if we were in map view
       wasInMapView = isMapView;
@@ -9847,7 +11154,6 @@
             tourDetailPage.style.opacity = '1';
             tourDetailPage.style.pointerEvents = 'auto';
             tourDetailPage.style.zIndex = '999999';
-            tourDetailPage.style.backgroundColor = 'red'; // DEBUG: make it red
             
             // Use setTimeout to ensure display change happens before transform
             setTimeout(() => {
@@ -9910,6 +11216,24 @@
       // Store the tour we came from
       previousTourKey = fromTourKey;
       
+      // Exit video flow if active
+      isInVideoFlow = false;
+      document.body.classList.remove('video-bg-active');
+      
+      // Hide video page and swipe overlay if active
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) videoPage.classList.remove('active');
+      
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      if (swipeOverlay) swipeOverlay.classList.remove('active');
+      
+      // Make sure home page is visible
+      const homePage = document.querySelector('.home-page');
+      if (homePage) {
+        homePage.classList.add('active');
+        homePage.style.display = 'block';
+      }
+      
       // Save current state to history before navigating
       navigationHistory.push({
         view: currentView,
@@ -9932,6 +11256,9 @@
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
+      
+      // Scroll to top of page
+      window.scrollTo({ top: 0, behavior: 'auto' });
       
       // Hide the hero section and show company filter nav
       const heroSection = document.getElementById('hero-section');
@@ -10095,6 +11422,7 @@
     
     document.getElementById('back-arrow').onclick = function() {
       console.log('⬅️ Back button clicked');
+      console.log('   isInVideoFlow:', isInVideoFlow);
       
       // URL stays on home page - no need to change it
       
@@ -10112,6 +11440,31 @@
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
+      
+      // If we're in the video flow, return to swipe results
+      if (isInVideoFlow) {
+        console.log('🔙 Returning to swipe results');
+        
+        // Keep video background active
+        document.body.classList.add('video-bg-active');
+        
+        // Hide home page
+        const homePage = document.querySelector('.home-page');
+        if (homePage) homePage.classList.remove('active');
+        
+        // Show video page
+        const videoPage = document.querySelector('.video-question-page');
+        if (videoPage) videoPage.classList.add('active');
+        
+        // Show swipe overlay
+        const swipeOverlay = document.getElementById('swipe-results-overlay');
+        if (swipeOverlay) swipeOverlay.classList.add('active');
+        
+        return; // Exit early, don't do the map view stuff
+      }
+      
+      // Not in video flow - hide video background
+      document.body.classList.remove('video-bg-active');
       
       // If we were in map view before opening the detail, switch back to map view
       if (wasInMapView) {
@@ -11533,13 +12886,12 @@
     });
     
     // =====================================================================
-    // INACTIVITY TIMER - Auto reset after period of inactivity
+    // INACTIVITY TIMER - Auto reset after period of inactivity (for home page)
     // =====================================================================
     
-    let inactivityTimer = null;
     const INACTIVITY_TIMEOUT = 120000; // 2 minutes in milliseconds
     
-    function resetInactivityTimer() {
+    function resetInactivityTimerHomePage() {
       // Clear existing timer
       if (inactivityTimer) {
         clearTimeout(inactivityTimer);
@@ -11561,11 +12913,11 @@
       const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
       
       events.forEach(event => {
-        document.addEventListener(event, resetInactivityTimer, true);
+        document.addEventListener(event, resetInactivityTimerHomePage, true);
       });
       
       // Start the timer
-      resetInactivityTimer();
+      resetInactivityTimerHomePage();
       console.log('✓ Inactivity monitor initialized (2 minute timeout)');
     }
     
@@ -13137,770 +14489,6 @@
           if (subtitle) subtitle.textContent = 'Error searching tours';
         }
       }, 500);
-    }
-    
-    // ===================================================================
-    // VIDEO QUESTION FLOW - NEW PRIMARY EXPERIENCE
-    // ===================================================================
-    
-    const videoQuestions = [
-      {
-        question: "How long can you be away?",
-        answers: [
-          { text: "Half Day<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>", value: "half_day", filter: "duration" },
-          { text: "Full Day<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>", value: "full_day", filter: "duration" },
-          { text: "Multi-day Adventure", value: "multi_day", filter: "duration" },
-          { text: "No preference", value: "", filter: "duration" }
-        ]
-      },
-      {
-        question: "Who's coming along?",
-        answers: [
-          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
-          { text: "👥 Adults Only", value: "false", filter: "family_friendly" },
-          { text: "No preference", value: "", filter: "family_friendly" }
-        ]
-      },
-      {
-        question: "What interests you most?",
-        multiple: true,
-        answers: [
-          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
-          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
-          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
-          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
-          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
-          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
-          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
-          { text: "No preference", value: "", filter: "activities", isSkip: true }
-        ]
-      }
-    ];
-    
-    let currentVideoQuestion = 0;
-    let videoAnswers = {
-      duration: "",
-      family_friendly: "",
-      activities: []
-    };
-    let hasStarted = false;
-    
-    function initVideoQuestionFlow() {
-      console.log('🔧 Setting up video question flow...');
-      
-      // Set up click to start
-      const startScreen = document.getElementById('video-start-screen');
-      if (!startScreen) {
-        console.error('❌ Start screen element not found!');
-        return;
-      }
-      
-      console.log('✅ Start screen found:', startScreen);
-      startScreen.addEventListener('click', function(e) {
-        console.log('👆 Start screen clicked!');
-        startVideoQuestions();
-      });
-      
-      // Set up back button
-      const backBtn = document.getElementById('vq-back-btn');
-      if (backBtn) {
-        backBtn.addEventListener('click', goBackVideoQuestion);
-        console.log('✅ Back button listener added');
-      }
-      
-      // Start inactivity timer
-      resetInactivityTimer();
-      console.log('✅ Inactivity timer started');
-    }
-    
-    function startVideoQuestions() {
-      console.log('🚀 Starting video questions!');
-      hasStarted = true;
-      
-      const startScreen = document.getElementById('video-start-screen');
-      const questionContainer = document.getElementById('video-question-container');
-      const backBtn = document.getElementById('vq-back-btn');
-      const tourCounter = document.getElementById('vq-tour-counter');
-      
-      if (startScreen) {
-        startScreen.style.display = 'none';
-        console.log('✅ Start screen hidden');
-      }
-      
-      if (questionContainer) {
-        questionContainer.style.display = 'flex';
-        console.log('✅ Question container shown');
-      }
-      
-      if (backBtn) {
-        backBtn.style.display = 'block';
-        console.log('✅ Back button shown');
-      }
-      
-      if (tourCounter) {
-        tourCounter.style.display = 'block';
-        updateTourCounter();
-      }
-      
-      renderVideoQuestion(0);
-      resetInactivityTimer();
-    }
-    
-    // Update tour counter based on current filters
-    async function updateTourCounter() {
-      const counter = document.getElementById('vq-tour-counter');
-      if (!counter) return;
-      
-      try {
-        const params = new URLSearchParams();
-        if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
-        if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
-        
-        // Only add activities if there are any selected
-        if (videoAnswers.activities && videoAnswers.activities.length > 0) {
-          videoAnswers.activities.forEach(act => {
-            if (act) params.append('activities', act);
-          });
-        }
-        
-        console.log('🔢 Fetching tour count with params:', params.toString());
-        const response = await fetch(`/api/tours?${params.toString()}`);
-        
-        if (!response.ok) {
-          console.error('❌ Failed to fetch tours:', response.status);
-          counter.textContent = 'Error loading count';
-          return;
-        }
-        
-        const data = await response.json();
-        const count = data.tours ? data.tours.length : 0;
-        counter.textContent = `${count} tours match`;
-        console.log('✅ Tour count:', count);
-      } catch (error) {
-        console.error('❌ Error fetching tour count:', error);
-        counter.textContent = 'Error loading count';
-      }
-    }
-    
-    // Make globally accessible for inline onclick
-    window.startVideoQuestions = startVideoQuestions;
-    
-    function resetInactivityTimer() {
-      if (inactivityTimer) clearTimeout(inactivityTimer);
-      
-      inactivityTimer = setTimeout(() => {
-        if (hasStarted) {
-          // Reset after 2 minutes of inactivity
-          resetVideoQuestionFlow();
-        }
-      }, 120000); // 2 minutes
-    }
-    
-    function resetVideoQuestionFlow() {
-      hasStarted = false;
-      currentVideoQuestion = 0;
-      videoAnswers = {
-        duration: "",
-        family_friendly: "",
-        activities: []
-      };
-      document.getElementById('video-start-screen').style.display = 'flex';
-      document.getElementById('video-question-container').style.display = 'none';
-      document.getElementById('vq-back-btn').style.display = 'none';
-      document.getElementById('vq-tour-counter').style.display = 'none';
-    }
-    
-    async function goBackVideoQuestion() {
-      if (currentVideoQuestion > 0) {
-        currentVideoQuestion--;
-        renderVideoQuestion(currentVideoQuestion);
-        await updateTourCounter();
-        resetInactivityTimer();
-      }
-    }
-    
-    function renderVideoQuestion(index) {
-      const question = videoQuestions[index];
-      const questionText = document.getElementById('vq-question-text');
-      const answersContainer = document.getElementById('vq-answers');
-      
-      questionText.textContent = question.question;
-      answersContainer.innerHTML = '';
-      
-      // Add subtitle for multiple choice
-      if (question.multiple) {
-        const subtitle = document.createElement('p');
-        subtitle.className = 'vq-subtitle';
-        subtitle.textContent = 'Select all that apply';
-        answersContainer.appendChild(subtitle);
-      }
-      
-      question.answers.forEach((answer, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'vq-answer-btn';
-        btn.innerHTML = answer.text;
-        btn.dataset.index = idx;
-        btn.dataset.value = answer.value;
-        btn.dataset.isSkip = answer.isSkip || false;
-        
-        // Restore selected state if returning to this question
-        if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
-          btn.classList.add('selected');
-        }
-        
-        btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, answer.filter, e.target);
-        answersContainer.appendChild(btn);
-      });
-      
-      // Add continue button if selections exist and it's a multiple choice question
-      const firstAnswer = question.answers[0];
-      if (question.multiple && firstAnswer && videoAnswers[firstAnswer.filter] && videoAnswers[firstAnswer.filter].length > 0) {
-        addContinueButton();
-      }
-      
-      // Trigger slide-up animation
-      const card = document.getElementById('vq-card');
-      card.style.animation = 'none';
-      setTimeout(() => {
-        card.style.animation = 'slideUpFadeIn 0.8s ease-out';
-      }, 10);
-      
-      // Update back button visibility
-      document.getElementById('vq-back-btn').style.display = currentVideoQuestion > 0 ? 'block' : 'none';
-    }
-    
-    function addContinueButton() {
-      const answersContainer = document.getElementById('vq-answers');
-      if (document.getElementById('vq-continue-btn')) return; // Already exists
-      
-      const continueBtn = document.createElement('button');
-      continueBtn.id = 'vq-continue-btn';
-      continueBtn.className = 'vq-answer-btn vq-continue-btn';
-      continueBtn.innerHTML = 'Continue →';
-      continueBtn.onclick = nextVideoQuestion;
-      answersContainer.appendChild(continueBtn);
-    }
-    
-    async function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
-      resetInactivityTimer();
-      
-      console.log('📝 Handling answer:', answer, 'isMultiple:', isMultiple, 'filterType:', filterType);
-      
-      if (isMultiple) {
-        // Handle multiple selection
-        if (answer.isSkip) {
-          // "No preference" - clear selections and proceed
-          console.log('⏩ Skipping (no preference)');
-          videoAnswers[filterType] = [];
-          
-          // Remove selected class from all buttons
-          document.querySelectorAll('.vq-answer-btn.selected').forEach(btn => {
-            btn.classList.remove('selected');
-          });
-          
-          await updateTourCounter();
-          nextVideoQuestion();
-        } else {
-          // Toggle selection
-          const index = videoAnswers[filterType].indexOf(answer.value);
-          if (index > -1) {
-            // Deselect
-            videoAnswers[filterType].splice(index, 1);
-            btnElement.classList.remove('selected');
-            console.log('❌ Deselected:', answer.value, 'Current:', videoAnswers[filterType]);
-          } else {
-            // Select
-            videoAnswers[filterType].push(answer.value);
-            btnElement.classList.add('selected');
-            console.log('✅ Selected:', answer.value, 'Current:', videoAnswers[filterType]);
-          }
-          
-          // Update tour counter
-          await updateTourCounter();
-          
-          // Show/hide continue button based on selections
-          const continueBtn = document.getElementById('vq-continue-btn');
-          if (videoAnswers[filterType].length > 0) {
-            if (!continueBtn) {
-              addContinueButton();
-            }
-          } else {
-            if (continueBtn) {
-              continueBtn.remove();
-            }
-          }
-        }
-      } else {
-        // Single selection - immediately proceed
-        videoAnswers[filterType] = answer.value;
-        console.log('✅ Single selection:', filterType, '=', answer.value);
-        await updateTourCounter();
-        nextVideoQuestion();
-      }
-    }
-    
-    function nextVideoQuestion() {
-      resetInactivityTimer();
-      currentVideoQuestion++;
-      if (currentVideoQuestion < videoQuestions.length) {
-        renderVideoQuestion(currentVideoQuestion);
-      } else {
-        // All questions answered - show swipe results
-        clearTimeout(inactivityTimer); // Stop inactivity timer once we're in results
-        showSwipeResults();
-      }
-    }
-    
-    // ===================================================================
-    // SWIPE RESULTS - TINDER-STYLE CARD INTERFACE
-    // ===================================================================
-    
-    let swipeCards = [];
-    let currentCardIndex = 0;
-    let isDragging = false;
-    let startX = 0;
-    let currentX = 0;
-    
-    async function showSwipeResults() {
-      console.log('[TRANSITION] Starting swipe results transition');
-      
-      // Get elements
-      const questionCard = document.getElementById('vq-card');
-      const backBtn = document.getElementById('vq-back-btn');
-      const tourCounter = document.getElementById('vq-tour-counter');
-      const swipeOverlay = document.getElementById('swipe-results-overlay');
-      
-      // Step 1: Start exit animation for questions (0.5s)
-      if (questionCard) questionCard.classList.add('exit-animation');
-      if (backBtn) backBtn.style.opacity = '0';
-      if (tourCounter) tourCounter.style.opacity = '0';
-      
-      console.log('[TRANSITION] Questions fading out...');
-      
-      // Wait for exit animation to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Step 2: Hide question elements completely
-      if (questionCard) questionCard.style.display = 'none';
-      if (backBtn) backBtn.style.display = 'none';
-      if (tourCounter) tourCounter.style.display = 'none';
-      
-      // Step 3: Fetch filtered tours
-      try {
-        const params = new URLSearchParams();
-        
-        // Only add non-empty filter values
-        if (videoAnswers.duration && videoAnswers.duration !== '') {
-          params.append('duration', videoAnswers.duration);
-        }
-        if (videoAnswers.family_friendly && videoAnswers.family_friendly !== '') {
-          params.append('family_friendly', videoAnswers.family_friendly);
-        }
-        
-        // Only add activities if there are any selected (not empty array)
-        if (videoAnswers.activities && Array.isArray(videoAnswers.activities) && videoAnswers.activities.length > 0) {
-          videoAnswers.activities.forEach(act => {
-            if (act && act !== '') {
-              params.append('activities', act);
-            }
-          });
-        }
-        
-        console.log('[API] Fetching tours with params:', params.toString());
-        const url = `/api/tours${params.toString() ? '?' + params.toString() : ''}`;
-        
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('[API] Received', data.tours ? data.tours.length : 0, 'tours');
-        
-        swipeCards = data.tours || [];
-        
-        if (swipeCards.length === 0) {
-          console.log('[WARNING] No matching tours found');
-          alert('No tours match your preferences. Showing all tours.');
-          goToHomePage();
-          return;
-        }
-        
-        // Step 4: Show overlay and render cards
-        console.log('[TRANSITION] Showing swipe overlay');
-        swipeOverlay.classList.add('active');
-        
-        renderSwipeCards();
-        
-        // Step 5: Trigger entrance animations
-        setTimeout(() => {
-          const firstCard = document.querySelector('.swipe-card');
-          const actions = document.getElementById('swipe-actions');
-          
-          if (firstCard) {
-            firstCard.classList.add('entering');
-            console.log('[ANIMATION] Card sliding up');
-          }
-          if (actions) {
-            actions.classList.add('entering');
-            console.log('[ANIMATION] Buttons sliding up');
-          }
-        }, 50);
-        
-      } catch (error) {
-        console.error('[ERROR] Error fetching tours:', error);
-        alert('Error loading tours. Showing all tours.');
-        goToHomePage();
-      }
-    }
-    
-    async function renderSwipeCards() {
-      if (swipeCards.length === 0) return;
-      
-      currentCardIndex = 0;
-      await displayCurrentCard();
-    }
-    
-    async function displayCurrentCard() {
-      if (currentCardIndex >= swipeCards.length) {
-        goToHomePage();
-        return;
-      }
-      
-      const tour = swipeCards[currentCardIndex];
-      console.log('[CARD] Displaying tour:', tour.name);
-      
-      // Fetch full tour data to get gallery and details
-      const fullTourData = await fetchTourDetails(tour.key);
-      
-      // Render gallery spread
-      renderGallerySpread(fullTourData);
-      
-      // Render info sections
-      renderInfoSections(fullTourData);
-    }
-    
-    async function fetchTourDetails(tourKey) {
-      try {
-        const response = await fetch(`/tour-data/${tourKey}?lang=${currentLanguage}`);
-        if (!response.ok) throw new Error('Failed to fetch tour details');
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error('[ERROR] Failed to fetch tour details:', error);
-        return swipeCards[currentCardIndex]; // Fallback to basic data
-      }
-    }
-    
-    function renderGallerySpread(tour) {
-      const stack = document.getElementById('swipe-card-stack');
-      stack.innerHTML = '';
-      
-      console.log('[GALLERY] Tour data:', tour);
-      console.log('[GALLERY] Gallery array:', tour.gallery);
-      
-      // Get 3 different images from gallery
-      const gallery = tour.gallery || [];
-      let images = [];
-      
-      if (gallery.length >= 3) {
-        // Use first 3 different images
-        images = [gallery[0], gallery[1], gallery[2]];
-      } else if (gallery.length === 2) {
-        // Use both + main image
-        images = [gallery[0], tour.image || tour.thumbnail_url, gallery[1]];
-      } else if (gallery.length === 1) {
-        // Use gallery image + main image twice
-        images = [tour.image || tour.thumbnail_url, gallery[0], tour.image || tour.thumbnail_url];
-      } else {
-        // Use main image 3 times as fallback
-        const mainImg = tour.image || tour.thumbnail_url || '/static/placeholder.jpg';
-        images = [mainImg, mainImg, mainImg];
-      }
-      
-      console.log('[GALLERY] Using images:', images);
-      
-      // Create header with title and company
-      const header = document.createElement('div');
-      header.className = 'swipe-card-header';
-      header.innerHTML = `
-        <h2>${tour.name}</h2>
-        <div class="company-chip">${tour.company_name || tour.company || ''}</div>
-      `;
-      stack.appendChild(header);
-      
-      // Create gallery spread container
-      const spreadContainer = document.createElement('div');
-      spreadContainer.className = 'swipe-gallery-spread';
-      
-      // Left image
-      const leftImg = document.createElement('div');
-      leftImg.className = 'swipe-gallery-image left';
-      leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
-      spreadContainer.appendChild(leftImg);
-      
-      // Center card (main)
-      const centerCard = document.createElement('div');
-      centerCard.className = 'swipe-gallery-image center';
-      centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
-      centerCard.dataset.tourId = tour.key;
-      spreadContainer.appendChild(centerCard);
-      
-      // Right image
-      const rightImg = document.createElement('div');
-      rightImg.className = 'swipe-gallery-image right';
-      rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
-      spreadContainer.appendChild(rightImg);
-      
-      stack.appendChild(spreadContainer);
-      
-      // Set up swipe handlers on center card
-      setupSwipeHandlers(centerCard);
-    }
-    
-    function renderInfoSections(tour) {
-      const container = document.getElementById('swipe-info-sections');
-      container.innerHTML = '';
-      
-      console.log('[INFO] Rendering info sections');
-      console.log('[INFO] Tour includes:', tour.includes);
-      console.log('[INFO] Tour highlights:', tour.highlights);
-      
-      let sectionsAdded = 0;
-      
-      // What's Included
-      if (tour.includes && tour.includes.trim() && tour.includes !== 'N/A') {
-        console.log('[INFO] Adding includes section');
-        const includesBox = document.createElement('div');
-        includesBox.className = 'swipe-info-box';
-        
-        // Split by newlines or bullet points
-        let items = tour.includes.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
-        
-        // If no newlines, try splitting by common separators
-        if (items.length === 1) {
-          items = tour.includes.split(/[;,]/).filter(item => item.trim());
-        }
-        
-        const itemsList = items.map(item => {
-          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
-          return cleaned ? `<li>${cleaned}</li>` : '';
-        }).filter(item => item).join('');
-        
-        console.log('[INFO] Includes items:', itemsList);
-        
-        if (itemsList) {
-          includesBox.innerHTML = `
-            <h3>✓ What's Included</h3>
-            <ul>${itemsList}</ul>
-          `;
-          container.appendChild(includesBox);
-          sectionsAdded++;
-        }
-      } else {
-        console.log('[INFO] No includes data available');
-      }
-      
-      // Highlights
-      if (tour.highlights && tour.highlights.trim() && tour.highlights !== 'N/A') {
-        console.log('[INFO] Adding highlights section');
-        const highlightsBox = document.createElement('div');
-        highlightsBox.className = 'swipe-info-box';
-        
-        // Split by newlines or bullet points
-        let highlights = tour.highlights.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
-        
-        // If no newlines, try splitting by common separators
-        if (highlights.length === 1) {
-          highlights = tour.highlights.split(/[;,]/).filter(item => item.trim());
-        }
-        
-        const highlightsList = highlights.map(item => {
-          const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
-          return cleaned ? `<li>${cleaned}</li>` : '';
-        }).filter(item => item).join('');
-        
-        console.log('[INFO] Highlights items:', highlightsList);
-        
-        if (highlightsList) {
-          highlightsBox.innerHTML = `
-            <h3>⭐ Highlights</h3>
-            <ul>${highlightsList}</ul>
-          `;
-          container.appendChild(highlightsBox);
-          sectionsAdded++;
-        }
-      } else {
-        console.log('[INFO] No highlights data available');
-      }
-      
-      // Adjust grid if only one section
-      if (sectionsAdded === 1) {
-        container.style.gridTemplateColumns = '1fr';
-        container.style.maxWidth = '600px';
-      }
-      
-      console.log('[INFO] Total sections added:', sectionsAdded);
-    }
-    
-    
-    function setupSwipeHandlers(card) {
-      if (!card) return;
-      
-      // Mouse events
-      card.addEventListener('mousedown', startDrag);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', endDrag);
-      
-      // Touch events
-      card.addEventListener('touchstart', startDrag);
-      document.addEventListener('touchmove', drag);
-      document.addEventListener('touchend', endDrag);
-    }
-    
-    function startDrag(e) {
-      isDragging = true;
-      startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-      e.currentTarget.classList.add('grabbing');
-    }
-    
-    function drag(e) {
-      if (!isDragging) return;
-      
-      currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-      const diff = currentX - startX;
-      const spread = document.querySelector('.swipe-gallery-spread');
-      
-      if (spread) {
-        const rotation = diff / 30;
-        spread.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
-        spread.style.transition = 'none';
-      }
-    }
-    
-    function endDrag(e) {
-      if (!isDragging) return;
-      
-      isDragging = false;
-      const spread = document.querySelector('.swipe-gallery-spread');
-      
-      if (!spread) return;
-      
-      const diff = currentX - startX;
-      
-      // Threshold for swipe action
-      if (Math.abs(diff) > 150) {
-        if (diff > 0) {
-          // Swiped right - Tell me more
-          acceptCard();
-        } else {
-          // Swiped left - Not for me
-          rejectCard();
-        }
-      } else {
-        // Snap back
-        spread.style.transform = '';
-        spread.style.transition = 'transform 0.3s ease';
-      }
-    }
-    
-    function rejectCard() {
-      console.log('[ACTION] Rejecting tour');
-      
-      const spread = document.querySelector('.swipe-gallery-spread');
-      if (!spread) return;
-      
-      // Animate out
-      spread.style.transition = 'all 0.4s ease-out';
-      spread.style.transform = 'translateX(-150%) rotate(-20deg)';
-      spread.style.opacity = '0';
-      
-      // Hide info sections
-      const infoSections = document.getElementById('swipe-info-sections');
-      if (infoSections) {
-        infoSections.style.transition = 'all 0.3s ease-out';
-        infoSections.style.opacity = '0';
-      }
-      
-      setTimeout(() => {
-        currentCardIndex++;
-        displayCurrentCard();
-      }, 400);
-    }
-    
-    function acceptCard() {
-      console.log('[ACTION] Accepting tour - going to detail page');
-      
-      if (currentCardIndex < swipeCards.length) {
-        const tour = swipeCards[currentCardIndex];
-        goToTourDetail(tour.key);
-      }
-    }
-    
-    function goToTourDetail(tourId) {
-      console.log('[NAVIGATION] Going to tour detail:', tourId);
-      
-      // Use existing function to show tour detail
-      if (typeof showTourDetail === 'function') {
-        showTourDetail(tourId);
-      }
-      
-      // Hide video page and swipe overlay
-      const videoPage = document.querySelector('.video-question-page');
-      const swipeOverlay = document.getElementById('swipe-results-overlay');
-      
-      if (videoPage) videoPage.classList.remove('active');
-      if (swipeOverlay) swipeOverlay.classList.remove('active');
-    }
-    
-    function goToHomePage() {
-      console.log('[NAVIGATION] Going to home page');
-      
-      // Hide video question page
-      const videoPage = document.querySelector('.video-question-page');
-      if (videoPage) videoPage.classList.remove('active');
-      
-      // Hide swipe overlay
-      const swipeOverlay = document.getElementById('swipe-results-overlay');
-      if (swipeOverlay) swipeOverlay.classList.remove('active');
-      
-      // Show home page
-      const homePage = document.querySelector('.home-page');
-      if (homePage) {
-        homePage.classList.add('active');
-        // Load all tours
-        if (typeof loadInitialFeaturedTours === 'function') {
-          loadInitialFeaturedTours();
-        }
-      }
-    }
-    
-    // Initialize everything when DOM is ready
-    function initializeApp() {
-      console.log('🎬 Initializing video question flow');
-      
-      // Initialize video question flow
-      initVideoQuestionFlow();
-      
-      // Button event listeners for swipe page
-      const rejectBtn = document.getElementById('reject-btn');
-      const acceptBtn = document.getElementById('accept-btn');
-      const skipBtn = document.getElementById('skip-to-list-btn');
-      
-      if (rejectBtn) rejectBtn.addEventListener('click', rejectCard);
-      if (acceptBtn) acceptBtn.addEventListener('click', acceptCard);
-      if (skipBtn) skipBtn.addEventListener('click', goToHomePage);
-      
-      console.log('✅ Video flow initialized');
-    }
-    
-    // Run initialization - handle both cases (before and after DOMContentLoaded)
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeApp);
-    } else {
-      // DOM already loaded
-      initializeApp();
     }
     
   </script>
