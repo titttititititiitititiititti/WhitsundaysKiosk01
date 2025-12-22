@@ -5880,6 +5880,276 @@
         min-width: 100px;
       }
     }
+    
+    /* ===================================================================
+       MOBILE RESPONSIVENESS FOR VIDEO QUESTIONNAIRE & SWIPE INTERFACE
+       =================================================================== */
+    
+    /* Disable zoom scaling on mobile for swipe interface */
+    @media (max-width: 768px) {
+      /* Reset zoom for video questionnaire pages */
+      body.video-bg-active {
+        zoom: 1 !important;
+        -moz-transform: none !important;
+      }
+      
+      /* Make video background work on mobile */
+      #bg-video {
+        transform: translate(-50%, -50%) rotate(0deg) !important; /* Don't rotate on mobile */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      
+      /* Video question container - mobile responsive */
+      .video-question-container {
+        padding: 20px 15px;
+        max-width: 100%;
+      }
+      
+      .video-question-card {
+        padding: 30px 20px;
+        max-width: 100%;
+      }
+      
+      .vq-card-content h1 {
+        font-size: 1.8em !important;
+      }
+      
+      .vq-card-content p {
+        font-size: 1.1em !important;
+      }
+      
+      .vq-answers {
+        gap: 15px;
+        min-height: auto;
+        padding-bottom: 60px;
+      }
+      
+      .vq-answer-btn {
+        font-size: 1.1em !important;
+        padding: 18px 20px !important;
+      }
+      
+      .vq-continue-btn {
+        font-size: 1.2em !important;
+        padding: 20px 30px !important;
+      }
+      
+      .vq-back-btn {
+        top: 15px;
+        left: 15px;
+        font-size: 1em !important;
+        padding: 12px 20px !important;
+      }
+      
+      /* Progress indicator */
+      .vq-progress-container {
+        top: 15px;
+        right: 15px;
+      }
+      
+      .vq-progress-text {
+        font-size: 0.9em !important;
+      }
+      
+      /* Browse all tours button */
+      #browse-all-tours-btn {
+        top: 15px !important;
+        right: 15px !important;
+        font-size: 0.9em !important;
+        padding: 12px 20px !important;
+      }
+      
+      /* Tour counter */
+      .vq-tour-counter {
+        font-size: 0.9em !important;
+      }
+      
+      /* Swipe results overlay */
+      .swipe-results-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        padding: 20px 15px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .swipe-fixed-top {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+      }
+      
+      /* Swipe card header */
+      .swipe-card-header h2 {
+        font-size: 1.8em !important;
+      }
+      
+      .swipe-card-header .company-chip {
+        font-size: 1.1em !important;
+        padding: 8px 20px !important;
+      }
+      
+      /* Gallery - stack vertically on mobile */
+      .swipe-gallery-wrapper {
+        height: auto;
+        margin-bottom: 20px;
+      }
+      
+      .swipe-gallery-spread {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .swipe-gallery-image {
+        width: 100% !important;
+        height: 200px !important;
+        margin: 0 !important;
+        transform: none !important;
+      }
+      
+      .swipe-gallery-image.center {
+        transform: none !important;
+        z-index: auto !important;
+      }
+      
+      /* Gallery arrows */
+      .gallery-nav-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+      }
+      
+      .gallery-nav-arrow.left {
+        left: 10px;
+      }
+      
+      .gallery-nav-arrow.right {
+        right: 10px;
+      }
+      
+      /* Info sections */
+      .swipe-info-sections {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+      }
+      
+      .swipe-info-box {
+        width: 100%;
+        padding: 20px;
+      }
+      
+      .swipe-info-box h3 {
+        font-size: 1.3em !important;
+      }
+      
+      .swipe-info-box ul li {
+        font-size: 1em !important;
+      }
+      
+      /* Swipe actions - keep at bottom */
+      .swipe-actions {
+        position: relative;
+        width: 100%;
+        flex-direction: row;
+        gap: 15px;
+        margin-top: 20px;
+        padding: 0;
+      }
+      
+      .swipe-btn {
+        font-size: 1.1em !important;
+        padding: 18px 25px !important;
+        flex: 1;
+      }
+      
+      .swipe-btn-reject,
+      .swipe-btn-accept {
+        width: auto;
+        height: auto;
+        border-radius: 50px;
+      }
+      
+      /* Scrollable content */
+      .swipe-scrollable-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px 0;
+      }
+      
+      /* Expanded details */
+      .swipe-expanded-details {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px 0;
+      }
+      
+      .swipe-detail-section {
+        padding: 25px 20px;
+      }
+      
+      .swipe-detail-section h3 {
+        font-size: 1.4em !important;
+      }
+      
+      .swipe-detail-section div,
+      .swipe-detail-section p,
+      .swipe-detail-section li {
+        font-size: 1em !important;
+      }
+      
+      /* Reviews grid - single column on mobile */
+      .swipe-reviews-grid {
+        column-count: 1;
+        gap: 15px;
+      }
+      
+      .swipe-review-card {
+        width: 100%;
+        padding: 20px;
+        margin-bottom: 15px;
+      }
+      
+      /* Skip to list button */
+      .skip-to-list-btn {
+        top: 15px;
+        right: 15px;
+        font-size: 1em !important;
+        padding: 12px 20px !important;
+      }
+    }
+    
+    /* iPhone 13 Mini and similar small phones */
+    @media (max-width: 390px) {
+      .swipe-card-header h2 {
+        font-size: 1.5em !important;
+      }
+      
+      .vq-card-content h1 {
+        font-size: 1.5em !important;
+      }
+      
+      .vq-answer-btn {
+        font-size: 1em !important;
+        padding: 15px 18px !important;
+      }
+      
+      .swipe-gallery-image {
+        height: 180px !important;
+      }
+      
+      .gallery-nav-arrow {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+      }
+    }
   </style>
 </head>
 <body>
