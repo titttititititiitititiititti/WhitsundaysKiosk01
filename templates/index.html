@@ -6279,8 +6279,26 @@
       
       /* ========== HOME PAGE & TOUR DETAIL PAGE SCALING ========== */
       
+      /* Home page title - Desktop: varies, need to scale */
+      #home-tours-title {
+        font-size: calc(45 / 1920 * 100vw) !important;
+      }
+      
+      .section-subtitle {
+        font-size: calc(24 / 1920 * 100vw) !important;
+      }
+      
+      #tour-grid-header {
+        font-size: calc(45 / 1920 * 100vw) !important;
+      }
+      
+      .results-info {
+        font-size: calc(26 / 1920 * 100vw) !important;
+      }
+      
       /* Tour cards on home page - Desktop: varies */
-      .tour-card {
+      .tour-card,
+      .tour-card-large {
         width: calc(450 / 1920 * 100vw) !important;
         padding: calc(20 / 1920 * 100vw) !important;
       }
@@ -6290,12 +6308,19 @@
         border-radius: calc(20 / 1920 * 100vw) !important;
       }
       
-      .tour-card h3 {
+      .tour-card h3,
+      .tour-card-large h3 {
         font-size: calc(24 / 1920 * 100vw) !important;
       }
       
-      .tour-card p {
+      .tour-card p,
+      .tour-card-large p {
         font-size: calc(16 / 1920 * 100vw) !important;
+      }
+      
+      /* Featured grid */
+      .featured-grid {
+        gap: calc(30 / 1920 * 100vw) !important;
       }
       
       /* Tour detail page */
@@ -6348,6 +6373,51 @@
         font-size: calc(16 / 1920 * 100vw) !important;
         padding: calc(10 / 1920 * 100vw) calc(20 / 1920 * 100vw) !important;
         border-radius: calc(30 / 1920 * 100vw) !important;
+      }
+      
+      /* ========== FIX EMPTY SWIPE INFO BOXES ========== */
+      
+      /* Info box content - ensure text is visible and properly sized */
+      .swipe-info-box ul {
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: calc(8 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-info-box ul li {
+        font-size: calc(22 / 1920 * 100vw) !important;
+        line-height: 1.5 !important;
+        padding: calc(8 / 1920 * 100vw) 0 !important;
+        padding-left: calc(35 / 1920 * 100vw) !important;
+        color: #2c3e50 !important;
+        position: relative !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+      
+      .swipe-info-box ul li::before {
+        content: '✓' !important;
+        position: absolute !important;
+        left: 0 !important;
+        color: #48bb78 !important;
+        font-weight: bold !important;
+        font-size: calc(20 / 1920 * 100vw) !important;
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      .swipe-info-box p {
+        font-size: calc(22 / 1920 * 100vw) !important;
+        color: #2c3e50 !important;
+        line-height: 1.6 !important;
+        margin: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
     }
 
