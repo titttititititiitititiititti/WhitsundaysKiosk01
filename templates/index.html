@@ -5573,7 +5573,7 @@
       /* 
         SINGLE SCALE FACTOR FOR EVERYTHING
         Set base font-size, ALL measurements use rem
-        1rem = 1% of desktop width (19.2px at 1920px desktop)
+        0.10rem = 1% of desktop width (19.2px at 1920px desktop)
       */
       
       html {
@@ -5596,7 +5596,7 @@
       }
       
       /* Now ALL desktop px values / 10 = rem value */
-      /* Desktop 220px = 22rem, scales to 43px on 375px phone */
+      /* Desktop 220px = 2.20rem, scales to 43px on 375px phone */
       
       #bg-video {
         position: fixed;
@@ -5616,114 +5616,114 @@
       }
       
       .video-question-container {
-        padding: 2rem;
+        padding: 0.20rem;
       }
       
       .video-question-card {
-        padding: 8rem 10rem !important;
+        padding: 0.80rem 1rem !important;
         max-height: 90vh;
         overflow-y: auto;
       }
       
       h2.vq-question,
       #vq-question-text {
-        font-size: 5.6rem !important; /* 56px desktop */
-        margin: 0 0 6rem 0 !important;
+        font-size: 0.56rem !important; /* 56px desktop */
+        margin: 0 0 0.60rem 0 !important;
       }
       
       .vq-answers,
       #vq-answers {
-        gap: 2.5rem !important;
-        padding-bottom: 8rem !important;
+        gap: 0.25rem !important;
+        padding-bottom: 0.80rem !important;
       }
       
       .vq-answer-btn,
       .vq-answers button,
       #vq-answers button {
-        font-size: 3.2rem !important; /* 32px desktop */
-        padding: 3.5rem 5rem !important;
-        border-radius: 2.5rem !important;
-        border: 0.3rem solid transparent !important;
+        font-size: 0.32rem !important; /* 32px desktop */
+        padding: 0.35rem 0.50rem !important;
+        border-radius: 0.25rem !important;
+        border: 0.03rem solid transparent !important;
       }
       
       .vq-answer-btn.selected {
-        border: 0.5rem solid #ffffff !important;
+        border: 0.05rem solid #ffffff !important;
       }
       
       .vq-continue-btn {
-        font-size: 3.5rem !important;
-        margin-top: 3rem !important;
+        font-size: 0.35rem !important;
+        margin-top: 0.30rem !important;
       }
       
       .vq-back-btn {
-        top: 4rem !important;
-        left: 4rem !important;
-        font-size: 2.9rem !important;
-        padding: 2rem 4rem !important;
-        border-radius: 5rem !important;
+        top: 0.40rem !important;
+        left: 0.40rem !important;
+        font-size: 0.29rem !important;
+        padding: 0.20rem 0.40rem !important;
+        border-radius: 0.50rem !important;
       }
       
       .vq-progress-container {
-        top: 3rem !important;
+        top: 0.30rem !important;
       }
       
       .vq-progress-text {
-        font-size: 2.1rem !important;
-        padding: 1rem 2.5rem !important;
-        border-radius: 3rem !important;
+        font-size: 0.21rem !important;
+        padding: 0.10rem 0.25rem !important;
+        border-radius: 0.30rem !important;
       }
       
       .vq-progress-bar {
-        width: 30rem !important;
-        height: 0.8rem !important;
-        border-radius: 1rem !important;
+        width: 3rem !important;
+        height: 0.08rem !important;
+        border-radius: 0.10rem !important;
       }
       
       #browse-all-tours-btn,
       .browse-all-tours-btn-questions {
-        top: 3rem !important;
-        right: 3rem !important;
-        font-size: 2.1rem !important;
-        padding: 1.8rem 4rem !important;
-        border-radius: 5rem !important;
-        border: 0.3rem solid rgba(255, 255, 255, 0.6) !important;
+        top: 0.30rem !important;
+        right: 0.30rem !important;
+        font-size: 0.21rem !important;
+        padding: 0.18rem 0.40rem !important;
+        border-radius: 0.50rem !important;
+        border: 0.03rem solid rgba(255, 255, 255, 0.6) !important;
       }
       
       .vq-tour-counter {
-        font-size: 2.4rem !important;
-        padding: 1.5rem 3rem !important;
-        border-radius: 4rem !important;
+        font-size: 0.24rem !important;
+        padding: 0.15rem 0.30rem !important;
+        border-radius: 0.40rem !important;
       }
       
       /* WIDGETS */
       .weather-widget,
       .weather-widget.collapsed {
-        bottom: 3rem !important;
-        right: 3rem !important;
-        width: 10rem !important;
-        height: 10rem !important;
-        min-width: 10rem !important;
-        max-width: 10rem !important;
-        min-height: 10rem !important;
-        max-height: 10rem !important;
-        border: 0.2rem solid rgba(255, 255, 255, 0.25) !important;
+        bottom: 0.30rem !important;
+        right: 0.30rem !important;
+        width: 1rem !important;
+        height: 1rem !important;
+        min-width: 1rem !important;
+        max-width: 1rem !important;
+        min-height: 1rem !important;
+        max-height: 1rem !important;
+        border: 0.02rem solid rgba(255, 255, 255, 0.25) !important;
       }
       
       .weather-widget.collapsed::before {
-        font-size: 4.8rem !important;
+        font-size: 0.48rem !important;
       }
       
       .chat-button,
       .chat-toggle-btn {
-        bottom: 3rem !important;
-        left: 3rem !important;
-        width: 10rem !important;
-        height: 10rem !important;
-        min-width: 10rem !important;
-        max-width: 10rem !important;
-        min-height: 10rem !important;
-        max-height: 10rem !important;
-        border: 0.2rem solid rgba(255, 255, 255, 0.25) !important;
+        bottom: 0.30rem !important;
+        left: 0.30rem !important;
+        width: 1rem !important;
+        height: 1rem !important;
+        min-width: 1rem !important;
+        max-width: 1rem !important;
+        min-height: 1rem !important;
+        max-height: 1rem !important;
+        border: 0.02rem solid rgba(255, 255, 255, 0.25) !important;
       }
       
       .chat-button img,
@@ -5734,16 +5734,16 @@
       
       /* START SCREEN */
       .video-start-text {
-        font-size: 4.8rem !important;
-        padding: 2rem 4rem !important;
-        border-radius: 2rem !important;
+        font-size: 0.48rem !important;
+        padding: 0.20rem 0.40rem !important;
+        border-radius: 0.20rem !important;
       }
       
       .browse-all-tours-btn {
-        font-size: 2.9rem !important;
-        padding: 2.5rem 6rem !important;
-        border-radius: 6rem !important;
-        border: 0.3rem solid rgba(255, 255, 255, 0.6) !important;
+        font-size: 0.29rem !important;
+        padding: 0.25rem 0.60rem !important;
+        border-radius: 0.60rem !important;
+        border: 0.03rem solid rgba(255, 255, 255, 0.6) !important;
       }
       
       /* SWIPE RESULTS */
@@ -5754,246 +5754,246 @@
       }
       
       .skip-to-list-btn {
-        top: 4rem !important;
-        right: 4rem !important;
-        font-size: 2.1rem !important;
-        padding: 1.5rem 3rem !important;
-        border-radius: 4rem !important;
+        top: 0.40rem !important;
+        right: 0.40rem !important;
+        font-size: 0.21rem !important;
+        padding: 0.15rem 0.30rem !important;
+        border-radius: 0.40rem !important;
       }
       
       .swipe-card-header h2 {
-        font-size: 4.8rem !important;
-        margin-bottom: 2rem !important;
+        font-size: 0.48rem !important;
+        margin-bottom: 0.20rem !important;
       }
       
       .swipe-card-header .company-chip {
-        font-size: 2.4rem !important;
-        padding: 1.2rem 3rem !important;
-        border-radius: 5rem !important;
+        font-size: 0.24rem !important;
+        padding: 0.12rem 0.30rem !important;
+        border-radius: 0.50rem !important;
       }
       
       /* GALLERY */
       .swipe-gallery-wrapper {
-        margin-bottom: 4rem;
+        margin-bottom: 0.40rem;
       }
       
       .swipe-gallery-spread {
-        gap: 4rem !important;
+        gap: 0.40rem !important;
       }
       
       .swipe-gallery-image {
-        width: 40rem !important; /* 400px desktop */
-        height: 50rem !important; /* 500px desktop */
-        border-radius: 3rem !important;
+        width: 4rem !important; /* 400px desktop */
+        height: 5rem !important; /* 500px desktop */
+        border-radius: 0.30rem !important;
       }
       
       .gallery-nav-arrow {
-        width: 7rem !important;
-        height: 7rem !important;
-        font-size: 4.8rem !important;
+        width: 0.70rem !important;
+        height: 0.70rem !important;
+        font-size: 0.48rem !important;
       }
       
       /* INFO SECTIONS */
       .swipe-info-sections {
-        gap: 3rem;
-        margin-bottom: 4rem;
+        gap: 0.30rem;
+        margin-bottom: 0.40rem;
       }
       
       .swipe-info-box {
-        min-width: 40rem !important;
-        padding: 3rem;
-        border-radius: 3rem !important;
+        min-width: 4rem !important;
+        padding: 0.30rem;
+        border-radius: 0.30rem !important;
       }
       
       .swipe-info-box h3 {
-        font-size: 3.2rem !important; /* 32px desktop */
-        margin-bottom: 1.5rem !important;
+        font-size: 0.32rem !important; /* 32px desktop */
+        margin-bottom: 0.15rem !important;
       }
       
       .swipe-info-box ul {
-        gap: 0.8rem !important;
+        gap: 0.08rem !important;
       }
       
       .swipe-info-box ul li {
-        font-size: 2.2rem !important; /* 22px desktop */
-        padding: 0.8rem 0 !important;
-        padding-left: 2.5rem !important;
+        font-size: 0.22rem !important; /* 22px desktop */
+        padding: 0.08rem 0 !important;
+        padding-left: 0.25rem !important;
       }
       
       .swipe-info-box ul li::before {
-        font-size: 2rem !important;
+        font-size: 0.20rem !important;
       }
       
       .swipe-info-box p {
-        font-size: 2.2rem !important;
+        font-size: 0.22rem !important;
       }
       
       /* ACTION BUTTONS */
       .swipe-actions {
-        gap: 5rem !important;
-        margin-top: 4rem !important;
-        margin-bottom: 6rem !important;
+        gap: 0.50rem !important;
+        margin-top: 0.40rem !important;
+        margin-bottom: 0.60rem !important;
       }
       
       .swipe-btn {
-        width: 22rem !important; /* 220px desktop */
-        height: 22rem !important;
-        min-width: 22rem !important;
-        max-width: 22rem !important;
-        min-height: 22rem !important;
-        max-height: 22rem !important;
+        width: 2.20rem !important; /* 220px desktop */
+        height: 2.20rem !important;
+        min-width: 2.20rem !important;
+        max-width: 2.20rem !important;
+        min-height: 2.20rem !important;
+        max-height: 2.20rem !important;
       }
       
       .swipe-btn-icon {
-        font-size: 7.2rem !important; /* 72px desktop */
+        font-size: 0.72rem !important; /* 72px desktop */
       }
       
       .swipe-btn-text {
-        font-size: 2.2rem !important; /* 22px desktop */
+        font-size: 0.22rem !important; /* 22px desktop */
       }
       
       /* EXPANDED DETAILS */
       .swipe-scrollable-content {
-        padding: 4rem 0;
+        padding: 0.40rem 0;
       }
       
       .swipe-expanded-details {
-        gap: 3rem;
+        gap: 0.30rem;
       }
       
       .swipe-detail-section {
-        padding: 4rem;
-        border-radius: 3rem !important;
+        padding: 0.40rem;
+        border-radius: 0.30rem !important;
       }
       
       .swipe-detail-section h3 {
-        font-size: 3.5rem !important;
-        margin-bottom: 2.5rem !important;
+        font-size: 0.35rem !important;
+        margin-bottom: 0.25rem !important;
       }
       
       .swipe-detail-section div,
       .swipe-detail-section p,
       .swipe-detail-section li {
-        font-size: 2rem !important;
+        font-size: 0.20rem !important;
       }
       
       .swipe-detail-section li {
-        padding-left: 4rem !important;
+        padding-left: 0.40rem !important;
       }
       
       .swipe-detail-section iframe {
-        min-height: 40rem !important;
-        border-radius: 2rem !important;
+        min-height: 4rem !important;
+        border-radius: 0.20rem !important;
       }
       
       /* REVIEWS */
       .swipe-reviews-grid {
-        gap: 2.5rem;
+        gap: 0.25rem;
       }
       
       .swipe-review-card {
-        padding: 3rem;
-        border-radius: 2rem !important;
-        margin-bottom: 2.5rem;
+        padding: 0.30rem;
+        border-radius: 0.20rem !important;
+        margin-bottom: 0.25rem;
       }
       
       .swipe-review-card strong {
-        font-size: 1.8rem !important;
+        font-size: 0.18rem !important;
       }
       
       .swipe-review-card p {
-        font-size: 1.6rem !important;
+        font-size: 0.16rem !important;
       }
       
       /* HOME PAGE */
       #home-tours-title {
-        font-size: 4.5rem !important;
+        font-size: 0.45rem !important;
       }
       
       .section-subtitle {
-        font-size: 2.4rem !important;
+        font-size: 0.24rem !important;
       }
       
       #tour-grid-header {
-        font-size: 4.5rem !important;
+        font-size: 0.45rem !important;
       }
       
       .results-info {
-        font-size: 2.6rem !important;
+        font-size: 0.26rem !important;
       }
       
       .tour-card,
       .tour-card-large {
-        width: 45rem !important;
-        padding: 2rem !important;
+        width: 4.50rem !important;
+        padding: 0.20rem !important;
       }
       
       .tour-card-image {
-        height: 30rem !important;
-        border-radius: 2rem !important;
+        height: 3rem !important;
+        border-radius: 0.20rem !important;
       }
       
       .tour-card h3,
       .tour-card-large h3 {
-        font-size: 2.4rem !important;
+        font-size: 0.24rem !important;
       }
       
       .tour-card p,
       .tour-card-large p {
-        font-size: 1.6rem !important;
+        font-size: 0.16rem !important;
       }
       
       .featured-grid {
-        gap: 3rem !important;
+        gap: 0.30rem !important;
       }
       
       /* TOUR DETAIL */
       .tour-detail-main {
-        padding: 4rem 8rem 12rem 8rem !important;
+        padding: 0.40rem 0.80rem 1.20rem 0.80rem !important;
       }
       
       .tour-hero h1 {
-        font-size: 4.8rem !important;
+        font-size: 0.48rem !important;
       }
       
       .tour-hero p {
-        font-size: 2rem !important;
+        font-size: 0.20rem !important;
       }
       
       .detail-section {
-        padding: 4rem !important;
-        border-radius: 3rem !important;
+        padding: 0.40rem !important;
+        border-radius: 0.30rem !important;
       }
       
       .detail-section h3 {
-        font-size: 3.5rem !important;
+        font-size: 0.35rem !important;
       }
       
       .detail-section p,
       .detail-section li {
-        font-size: 2rem !important;
+        font-size: 0.20rem !important;
       }
       
       .kiosk-header {
-        padding: 3rem 5rem !important;
+        padding: 0.30rem 0.50rem !important;
       }
       
       .logo-image {
-        height: 7rem !important;
+        height: 0.70rem !important;
       }
       
       .btn-primary,
       .btn-secondary,
       .btn-tertiary {
-        font-size: 2rem !important;
-        padding: 1.8rem 4rem !important;
-        border-radius: 5rem !important;
+        font-size: 0.20rem !important;
+        padding: 0.18rem 0.40rem !important;
+        border-radius: 0.50rem !important;
       }
       
       .chip {
-        font-size: 1.6rem !important;
-        padding: 1rem 2rem !important;
-        border-radius: 3rem !important;
+        font-size: 0.16rem !important;
+        padding: 0.10rem 0.20rem !important;
+        border-radius: 0.30rem !important;
       }
     }
       
