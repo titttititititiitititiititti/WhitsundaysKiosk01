@@ -439,15 +439,35 @@
     }
     
     /* ===================================================================
+       PAGE VISIBILITY SYSTEM
+       =================================================================== */
+    
+    /* Hide all pages by default */
+    .page {
+      display: none !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100vh;
+    }
+    
+    /* Show only the active page */
+    .page.active {
+      display: block !important;
+      position: relative;
+    }
+    
+    /* ===================================================================
        VIDEO QUESTION PAGE - NEW PRIMARY FLOW
        =================================================================== */
     
-    .page.video-question-page {
+    .page.video-question-page.active {
+      display: flex !important; /* Override the block from .page.active */
       position: relative;
       width: 100%;
       height: 100vh;
       overflow: hidden;
-      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 10; /* Above video background */
@@ -475,9 +495,34 @@
       z-index: 1 !important; /* Bring above body but below home page */
     }
     
-    /* Hide home page when video is active */
-    body.video-bg-active .home-page {
+    /* Hide ALL non-active pages and widgets when video question page is active */
+    body.video-bg-active .page:not(.video-question-page),
+    body.video-bg-active .home-page,
+    body.video-bg-active .tour-list-page,
+    body.video-bg-active .tour-detail-page {
       display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    
+    /* Force widgets to stay hidden when video page is active */
+    body.video-bg-active .weather-widget,
+    body.video-bg-active #weather-widget,
+    body.video-bg-active .chat-interface,
+    body.video-bg-active #chat-interface {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    
+    /* Only show chat button, not the interface */
+    body.video-bg-active .chat-button,
+    body.video-bg-active #chat-button {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     .video-question-container {
@@ -1322,7 +1367,7 @@
        MODERN KIOSK LAYOUT - Home Page
        =================================================================== */
     
-    .page.home-page {
+    .page.home-page.active {
       min-height: auto;
       display: flex;
       flex-direction: column;
@@ -1829,7 +1874,7 @@
        MODERN KIOSK LAYOUT - Tour List Page
        =================================================================== */
     
-    .page.tour-list-page {
+    .page.tour-list-page.active {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -2210,7 +2255,7 @@
        MODERN KIOSK LAYOUT - Tour Detail Page
        =================================================================== */
     
-    .page.tour-detail-page {
+    .page.tour-detail-page.active {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -2230,7 +2275,7 @@
     }
     
     /* Make background transparent when in video flow */
-    body.video-bg-active .page.tour-detail-page {
+    body.video-bg-active .page.tour-detail-page.active {
       background: transparent !important;
     }
     
