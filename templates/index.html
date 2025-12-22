@@ -3216,13 +3216,6 @@
         font-size: 14px;
       }
       
-      body,
-      .page.tour-detail-page {
-        zoom: 0.75;
-        -moz-transform: scale(0.75);
-        -moz-transform-origin: 0 0;
-      }
-      
       /* Make header buttons sticky on tablet */
       .kiosk-header .header-right {
         position: -webkit-sticky;
@@ -3232,15 +3225,10 @@
       }
     }
     
-    /* Mobile - Scale down desktop view to fit */
+    /* Mobile - Responsive layout */
     @media (max-width: 768px) {
-      /* Zoom out to show desktop view scaled down */
-      body,
-      .page.tour-detail-page {
-        zoom: 0.5;
-        -moz-transform: scale(0.5);
-        -moz-transform-origin: 0 0;
-        overflow-x: hidden !important;
+      html {
+        font-size: 16px; /* Reset to normal for mobile */
       }
       
       /* Make header buttons sticky and always visible on mobile */
@@ -3260,13 +3248,10 @@
       }
     }
     
-    /* Small phones - Scale down to 40% */
+    /* Small phones - Further adjustments */
     @media (max-width: 480px) {
-      body,
-      .page.tour-detail-page {
-        zoom: 0.4;
-        -moz-transform: scale(0.4);
-        -moz-transform-origin: 0 0;
+      html {
+        font-size: 15px;
       }
       
       .question-text {
@@ -6214,7 +6199,7 @@
 </head>
 <body>
   <!-- Version indicator for cache verification -->
-  <div class="version-indicator">v-mobile-vw-vh-2</div>
+  <div class="version-indicator">v-no-zoom-responsive</div>
   
   <div id="main-layout">
     <!-- Mobile Hamburger Menu (Mobile Only) -->
