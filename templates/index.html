@@ -544,20 +544,26 @@
     
     /* Keep widgets visible and functional on video page */
     body.video-bg-active .weather-widget,
-    body.video-bg-active #weather-widget,
-    body.video-bg-active .chat-button,
-    body.video-bg-active #chat-button,
-    body.video-bg-active .chat-interface,
-    body.video-bg-active #chat-interface {
+    body.video-bg-active #weather-widget {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
       pointer-events: auto !important;
+      z-index: 999999 !important;
     }
     
     body.video-bg-active .chat-button,
     body.video-bg-active #chat-button {
       display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 999999 !important;
+    }
+    
+    body.video-bg-active .chat-interface,
+    body.video-bg-active #chat-interface {
+      z-index: 999999 !important;
     }
     
     .video-question-container {
@@ -566,7 +572,7 @@
       width: 100%;
       max-width: 1200px;
       padding: 40px;
-      padding-top: 120px; /* Push down to avoid top crowding */
+      padding-top: 180px; /* Push down further to avoid top crowding */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -674,7 +680,7 @@
     /* Progress Indicator */
     .vq-progress-container {
       position: fixed;
-      top: 15px;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -5739,7 +5745,12 @@
       
       /* Video question container adjustment for mobile */
       .video-question-container {
-        padding-top: 100px !important;
+        padding-top: 150px !important;
+      }
+      
+      /* Progress indicator positioning for mobile */
+      .vq-progress-container {
+        top: 60px !important;
       }
       
       /* Kiosk header adjustments */
