@@ -5795,38 +5795,59 @@
         transform: none !important;
       }
       
-      /* Fix header overlaps - stack vertically on mobile */
+      /* Fix header - much smaller, back arrow top-left */
       .kiosk-header {
-        flex-direction: column !important;
+        flex-direction: row !important;
         align-items: center !important;
-        gap: 8px !important;
-        padding: 10px !important;
+        justify-content: space-between !important;
+        gap: 5px !important;
+        padding: 8px 10px !important;
         position: relative !important;
+        min-height: auto !important;
       }
       
       .logo-image {
-        max-width: 100px !important;
+        max-width: 60px !important;
         height: auto !important;
       }
       
       .header-left {
         position: static !important;
-        width: 100% !important;
-        justify-content: center !important;
+        flex: 0 0 auto !important;
       }
       
       .header-right {
         position: static !important;
         right: auto !important;
-        width: 100% !important;
-        justify-content: center !important;
+        display: flex !important;
+        gap: 5px !important;
+        flex: 0 0 auto !important;
+      }
+      
+      /* Language and currency buttons - much smaller */
+      .header-right .chip,
+      .language-selector button,
+      .currency-selector button {
+        padding: 6px 12px !important;
+        font-size: 0.85em !important;
+        min-width: auto !important;
+      }
+      
+      /* Back arrow - top left corner */
+      #back-arrow,
+      .back-btn {
+        position: fixed !important;
+        top: 8px !important;
+        left: 8px !important;
+        z-index: 10000 !important;
+        width: 40px !important;
+        height: 40px !important;
+        padding: 8px !important;
+        font-size: 1.2em !important;
       }
       
       .search-wrapper {
-        position: static !important;
-        width: 90% !important;
-        max-width: 400px !important;
-        margin: 0 auto !important;
+        display: none !important;
       }
       
       .home-main {
@@ -5881,13 +5902,33 @@
         padding: 15px 10px !important;
       }
       
-      /* Tour cards - fix title wrapping */
+      /* Tour cards - scale down AGGRESSIVELY */
+      .tour-card {
+        min-height: auto !important;
+        padding: 10px !important;
+      }
+      
       .tour-card h3,
       .tour-card .tour-name {
-        font-size: 1.1em !important;
-        line-height: 1.3 !important;
+        font-size: 0.95em !important;
+        line-height: 1.2 !important;
         word-break: normal !important;
         overflow-wrap: break-word !important;
+        margin: 5px 0 !important;
+      }
+      
+      .tour-card .tour-rating,
+      .tour-card .review-count {
+        font-size: 0.85em !important;
+      }
+      
+      .tour-card .tour-price {
+        font-size: 0.9em !important;
+        padding: 8px 12px !important;
+      }
+      
+      .tour-card img {
+        max-height: 150px !important;
       }
       
       /* Ensure dropdowns are hidden by default */
@@ -5911,6 +5952,7 @@
         width: 100vw !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
+        padding-top: 60px !important;
       }
       
       /* Remove narrow width constraints - use full width */
@@ -5922,19 +5964,22 @@
         width: 95% !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        padding: 15px 10px !important;
+        padding: 12px 10px !important;
+        margin-top: 0 !important;
+        margin-bottom: 12px !important;
       }
       
-      /* Photo carousel full width */
+      /* Photo carousel - hide old one, will use swipe gallery */
       .tour-detail-page .photo-carousel {
-        max-height: 300px !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        display: none !important;
       }
       
-      .tour-detail-page .photo-carousel img {
-        max-width: 100% !important;
+      /* Show swipe-style gallery on tour detail pages */
+      .tour-detail-page .swipe-gallery-wrapper {
+        display: flex !important;
         width: 100% !important;
+        max-height: 350px !important;
+        margin-bottom: 15px !important;
       }
       
       /* Scale down all headings */
