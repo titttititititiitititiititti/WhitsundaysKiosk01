@@ -11106,11 +11106,50 @@
       // Don't change URL - keep user on home page for consistent experience
       // This way refreshing doesn't take them to the standalone share page
       
-      console.log('🌐 Fetching tour data...');
+      console.log('🌐 Fetching tour data (browse -> swipe detail)...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
         .then(res => res.json())
         .then(data => {
-          document.getElementById('detail-title').textContent = data.name;
+          // Build a single swipe card and show swipe overlay (no swipe actions)
+          const card = {
+            key: data.key || key,
+            name: data.name,
+            company: data.company,
+            company_name: data.company_name || data.company,
+            gallery: data.gallery || [],
+            includes: data.includes,
+            highlights: data.highlights,
+            description: data.description,
+            duration: data.duration,
+            departure_times: data.departure_times,
+            age_requirements: data.age_requirements,
+            ideal_for: data.ideal_for,
+            important_information: data.important_information,
+            whats_extra: data.whats_extra,
+            cancellation_policy: data.cancellation_policy,
+            departure_location: data.departure_location,
+            departure_coords: data.departure_coords,
+            price_display: data.price_display,
+            reviews: data.reviews || {}
+          };
+          
+          swipeCards = [card];
+          currentCardIndex = 0;
+          
+          renderGallerySpread(card);
+          renderInfoSections(card);
+          expandTourDetails({ key: card.key }); // builds map and reviews
+          
+          // Hide swipe action buttons in browse context
+          const swipeActions = document.querySelector('.swipe-actions');
+          if (swipeActions) swipeActions.style.display = 'none';
+          
+          const swipeOverlay = document.getElementById('swipe-results-overlay');
+          if (swipeOverlay) swipeOverlay.classList.add('active');
+          
+          // Close menus
+          closeAllMenus();
+        })
           
           // Make company name clickable to filter by company
           const companyElement = document.getElementById('detail-company');
