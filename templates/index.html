@@ -6699,8 +6699,17 @@
               <button class="duration-pill" data-activity="island_tours" onclick="toggleActivity('island_tours', this)">
                 🏝️ Island Tours
               </button>
-              <button class="duration-pill" data-activity="scenic_adventure" onclick="toggleActivity('scenic_adventure', this)">
-                🎢 Scenic & Adventure
+              <button class="duration-pill" data-activity="sailing" onclick="toggleActivity('sailing', this)">
+                ⛵ Sailing
+              </button>
+              <button class="duration-pill" data-activity="snorkeling" onclick="toggleActivity('snorkeling', this)">
+                🤿 Snorkeling
+              </button>
+              <button class="duration-pill" data-activity="swimming" onclick="toggleActivity('swimming', this)">
+                🏊 Swimming
+              </button>
+              <button class="duration-pill" data-activity="scenic_views" onclick="toggleActivity('scenic_views', this)">
+                🌅 Scenic Views
               </button>
             </div>
             <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
@@ -6710,33 +6719,11 @@
               <button class="duration-pill" style="max-width: 400px; height: auto; min-height: 80px; background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);" onclick="confirmActivity()">
                 Continue
               </button>
-        </div>
-      </div>
-      
-          <!-- Question 4: Extras -->
-          <div class="hero-card filter-question-card" data-question="4" style="display: none;">
-            <p class="hero-question">Any special requirements?</p>
-            <p style="font-size: 1.2em; color: #90e0ef; margin-top: -15px; margin-bottom: 20px;">Select all that apply</p>
-            <div class="duration-grid" style="grid-template-columns: 1fr 1fr; max-width: 800px; margin: 0 auto;">
-              <button class="duration-pill" data-extra="meals" onclick="toggleExtra('meals', this)">
-                🍽️ Meals Included
-              </button>
-              <button class="duration-pill" data-extra="equipment" onclick="toggleExtra('equipment', this)">
-                🤿 Equipment Provided
-              </button>
-            </div>
-            <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
-              <button class="duration-pill duration-pill--ghost" style="max-width: 400px; height: auto; min-height: 80px;" onclick="skipExtras()">
-                No preference
-              </button>
-              <button class="duration-pill" style="max-width: 400px; height: auto; min-height: 80px; background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);" onclick="confirmExtras()">
-                Continue
-              </button>
             </div>
           </div>
-
-          <!-- Question 5: Price (Slider) -->
-          <div class="hero-card filter-question-card" data-question="5" style="display: none;">
+      
+          <!-- Question 4: Price (Slider) -->
+          <div class="hero-card filter-question-card" data-question="4" style="display: none;">
             <p class="hero-question">What's your budget per person?</p>
             <div class="budget-slider-container">
               <div class="budget-label-display">
@@ -9095,7 +9082,7 @@
           const btn = document.querySelector('[data-extra="equipment"]');
           if (btn) btn.classList.add('duration-pill--selected');
         }
-      } else if (questionNum === 5) {
+      } else if (questionNum === 4) {
         // Price slider - restore slider position
         const slider = document.getElementById('budget-slider');
         const display = document.getElementById('budget-display');
