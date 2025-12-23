@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
-  <meta name="viewport" content="width=1920, initial-scale=0.5, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   
   <!-- Cache busting -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -21,7 +21,12 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
   <style>
-    * {
+    /* ===================================================================
+       GLOBAL RESPONSIVE FOUNDATIONS
+       =================================================================== */
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
@@ -29,6 +34,8 @@
     html {
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
+      font-size: 16px; /* Base for rem calculations */
+      overflow-x: hidden; /* Prevent horizontal scroll */
     }
     
     html::-webkit-scrollbar {
@@ -45,6 +52,20 @@
       overflow-x: hidden;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* Responsive media defaults */
+    img, video, iframe, embed, object {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* Prevent text overflow */
+    p, h1, h2, h3, h4, h5, h6, span, div {
+      overflow-wrap: break-word;
+      word-wrap: break-word;
     }
     
     body::-webkit-scrollbar {
@@ -475,13 +496,10 @@
     
     #bg-video {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translate(-50%, -50%) rotate(90deg); /* Rotate for vertical kiosk */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: -1; /* Behind all pages */
       object-fit: cover;
       filter: blur(8px);
@@ -506,11 +524,15 @@
       pointer-events: none !important;
     }
     
-    /* Force widgets to stay hidden when video page is active */
+    /* Force widgets, modals, and forms to stay hidden when video page is active */
     body.video-bg-active .weather-widget,
     body.video-bg-active #weather-widget,
     body.video-bg-active .chat-interface,
-    body.video-bg-active #chat-interface {
+    body.video-bg-active #chat-interface,
+    body.video-bg-active #booking-modal,
+    body.video-bg-active .modal,
+    body.video-bg-active #qr-modal,
+    body.video-bg-active .top-button-bar {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
@@ -5609,14 +5631,235 @@
     }
 
     /* ===================================================================
-       SIMPLE UNIFORM SCALING - Everything scales together
-       Desktop baseline: 1920px = 100rem
-       Mobile: viewport width / 19.2 = scales everything proportionally
+       RESPONSIVE BREAKPOINTS - Mobile First Approach
        =================================================================== */
     
-    
+    /* Tablet and below - adjust main layouts */
+    @media (max-width: 1024px) {
+      /* Reduce fixed widths */
+      .kiosk-header {
+        padding: 15px 30px !important;
+      }
       
-
+      .home-main, .tour-list-main {
+        padding: 20px !important;
+      }
+      
+      /* Stack filters vertically on smaller screens */
+      .duration-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 500px !important;
+        margin: 0 auto !important;
+      }
+      
+      /* Make tour cards responsive */
+      .tour-card {
+        max-width: 100% !important;
+      }
+      
+      /* Adjust font sizes */
+      .hero-title {
+        font-size: 2.5em !important;
+      }
+      
+      .hero-question {
+        font-size: 1.8em !important;
+      }
+    }
+    
+    /* Mobile phones */
+    @media (max-width: 768px) {
+      /* Hide desktop-only elements */
+      .top-button-bar {
+        display: none !important;
+      }
+      
+      /* Make weather and chat widgets smaller and stack */
+      .weather-widget {
+        bottom: 80px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: auto !important;
+        max-width: calc(100vw - 20px) !important;
+      }
+      
+      .chat-button {
+        bottom: 10px !important;
+        left: 10px !important;
+        width: 60px !important;
+        height: 60px !important;
+      }
+      
+      .chat-interface {
+        bottom: 80px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: calc(100vw - 20px) !important;
+        max-width: 100% !important;
+        height: calc(100vh - 100px) !important;
+      }
+      
+      /* Kiosk header adjustments */
+      .kiosk-header {
+        flex-direction: column !important;
+        padding: 10px 15px !important;
+        gap: 10px !important;
+      }
+      
+      .header-left, .header-right {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      
+      .logo-image {
+        max-width: 150px !important;
+        height: auto !important;
+      }
+      
+      /* Hero section */
+      .hero-title {
+        font-size: 2em !important;
+        padding: 0 15px !important;
+      }
+      
+      .hero-question {
+        font-size: 1.5em !important;
+        padding: 0 15px !important;
+      }
+      
+      /* Button adjustments */
+      .duration-pill {
+        font-size: 1.2em !important;
+        padding: 20px !important;
+        min-height: 70px !important;
+      }
+      
+      /* Search bar */
+      #home-search-input {
+        width: calc(100% - 30px) !important;
+        font-size: 1.2em !important;
+        padding: 15px 20px !important;
+      }
+      
+      /* Tour cards in grid */
+      .tour-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        padding: 0 15px !important;
+      }
+      
+      /* Video question page */
+      .video-start-screen h1 {
+        font-size: 2.5em !important;
+      }
+      
+      .video-start-btn {
+        font-size: 1.2em !important;
+        padding: 18px 40px !important;
+      }
+      
+      .vq-question {
+        font-size: 1.8em !important;
+      }
+      
+      .vq-answer-btn {
+        font-size: 1.1em !important;
+        padding: 18px !important;
+      }
+      
+      /* Swipe results overlay */
+      .swipe-card-stack {
+        height: 300px !important;
+      }
+      
+      .swipe-info-sections {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .swipe-actions {
+        flex-direction: row !important;
+        gap: 10px !important;
+        padding: 15px !important;
+      }
+      
+      .swipe-btn {
+        font-size: 1em !important;
+        padding: 15px 20px !important;
+      }
+      
+      /* Progress bar */
+      .vq-progress-bar {
+        top: 70px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: calc(100% - 20px) !important;
+      }
+      
+      /* Browse all tours button */
+      .browse-all-btn {
+        top: 10px !important;
+        right: 10px !important;
+        font-size: 0.9em !important;
+        padding: 10px 20px !important;
+      }
+    }
+    
+    /* Small phones */
+    @media (max-width: 480px) {
+      /* Further reduce sizes for very small screens */
+      .hero-title {
+        font-size: 1.8em !important;
+      }
+      
+      .hero-question {
+        font-size: 1.3em !important;
+      }
+      
+      .duration-pill {
+        font-size: 1.1em !important;
+        padding: 15px !important;
+        min-height: 60px !important;
+      }
+      
+      .vq-question {
+        font-size: 1.5em !important;
+      }
+      
+      .vq-answer-btn {
+        font-size: 1em !important;
+        padding: 15px !important;
+      }
+      
+      .weather-widget {
+        font-size: 0.9em !important;
+      }
+      
+      .chat-button {
+        width: 50px !important;
+        height: 50px !important;
+      }
+    }
+    
+    /* Landscape mode adjustments */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .hero-title {
+        font-size: 1.5em !important;
+        margin-bottom: 10px !important;
+      }
+      
+      .hero-question {
+        font-size: 1.2em !important;
+      }
+      
+      .duration-pill {
+        padding: 10px !important;
+        min-height: 50px !important;
+      }
+      
+      .vq-question {
+        font-size: 1.3em !important;
+      }
+    }
 
   </style>
 </head>
