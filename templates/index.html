@@ -5795,31 +5795,62 @@
         transform: none !important;
       }
       
-      /* Scale home page content to fit mobile */
+      /* Fix header overlaps - stack vertically on mobile */
       .kiosk-header {
-        padding: 15px 20px !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        position: relative !important;
+      }
+      
+      .logo-image {
+        max-width: 100px !important;
+        height: auto !important;
+      }
+      
+      .header-left {
+        position: static !important;
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      
+      .header-right {
+        position: static !important;
+        right: auto !important;
+        width: 100% !important;
+        justify-content: center !important;
+      }
+      
+      .search-wrapper {
+        position: static !important;
+        width: 90% !important;
+        max-width: 400px !important;
+        margin: 0 auto !important;
       }
       
       .home-main {
         padding: 15px !important;
       }
       
-      /* Scale down home page headings */
+      /* Scale down home page headings MORE */
       .home-main h1,
       .home-main .hero-title {
-        font-size: 1.8em !important;
+        font-size: 1.4em !important;
+        margin: 10px 0 !important;
       }
       
       .home-main h2 {
-        font-size: 1.3em !important;
+        font-size: 1.1em !important;
+        margin: 8px 0 !important;
       }
       
       .home-main h3 {
-        font-size: 1.1em !important;
+        font-size: 1em !important;
       }
       
       .home-main p {
-        font-size: 1em !important;
+        font-size: 0.95em !important;
       }
       
       .duration-grid {
@@ -5833,20 +5864,30 @@
         padding: 20px 15px !important;
       }
       
-      /* Browse All Tours page scaling */
+      /* Browse All Tours page scaling - AGGRESSIVE */
       .tour-list-main h1,
       .tour-list-header h1 {
-        font-size: 1.5em !important;
-        padding: 15px 10px !important;
+        font-size: 1.3em !important;
+        padding: 10px !important;
+        margin: 5px 0 !important;
       }
       
       .tour-list-main > p,
       .tour-list-main .subtitle {
-        font-size: 1em !important;
+        font-size: 0.95em !important;
       }
       
       .tour-list-main {
         padding: 15px 10px !important;
+      }
+      
+      /* Tour cards - fix title wrapping */
+      .tour-card h3,
+      .tour-card .tour-name {
+        font-size: 1.1em !important;
+        line-height: 1.3 !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
       }
       
       /* Ensure dropdowns are hidden by default */
@@ -5922,12 +5963,37 @@
       }
       
       .tour-detail-page .info-card {
-        padding: 18px !important;
+        padding: 15px !important;
         font-size: 0.95em !important;
+        min-height: auto !important;
       }
       
       .tour-detail-page .info-card h3 {
+        font-size: 1.1em !important;
+        margin-bottom: 8px !important;
+      }
+      
+      /* Pricing section - reduce massive padding */
+      .tour-detail-page .pricing-section {
+        padding: 15px 10px !important;
+      }
+      
+      .tour-detail-page .pricing-card,
+      .tour-detail-page .price-option {
+        padding: 12px 15px !important;
+        font-size: 1em !important;
+        margin: 8px 0 !important;
+      }
+      
+      .tour-detail-page .pricing-section h2,
+      .tour-detail-page .pricing-section h3 {
         font-size: 1.2em !important;
+        margin: 8px 0 !important;
+      }
+      
+      .tour-detail-page .pricing-section p {
+        font-size: 0.9em !important;
+        margin: 5px 0 !important;
       }
       
       /* Make weather and chat widgets visible and properly styled */
