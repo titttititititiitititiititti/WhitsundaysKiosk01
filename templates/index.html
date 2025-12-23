@@ -738,6 +738,68 @@
       }
     }
     
+    /* Swipe animations for card transitions */
+    @keyframes swipeOutLeft {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+    }
+    
+    @keyframes swipeInRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes slideDownFromTop {
+      0% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes slideUpFadeInSections {
+      0% {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Animation classes to trigger transitions */
+    .swipe-out-left {
+      animation: swipeOutLeft 0.4s ease-out forwards;
+    }
+    
+    .swipe-in-right {
+      animation: swipeInRight 0.5s ease-out forwards;
+    }
+    
+    .slide-down-top {
+      animation: slideDownFromTop 0.5s ease-out forwards;
+    }
+    
+    .slide-up-fade {
+      animation: slideUpFadeInSections 0.6s ease-out forwards;
+    }
+    
     .vq-question {
       font-size: 2.2em;
       font-weight: 700;
@@ -1293,11 +1355,11 @@
     
     .swipe-actions {
       position: fixed;
-      bottom: 30px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 50px;
+      gap: clamp(30px, 5vw, 60px);
       z-index: 100;
       transition: all 0.3s ease;
       justify-content: center;
@@ -1320,8 +1382,8 @@
     }
     
     .swipe-btn {
-      width: 220px;
-      height: 220px;
+      width: clamp(120px, 12vw, 180px);
+      height: clamp(120px, 12vw, 180px);
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -1329,7 +1391,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
       font-weight: 700;
@@ -1403,13 +1465,13 @@
     }
     
     .swipe-btn-icon {
-      font-size: 4.5em;
+      font-size: clamp(2.5em, 3.5vw, 3.5em);
       line-height: 1;
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
     .swipe-btn-text {
-      font-size: 1.4em;
+      font-size: clamp(0.9em, 1.1vw, 1.2em);
       letter-spacing: 0.5px;
       text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
@@ -7355,6 +7417,13 @@
         return;
       }
       
+      // Clear any existing animation classes from the container
+      const stack = document.getElementById('swipe-card-stack');
+      if (stack) {
+        const oldElements = stack.querySelectorAll('.swipe-out-left');
+        oldElements.forEach(el => el.classList.remove('swipe-out-left'));
+      }
+      
       const tour = swipeCards[currentCardIndex];
       const fullTourData = await fetchTourDetails(tour.key);
       
@@ -7414,7 +7483,7 @@
       console.log('[GALLERY] Final images array:', images);
       
       const header = document.createElement('div');
-      header.className = 'swipe-card-header';
+      header.className = 'swipe-card-header slide-down-top';
       header.innerHTML = `
         <h2>${tour.name}</h2>
         <div class="company-chip">${tour.company_name || tour.company || ''}</div>
@@ -7422,7 +7491,7 @@
       stack.appendChild(header);
       
       const galleryWrapper = document.createElement('div');
-      galleryWrapper.className = 'swipe-gallery-wrapper';
+      galleryWrapper.className = 'swipe-gallery-wrapper swipe-in-right';
       
       // Always show left arrow
       const leftArrow = document.createElement('button');
@@ -7512,7 +7581,7 @@
       
       if (tour.includes && tour.includes.trim() && tour.includes !== 'N/A') {
         const includesBox = document.createElement('div');
-        includesBox.className = 'swipe-info-box';
+        includesBox.className = 'swipe-info-box slide-up-fade';
         
         let items = tour.includes.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
         
@@ -7537,7 +7606,7 @@
       
       if (tour.highlights && tour.highlights.trim() && tour.highlights !== 'N/A') {
         const highlightsBox = document.createElement('div');
-        highlightsBox.className = 'swipe-info-box';
+        highlightsBox.className = 'swipe-info-box slide-up-fade';
         
         let highlights = tour.highlights.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
         
@@ -7623,18 +7692,17 @@
     function rejectCard() {
       console.log('[ACTION] Rejecting tour');
       
-      const spread = document.querySelector('.swipe-gallery-spread');
-      if (!spread) return;
-      
-      spread.style.transition = 'all 0.4s ease-out';
-      spread.style.transform = 'translateX(-150%) rotate(-20deg)';
-      spread.style.opacity = '0';
-      
+      // Animate ALL elements out to the left
+      const header = document.querySelector('.swipe-card-header');
+      const galleryWrapper = document.querySelector('.swipe-gallery-wrapper');
       const infoSections = document.getElementById('swipe-info-sections');
-      if (infoSections) {
-        infoSections.style.transition = 'all 0.3s ease-out';
-        infoSections.style.opacity = '0';
-      }
+      const expandedDetails = document.querySelector('.swipe-expanded-details');
+      
+      // Apply swipe-out animation to all visible elements
+      if (header) header.classList.add('swipe-out-left');
+      if (galleryWrapper) galleryWrapper.classList.add('swipe-out-left');
+      if (infoSections) infoSections.classList.add('swipe-out-left');
+      if (expandedDetails) expandedDetails.classList.add('swipe-out-left');
       
       setTimeout(() => {
         currentCardIndex++;
@@ -7681,12 +7749,12 @@
       
       const rejectBtn = document.getElementById('reject-btn');
       if (rejectBtn) {
-        rejectBtn.querySelector('.swipe-btn-text').textContent = '← Back';
-        rejectBtn.querySelector('.swipe-btn-icon').textContent = '←';
-        rejectBtn.onclick = () => window.collapseDetails();
+        rejectBtn.querySelector('.swipe-btn-text').textContent = 'Not For Me';
+        rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
+        rejectBtn.onclick = () => rejectCard();
       }
       
-      let detailsHtml = '<div class="swipe-expanded-details">';
+      let detailsHtml = '<div class="swipe-expanded-details slide-up-fade">';
       
       // Times, Ages, and Ideal For sections
       const hasTimeInfo = fullTourData.departure_times && fullTourData.departure_times.trim();
