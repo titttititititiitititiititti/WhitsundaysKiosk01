@@ -524,11 +524,7 @@
       pointer-events: none !important;
     }
     
-    /* Force widgets, modals, and forms to stay hidden when video page is active */
-    body.video-bg-active .weather-widget,
-    body.video-bg-active #weather-widget,
-    body.video-bg-active .chat-interface,
-    body.video-bg-active #chat-interface,
+    /* Force modals and forms to stay hidden when video page is active */
     body.video-bg-active #booking-modal,
     body.video-bg-active .modal,
     body.video-bg-active #qr-modal,
@@ -539,12 +535,22 @@
       pointer-events: none !important;
     }
     
-    /* Only show chat button, not the interface */
+    /* Keep widgets visible and functional on video page */
+    body.video-bg-active .weather-widget,
+    body.video-bg-active #weather-widget,
+    body.video-bg-active .chat-button,
+    body.video-bg-active #chat-button,
+    body.video-bg-active .chat-interface,
+    body.video-bg-active #chat-interface {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    
     body.video-bg-active .chat-button,
     body.video-bg-active #chat-button {
       display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
     }
     
     .video-question-container {
@@ -5674,29 +5680,42 @@
         display: none !important;
       }
       
-      /* Make weather and chat widgets smaller and stack */
+      /* Make weather and chat widgets visible and properly styled */
       .weather-widget {
         bottom: 80px !important;
         right: 10px !important;
         left: auto !important;
         width: auto !important;
         max-width: calc(100vw - 20px) !important;
+        font-size: 0.9em !important;
       }
       
       .chat-button {
         bottom: 10px !important;
         left: 10px !important;
-        width: 60px !important;
-        height: 60px !important;
+        width: 70px !important;
+        height: 70px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+      }
+      
+      .chat-button img {
+        width: 40px !important;
+        height: 40px !important;
+        object-fit: contain !important;
       }
       
       .chat-interface {
-        bottom: 80px !important;
+        bottom: 90px !important;
         left: 10px !important;
         right: 10px !important;
         width: calc(100vw - 20px) !important;
         max-width: 100% !important;
-        height: calc(100vh - 100px) !important;
+        height: calc(100vh - 180px) !important;
+        max-height: 500px !important;
       }
       
       /* Kiosk header adjustments */
@@ -5727,11 +5746,20 @@
         padding: 0 15px !important;
       }
       
-      /* Button adjustments */
+      /* Button adjustments - use more horizontal space */
       .duration-pill {
         font-size: 1.2em !important;
-        padding: 20px !important;
+        padding: 20px 30px !important;
         min-height: 70px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      .duration-grid {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 20px !important;
+        gap: 15px !important;
       }
       
       /* Search bar */
@@ -5748,9 +5776,10 @@
         padding: 0 15px !important;
       }
       
-      /* Video question page */
+      /* Video question page - use full width */
       .video-start-screen h1 {
         font-size: 2.5em !important;
+        padding: 0 20px !important;
       }
       
       .video-start-btn {
@@ -5758,13 +5787,36 @@
         padding: 18px 40px !important;
       }
       
+      .video-question-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 30px 20px !important;
+        margin: 0 !important;
+      }
+      
       .vq-question {
         font-size: 1.8em !important;
+        padding: 0 !important;
+        margin-bottom: 25px !important;
+      }
+      
+      .vq-answers {
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 15px !important;
+        padding: 0 !important;
       }
       
       .vq-answer-btn {
         font-size: 1.1em !important;
-        padding: 18px !important;
+        padding: 20px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      .vq-tour-counter {
+        font-size: 1.1em !important;
+        padding: 15px 25px !important;
       }
       
       /* Swipe results overlay */
@@ -5806,9 +5858,10 @@
     
     /* Small phones */
     @media (max-width: 480px) {
-      /* Further reduce sizes for very small screens */
+      /* Further reduce text sizes but keep full width buttons */
       .hero-title {
         font-size: 1.8em !important;
+        padding: 0 15px !important;
       }
       
       .hero-question {
@@ -5817,26 +5870,39 @@
       
       .duration-pill {
         font-size: 1.1em !important;
-        padding: 15px !important;
-        min-height: 60px !important;
+        padding: 18px 20px !important;
+        min-height: 65px !important;
+        width: 100% !important;
+      }
+      
+      .video-question-card {
+        padding: 25px 15px !important;
       }
       
       .vq-question {
         font-size: 1.5em !important;
+        margin-bottom: 20px !important;
       }
       
       .vq-answer-btn {
         font-size: 1em !important;
-        padding: 15px !important;
+        padding: 18px !important;
+        width: 100% !important;
       }
       
       .weather-widget {
-        font-size: 0.9em !important;
+        font-size: 0.85em !important;
+        bottom: 90px !important;
       }
       
       .chat-button {
-        width: 50px !important;
-        height: 50px !important;
+        width: 60px !important;
+        height: 60px !important;
+      }
+      
+      .chat-button img {
+        width: 35px !important;
+        height: 35px !important;
       }
     }
     
@@ -13277,14 +13343,21 @@
         // const input = document.getElementById('chat-input');
         // input.focus();
         
-        // Speak welcome message on first open
+        // Speak welcome message on first open - only if chat is actually visible
         if (!hasSpokenWelcome && window.voiceChat && window.voiceChat.autoSpeak) {
           hasSpokenWelcome = true;
           
-          // Wait a moment for chat to open, then speak
+          // Wait a moment for chat to open, then check if visible before speaking
           setTimeout(() => {
-            const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
-            window.voiceChat.speak(welcomeText);
+            const computedStyle = window.getComputedStyle(chatInterface);
+            const isVisible = computedStyle.display !== 'none' && 
+                             computedStyle.visibility !== 'hidden' && 
+                             computedStyle.opacity !== '0';
+            
+            if (isVisible && chatInterface.classList.contains('active')) {
+              const welcomeText = "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour! Let's start simple - what would you like to experience? Great Barrier Reef, Whitehaven Beach, Sailing and Cruises, Diving and Snorkeling, or something else?";
+              window.voiceChat.speak(welcomeText);
+            }
           }, 500);
         }
       } else {
