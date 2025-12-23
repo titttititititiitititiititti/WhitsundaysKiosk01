@@ -11567,32 +11567,58 @@
               pricingOptions[0].click();
             }
           }, 100);
-          // Carousel with thumbnail navigation
+          // Swipe-style 3-image spread gallery (same as swipe section)
           let gallery = data.gallery || [];
-          let carouselHtml = '';
-          if (gallery.length) {
-            carouselHtml = '<div class="carousel"><img id="carousel-img" src="' + gallery[0] + '" alt="Tour image"><button class="carousel-arrow left">&#8249;</button><button class="carousel-arrow right">&#8250;</button></div><div class="carousel-thumbnails">';
-            for (let i = 0; i < gallery.length; i++) {
-              carouselHtml += `<div class='carousel-thumbnail${i===0?' active':''}' data-idx='${i}'><img src='${gallery[i]}' alt='Thumbnail ${i+1}'></div>`;
+          let galleryHtml = '';
+          
+          if (gallery.length > 0) {
+            let images = [];
+            if (gallery.length >= 3) {
+              images = [gallery[0], gallery[1], gallery[2]];
+            } else if (gallery.length === 2) {
+              images = [gallery[0], gallery[1], gallery[0]];
+            } else {
+              images = [gallery[0], gallery[0], gallery[0]];
             }
-            carouselHtml += '</div>';
+            
+            let detailGalleryIndex = 0;
+            
+            galleryHtml = `
+              <div class="swipe-gallery-wrapper">
+                <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
+                <div class="swipe-gallery-spread" id="detail-gallery-spread">
+                  <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
+                  <div class="swipe-gallery-image center"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
+                </div>
+                <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
+              </div>
+            `;
+            
+            window.rotateDetailGallery = function(direction) {
+              if (gallery.length <= 1) return;
+              const spread = document.getElementById('detail-gallery-spread');
+              if (!spread) return;
+              spread.classList.add(direction === 'right' ? 'rotating-right' : 'rotating-left');
+              setTimeout(() => {
+                detailGalleryIndex = direction === 'right' 
+                  ? (detailGalleryIndex + 1) % gallery.length
+                  : (detailGalleryIndex - 1 + gallery.length) % gallery.length;
+                const nextImages = [
+                  gallery[(detailGalleryIndex - 1 + gallery.length) % gallery.length],
+                  gallery[detailGalleryIndex],
+                  gallery[(detailGalleryIndex + 1) % gallery.length]
+                ];
+                const imgElements = spread.querySelectorAll('.swipe-gallery-image img');
+                imgElements[0].src = nextImages[0];
+                imgElements[1].src = nextImages[1];
+                imgElements[2].src = nextImages[2];
+                spread.classList.remove('rotating-right', 'rotating-left');
+              }, 150);
+            };
           }
-          document.getElementById('detail-gallery').innerHTML = carouselHtml;
-          let currentIdx = 0;
-          function showImg(idx) {
-            currentIdx = idx;
-            document.getElementById('carousel-img').src = gallery[idx];
-            document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
-              el.classList.toggle('active', i === idx);
-            });
-          }
-          if (gallery.length) {
-            document.querySelector('.carousel-arrow.left').onclick = e => { e.stopPropagation(); showImg((currentIdx-1+gallery.length)%gallery.length); };
-            document.querySelector('.carousel-arrow.right').onclick = e => { e.stopPropagation(); showImg((currentIdx+1)%gallery.length); };
-            document.querySelectorAll('.carousel-thumbnail').forEach((el, i) => {
-              el.onclick = e => { e.stopPropagation(); showImg(i); };
-            });
-          }
+          
+          document.getElementById('detail-gallery').innerHTML = galleryHtml;
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
           
