@@ -28,7 +28,8 @@ import json
 TOUR_LINKS = [ 
  "https://jetskitour.com.au/tour/airlie-adventure/"
  "https://jetskitour.com.au/tour/two-island-safari/"
- "https://jetskitour.com.au/tour/ultimate-island-trek/" ]
+ "https://jetskitour.com.au/tour/ultimate-island-trek/"
+ "https://skyone.com.au/airlie-beach/#bookings" ]
 
     
 # =================================
