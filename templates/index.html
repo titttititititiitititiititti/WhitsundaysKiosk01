@@ -493,6 +493,7 @@
       align-items: flex-start; /* Align to top for scrollable content */
       justify-content: center;
       z-index: 10; /* Above video background */
+      background: transparent !important; /* Let video show through */
     }
     
     #bg-video {
@@ -1291,14 +1292,16 @@
     }
     
     .swipe-actions {
-      position: relative;
-      margin: 40px auto;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       gap: 50px;
       z-index: 100;
-      flex-shrink: 0;
       transition: all 0.3s ease;
       justify-content: center;
+      pointer-events: auto;
     }
     
     .swipe-actions.entering {
