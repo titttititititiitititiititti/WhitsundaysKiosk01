@@ -5804,14 +5804,49 @@
         padding: 15px !important;
       }
       
+      /* Scale down home page headings */
+      .home-main h1,
+      .home-main .hero-title {
+        font-size: 1.8em !important;
+      }
+      
+      .home-main h2 {
+        font-size: 1.3em !important;
+      }
+      
+      .home-main h3 {
+        font-size: 1.1em !important;
+      }
+      
+      .home-main p {
+        font-size: 1em !important;
+      }
+      
       .duration-grid {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
       }
       
-      .filter-option {
-        font-size: 1.2em !important;
-        padding: 20px !important;
+      .filter-option,
+      .duration-option {
+        font-size: 1.1em !important;
+        padding: 20px 15px !important;
+      }
+      
+      /* Browse All Tours page scaling */
+      .tour-list-main h1,
+      .tour-list-header h1 {
+        font-size: 1.5em !important;
+        padding: 15px 10px !important;
+      }
+      
+      .tour-list-main > p,
+      .tour-list-main .subtitle {
+        font-size: 1em !important;
+      }
+      
+      .tour-list-main {
+        padding: 15px 10px !important;
       }
       
       /* Ensure dropdowns are hidden by default */
@@ -5830,34 +5865,69 @@
         display: none !important;
       }
       
-      /* TOUR DETAIL PAGE - Scale like swipe section */
+      /* TOUR DETAIL PAGE - Use full width, scale everything down */
       .page.tour-detail-page.active {
         width: 100vw !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
       }
       
+      /* Remove narrow width constraints - use full width */
+      .tour-detail-page .tour-info,
+      .tour-detail-page main,
+      .tour-detail-page section,
+      .tour-detail-page .info-grid {
+        max-width: 95% !important;
+        width: 95% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 15px 10px !important;
+      }
+      
+      /* Photo carousel full width */
       .tour-detail-page .photo-carousel {
         max-height: 300px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      
+      .tour-detail-page .photo-carousel img {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      
+      /* Scale down all headings */
+      .tour-detail-page h1 {
+        font-size: 1.5em !important;
+      }
+      
+      .tour-detail-page h2 {
+        font-size: 1.3em !important;
+      }
+      
+      .tour-detail-page h3 {
+        font-size: 1.2em !important;
+      }
+      
+      /* Scale down body text */
+      .tour-detail-page p,
+      .tour-detail-page li,
+      .tour-detail-page div {
+        font-size: 0.95em !important;
       }
       
       .tour-detail-page .info-grid {
         grid-template-columns: 1fr !important;
         gap: 15px !important;
-        padding: 15px !important;
       }
       
       .tour-detail-page .info-card {
-        padding: 20px !important;
+        padding: 18px !important;
         font-size: 0.95em !important;
       }
       
       .tour-detail-page .info-card h3 {
-        font-size: 1.25em !important;
-      }
-      
-      .tour-detail-page section {
-        padding: 20px 15px !important;
+        font-size: 1.2em !important;
       }
       
       /* Make weather and chat widgets visible and properly styled */
