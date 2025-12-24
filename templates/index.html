@@ -5885,26 +5885,27 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - MATCH BACK ARROW HEIGHT (38px) but shorter visually */
+      /* Language and currency buttons - SMALL ENOUGH TO FIT IN HEADER */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
       .kiosk-header .header-right .language-selector button,
       .kiosk-header .header-right .currency-selector button {
-        padding: 0 !important;
-        font-size: 0.65em !important;
-        min-width: 38px !important;
-        width: 38px !important;
-        height: 28px !important;
-        max-height: 28px !important;
+        padding: 2px 4px !important;
+        font-size: 0.7em !important;
+        min-width: 36px !important;
+        width: 36px !important;
+        height: 24px !important;
+        max-height: 24px !important;
         line-height: 1 !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 6px !important;
+        border-radius: 5px !important;
         font-weight: 600 !important;
         margin: 0 !important;
+        box-sizing: border-box !important;
       }
       
       /* Ensure all pages have padding for fixed header */
@@ -6060,36 +6061,73 @@
       }
       
       .tour-list-main {
-        padding: 10px 6px !important;
+        padding: 10px 8px !important;
       }
       
-      /* Tour cards - scale down AGGRESSIVELY */
-      .tour-card {
+      /* Tour list page headings - scale down */
+      .list-title,
+      .tour-list-page h1 {
+        font-size: 1.4em !important;
+        margin: 10px 0 !important;
+        padding: 0 5px !important;
+      }
+      
+      .results-info,
+      .tour-list-page .results-info {
+        font-size: 0.9em !important;
+        margin: 5px 0 10px 0 !important;
+        padding: 0 5px !important;
+      }
+      
+      /* Tour grid - 2 columns on mobile */
+      .tour-grid,
+      .tour-grid--2col {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        padding: 0 !important;
+      }
+      
+      /* Tour cards - scale down AGGRESSIVELY, shorter height */
+      .tour-card,
+      .tour-card-large {
         min-height: auto !important;
-        padding: 8px !important;
+        height: auto !important;
+        max-height: 200px !important;
+        padding: 6px !important;
+        margin: 0 !important;
       }
       
       .tour-card h3,
-      .tour-card .tour-name {
-        font-size: 0.85em !important;
-        line-height: 1.15 !important;
+      .tour-card .tour-name,
+      .tour-card-large h3 {
+        font-size: 0.75em !important;
+        line-height: 1.1 !important;
         word-break: normal !important;
         overflow-wrap: break-word !important;
-        margin: 4px 0 !important;
+        margin: 3px 0 !important;
+        padding: 0 !important;
       }
       
       .tour-card .tour-rating,
-      .tour-card .review-count {
-        font-size: 0.8em !important;
+      .tour-card .review-count,
+      .tour-card-large .tour-rating {
+        font-size: 0.7em !important;
       }
       
-      .tour-card .tour-price {
-        font-size: 0.85em !important;
-        padding: 6px 10px !important;
+      .tour-card .tour-price,
+      .tour-card-large .tour-price {
+        font-size: 0.75em !important;
+        padding: 5px 8px !important;
       }
       
-      .tour-card img {
-        max-height: 120px !important;
+      .tour-card img,
+      .tour-card-large img,
+      .tour-card-image {
+        max-height: 90px !important;
+        min-height: 90px !important;
+        object-fit: cover !important;
       }
       
       /* Ensure dropdowns are hidden by default */
