@@ -5926,7 +5926,7 @@
         display: none !important;
       }
       
-      /* Search bar - FULL SCREEN WIDTH */
+      /* Search bar - FULL SCREEN WIDTH - Override inline styles */
       .page.home-page .search-wrapper,
       .page.tour-list-page .search-wrapper {
         display: block !important;
@@ -5935,6 +5935,7 @@
         max-width: none !important;
         margin: 10px auto 15px auto !important;
         z-index: 5 !important;
+        padding: 0 !important;
       }
       
       .page.home-page .search-wrapper input,
@@ -5945,6 +5946,29 @@
         text-align: center !important;
         border-radius: 50px !important;
         font-weight: 500 !important;
+      }
+      
+      /* Override inline styles on search input by ID */
+      #home-search-input {
+        width: 96% !important;
+        max-width: 96% !important;
+        min-width: 96% !important;
+        padding: 20px 30px !important;
+        font-size: 1.6em !important;
+        margin: 0 auto !important;
+        display: block !important;
+      }
+      
+      /* Override parent div inline styles */
+      #home-search-input + button {
+        display: none !important;
+      }
+      
+      .page.home-page > div[style*="padding: 0 100px"],
+      .page.home-page div[style*="max-width: 1600px"] {
+        padding: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
       }
       
       /* Home/Tour List - Apply same logo styling */
