@@ -3976,16 +3976,16 @@
     /* AI Chat Assistant */
     .chat-button {
       position: fixed;
-      bottom: 30px;
-      left: 30px;
+      bottom: 16px;
+      left: 16px;
       z-index: 999999 !important;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 2px solid rgba(255, 255, 255, 0.3);
       color: white;
-      width: 100px;
-      height: 100px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
       font-size: 3em;
       cursor: pointer;
@@ -4551,8 +4551,8 @@
     /* Weather Widget */
     .weather-widget {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
+      bottom: 16px;
+      right: 16px;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(10px);
       border-radius: 16px;
@@ -8125,6 +8125,16 @@
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'auto' });
       
+      // Force-hide QR modal and chat interface when switching home
+      closeQRModal();
+      const chatInterface = document.getElementById('chat-interface');
+      if (chatInterface) {
+        chatInterface.classList.remove('active');
+        chatInterface.style.display = 'none';
+      }
+      const swipeOverlayEl = document.getElementById('swipe-results-overlay');
+      if (swipeOverlayEl) swipeOverlayEl.scrollTop = 0;
+      
       resetVideoQuestionFlow();
       
       console.log('✅ Home page active, video flow exited');
@@ -8135,6 +8145,8 @@
       
       // Show video background on initial load
       document.body.classList.add('video-bg-active');
+      // Ensure QR modal is hidden on load
+      closeQRModal();
       
       initVideoQuestionFlow();
       
@@ -8173,6 +8185,24 @@
     } else {
       initializeApp();
     }
+    
+    // Failsafe: wire Browse All buttons to home navigation
+    document.addEventListener('DOMContentLoaded', () => {
+      const ids = ['browse-all-tours-btn', 'browse-all-tours-questions'];
+      ids.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.goToHomePage === 'function') {
+              window.goToHomePage();
+            }
+          });
+        }
+      });
+      closeQRModal();
+    });
     
     // Helper function to generate star display
     function generateStars(rating, fullOnly = false) {
@@ -11886,7 +11916,7 @@
   </script>
   
   <!-- QR Code Modal -->
-  <div id="qr-modal">
+  <div id="qr-modal" style="display:none !important; pointer-events:none !important;">
     <div class="qr-modal-content">
       <button class="qr-modal-close" onclick="closeQRModal()">×</button>
       <div class="qr-modal-title">📱 Scan to Book</div>
@@ -11903,22 +11933,21 @@
   
   <script>
     // QR Code functionality
-    function showQRCode(tourUrl, tourName) {
+    // Disable QR modal on kiosk (legacy flow)
+    function showQRCode() {
       const modal = document.getElementById('qr-modal');
-      const qrImage = document.getElementById('qr-code-image');
-      const tourNameEl = document.getElementById('qr-tour-name');
-      
-      // Use a free QR code API to generate the QR code
-      // tourUrl is now the link_more_info (tour company's page)
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tourUrl)}`;
-      
-      qrImage.src = qrApiUrl;
-      tourNameEl.textContent = tourName;
-      modal.style.display = 'flex';
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
+      }
     }
     
     function closeQRModal() {
-      document.getElementById('qr-modal').style.display = 'none';
+      const modal = document.getElementById('qr-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
+      }
     }
     
     // Close modal when clicking outside
