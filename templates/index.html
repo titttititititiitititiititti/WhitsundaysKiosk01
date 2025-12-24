@@ -5885,24 +5885,24 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - SMALL ENOUGH TO FIT IN HEADER */
+      /* Language and currency buttons - TINY TO FIT IN HEADER */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
       .kiosk-header .header-right .language-selector button,
       .kiosk-header .header-right .currency-selector button {
-        padding: 2px 4px !important;
-        font-size: 0.7em !important;
-        min-width: 36px !important;
-        width: 36px !important;
-        height: 24px !important;
-        max-height: 24px !important;
+        padding: 1px 3px !important;
+        font-size: 0.65em !important;
+        min-width: 34px !important;
+        width: 34px !important;
+        height: 20px !important;
+        max-height: 20px !important;
         line-height: 1 !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 5px !important;
+        border-radius: 4px !important;
         font-weight: 600 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
@@ -6089,45 +6089,82 @@
         padding: 0 !important;
       }
       
-      /* Tour cards - scale down AGGRESSIVELY, shorter height */
+      /* Tour cards - scale down AGGRESSIVELY, FIX BLACK BOXES */
       .tour-card,
       .tour-card-large {
-        min-height: auto !important;
+        min-height: 180px !important;
         height: auto !important;
-        max-height: 200px !important;
-        padding: 6px !important;
-        margin: 0 !important;
-      }
-      
-      .tour-card h3,
-      .tour-card .tour-name,
-      .tour-card-large h3 {
-        font-size: 0.75em !important;
-        line-height: 1.1 !important;
-        word-break: normal !important;
-        overflow-wrap: break-word !important;
-        margin: 3px 0 !important;
+        max-height: 220px !important;
         padding: 0 !important;
+        margin: 0 !important;
+        background: #fff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        position: relative !important;
       }
       
-      .tour-card .tour-rating,
-      .tour-card .review-count,
-      .tour-card-large .tour-rating {
-        font-size: 0.7em !important;
-      }
-      
-      .tour-card .tour-price,
-      .tour-card-large .tour-price {
-        font-size: 0.75em !important;
-        padding: 5px 8px !important;
-      }
-      
+      /* Tour card images - make sure they show */
       .tour-card img,
       .tour-card-large img,
       .tour-card-image {
-        max-height: 90px !important;
-        min-height: 90px !important;
+        max-height: 100px !important;
+        min-height: 100px !important;
+        height: 100px !important;
+        width: 100% !important;
         object-fit: cover !important;
+        display: block !important;
+        background-size: cover !important;
+        background-position: center !important;
+      }
+      
+      /* Tour card content area */
+      .tour-card-content,
+      .tour-card-large .tour-card-content {
+        padding: 6px 8px !important;
+        background: #fff !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
+      
+      /* Tour card titles - make visible */
+      .tour-card h3,
+      .tour-card .tour-name,
+      .tour-card-large h3,
+      .tour-card-title {
+        font-size: 0.75em !important;
+        line-height: 1.15 !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+        margin: 0 0 4px 0 !important;
+        padding: 0 !important;
+        color: #1a1a1a !important;
+        font-weight: 600 !important;
+      }
+      
+      /* Tour card rating/reviews */
+      .tour-card .tour-rating,
+      .tour-card .review-count,
+      .tour-card-large .tour-rating,
+      .tour-rating-display {
+        font-size: 0.7em !important;
+        color: #666 !important;
+        margin: 2px 0 !important;
+      }
+      
+      /* Tour card price */
+      .tour-card .tour-price,
+      .tour-card-large .tour-price,
+      .price-display {
+        font-size: 0.75em !important;
+        padding: 4px 8px !important;
+        background: #0077b6 !important;
+        color: white !important;
+        border-radius: 4px !important;
+        display: inline-block !important;
+        margin-top: 4px !important;
       }
       
       /* Ensure dropdowns are hidden by default */
