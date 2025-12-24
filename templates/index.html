@@ -5795,38 +5795,38 @@
         transform: none !important;
       }
       
-      /* Fix header - compact, at very top of screen */
+      /* Fix header - compact, at very top of screen - UNIFORM ACROSS ALL PAGES */
       .kiosk-header {
         flex-direction: row !important;
         align-items: center !important;
         justify-content: flex-start !important;
         gap: 0 !important;
-        padding: 5px 0px 5px 5px !important;
+        padding: 6px 0px 6px 6px !important;
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        max-height: 44px !important;
+        height: 50px !important;
+        min-height: 50px !important;
+        max-height: 50px !important;
         z-index: 10000 !important;
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(10px) !important;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
       }
       
-      /* Show logo in center */
+      /* Show logo in center - same across all pages */
       .kiosk-header .logo-image {
         display: block !important;
-        height: 32px !important;
+        height: 38px !important;
         width: auto !important;
         position: absolute !important;
         left: 50% !important;
         top: 50% !important;
         transform: translate(-50%, -50%) !important;
         z-index: 1 !important;
-        max-width: 120px !important;
+        max-width: 140px !important;
         object-fit: contain !important;
       }
       
@@ -5842,21 +5842,20 @@
         display: none !important;
       }
       
-      /* Back button - compact, left aligned */
+      /* Back button - compact, left aligned, same height as other buttons */
       .back-button,
       .tour-detail-page .back-button,
       .kiosk-header .back-button {
-        width: 36px !important;
-        height: 36px !important;
+        width: 38px !important;
+        height: 38px !important;
         padding: 0 !important;
         font-size: 1.2em !important;
         border-radius: 8px !important;
         flex-shrink: 0 !important;
         z-index: 2 !important;
         position: relative !important;
-        margin-right: 0 !important;
+        margin: 0 !important;
         left: 0 !important;
-        margin-left: 0 !important;
       }
       
       .kiosk-header .header-right {
@@ -5893,17 +5892,78 @@
       .kiosk-header .header-right .language-selector button,
       .kiosk-header .header-right .currency-selector button {
         padding: 0 !important;
-        font-size: 0.75em !important;
-        min-width: 42px !important;
-        width: 42px !important;
-        height: 32px !important;
+        font-size: 0.7em !important;
+        min-width: 38px !important;
+        width: 38px !important;
+        height: 30px !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important;
         font-weight: 600 !important;
         margin: 0 !important;
+      }
+      
+      /* Ensure all pages have padding for fixed header */
+      .page.home-page,
+      .page.tour-list-page {
+        padding-top: 50px !important;
+      }
+      
+      /* HOME PAGE & TOUR LIST - Headers inherit from main .kiosk-header styles above */
+      
+      /* Home/Tour List page - hide search and map view on mobile */
+      .page.home-page .search-wrapper,
+      .page.home-page #home-map-toggle-btn,
+      .page.tour-list-page #map-toggle-btn {
+        display: none !important;
+      }
+      
+      /* Home/Tour List - Apply same logo styling */
+      .page.home-page .kiosk-header .logo-image,
+      .page.tour-list-page .kiosk-header .logo-image {
+        display: block !important;
+        height: 38px !important;
+        width: auto !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 1 !important;
+        max-width: 140px !important;
+        object-fit: contain !important;
+      }
+      
+      /* Home/Tour List - Apply same header-right styling */
+      .page.home-page .kiosk-header .header-right,
+      .page.tour-list-page .kiosk-header .header-right {
+        position: absolute !important;
+        right: 0 !important;
+        left: auto !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        gap: 3px !important;
+        flex: 0 0 auto !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding-right: 3px !important;
+      }
+      
+      /* Home page - hide header-left content, keep back arrow only on tour pages */
+      .page.home-page .kiosk-header .header-left,
+      .page.tour-list-page .kiosk-header .header-left {
+        display: none !important;
+      }
+      
+      /* Hide back button on home/tour list pages */
+      .page.home-page .back-button,
+      .page.tour-list-page .back-button {
+        display: none !important;
       }
       
       /* Back arrow - top left corner */
@@ -5948,14 +6008,31 @@
       }
       
       .duration-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr 1fr !important;
         gap: 10px !important;
+        max-width: 100% !important;
+        padding: 0 10px !important;
+      }
+      
+      .duration-pill {
+        font-size: 1em !important;
+        padding: 18px 12px !important;
+        min-height: auto !important;
+      }
+      
+      .duration-pill span {
+        font-size: 0.85em !important;
+      }
+      
+      /* "No preference" and "Continue" buttons can span full width if last item */
+      .duration-pill--ghost {
+        grid-column: 1 / -1 !important;
       }
       
       .filter-option,
       .duration-option {
-        font-size: 1.1em !important;
-        padding: 20px 15px !important;
+        font-size: 1em !important;
+        padding: 18px 12px !important;
       }
       
       /* Browse All Tours page scaling - AGGRESSIVE */
