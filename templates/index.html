@@ -5885,7 +5885,7 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - SUPER TINY (16px) */
+      /* Language and currency buttons - SUPER TINY (16px) - OVERRIDE DESKTOP min-height! */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
@@ -5894,7 +5894,9 @@
         padding: 0 !important;
         font-size: 0.55em !important;
         min-width: 30px !important;
+        max-width: 30px !important;
         width: 30px !important;
+        min-height: 16px !important;
         height: 16px !important;
         max-height: 16px !important;
         line-height: 16px !important;
