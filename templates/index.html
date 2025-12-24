@@ -5885,27 +5885,28 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - TINY TO FIT IN HEADER */
+      /* Language and currency buttons - ABSOLUTELY TINY (18px) */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
       .kiosk-header .header-right .language-selector button,
       .kiosk-header .header-right .currency-selector button {
-        padding: 1px 3px !important;
-        font-size: 0.65em !important;
-        min-width: 34px !important;
-        width: 34px !important;
-        height: 20px !important;
-        max-height: 20px !important;
-        line-height: 1 !important;
+        padding: 0px 2px !important;
+        font-size: 0.6em !important;
+        min-width: 32px !important;
+        width: 32px !important;
+        height: 18px !important;
+        max-height: 18px !important;
+        line-height: 18px !important;
         text-align: center !important;
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 4px !important;
+        border-radius: 3px !important;
         font-weight: 600 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
+        vertical-align: middle !important;
       }
       
       /* Ensure all pages have padding for fixed header */
@@ -6079,14 +6080,45 @@
         padding: 0 5px !important;
       }
       
-      /* Tour grid - 2 columns on mobile */
+      /* Tour grid - 3 columns on tablets, 2 on smaller phones */
       .tour-grid,
       .tour-grid--2col {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px !important;
         width: 100% !important;
-        padding: 0 !important;
+        padding: 0 5px !important;
+      }
+      
+      /* Switch to 2 columns on smaller screens (< 500px) */
+      @media (max-width: 500px) {
+        .tour-grid,
+        .tour-grid--2col {
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+        }
+        
+        /* Make cards slightly bigger on 2-column layout */
+        .tour-card,
+        .tour-card-large {
+          min-height: 200px !important;
+          max-height: 240px !important;
+        }
+        
+        .tour-card img,
+        .tour-card-large img,
+        .tour-card-image {
+          max-height: 110px !important;
+          min-height: 110px !important;
+          height: 110px !important;
+        }
+        
+        .tour-card h3,
+        .tour-card .tour-name,
+        .tour-card-large h3,
+        .tour-card-title {
+          font-size: 0.8em !important;
+        }
       }
       
       /* Tour cards - scale down AGGRESSIVELY, FIX BLACK BOXES */
@@ -6104,7 +6136,7 @@
         position: relative !important;
       }
       
-      /* Tour card images - make sure they show */
+      /* Tour card images - remove dark overlay, make bright */
       .tour-card img,
       .tour-card-large img,
       .tour-card-image {
@@ -6116,6 +6148,20 @@
         display: block !important;
         background-size: cover !important;
         background-position: center !important;
+        filter: none !important;
+        opacity: 1 !important;
+      }
+      
+      /* Remove any ::before or ::after overlays on tour card images */
+      .tour-card::before,
+      .tour-card::after,
+      .tour-card-large::before,
+      .tour-card-large::after,
+      .tour-card-image::before,
+      .tour-card-image::after {
+        display: none !important;
+        content: none !important;
+        background: none !important;
       }
       
       /* Tour card content area */
@@ -6181,6 +6227,22 @@
       /* Hide desktop-only elements */
       .top-button-bar {
         display: none !important;
+      }
+      
+      /* Info sections - stack vertically on mobile (What To Bring, What's Included) */
+      .swipe-info-sections {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      
+      .swipe-info-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
       }
       
       /* TOUR DETAIL PAGE - Use full width, scale everything down */
