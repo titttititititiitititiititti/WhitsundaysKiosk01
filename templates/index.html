@@ -6409,13 +6409,13 @@
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen" onclick="handleStartScreenClick(event)">
+      <div class="video-start-screen" id="video-start-screen" onclick="startVideoQuestions();">
         <div class="video-start-text">Tap to Start</div>
-        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
+        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
       </div>
       
       <!-- Browse All Tours Button (Always visible during questions) -->
-      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: none;" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
+      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: none;" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
       
       <!-- Progress Indicator -->
       <div class="vq-progress-container" id="vq-progress-container" style="display: none;">
