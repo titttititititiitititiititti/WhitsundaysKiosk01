@@ -7256,7 +7256,11 @@
         updateProgressIndicator();
       }
       
-      renderVideoQuestion(0);
+      console.log('🔄 About to render question 0');
+      setTimeout(() => {
+        renderVideoQuestion(0);
+        console.log('✅ Question 0 render complete');
+      }, 100);
       resetInactivityTimer();
     }
     
@@ -7338,12 +7342,22 @@
     }
     
     function renderVideoQuestion(index) {
+      console.log('🎯 renderVideoQuestion called with index:', index);
       const question = videoQuestions[index];
+      console.log('📝 Question:', question);
       const questionText = document.getElementById('vq-question-text');
       const answersContainer = document.getElementById('vq-answers');
+      console.log('📦 Answers container:', answersContainer);
+      
+      if (!answersContainer) {
+        console.error('❌ Answers container not found!');
+        return;
+      }
       
       questionText.textContent = question.question;
       answersContainer.innerHTML = '';
+      answersContainer.style.display = 'flex';
+      answersContainer.style.visibility = 'visible';
       
       // Update progress indicator
       updateProgressIndicator();
@@ -7355,6 +7369,7 @@
         answersContainer.appendChild(subtitle);
       }
       
+      console.log('🔘 Creating', question.answers.length, 'answer buttons');
       question.answers.forEach((answer, idx) => {
         const btn = document.createElement('button');
         btn.className = 'vq-answer-btn';
@@ -7362,6 +7377,8 @@
         btn.dataset.index = idx;
         btn.dataset.value = answer.value;
         btn.dataset.isSkip = answer.isSkip || false;
+        btn.style.display = 'block';
+        btn.style.visibility = 'visible';
         
         if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
           btn.classList.add('selected');
@@ -7369,7 +7386,9 @@
         
         btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, answer.filter, e.target);
         answersContainer.appendChild(btn);
+        console.log('✅ Button added:', answer.text);
       });
+      console.log('📊 Total buttons in container:', answersContainer.children.length);
       
       const firstAnswer = question.answers[0];
       if (question.multiple && firstAnswer && videoAnswers[firstAnswer.filter] && videoAnswers[firstAnswer.filter].length > 0) {
