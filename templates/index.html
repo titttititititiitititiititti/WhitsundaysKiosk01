@@ -838,12 +838,16 @@
     }
     
     .vq-answers {
-      display: flex;
+      display: flex !important;
       flex-direction: column;
       gap: 15px;
       width: 100%;
-      min-height: auto; /* Remove fixed height to allow natural flow */
-      padding-bottom: 60px; /* Reserve space for continue button */
+      min-height: 200px !important; /* Ensure visible space */
+      padding-bottom: 60px;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative;
+      z-index: 100;
     }
     
     .vq-answer-btn {
@@ -6415,7 +6419,7 @@
       </div>
       
       <!-- Browse All Tours Button (Always visible during questions) -->
-      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: none;" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
+      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999;" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
       
       <!-- Progress Indicator -->
       <div class="vq-progress-container" id="vq-progress-container" style="display: flex;">
@@ -6432,8 +6436,12 @@
       <div class="video-question-container" id="video-question-container" style="display: flex;">
         <div class="video-question-card" id="vq-card">
           <h2 class="vq-question" id="vq-question-text">How long can you be away?</h2>
-          <div class="vq-answers" id="vq-answers">
-            <!-- Buttons will be inserted here -->
+          <div class="vq-answers" id="vq-answers" style="display: flex !important; flex-direction: column; gap: 15px; visibility: visible !important; opacity: 1 !important; min-height: 300px; width: 100%;">
+            <!-- Test buttons - remove once JS working -->
+            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Half Day (2-4 hours)</button>
+            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Full Day (5-8 hours)</button>
+            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Multi-day Adventure</button>
+            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">No preference</button>
           </div>
         </div>
       </div>
