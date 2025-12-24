@@ -521,7 +521,7 @@
       height: 100vh !important;
     }
     
-    /* Hide ALL non-active pages and widgets when video question page is active */
+    /* Hide ALL non-active pages when video question page is active */
     body.video-bg-active .page:not(.video-question-page),
     body.video-bg-active .home-page,
     body.video-bg-active .tour-list-page,
@@ -1979,12 +1979,12 @@
       50% { opacity: 1; }
     }
     
-    /* Hide old elements when using new home layout (but not when in map view) */
-    body:has(.home-page):not(.map-view-active) #content-area,
-    body:has(.home-page):not(.map-view-active) #filter-panel,
-    body:has(.home-page):not(.map-view-active) .top-button-bar,
-    body:has(.home-page) #map-container,
-    body:has(.home-page) .tour-list-page {
+    /* Hide old elements when home page is active (but not when in map view) */
+    body:has(.home-page.active):not(.map-view-active) #content-area,
+    body:has(.home-page.active):not(.map-view-active) #filter-panel,
+    body:has(.home-page.active):not(.map-view-active) .top-button-bar,
+    body:has(.home-page.active) #map-container,
+    body:has(.home-page.active) .tour-list-page {
       display: none !important;
     }
     
@@ -8082,13 +8082,10 @@
       console.log('[EXPAND] Tour details expanded with all sections');
     }
     
-    window.goToHomePage = function() {
-      console.log('🏠 Going to regular home page');
-      
+    function openBrowseAllTours() {
+      console.log('📚 Opening Browse All Tours');
       activeFilters = {};
-      isInVideoFlow = false; // Exit video flow
-      
-      // Hide video background
+      isInVideoFlow = false;
       document.body.classList.remove('video-bg-active');
       
       const videoPage = document.querySelector('.video-question-page');
@@ -8096,49 +8093,32 @@
         videoPage.classList.remove('active');
         videoPage.style.display = 'none';
       }
-      
+      const homePage = document.querySelector('.home-page');
+      if (homePage) {
+        homePage.classList.remove('active');
+        homePage.style.display = 'none';
+      }
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (swipeOverlay) {
         swipeOverlay.classList.remove('active');
         swipeOverlay.style.display = 'none';
+        swipeOverlay.scrollTop = 0;
       }
-      
-      const homePage = document.querySelector('.home-page');
-      if (homePage) {
-        homePage.classList.add('active');
-        homePage.style.display = 'flex';
-        
-        // Show hero section
-        const heroSection = document.getElementById('hero-section');
-        if (heroSection) heroSection.style.display = 'block';
-        
-        // Hide company filter nav
-        const companyFilterNav = document.getElementById('company-filter-nav');
-        if (companyFilterNav) companyFilterNav.style.display = 'none';
-        
-        // Reload tours
-        if (typeof loadInitialFeaturedTours === 'function') {
-          loadInitialFeaturedTours();
-        }
+      const tourListPage = document.querySelector('.tour-list-page');
+      if (tourListPage) {
+        tourListPage.classList.add('active');
+        tourListPage.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'auto' });
       }
-      
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'auto' });
-      
-      // Force-hide QR modal and chat interface when switching home
       closeQRModal();
       const chatInterface = document.getElementById('chat-interface');
       if (chatInterface) {
         chatInterface.classList.remove('active');
         chatInterface.style.display = 'none';
       }
-      const swipeOverlayEl = document.getElementById('swipe-results-overlay');
-      if (swipeOverlayEl) swipeOverlayEl.scrollTop = 0;
-      
-      resetVideoQuestionFlow();
-      
-      console.log('✅ Home page active, video flow exited');
     }
+    
+    window.goToHomePage = openBrowseAllTours;
     
     function initializeApp() {
       console.log('🎬 Initializing video question flow');
@@ -8186,7 +8166,7 @@
       initializeApp();
     }
     
-    // Failsafe: wire Browse All buttons to home navigation
+    // Failsafe: wire Browse All buttons to browse-all navigation
     document.addEventListener('DOMContentLoaded', () => {
       const ids = ['browse-all-tours-btn', 'browse-all-tours-questions'];
       ids.forEach(id => {
