@@ -383,6 +383,35 @@ def load_all_tours(language='en'):
 # Set your OpenAI API key here or via environment variable
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+# SendGrid Configuration
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+FROM_EMAIL = os.getenv('FROM_EMAIL', 'bookings@whitsundayskiosk.com')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@example.com')  # Fallback admin email
+
+# Company email mapping - Real operator contact emails based on their domains
+COMPANY_EMAILS = {
+    # Main operators with verified domains
+    'airliebeachdiving': 'bookings@airliebeachdiving.com',
+    'crocodilesafari': 'bookings@crocodilesafari.com.au',
+    'cruisewhitsundays': 'bailey.amouyal@gmail.com',
+    'exploregroup': 'bookings@exploregroup.com.au',
+    'explorewhitsundays': 'bookings@explorewhitsundays.com',
+    'helireef': 'bookings@helireef.com.au',
+    'iconicwhitsunday': 'bookings@iconicwhitsunday.com',
+    'oceandynamics': 'bookings@oceandynamics.com.au',
+    'ozsail': 'bookings@ozsail.com.au',
+    'pioneeradventures': 'bookings@pioneeradventures.com.au',
+    'prosail': 'bookings@prosail.com.au',
+    'redcatadventures': 'bookings@redcatadventures.com.au',
+    'saltydog': 'bookings@saltydog.com.au',
+    'sundownercruises': 'bookings@sundownercruises.com.au',
+    'truebluesailing': 'bookings@truebluesailing.com.au',
+    'whitsunday-catamarans': 'bookings@whitsundaycatamarans.com.au',
+    'whitsundaydiveadventures': 'bookings@whitsundaydiveadventures.com',
+    'whitsundaystanduppaddle': 'bookings@whitsundaystanduppaddle.com.au',
+    'zigzagwhitsundays': 'bookings@zigzagwhitsundays.com'
+}
+
 SYSTEM_PROMPT = (
     "You are a helpful tour assistant for Airlie Beach and the Whitsundays. "
     "You have access to a database of local tours. Answer questions and recommend tours based on the following data:"
@@ -968,6 +997,148 @@ def tour_detail(key):
             print(f"Error processing {csvfile}: {e}")
             continue
     return jsonify({'error': 'Tour not found'}), 404
+
+def log_lead_to_csv(booking_data):
+    """Log booking lead to CSV file for backup"""
+    csv_file = 'leads_log.csv'
+    file_exists = os.path.isfile(csv_file)
+    
+    try:
+        with open(csv_file, 'a', newline='', encoding='utf-8') as f:
+            fieldnames = ['timestamp', 'tour_name', 'tour_company', 'selected_pricing', 'guest_name', 'guest_email', 
+                         'guest_phone', 'adults', 'children', 'preferred_date', 'message', 'email_sent']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            
+            if not file_exists:
+                writer.writeheader()
+            
+            writer.writerow({
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'tour_name': booking_data.get('tour_name', ''),
+                'tour_company': booking_data.get('tour_company', ''),
+                'selected_pricing': booking_data.get('selected_pricing', 'Not specified'),
+                'guest_name': booking_data.get('guest_name', ''),
+                'guest_email': booking_data.get('guest_email', ''),
+                'guest_phone': booking_data.get('guest_phone', ''),
+                'adults': booking_data.get('adults', ''),
+                'children': booking_data.get('children', ''),
+                'preferred_date': booking_data.get('preferred_date', ''),
+                'message': booking_data.get('message', ''),
+                'email_sent': booking_data.get('email_sent', False)
+            })
+        return True
+    except Exception as e:
+        print(f"Error logging lead to CSV: {e}")
+        return False
+
+def send_booking_email(booking_data):
+    """Send booking inquiry email to tour operator"""
+    if not SENDGRID_API_KEY:
+        print("Warning: SENDGRID_API_KEY not set. Email not sent.")
+        return False
+    
+    try:
+        # Get tour operator email
+        company = booking_data.get('tour_company', '').lower().replace(' ', '').replace('-', '')
+        to_email = COMPANY_EMAILS.get(company, ADMIN_EMAIL)
+        
+        # Create email content
+        subject = f"New Tour Inquiry - {booking_data.get('tour_name', 'Tour')}"
+        
+        html_content = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: #0077b6; color: white; padding: 20px; text-align: center; }}
+                .content {{ background: #f9f9f9; padding: 30px; }}
+                .section {{ margin-bottom: 20px; }}
+                .label {{ font-weight: bold; color: #0077b6; }}
+                .value {{ margin-left: 10px; }}
+                .footer {{ background: #333; color: white; padding: 15px; text-align: center; font-size: 0.9em; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🏝️ New Tour Inquiry</h1>
+                </div>
+                <div class="content">
+                    <div class="section">
+                        <p><span class="label">Tour:</span> <span class="value">{booking_data.get('tour_name', 'N/A')}</span></p>
+                        <p><span class="label">Company:</span> <span class="value">{COMPANY_DISPLAY_NAMES.get(company, company.title())}</span></p>
+                        <p><span class="label">Selected Pricing:</span> <span class="value">{booking_data.get('selected_pricing', 'Not specified')}</span></p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 style="color: #0077b6;">Guest Information</h3>
+                        <p><span class="label">Name:</span> <span class="value">{booking_data.get('guest_name', 'N/A')}</span></p>
+                        <p><span class="label">Email:</span> <span class="value">{booking_data.get('guest_email', 'N/A')}</span></p>
+                        <p><span class="label">Phone:</span> <span class="value">{booking_data.get('guest_phone', 'N/A')}</span></p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 style="color: #0077b6;">Booking Details</h3>
+                        <p><span class="label">Adults:</span> <span class="value">{booking_data.get('adults', 'N/A')}</span></p>
+                        <p><span class="label">Children:</span> <span class="value">{booking_data.get('children', '0')}</span></p>
+                        <p><span class="label">Preferred Date:</span> <span class="value">{booking_data.get('preferred_date', 'N/A')}</span></p>
+                    </div>
+                    
+                    <div class="section">
+                        <h3 style="color: #0077b6;">Message / Special Requests</h3>
+                        <p>{booking_data.get('message', 'No special requests')}</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>Inquiry submitted from Whitsundays Visitor Kiosk</p>
+                    <p>Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        message = Mail(
+            from_email=FROM_EMAIL,
+            to_emails=to_email,
+            subject=subject,
+            html_content=html_content
+        )
+        
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        
+        print(f"Email sent successfully to {to_email}. Status code: {response.status_code}")
+        return True
+        
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
+@app.route('/submit-booking', methods=['POST'])
+def submit_booking():
+    """Handle booking form submission"""
+    try:
+        booking_data = request.get_json()
+        
+        # Send email to tour operator
+        email_sent = send_booking_email(booking_data)
+        
+        # Log to CSV (always log, even if email fails)
+        booking_data['email_sent'] = email_sent
+        log_lead_to_csv(booking_data)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Booking inquiry submitted successfully'
+        })
+    except Exception as e:
+        print(f"Error processing booking: {e}")
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
 
 def build_tour_context(language='en'):
     """Build a concise tour knowledge base for AI context"""
