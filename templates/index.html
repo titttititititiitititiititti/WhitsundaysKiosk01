@@ -5885,26 +5885,26 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - SUPER TINY (16px) - OVERRIDE DESKTOP min-height! */
+      /* Language and currency buttons - MATCH BACK ARROW HEIGHT (38px) */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
       .kiosk-header .header-right .language-selector button,
       .kiosk-header .header-right .currency-selector button {
         padding: 0 !important;
-        font-size: 0.55em !important;
-        min-width: 30px !important;
-        max-width: 30px !important;
-        width: 30px !important;
-        min-height: 16px !important;
-        height: 16px !important;
-        max-height: 16px !important;
-        line-height: 16px !important;
+        font-size: 0.7em !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        width: 38px !important;
+        min-height: 38px !important;
+        height: 38px !important;
+        max-height: 38px !important;
+        line-height: 38px !important;
         text-align: center !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 3px !important;
+        border-radius: 8px !important;
         font-weight: 600 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
@@ -6083,73 +6083,56 @@
         padding: 0 5px !important;
       }
       
-      /* Tour grid - DEFAULT 2 COLUMNS ON MOBILE */
+      /* Tour grid - 3 COLUMNS, everything scales with screen width */
       .tour-grid,
       .tour-grid--2col {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: clamp(6px, 1.5vw, 10px) !important;
         width: 100% !important;
-        padding: 0 8px !important;
+        padding: 0 clamp(5px, 1.5vw, 8px) !important;
       }
       
-      /* Tour cards - bigger on 2-column layout */
+      /* Tour cards - scale with viewport */
       .tour-card,
       .tour-card-large {
-        min-height: 220px !important;
-        max-height: 260px !important;
+        min-height: clamp(160px, 28vw, 220px) !important;
+        max-height: clamp(180px, 30vw, 240px) !important;
       }
       
+      /* Tour card images - scale with viewport */
       .tour-card img,
       .tour-card-large img,
       .tour-card-image {
-        max-height: 120px !important;
-        min-height: 120px !important;
-        height: 120px !important;
+        max-height: clamp(80px, 15vw, 110px) !important;
+        min-height: clamp(80px, 15vw, 110px) !important;
+        height: clamp(80px, 15vw, 110px) !important;
       }
       
+      /* Tour card titles - scale with viewport */
       .tour-card h3,
       .tour-card .tour-name,
       .tour-card-large h3,
       .tour-card-title {
-        font-size: 0.85em !important;
-        line-height: 1.2 !important;
-        padding: 0 4px !important;
+        font-size: clamp(0.65em, 1.8vw, 0.85em) !important;
+        line-height: 1.15 !important;
+        padding: 0 clamp(2px, 1vw, 4px) !important;
       }
       
+      /* Tour card rating - scale with viewport */
+      .tour-card .tour-rating,
+      .tour-card .review-count,
+      .tour-card-large .tour-rating,
+      .tour-rating-display {
+        font-size: clamp(0.6em, 1.5vw, 0.75em) !important;
+      }
+      
+      /* Tour card price - scale with viewport */
       .tour-card .tour-price,
-      .tour-card-large .tour-price {
-        font-size: 0.8em !important;
-      }
-      
-      /* Switch to 3 columns ONLY on wider tablets (> 650px) */
-      @media (min-width: 651px) and (max-width: 768px) {
-        .tour-grid,
-        .tour-grid--2col {
-          grid-template-columns: 1fr 1fr 1fr !important;
-          gap: 8px !important;
-        }
-        
-        .tour-card,
-        .tour-card-large {
-          min-height: 180px !important;
-          max-height: 220px !important;
-        }
-        
-        .tour-card img,
-        .tour-card-large img,
-        .tour-card-image {
-          max-height: 100px !important;
-          min-height: 100px !important;
-          height: 100px !important;
-        }
-        
-        .tour-card h3,
-        .tour-card .tour-name,
-        .tour-card-large h3,
-        .tour-card-title {
-          font-size: 0.7em !important;
-        }
+      .tour-card-large .tour-price,
+      .price-display {
+        font-size: clamp(0.65em, 1.6vw, 0.8em) !important;
+        padding: clamp(3px, 1vw, 5px) clamp(6px, 1.5vw, 8px) !important;
       }
       
       /* Tour cards - scale down AGGRESSIVELY, FIX BLACK BOXES */
