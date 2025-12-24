@@ -5885,7 +5885,7 @@
         display: none !important;
       }
       
-      /* Language and currency buttons - smaller, compact */
+      /* Language and currency buttons - smaller, compact, SHORTER HEIGHT */
       .kiosk-header .header-right .chip,
       .kiosk-header .language-selector button,
       .kiosk-header .currency-selector button,
@@ -5895,7 +5895,7 @@
         font-size: 0.7em !important;
         min-width: 38px !important;
         width: 38px !important;
-        height: 30px !important;
+        height: 26px !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
@@ -6009,22 +6009,24 @@
       
       .duration-grid {
         grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
+        gap: 12px !important;
         max-width: 100% !important;
-        padding: 0 10px !important;
+        padding: 0 15px !important;
+        width: 100% !important;
       }
       
       .duration-pill {
-        font-size: 1em !important;
-        padding: 18px 12px !important;
+        font-size: 1.05em !important;
+        padding: 22px 16px !important;
         min-height: auto !important;
+        width: 100% !important;
       }
       
       .duration-pill span {
         font-size: 0.85em !important;
       }
       
-      /* "No preference" and "Continue" buttons can span full width if last item */
+      /* "No preference" and "Continue" buttons span full width */
       .duration-pill--ghost {
         grid-column: 1 / -1 !important;
       }
