@@ -5961,14 +5961,24 @@
         padding-right: 3px !important;
       }
       
-      /* Home page - hide header-left content, keep back arrow only on tour pages */
-      .page.home-page .kiosk-header .header-left,
+      /* Tour list - hide header-left content */
       .page.tour-list-page .kiosk-header .header-left {
         display: none !important;
       }
       
-      /* Hide back button on home/tour list pages */
-      .page.home-page .back-button,
+      /* Home page - show header-left with back arrow */
+      .page.home-page .kiosk-header .header-left {
+        display: flex !important;
+        position: relative !important;
+        z-index: 2 !important;
+      }
+      
+      /* Home page back button visible */
+      .page.home-page .back-button {
+        display: flex !important;
+      }
+      
+      /* Tour list page - hide back button */
       .page.tour-list-page .back-button {
         display: none !important;
       }
@@ -6148,6 +6158,65 @@
         flex-direction: column !important;
         overflow: hidden !important;
         position: relative !important;
+      }
+      
+      /* HIDE the dark overlay on mobile */
+      .tour-card-overlay {
+        position: relative !important;
+        background: #fff !important;
+        color: #1a1a1a !important;
+        padding: 8px !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+      }
+      
+      /* Make tour card image NOT absolute positioned */
+      .tour-card-image {
+        position: relative !important;
+        width: 100% !important;
+        height: clamp(80px, 15vw, 110px) !important;
+        background-size: cover !important;
+        background-position: center !important;
+      }
+      
+      /* Tour meta and text styling */
+      .tour-card-overlay .tour-name,
+      .tour-card-overlay h2,
+      .tour-card-overlay h3 {
+        color: #1a1a1a !important;
+        font-size: clamp(0.65em, 1.8vw, 0.85em) !important;
+        margin: 0 0 4px 0 !important;
+        line-height: 1.15 !important;
+      }
+      
+      .tour-card-overlay .operator-chip {
+        background: #e6f3f8 !important;
+        color: #0077b6 !important;
+        padding: 3px 8px !important;
+        font-size: clamp(0.55em, 1.3vw, 0.7em) !important;
+        display: inline-block !important;
+        margin-bottom: 4px !important;
+      }
+      
+      .tour-card-overlay .tour-meta {
+        font-size: clamp(0.6em, 1.5vw, 0.75em) !important;
+        color: #666 !important;
+        display: flex !important;
+        gap: 6px !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+      }
+      
+      .tour-card-overlay .price-badge {
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+        font-size: clamp(0.65em, 1.6vw, 0.8em) !important;
+      }
+      
+      .tour-card-overlay .rating {
+        color: #666 !important;
       }
       
       /* Tour card images - remove dark overlay, make bright */
@@ -6859,6 +6928,7 @@
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
+          <button class="back-button" onclick="goToStartPage()">←</button>
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       </div>
         <div class="header-right">
@@ -8515,6 +8585,41 @@
       
       console.log('[EXPAND] Tour details expanded with all sections');
     }
+    
+    window.goToStartPage = function() {
+      console.log('⬅️ Going back to start screen');
+      
+      // Hide home page
+      const homePage = document.querySelector('.home-page');
+      if (homePage) {
+        homePage.classList.remove('active');
+      }
+      
+      // Show video question page with start screen
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) {
+        videoPage.classList.add('active');
+      }
+      
+      // Show start screen, hide questions
+      const startScreen = document.getElementById('video-start-screen');
+      const questionContainer = document.getElementById('video-question-container');
+      if (startScreen) startScreen.style.display = 'flex';
+      if (questionContainer) questionContainer.style.display = 'none';
+      
+      // Enable video background
+      document.body.classList.add('video-bg-active');
+      const video = document.getElementById('bg-video');
+      if (video) video.play();
+      
+      // Hide progress and back button
+      const progress = document.getElementById('vq-progress-container');
+      const backBtn = document.getElementById('vq-back-btn');
+      const browseBtnQuestions = document.getElementById('browse-all-tours-questions');
+      if (progress) progress.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'none';
+      if (browseBtnQuestions) browseBtnQuestions.style.display = 'none';
+    };
     
     window.goToHomePage = function() {
       console.log('🏠 Going to regular home page');
