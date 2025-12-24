@@ -5801,7 +5801,7 @@
         align-items: center !important;
         justify-content: flex-start !important;
         gap: 0 !important;
-        padding: 5px 8px !important;
+        padding: 5px 5px !important;
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -5817,7 +5817,7 @@
       }
       
       /* Show logo in center */
-      .logo-image {
+      .kiosk-header .logo-image {
         display: block !important;
         height: 32px !important;
         width: auto !important;
@@ -5842,6 +5842,7 @@
       }
       
       /* Back button - compact, left aligned */
+      .back-button,
       .tour-detail-page .back-button {
         width: 36px !important;
         height: 36px !important;
@@ -5852,20 +5853,23 @@
         z-index: 2 !important;
         position: relative !important;
         margin-right: 0 !important;
+        left: 0 !important;
       }
       
-      .header-right {
+      .kiosk-header .header-right {
         position: absolute !important;
-        right: 5px !important;
+        right: 0 !important;
+        left: auto !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
         display: flex !important;
-        gap: 5px !important;
+        gap: 4px !important;
         flex: 0 0 auto !important;
         align-items: center !important;
         z-index: 2 !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
+        padding-right: 5px !important;
       }
       
       /* Hide map view button on mobile tour detail */
@@ -5875,14 +5879,14 @@
       }
       
       /* Language and currency buttons - smaller, compact */
-      .header-right .chip,
-      .language-selector button,
-      .currency-selector button {
+      .kiosk-header .header-right .chip,
+      .kiosk-header .language-selector button,
+      .kiosk-header .currency-selector button {
         padding: 0 !important;
-        font-size: 0.8em !important;
-        min-width: 48px !important;
-        width: 48px !important;
-        height: 34px !important;
+        font-size: 0.75em !important;
+        min-width: 44px !important;
+        width: 44px !important;
+        height: 32px !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
@@ -7124,6 +7128,7 @@
     <!-- Kiosk Header -->
     <header class="kiosk-header">
       <button class="back-button" id="back-arrow">←</button>
+      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
           <button class="chip" id="detail-language-btn" onclick="toggleDetailLanguageMenu(event)">EN</button>
