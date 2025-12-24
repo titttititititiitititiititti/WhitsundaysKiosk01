@@ -5856,7 +5856,7 @@
       
       .header-right {
         position: absolute !important;
-        right: 8px !important;
+        right: 5px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
         display: flex !important;
@@ -5864,7 +5864,14 @@
         flex: 0 0 auto !important;
         align-items: center !important;
         z-index: 2 !important;
-        margin-left: auto !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      
+      /* Hide map view button on mobile tour detail */
+      .tour-detail-page .header-right .chip-outline,
+      .tour-detail-page .header-right #map-toggle-btn {
+        display: none !important;
       }
       
       /* Language and currency buttons - smaller, compact */
@@ -5873,8 +5880,8 @@
       .currency-selector button {
         padding: 0 !important;
         font-size: 0.8em !important;
-        min-width: 50px !important;
-        width: 50px !important;
+        min-width: 48px !important;
+        width: 48px !important;
         height: 34px !important;
         text-align: center !important;
         display: flex !important;
@@ -5882,6 +5889,7 @@
         justify-content: center !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
+        margin: 0 !important;
       }
       
       /* Back arrow - top left corner */
