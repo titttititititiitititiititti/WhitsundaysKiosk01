@@ -5926,22 +5926,22 @@
         display: none !important;
       }
       
-      /* Search bar - MAXIMUM WIDTH */
+      /* Search bar - ABSOLUTE MAXIMUM WIDTH */
       .page.home-page .search-wrapper,
       .page.tour-list-page .search-wrapper {
         display: block !important;
         position: relative !important;
-        width: 92% !important;
-        max-width: 650px !important;
-        margin: 15px auto 20px auto !important;
+        width: 96% !important;
+        max-width: 680px !important;
+        margin: 12px auto 18px auto !important;
         z-index: 5 !important;
       }
       
       .page.home-page .search-wrapper input,
       .page.tour-list-page .search-wrapper input {
         width: 100% !important;
-        font-size: 1.4em !important;
-        padding: 18px 30px !important;
+        font-size: 1.5em !important;
+        padding: 20px 32px !important;
         text-align: center !important;
         border-radius: 50px !important;
       }
@@ -6465,6 +6465,40 @@
       /* Force info-grid to single column on tour detail */
       .tour-detail-page [style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
+      }
+      
+      /* Tour detail sections - reduce padding and spacing (meet in the middle) */
+      .tour-detail-page [style*="padding:40px 45px"],
+      .tour-detail-page [style*="padding: 40px 45px"],
+      .tour-detail-page main > div[style*="padding"],
+      .tour-detail-page section > div[style*="padding"] {
+        padding: 20px 22px !important;
+      }
+      
+      /* Reduce heading margins in tour detail */
+      .tour-detail-page h3[style*="margin"],
+      .tour-detail-page h3 {
+        margin: 0 0 12px 0 !important;
+        font-size: 1.6em !important;
+      }
+      
+      /* Reduce line-height and font size in tour detail content */
+      .tour-detail-page [style*="line-height"],
+      .tour-detail-page li,
+      .tour-detail-page p {
+        line-height: 1.5 !important;
+        font-size: 1.05em !important;
+      }
+      
+      /* Reduce gap between list items */
+      .tour-detail-page ul[style*="gap"] {
+        gap: 8px !important;
+      }
+      
+      /* Reduce margins between sections */
+      .tour-detail-page [style*="margin:0 2px 30px 2px"],
+      .tour-detail-page [style*="margin: 0 2px 30px 2px"] {
+        margin: 0 2px 15px 2px !important;
       }
       
       /* TOUR DETAIL PAGE - Use full width, scale everything down */
