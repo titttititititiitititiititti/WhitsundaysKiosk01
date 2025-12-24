@@ -5926,24 +5926,25 @@
         display: none !important;
       }
       
-      /* Search bar - ABSOLUTE MAXIMUM WIDTH */
+      /* Search bar - FULL SCREEN WIDTH */
       .page.home-page .search-wrapper,
       .page.tour-list-page .search-wrapper {
         display: block !important;
         position: relative !important;
-        width: 96% !important;
-        max-width: 680px !important;
-        margin: 12px auto 18px auto !important;
+        width: 98% !important;
+        max-width: none !important;
+        margin: 10px auto 15px auto !important;
         z-index: 5 !important;
       }
       
       .page.home-page .search-wrapper input,
       .page.tour-list-page .search-wrapper input {
         width: 100% !important;
-        font-size: 1.5em !important;
-        padding: 20px 32px !important;
+        font-size: 1.6em !important;
+        padding: 22px 35px !important;
         text-align: center !important;
         border-radius: 50px !important;
+        font-weight: 500 !important;
       }
       
       /* Home/Tour List - Apply same logo styling */
@@ -6523,16 +6524,18 @@
         margin-bottom: 10px !important;
       }
       
-      /* Photo carousel - hide old one, will use swipe gallery */
+      /* Photo carousel - show it (contains swipe gallery) */
       .tour-detail-page .photo-carousel {
-        display: none !important;
+        display: flex !important;
+        width: 100% !important;
+        margin: 10px auto 15px auto !important;
       }
       
       /* Show swipe-style gallery on tour detail pages */
       .tour-detail-page .swipe-gallery-wrapper {
         display: flex !important;
         width: 100% !important;
-        max-height: 260px !important;
+        max-height: 300px !important;
         margin-bottom: 10px !important;
       }
       
