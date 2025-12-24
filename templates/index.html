@@ -2447,8 +2447,8 @@
     
     /* Force transparent on header with slight override */
     .tour-detail-page .kiosk-header {
-      background: rgba(255, 255, 255, 0.1) !important;
-      backdrop-filter: blur(10px);
+      background: transparent !important;
+      backdrop-filter: none !important;
     }
     
     /* Back Button */
@@ -5795,60 +5795,84 @@
         transform: none !important;
       }
       
-      /* Fix header - much smaller, back arrow top-left */
+      /* Fix header - compact, at very top of screen */
       .kiosk-header {
         flex-direction: row !important;
         align-items: center !important;
         justify-content: space-between !important;
-        gap: 8px !important;
+        gap: 10px !important;
         padding: 8px 12px !important;
-        position: relative !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 50px !important;
         min-height: 50px !important;
         max-height: 50px !important;
+        z-index: 10000 !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
       }
       
+      /* Show logo in center */
       .logo-image {
-        display: none !important;
+        display: block !important;
+        height: 36px !important;
+        width: auto !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 1 !important;
       }
       
-      .header-left,
+      .header-left {
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+      }
+      
       .header-spacer {
         display: none !important;
       }
       
       /* Back button - same height as language/currency buttons */
       .tour-detail-page .back-button {
-        width: 44px !important;
-        height: 44px !important;
+        width: 40px !important;
+        height: 40px !important;
         padding: 0 !important;
-        font-size: 1.5em !important;
-        border-radius: 12px !important;
+        font-size: 1.3em !important;
+        border-radius: 10px !important;
         flex-shrink: 0 !important;
+        z-index: 2 !important;
+        position: relative !important;
       }
       
       .header-right {
-        position: static !important;
-        right: auto !important;
+        position: relative !important;
         display: flex !important;
-        gap: 8px !important;
+        gap: 6px !important;
         flex: 0 0 auto !important;
-        margin-left: auto !important;
         align-items: center !important;
+        z-index: 2 !important;
       }
       
-      /* Language and currency buttons - same size as back button */
+      /* Language and currency buttons - same height as back button */
       .header-right .chip,
       .language-selector button,
       .currency-selector button {
         padding: 0 !important;
-        font-size: 0.9em !important;
-        min-width: 64px !important;
-        width: 64px !important;
-        height: 44px !important;
+        font-size: 0.85em !important;
+        min-width: 56px !important;
+        width: 56px !important;
+        height: 40px !important;
         text-align: center !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        border-radius: 10px !important;
       }
       
       /* Back arrow - top left corner */
