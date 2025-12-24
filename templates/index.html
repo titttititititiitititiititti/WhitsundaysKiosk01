@@ -8176,11 +8176,23 @@
             e.preventDefault();
             e.stopPropagation();
             if (typeof window.goToHomePage === 'function') {
-              window.goToHomePage();
+              window.goToHomePage(); // opens tour list page
             }
           });
         }
       });
+      const startScreen = document.getElementById('video-start-screen');
+      if (startScreen) {
+        startScreen.addEventListener('click', (e) => {
+          // Let Browse button handle itself
+          if (e.target && (e.target.closest('.browse-all-tours-btn') || e.target.closest('.browse-all-tours-btn-questions'))) {
+            return;
+          }
+          if (typeof window.startVideoQuestions === 'function') {
+            window.startVideoQuestions(); // jump into questionnaire
+          }
+        });
+      }
       closeQRModal();
     });
     
@@ -14798,5 +14810,6 @@
   <!-- Voice Chat System -->
   <script src="{{ url_for('static', filename='voice-chat.js') }}"></script>
 </body>
+</html>
 </html>
 </html>
