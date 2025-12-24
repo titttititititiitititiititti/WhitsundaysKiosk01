@@ -521,7 +521,7 @@
       height: 100vh !important;
     }
     
-    /* Hide ALL non-active pages when video question page is active */
+    /* Hide ALL non-active pages and widgets when video question page is active */
     body.video-bg-active .page:not(.video-question-page),
     body.video-bg-active .home-page,
     body.video-bg-active .tour-list-page,
@@ -533,6 +533,7 @@
     }
     
     /* Force modals and forms to stay hidden when video page is active */
+    body.video-bg-active #booking-modal,
     body.video-bg-active .modal,
     body.video-bg-active #qr-modal,
     body.video-bg-active .top-button-bar {
@@ -838,16 +839,12 @@
     }
     
     .vq-answers {
-      display: flex !important;
+      display: flex;
       flex-direction: column;
       gap: 15px;
       width: 100%;
-      min-height: 200px !important; /* Ensure visible space */
-      padding-bottom: 60px;
-      visibility: visible !important;
-      opacity: 1 !important;
-      position: relative;
-      z-index: 100;
+      min-height: auto; /* Remove fixed height to allow natural flow */
+      padding-bottom: 60px; /* Reserve space for continue button */
     }
     
     .vq-answer-btn {
@@ -1098,7 +1095,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 30px;
       transition: transform 0.3s ease;
     }
     
@@ -1122,9 +1119,9 @@
       100% { transform: translateX(0); opacity: 1; }
     }
     
-      .swipe-gallery-image {
-        width: 140px;
-        height: 180px;
+    .swipe-gallery-image {
+      width: 160px;
+      height: 200px;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
@@ -1150,11 +1147,11 @@
       animation: slideInRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
     }
     
-      .swipe-gallery-image.center {
-        z-index: 2;
-        width: 180px;
-        height: 220px;
-      }
+    .swipe-gallery-image.center {
+      z-index: 2;
+      width: 220px;
+      height: 280px;
+    }
     
     @keyframes slideInLeft {
       to {
@@ -1204,11 +1201,11 @@
     .swipe-reviews-grid {
       display: flex;
       flex-direction: row;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 20px;
+      margin-top: 15px;
       overflow-x: auto;
       overflow-y: hidden;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
@@ -1233,14 +1230,14 @@
     
     .swipe-review-card {
       background: rgba(240, 248, 255, 0.8);
-      padding: 12px;
+      padding: 18px;
       border-radius: 12px;
       border: 2px solid rgba(0, 119, 182, 0.1);
-      flex: 0 0 220px;
-      min-width: 220px;
-      max-width: 220px;
+      flex: 0 0 280px;
+      min-width: 280px;
+      max-width: 280px;
       height: auto;
-      max-height: 250px;
+      max-height: 350px;
       overflow-y: auto;
       transition: all 0.3s ease;
     }
@@ -1278,8 +1275,8 @@
     }
     
     .swipe-detail-section h3 {
-      margin: 0 0 6px 0;
-      font-size: 0.95em;
+      margin: 0 0 8px 0;
+      font-size: 1.05em;
       font-weight: 700;
       color: #0077b6;
     }
@@ -1384,11 +1381,11 @@
     
       .swipe-actions {
         position: fixed;
-        bottom: 8px;
+        bottom: 12px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 8px;
+        gap: 12px;
         z-index: 100;
         transition: all 0.3s ease;
         justify-content: center;
@@ -1410,9 +1407,9 @@
       }
     }
     
-    .swipe-btn {
-      width: clamp(64px, 7vw, 90px);
-      height: clamp(64px, 7vw, 90px);
+      .swipe-btn {
+        width: clamp(80px, 8vw, 110px);
+        height: clamp(80px, 8vw, 110px);
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -1420,7 +1417,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+        gap: 4px;
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
       font-weight: 700;
@@ -1493,14 +1490,14 @@
       opacity: 0.7;
     }
     
-    .swipe-btn-icon {
-      font-size: clamp(1.4em, 2vw, 2em);
+      .swipe-btn-icon {
+        font-size: clamp(1.6em, 2.5vw, 2.4em);
       line-height: 1;
       text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
     .swipe-btn-text {
-      font-size: clamp(0.65em, 0.85vw, 0.9em);
+        font-size: clamp(0.7em, 0.9vw, 0.95em);
       letter-spacing: 0.5px;
       text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
@@ -1725,21 +1722,21 @@
     .duration-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 25px;
     }
     
     .duration-pill {
-      padding: 14px 16px;
+      padding: 35px 40px;
       background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
       border: none;
       border-radius: 18px;
-      font-size: 1.05em;
+      font-size: 1.8em;
       font-weight: 600;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease;
-      height: auto;
+      height: 140px;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -1983,12 +1980,12 @@
       50% { opacity: 1; }
     }
     
-    /* Hide old elements when home page is active (but not when in map view) */
-    body:has(.home-page.active):not(.map-view-active) #content-area,
-    body:has(.home-page.active):not(.map-view-active) #filter-panel,
-    body:has(.home-page.active):not(.map-view-active) .top-button-bar,
-    body:has(.home-page.active) #map-container,
-    body:has(.home-page.active) .tour-list-page {
+    /* Hide old elements when using new home layout (but not when in map view) */
+    body:has(.home-page):not(.map-view-active) #content-area,
+    body:has(.home-page):not(.map-view-active) #filter-panel,
+    body:has(.home-page):not(.map-view-active) .top-button-bar,
+    body:has(.home-page) #map-container,
+    body:has(.home-page) .tour-list-page {
       display: none !important;
     }
     
@@ -2515,7 +2512,7 @@
     .tour-hero {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 20px;
       background: transparent !important;
     }
     
@@ -2764,17 +2761,17 @@
     .departure-section {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 14px 12px;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      margin: 12px 12px 20px 12px;
+      padding: 50px 60px;
+      border-radius: 25px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin: 32px 50px 100px 50px;
     }
     
     .departure-section h3 {
-      font-size: 1.2em;
+      font-size: 1.8em;
       font-weight: 700;
       color: #0077b6;
-      margin: 0 0 8px 0;
+      margin: 0 0 15px 0;
     }
     
     .departure-section p,
@@ -3603,6 +3600,90 @@
       margin-top: 30px;
     }
     
+    .submit-booking-btn {
+      width: 100%;
+      padding: 25px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.6em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,119,182,0.3);
+    }
+    
+    .submit-booking-btn:active {
+      background: #005a8b;
+      transform: scale(0.98);
+    }
+    
+    .submit-booking-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .form-note {
+      text-align: center;
+      font-size: 0.95em;
+      color: #666;
+      margin-top: 15px;
+    }
+    
+    .booking-success {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4em;
+      color: white;
+      margin: 0 auto 30px;
+      animation: scaleIn 0.5s ease;
+    }
+    
+    @keyframes scaleIn {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    
+    .booking-success h3 {
+      font-size: 2em;
+      color: #0077b6;
+      margin-bottom: 15px;
+    }
+    
+    .booking-success p {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .success-close-btn {
+      padding: 18px 50px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.4em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+      .success-close-btn:active {
+      background: #005a8b;
+      transform: scale(0.98);
+    }
+    
     /* Review Section Styles */
     .reviews-section {
       width: 100%;
@@ -3980,16 +4061,16 @@
     /* AI Chat Assistant */
     .chat-button {
       position: fixed;
-      bottom: 16px;
-      left: 16px;
+      bottom: 30px;
+      left: 30px;
       z-index: 999999 !important;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 2px solid rgba(255, 255, 255, 0.3);
       color: white;
-      width: 82px;
-      height: 82px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       font-size: 3em;
       cursor: pointer;
@@ -4555,8 +4636,8 @@
     /* Weather Widget */
     .weather-widget {
       position: fixed;
-      bottom: 16px;
-      right: 16px;
+      bottom: 30px;
+      right: 30px;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(10px);
       border-radius: 16px;
@@ -5718,11 +5799,12 @@
       .kiosk-header {
         flex-direction: row !important;
         align-items: center !important;
-        justify-content: flex-end !important;
-        gap: 6px !important;
-        padding: 4px 6px !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        padding: 8px 12px !important;
         position: relative !important;
-        min-height: auto !important;
+        min-height: 50px !important;
+        max-height: 50px !important;
       }
       
       .logo-image {
@@ -5734,33 +5816,47 @@
         display: none !important;
       }
       
+      /* Back button - same height as language/currency buttons */
+      .tour-detail-page .back-button {
+        width: 44px !important;
+        height: 44px !important;
+        padding: 0 !important;
+        font-size: 1.5em !important;
+        border-radius: 12px !important;
+        flex-shrink: 0 !important;
+      }
+      
       .header-right {
         position: static !important;
         right: auto !important;
         display: flex !important;
-        gap: 6px !important;
+        gap: 8px !important;
         flex: 0 0 auto !important;
         margin-left: auto !important;
-        margin-right: 4px !important;
+        align-items: center !important;
       }
       
-      /* Language and currency buttons - same size */
+      /* Language and currency buttons - same size as back button */
       .header-right .chip,
       .language-selector button,
       .currency-selector button {
-        padding: 4px 12px !important;
-        font-size: 0.85em !important;
-        min-width: 74px !important;
+        padding: 0 !important;
+        font-size: 0.9em !important;
+        min-width: 64px !important;
+        width: 64px !important;
+        height: 44px !important;
         text-align: center !important;
-        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
       
       /* Back arrow - top left corner */
       #back-arrow,
       .back-btn {
         position: fixed !important;
-        top: 6px !important;
-        left: 6px !important;
+        top: 8px !important;
+        left: 8px !important;
         z-index: 10000 !important;
         width: 36px !important;
         height: 36px !important;
@@ -5824,28 +5920,11 @@
       .tour-list-main {
         padding: 10px 6px !important;
       }
-
-      /* Departure section tighter */
-      .departure-section p,
-      .departure-section div {
-        font-size: 0.95em !important;
-        line-height: 1.5 !important;
-        margin: 6px 0 !important;
-      }
-
-      /* Map iframe must fill box */
-      .departure-section iframe,
-      .departure-section .map iframe,
-      .departure-section .map-container iframe {
-        width: 100% !important;
-        height: 240px !important;
-        display: block !important;
-      }
       
       /* Tour cards - scale down AGGRESSIVELY */
       .tour-card {
         min-height: auto !important;
-        padding: 6px !important;
+        padding: 8px !important;
       }
       
       .tour-card h3,
@@ -5863,8 +5942,8 @@
       }
       
       .tour-card .tour-price {
-        font-size: 0.8em !important;
-        padding: 5px 8px !important;
+        font-size: 0.85em !important;
+        padding: 6px 10px !important;
       }
       
       .tour-card img {
@@ -5892,7 +5971,7 @@
         width: 100vw !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
-        padding-top: 32px !important;
+        padding-top: 60px !important;
       }
       
       /* Remove narrow width constraints - use full width */
@@ -5918,25 +5997,21 @@
       .tour-detail-page .swipe-gallery-wrapper {
         display: flex !important;
         width: 100% !important;
-        max-height: 220px !important;
-        margin-bottom: 8px !important;
+        max-height: 260px !important;
+        margin-bottom: 10px !important;
       }
       
       /* Scale down all headings */
       .tour-detail-page h1 {
-        font-size: 1.3em !important;
-      }
-      .tour-detail-page .tour-title {
-        font-size: 2em !important;
-        margin: 6px 0 !important;
+        font-size: 1.5em !important;
       }
       
       .tour-detail-page h2 {
-        font-size: 1.15em !important;
+        font-size: 1.3em !important;
       }
       
       .tour-detail-page h3 {
-        font-size: 0.95em !important;
+        font-size: 1.2em !important;
       }
       
       /* Scale down body text */
@@ -5952,14 +6027,14 @@
       }
       
       .tour-detail-page .info-card {
-        padding: 10px !important;
+        padding: 12px !important;
         font-size: 0.95em !important;
         min-height: auto !important;
       }
       
       .tour-detail-page .info-card h3 {
-        font-size: 1em !important;
-        margin-bottom: 6px !important;
+        font-size: 1.1em !important;
+        margin-bottom: 8px !important;
       }
       
       /* Pricing section - reduce massive padding */
@@ -5974,11 +6049,11 @@
         margin: 6px 0 !important;
       }
       
-    .tour-detail-page .pricing-section h2,
-    .tour-detail-page .pricing-section h3 {
-      font-size: 1em !important;
-      margin: 6px 0 !important;
-    }
+      .tour-detail-page .pricing-section h2,
+      .tour-detail-page .pricing-section h3 {
+        font-size: 1.2em !important;
+        margin: 8px 0 !important;
+      }
       
       .tour-detail-page .pricing-section p {
         font-size: 0.9em !important;
@@ -6413,16 +6488,16 @@
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen" style="display:none !important;">
+      <div class="video-start-screen" id="video-start-screen" onclick="handleStartScreenClick(event)">
         <div class="video-start-text">Tap to Start</div>
-        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
+        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
       </div>
       
       <!-- Browse All Tours Button (Always visible during questions) -->
-      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 9999;" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
+      <button class="browse-all-tours-btn-questions" id="browse-all-tours-questions" style="display: none;" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
       
       <!-- Progress Indicator -->
-      <div class="vq-progress-container" id="vq-progress-container" style="display: flex;">
+      <div class="vq-progress-container" id="vq-progress-container" style="display: none;">
         <div class="vq-progress-text" id="vq-progress-text">Question 1 of 3</div>
         <div class="vq-progress-bar">
           <div class="vq-progress-fill" id="vq-progress-fill" style="width: 33.33%;"></div>
@@ -6430,14 +6505,14 @@
       </div>
       
       <!-- Back Button -->
-      <button class="vq-back-btn" id="vq-back-btn" style="display: block;">← Back</button>
+      <button class="vq-back-btn" id="vq-back-btn" style="display: none;">← Back</button>
       
       <!-- Question Container -->
-      <div class="video-question-container" id="video-question-container" style="display: flex;">
+      <div class="video-question-container" id="video-question-container" style="display: none;">
         <div class="video-question-card" id="vq-card">
           <h2 class="vq-question" id="vq-question-text">How long can you be away?</h2>
-          <div class="vq-answers" id="vq-answers" style="display: flex !important; flex-direction: column; gap: 15px; visibility: visible !important; opacity: 1 !important; min-height: 300px; width: 100%;">
-            <!-- Buttons will be inserted here by JavaScript -->
+          <div class="vq-answers" id="vq-answers">
+            <!-- Buttons will be inserted here -->
           </div>
         </div>
       </div>
@@ -7008,7 +7083,6 @@
     <!-- Kiosk Header -->
     <header class="kiosk-header">
       <button class="back-button" id="back-arrow">←</button>
-      <div class="header-spacer"></div>
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
           <button class="chip" id="detail-language-btn" onclick="toggleDetailLanguageMenu(event)">EN</button>
@@ -7118,6 +7192,68 @@
     </div>
   </div>
   
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="close-booking-modal">✕</button>
+      <h2 class="modal-title">📬 Book Your Tour</h2>
+      <p class="modal-subtitle" id="booking-tour-name"></p>
+      
+      <form id="booking-form">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="guest-name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="guest-email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="guest-phone" name="phone" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Adults *</label>
+            <input type="number" id="guest-adults" name="adults" min="1" value="2" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Children</label>
+            <input type="number" id="guest-children" name="children" min="0" value="0">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Preferred Date *</label>
+          <input type="date" id="guest-date" name="date" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Message / Special Requests</label>
+          <textarea id="guest-message" name="message" rows="4" placeholder="Any questions or special requirements..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="submit-booking-btn" id="submit-booking-btn">
+            Send Inquiry ✉️
+          </button>
+        </div>
+        
+        <p class="form-note">* Required fields. Your inquiry will be sent directly to the tour operator.</p>
+      </form>
+      
+      <div id="booking-success" class="booking-success" style="display:none;">
+        <div class="success-icon">✓</div>
+        <h3>Inquiry Sent Successfully!</h3>
+        <p>The tour operator will contact you shortly at the email address provided.</p>
+        <button class="success-close-btn" onclick="closeBookingModal()">Done</button>
+      </div>
+    </div>
+  </div>
   
   <!-- Rezdy Booking Modal (Full Screen with iframe) -->
   <div id="rezdy-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;background:white;">
@@ -7260,10 +7396,7 @@
         updateProgressIndicator();
       }
       
-      console.log('🔄 About to render question 0');
-      // Call immediately - no setTimeout delay
       renderVideoQuestion(0);
-      console.log('✅ Question 0 render called');
       resetInactivityTimer();
     }
     
@@ -7345,22 +7478,12 @@
     }
     
     function renderVideoQuestion(index) {
-      console.log('🎯 renderVideoQuestion called with index:', index);
       const question = videoQuestions[index];
-      console.log('📝 Question:', question);
       const questionText = document.getElementById('vq-question-text');
       const answersContainer = document.getElementById('vq-answers');
-      console.log('📦 Answers container:', answersContainer);
-      
-      if (!answersContainer) {
-        console.error('❌ Answers container not found!');
-        return;
-      }
       
       questionText.textContent = question.question;
       answersContainer.innerHTML = '';
-      answersContainer.style.display = 'flex';
-      answersContainer.style.visibility = 'visible';
       
       // Update progress indicator
       updateProgressIndicator();
@@ -7372,7 +7495,6 @@
         answersContainer.appendChild(subtitle);
       }
       
-      console.log('🔘 Creating', question.answers.length, 'answer buttons');
       question.answers.forEach((answer, idx) => {
         const btn = document.createElement('button');
         btn.className = 'vq-answer-btn';
@@ -7380,8 +7502,6 @@
         btn.dataset.index = idx;
         btn.dataset.value = answer.value;
         btn.dataset.isSkip = answer.isSkip || false;
-        btn.style.display = 'block';
-        btn.style.visibility = 'visible';
         
         if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
           btn.classList.add('selected');
@@ -7389,9 +7509,7 @@
         
         btn.onclick = (e) => handleVideoAnswer(answer, question.multiple, answer.filter, e.target);
         answersContainer.appendChild(btn);
-        console.log('✅ Button added:', answer.text);
       });
-      console.log('📊 Total buttons in container:', answersContainer.children.length);
       
       const firstAnswer = question.answers[0];
       if (question.multiple && firstAnswer && videoAnswers[firstAnswer.filter] && videoAnswers[firstAnswer.filter].length > 0) {
@@ -8104,10 +8222,13 @@
       console.log('[EXPAND] Tour details expanded with all sections');
     }
     
-    function openBrowseAllTours() {
-      console.log('📚 Opening Browse All Tours');
+    window.goToHomePage = function() {
+      console.log('🏠 Going to regular home page');
+      
       activeFilters = {};
-      isInVideoFlow = false;
+      isInVideoFlow = false; // Exit video flow
+      
+      // Hide video background
       document.body.classList.remove('video-bg-active');
       
       const videoPage = document.querySelector('.video-question-page');
@@ -8115,46 +8236,47 @@
         videoPage.classList.remove('active');
         videoPage.style.display = 'none';
       }
-      const homePage = document.querySelector('.home-page');
-      if (homePage) {
-        homePage.classList.remove('active');
-        homePage.style.display = 'none';
-      }
+      
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (swipeOverlay) {
         swipeOverlay.classList.remove('active');
         swipeOverlay.style.display = 'none';
-        swipeOverlay.scrollTop = 0;
       }
-      const tourListPage = document.querySelector('.tour-list-page');
-      if (tourListPage) {
-        tourListPage.classList.add('active');
-        tourListPage.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'auto' });
+      
+      const homePage = document.querySelector('.home-page');
+      if (homePage) {
+        homePage.classList.add('active');
+        homePage.style.display = 'flex';
+        
+        // Show hero section
+        const heroSection = document.getElementById('hero-section');
+        if (heroSection) heroSection.style.display = 'block';
+        
+        // Hide company filter nav
+        const companyFilterNav = document.getElementById('company-filter-nav');
+        if (companyFilterNav) companyFilterNav.style.display = 'none';
+        
+        // Reload tours
+        if (typeof loadInitialFeaturedTours === 'function') {
+          loadInitialFeaturedTours();
+        }
       }
-      closeQRModal();
-      const chatInterface = document.getElementById('chat-interface');
-      if (chatInterface) {
-        chatInterface.classList.remove('active');
-        chatInterface.style.display = 'none';
-      }
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      
+      resetVideoQuestionFlow();
+      
+      console.log('✅ Home page active, video flow exited');
     }
-    
-    window.goToHomePage = openBrowseAllTours;
-    window.openBrowseAllTours = openBrowseAllTours; // Make it globally accessible
     
     function initializeApp() {
       console.log('🎬 Initializing video question flow');
       
       // Show video background on initial load
       document.body.classList.add('video-bg-active');
-      // Ensure QR modal is hidden on load
-      closeQRModal();
       
       initVideoQuestionFlow();
-      // Auto-start questionnaire (skip start screen)
-      console.log('🚀 Force starting questions immediately');
-      startVideoQuestions();
       
       const rejectBtn = document.getElementById('reject-btn');
       const acceptBtn = document.getElementById('accept-btn');
@@ -8191,43 +8313,6 @@
     } else {
       initializeApp();
     }
-    
-    // Fallback: ensure questions appear even if earlier hooks failed
-    window.addEventListener('load', () => {
-      if (typeof startVideoQuestions === 'function') {
-        startVideoQuestions();
-      }
-    });
-    
-    // Failsafe: wire Browse All buttons to browse-all navigation
-    document.addEventListener('DOMContentLoaded', () => {
-      const ids = ['browse-all-tours-btn', 'browse-all-tours-questions'];
-      ids.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (typeof window.goToHomePage === 'function') {
-              window.goToHomePage(); // opens tour list page
-            }
-          });
-        }
-      });
-      const startScreen = document.getElementById('video-start-screen');
-      if (startScreen) {
-        startScreen.addEventListener('click', (e) => {
-          // Let Browse button handle itself
-          if (e.target && (e.target.closest('.browse-all-tours-btn') || e.target.closest('.browse-all-tours-btn-questions'))) {
-            return;
-          }
-          if (typeof window.startVideoQuestions === 'function') {
-            window.startVideoQuestions(); // jump into questionnaire
-          }
-        });
-      }
-      closeQRModal();
-    });
     
     // Helper function to generate star display
     function generateStars(rating, fullOnly = false) {
@@ -10712,10 +10797,24 @@
             return;
           }
           
-          // Fallback: if booking link exists, show QR code; otherwise noop
+          // Fallback: use provided booking link or open inquiry modal
           if (data.link_booking) {
             showQRPaymentModal(data.link_booking, data.name);
             return;
+          }
+          
+            const modal = document.getElementById('booking-modal');
+            if (modal) {
+              document.getElementById('booking-tour-name').textContent = data.name;
+              modal.style.display = 'flex';
+              
+              // Store current tour data for booking form
+              window.currentTourForBooking = {
+                name: data.name,
+                company: data.company,
+                key: key,
+                pricing: selectedPricingTier
+              };
           }
         };
       }
@@ -11000,50 +11099,11 @@
       // Don't change URL - keep user on home page for consistent experience
       // This way refreshing doesn't take them to the standalone share page
       
-      console.log('🌐 Fetching tour data (browse -> swipe detail)...');
+      console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
         .then(res => res.json())
         .then(data => {
-          // Build a single swipe card and show swipe overlay (no swipe actions)
-          const card = {
-            key: data.key || key,
-            name: data.name,
-            company: data.company,
-            company_name: data.company_name || data.company,
-            gallery: data.gallery || [],
-            includes: data.includes,
-            highlights: data.highlights,
-            description: data.description,
-            duration: data.duration,
-            departure_times: data.departure_times,
-            age_requirements: data.age_requirements,
-            ideal_for: data.ideal_for,
-            important_information: data.important_information,
-            whats_extra: data.whats_extra,
-            cancellation_policy: data.cancellation_policy,
-            departure_location: data.departure_location,
-            departure_coords: data.departure_coords,
-            price_display: data.price_display,
-            reviews: data.reviews || {}
-          };
-          
-          swipeCards = [card];
-          currentCardIndex = 0;
-          
-          renderGallerySpread(card);
-          renderInfoSections(card);
-          expandTourDetails({ key: card.key }); // builds map and reviews
-          
-          // Hide swipe action buttons in browse context
-          const swipeActions = document.querySelector('.swipe-actions');
-          if (swipeActions) swipeActions.style.display = 'none';
-          
-          const swipeOverlay = document.getElementById('swipe-results-overlay');
-          if (swipeOverlay) swipeOverlay.classList.add('active');
-          
-          // Close menus
-          closeAllMenus();
-        })
+          document.getElementById('detail-title').textContent = data.name;
           
           // Make company name clickable to filter by company
           const companyElement = document.getElementById('detail-company');
@@ -11915,6 +11975,7 @@
     };
     
     // Booking Modal Functions
+    let currentTourForBooking = null;
     let selectedPricingTier = null;
     
     // Rezdy booking function - opens in smaller borderless popup window
@@ -11938,10 +11999,93 @@
       }
     }
     
+    function openBookingModal(tourKey, tourName, tourCompany) {
+      currentTourForBooking = { key: tourKey, name: tourName, company: tourCompany };
+      document.getElementById('booking-tour-name').textContent = tourName;
+      
+      // Update booking tour name with selected pricing tier if available
+      if (selectedPricingTier) {
+        document.getElementById('booking-tour-name').textContent = `${tourName} - ${selectedPricingTier}`;
+      }
+      
+      document.getElementById('booking-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('guest-date').setAttribute('min', today);
+    }
+    
+    function closeBookingModal() {
+      document.getElementById('booking-modal').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('booking-form').reset();
+      document.getElementById('booking-form').style.display = 'block';
+      document.getElementById('booking-success').style.display = 'none';
+      currentTourForBooking = null;
+      // Note: We don't reset selectedPricingTier here so user can still see their selection
+    }
+    
+    // Close modal when clicking X or outside
+    document.getElementById('close-booking-modal').onclick = closeBookingModal;
+    document.getElementById('booking-modal').onclick = function(e) {
+      if (e.target === this) {
+        closeBookingModal();
+      }
+    };
+    
+    // Handle booking form submission
+    document.getElementById('booking-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-booking-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      
+      const formData = {
+        tour_key: currentTourForBooking.key,
+        tour_name: currentTourForBooking.name,
+        tour_company: currentTourForBooking.company,
+        selected_pricing: selectedPricingTier || 'Not specified',
+        guest_name: document.getElementById('guest-name').value,
+        guest_email: document.getElementById('guest-email').value,
+        guest_phone: document.getElementById('guest-phone').value,
+        adults: document.getElementById('guest-adults').value,
+        children: document.getElementById('guest-children').value,
+        preferred_date: document.getElementById('guest-date').value,
+        message: document.getElementById('guest-message').value
+      };
+      
+      try {
+        const response = await fetch('/submit-booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Show success screen
+          document.getElementById('booking-form').style.display = 'none';
+          document.getElementById('booking-success').style.display = 'block';
+        } else {
+          alert('There was an error sending your inquiry. Please try again or contact us directly.');
+        }
+      } catch (error) {
+        console.error('Booking error:', error);
+        alert('There was an error sending your inquiry. Please try again or contact us directly.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Inquiry ✉️';
+      }
+    });
   </script>
   
   <!-- QR Code Modal -->
-  <div id="qr-modal" style="display:none !important; pointer-events:none !important;">
+  <div id="qr-modal">
     <div class="qr-modal-content">
       <button class="qr-modal-close" onclick="closeQRModal()">×</button>
       <div class="qr-modal-title">📱 Scan to Book</div>
@@ -11958,21 +12102,22 @@
   
   <script>
     // QR Code functionality
-    // Disable QR modal on kiosk (legacy flow)
-    function showQRCode() {
+    function showQRCode(tourUrl, tourName) {
       const modal = document.getElementById('qr-modal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.style.pointerEvents = 'none';
-      }
+      const qrImage = document.getElementById('qr-code-image');
+      const tourNameEl = document.getElementById('qr-tour-name');
+      
+      // Use a free QR code API to generate the QR code
+      // tourUrl is now the link_more_info (tour company's page)
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tourUrl)}`;
+      
+      qrImage.src = qrApiUrl;
+      tourNameEl.textContent = tourName;
+      modal.style.display = 'flex';
     }
     
     function closeQRModal() {
-      const modal = document.getElementById('qr-modal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.style.pointerEvents = 'none';
-      }
+      document.getElementById('qr-modal').style.display = 'none';
     }
     
     // Close modal when clicking outside
@@ -14843,6 +14988,5 @@
   <!-- Voice Chat System -->
   <script src="{{ url_for('static', filename='voice-chat.js') }}"></script>
 </body>
-</html>
 </html>
 </html>
