@@ -6437,11 +6437,7 @@
         <div class="video-question-card" id="vq-card">
           <h2 class="vq-question" id="vq-question-text">How long can you be away?</h2>
           <div class="vq-answers" id="vq-answers" style="display: flex !important; flex-direction: column; gap: 15px; visibility: visible !important; opacity: 1 !important; min-height: 300px; width: 100%;">
-            <!-- Test buttons - remove once JS working -->
-            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Half Day (2-4 hours)</button>
-            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Full Day (5-8 hours)</button>
-            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">Multi-day Adventure</button>
-            <button class="vq-answer-btn" style="display: block !important; visibility: visible !important;">No preference</button>
+            <!-- Buttons will be inserted here by JavaScript -->
           </div>
         </div>
       </div>
@@ -7265,10 +7261,9 @@
       }
       
       console.log('🔄 About to render question 0');
-      setTimeout(() => {
-        renderVideoQuestion(0);
-        console.log('✅ Question 0 render complete');
-      }, 100);
+      // Call immediately - no setTimeout delay
+      renderVideoQuestion(0);
+      console.log('✅ Question 0 render called');
       resetInactivityTimer();
     }
     
@@ -8146,6 +8141,7 @@
     }
     
     window.goToHomePage = openBrowseAllTours;
+    window.openBrowseAllTours = openBrowseAllTours; // Make it globally accessible
     
     function initializeApp() {
       console.log('🎬 Initializing video question flow');
@@ -8157,9 +8153,8 @@
       
       initVideoQuestionFlow();
       // Auto-start questionnaire (skip start screen)
-      if (typeof startVideoQuestions === 'function') {
-        startVideoQuestions();
-      }
+      console.log('🚀 Force starting questions immediately');
+      startVideoQuestions();
       
       const rejectBtn = document.getElementById('reject-btn');
       const acceptBtn = document.getElementById('accept-btn');
