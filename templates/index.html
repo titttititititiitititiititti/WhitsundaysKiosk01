@@ -6409,7 +6409,7 @@
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen" onclick="startVideoQuestions();">
+      <div class="video-start-screen" id="video-start-screen" style="display:none !important;">
         <div class="video-start-text">Tap to Start</div>
         <button class="browse-all-tours-btn" onclick="event.stopPropagation(); openBrowseAllTours();">Browse All Tours</button>
       </div>
@@ -8129,6 +8129,10 @@
       closeQRModal();
       
       initVideoQuestionFlow();
+      // Auto-start questionnaire (skip start screen)
+      if (typeof startVideoQuestions === 'function') {
+        startVideoQuestions();
+      }
       
       const rejectBtn = document.getElementById('reject-btn');
       const acceptBtn = document.getElementById('accept-btn');
