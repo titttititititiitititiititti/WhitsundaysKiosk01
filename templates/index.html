@@ -533,7 +533,6 @@
     }
     
     /* Force modals and forms to stay hidden when video page is active */
-    body.video-bg-active #booking-modal,
     body.video-bg-active .modal,
     body.video-bg-active #qr-modal,
     body.video-bg-active .top-button-bar {
@@ -3598,90 +3597,6 @@
     
     .form-actions {
       margin-top: 30px;
-    }
-    
-    .submit-booking-btn {
-      width: 100%;
-      padding: 25px;
-      background: #0077b6;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.6em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,119,182,0.3);
-    }
-    
-    .submit-booking-btn:active {
-      background: #005a8b;
-      transform: scale(0.98);
-    }
-    
-    .submit-booking-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    
-    .form-note {
-      text-align: center;
-      font-size: 0.95em;
-      color: #666;
-      margin-top: 15px;
-    }
-    
-    .booking-success {
-      text-align: center;
-      padding: 40px 20px;
-    }
-    
-    .success-icon {
-      width: 100px;
-      height: 100px;
-      background: #4ade80;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4em;
-      color: white;
-      margin: 0 auto 30px;
-      animation: scaleIn 0.5s ease;
-    }
-    
-    @keyframes scaleIn {
-      from { transform: scale(0); }
-      to { transform: scale(1); }
-    }
-    
-    .booking-success h3 {
-      font-size: 2em;
-      color: #0077b6;
-      margin-bottom: 15px;
-    }
-    
-    .booking-success p {
-      font-size: 1.2em;
-      color: #666;
-      margin-bottom: 30px;
-    }
-    
-    .success-close-btn {
-      padding: 18px 50px;
-      background: #0077b6;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.4em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-      .success-close-btn:active {
-      background: #005a8b;
-      transform: scale(0.98);
     }
     
     /* Review Section Styles */
@@ -7199,68 +7114,6 @@
     </div>
   </div>
   
-  <!-- Booking Modal -->
-  <div id="booking-modal" class="modal">
-    <div class="modal-content">
-      <button class="modal-close" id="close-booking-modal">✕</button>
-      <h2 class="modal-title">📬 Book Your Tour</h2>
-      <p class="modal-subtitle" id="booking-tour-name"></p>
-      
-      <form id="booking-form">
-        <div class="form-group">
-          <label>Full Name *</label>
-          <input type="text" id="guest-name" name="name" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Email Address *</label>
-          <input type="email" id="guest-email" name="email" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Phone Number *</label>
-          <input type="tel" id="guest-phone" name="phone" required>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Adults *</label>
-            <input type="number" id="guest-adults" name="adults" min="1" value="2" required>
-          </div>
-          
-          <div class="form-group">
-            <label>Children</label>
-            <input type="number" id="guest-children" name="children" min="0" value="0">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>Preferred Date *</label>
-          <input type="date" id="guest-date" name="date" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Message / Special Requests</label>
-          <textarea id="guest-message" name="message" rows="4" placeholder="Any questions or special requirements..."></textarea>
-        </div>
-        
-        <div class="form-actions">
-          <button type="submit" class="submit-booking-btn" id="submit-booking-btn">
-            Send Inquiry ✉️
-          </button>
-        </div>
-        
-        <p class="form-note">* Required fields. Your inquiry will be sent directly to the tour operator.</p>
-      </form>
-      
-      <div id="booking-success" class="booking-success" style="display:none;">
-        <div class="success-icon">✓</div>
-        <h3>Inquiry Sent Successfully!</h3>
-        <p>The tour operator will contact you shortly at the email address provided.</p>
-        <button class="success-close-btn" onclick="closeBookingModal()">Done</button>
-      </div>
-    </div>
-  </div>
   
   <!-- Rezdy Booking Modal (Full Screen with iframe) -->
   <div id="rezdy-modal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;background:white;">
@@ -10804,24 +10657,10 @@
             return;
           }
           
-          // Fallback: use provided booking link or open inquiry modal
+          // Fallback: if booking link exists, show QR code; otherwise noop
           if (data.link_booking) {
             showQRPaymentModal(data.link_booking, data.name);
             return;
-          }
-          
-            const modal = document.getElementById('booking-modal');
-            if (modal) {
-              document.getElementById('booking-tour-name').textContent = data.name;
-              modal.style.display = 'flex';
-              
-              // Store current tour data for booking form
-              window.currentTourForBooking = {
-                name: data.name,
-                company: data.company,
-                key: key,
-                pricing: selectedPricingTier
-              };
           }
         };
       }
@@ -12021,7 +11860,6 @@
     };
     
     // Booking Modal Functions
-    let currentTourForBooking = null;
     let selectedPricingTier = null;
     
     // Rezdy booking function - opens in smaller borderless popup window
@@ -12045,89 +11883,6 @@
       }
     }
     
-    function openBookingModal(tourKey, tourName, tourCompany) {
-      currentTourForBooking = { key: tourKey, name: tourName, company: tourCompany };
-      document.getElementById('booking-tour-name').textContent = tourName;
-      
-      // Update booking tour name with selected pricing tier if available
-      if (selectedPricingTier) {
-        document.getElementById('booking-tour-name').textContent = `${tourName} - ${selectedPricingTier}`;
-      }
-      
-      document.getElementById('booking-modal').classList.add('active');
-      document.body.style.overflow = 'hidden';
-      
-      // Set minimum date to today
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('guest-date').setAttribute('min', today);
-    }
-    
-    function closeBookingModal() {
-      document.getElementById('booking-modal').classList.remove('active');
-      document.body.style.overflow = '';
-      document.getElementById('booking-form').reset();
-      document.getElementById('booking-form').style.display = 'block';
-      document.getElementById('booking-success').style.display = 'none';
-      currentTourForBooking = null;
-      // Note: We don't reset selectedPricingTier here so user can still see their selection
-    }
-    
-    // Close modal when clicking X or outside
-    document.getElementById('close-booking-modal').onclick = closeBookingModal;
-    document.getElementById('booking-modal').onclick = function(e) {
-      if (e.target === this) {
-        closeBookingModal();
-      }
-    };
-    
-    // Handle booking form submission
-    document.getElementById('booking-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submit-booking-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
-      
-      const formData = {
-        tour_key: currentTourForBooking.key,
-        tour_name: currentTourForBooking.name,
-        tour_company: currentTourForBooking.company,
-        selected_pricing: selectedPricingTier || 'Not specified',
-        guest_name: document.getElementById('guest-name').value,
-        guest_email: document.getElementById('guest-email').value,
-        guest_phone: document.getElementById('guest-phone').value,
-        adults: document.getElementById('guest-adults').value,
-        children: document.getElementById('guest-children').value,
-        preferred_date: document.getElementById('guest-date').value,
-        message: document.getElementById('guest-message').value
-      };
-      
-      try {
-        const response = await fetch('/submit-booking', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Show success screen
-          document.getElementById('booking-form').style.display = 'none';
-          document.getElementById('booking-success').style.display = 'block';
-        } else {
-          alert('There was an error sending your inquiry. Please try again or contact us directly.');
-        }
-      } catch (error) {
-        console.error('Booking error:', error);
-        alert('There was an error sending your inquiry. Please try again or contact us directly.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Inquiry ✉️';
-      }
-    });
   </script>
   
   <!-- QR Code Modal -->
