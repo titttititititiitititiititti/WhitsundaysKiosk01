@@ -3975,21 +3975,27 @@
     }
     
     .language-menu {
-      display: none;
       position: absolute;
       top: 100%;
       right: 0;
       margin-top: 10px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.98);
       backdrop-filter: blur(10px);
       border-radius: 10px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       overflow: hidden;
       min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
     }
     
     .language-menu.active {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
     
     .language-option {
@@ -4021,15 +4027,17 @@
       top: 100%;
       right: 0;
       margin-top: 10px;
-      background: white;
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(10px);
       border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       min-width: 280px;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
       transition: all 0.3s ease;
       overflow: hidden;
+      z-index: 1000;
     }
     
     .currency-menu.active {
@@ -5910,6 +5918,33 @@
         box-sizing: border-box !important;
         vertical-align: middle !important;
         overflow: hidden !important;
+      }
+      
+      /* Language and currency DROPDOWN MENUS - mobile styles */
+      .language-menu,
+      .currency-menu {
+        background: rgba(255,255,255,0.98) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        min-width: 180px !important;
+        max-width: 250px !important;
+        font-size: 0.85em !important;
+        margin-top: 5px !important;
+        z-index: 10000 !important;
+      }
+      
+      .language-option,
+      .currency-option {
+        padding: 10px 15px !important;
+        font-size: 0.95em !important;
+        color: #2c3e50 !important;
+        background: transparent !important;
+      }
+      
+      .language-option:hover,
+      .currency-option:hover {
+        background: rgba(0,119,182,0.15) !important;
       }
       
       /* Ensure all pages have padding for fixed header */
@@ -13806,20 +13841,23 @@
       // Save preference
       localStorage.setItem('preferred_language', langCode);
       
-      // Check if we're on a tour detail page - if so, save the tour key to reopen it after reload
-      const tourDetailPage = document.getElementById('tour-detail-page');
-      if (tourDetailPage && tourDetailPage.classList.contains('active')) {
-        // Find the current tour key from the detail page
-        const currentTourKey = tourDetailPage.getAttribute('data-current-tour-key');
-        if (currentTourKey) {
-          localStorage.setItem('reopen_tour_after_reload', currentTourKey);
-        }
-      }
+      // Apply language translations immediately (no page reload!)
+      applyLanguage(langCode);
       
-      // Reload page with language parameter to get translated content
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', langCode);
-      window.location.href = url.toString();
+      // Update all language selector buttons
+      const langMap = {
+        'en': 'EN', 'zh': '中文', 'ja': '日本', 'ko': '한국', 
+        'de': 'DE', 'fr': 'FR', 'es': 'ES', 'hi': 'हिन्दी'
+      };
+      const shortCode = langMap[langCode] || langCode.toUpperCase();
+      
+      // Update all language buttons across pages
+      ['header-language-btn', 'detail-language-btn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.textContent = shortCode;
+      });
+      
+      console.log('✓ Language switched to', langCode, '(no reload!)');
     }
     
     // Apply language to UI
@@ -14133,6 +14171,10 @@
     function selectHomeCurrency(curr) {
       switchCurrency(curr);
       document.getElementById('home-currency-menu').classList.remove('active');
+      
+      // Update home currency button
+      const btn = document.getElementById('header-currency-btn');
+      if (btn) btn.textContent = curr;
     }
     
     function toggleCurrencyMenu() {
@@ -14186,9 +14228,13 @@
     }
     
     function selectCurrencyFromDetail(currency) {
-      selectCurrency(currency);
+      switchCurrency(currency);
       const menu = document.getElementById('detail-currency-menu');
       if (menu) menu.classList.remove('active');
+      
+      // Update detail currency button
+      const btn = document.getElementById('detail-currency-btn');
+      if (btn) btn.textContent = currency;
     }
     
     // =====================================================================
