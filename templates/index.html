@@ -3987,8 +3987,10 @@
       min-width: 200px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
+      transform: translateY(-15px);
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
     }
     
@@ -4034,8 +4036,10 @@
       min-width: 280px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s ease;
+      transform: translateY(-15px);
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
       z-index: 1000;
     }
@@ -5923,6 +5927,10 @@
       /* Language and currency DROPDOWN MENUS - mobile styles */
       .language-menu,
       .currency-menu {
+        position: absolute !important;
+        top: 100% !important;
+        bottom: auto !important;
+        right: 0 !important;
         background: rgba(255,255,255,0.98) !important;
         backdrop-filter: blur(10px) !important;
         border-radius: 8px !important;
@@ -5930,8 +5938,21 @@
         min-width: 180px !important;
         max-width: 250px !important;
         font-size: 0.85em !important;
-        margin-top: 5px !important;
+        margin-top: 8px !important;
         z-index: 10000 !important;
+        overflow: hidden !important;
+        /* Animation properties */
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transform: translateY(-15px) !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      
+      .language-menu.active,
+      .currency-menu.active {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
       }
       
       .language-option,
