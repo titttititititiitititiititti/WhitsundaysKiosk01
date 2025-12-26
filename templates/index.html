@@ -610,12 +610,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 50px;
+      justify-content: flex-start;
+      padding-top: 50px;
+      gap: 30px;
       z-index: 25;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(8px);
       transition: opacity 0.5s ease, visibility 0.5s ease;
+      overflow-y: auto;
     }
     
     .language-selection-screen.hidden {
@@ -637,9 +639,10 @@
     .language-selection-buttons {
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 20px;
       width: 90%;
       max-width: 500px;
+      padding-bottom: 50px;
     }
     
     .language-select-btn {
@@ -7569,15 +7572,15 @@
       
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
-        <div class="video-start-text">How Would You Like to Find Your Tour?</div>
+        <div class="video-start-text">{{ _('How Would You Like to Find Your Tour?') }}</div>
         <button class="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
-          🤖 Talk To Our AI Assistant
+          🤖 {{ _('Talk To Our AI Assistant') }}
         </button>
         <button class="quick-decision-btn-start" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
-          ⚡ Quick Decision
+          ⚡ {{ _('Quick Decision') }}
         </button>
         <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
-          🗂️ Browse All Tours
+          🗂️ {{ _('Browse All Tours') }}
         </button>
       </div>
       
@@ -8372,40 +8375,79 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
+    // Translation strings from Flask (for JavaScript use)
+    const translations = {
+      howLongCanYouBeAway: "{{ _('How long can you be away?') }}",
+      whatInterestsYouMost: "{{ _('What interests you most?') }}",
+      whatsYourBudget: "{{ _('What\\'s your budget per person?') }}",
+      halfDay: "{{ _('Half Day') }}",
+      fullDay: "{{ _('Full Day') }}",
+      multiDayAdventure: "{{ _('Multi-day Adventure') }}",
+      noPreference: "{{ _('No Preference') }}",
+      nature: "{{ _('Nature & Wildlife') }}",
+      adventure: "{{ _('Adventure & Thrills') }}",
+      relaxation: "{{ _('Relaxation & Beaches') }}",
+      culture: "{{ _('Culture & History') }}",
+      familyFun: "{{ _('Family Fun') }}",
+      luxury: "{{ _('Luxury Experiences') }}",
+      budget: "{{ _('Budget-Friendly') }}",
+      midRange: "{{ _('Mid-Range') }}",
+      premium: "{{ _('Premium') }}",
+      splurge: "{{ _('Splurge-Worthy') }}",
+      anyBudget: "{{ _('Any Budget') }}",
+      toursMatch: "{{ _('tours match') }}",
+      notForMe: "{{ _('Not For Me') }}",
+      bookNow: "{{ _('Book Now') }}",
+      whatsIncluded: "{{ _('What\\'s Included') }}",
+      highlights: "{{ _('Highlights') }}",
+      importantInfo: "{{ _('Important Information') }}",
+      whatToBring: "{{ _('What to Bring') }}",
+      whatsExtra: "{{ _('What\\'s Extra') }}",
+      departureLocation: "{{ _('Departure Location') }}",
+      customerReviews: "{{ _('Customer Reviews') }}",
+      basedOnReviews: "{{ _('Based on') }}",
+      reviews: "{{ _('reviews') }}",
+      times: "{{ _('Times') }}",
+      ages: "{{ _('Ages') }}",
+      idealFor: "{{ _('Ideal For') }}",
+      questionOf: "{{ _('Question') }}",
+      of: "{{ _('of') }}"
+    };
+    
     // =====================================================================
     // VIDEO QUESTION FLOW - NEW PRIMARY EXPERIENCE
     // =====================================================================
     
     const videoQuestions = [
       {
-        question: "How long can you be away?",
+        get question() { return translations.howLongCanYouBeAway; },
         answers: [
-          { text: "Half Day<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>", value: "half_day", filter: "duration" },
-          { text: "Full Day<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>", value: "full_day", filter: "duration" },
-          { text: "Multi-day Adventure", value: "multi_day", filter: "duration" },
-          { text: "No preference", value: "", filter: "duration" }
+          { get text() { return translations.halfDay + "<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>"; }, value: "half_day", filter: "duration" },
+          { get text() { return translations.fullDay + "<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>"; }, value: "full_day", filter: "duration" },
+          { get text() { return translations.multiDayAdventure; }, value: "multi_day", filter: "duration" },
+          { get text() { return translations.noPreference; }, value: "", filter: "duration" }
         ]
       },
       {
-        question: "Who's coming along?",
+        question: "{{ _('Who\\'s coming along?') }}",
         answers: [
-          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
-          { text: "👥 Adults Only", value: "adults_only", filter: "family_friendly" },
-          { text: "No preference", value: "", filter: "family_friendly" }
+          { text: "👨‍👩‍👧‍👦 {{ _('Family with Kids') }}", value: "true", filter: "family_friendly" },
+          { text: "👥 {{ _('Adults Only') }}", value: "adults_only", filter: "family_friendly" },
+          { get text() { return translations.noPreference; }, value: "", filter: "family_friendly" }
         ]
       },
       {
-        question: "What interests you most?",
+        get question() { return translations.whatInterestsYouMost; },
         multiple: true,
         answers: [
-          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
-          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
-          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
-          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
-          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
-          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
-          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
-          { text: "No preference", value: "", filter: "activities", isSkip: true }
+          { text: "🐠 {{ _('Great Barrier Reef') }}", value: "great_barrier_reef", filter: "activities" },
+          { text: "🏖️ {{ _('Whitehaven Beach') }}", value: "whitehaven_beach", filter: "activities" },
+          { text: "🏝️ {{ _('Island Tours') }}", value: "island_tours", filter: "activities" },
+          { text: "⛵ {{ _('Sailing') }}", value: "sailing", filter: "activities" },
+          { text: "🤿 {{ _('Snorkeling') }}", value: "snorkeling", filter: "activities" },
+          { text: "🏊 {{ _('Swimming') }}", value: "swimming", filter: "activities" },
+          { text: "🌅 {{ _('Scenic Views') }}", value: "scenic_views", filter: "activities" },
+          { get text() { return translations.noPreference; }, value: "", filter: "activities", isSkip: true }
         ]
       }
     ];
@@ -8557,7 +8599,7 @@
       const progressFill = document.getElementById('vq-progress-fill');
       
       if (progressText) {
-        progressText.textContent = `Question ${currentVideoQuestion + 1} of 3`;
+        progressText.textContent = `${translations.questionOf} ${currentVideoQuestion + 1} ${translations.of} 3`;
       }
       if (progressFill) {
         const percentage = ((currentVideoQuestion + 1) / 3) * 100;
@@ -8966,7 +9008,7 @@
         
         if (itemsList) {
           includesBox.innerHTML = `
-            <h3>✓ What's Included</h3>
+            <h3>✓ ${translations.whatsIncluded}</h3>
             <ul>${itemsList}</ul>
           `;
           container.appendChild(includesBox);
@@ -8991,7 +9033,7 @@
         
         if (highlightsList) {
           highlightsBox.innerHTML = `
-            <h3>⭐ Highlights</h3>
+            <h3>⭐ ${translations.highlights}</h3>
             <ul>${highlightsList}</ul>
           `;
           container.appendChild(highlightsBox);
@@ -9101,7 +9143,7 @@
       
       const acceptBtn = document.getElementById('accept-btn');
       if (acceptBtn) {
-        acceptBtn.querySelector('.swipe-btn-text').textContent = 'Book Now';
+        acceptBtn.querySelector('.swipe-btn-text').textContent = translations.bookNow;
         acceptBtn.querySelector('.swipe-btn-icon').textContent = '✓';
         acceptBtn.classList.add('booking-mode');
         acceptBtn.onclick = () => acceptCard();
@@ -9109,7 +9151,7 @@
       
       const rejectBtn = document.getElementById('reject-btn');
       if (rejectBtn) {
-        rejectBtn.querySelector('.swipe-btn-text').textContent = 'Not For Me';
+        rejectBtn.querySelector('.swipe-btn-text').textContent = translations.notForMe;
         rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
         rejectBtn.onclick = () => rejectCard();
       }
@@ -9126,7 +9168,7 @@
         const cleanedTimes = cleanBracketFormatting(fullTourData.departure_times);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>🕐 Times</h3>
+            <h3>🕐 ${translations.times}</h3>
             <div>${cleanedTimes}</div>
           </div>
         `;
@@ -9138,7 +9180,7 @@
         const cleanedAges = cleanBracketFormatting(fullTourData.age_requirements);
         detailsHtml += `
           <div class="swipe-detail-section ${ageClass}">
-            <h3>👥 Ages</h3>
+            <h3>👥 ${translations.ages}</h3>
             <div>${cleanedAges}</div>
           </div>
         `;
@@ -9150,7 +9192,7 @@
         const cleanedIdealFor = cleanBracketFormatting(fullTourData.ideal_for);
         detailsHtml += `
           <div class="swipe-detail-section ${idealClass}">
-            <h3>🎯 Ideal For</h3>
+            <h3>🎯 ${translations.idealFor}</h3>
             <div>${cleanedIdealFor}</div>
           </div>
         `;
@@ -9190,7 +9232,7 @@
         const formattedInfo = cleanBracketFormatting(fullTourData.important_information);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>⚠️ Important Information</h3>
+            <h3>⚠️ ${translations.importantInfo}</h3>
             <div>${formattedInfo}</div>
           </div>
         `;
@@ -9205,7 +9247,7 @@
         const bringClass = !hasExtra ? 'description-section' : '';
         detailsHtml += `
           <div class="swipe-detail-section ${bringClass}">
-            <h3>🎒 What to Bring</h3>
+            <h3>🎒 ${translations.whatToBring}</h3>
             <div>${formattedBring}</div>
           </div>
         `;
@@ -9217,7 +9259,7 @@
         const extraClass = !hasBring ? 'description-section' : '';
         detailsHtml += `
           <div class="swipe-detail-section ${extraClass}">
-            <h3>💰 What's Extra</h3>
+            <h3>💰 ${translations.whatsExtra}</h3>
             <div>${formattedExtra}</div>
           </div>
         `;
@@ -9240,7 +9282,7 @@
         
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>📍 Departure Location</h3>
+            <h3>📍 ${translations.departureLocation}</h3>
             <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${fullTourData.departure_location}</div>
             <div style="width: 100%; height: 350px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
               <iframe 
@@ -9260,12 +9302,12 @@
       if (fullTourData.reviews && fullTourData.reviews.overall_rating > 0 && fullTourData.reviews.review_count > 0) {
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3 style="margin-bottom: 12px;">⭐ Customer Reviews</h3>
+            <h3 style="margin-bottom: 12px;">⭐ ${translations.customerReviews}</h3>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
               <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${fullTourData.reviews.overall_rating.toFixed(1)}</div>
               <div style="display: flex; flex-direction: column; gap: 3px;">
                 <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
-                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">Based on ${fullTourData.reviews.review_count} review${fullTourData.reviews.review_count !== 1 ? 's' : ''}</div>
+                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${translations.basedOnReviews} ${fullTourData.reviews.review_count} ${translations.reviews}</div>
               </div>
             </div>
             <div class="swipe-reviews-grid">
