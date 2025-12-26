@@ -3484,7 +3484,7 @@
     
     /* Booking Modal Styles */
     .modal {
-      display: none;
+      display: none !important;
       position: fixed;
       z-index: 300;
       left: 0;
@@ -3495,13 +3495,19 @@
       backdrop-filter: blur(5px);
       overflow-y: auto;
       animation: fadeIn 0.3s ease;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
     }
     
     .modal.active {
-      display: flex;
+      display: flex !important;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
     }
     
     .modal-content {
@@ -10629,8 +10635,25 @@
         resultsInfo.textContent = `Found ${totalCount} tour${totalCount !== 1 ? 's' : ''} matching your preferences`;
       }
       
-      // Display tours in the grid
-      displayToursInGrid(tours);
+      // Fetch ALL tours for "Other Tours You Might Like" section
+      if (!window.allTours || window.allTours.length === 0) {
+        fetch(`/filter-tours?lang=${currentLanguage}`)
+          .then(response => response.json())
+          .then(data => {
+            window.allTours = data.tours || [];
+            console.log(`✅ Stored ${window.allTours.length} total tours for recommendations`);
+            // Display tours in the grid (after we have all tours)
+            displayToursInGrid(tours);
+          })
+          .catch(error => {
+            console.error('❌ Error fetching all tours:', error);
+            // Display filtered tours anyway
+            displayToursInGrid(tours);
+          });
+      } else {
+        // Display tours in the grid
+        displayToursInGrid(tours);
+      }
     }
     
     // Update header chips on tour list page
@@ -10703,9 +10726,14 @@
       
       grid.innerHTML = '';
       
+      const filteredTourKeys = new Set();
+      
+      // Display filtered tours
       tours.forEach(tour => {
         // Exclude Ocean Dynamics
         if (shouldHideTour(tour)) return;
+        
+        filteredTourKeys.add(tour.key);
         
         const hasBooking = hasWorkingBooking(tour);
         const card = document.createElement('article');
@@ -10736,6 +10764,58 @@
         
         grid.appendChild(card);
       });
+      
+      // Add "Other Tours You Might Like" section with remaining tours (if filters are active)
+      if (Object.keys(activeFilters).length > 0 && window.allTours && window.allTours.length > tours.length) {
+        // Get tours that weren't in the filtered results
+        const otherTours = window.allTours.filter(tour => 
+          !filteredTourKeys.has(tour.key) && !shouldHideTour(tour)
+        );
+        
+        if (otherTours.length > 0) {
+          // Add divider
+          const divider = document.createElement('div');
+          divider.className = 'other-tours-divider';
+          divider.style.cssText = 'grid-column: 1/-1; margin: 40px 0 30px 0; text-align: center;';
+          divider.innerHTML = `
+            <h2 style="color: white; font-size: 2.2em; font-weight: 700; margin: 0 0 10px 0;">Other Tours You Might Like</h2>
+            <p style="color: rgba(255,255,255,0.9); font-size: 1.1em; margin: 0;">Continue scrolling to explore all available tours</p>
+          `;
+          grid.appendChild(divider);
+          
+          // Shuffle and display other tours
+          const shuffled = otherTours.sort(() => Math.random() - 0.5);
+          shuffled.forEach(tour => {
+            const hasBooking = hasWorkingBooking(tour);
+            const card = document.createElement('article');
+            card.className = 'tour-card-large';
+            card.setAttribute('data-key', tour.key);
+            card.setAttribute('data-departure', tour.departure_location || '');
+            card.onclick = () => openTourDetail(tour.key);
+            
+            let ratingHtml = '';
+            if (tour.review_rating && tour.review_rating > 0 && tour.review_count > 0) {
+              ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
+            }
+            
+            const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
+            card.innerHTML = `
+              <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');"></div>
+              ${starHtml}
+              <div class="tour-card-overlay">
+                <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+                <h2 class="tour-name">${tour.name}</h2>
+                <div class="tour-meta">
+                  ${ratingHtml}
+                  <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+                </div>
+              </div>
+            `;
+            
+            grid.appendChild(card);
+          });
+        }
+      }
     }
     
     // Clear filters and go back to home page
@@ -11887,15 +11967,28 @@
             });
           }
           
-          // All quick info items align along left margin
+          // Render quick info items - use grid for 2-3 items, full width for 1 or 4+
           if (quickInfoItems.length > 0) {
-            quickInfoItems.forEach((item, index) => {
-              // Each item is full width, aligned along left margin
-              info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">`;
-              info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
-              info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
+            // If we have exactly 2 or 3 items, render in a grid for better symmetry
+            if (quickInfoItems.length === 2 || quickInfoItems.length === 3) {
+              const gridCols = quickInfoItems.length === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
+              info += `<div class="detail-section-grid" style="display:grid;grid-template-columns:${gridCols};gap:30px;margin:0 2px 30px 2px;">`;
+              quickInfoItems.forEach((item) => {
+                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+                info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
+                info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
+                info += '</div>';
+              });
               info += '</div>';
-            });
+            } else {
+              // For 1 or 4+ items, render full width
+              quickInfoItems.forEach((item) => {
+                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">`;
+                info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
+                info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
+                info += '</div>';
+              });
+            }
           }
           
           // ITINERARY & MENU - Side by side like Includes/Highlights, EXACT same styling
