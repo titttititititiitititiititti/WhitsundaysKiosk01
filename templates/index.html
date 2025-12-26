@@ -7572,15 +7572,15 @@
       
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
-        <div class="video-start-text">{{ _('How Would You Like to Find Your Tour?') }}</div>
+        <div class="video-start-text">How Would You Like to Find Your Tour?</div>
         <button class="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
-          🤖 {{ _('Talk To Our AI Assistant') }}
+          🤖 Talk To Our AI Assistant
         </button>
         <button class="quick-decision-btn-start" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
-          ⚡ {{ _('Quick Decision') }}
+          ⚡ Quick Decision
         </button>
         <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
-          🗂️ {{ _('Browse All Tours') }}
+          🗂️ Browse All Tours
         </button>
       </div>
       
@@ -8375,43 +8375,44 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
-    // Translation strings from Flask (for JavaScript use)
+    // Translation strings - these will be the same across languages in JS
+    // The actual tour data comes pre-translated from the CSV files
     const translations = {
-      howLongCanYouBeAway: "{{ _('How long can you be away?') }}",
-      whatInterestsYouMost: "{{ _('What interests you most?') }}",
-      whatsYourBudget: "{{ _('Whats your budget per person?') }}",
-      halfDay: "{{ _('Half Day') }}",
-      fullDay: "{{ _('Full Day') }}",
-      multiDayAdventure: "{{ _('Multi-day Adventure') }}",
-      noPreference: "{{ _('No Preference') }}",
-      nature: "{{ _('Nature & Wildlife') }}",
-      adventure: "{{ _('Adventure & Thrills') }}",
-      relaxation: "{{ _('Relaxation & Beaches') }}",
-      culture: "{{ _('Culture & History') }}",
-      familyFun: "{{ _('Family Fun') }}",
-      luxury: "{{ _('Luxury Experiences') }}",
-      budget: "{{ _('Budget-Friendly') }}",
-      midRange: "{{ _('Mid-Range') }}",
-      premium: "{{ _('Premium') }}",
-      splurge: "{{ _('Splurge-Worthy') }}",
-      anyBudget: "{{ _('Any Budget') }}",
-      toursMatch: "{{ _('tours match') }}",
-      notForMe: "{{ _('Not For Me') }}",
-      bookNow: "{{ _('Book Now') }}",
-      whatsIncluded: "{{ _('Whats Included') }}",
-      highlights: "{{ _('Highlights') }}",
-      importantInfo: "{{ _('Important Information') }}",
-      whatToBring: "{{ _('What to Bring') }}",
-      whatsExtra: "{{ _('Whats Extra') }}",
-      departureLocation: "{{ _('Departure Location') }}",
-      customerReviews: "{{ _('Customer Reviews') }}",
-      basedOnReviews: "{{ _('Based on') }}",
-      reviews: "{{ _('reviews') }}",
-      times: "{{ _('Times') }}",
-      ages: "{{ _('Ages') }}",
-      idealFor: "{{ _('Ideal For') }}",
-      questionOf: "{{ _('Question') }}",
-      of: "{{ _('of') }}"
+      howLongCanYouBeAway: "How long can you be away?",
+      whatInterestsYouMost: "What interests you most?",
+      whatsYourBudget: "Whats your budget per person?",
+      halfDay: "Half Day",
+      fullDay: "Full Day",
+      multiDayAdventure: "Multi-day Adventure",
+      noPreference: "No Preference",
+      nature: "Nature & Wildlife",
+      adventure: "Adventure & Thrills",
+      relaxation: "Relaxation & Beaches",
+      culture: "Culture & History",
+      familyFun: "Family Fun",
+      luxury: "Luxury Experiences",
+      budget: "Budget-Friendly",
+      midRange: "Mid-Range",
+      premium: "Premium",
+      splurge: "Splurge-Worthy",
+      anyBudget: "Any Budget",
+      toursMatch: "tours match",
+      notForMe: "Not For Me",
+      bookNow: "Book Now",
+      whatsIncluded: "Whats Included",
+      highlights: "Highlights",
+      importantInfo: "Important Information",
+      whatToBring: "What to Bring",
+      whatsExtra: "Whats Extra",
+      departureLocation: "Departure Location",
+      customerReviews: "Customer Reviews",
+      basedOnReviews: "Based on",
+      reviews: "reviews",
+      times: "Times",
+      ages: "Ages",
+      idealFor: "Ideal For",
+      questionOf: "Question",
+      of: "of"
     };
     
     // =====================================================================
@@ -8429,10 +8430,10 @@
         ]
       },
       {
-        question: "{{ _('Whos coming along?') }}",
+        question: "Whos coming along?",
         answers: [
-          { text: "👨‍👩‍👧‍👦 {{ _('Family with Kids') }}", value: "true", filter: "family_friendly" },
-          { text: "👥 {{ _('Adults Only') }}", value: "adults_only", filter: "family_friendly" },
+          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
+          { text: "👥 Adults Only", value: "adults_only", filter: "family_friendly" },
           { get text() { return translations.noPreference; }, value: "", filter: "family_friendly" }
         ]
       },
@@ -8440,13 +8441,13 @@
         get question() { return translations.whatInterestsYouMost; },
         multiple: true,
         answers: [
-          { text: "🐠 {{ _('Great Barrier Reef') }}", value: "great_barrier_reef", filter: "activities" },
-          { text: "🏖️ {{ _('Whitehaven Beach') }}", value: "whitehaven_beach", filter: "activities" },
-          { text: "🏝️ {{ _('Island Tours') }}", value: "island_tours", filter: "activities" },
-          { text: "⛵ {{ _('Sailing') }}", value: "sailing", filter: "activities" },
-          { text: "🤿 {{ _('Snorkeling') }}", value: "snorkeling", filter: "activities" },
-          { text: "🏊 {{ _('Swimming') }}", value: "swimming", filter: "activities" },
-          { text: "🌅 {{ _('Scenic Views') }}", value: "scenic_views", filter: "activities" },
+          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
+          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
+          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
+          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
+          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
+          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
+          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
           { get text() { return translations.noPreference; }, value: "", filter: "activities", isSkip: true }
         ]
       }
