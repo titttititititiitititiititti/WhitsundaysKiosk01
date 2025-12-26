@@ -633,6 +633,36 @@
       transform: scale(1.05);
     }
     
+    /* Quick Decision Button (Green) */
+    .quick-decision-btn-start {
+      padding: 25px 60px;
+      font-size: 1.8em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, rgba(72, 187, 120, 0.8) 0%, rgba(56, 161, 105, 0.9) 50%, rgba(34, 139, 87, 0.85) 100%);
+      backdrop-filter: blur(10px);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(72, 187, 120, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1000;
+    }
+    
+    .quick-decision-btn-start:hover {
+      background: linear-gradient(135deg, rgba(92, 207, 140, 0.9) 0%, rgba(76, 181, 125, 1) 50%, rgba(54, 159, 107, 0.95) 100%);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 40px rgba(72, 187, 120, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .quick-decision-btn-start:active {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Browse All Tours Button (Orange) */
     .browse-all-tours-btn {
       padding: 25px 60px;
       font-size: 1.8em;
@@ -654,6 +684,38 @@
       border-color: rgba(255, 255, 255, 0.8);
       transform: translateY(-3px) scale(1.05);
       box-shadow: 0 12px 40px rgba(255, 100, 0, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .browse-all-tours-btn:active {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(255, 100, 0, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Quick Decision Button in Header (Orange, smaller) */
+    .quick-decision-btn-header {
+      padding: 12px 20px;
+      font-size: 1em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      white-space: nowrap;
+    }
+    
+    .quick-decision-btn-header:hover {
+      background: linear-gradient(135deg, #ffa05c 0%, #ff7b45 100%);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+    
+    .quick-decision-btn-header:active {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
     }
     
     /* Browse All Tours button during questions (top right) */
@@ -6116,14 +6178,20 @@
         z-index: 2 !important;
       }
       
-      /* Home page back button - top left corner like tour detail */
-      .page.home-page .back-button {
+      /* Home page quick decision button - top left corner */
+      .page.home-page .quick-decision-btn-header {
         display: flex !important;
         position: absolute !important;
         left: 6px !important;
         top: 50% !important;
         transform: translateY(-50%) !important;
         z-index: 2 !important;
+        font-size: 0.75em !important;
+        padding: 8px 12px !important;
+        min-height: 38px !important;
+        height: 38px !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
       
       /* Home page header-left just for logo (back arrow positioned separately) */
@@ -6851,6 +6919,15 @@
         padding: 18px 40px !important;
       }
       
+      /* Mobile styling for start screen buttons */
+      .quick-decision-btn-start,
+      .browse-all-tours-btn {
+        font-size: 1.2em !important;
+        padding: 18px 40px !important;
+        width: 85% !important;
+        max-width: 350px !important;
+      }
+      
       .video-question-card {
         width: 100% !important;
         max-width: 100% !important;
@@ -7153,7 +7230,12 @@
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen" onclick="handleStartScreenClick(event)">
         <div class="video-start-text">Tap to Start</div>
-        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">Browse All Tours</button>
+        <button class="quick-decision-btn-start" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
+          ⚡ Quick Decision
+        </button>
+        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
+          🗂️ Browse All Tours
+        </button>
       </div>
       
       <!-- Browse All Tours Button (Always visible during questions) -->
@@ -7229,7 +7311,7 @@
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
-          <button class="back-button" onclick="goToStartPage()">←</button>
+          <button class="quick-decision-btn-header" onclick="goToStartPage()">⚡ Quick Decision</button>
           <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       </div>
         <div class="header-right">
