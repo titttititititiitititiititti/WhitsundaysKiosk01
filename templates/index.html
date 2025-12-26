@@ -600,13 +600,105 @@
       opacity: 0;
     }
     
-    .video-start-screen {
+    /* Language Selection Screen - First screen users see */
+    .language-selection-screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      z-index: 25;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    .language-selection-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    .language-selection-title {
+      font-size: 3.2em;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+      text-align: center;
+      padding: 0 30px;
+      line-height: 1.3;
+    }
+    
+    .language-selection-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      width: 90%;
+      max-width: 500px;
+    }
+    
+    .language-select-btn {
+      padding: 30px 50px;
+      font-size: 2em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, rgba(0, 119, 182, 0.85) 0%, rgba(0, 150, 215, 0.9) 50%, rgba(3, 169, 244, 0.85) 100%);
+      backdrop-filter: blur(10px);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(0, 119, 182, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .language-select-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .language-select-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 12px 40px rgba(0, 119, 182, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .language-select-btn:hover::before {
+      left: 100%;
+    }
+    
+    .language-select-btn:active {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 25px rgba(0, 119, 182, 0.5), 0 3px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .language-select-btn .flag {
+      font-size: 1.3em;
+    }
+    
+    .video-start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none; /* Hidden by default, shown after language selection */
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -6920,6 +7012,23 @@
         padding: 18px 40px !important;
       }
       
+      /* Mobile styling for language selection */
+      .language-selection-title {
+        font-size: 2em !important;
+        padding: 0 20px !important;
+      }
+      
+      .language-select-btn {
+        font-size: 1.4em !important;
+        padding: 20px 35px !important;
+        width: 90% !important;
+        max-width: 400px !important;
+      }
+      
+      .language-select-btn .flag {
+        font-size: 1.2em !important;
+      }
+      
       /* Mobile styling for start screen buttons */
       .quick-decision-btn-start,
       .browse-all-tours-btn {
@@ -7228,6 +7337,25 @@
     
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
+      <!-- Language Selection Screen - First thing users see -->
+      <div class="language-selection-screen" id="language-selection-screen">
+        <div class="language-selection-title">Select Your Language to Begin</div>
+        <div class="language-selection-buttons">
+          <button class="language-select-btn" onclick="selectInitialLanguage('en')">
+            <span class="flag">🇬🇧</span>
+            <span>English</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('zh')">
+            <span class="flag">🇨🇳</span>
+            <span>中文</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('ja')">
+            <span class="flag">🇯🇵</span>
+            <span>日本語</span>
+          </button>
+        </div>
+      </div>
+      
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen" onclick="handleStartScreenClick(event)">
         <div class="video-start-text">Tap to Start</div>
@@ -14080,6 +14208,38 @@
     }
     
     // Switch language
+    // Initial language selection from the first screen
+    function selectInitialLanguage(langCode) {
+      console.log('🌐 Initial language selected:', langCode);
+      
+      // Save language preference
+      localStorage.setItem('preferred_language', langCode);
+      
+      // Update URL with language parameter
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', langCode);
+      
+      // Hide language selection screen
+      const langScreen = document.getElementById('language-selection-screen');
+      if (langScreen) {
+        langScreen.classList.add('hidden');
+      }
+      
+      // Show video start screen (Tap to Start)
+      const videoStartScreen = document.getElementById('video-start-screen');
+      if (videoStartScreen) {
+        videoStartScreen.style.display = 'flex';
+      }
+      
+      // Set hash to video-start
+      window.location.hash = 'video-start';
+      
+      // Reload page with language parameter to get translations
+      setTimeout(() => {
+        window.location.href = url.toString();
+      }, 300);
+    }
+    
     function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
       console.log('🔗 Current URL before change:', window.location.href);
@@ -14303,9 +14463,8 @@
         localStorage.removeItem('preferred_currency');
         console.log('🧹 Cleared all saved user data');
         
-        // Reset to homepage with English language and AUD currency
+        // Reset to language selection screen (no language parameter, no hash)
         const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('lang', 'en');
         window.location.href = url.toString();
       }, INACTIVITY_TIMEOUT);
     }
@@ -15716,10 +15875,46 @@
       initCurrency();
       loadWeatherData();
       
-      // Hash-based routing - check URL hash to determine which page to show
+      // Check if language has been selected
+      const selectedLanguage = localStorage.getItem('preferred_language');
       const hash = window.location.hash;
-      console.log('🔗 Page loaded with hash:', hash || '(none - showing tap to start)');
+      
+      console.log('🌐 Selected language:', selectedLanguage || '(none - need to select)');
+      console.log('🔗 Page loaded with hash:', hash || '(none)');
       console.log('📊 Body classes:', document.body.className);
+      
+      // If no language selected and no specific hash, show language selection screen
+      if (!selectedLanguage && (!hash || hash === '#' || hash === '#video-start')) {
+        console.log('🌐 No language selected - showing language selection screen');
+        document.body.classList.add('video-bg-active');
+        const langScreen = document.getElementById('language-selection-screen');
+        const startScreen = document.getElementById('video-start-screen');
+        const video = document.getElementById('bg-video');
+        
+        if (langScreen) {
+          langScreen.classList.remove('hidden');
+          langScreen.style.display = 'flex';
+        }
+        if (startScreen) {
+          startScreen.style.display = 'none';
+        }
+        if (video) {
+          video.play();
+        }
+        console.log('✅ Language selection screen displayed');
+        return; // Stop here, wait for user to select language
+      }
+      
+      // Language already selected - proceed with normal routing
+      // Hide language selection screen
+      const langScreen = document.getElementById('language-selection-screen');
+      if (langScreen) {
+        langScreen.classList.add('hidden');
+        langScreen.style.display = 'none';
+      }
+      
+      // Hash-based routing - check URL hash to determine which page to show
+      console.log('🔗 Proceeding with hash routing...');
       
       if (hash && hash !== '#' && hash !== '#video-start') {
         // We have a hash - need to navigate away from video start page
