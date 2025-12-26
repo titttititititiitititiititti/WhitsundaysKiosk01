@@ -8391,6 +8391,7 @@
     
     window.selectInitialLanguage = function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
+      alert('Language selected: ' + langCode + '. Page will reload now.');
       
       // Save language preference
       localStorage.setItem('preferred_language', langCode);
@@ -8401,10 +8402,14 @@
       url.hash = 'video-start';
       
       console.log('🔗 Reloading page with language:', url.toString());
+      console.log('🔗 Full URL:', url.href);
       
       // RELOAD page to get translated content from Flask
       window.location.href = url.toString();
     };
+    
+    // Also make it available without window prefix for onclick handlers
+    const selectInitialLanguage = window.selectInitialLanguage;
     
     // Translation strings - these will be the same across languages in JS
     // The actual tour data comes pre-translated from the CSV files
