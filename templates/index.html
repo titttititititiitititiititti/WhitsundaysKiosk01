@@ -14074,7 +14074,13 @@
       inactivityTimer = setTimeout(() => {
         console.log('⏰ Inactivity detected - resetting kiosk...');
         
-        // Reset to homepage with English language
+        // Clear all saved state to prevent interference between users
+        localStorage.removeItem('page_state_before_language_change');
+        localStorage.removeItem('preferred_language');
+        localStorage.removeItem('preferred_currency');
+        console.log('🧹 Cleared all saved user data');
+        
+        // Reset to homepage with English language and AUD currency
         const url = new URL(window.location.origin + window.location.pathname);
         url.searchParams.set('lang', 'en');
         window.location.href = url.toString();
