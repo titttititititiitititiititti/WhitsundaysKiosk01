@@ -8391,21 +8391,13 @@
     
     window.selectInitialLanguage = function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
-      alert('Language selected: ' + langCode + '. Page will reload now.');
       
       // Save language preference
       localStorage.setItem('preferred_language', langCode);
+      localStorage.setItem('skip_language_screen', 'true'); // Mark that we've selected a language
       
-      // Build new URL with language parameter
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', langCode);
-      url.hash = 'video-start';
-      
-      console.log('🔗 Reloading page with language:', url.toString());
-      console.log('🔗 Full URL:', url.href);
-      
-      // RELOAD page to get translated content from Flask
-      window.location.href = url.toString();
+      // Simple redirect - just go to the video start page with the language parameter
+      window.location.href = '/?lang=' + langCode + '#video-start';
     };
     
     // Also make it available without window prefix for onclick handlers
@@ -16343,35 +16335,25 @@
     // =====================================================================
     
     document.addEventListener('DOMContentLoaded', () => {
-      alert('🎯 DOMContentLoaded FIRED! Starting initialization...');
+      initInactivityMonitor();
+      initCurrency();
+      loadWeatherData();
+      updateGlobalHeaderChips();
+      updateBackButtonVisibility();
       
-      try {
-        initInactivityMonitor();
-        initCurrency();
-        loadWeatherData();
-        updateGlobalHeaderChips();
-        updateBackButtonVisibility();
-        
-        // Check if language has been selected (check URL parameter first, then localStorage)
-        const urlLangParam = new URLSearchParams(window.location.search).get('lang');
-        const selectedLanguage = urlLangParam || localStorage.getItem('preferred_language');
-        const hash = window.location.hash;
-        
-        // DEBUG: Show what we detected
-        alert('DEBUG DOMContentLoaded:\nURL: ' + window.location.href + '\nURL Lang: ' + (urlLangParam || 'NONE') + '\nLocalStorage Lang: ' + (localStorage.getItem('preferred_language') || 'NONE') + '\nSelected: ' + (selectedLanguage || 'NONE') + '\nHash: ' + (hash || 'NONE'));
-      } catch (error) {
-        alert('ERROR in DOMContentLoaded: ' + error.message);
-      }
+      // Check if user has already selected a language
+      const urlLangParam = new URLSearchParams(window.location.search).get('lang');
+      const skipLanguageScreen = localStorage.getItem('skip_language_screen') === 'true';
+      const selectedLanguage = urlLangParam || localStorage.getItem('preferred_language');
+      const hash = window.location.hash;
       
       console.log('🌐 URL lang parameter:', urlLangParam || '(none)');
-      console.log('🌐 localStorage language:', localStorage.getItem('preferred_language') || '(none)');
-      console.log('🌐 Selected language:', selectedLanguage || '(none - need to select)');
+      console.log('🌐 Skip language screen flag:', skipLanguageScreen);
+      console.log('🌐 Selected language:', selectedLanguage || '(none)');
       console.log('🔗 Page loaded with hash:', hash || '(none)');
-      console.log('📊 Body classes:', document.body.className);
       
-      // If no language selected and no specific hash, show language selection screen
-      if (!selectedLanguage) {
-        alert('DEBUG: No language detected, showing language selection screen');
+      // If no language selected AND no skip flag, show language selection screen
+      if (!selectedLanguage && !skipLanguageScreen) {
         console.log('🌐 No language selected - showing language selection screen');
         document.body.classList.add('video-bg-active');
         document.body.classList.add('showing-language-selection');
@@ -16394,14 +16376,11 @@
       }
       
       // Language already selected - proceed with normal routing
-      alert('DEBUG: Language IS selected (' + selectedLanguage + '), hiding language screen...');
-      
       // Hide language selection screen
       const langScreen = document.getElementById('language-selection-screen');
       if (langScreen) {
         langScreen.classList.add('hidden');
         langScreen.style.display = 'none';
-        alert('DEBUG: Language screen hidden');
       }
       
       // Make sure header is visible
@@ -16409,10 +16388,8 @@
       
       // Hash-based routing - check URL hash to determine which page to show
       console.log('🔗 Proceeding with hash routing...');
-      alert('DEBUG: Hash routing... Hash is: ' + hash);
       
       if (hash && hash !== '#' && hash !== '#video-start') {
-        alert('DEBUG: Hash detected and its NOT #video-start, navigating to: ' + hash);
         // We have a hash - need to navigate away from video start page
         console.log('🎯 Hash detected, preparing to navigate...');
         
@@ -16451,20 +16428,15 @@
         }, 800); // Increased timeout to 800ms to ensure everything is loaded
       } else {
         // No hash or #video-start - ensure video start screen is visible
-        alert('DEBUG: Hash is #video-start or empty, showing video start screen...');
-        console.log('🎯 Default: Showing video start screen (tap to start)');
+        console.log('🎯 Default: Showing video start screen');
         document.body.classList.add('video-bg-active');
         const videoPage = document.querySelector('.video-question-page');
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
-        alert('DEBUG: videoPage=' + !!videoPage + ', startScreen=' + !!startScreen + ', video=' + !!video);
         if (videoPage && startScreen) {
           videoPage.classList.add('active');
           startScreen.style.display = 'flex';
           if (video) video.play();
-          alert('DEBUG: Video start screen should now be visible!');
-        } else {
-          alert('DEBUG ERROR: Could not find videoPage or startScreen elements!');
         }
         console.log('✅ Video page initialized with background');
       }
