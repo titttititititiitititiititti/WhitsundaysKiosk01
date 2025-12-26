@@ -1735,10 +1735,16 @@
       transition: all 0.3s ease;
       color: #0077b6;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      display: flex;
+      display: flex !important;
       align-items: center;
       justify-content: center;
       padding: 0;
+      flex-shrink: 0;
+      z-index: 10001;
+    }
+    
+    body.showing-language-selection .global-back-button {
+      display: none !important;
     }
     
     .global-back-button:hover {
@@ -1801,21 +1807,6 @@
       position: sticky;
       top: 0;
       z-index: 100;
-    }
-    
-    /* Version indicator (temporary for cache verification) */
-    .version-indicator {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(255, 0, 0, 0.8);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 99999;
-      pointer-events: none;
     }
     
     .header-left {
@@ -6094,32 +6085,40 @@
         width: 40px !important;
         height: 40px !important;
         font-size: 1.5em !important;
+        flex-shrink: 0 !important;
+        z-index: 10001 !important;
+        display: flex !important;
       }
       
       .global-logo-image {
-        height: 35px !important;
+        height: 32px !important;
         position: absolute !important;
         left: 50% !important;
         top: 50% !important;
         transform: translate(-50%, -50%) !important;
+        z-index: 1 !important;
       }
       
       .global-header-left {
         gap: 10px !important;
-        flex: 1 !important;
+        flex: 0 0 auto !important;
+        min-width: 50px !important;
+        z-index: 10001 !important;
       }
       
       .global-header-right {
-        gap: 10px !important;
-        flex: 1 !important;
+        gap: 8px !important;
+        flex: 0 0 auto !important;
         justify-content: flex-end !important;
+        z-index: 10001 !important;
       }
       
       .global-header .chip {
-        font-size: 0.85em !important;
-        padding: 8px 12px !important;
-        min-height: 38px !important;
-        height: 38px !important;
+        font-size: 0.75em !important;
+        padding: 6px 10px !important;
+        min-height: 32px !important;
+        height: 32px !important;
+        min-width: 45px !important;
       }
       
       .page {
@@ -7400,9 +7399,6 @@
   </style>
 </head>
 <body class="video-bg-active">
-  <!-- Version indicator for cache verification -->
-  <div class="version-indicator">v-target-actual-elements</div>
-  
   <div id="main-layout">
     <!-- Mobile Hamburger Menu (Mobile Only) -->
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
@@ -7574,14 +7570,14 @@
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
         <div class="video-start-text">How Would You Like to Find Your Tour?</div>
+        <button class="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
+          🤖 Talk To Our AI Assistant
+        </button>
         <button class="quick-decision-btn-start" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
           ⚡ Quick Decision
         </button>
         <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
           🗂️ Browse All Tours
-        </button>
-        <button class="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
-          🤖 Talk To Our AI Assistant
         </button>
       </div>
       
