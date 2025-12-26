@@ -8392,28 +8392,47 @@
     window.selectInitialLanguage = function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
       
-      try {
-        // Save language preference
-        localStorage.setItem('preferred_language', langCode);
-        console.log('✅ Saved to localStorage');
-        
-        // Update URL with language parameter and reload
-        const url = new URL(window.location.href);
-        url.searchParams.set('lang', langCode);
-        url.hash = 'video-start';
-        
-        console.log('🔗 Redirecting to:', url.toString());
-        
-        // Reload with new language
-        window.location.href = url.toString();
-      } catch (error) {
-        console.error('❌ Error selecting language:', error);
-        alert('Error: ' + error.message);
+      // Save language preference
+      localStorage.setItem('preferred_language', langCode);
+      
+      // Immediately hide language selection and show video start - NO PAGE RELOAD
+      const langScreen = document.getElementById('language-selection-screen');
+      const videoStartScreen = document.getElementById('video-start-screen');
+      const videoPage = document.querySelector('.video-question-page');
+      
+      if (langScreen) {
+        langScreen.style.display = 'none';
+        langScreen.classList.add('hidden');
       }
+      
+      if (videoStartScreen) {
+        videoStartScreen.style.display = 'flex';
+      }
+      
+      if (videoPage) {
+        videoPage.classList.add('active');
+      }
+      
+      // Remove body class to show header
+      document.body.classList.remove('showing-language-selection');
+      
+      // Update current language variable
+      currentLanguage = langCode;
+      
+      // Update URL without reload
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', langCode);
+      url.hash = 'video-start';
+      window.history.replaceState({}, '', url.toString());
+      
+      // Update header buttons
+      const globalLangBtn = document.getElementById('global-language-btn');
+      if (globalLangBtn) {
+        globalLangBtn.textContent = langCode.toUpperCase();
+      }
+      
+      console.log('✅ Language selection complete - showing video start page');
     };
-    
-    console.log('✅ selectInitialLanguage function defined');
-    console.log('Test call:', typeof window.selectInitialLanguage); // Should be "function"
     
     // Translation strings - these will be the same across languages in JS
     // The actual tour data comes pre-translated from the CSV files
