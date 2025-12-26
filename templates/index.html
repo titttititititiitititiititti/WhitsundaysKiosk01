@@ -11840,9 +11840,21 @@
       selectedPricingTier = null;
       
       // Update URL hash for routing (allows language change restoration and direct linking)
-      window.location.hash = `tour/${key}`;
-      console.log('🔗 Updated hash to:', window.location.hash);
-      console.log('🔗 Full URL:', window.location.href);
+      try {
+        window.location.hash = `tour/${key}`;
+        console.log('✅ Hash set successfully!');
+        console.log('🔗 Current hash:', window.location.hash);
+        console.log('🔗 Full URL:', window.location.href);
+        
+        // Alert for debugging (remove after confirmed working)
+        if (!window.hashTestedOnce) {
+          alert('Hash updated to: ' + window.location.hash);
+          window.hashTestedOnce = true;
+        }
+      } catch (e) {
+        console.error('❌ Error setting hash:', e);
+        alert('ERROR setting hash: ' + e.message);
+      }
       
       console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
@@ -13963,6 +13975,8 @@
     // Switch language
     function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
+      console.log('🔗 Current URL before change:', window.location.href);
+      console.log('🔗 Current hash before change:', window.location.hash);
       
       // Save preference
       localStorage.setItem('preferred_language', langCode);
@@ -13978,30 +13992,40 @@
       const homePage = document.querySelector('.home-page.active');
       const videoPage = document.querySelector('.video-question-page.active');
       
+      console.log('📊 Page detection:', {
+        tourDetailPage: !!tourDetailPage,
+        isSwipeActive,
+        homePage: !!homePage,
+        videoPage: !!videoPage
+      });
+      
       if (isSwipeActive && window.currentSwipeIndex !== undefined) {
         // On swipe results - use hash #swipe/INDEX
-        url.hash = `#swipe/${window.currentSwipeIndex}`;
+        url.hash = `swipe/${window.currentSwipeIndex}`;
         console.log('📍 Setting hash for swipe:', url.hash);
       } else if (tourDetailPage && tourDetailPage.classList.contains('active')) {
         // On tour detail page - use hash #tour/KEY
         const tourKey = tourDetailPage.getAttribute('data-current-tour-key');
+        console.log('📍 Tour key found:', tourKey);
         if (tourKey) {
-          url.hash = `#tour/${tourKey}`;
+          url.hash = `tour/${tourKey}`;
           console.log('📍 Setting hash for tour detail:', url.hash);
         }
       } else if (homePage && homePage.classList.contains('active')) {
         // On home page
-        url.hash = '#home';
+        url.hash = 'home';
         console.log('📍 Setting hash for home page');
       } else if (videoPage) {
         // On video page
-        url.hash = '#video-start';
+        url.hash = 'video-start';
         console.log('📍 Setting hash for video page');
       }
       
       // Reload page with language parameter - hash will automatically restore page
-      console.log('🔄 Reloading with URL:', url.toString());
-      window.location.href = url.toString();
+      const finalUrl = url.toString();
+      console.log('🔄 Reloading with URL:', finalUrl);
+      alert('Language change - reloading to: ' + finalUrl); // Debug alert
+      window.location.href = finalUrl;
     }
     
     // Apply language to UI
