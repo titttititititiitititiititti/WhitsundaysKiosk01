@@ -471,7 +471,6 @@
       left: 0;
       width: 100%;
       min-height: 100vh;
-      overflow: hidden; /* Prevent scrolling on pages */
     }
     
     /* Show only the active page */
@@ -574,13 +573,13 @@
       width: 100%;
       max-width: 1200px;
       padding: 40px;
-      padding-top: 140px; /* Reduced from 200px */
-      padding-bottom: 80px; /* Reduced from 100px */
+      padding-top: 140px; /* Space for progress bar */
+      padding-bottom: 120px; /* Space for continue button */
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden; /* Prevent vertical scrolling */
-      height: calc(100vh - 60px); /* Fixed height to prevent scrolling */
+      overflow-y: auto; /* Allow scrolling */
+      min-height: calc(100vh - 60px);
     }
     
     .video-question-card {
@@ -1401,16 +1400,16 @@
     .swipe-info-box {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 20px 25px;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     }
     
     .swipe-info-box h3 {
-      font-size: 2em;
+      font-size: 1.4em;
       font-weight: 700;
       color: #0077b6;
-      margin: 0 0 15px 0;
+      margin: 0 0 12px 0;
     }
     
     .swipe-info-box ul {
@@ -1420,11 +1419,12 @@
     }
     
     .swipe-info-box li {
-      font-size: 1.4em;
+      font-size: 1.05em;
       color: #2c3e50;
-      padding: 8px 0;
-      padding-left: 25px;
+      padding: 6px 0;
+      padding-left: 22px;
       position: relative;
+      line-height: 1.5;
     }
     
     .swipe-info-box li:before {
