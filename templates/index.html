@@ -1768,8 +1768,12 @@
       justify-content: flex-end;
     }
     
-    /* Hide header when language selection screen is visible */
-    .language-selection-screen:not(.hidden) ~ * .global-header {
+    /* Always show header except when language selection is active */
+    .global-header {
+      display: flex !important;
+    }
+    
+    body.showing-language-selection .global-header {
       display: none !important;
     }
     
@@ -1784,7 +1788,7 @@
     
     /* Video start screen - account for header at top */
     .video-start-screen {
-      padding-top: 70px; /* Add padding so content doesn't hide behind header */
+      padding-top: 80px; /* Add padding so content doesn't hide behind header */
     }
     
     .kiosk-header {
@@ -6122,8 +6126,12 @@
         padding-top: 60px !important;
       }
       
+      .video-question-page {
+        padding-top: 0 !important;
+      }
+      
       .video-start-screen {
-        padding-top: 60px !important;
+        padding-top: 80px !important;
       }
       
       .kiosk-header {
@@ -9560,6 +9568,9 @@
         videoStartScreen.style.display = 'none';
       }
       
+      // Add body class to hide header
+      document.body.classList.add('showing-language-selection');
+      
       // Hide header
       updateBackButtonVisibility();
       
@@ -9573,18 +9584,16 @@
     // Update back button and header visibility
     function updateBackButtonVisibility() {
       const backBtn = document.getElementById('global-back-button');
-      const globalHeader = document.getElementById('global-header');
       
       // Check if we're at language selection
-      const isAtLanguageSelection = document.getElementById('language-selection-screen') && 
-                                    !document.getElementById('language-selection-screen').classList.contains('hidden');
+      const langScreen = document.getElementById('language-selection-screen');
+      const isAtLanguageSelection = langScreen && !langScreen.classList.contains('hidden');
       
-      if (globalHeader) {
-        if (isAtLanguageSelection) {
-          globalHeader.style.display = 'none';
-        } else {
-          globalHeader.style.display = 'flex';
-        }
+      // Toggle body class for header visibility
+      if (isAtLanguageSelection) {
+        document.body.classList.add('showing-language-selection');
+      } else {
+        document.body.classList.remove('showing-language-selection');
       }
       
       if (backBtn) {
@@ -14645,11 +14654,8 @@
         langScreen.classList.add('hidden');
       }
       
-      // Show global header
-      const globalHeader = document.getElementById('global-header');
-      if (globalHeader) {
-        globalHeader.style.display = 'flex';
-      }
+      // Remove body class to show header
+      document.body.classList.remove('showing-language-selection');
       
       // Update back button visibility
       updateBackButtonVisibility();
@@ -16321,6 +16327,7 @@
       if (!selectedLanguage && (!hash || hash === '#' || hash === '#video-start')) {
         console.log('🌐 No language selected - showing language selection screen');
         document.body.classList.add('video-bg-active');
+        document.body.classList.add('showing-language-selection');
         const langScreen = document.getElementById('language-selection-screen');
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
@@ -16346,6 +16353,9 @@
         langScreen.classList.add('hidden');
         langScreen.style.display = 'none';
       }
+      
+      // Make sure header is visible
+      document.body.classList.remove('showing-language-selection');
       
       // Hash-based routing - check URL hash to determine which page to show
       console.log('🔗 Proceeding with hash routing...');
