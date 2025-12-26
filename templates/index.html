@@ -8383,6 +8383,32 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
+    // =====================================================================
+    // LANGUAGE SELECTION - Define early so onclick handlers work
+    // =====================================================================
+    
+    window.selectInitialLanguage = function(langCode) {
+      console.log('🌐 Initial language selected:', langCode);
+      
+      try {
+        // Save language preference
+        localStorage.setItem('preferred_language', langCode);
+        
+        // Update URL with language parameter and reload
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', langCode);
+        url.hash = 'video-start';
+        
+        console.log('🔗 Redirecting to:', url.toString());
+        
+        // Reload with new language
+        window.location.href = url.toString();
+      } catch (error) {
+        console.error('❌ Error selecting language:', error);
+        alert('Error selecting language. Please try again.');
+      }
+    };
+    
     // Translation strings - these will be the same across languages in JS
     // The actual tour data comes pre-translated from the CSV files
     const translations = {
@@ -14683,48 +14709,6 @@
         currBtn.textContent = currentCurrency;
       }
     }
-    
-    // Initial language selection from the first screen
-    window.selectInitialLanguage = function(langCode) {
-      console.log('🌐 Initial language selected:', langCode);
-      
-      // Save language preference
-      localStorage.setItem('preferred_language', langCode);
-      
-      // Update URL with language parameter
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', langCode);
-      
-      // Hide language selection screen
-      const langScreen = document.getElementById('language-selection-screen');
-      if (langScreen) {
-        langScreen.classList.add('hidden');
-        langScreen.style.display = 'none';
-      }
-      
-      // Remove body class to show header
-      document.body.classList.remove('showing-language-selection');
-      
-      // Update back button visibility
-      updateBackButtonVisibility();
-      
-      // Show video start screen (Tap to Start)
-      const videoStartScreen = document.getElementById('video-start-screen');
-      if (videoStartScreen) {
-        videoStartScreen.style.display = 'flex';
-      }
-      
-      // Add to navigation history
-      addToNavigationHistory('video-start');
-      
-      // Set hash to video-start
-      window.location.hash = 'video-start';
-      
-      // Reload page with language parameter to get translations
-      setTimeout(() => {
-        window.location.href = url.toString();
-      }, 300);
-    };
     
     function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
