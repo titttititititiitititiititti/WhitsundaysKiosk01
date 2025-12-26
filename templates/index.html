@@ -16343,19 +16343,25 @@
     // =====================================================================
     
     document.addEventListener('DOMContentLoaded', () => {
-      initInactivityMonitor();
-      initCurrency();
-      loadWeatherData();
-      updateGlobalHeaderChips();
-      updateBackButtonVisibility();
+      alert('🎯 DOMContentLoaded FIRED! Starting initialization...');
       
-      // Check if language has been selected (check URL parameter first, then localStorage)
-      const urlLangParam = new URLSearchParams(window.location.search).get('lang');
-      const selectedLanguage = urlLangParam || localStorage.getItem('preferred_language');
-      const hash = window.location.hash;
-      
-      // DEBUG: Show what we detected
-      alert('DEBUG DOMContentLoaded:\nURL: ' + window.location.href + '\nURL Lang: ' + (urlLangParam || 'NONE') + '\nLocalStorage Lang: ' + (localStorage.getItem('preferred_language') || 'NONE') + '\nSelected: ' + (selectedLanguage || 'NONE') + '\nHash: ' + (hash || 'NONE'));
+      try {
+        initInactivityMonitor();
+        initCurrency();
+        loadWeatherData();
+        updateGlobalHeaderChips();
+        updateBackButtonVisibility();
+        
+        // Check if language has been selected (check URL parameter first, then localStorage)
+        const urlLangParam = new URLSearchParams(window.location.search).get('lang');
+        const selectedLanguage = urlLangParam || localStorage.getItem('preferred_language');
+        const hash = window.location.hash;
+        
+        // DEBUG: Show what we detected
+        alert('DEBUG DOMContentLoaded:\nURL: ' + window.location.href + '\nURL Lang: ' + (urlLangParam || 'NONE') + '\nLocalStorage Lang: ' + (localStorage.getItem('preferred_language') || 'NONE') + '\nSelected: ' + (selectedLanguage || 'NONE') + '\nHash: ' + (hash || 'NONE'));
+      } catch (error) {
+        alert('ERROR in DOMContentLoaded: ' + error.message);
+      }
       
       console.log('🌐 URL lang parameter:', urlLangParam || '(none)');
       console.log('🌐 localStorage language:', localStorage.getItem('preferred_language') || '(none)');
