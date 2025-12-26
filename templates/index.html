@@ -611,13 +611,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding-top: 90px;
-      gap: 25px;
+      padding: 70px 20px 30px 20px;
+      gap: 20px;
       z-index: 25;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(8px);
       transition: opacity 0.5s ease, visibility 0.5s ease;
       overflow-y: auto;
+      overflow-x: hidden;
     }
     
     .language-selection-screen.hidden {
@@ -639,15 +640,15 @@
     .language-selection-buttons {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       width: 90%;
       max-width: 500px;
-      padding-bottom: 50px;
+      padding-bottom: 30px;
     }
     
     .language-select-btn {
-      padding: 25px 50px;
-      font-size: 2em;
+      padding: 18px 40px;
+      font-size: 1.8em;
       font-weight: 700;
       color: white;
       background: linear-gradient(135deg, rgba(0, 119, 182, 0.85) 0%, rgba(0, 150, 215, 0.9) 50%, rgba(3, 169, 244, 0.85) 100%);
@@ -666,6 +667,7 @@
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
+      flex-shrink: 0;
     }
     
     .language-select-btn::before {
@@ -16356,7 +16358,7 @@
       console.log('📊 Body classes:', document.body.className);
       
       // If no language selected and no specific hash, show language selection screen
-      if (!selectedLanguage && (!hash || hash === '#' || hash === '#video-start')) {
+      if (!selectedLanguage) {
         console.log('🌐 No language selected - showing language selection screen');
         document.body.classList.add('video-bg-active');
         document.body.classList.add('showing-language-selection');
