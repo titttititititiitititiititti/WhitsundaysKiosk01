@@ -8852,7 +8852,8 @@
       console.log('⬅️ Going back to start screen');
       
       // Update URL hash
-      window.history.replaceState(null, '', '#video-start');
+      window.location.hash = 'video-start';
+      console.log('🔗 Updated hash to video-start:', window.location.href);
       
       // Hide home page
       const homePage = document.querySelector('.home-page');
@@ -8893,7 +8894,8 @@
       isInVideoFlow = false; // Exit video flow
       
       // Update URL hash
-      window.history.replaceState(null, '', '#home');
+      window.location.hash = 'home';
+      console.log('🔗 Updated hash to home:', window.location.href);
       
       // Hide video background
       document.body.classList.remove('video-bg-active');
@@ -11838,8 +11840,9 @@
       selectedPricingTier = null;
       
       // Update URL hash for routing (allows language change restoration and direct linking)
-      window.history.replaceState(null, '', `#tour/${key}`);
+      window.location.hash = `tour/${key}`;
       console.log('🔗 Updated hash to:', window.location.hash);
+      console.log('🔗 Full URL:', window.location.href);
       
       console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
