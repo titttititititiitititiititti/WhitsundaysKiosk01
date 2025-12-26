@@ -1695,6 +1695,7 @@
       display: flex;
       align-items: center;
       gap: 20px;
+      flex: 1;
     }
     
     .global-back-button {
@@ -1729,21 +1730,23 @@
     .global-logo-image {
       height: 45px;
       width: auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
     
     .global-header-right {
       display: flex;
       gap: 15px;
       align-items: center;
+      flex: 1;
+      justify-content: flex-end;
     }
     
-    /* Hide language selection screen header */
-    .language-selection-screen ~ .global-header {
-      display: none;
-    }
-    
-    body.video-bg-active .global-header {
-      display: flex;
+    /* Hide header when language selection screen is visible */
+    .language-selection-screen:not(.hidden) ~ * .global-header {
+      display: none !important;
     }
     
     /* Add padding to pages to account for fixed header */
@@ -6062,14 +6065,21 @@
       
       .global-logo-image {
         height: 35px !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
       }
       
       .global-header-left {
         gap: 10px !important;
+        flex: 1 !important;
       }
       
       .global-header-right {
         gap: 10px !important;
+        flex: 1 !important;
+        justify-content: flex-end !important;
       }
       
       .global-header .chip {
@@ -7460,6 +7470,9 @@
             <div class="language-option" data-lang="en" onclick="selectGlobalLanguage('en')"><span>🇬🇧</span> English</div>
             <div class="language-option" data-lang="zh" onclick="selectGlobalLanguage('zh')"><span>🇨🇳</span> 中文</div>
             <div class="language-option" data-lang="ja" onclick="selectGlobalLanguage('ja')"><span>🇯🇵</span> 日本語</div>
+            <div class="language-option" data-lang="ko" onclick="selectGlobalLanguage('ko')"><span>🇰🇷</span> 한국어</div>
+            <div class="language-option" data-lang="de" onclick="selectGlobalLanguage('de')"><span>🇩🇪</span> Deutsch</div>
+            <div class="language-option" data-lang="fr" onclick="selectGlobalLanguage('fr')"><span>🇫🇷</span> Français</div>
           </div>
         </div>
         <div class="currency-selector" style="position: relative; display: inline-block;">
@@ -7500,6 +7513,18 @@
           <button class="language-select-btn" onclick="selectInitialLanguage('ja')">
             <span class="flag">🇯🇵</span>
             <span>日本語</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('ko')">
+            <span class="flag">🇰🇷</span>
+            <span>한국어</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('de')">
+            <span class="flag">🇩🇪</span>
+            <span>Deutsch</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('fr')">
+            <span class="flag">🇫🇷</span>
+            <span>Français</span>
           </button>
         </div>
       </div>
@@ -9452,13 +9477,25 @@
       }
     }
     
-    // Update back button visibility
+    // Update back button and header visibility
     function updateBackButtonVisibility() {
       const backBtn = document.getElementById('global-back-button');
+      const globalHeader = document.getElementById('global-header');
+      
+      // Check if we're at language selection
+      const isAtLanguageSelection = document.getElementById('language-selection-screen') && 
+                                    !document.getElementById('language-selection-screen').classList.contains('hidden');
+      
+      if (globalHeader) {
+        if (isAtLanguageSelection) {
+          globalHeader.style.display = 'none';
+        } else {
+          globalHeader.style.display = 'flex';
+        }
+      }
+      
       if (backBtn) {
         // Always show back button unless we're at language selection
-        const isAtLanguageSelection = document.getElementById('language-selection-screen') && 
-                                      !document.getElementById('language-selection-screen').classList.contains('hidden');
         if (isAtLanguageSelection) {
           backBtn.style.display = 'none';
         } else {
@@ -14514,6 +14551,15 @@
       if (langScreen) {
         langScreen.classList.add('hidden');
       }
+      
+      // Show global header
+      const globalHeader = document.getElementById('global-header');
+      if (globalHeader) {
+        globalHeader.style.display = 'flex';
+      }
+      
+      // Update back button visibility
+      updateBackButtonVisibility();
       
       // Show video start screen (Tap to Start)
       const videoStartScreen = document.getElementById('video-start-screen');
