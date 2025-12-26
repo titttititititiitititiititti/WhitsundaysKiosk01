@@ -13859,26 +13859,56 @@
     
     // Switch language
     function switchLanguage(langCode) {
+      console.log('🌐 Switching language to:', langCode);
+      
       // Save preference
       localStorage.setItem('preferred_language', langCode);
       
-      // Apply language translations immediately (no page reload!)
-      applyLanguage(langCode);
-      
-      // Update all language selector buttons
-      const langMap = {
-        'en': 'EN', 'zh': '中文', 'ja': '日本', 'ko': '한국', 
-        'de': 'DE', 'fr': 'FR', 'es': 'ES', 'hi': 'हिन्दी'
+      // Save current page state to restore after reload
+      const pageState = {
+        timestamp: Date.now()
       };
-      const shortCode = langMap[langCode] || langCode.toUpperCase();
       
-      // Update all language buttons across pages
-      ['header-language-btn', 'detail-language-btn'].forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.textContent = shortCode;
-      });
+      // Detect which page is active
+      const videoPage = document.querySelector('.video-question-page.active');
+      const homePage = document.querySelector('.home-page.active');
+      const tourListPage = document.querySelector('.tour-list-page.active');
+      const tourDetailPage = document.querySelector('.tour-detail-page.active');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      const isSwipeActive = swipeOverlay && swipeOverlay.classList.contains('active');
       
-      console.log('✓ Language switched to', langCode, '(no reload!)');
+      if (isSwipeActive) {
+        // On swipe results - save current tour index and data
+        pageState.page = 'swipe';
+        pageState.currentIndex = window.currentSwipeIndex || 0;
+        pageState.tourResults = window.currentSwipeTours || [];
+        console.log('📍 Saved swipe state - index:', pageState.currentIndex);
+      } else if (tourDetailPage && tourDetailPage.classList.contains('active')) {
+        // On tour detail page - save tour key
+        pageState.page = 'tour-detail';
+        pageState.tourKey = tourDetailPage.getAttribute('data-current-tour-key');
+        console.log('📍 Saved tour detail state - key:', pageState.tourKey);
+      } else if (tourListPage && tourListPage.classList.contains('active')) {
+        // On browse all tours page
+        pageState.page = 'tour-list';
+        console.log('📍 Saved tour list state');
+      } else if (homePage && homePage.classList.contains('active')) {
+        // On home page with questionnaire
+        pageState.page = 'home';
+        console.log('📍 Saved home page state');
+      } else if (videoPage) {
+        // On video question page
+        pageState.page = 'video';
+        console.log('📍 Saved video page state');
+      }
+      
+      // Save state to localStorage
+      localStorage.setItem('page_state_before_language_change', JSON.stringify(pageState));
+      
+      // Reload page with language parameter to get translated content from Flask
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', langCode);
+      window.location.href = url.toString();
     }
     
     // Apply language to UI
@@ -15457,14 +15487,54 @@
       initCurrency();
       loadWeatherData();
       
-      // Check if we need to reopen a tour detail page after language/currency change
-      const tourToReopen = localStorage.getItem('reopen_tour_after_reload');
-      if (tourToReopen) {
-        localStorage.removeItem('reopen_tour_after_reload');
-        // Wait a bit for the page to fully load, then reopen the tour
-        setTimeout(() => {
-          openTourDetail(tourToReopen);
-        }, 100);
+      // Check if we need to restore page state after language change
+      const savedStateJson = localStorage.getItem('page_state_before_language_change');
+      if (savedStateJson) {
+        try {
+          const pageState = JSON.parse(savedStateJson);
+          localStorage.removeItem('page_state_before_language_change');
+          
+          // Only restore if less than 10 seconds old (prevent stale state)
+          if (Date.now() - pageState.timestamp < 10000) {
+            console.log('🔄 Restoring page state:', pageState);
+            
+            setTimeout(() => {
+              if (pageState.page === 'tour-detail' && pageState.tourKey) {
+                // Restore tour detail page
+                openTourDetail(pageState.tourKey);
+                console.log('✅ Restored tour detail:', pageState.tourKey);
+              } else if (pageState.page === 'tour-list') {
+                // Restore browse all tours page - navigate to home first
+                window.goToHomePage && window.goToHomePage();
+                console.log('✅ Restored tour list page (home)');
+              } else if (pageState.page === 'home') {
+                // Restore home page
+                window.goToHomePage && window.goToHomePage();
+                console.log('✅ Restored home page');
+              } else if (pageState.page === 'swipe' && pageState.currentIndex !== undefined) {
+                // Restore swipe results - this is complex, need to reopen swipe flow
+                if (pageState.tourResults && pageState.tourResults.length > 0) {
+                  window.currentSwipeTours = pageState.tourResults;
+                  window.currentSwipeIndex = pageState.currentIndex;
+                  // Show swipe overlay
+                  const overlay = document.getElementById('swipe-results-overlay');
+                  if (overlay) {
+                    overlay.classList.add('active');
+                    // Render current tour in swipe
+                    if (window.showSwipeCard) {
+                      window.showSwipeCard(pageState.currentIndex);
+                    }
+                  }
+                  console.log('✅ Restored swipe results at index:', pageState.currentIndex);
+                }
+              }
+            }, 300); // Wait for page to fully initialize
+          } else {
+            console.log('⏰ Saved state too old, ignoring');
+          }
+        } catch (e) {
+          console.error('❌ Error restoring page state:', e);
+        }
       }
       
       // Add currency selector click handlers
