@@ -8851,6 +8851,9 @@
     window.goToStartPage = function() {
       console.log('⬅️ Going back to start screen');
       
+      // Update URL hash
+      window.history.replaceState(null, '', '#video-start');
+      
       // Hide home page
       const homePage = document.querySelector('.home-page');
       if (homePage) {
@@ -8888,6 +8891,9 @@
       
       activeFilters = {};
       isInVideoFlow = false; // Exit video flow
+      
+      // Update URL hash
+      window.history.replaceState(null, '', '#home');
       
       // Hide video background
       document.body.classList.remove('video-bg-active');
@@ -11831,8 +11837,9 @@
       // Reset selected pricing tier when opening a new tour
       selectedPricingTier = null;
       
-      // Don't change URL - keep user on home page for consistent experience
-      // This way refreshing doesn't take them to the standalone share page
+      // Update URL hash for routing (allows language change restoration and direct linking)
+      window.history.replaceState(null, '', `#tour/${key}`);
+      console.log('🔗 Updated hash to:', window.location.hash);
       
       console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
@@ -13957,50 +13964,40 @@
       // Save preference
       localStorage.setItem('preferred_language', langCode);
       
-      // Save current page state to restore after reload
-      const pageState = {
-        timestamp: Date.now()
-      };
+      // Build URL with current page hash (for automatic restoration)
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', langCode);
       
-      // Detect which page is active
-      const videoPage = document.querySelector('.video-question-page.active');
-      const homePage = document.querySelector('.home-page.active');
-      const tourListPage = document.querySelector('.tour-list-page.active');
+      // Detect which page is active and set hash
       const tourDetailPage = document.querySelector('.tour-detail-page.active');
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       const isSwipeActive = swipeOverlay && swipeOverlay.classList.contains('active');
+      const homePage = document.querySelector('.home-page.active');
+      const videoPage = document.querySelector('.video-question-page.active');
       
-      if (isSwipeActive) {
-        // On swipe results - save current tour index and data
-        pageState.page = 'swipe';
-        pageState.currentIndex = window.currentSwipeIndex || 0;
-        pageState.tourResults = window.currentSwipeTours || [];
-        console.log('📍 Saved swipe state - index:', pageState.currentIndex);
+      if (isSwipeActive && window.currentSwipeIndex !== undefined) {
+        // On swipe results - use hash #swipe/INDEX
+        url.hash = `#swipe/${window.currentSwipeIndex}`;
+        console.log('📍 Setting hash for swipe:', url.hash);
       } else if (tourDetailPage && tourDetailPage.classList.contains('active')) {
-        // On tour detail page - save tour key
-        pageState.page = 'tour-detail';
-        pageState.tourKey = tourDetailPage.getAttribute('data-current-tour-key');
-        console.log('📍 Saved tour detail state - key:', pageState.tourKey);
-      } else if (tourListPage && tourListPage.classList.contains('active')) {
-        // On browse all tours page
-        pageState.page = 'tour-list';
-        console.log('📍 Saved tour list state');
+        // On tour detail page - use hash #tour/KEY
+        const tourKey = tourDetailPage.getAttribute('data-current-tour-key');
+        if (tourKey) {
+          url.hash = `#tour/${tourKey}`;
+          console.log('📍 Setting hash for tour detail:', url.hash);
+        }
       } else if (homePage && homePage.classList.contains('active')) {
-        // On home page with questionnaire
-        pageState.page = 'home';
-        console.log('📍 Saved home page state');
+        // On home page
+        url.hash = '#home';
+        console.log('📍 Setting hash for home page');
       } else if (videoPage) {
-        // On video question page
-        pageState.page = 'video';
-        console.log('📍 Saved video page state');
+        // On video page
+        url.hash = '#video-start';
+        console.log('📍 Setting hash for video page');
       }
       
-      // Save state to localStorage
-      localStorage.setItem('page_state_before_language_change', JSON.stringify(pageState));
-      
-      // Reload page with language parameter to get translated content from Flask
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', langCode);
+      // Reload page with language parameter - hash will automatically restore page
+      console.log('🔄 Reloading with URL:', url.toString());
       window.location.href = url.toString();
     }
     
@@ -15586,53 +15583,57 @@
       initCurrency();
       loadWeatherData();
       
-      // Check if we need to restore page state after language change
+      // Hash-based routing - check URL hash to determine which page to show
+      const hash = window.location.hash;
+      console.log('🔗 Page loaded with hash:', hash || '(none)');
+      
+      if (hash) {
+        setTimeout(() => {
+          if (hash.startsWith('#tour/')) {
+            // Tour detail page: #tour/KEY
+            const tourKey = hash.substring(6); // Remove '#tour/'
+            console.log('🎯 Navigating to tour detail:', tourKey);
+            openTourDetail(tourKey);
+          } else if (hash.startsWith('#swipe/')) {
+            // Swipe results: #swipe/INDEX (not fully supported yet, just go home)
+            console.log('🎯 Navigating to home (swipe not fully restorable)');
+            window.goToHomePage && window.goToHomePage();
+          } else if (hash === '#home') {
+            // Home page with questionnaire
+            console.log('🎯 Navigating to home page');
+            window.goToHomePage && window.goToHomePage();
+          } else if (hash === '#video-start') {
+            // Video start page (default, do nothing)
+            console.log('🎯 Staying on video start page');
+          }
+        }, 300); // Wait for page to fully initialize
+      }
+      
+      // LEGACY: Check old localStorage-based state restoration (backwards compatibility)
       const savedStateJson = localStorage.getItem('page_state_before_language_change');
-      if (savedStateJson) {
+      if (savedStateJson && !hash) {
         try {
           const pageState = JSON.parse(savedStateJson);
           localStorage.removeItem('page_state_before_language_change');
           
           // Only restore if less than 10 seconds old (prevent stale state)
           if (Date.now() - pageState.timestamp < 10000) {
-            console.log('🔄 Restoring page state:', pageState);
+            console.log('🔄 [LEGACY] Restoring page state:', pageState);
             
             setTimeout(() => {
               if (pageState.page === 'tour-detail' && pageState.tourKey) {
-                // Restore tour detail page
                 openTourDetail(pageState.tourKey);
-                console.log('✅ Restored tour detail:', pageState.tourKey);
-              } else if (pageState.page === 'tour-list') {
-                // Restore browse all tours page - navigate to home first
-                window.goToHomePage && window.goToHomePage();
-                console.log('✅ Restored tour list page (home)');
+                console.log('✅ [LEGACY] Restored tour detail:', pageState.tourKey);
               } else if (pageState.page === 'home') {
-                // Restore home page
                 window.goToHomePage && window.goToHomePage();
-                console.log('✅ Restored home page');
-              } else if (pageState.page === 'swipe' && pageState.currentIndex !== undefined) {
-                // Restore swipe results - this is complex, need to reopen swipe flow
-                if (pageState.tourResults && pageState.tourResults.length > 0) {
-                  window.currentSwipeTours = pageState.tourResults;
-                  window.currentSwipeIndex = pageState.currentIndex;
-                  // Show swipe overlay
-                  const overlay = document.getElementById('swipe-results-overlay');
-                  if (overlay) {
-                    overlay.classList.add('active');
-                    // Render current tour in swipe
-                    if (window.showSwipeCard) {
-                      window.showSwipeCard(pageState.currentIndex);
-                    }
-                  }
-                  console.log('✅ Restored swipe results at index:', pageState.currentIndex);
-                }
+                console.log('✅ [LEGACY] Restored home page');
               }
-            }, 300); // Wait for page to fully initialize
+            }, 300);
           } else {
-            console.log('⏰ Saved state too old, ignoring');
+            console.log('⏰ [LEGACY] Saved state too old, ignoring');
           }
         } catch (e) {
-          console.error('❌ Error restoring page state:', e);
+          console.error('❌ [LEGACY] Error restoring page state:', e);
         }
       }
       
