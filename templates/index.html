@@ -7006,7 +7006,7 @@
 
   </style>
 </head>
-<body>
+<body class="video-bg-active">
   <!-- Version indicator for cache verification -->
   <div class="version-indicator">v-target-actual-elements</div>
   
@@ -15588,9 +15588,9 @@
       
       // Hash-based routing - check URL hash to determine which page to show
       const hash = window.location.hash;
-      console.log('🔗 Page loaded with hash:', hash || '(none)');
+      console.log('🔗 Page loaded with hash:', hash || '(none - showing tap to start)');
       
-      if (hash) {
+      if (hash && hash !== '#' && hash !== '#video-start') {
         setTimeout(() => {
           if (hash.startsWith('#tour/')) {
             // Tour detail page: #tour/KEY
@@ -15605,11 +15605,21 @@
             // Home page with questionnaire
             console.log('🎯 Navigating to home page');
             window.goToHomePage && window.goToHomePage();
-          } else if (hash === '#video-start') {
-            // Video start page (default, do nothing)
-            console.log('🎯 Staying on video start page');
           }
         }, 300); // Wait for page to fully initialize
+      } else {
+        // No hash or #video-start - ensure video start screen is visible
+        console.log('🎯 Default: Showing video start screen (tap to start)');
+        document.body.classList.add('video-bg-active');
+        const videoPage = document.querySelector('.video-question-page');
+        const startScreen = document.getElementById('video-start-screen');
+        const video = document.getElementById('bg-video');
+        if (videoPage && startScreen) {
+          videoPage.classList.add('active');
+          startScreen.style.display = 'flex';
+          if (video) video.play();
+        }
+        console.log('✅ Video page initialized with background');
       }
       
       // LEGACY: Check old localStorage-based state restoration (backwards compatibility)
