@@ -471,6 +471,7 @@
       left: 0;
       width: 100%;
       min-height: 100vh;
+      overflow: hidden; /* Prevent scrolling on pages */
     }
     
     /* Show only the active page */
@@ -578,8 +579,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow-y: auto; /* Allow scrolling within container */
-      max-height: calc(100vh - 60px); /* Leave room for top buttons */
+      overflow: hidden; /* Prevent vertical scrolling */
+      height: calc(100vh - 60px); /* Fixed height to prevent scrolling */
     }
     
     .video-question-card {
@@ -8902,7 +8903,7 @@
             <div style="width: 100%; height: 300px; border-radius: 15px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
               <iframe 
                 width="100%" 
-                height="300"
+                height="100%"
                 frameborder="0" 
                 style="border:0; display: block;" 
                 src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullTourData.departure_location)}&zoom=14"
@@ -8917,11 +8918,11 @@
       if (fullTourData.reviews && fullTourData.reviews.overall_rating > 0 && fullTourData.reviews.review_count > 0) {
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3 style="margin-bottom: 12px;">⭐ Customer Reviews</h3>
-            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin-bottom: 15px;">⭐ Customer Reviews</h3>
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 15px;">
               <div style="font-size: 2em; font-weight: 700; color: #0077b6;">${fullTourData.reviews.overall_rating.toFixed(1)}</div>
               <div>
-                <div style="font-size: 1.2em; color: #ffa500; margin-bottom: 2px; line-height: 1;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
+                <div style="font-size: 1.2em; color: #ffa500; margin-bottom: 2px; line-height: 1; letter-spacing: 2px;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
                 <div style="color: #2c3e50; font-size: 0.9em;">Based on ${fullTourData.reviews.review_count} review${fullTourData.reviews.review_count !== 1 ? 's' : ''}</div>
               </div>
             </div>
