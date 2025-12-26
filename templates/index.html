@@ -611,8 +611,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding-top: 50px;
-      gap: 30px;
+      padding-top: 90px;
+      gap: 25px;
       z-index: 25;
       background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(8px);
@@ -646,7 +646,7 @@
     }
     
     .language-select-btn {
-      padding: 30px 50px;
+      padding: 25px 50px;
       font-size: 2em;
       font-weight: 700;
       color: white;
@@ -663,6 +663,9 @@
       align-items: center;
       justify-content: center;
       gap: 15px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
     
     .language-select-btn::before {
@@ -7511,9 +7514,10 @@
             <div class="language-option" data-lang="en" onclick="selectGlobalLanguage('en')"><span>🇬🇧</span> English</div>
             <div class="language-option" data-lang="zh" onclick="selectGlobalLanguage('zh')"><span>🇨🇳</span> 中文</div>
             <div class="language-option" data-lang="ja" onclick="selectGlobalLanguage('ja')"><span>🇯🇵</span> 日本語</div>
-            <div class="language-option" data-lang="ko" onclick="selectGlobalLanguage('ko')"><span>🇰🇷</span> 한국어</div>
+            <div class="language-option" data-lang="hi" onclick="selectGlobalLanguage('hi')"><span>🇮🇳</span> हिन्दी</div>
             <div class="language-option" data-lang="de" onclick="selectGlobalLanguage('de')"><span>🇩🇪</span> Deutsch</div>
             <div class="language-option" data-lang="fr" onclick="selectGlobalLanguage('fr')"><span>🇫🇷</span> Français</div>
+            <div class="language-option" data-lang="es" onclick="selectGlobalLanguage('es')"><span>🇪🇸</span> Español</div>
           </div>
         </div>
         <div class="currency-selector" style="position: relative; display: inline-block;">
@@ -7555,9 +7559,9 @@
             <span class="flag">🇯🇵</span>
             <span>日本語</span>
           </button>
-          <button class="language-select-btn" onclick="selectInitialLanguage('ko')">
-            <span class="flag">🇰🇷</span>
-            <span>한국어</span>
+          <button class="language-select-btn" onclick="selectInitialLanguage('hi')">
+            <span class="flag">🇮🇳</span>
+            <span>हिन्दी</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('de')">
             <span class="flag">🇩🇪</span>
@@ -7566,6 +7570,10 @@
           <button class="language-select-btn" onclick="selectInitialLanguage('fr')">
             <span class="flag">🇫🇷</span>
             <span>Français</span>
+          </button>
+          <button class="language-select-btn" onclick="selectInitialLanguage('es')">
+            <span class="flag">🇪🇸</span>
+            <span>Español</span>
           </button>
         </div>
       </div>
@@ -14677,7 +14685,7 @@
     }
     
     // Initial language selection from the first screen
-    function selectInitialLanguage(langCode) {
+    window.selectInitialLanguage = function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
       
       // Save language preference
@@ -14691,6 +14699,7 @@
       const langScreen = document.getElementById('language-selection-screen');
       if (langScreen) {
         langScreen.classList.add('hidden');
+        langScreen.style.display = 'none';
       }
       
       // Remove body class to show header
@@ -14715,7 +14724,7 @@
       setTimeout(() => {
         window.location.href = url.toString();
       }, 300);
-    }
+    };
     
     function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
