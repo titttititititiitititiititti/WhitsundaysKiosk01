@@ -8395,43 +8395,15 @@
       // Save language preference
       localStorage.setItem('preferred_language', langCode);
       
-      // Immediately hide language selection and show video start - NO PAGE RELOAD
-      const langScreen = document.getElementById('language-selection-screen');
-      const videoStartScreen = document.getElementById('video-start-screen');
-      const videoPage = document.querySelector('.video-question-page');
-      
-      if (langScreen) {
-        langScreen.style.display = 'none';
-        langScreen.classList.add('hidden');
-      }
-      
-      if (videoStartScreen) {
-        videoStartScreen.style.display = 'flex';
-      }
-      
-      if (videoPage) {
-        videoPage.classList.add('active');
-      }
-      
-      // Remove body class to show header
-      document.body.classList.remove('showing-language-selection');
-      
-      // Update current language variable
-      currentLanguage = langCode;
-      
-      // Update URL without reload
+      // Build new URL with language parameter
       const url = new URL(window.location.href);
       url.searchParams.set('lang', langCode);
       url.hash = 'video-start';
-      window.history.replaceState({}, '', url.toString());
       
-      // Update header buttons
-      const globalLangBtn = document.getElementById('global-language-btn');
-      if (globalLangBtn) {
-        globalLangBtn.textContent = langCode.toUpperCase();
-      }
+      console.log('🔗 Reloading page with language:', url.toString());
       
-      console.log('✅ Language selection complete - showing video start page');
+      // RELOAD page to get translated content from Flask
+      window.location.href = url.toString();
     };
     
     // Translation strings - these will be the same across languages in JS
