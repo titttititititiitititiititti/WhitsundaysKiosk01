@@ -3281,25 +3281,62 @@
       display: none !important;
       visibility: hidden !important;
     }
-    #back-arrow {
-      position: fixed;
-      top: 40px;
-      left: 40px;
+    #back-arrow,
+    .back-button {
+      position: fixed !important;
+      top: 40px !important;
+      left: 40px !important;
       font-size: 2.8em;
       color: #0077b6;
       background: #fff;
       border-radius: 50%;
-      width: 70px; height: 70px;
-      display: flex; align-items: center; justify-content: center;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.15);
       cursor: pointer;
       z-index: 210;
       border: none;
       transition: all 0.3s ease;
     }
-    #back-arrow:active {
+    #back-arrow:active,
+    .back-button:active {
       transform: scale(0.95);
       background: #e0eafc;
+    }
+    
+    /* Desktop - ensure header is always visible */
+    @media (min-width: 769px) {
+      .tour-detail-page .kiosk-header,
+      .kiosk-header {
+        display: flex !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 30px 50px !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+      
+      .tour-detail-page .header-right,
+      .kiosk-header .header-right {
+        display: flex !important;
+        position: absolute !important;
+        right: 50px !important;
+        gap: 15px !important;
+        align-items: center !important;
+      }
+      
+      .tour-detail-page .back-button,
+      .tour-detail-page #back-arrow {
+        position: fixed !important;
+        top: 40px !important;
+        left: 40px !important;
+      }
     }
     #detail-content {
       max-width: 1000px;
@@ -11840,21 +11877,8 @@
       selectedPricingTier = null;
       
       // Update URL hash for routing (allows language change restoration and direct linking)
-      try {
-        window.location.hash = `tour/${key}`;
-        console.log('✅ Hash set successfully!');
-        console.log('🔗 Current hash:', window.location.hash);
-        console.log('🔗 Full URL:', window.location.href);
-        
-        // Alert for debugging (remove after confirmed working)
-        if (!window.hashTestedOnce) {
-          alert('Hash updated to: ' + window.location.hash);
-          window.hashTestedOnce = true;
-        }
-      } catch (e) {
-        console.error('❌ Error setting hash:', e);
-        alert('ERROR setting hash: ' + e.message);
-      }
+      window.location.hash = `tour/${key}`;
+      console.log('🔗 Hash updated to:', window.location.hash);
       
       console.log('🌐 Fetching tour data...');
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
@@ -14024,7 +14048,6 @@
       // Reload page with language parameter - hash will automatically restore page
       const finalUrl = url.toString();
       console.log('🔄 Reloading with URL:', finalUrl);
-      alert('Language change - reloading to: ' + finalUrl); // Debug alert
       window.location.href = finalUrl;
     }
     
@@ -15613,24 +15636,45 @@
       // Hash-based routing - check URL hash to determine which page to show
       const hash = window.location.hash;
       console.log('🔗 Page loaded with hash:', hash || '(none - showing tap to start)');
+      console.log('📊 Body classes:', document.body.className);
       
       if (hash && hash !== '#' && hash !== '#video-start') {
+        // We have a hash - need to navigate away from video start page
+        console.log('🎯 Hash detected, preparing to navigate...');
+        
+        // IMPORTANT: Remove video-bg-active class so we can see other pages
+        document.body.classList.remove('video-bg-active');
+        console.log('✅ Removed video-bg-active class');
+        
+        // Wait longer for all scripts to initialize
         setTimeout(() => {
+          console.log('⏰ Timeout fired, checking hash type...');
+          
           if (hash.startsWith('#tour/')) {
             // Tour detail page: #tour/KEY
             const tourKey = hash.substring(6); // Remove '#tour/'
-            console.log('🎯 Navigating to tour detail:', tourKey);
-            openTourDetail(tourKey);
+            console.log('🎯 Opening tour detail for key:', tourKey);
+            
+            if (typeof openTourDetail === 'function') {
+              openTourDetail(tourKey);
+              console.log('✅ Called openTourDetail()');
+            } else {
+              console.error('❌ openTourDetail function not found!');
+            }
           } else if (hash.startsWith('#swipe/')) {
             // Swipe results: #swipe/INDEX (not fully supported yet, just go home)
             console.log('🎯 Navigating to home (swipe not fully restorable)');
-            window.goToHomePage && window.goToHomePage();
+            if (typeof window.goToHomePage === 'function') {
+              window.goToHomePage();
+            }
           } else if (hash === '#home') {
             // Home page with questionnaire
             console.log('🎯 Navigating to home page');
-            window.goToHomePage && window.goToHomePage();
+            if (typeof window.goToHomePage === 'function') {
+              window.goToHomePage();
+            }
           }
-        }, 300); // Wait for page to fully initialize
+        }, 800); // Increased timeout to 800ms to ensure everything is loaded
       } else {
         // No hash or #video-start - ensure video start screen is visible
         console.log('🎯 Default: Showing video start screen (tap to start)');
