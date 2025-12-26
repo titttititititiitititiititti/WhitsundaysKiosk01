@@ -16343,20 +16343,45 @@
       
       // Check if user has already selected a language
       const urlLangParam = new URLSearchParams(window.location.search).get('lang');
-      const skipLanguageScreen = localStorage.getItem('skip_language_screen') === 'true';
-      const selectedLanguage = urlLangParam || localStorage.getItem('preferred_language');
       const hash = window.location.hash;
       
-      console.log('🌐 URL lang parameter:', urlLangParam || '(none)');
-      console.log('🌐 Skip language screen flag:', skipLanguageScreen);
-      console.log('🌐 Selected language:', selectedLanguage || '(none)');
-      console.log('🔗 Page loaded with hash:', hash || '(none)');
+      console.log('🔍 FULL URL:', window.location.href);
+      console.log('🔍 URL lang param:', urlLangParam);
+      console.log('🔍 Hash:', hash);
       
-      // If no language selected AND no skip flag, show language selection screen
-      if (!selectedLanguage && !skipLanguageScreen) {
-        console.log('🌐 No language selected - showing language selection screen');
+      // SIMPLE LOGIC: If there's a lang parameter in URL, show video start page. Otherwise, show language selection.
+      if (urlLangParam) {
+        // Language is in URL - hide language screen, show video start
+        console.log('✅ Language in URL (' + urlLangParam + ') - showing video start page');
+        
+        // Hide language selection screen
+        const langScreen = document.getElementById('language-selection-screen');
+        if (langScreen) {
+          langScreen.style.display = 'none';
+        }
+        
+        // Remove the showing-language-selection class
+        document.body.classList.remove('showing-language-selection');
+        
+        // Show video start screen
+        document.body.classList.add('video-bg-active');
+        const videoPage = document.querySelector('.video-question-page');
+        const startScreen = document.getElementById('video-start-screen');
+        const video = document.getElementById('bg-video');
+        
+        if (videoPage) videoPage.classList.add('active');
+        if (startScreen) startScreen.style.display = 'flex';
+        if (video) video.play();
+        
+        console.log('✅ Video start screen should be visible now');
+        
+        // Continue with rest of initialization...
+      } else {
+        // No language selected - show language selection screen
+        console.log('❌ No language in URL - showing language selection screen');
         document.body.classList.add('video-bg-active');
         document.body.classList.add('showing-language-selection');
+        
         const langScreen = document.getElementById('language-selection-screen');
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
@@ -16371,24 +16396,11 @@
         if (video) {
           video.play();
         }
-        console.log('✅ Language selection screen displayed');
+        
         return; // Stop here, wait for user to select language
       }
       
-      // Language already selected - proceed with normal routing
-      // Hide language selection screen
-      const langScreen = document.getElementById('language-selection-screen');
-      if (langScreen) {
-        langScreen.classList.add('hidden');
-        langScreen.style.display = 'none';
-      }
-      
-      // Make sure header is visible
-      document.body.classList.remove('showing-language-selection');
-      
-      // Hash-based routing - check URL hash to determine which page to show
-      console.log('🔗 Proceeding with hash routing...');
-      
+      // Continue with hash-based routing for other pages if needed
       if (hash && hash !== '#' && hash !== '#video-start') {
         // We have a hash - need to navigate away from video start page
         console.log('🎯 Hash detected, preparing to navigate...');
