@@ -8390,11 +8390,13 @@
     // =====================================================================
     
     window.selectInitialLanguage = function(langCode) {
+      alert('Language button clicked: ' + langCode); // DEBUG
       console.log('🌐 Initial language selected:', langCode);
       
       try {
         // Save language preference
         localStorage.setItem('preferred_language', langCode);
+        console.log('✅ Saved to localStorage');
         
         // Update URL with language parameter and reload
         const url = new URL(window.location.href);
@@ -8402,14 +8404,18 @@
         url.hash = 'video-start';
         
         console.log('🔗 Redirecting to:', url.toString());
+        alert('About to redirect to: ' + url.toString()); // DEBUG
         
         // Reload with new language
         window.location.href = url.toString();
       } catch (error) {
         console.error('❌ Error selecting language:', error);
-        alert('Error selecting language. Please try again.');
+        alert('Error: ' + error.message);
       }
     };
+    
+    console.log('✅ selectInitialLanguage function defined');
+    console.log('Test call:', typeof window.selectInitialLanguage); // Should be "function"
     
     // Translation strings - these will be the same across languages in JS
     // The actual tour data comes pre-translated from the CSV files
