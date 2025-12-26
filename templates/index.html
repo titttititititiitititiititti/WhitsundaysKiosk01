@@ -607,7 +607,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      display: flex;
+      display: none; /* HIDDEN BY DEFAULT - JavaScript will show it if needed */
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
@@ -16386,17 +16386,20 @@
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
         
+        // Show language screen
         if (langScreen) {
-          langScreen.classList.remove('hidden');
           langScreen.style.display = 'flex';
         }
+        // Hide video start screen
         if (startScreen) {
           startScreen.style.display = 'none';
         }
+        // Play background video
         if (video) {
           video.play();
         }
         
+        console.log('✅ Language selection screen is now visible');
         return; // Stop here, wait for user to select language
       }
       
