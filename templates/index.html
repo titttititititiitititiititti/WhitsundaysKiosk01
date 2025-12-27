@@ -1998,7 +1998,7 @@
       font-size: 4em;
       font-weight: 700;
       color: white;
-      margin: 0 0 30px 0;
+      margin: 40px 0 30px 0;
       text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
       letter-spacing: -1px;
     }
@@ -2798,16 +2798,16 @@
     .tour-detail-page .tour-hero,
     .tour-detail-page .photo-carousel,
     .tour-detail-page .info-grid,
+    /* Tour detail page - KEEP HEADER STYLE SAME AS HOME PAGE */
     .tour-detail-page header,
-    .tour-detail-page main,
-    .tour-detail-page .kiosk-header {
-      background: transparent !important;
+    .tour-detail-page main {
+      background: transparent;
     }
     
-    /* Force transparent on header with slight override */
+    /* Keep header background on tour detail page */
     .tour-detail-page .kiosk-header {
-      background: transparent !important;
-      backdrop-filter: none !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      backdrop-filter: blur(10px) !important;
     }
     
     /* Back Button */
@@ -6553,25 +6553,26 @@
         z-index: 2 !important;
       }
       
-      /* Home page quick decision button - top left corner */
+      /* Home page quick decision button - HIDDEN ON MOBILE */
       .page.home-page .quick-decision-btn-header {
-        display: flex !important;
-        position: absolute !important;
-        left: 6px !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        z-index: 2 !important;
-        font-size: 0.75em !important;
-        padding: 8px 12px !important;
-        min-height: 38px !important;
-        height: 38px !important;
-        align-items: center !important;
-        justify-content: center !important;
+        display: none !important;
       }
       
       /* Home page AI assistant button - hidden on mobile */
       .page.home-page .ai-assistant-btn-header {
         display: none !important;
+      }
+      
+      /* Mobile home page - show back arrow to go to video start */
+      .page.home-page .back-button {
+        display: flex !important;
+        position: absolute !important;
+        left: 6px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 38px !important;
+        height: 38px !important;
+        z-index: 10 !important;
       }
       
       /* Video Question Header - hidden on mobile */
@@ -7874,6 +7875,7 @@
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
+          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
