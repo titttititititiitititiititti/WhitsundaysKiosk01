@@ -903,13 +903,24 @@
     }
     
     /* Video Question Page - hide header on language selection and start screen */
+    /* Video question page shares home page header */
     .video-question-page .kiosk-header {
-      display: none;
+      display: none !important; /* No separate header */
     }
     
-    /* Show header only when questions are active */
-    .video-question-page.showing-questions .kiosk-header {
-      display: flex;
+    /* Make home page header visible when in quick decision mode */
+    body.in-quick-decision .home-page .kiosk-header {
+      display: flex !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 10000 !important;
+    }
+    
+    /* Keep home page below header when QD active */
+    body.in-quick-decision .home-page {
+      display: none !important;
     }
     
     /* Video Question Header - REMOVED, using kiosk-header instead */
@@ -7720,40 +7731,7 @@
     
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
-      <!-- Kiosk Header - SAME AS HOME PAGE -->
-      <header class="kiosk-header">
-        <div class="header-left">
-          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
-          <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
-          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
-        </div>
-        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
-        <div class="header-right">
-          <div class="language-selector" style="position: relative; display: inline-block;">
-            <button class="chip" id="vq-header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
-            <div class="language-menu" id="vq-home-language-menu">
-              <div class="language-option" data-lang="en" onclick="selectHomeLanguage('en')"><span>🇬🇧</span> English</div>
-              <div class="language-option" data-lang="zh" onclick="selectHomeLanguage('zh')"><span>🇨🇳</span> 中文</div>
-              <div class="language-option" data-lang="ja" onclick="selectHomeLanguage('ja')"><span>🇯🇵</span> 日本語</div>
-              <div class="language-option" data-lang="ko" onclick="selectHomeLanguage('ko')"><span>🇰🇷</span> 한국어</div>
-              <div class="language-option" data-lang="de" onclick="selectHomeLanguage('de')"><span>🇩🇪</span> Deutsch</div>
-              <div class="language-option" data-lang="fr" onclick="selectHomeLanguage('fr')"><span>🇫🇷</span> Français</div>
-            </div>
-          </div>
-          <div class="currency-selector" style="position: relative; display: inline-block;">
-            <button class="chip" id="vq-header-currency-btn" onclick="toggleHomeCurrencyMenu(event)">AUD</button>
-            <div class="currency-menu" id="vq-home-currency-menu">
-              <div class="currency-option" data-currency="AUD" onclick="selectHomeCurrency('AUD')"><span>A$</span> AUD</div>
-              <div class="currency-option" data-currency="USD" onclick="selectHomeCurrency('USD')"><span>$</span> USD</div>
-              <div class="currency-option" data-currency="EUR" onclick="selectHomeCurrency('EUR')"><span>€</span> EUR</div>
-              <div class="currency-option" data-currency="GBP" onclick="selectHomeCurrency('GBP')"><span>£</span> GBP</div>
-              <div class="currency-option" data-currency="CNY" onclick="selectHomeCurrency('CNY')"><span>¥</span> CNY</div>
-              <div class="currency-option" data-currency="JPY" onclick="selectHomeCurrency('JPY')"><span>¥</span> JPY</div>
-            </div>
-          </div>
-          <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()" style="display: none;">Map view</button>
-        </div>
-      </header>
+      <!-- No header here - uses shared header from home page -->
       
       <!-- Language Selection Screen - First thing users see -->
       <div class="language-selection-screen" id="language-selection-screen">
@@ -9663,6 +9641,7 @@
       // Mark that we're in quick decision mode
       isInVideoFlow = true;
       hasStarted = true;
+      body.classList.add('in-quick-decision'); // Show shared header
       
       // Add to navigation history
       addToNavigationHistory('quick-decision');
@@ -9670,11 +9649,11 @@
       // Update URL hash
       window.location.hash = 'quick-decision';
       
-      // Hide home page
+      // Don't hide home page - keep it to use its header
       const homePage = document.querySelector('.home-page');
       if (homePage) {
         homePage.classList.remove('active');
-        homePage.style.display = 'none';
+        // Keep display as is to maintain header
       }
       
       // Show video page and mark it as showing questions
