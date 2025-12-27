@@ -572,6 +572,7 @@
       z-index: 10;
       width: 100%;
       max-width: 1200px;
+      margin: 0 auto; /* Center the content */
       padding: 40px;
       padding-top: 140px; /* Space for progress bar */
       padding-bottom: 120px; /* Space for continue button */
@@ -910,12 +911,14 @@
     
     /* Show header when questions are active */
     .video-question-page.showing-questions .kiosk-header {
-      display: flex;
-      width: 100%;
-      position: sticky;
-      top: 0;
-      left: 0;
-      right: 0;
+      display: flex !important;
+      width: 100vw !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 10000 !important;
+      margin: 0 !important;
     }
     
     /* Position header elements same as home page */
