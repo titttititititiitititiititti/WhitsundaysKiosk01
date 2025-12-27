@@ -869,7 +869,7 @@
       box-shadow: 0 3px 10px rgba(147, 51, 234, 0.3);
     }
     
-    /* Desktop: Position header buttons on left */
+    /* Desktop: Position header buttons on left, logo centered */
     .page.home-page .header-left {
       position: absolute;
       left: 50px;
@@ -881,7 +881,9 @@
     .page.home-page .logo-image {
       position: absolute;
       left: 50%;
-      transform: translateX(-50%);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
     }
     
     /* Video Question Header - same style as home header */
@@ -905,6 +907,14 @@
       display: flex;
       gap: 15px;
       align-items: center;
+    }
+    
+    .video-question-header .logo-image {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
     }
     
     .video-question-header .header-right {
@@ -7634,6 +7644,7 @@
           <button class="quick-decision-btn-header" id="vq-browse-btn" onclick="window.goToHomePage && window.goToHomePage()">🗂️ Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image vq-logo">
         <div class="header-right">
           <div class="language-selector" style="position: relative; display: inline-block;">
             <button class="chip" id="vq-language-btn" onclick="toggleVQLanguageMenu(event)">EN</button>
@@ -7784,8 +7795,8 @@
         <div class="header-left">
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
-          <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
-      </div>
+        </div>
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
         <div class="header-right">
           <div class="language-selector" style="position: relative; display: inline-block;">
             <button class="chip" id="header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
