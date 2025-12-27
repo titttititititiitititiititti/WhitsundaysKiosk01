@@ -9720,7 +9720,7 @@
       let html = '';
       let hasFilters = false;
       
-      const lang = translations && translations[currentLanguage] ? translations[currentLanguage] : translations['en'];
+      // Use the t() helper function for translations
       
       if (activeFilters.duration) {
         const durationKey = activeFilters.duration === 'half_day' ? 'half_day' :
@@ -14515,7 +14515,7 @@
     // MULTI-LANGUAGE SYSTEM
     // =====================================================================
     
-    let translations = {};
+    let uiTranslations = {};
     
     // Store the tour key we came from when filtering by company
     let previousTourKey = null;
@@ -14524,8 +14524,8 @@
     async function loadTranslations() {
       try {
         const response = await fetch("{{ url_for('static', filename='translations.json') }}");
-        translations = await response.json();
-        console.log('✓ Translations loaded for', Object.keys(translations).length, 'languages');
+        uiTranslations = await response.json();
+        console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
         
         // Apply saved language or default to English
         applyLanguage(currentLanguage);
@@ -14536,12 +14536,12 @@
     
     // Translation helper function
     function t(key) {
-      if (translations && translations[currentLanguage] && translations[currentLanguage][key]) {
-        return translations[currentLanguage][key];
+      if (uiTranslations && uiTranslations[currentLanguage] && uiTranslations[currentLanguage][key]) {
+        return uiTranslations[currentLanguage][key];
       }
       // Fallback to English if translation not found
-      if (translations && translations['en'] && translations['en'][key]) {
-        return translations['en'][key];
+      if (uiTranslations && uiTranslations['en'] && uiTranslations['en'][key]) {
+        return uiTranslations['en'][key];
       }
       return key; // Return key if no translation found
     }
@@ -14760,7 +14760,7 @@
     
     // Apply language to UI
     function applyLanguage(langCode) {
-      const lang = translations[langCode];
+      const lang = uiTranslations[langCode];
       if (!lang) {
         console.error('Language not found:', langCode);
         return;
@@ -15897,7 +15897,7 @@
       // Reset the main header
       const tourGridHeader = document.getElementById('tour-grid-header');
       if (tourGridHeader) {
-        tourGridHeader.textContent = translations[currentLanguage]?.available_tours || 'Available Tours';
+        tourGridHeader.textContent = uiTranslations[currentLanguage]?.available_tours || 'Available Tours';
         tourGridHeader.style.background = '';
         tourGridHeader.style.color = '';
         tourGridHeader.style.padding = '';
@@ -15906,7 +15906,7 @@
       // Reset results info
       const resultsInfo = document.getElementById('results-info');
       if (resultsInfo) {
-        resultsInfo.textContent = translations[currentLanguage]?.tap_to_filter || 'Tap an option above to start filtering';
+        resultsInfo.textContent = uiTranslations[currentLanguage]?.tap_to_filter || 'Tap an option above to start filtering';
         resultsInfo.style.display = 'block';
       }
       
