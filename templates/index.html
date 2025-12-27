@@ -7771,35 +7771,35 @@
       
       <!-- Question 1: Duration -->
           <div class="hero-card filter-question-card" data-question="1">
-            <p class="hero-question">How long can you be away?</p>
+            <p class="hero-question" id="home-duration-question">How long can you be away?</p>
             <div class="duration-grid">
-              <button class="duration-pill" data-value="half_day" onclick="selectDuration('half_day')">
-                Half Day<br><span>2–4 hours</span>
+              <button class="duration-pill" data-value="half_day" onclick="selectDuration('half_day')" id="home-half-day-btn">
+                <span id="home-half-day-text">Half Day</span><br><span id="home-half-day-hours">2–4 hours</span>
               </button>
-              <button class="duration-pill" data-value="full_day" onclick="selectDuration('full_day')">
-                Full Day<br><span>5–8 hours</span>
+              <button class="duration-pill" data-value="full_day" onclick="selectDuration('full_day')" id="home-full-day-btn">
+                <span id="home-full-day-text">Full Day</span><br><span id="home-full-day-hours">5–8 hours</span>
               </button>
-              <button class="duration-pill" data-value="multi_day" onclick="selectDuration('multi_day')">
-                Multi-day Adventure
+              <button class="duration-pill" data-value="multi_day" onclick="selectDuration('multi_day')" id="home-multi-day-btn">
+                <span id="home-multi-day-text">Multi-day Adventure</span>
               </button>
-              <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')">
-                No preference
+              <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')" id="home-no-pref-duration-btn">
+                <span id="home-no-pref-duration-text">No preference</span>
               </button>
           </div>
           </div>
 
           <!-- Question 2: Family -->
           <div class="hero-card filter-question-card" data-question="2" style="display: none;">
-            <p class="hero-question">Who's coming along?</p>
+            <p class="hero-question" id="home-family-question">Who's coming along?</p>
             <div class="duration-grid">
-              <button class="duration-pill" onclick="selectFamily('true')">
-                👨‍👩‍👧‍👦 Family with Kids
+              <button class="duration-pill" onclick="selectFamily('true')" id="home-family-kids-btn">
+                <span id="home-family-kids-text">👨‍👩‍👧‍👦 Family with Kids</span>
               </button>
-              <button class="duration-pill" onclick="selectFamily('false')">
-                👥 Adults Only
+              <button class="duration-pill" onclick="selectFamily('false')" id="home-adults-only-btn">
+                <span id="home-adults-only-text">👥 Adults Only</span>
               </button>
-              <button class="duration-pill duration-pill--ghost" onclick="selectFamily('')">
-                No preference
+              <button class="duration-pill duration-pill--ghost" onclick="selectFamily('')" id="home-no-pref-family-btn">
+                <span id="home-no-pref-family-text">No preference</span>
               </button>
         </div>
       </div>
@@ -8403,80 +8403,40 @@
     // Also make it available without window prefix for onclick handlers
     const selectInitialLanguage = window.selectInitialLanguage;
     
-    // Translation strings - these will be the same across languages in JS
-    // The actual tour data comes pre-translated from the CSV files
-    const translations = {
-      howLongCanYouBeAway: "How long can you be away?",
-      whatInterestsYouMost: "What interests you most?",
-      whatsYourBudget: "Whats your budget per person?",
-      halfDay: "Half Day",
-      fullDay: "Full Day",
-      multiDayAdventure: "Multi-day Adventure",
-      noPreference: "No Preference",
-      nature: "Nature & Wildlife",
-      adventure: "Adventure & Thrills",
-      relaxation: "Relaxation & Beaches",
-      culture: "Culture & History",
-      familyFun: "Family Fun",
-      luxury: "Luxury Experiences",
-      budget: "Budget-Friendly",
-      midRange: "Mid-Range",
-      premium: "Premium",
-      splurge: "Splurge-Worthy",
-      anyBudget: "Any Budget",
-      toursMatch: "tours match",
-      notForMe: "Not For Me",
-      bookNow: "Book Now",
-      whatsIncluded: "Whats Included",
-      highlights: "Highlights",
-      importantInfo: "Important Information",
-      whatToBring: "What to Bring",
-      whatsExtra: "Whats Extra",
-      departureLocation: "Departure Location",
-      customerReviews: "Customer Reviews",
-      basedOnReviews: "Based on",
-      reviews: "reviews",
-      times: "Times",
-      ages: "Ages",
-      idealFor: "Ideal For",
-      questionOf: "Question",
-      of: "of"
-    };
-    
     // =====================================================================
     // VIDEO QUESTION FLOW - NEW PRIMARY EXPERIENCE
     // =====================================================================
     
     const videoQuestions = [
       {
-        get question() { return translations.howLongCanYouBeAway; },
+        get question() { return t('duration_question'); },
         answers: [
-          { get text() { return translations.halfDay + "<br><span style='font-size:0.6em;opacity:0.8;'>2–4 hours</span>"; }, value: "half_day", filter: "duration" },
-          { get text() { return translations.fullDay + "<br><span style='font-size:0.6em;opacity:0.8;'>5–8 hours</span>"; }, value: "full_day", filter: "duration" },
-          { get text() { return translations.multiDayAdventure; }, value: "multi_day", filter: "duration" },
-          { get text() { return translations.noPreference; }, value: "", filter: "duration" }
+          { get text() { return t('half_day') + "<br><span style='font-size:0.6em;opacity:0.8;'>" + t('half_day_hours') + "</span>"; }, value: "half_day", filter: "duration" },
+          { get text() { return t('full_day') + "<br><span style='font-size:0.6em;opacity:0.8;'>" + t('full_day_hours') + "</span>"; }, value: "full_day", filter: "duration" },
+          { get text() { return t('multi_day_adventure'); }, value: "multi_day", filter: "duration" },
+          { get text() { return t('no_preference'); }, value: "", filter: "duration" }
         ]
       },
       {
-        question: "Whos coming along?",
+        get question() { return t('family_question'); },
         answers: [
-          { text: "👨‍👩‍👧‍👦 Family with Kids", value: "true", filter: "family_friendly" },
-          { text: "👥 Adults Only", value: "adults_only", filter: "family_friendly" },
-          { get text() { return translations.noPreference; }, value: "", filter: "family_friendly" }
+          { get text() { return "👨‍👩‍👧‍👦 " + t('family_with_kids'); }, value: "true", filter: "family_friendly" },
+          { get text() { return "👥 " + t('adults_only'); }, value: "adults_only", filter: "family_friendly" },
+          { get text() { return t('no_preference'); }, value: "", filter: "family_friendly" }
         ]
       },
       {
-        get question() { return translations.whatInterestsYouMost; },
+        get question() { return t('activity_question'); },
         multiple: true,
         answers: [
-          { text: "🐠 Great Barrier Reef", value: "great_barrier_reef", filter: "activities" },
-          { text: "🏖️ Whitehaven Beach", value: "whitehaven_beach", filter: "activities" },
-          { text: "🏝️ Island Tours", value: "island_tours", filter: "activities" },
-          { text: "⛵ Sailing", value: "sailing", filter: "activities" },
+          { get text() { return "🐠 " + t('activity_gbr'); }, value: "great_barrier_reef", filter: "activities" },
+          { get text() { return "🏖️ " + t('activity_whitehaven'); }, value: "whitehaven_beach", filter: "activities" },
+          { get text() { return "🏝️ " + t('activity_island'); }, value: "island_tours", filter: "activities" },
+          { get text() { return "⛵ " + t('activity_scenic'); }, value: "sailing", filter: "activities" },
           { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
           { text: "🏊 Swimming", value: "swimming", filter: "activities" },
           { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
-          { get text() { return translations.noPreference; }, value: "", filter: "activities", isSkip: true }
+          { get text() { return t('no_preference'); }, value: "", filter: "activities", isSkip: true }
         ]
       }
     ];
@@ -14791,6 +14751,31 @@
       if (aiAssistantText) aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
       if (quickDecisionText) quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
       if (browseAllToursText) browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      
+      // Update home page filter questions
+      const homeDurationQuestion = document.getElementById('home-duration-question');
+      const homeFamilyQuestion = document.getElementById('home-family-question');
+      const homeHalfDayText = document.getElementById('home-half-day-text');
+      const homeHalfDayHours = document.getElementById('home-half-day-hours');
+      const homeFullDayText = document.getElementById('home-full-day-text');
+      const homeFullDayHours = document.getElementById('home-full-day-hours');
+      const homeMultiDayText = document.getElementById('home-multi-day-text');
+      const homeNoPrefDurationText = document.getElementById('home-no-pref-duration-text');
+      const homeFamilyKidsText = document.getElementById('home-family-kids-text');
+      const homeAdultsOnlyText = document.getElementById('home-adults-only-text');
+      const homeNoPrefFamilyText = document.getElementById('home-no-pref-family-text');
+      
+      if (homeDurationQuestion) homeDurationQuestion.textContent = lang.duration_question;
+      if (homeFamilyQuestion) homeFamilyQuestion.textContent = lang.family_question;
+      if (homeHalfDayText) homeHalfDayText.textContent = lang.half_day;
+      if (homeHalfDayHours) homeHalfDayHours.textContent = lang.half_day_hours;
+      if (homeFullDayText) homeFullDayText.textContent = lang.full_day;
+      if (homeFullDayHours) homeFullDayHours.textContent = lang.full_day_hours;
+      if (homeMultiDayText) homeMultiDayText.textContent = lang.multi_day_adventure;
+      if (homeNoPrefDurationText) homeNoPrefDurationText.textContent = lang.no_preference;
+      if (homeFamilyKidsText) homeFamilyKidsText.textContent = '👨‍👩‍👧‍👦 ' + lang.family_with_kids;
+      if (homeAdultsOnlyText) homeAdultsOnlyText.textContent = '👥 ' + lang.adults_only;
+      if (homeNoPrefFamilyText) homeNoPrefFamilyText.textContent = lang.no_preference;
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
