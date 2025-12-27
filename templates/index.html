@@ -7540,6 +7540,33 @@
       visibility: hidden !important;
       pointer-events: none !important;
     }
+    
+    /* FORCE SHOW dropdown menus when active - MAXIMUM specificity */
+    #home-language-menu.active,
+    #home-currency-menu.active,
+    #vq-language-menu.active,
+    #vq-currency-menu.active,
+    #global-language-menu.active,
+    #global-currency-menu.active,
+    #detail-language-menu.active,
+    #detail-currency-menu.active {
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      position: absolute !important;
+      top: 100% !important;
+      right: 0 !important;
+      margin-top: 10px !important;
+      background: rgba(255, 255, 255, 0.98) !important;
+      backdrop-filter: blur(10px) !important;
+      border-radius: 10px !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+      min-width: 200px !important;
+      z-index: 10000 !important;
+      overflow: hidden !important;
+      transform: translateY(0) !important;
+    }
 
   </style>
 </head>
