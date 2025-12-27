@@ -902,19 +902,19 @@
       align-items: center;
     }
     
-    /* Video Question Header - same style as home header */
-    .video-question-header {
+    /* Video Question Page - hide header on language selection and start screen */
+    .video-question-page .kiosk-header {
+      display: none;
+    }
+    
+    /* Show header only when questions are active */
+    .video-question-page.showing-questions .kiosk-header {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 30px 50px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
+    }
+    
+    /* Video Question Header - REMOVED, using kiosk-header instead */
+    .video-question-header {
+      display: none !important;
     }
     
     .video-question-header .header-left {
@@ -9671,18 +9671,16 @@
         homePage.style.display = 'none';
       }
       
-      // Show video page
+      // Show video page and mark it as showing questions
       const videoPage = document.querySelector('.video-question-page');
       if (videoPage) {
         videoPage.classList.add('active');
+        videoPage.classList.add('showing-questions'); // Show header
         videoPage.style.display = 'flex';
       }
       
       // Show video background
       document.body.classList.add('video-bg-active');
-      
-      // DON'T show separate video question header - use the same kiosk-header
-      // (The kiosk-header is already showing from the home page)
       
       // Start video questions (skip the start screen)
       if (window.startVideoQuestions) {
