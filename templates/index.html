@@ -7832,11 +7832,11 @@
               </button>
             </div>
             <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
-              <button class="duration-pill duration-pill--ghost" style="max-width: 400px; height: auto; min-height: 80px;" onclick="skipActivity()">
-                Show me everything
+              <button class="duration-pill duration-pill--ghost" style="max-width: 400px; height: auto; min-height: 80px;" onclick="skipActivity()" id="home-show-everything-btn">
+                <span id="home-show-everything-text">Show me everything</span>
               </button>
-              <button class="duration-pill continue-btn" style="max-width: 400px; height: auto; min-height: 80px; background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);" onclick="confirmActivity()">
-                Continue
+              <button class="duration-pill continue-btn" style="max-width: 400px; height: auto; min-height: 80px; background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);" onclick="confirmActivity()" id="home-continue-btn">
+                <span id="home-continue-text">Continue</span>
               </button>
             </div>
           </div>
@@ -8432,10 +8432,10 @@
           { get text() { return "🐠 " + t('activity_gbr'); }, value: "great_barrier_reef", filter: "activities" },
           { get text() { return "🏖️ " + t('activity_whitehaven'); }, value: "whitehaven_beach", filter: "activities" },
           { get text() { return "🏝️ " + t('activity_island'); }, value: "island_tours", filter: "activities" },
-          { get text() { return "⛵ " + t('activity_scenic'); }, value: "sailing", filter: "activities" },
-          { text: "🤿 Snorkeling", value: "snorkeling", filter: "activities" },
-          { text: "🏊 Swimming", value: "swimming", filter: "activities" },
-          { text: "🌅 Scenic Views", value: "scenic_views", filter: "activities" },
+          { get text() { return "⛵ " + t('activity_sailing'); }, value: "sailing", filter: "activities" },
+          { get text() { return "🤿 " + t('activity_snorkeling'); }, value: "snorkeling", filter: "activities" },
+          { get text() { return "🏊 " + t('activity_swimming'); }, value: "swimming", filter: "activities" },
+          { get text() { return "🌅 " + t('activity_scenic_views'); }, value: "scenic_views", filter: "activities" },
           { get text() { return t('no_preference'); }, value: "", filter: "activities", isSkip: true }
         ]
       }
@@ -8652,7 +8652,7 @@
       const continueBtn = document.createElement('button');
       continueBtn.id = 'vq-continue-btn';
       continueBtn.className = 'vq-answer-btn vq-continue-btn';
-      continueBtn.innerHTML = 'Continue →';
+      continueBtn.innerHTML = t('continue') + ' →';
       continueBtn.onclick = nextVideoQuestion;
       continueBtn.style.opacity = '0';
       continueBtn.style.transform = 'translateY(20px)';
@@ -14777,6 +14777,12 @@
       if (homeFamilyKidsText) homeFamilyKidsText.textContent = '👨‍👩‍👧‍👦 ' + lang.family_with_kids;
       if (homeAdultsOnlyText) homeAdultsOnlyText.textContent = '👥 ' + lang.adults_only;
       if (homeNoPrefFamilyText) homeNoPrefFamilyText.textContent = lang.no_preference;
+      
+      // Update home page action buttons
+      const homeShowEverythingText = document.getElementById('home-show-everything-text');
+      const homeContinueText = document.getElementById('home-continue-text');
+      if (homeShowEverythingText) homeShowEverythingText.textContent = lang.show_me_everything;
+      if (homeContinueText) homeContinueText.textContent = lang.continue;
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
