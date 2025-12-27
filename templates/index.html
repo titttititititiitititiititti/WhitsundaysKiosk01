@@ -16356,8 +16356,10 @@
         
         // Hide language selection screen
         const langScreen = document.getElementById('language-selection-screen');
+        console.log('   Lang screen element:', langScreen);
         if (langScreen) {
           langScreen.style.display = 'none';
+          console.log('   ✓ Hid language screen');
         }
         
         // Remove the showing-language-selection class
@@ -16369,11 +16371,26 @@
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
         
-        if (videoPage) videoPage.classList.add('active');
-        if (startScreen) startScreen.style.display = 'flex';
-        if (video) video.play();
+        console.log('   Video page element:', videoPage);
+        console.log('   Start screen element:', startScreen);
+        console.log('   Video element:', video);
         
-        console.log('✅ Video start screen should be visible now');
+        if (videoPage) {
+          videoPage.classList.add('active');
+          console.log('   ✓ Activated video page');
+        }
+        if (startScreen) {
+          startScreen.style.display = 'flex';
+          console.log('   ✓ Set start screen to flex, computed style:', window.getComputedStyle(startScreen).display);
+        } else {
+          console.error('   ❌ Start screen element NOT FOUND!');
+        }
+        if (video) {
+          video.play();
+          console.log('   ✓ Playing video');
+        }
+        
+        console.log('✅ Video start screen initialization complete');
         
         // Continue with rest of initialization...
       } else {
@@ -16386,20 +16403,29 @@
         const startScreen = document.getElementById('video-start-screen');
         const video = document.getElementById('bg-video');
         
+        console.log('   Lang screen element:', langScreen);
+        console.log('   Start screen element:', startScreen);
+        console.log('   Video element:', video);
+        
         // Show language screen
         if (langScreen) {
           langScreen.style.display = 'flex';
+          console.log('   ✓ Set language screen to flex, computed style:', window.getComputedStyle(langScreen).display);
+        } else {
+          console.error('   ❌ Language screen element NOT FOUND!');
         }
         // Hide video start screen
         if (startScreen) {
           startScreen.style.display = 'none';
+          console.log('   ✓ Hid start screen');
         }
         // Play background video
         if (video) {
           video.play();
+          console.log('   ✓ Playing video');
         }
         
-        console.log('✅ Language selection screen is now visible');
+        console.log('✅ Language selection screen initialization complete');
         return; // Stop here, wait for user to select language
       }
       
