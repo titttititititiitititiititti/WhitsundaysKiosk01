@@ -8706,6 +8706,12 @@
       // Show video background
       document.body.classList.add('video-bg-active');
       
+      // Show header when questions start
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) {
+        videoPage.classList.add('showing-questions');
+      }
+      
       const startScreen = document.getElementById('video-start-screen');
       const questionContainer = document.getElementById('video-question-container');
       const backBtn = document.getElementById('vq-back-btn');
