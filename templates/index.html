@@ -1898,12 +1898,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 30px 50px;
+      padding: 15px 50px;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 100;
+      min-height: 70px;
+      max-height: 70px;
     }
     
     .header-left {
@@ -7508,6 +7510,21 @@
         font-size: 1.3em !important;
       }
     }
+    
+    /* CRITICAL: Force hide dropdown menus by default - highest specificity */
+    #home-language-menu:not(.active),
+    #home-currency-menu:not(.active),
+    #vq-language-menu:not(.active),
+    #vq-currency-menu:not(.active),
+    #global-language-menu:not(.active),
+    #global-currency-menu:not(.active),
+    #detail-language-menu:not(.active),
+    #detail-currency-menu:not(.active) {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
 
   </style>
 </head>
@@ -7819,7 +7836,7 @@
               <div class="language-option" data-lang="ko" onclick="selectHomeLanguage('ko')"><span>🇰🇷</span> 한국어</div>
               <div class="language-option" data-lang="de" onclick="selectHomeLanguage('de')"><span>🇩🇪</span> Deutsch</div>
               <div class="language-option" data-lang="fr" onclick="selectHomeLanguage('fr')"><span>🇫🇷</span> Français</div>
-        </div>
+            </div>
           </div>
           <div class="currency-selector" style="position: relative; display: inline-block;">
             <button class="chip" id="header-currency-btn" onclick="toggleHomeCurrencyMenu(event)">AUD</button>
