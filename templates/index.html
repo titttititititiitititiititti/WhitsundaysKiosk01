@@ -951,6 +951,11 @@
       gap: 15px;
     }
     
+    /* Hide Map view button on Quick Decision page */
+    .video-question-page.showing-questions #home-map-toggle-btn {
+      display: none !important;
+    }
+    
     /* Video Question Header - REMOVED, using kiosk-header instead */
     .video-question-header {
       display: none !important;
@@ -1937,10 +1942,14 @@
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       z-index: 100;
       height: 65px;
       min-height: 65px;
       max-height: 65px;
+      box-sizing: border-box;
     }
     
     .header-left {
