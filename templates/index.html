@@ -7806,29 +7806,29 @@
       
           <!-- Question 3: Activity -->
           <div class="hero-card filter-question-card" data-question="3" style="display: none;">
-            <p class="hero-question">What interests you most?</p>
-            <p style="font-size: 1.2em; color: #90e0ef; margin-top: -15px; margin-bottom: 20px;">Select all that apply</p>
+            <p class="hero-question" id="home-activity-question">What interests you most?</p>
+            <p style="font-size: 1.2em; color: #90e0ef; margin-top: -15px; margin-bottom: 20px;" id="home-select-all-text">Select all that apply</p>
             <div class="duration-grid" style="grid-template-columns: 1fr 1fr; max-width: 800px; margin: 0 auto;">
-              <button class="duration-pill" data-activity="great_barrier_reef" onclick="toggleActivity('great_barrier_reef', this)">
-                🐠 Great Barrier Reef
+              <button class="duration-pill" data-activity="great_barrier_reef" onclick="toggleActivity('great_barrier_reef', this)" id="home-activity-gbr-btn">
+                <span id="home-activity-gbr-text">🐠 Great Barrier Reef</span>
               </button>
-              <button class="duration-pill" data-activity="whitehaven_beach" onclick="toggleActivity('whitehaven_beach', this)">
-                🏖️ Whitehaven Beach
+              <button class="duration-pill" data-activity="whitehaven_beach" onclick="toggleActivity('whitehaven_beach', this)" id="home-activity-whitehaven-btn">
+                <span id="home-activity-whitehaven-text">🏖️ Whitehaven Beach</span>
               </button>
-              <button class="duration-pill" data-activity="island_tours" onclick="toggleActivity('island_tours', this)">
-                🏝️ Island Tours
+              <button class="duration-pill" data-activity="island_tours" onclick="toggleActivity('island_tours', this)" id="home-activity-island-btn">
+                <span id="home-activity-island-text">🏝️ Island Tours</span>
               </button>
-              <button class="duration-pill" data-activity="sailing" onclick="toggleActivity('sailing', this)">
-                ⛵ Sailing
+              <button class="duration-pill" data-activity="sailing" onclick="toggleActivity('sailing', this)" id="home-activity-sailing-btn">
+                <span id="home-activity-sailing-text">⛵ Sailing</span>
               </button>
-              <button class="duration-pill" data-activity="snorkeling" onclick="toggleActivity('snorkeling', this)">
-                🤿 Snorkeling
+              <button class="duration-pill" data-activity="snorkeling" onclick="toggleActivity('snorkeling', this)" id="home-activity-snorkeling-btn">
+                <span id="home-activity-snorkeling-text">🤿 Snorkeling</span>
               </button>
-              <button class="duration-pill" data-activity="swimming" onclick="toggleActivity('swimming', this)">
-                🏊 Swimming
+              <button class="duration-pill" data-activity="swimming" onclick="toggleActivity('swimming', this)" id="home-activity-swimming-btn">
+                <span id="home-activity-swimming-text">🏊 Swimming</span>
               </button>
-              <button class="duration-pill" data-activity="scenic_views" onclick="toggleActivity('scenic_views', this)">
-                🌅 Scenic Views
+              <button class="duration-pill" data-activity="scenic_views" onclick="toggleActivity('scenic_views', this)" id="home-activity-scenic-btn">
+                <span id="home-activity-scenic-text">🌅 Scenic Views</span>
               </button>
             </div>
             <div style="margin-top: 30px; display: flex; gap: 20px; justify-content: center;">
@@ -14792,6 +14792,27 @@
       if (homeToursSubtitle && homeToursSubtitle.textContent.includes('Showing all')) {
         homeToursSubtitle.textContent = lang.showing_all_tours;
       }
+      
+      // Update home page activity question and options
+      const homeActivityQuestion = document.getElementById('home-activity-question');
+      const homeSelectAllText = document.getElementById('home-select-all-text');
+      const homeActivityGbrText = document.getElementById('home-activity-gbr-text');
+      const homeActivityWhitehavenText = document.getElementById('home-activity-whitehaven-text');
+      const homeActivityIslandText = document.getElementById('home-activity-island-text');
+      const homeActivitySailingText = document.getElementById('home-activity-sailing-text');
+      const homeActivitySnorkelingText = document.getElementById('home-activity-snorkeling-text');
+      const homeActivitySwimmingText = document.getElementById('home-activity-swimming-text');
+      const homeActivityScenicText = document.getElementById('home-activity-scenic-text');
+      
+      if (homeActivityQuestion) homeActivityQuestion.textContent = lang.activity_question;
+      if (homeSelectAllText) homeSelectAllText.textContent = lang.select_all_that_apply;
+      if (homeActivityGbrText) homeActivityGbrText.textContent = '🐠 ' + lang.activity_gbr;
+      if (homeActivityWhitehavenText) homeActivityWhitehavenText.textContent = '🏖️ ' + lang.activity_whitehaven;
+      if (homeActivityIslandText) homeActivityIslandText.textContent = '🏝️ ' + lang.activity_island;
+      if (homeActivitySailingText) homeActivitySailingText.textContent = '⛵ ' + lang.activity_sailing;
+      if (homeActivitySnorkelingText) homeActivitySnorkelingText.textContent = '🤿 ' + lang.activity_snorkeling;
+      if (homeActivitySwimmingText) homeActivitySwimmingText.textContent = '🏊 ' + lang.activity_swimming;
+      if (homeActivityScenicText) homeActivityScenicText.textContent = '🌅 ' + lang.activity_scenic_views;
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
