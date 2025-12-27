@@ -869,21 +869,41 @@
       box-shadow: 0 3px 10px rgba(147, 51, 234, 0.3);
     }
     
-    /* Desktop: Position header buttons on left, logo centered */
+    /* Desktop: Floating action buttons in top-left */
     .page.home-page .header-left {
-      position: absolute;
-      left: 50px;
+      position: fixed;
+      left: 20px;
+      top: 20px;
       display: flex;
-      gap: 15px;
+      gap: 10px;
       align-items: center;
+      z-index: 1000;
+    }
+    
+    .page.home-page .quick-decision-btn-header,
+    .page.home-page .ai-assistant-btn-header {
+      padding: 10px 18px;
+      font-size: 0.9em;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
     
     .page.home-page .logo-image {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
+      display: none; /* Hide logo on home page to reduce clutter */
+    }
+    
+    /* Desktop: Floating language/currency buttons in top-right */
+    .page.home-page .header-right {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .page.home-page .header-right .chip {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
     
     /* Video Question Header - same style as home header */
@@ -1895,7 +1915,7 @@
     }
     
     .kiosk-header {
-      display: flex;
+      display: none; /* Hide by default - show only when needed */
       justify-content: center;
       align-items: center;
       padding: 10px 50px;
@@ -7555,17 +7575,32 @@
       visibility: visible !important;
       pointer-events: auto !important;
       position: absolute !important;
-      top: 100% !important;
+      top: calc(100% + 5px) !important;
       right: 0 !important;
-      margin-top: 10px !important;
-      background: rgba(255, 255, 255, 0.98) !important;
+      margin-top: 0 !important;
+      background: white !important;
       backdrop-filter: blur(10px) !important;
-      border-radius: 10px !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-      min-width: 200px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+      min-width: 160px !important;
+      max-width: 200px !important;
       z-index: 10000 !important;
       overflow: hidden !important;
       transform: translateY(0) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Better dropdown option styling */
+    .language-menu .language-option,
+    .currency-menu .currency-option {
+      padding: 12px 16px !important;
+      font-size: 0.95em !important;
+      transition: background 0.15s ease !important;
+    }
+    
+    .language-menu .language-option:hover,
+    .currency-menu .currency-option:hover {
+      background: rgba(0, 119, 182, 0.08) !important;
     }
 
   </style>
