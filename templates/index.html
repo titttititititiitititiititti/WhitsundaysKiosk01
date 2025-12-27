@@ -7876,9 +7876,8 @@
 
         <!-- Featured Tours - Always Visible -->
         <section class="featured-tours" id="featured-tours-section" style="background: transparent;">
-          <h2 id="home-tours-title" style="color: white;">Tap Any Card For Booking and More Info</h2>
+          <h2 id="home-tours-title" style="color: white;"></h2>
           <p class="section-subtitle" id="home-tours-subtitle" style="color: rgba(255,255,255,0.9);">
-            Showing all available tours
           </p>
 
           <div class="featured-grid" id="featured-grid">
@@ -9808,8 +9807,8 @@
       // Reset tour titles
       const title = document.getElementById('home-tours-title');
       const subtitle = document.getElementById('home-tours-subtitle');
-      if (title) title.textContent = 'Tap Any Card For Booking and More Info';
-      if (subtitle) subtitle.textContent = 'Showing all available tours';
+      if (title) title.textContent = t('tap_any_card');
+      if (subtitle) subtitle.textContent = t('showing_all_tours');
       
       // Clear budget slider
       const budgetSliderEl = document.getElementById('budget-slider');
@@ -10337,7 +10336,7 @@
           // Update subtitle with total count
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            subtitle.textContent = 'Showing all available tours';
+            subtitle.textContent = t('showing_all_tours');
           }
           
           // Also fetch ALL tours for map view (with location data)
@@ -10722,7 +10721,7 @@
         // No filters yet
         const subtitle = document.getElementById('home-tours-subtitle');
         if (subtitle) {
-          subtitle.textContent = 'Showing all available tours';
+          subtitle.textContent = t('showing_all_tours');
         }
         
         // If in map view, show all tours
@@ -10931,7 +10930,7 @@
           // No filters left, show all tours
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            subtitle.textContent = 'Showing all available tours';
+            subtitle.textContent = t('showing_all_tours');
           }
           
           if (isMapView) {
@@ -11002,7 +11001,7 @@
       // Reset and reload ALL tours
       const subtitle = document.getElementById('home-tours-subtitle');
       if (subtitle) {
-        subtitle.textContent = 'Showing all available tours';
+        subtitle.textContent = t('showing_all_tours');
       }
       
       // Update title
@@ -11119,21 +11118,21 @@
           if (hasFilters) {
             const filterLabels = [];
             if (activeFilters.duration) {
-              const durationLabel = activeFilters.duration === 'half_day' ? 'Half Day' :
-                                    activeFilters.duration === 'full_day' ? 'Full Day' :
-                                    activeFilters.duration === 'multi_day' ? 'Multi-day' : '';
+              const durationLabel = activeFilters.duration === 'half_day' ? t('half_day') :
+                                    activeFilters.duration === 'full_day' ? t('full_day') :
+                                    activeFilters.duration === 'multi_day' ? t('multi_day') : '';
               if (durationLabel) filterLabels.push(durationLabel);
             }
             
             if (filterLabels.length > 0) {
-              subtitle.textContent = `Showing ${totalCount} ${filterLabels.join(', ')} tour${totalCount !== 1 ? 's' : ''}`;
+              subtitle.textContent = t('showing_tours').replace('{count}', `${totalCount} ${filterLabels.join(', ')}`);
             } else {
-              subtitle.textContent = `Showing ${totalCount} tour${totalCount !== 1 ? 's' : ''}`;
+              subtitle.textContent = t('showing_tours').replace('{count}', totalCount);
             }
-            title.textContent = 'Filtered Tours';
+            title.textContent = t('filtered_tours');
           } else {
-            subtitle.textContent = `Showing ${totalCount} tour${totalCount !== 1 ? 's' : ''}`;
-            title.textContent = 'Tap Any Card For Booking and More Info';
+            subtitle.textContent = t('showing_tours').replace('{count}', totalCount);
+            title.textContent = t('tap_any_card') || 'Tap Any Card For Booking and More Info';
           }
           
           // Store filtered tours in mapTourData for map view
@@ -14784,6 +14783,16 @@
       if (homeShowEverythingText) homeShowEverythingText.textContent = lang.show_me_everything;
       if (homeContinueText) homeContinueText.textContent = lang.continue;
       
+      // Update home page titles
+      const homeToursTitle = document.getElementById('home-tours-title');
+      const homeToursSubtitle = document.getElementById('home-tours-subtitle');
+      if (homeToursTitle && homeToursTitle.textContent.includes('Tap Any Card')) {
+        homeToursTitle.textContent = lang.tap_any_card;
+      }
+      if (homeToursSubtitle && homeToursSubtitle.textContent.includes('Showing all')) {
+        homeToursSubtitle.textContent = lang.showing_all_tours;
+      }
+      
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
       if (heading) {
@@ -15866,7 +15875,7 @@
           }
           
           if (subtitle) {
-            subtitle.textContent = 'Showing all available tours';
+            subtitle.textContent = t('showing_all_tours');
             subtitle.style.fontStyle = '';
             subtitle.style.color = '';
           }
