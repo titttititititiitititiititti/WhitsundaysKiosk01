@@ -841,6 +841,33 @@
       box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
     }
     
+    /* Browse All Tours button in header (orange - same as Quick Decision) */
+    .browse-all-btn-header {
+      padding: 12px 20px;
+      font-size: 1em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      white-space: nowrap;
+    }
+    
+    .browse-all-btn-header:hover {
+      background: linear-gradient(135deg, #ffa05c 0%, #ff7b45 100%);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+    
+    .browse-all-btn-header:active {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+    }
+    
     /* AI Assistant button in header (purple) */
     .ai-assistant-btn-header {
       padding: 12px 20px;
@@ -878,6 +905,7 @@
     }
     
     .page.home-page .quick-decision-btn-header,
+    .page.home-page .browse-all-btn-header,
     .page.home-page .ai-assistant-btn-header {
       padding: 8px 16px;
       font-size: 0.85em;
@@ -936,7 +964,17 @@
       align-items: center !important;
     }
     
-    .page.video-question-page.showing-questions .quick-decision-btn-header,
+    /* Hide Quick Decision button on video question page, show Browse All Tours */
+    .page.video-question-page.showing-questions .quick-decision-btn-header {
+      display: none !important;
+    }
+    
+    .page.video-question-page.showing-questions .browse-all-btn-header {
+      display: inline-flex !important;
+      padding: 8px 16px !important;
+      font-size: 0.85em !important;
+    }
+    
     .page.video-question-page.showing-questions .ai-assistant-btn-header {
       padding: 8px 16px !important;
       font-size: 0.85em !important;
@@ -6615,6 +6653,12 @@
         display: none !important;
       }
       
+      /* Browse All Tours button - HIDDEN ON MOBILE */
+      .page.home-page .browse-all-btn-header,
+      .page.video-question-page .browse-all-btn-header {
+        display: none !important;
+      }
+      
       /* Home page AI assistant button - hidden on mobile */
       .page.home-page .ai-assistant-btn-header {
         display: none !important;
@@ -7781,8 +7825,9 @@
       <header class="kiosk-header">
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
-          <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
-          <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+          <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+          <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
+          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
         <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
         <div class="header-right">
@@ -7936,6 +7981,7 @@
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+          <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
         <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
