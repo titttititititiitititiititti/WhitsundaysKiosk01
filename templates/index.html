@@ -919,40 +919,48 @@
     }
     
     /* Position header elements same as home page */
-    .video-question-page.showing-questions .header-left {
-      position: absolute;
-      left: 50px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
+    .page.video-question-page.showing-questions .kiosk-header {
+      display: flex !important;
+      width: 100% !important;
+      justify-content: center !important;
+      align-items: center !important;
+      position: relative !important;
     }
     
-    .video-question-page.showing-questions .quick-decision-btn-header,
-    .video-question-page.showing-questions .ai-assistant-btn-header {
-      padding: 8px 16px;
-      font-size: 0.85em;
+    .page.video-question-page.showing-questions .header-left {
+      position: absolute !important;
+      left: 50px !important;
+      display: flex !important;
+      gap: 12px !important;
+      align-items: center !important;
     }
     
-    .video-question-page.showing-questions .logo-image {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      height: 45px;
-      width: auto;
-      z-index: 1;
+    .page.video-question-page.showing-questions .quick-decision-btn-header,
+    .page.video-question-page.showing-questions .ai-assistant-btn-header {
+      padding: 8px 16px !important;
+      font-size: 0.85em !important;
     }
     
-    .video-question-page.showing-questions .header-right {
-      position: absolute;
-      right: 50px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    .page.video-question-page.showing-questions .logo-image {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      height: 40px !important;
+      width: auto !important;
+      z-index: 1 !important;
+    }
+    
+    .page.video-question-page.showing-questions .header-right {
+      position: absolute !important;
+      right: 50px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 15px !important;
     }
     
     /* Hide Map view button on Quick Decision page */
-    .video-question-page.showing-questions #home-map-toggle-btn {
+    .page.video-question-page.showing-questions #home-map-toggle-btn {
       display: none !important;
     }
     
