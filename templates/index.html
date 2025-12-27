@@ -7703,7 +7703,7 @@
         <!-- Search Bar -->
         <div style="margin-bottom: 20px; padding: 0 2%;">
           <div style="max-width: 100%; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center;">
-            <input type="text" id="home-search-input" placeholder="🔍 Search tours by name or company..." style="
+            <input type="text" id="home-search-input" placeholder="" style="
               width: 96%;
               padding: 20px 30px;
               font-size: 1.6em;
@@ -7752,7 +7752,7 @@
         
         <!-- Hero / Question Area -->
         <section class="hero" id="hero-section">
-          <h1 class="hero-title">Find Your Perfect Tour</h1>
+          <h1 class="hero-title" id="hero-title">Find Your Perfect Tour</h1>
 
           <!-- Filter Summary & Navigation -->
           <div class="filter-summary-bar" id="filter-summary-bar" style="display: none;">
@@ -14813,6 +14813,12 @@
       if (homeActivitySnorkelingText) homeActivitySnorkelingText.textContent = '🤿 ' + lang.activity_snorkeling;
       if (homeActivitySwimmingText) homeActivitySwimmingText.textContent = '🏊 ' + lang.activity_swimming;
       if (homeActivityScenicText) homeActivityScenicText.textContent = '🌅 ' + lang.activity_scenic_views;
+      
+      // Update hero title and search placeholder
+      const heroTitle = document.getElementById('hero-title');
+      const searchInput = document.getElementById('home-search-input');
+      if (heroTitle) heroTitle.textContent = lang.find_perfect_tour;
+      if (searchInput) searchInput.placeholder = lang.search_tours_placeholder;
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
