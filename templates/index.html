@@ -7720,36 +7720,38 @@
     
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
-      <!-- Header for Quick Decision mode -->
-      <header class="video-question-header" id="video-question-header" style="display: none;">
+      <!-- Kiosk Header - SAME AS HOME PAGE -->
+      <header class="kiosk-header">
         <div class="header-left">
-          <button class="quick-decision-btn-header" id="vq-browse-btn" onclick="window.goToHomePage && window.goToHomePage()">🗂️ Browse All Tours</button>
-          <button class="ai-assistant-btn-header" id="vq-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
+          <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
-        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image vq-logo">
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
         <div class="header-right">
           <div class="language-selector" style="position: relative; display: inline-block;">
-            <button class="chip" id="vq-language-btn" onclick="toggleVQLanguageMenu(event)">EN</button>
-            <div class="language-menu" id="vq-language-menu">
-              <div class="language-option" data-lang="en" onclick="selectLanguageFromVQ('en')"><span>🇬🇧</span> English</div>
-              <div class="language-option" data-lang="zh" onclick="selectLanguageFromVQ('zh')"><span>🇨🇳</span> 中文</div>
-              <div class="language-option" data-lang="ja" onclick="selectLanguageFromVQ('ja')"><span>🇯🇵</span> 日本語</div>
-              <div class="language-option" data-lang="ko" onclick="selectLanguageFromVQ('ko')"><span>🇰🇷</span> 한국어</div>
-              <div class="language-option" data-lang="de" onclick="selectLanguageFromVQ('de')"><span>🇩🇪</span> Deutsch</div>
-              <div class="language-option" data-lang="fr" onclick="selectLanguageFromVQ('fr')"><span>🇫🇷</span> Français</div>
+            <button class="chip" id="vq-header-language-btn" onclick="toggleHomeLanguageMenu(event)">EN</button>
+            <div class="language-menu" id="vq-home-language-menu">
+              <div class="language-option" data-lang="en" onclick="selectHomeLanguage('en')"><span>🇬🇧</span> English</div>
+              <div class="language-option" data-lang="zh" onclick="selectHomeLanguage('zh')"><span>🇨🇳</span> 中文</div>
+              <div class="language-option" data-lang="ja" onclick="selectHomeLanguage('ja')"><span>🇯🇵</span> 日本語</div>
+              <div class="language-option" data-lang="ko" onclick="selectHomeLanguage('ko')"><span>🇰🇷</span> 한국어</div>
+              <div class="language-option" data-lang="de" onclick="selectHomeLanguage('de')"><span>🇩🇪</span> Deutsch</div>
+              <div class="language-option" data-lang="fr" onclick="selectHomeLanguage('fr')"><span>🇫🇷</span> Français</div>
             </div>
           </div>
           <div class="currency-selector" style="position: relative; display: inline-block;">
-            <button class="chip" id="vq-currency-btn" onclick="toggleVQCurrencyMenu(event)">AUD</button>
-            <div class="currency-menu" id="vq-currency-menu">
-              <div class="currency-option" data-currency="AUD" onclick="selectCurrencyFromVQ('AUD')"><span>A$</span> AUD</div>
-              <div class="currency-option" data-currency="USD" onclick="selectCurrencyFromVQ('USD')"><span>$</span> USD</div>
-              <div class="currency-option" data-currency="EUR" onclick="selectCurrencyFromVQ('EUR')"><span>€</span> EUR</div>
-              <div class="currency-option" data-currency="GBP" onclick="selectCurrencyFromVQ('GBP')"><span>£</span> GBP</div>
-              <div class="currency-option" data-currency="CNY" onclick="selectCurrencyFromVQ('CNY')"><span>¥</span> CNY</div>
-              <div class="currency-option" data-currency="JPY" onclick="selectCurrencyFromVQ('JPY')"><span>¥</span> JPY</div>
+            <button class="chip" id="vq-header-currency-btn" onclick="toggleHomeCurrencyMenu(event)">AUD</button>
+            <div class="currency-menu" id="vq-home-currency-menu">
+              <div class="currency-option" data-currency="AUD" onclick="selectHomeCurrency('AUD')"><span>A$</span> AUD</div>
+              <div class="currency-option" data-currency="USD" onclick="selectHomeCurrency('USD')"><span>$</span> USD</div>
+              <div class="currency-option" data-currency="EUR" onclick="selectHomeCurrency('EUR')"><span>€</span> EUR</div>
+              <div class="currency-option" data-currency="GBP" onclick="selectHomeCurrency('GBP')"><span>£</span> GBP</div>
+              <div class="currency-option" data-currency="CNY" onclick="selectHomeCurrency('CNY')"><span>¥</span> CNY</div>
+              <div class="currency-option" data-currency="JPY" onclick="selectHomeCurrency('JPY')"><span>¥</span> JPY</div>
             </div>
           </div>
+          <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()" style="display: none;">Map view</button>
         </div>
       </header>
       
@@ -9679,11 +9681,8 @@
       // Show video background
       document.body.classList.add('video-bg-active');
       
-      // Show the video question header
-      const vqHeader = document.getElementById('video-question-header');
-      if (vqHeader) {
-        vqHeader.style.display = 'flex';
-      }
+      // DON'T show separate video question header - use the same kiosk-header
+      // (The kiosk-header is already showing from the home page)
       
       // Start video questions (skip the start screen)
       if (window.startVideoQuestions) {
