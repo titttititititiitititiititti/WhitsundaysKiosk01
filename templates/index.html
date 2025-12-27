@@ -3790,6 +3790,14 @@
         align-items: center !important;
       }
       
+      .tour-detail-page .header-left {
+        position: absolute !important;
+        left: 50px !important;
+        display: flex !important;
+        gap: 12px !important;
+        align-items: center !important;
+      }
+      
       .tour-detail-page .header-right,
       .kiosk-header .header-right {
         display: flex !important;
@@ -3799,11 +3807,13 @@
         align-items: center !important;
       }
       
-      .tour-detail-page .back-button,
-      .tour-detail-page #back-arrow {
-        position: fixed !important;
-        top: 40px !important;
-        left: 40px !important;
+      .tour-detail-page .logo-image {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        height: 40px !important;
+        z-index: 1 !important;
       }
     }
     #detail-content {
@@ -8510,7 +8520,11 @@
   <div class="page tour-detail-page">
     <!-- Kiosk Header -->
     <header class="kiosk-header">
-      <button class="back-button" id="back-arrow">←</button>
+      <div class="header-left">
+        <button class="back-button" id="back-arrow">←</button>
+        <button class="header-btn" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+        <button class="header-btn header-btn-purple" id="detail-ai-assistant-btn" onclick="alert('AI Assistant feature coming soon!')">🤖 Talk To Our AI Assistant</button>
+      </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       <div class="header-right">
         <div class="language-selector" style="position: relative;">
@@ -12989,7 +13003,7 @@
             // If we have exactly 2 or 3 items, render in a grid for better symmetry
             if (quickInfoItems.length === 2 || quickInfoItems.length === 3) {
               const gridCols = quickInfoItems.length === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
-              info += `<div class="detail-section-grid" style="display:grid;grid-template-columns:${gridCols};gap:30px;margin:0 2px 30px 2px;">`;
+              info += `<div class="detail-section-grid" style="display:grid;grid-template-columns:${gridCols};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
               quickInfoItems.forEach((item) => {
                 info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
                 info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
@@ -13000,7 +13014,7 @@
             } else {
               // For 1 or 4+ items, render full width
               quickInfoItems.forEach((item) => {
-                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">`;
+                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
                 info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
                 info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
                 info += '</div>';
@@ -13015,12 +13029,12 @@
           if (hasItinerary || hasMenu) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasItinerary && hasMenu) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 2px 30px 2px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
             if (hasItinerary) {
               // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:0 2px 30px 2px;' : '';
+              const itineraryMargin = !hasMenu ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
               info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
@@ -13035,7 +13049,7 @@
             
             if (hasMenu) {
               // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:0 2px 30px 2px;' : '';
+              const menuMargin = !hasItinerary ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
               info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
               let formattedMenu = cleanBracketFormatting(data.menu);
@@ -13067,7 +13081,7 @@
             const useSquares = bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 2px 30px 2px;">`;
+            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -13088,7 +13102,7 @@
           
           // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
@@ -13102,12 +13116,12 @@
           if (hasBring || hasExtra) {
             // If both exist, use side-by-side grid; if single, apply margin directly
             if (hasBring && hasExtra) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 2px 30px 2px;">';
+              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
             if (hasBring) {
               // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:0 2px 30px 2px;' : '';
+              const bringMargin = !hasExtra ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
               info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
@@ -13122,7 +13136,7 @@
           
             if (hasExtra) {
               // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:0 2px 30px 2px;' : '';
+              const extraMargin = !hasBring ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
               info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
               info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
@@ -13143,7 +13157,7 @@
           
           // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
@@ -13162,7 +13176,7 @@
           
           // DEPARTURE LOCATION SECTION (Full width)
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
             info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
             info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
@@ -13181,7 +13195,7 @@
           // REVIEWS SECTION - Header in floating box, each review in its own box
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
             // Reviews header box - matching other section styles
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
+            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⭐ Customer Reviews</h3>';
             info += '<div class="reviews-summary" style="display:flex;gap:15px;align-items:center;">';
             info += `<div class="overall-rating" style="font-size: 2.5em; font-weight: 700;color:#0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>`;
@@ -13195,7 +13209,7 @@
             // Individual reviews - each in its own white floating box
             if (data.reviews.reviews && data.reviews.reviews.length > 0) {
               data.reviews.reviews.forEach(review => {
-                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;">';
+                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
                 info += '<div class="review-header" style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px;">';
                 info += '<div>';
                 info += `<div class="review-author" style="font-size: 1.3em; font-weight: 600;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
@@ -13219,7 +13233,7 @@
             
             // Link to more reviews if available - in its own small box
             if (data.reviews.source_url) {
-              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 2px 30px 2px;text-align:center;">';
+              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;text-align:center;">';
               info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               info += '</div>';
             }
@@ -15280,20 +15294,24 @@
       // Update filter summary to use translations
       updateFilterSummary();
       
-      // Update header buttons (both home and video question pages)
+      // Update header buttons (home, video question, and tour detail pages)
       const homeQuickDecisionBtn = document.getElementById('home-quick-decision-btn');
       const vqQuickDecisionBtn = document.getElementById('vq-quick-decision-btn');
+      const detailQuickDecisionBtn = document.getElementById('detail-quick-decision-btn');
       const homeBrowseAllBtn = document.getElementById('home-browse-all-btn');
       const vqBrowseAllBtn = document.getElementById('vq-browse-all-btn');
       const homeAiAssistantBtn = document.getElementById('home-ai-assistant-btn');
       const vqAiAssistantBtn = document.getElementById('vq-ai-assistant-btn');
+      const detailAiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
       
       if (homeQuickDecisionBtn) homeQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
       if (vqQuickDecisionBtn) vqQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (detailQuickDecisionBtn) detailQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
       if (homeBrowseAllBtn) homeBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
       if (vqBrowseAllBtn) vqBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
       if (homeAiAssistantBtn) homeAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       if (vqAiAssistantBtn) vqAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
+      if (detailAiAssistantBtn) detailAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       
       console.log('✓ Language applied:', lang.name);
     }
