@@ -7582,15 +7582,15 @@
       
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
-        <div class="video-start-text">How Would You Like to Find Your Tour?</div>
-        <button class="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
-          🤖 Talk To Our AI Assistant
+        <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
+        <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
+          <span id="ai-assistant-text">🤖 Talk To Our AI Assistant</span>
         </button>
-        <button class="quick-decision-btn-start" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
-          ⚡ Quick Decision
+        <button class="quick-decision-btn-start" id="quick-decision-btn" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
+          <span id="quick-decision-text">⚡ Quick Decision</span>
         </button>
-        <button class="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
-          🗂️ Browse All Tours
+        <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
+          <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
       </div>
       
@@ -14780,6 +14780,17 @@
       const mobileLangText = document.getElementById('mobile-menu-lang-text');
       if (mobileLangFlag) mobileLangFlag.textContent = lang.flag;
       if (mobileLangText) mobileLangText.textContent = lang.code.toUpperCase();
+      
+      // Update video start screen
+      const videoStartTitle = document.getElementById('video-start-title');
+      const aiAssistantText = document.getElementById('ai-assistant-text');
+      const quickDecisionText = document.getElementById('quick-decision-text');
+      const browseAllToursText = document.getElementById('browse-all-tours-text');
+      
+      if (videoStartTitle) videoStartTitle.textContent = lang.video_start_title;
+      if (aiAssistantText) aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
+      if (quickDecisionText) quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (browseAllToursText) browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
       
       // Update filter panel elements
       const heading = document.querySelector('#filter-panel h1');
