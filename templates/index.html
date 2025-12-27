@@ -15266,6 +15266,21 @@
       // Update filter summary to use translations
       updateFilterSummary();
       
+      // Update header buttons (both home and video question pages)
+      const homeQuickDecisionBtn = document.getElementById('home-quick-decision-btn');
+      const vqQuickDecisionBtn = document.getElementById('vq-quick-decision-btn');
+      const homeBrowseAllBtn = document.getElementById('home-browse-all-btn');
+      const vqBrowseAllBtn = document.getElementById('vq-browse-all-btn');
+      const homeAiAssistantBtn = document.getElementById('home-ai-assistant-btn');
+      const vqAiAssistantBtn = document.getElementById('vq-ai-assistant-btn');
+      
+      if (homeQuickDecisionBtn) homeQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (vqQuickDecisionBtn) vqQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (homeBrowseAllBtn) homeBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
+      if (vqBrowseAllBtn) vqBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
+      if (homeAiAssistantBtn) homeAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
+      if (vqAiAssistantBtn) vqAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
+      
       console.log('✓ Language applied:', lang.name);
     }
     
