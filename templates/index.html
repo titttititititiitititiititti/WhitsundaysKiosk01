@@ -911,6 +911,44 @@
     /* Show header when questions are active */
     .video-question-page.showing-questions .kiosk-header {
       display: flex;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    
+    /* Position header elements same as home page */
+    .video-question-page.showing-questions .header-left {
+      position: absolute;
+      left: 50px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .video-question-page.showing-questions .quick-decision-btn-header,
+    .video-question-page.showing-questions .ai-assistant-btn-header {
+      padding: 8px 16px;
+      font-size: 0.85em;
+    }
+    
+    .video-question-page.showing-questions .logo-image {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 45px;
+      width: auto;
+      z-index: 1;
+    }
+    
+    .video-question-page.showing-questions .header-right {
+      position: absolute;
+      right: 50px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
     
     /* Video Question Header - REMOVED, using kiosk-header instead */
