@@ -1865,12 +1865,18 @@
       justify-content: flex-end;
     }
     
-    /* Always show header except when language selection is active */
+    /* Always show header except when language selection is active or on video start page */
     .global-header {
       display: flex !important;
     }
     
-    body.showing-language-selection .global-header {
+    body.showing-language-selection .global-header,
+    body.video-bg-active .global-header {
+      display: none !important;
+    }
+    
+    /* Show global header on home page even with video background */
+    .home-page.active ~ .global-header {
       display: none !important;
     }
     
@@ -4383,6 +4389,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       overflow: hidden;
       min-width: 200px;
+      display: none;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-15px);
@@ -4393,6 +4400,7 @@
     }
     
     .language-menu.active {
+      display: block;
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
@@ -4432,6 +4440,7 @@
       border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.2);
       min-width: 280px;
+      display: none;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-15px);
@@ -4443,6 +4452,7 @@
     }
     
     .currency-menu.active {
+      display: block;
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
@@ -6398,6 +6408,7 @@
         z-index: 10000 !important;
         overflow: hidden !important;
         /* Animation properties */
+        display: none !important;
         opacity: 0 !important;
         visibility: hidden !important;
         transform: translateY(-15px) !important;
@@ -6406,6 +6417,7 @@
       
       .language-menu.active,
       .currency-menu.active {
+        display: block !important;
         opacity: 1 !important;
         visibility: visible !important;
         transform: translateY(0) !important;
