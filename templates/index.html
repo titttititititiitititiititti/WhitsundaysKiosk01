@@ -1999,11 +1999,22 @@
       box-sizing: border-box;
     }
     
+    /* Tour detail header - NO CENTERING */
+    .tour-detail-page .kiosk-header {
+      justify-content: flex-start !important;
+      position: relative !important;
+    }
+    
     .header-left {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 15px;
+    }
+    
+    /* Tour detail page - override to ensure left alignment */
+    .tour-detail-page .header-left {
+      justify-content: flex-start !important;
     }
     
     .header-right {
