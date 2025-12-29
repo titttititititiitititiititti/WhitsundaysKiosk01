@@ -1999,10 +1999,37 @@
       box-sizing: border-box;
     }
     
-    /* Tour detail header - NO CENTERING */
+    /* Tour detail header - NO CENTERING but logo stays centered */
     .tour-detail-page .kiosk-header {
       justify-content: flex-start !important;
       position: relative !important;
+    }
+    
+    .tour-detail-page .kiosk-header .logo-image {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      height: 40px !important;
+      width: auto !important;
+      z-index: 1 !important;
+    }
+    
+    .tour-detail-page .kiosk-header .header-left {
+      position: absolute !important;
+      left: 50px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      z-index: 2 !important;
+    }
+    
+    .tour-detail-page .kiosk-header .header-right {
+      position: absolute !important;
+      right: 50px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      z-index: 2 !important;
     }
     
     .header-left {
@@ -3312,18 +3339,20 @@
        =================================================================== */
     .detail-footer {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      max-width: 90%;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
-      padding: 20px;
+      padding: 20px 30px;
       display: flex;
       gap: 15px;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border-radius: 16px;
       z-index: 99;
     }
     
