@@ -3337,22 +3337,30 @@
     /* ===================================================================
        TOUR DETAIL FOOTER BUTTONS - Desktop & Mobile
        =================================================================== */
+    .tour-detail-page {
+      text-align: center !important;
+    }
+    
     .detail-footer {
       position: fixed !important;
       bottom: 20px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      width: auto !important;
+      left: 0 !important;
+      right: 0 !important;
+      text-align: center !important;
+      background: transparent !important;
+      padding: 0 !important;
+      display: block !important;
+      z-index: 999999 !important;
+    }
+    
+    .detail-footer-inner {
+      display: inline-flex !important;
+      gap: 15px !important;
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(20px) !important;
       padding: 20px 30px !important;
-      display: flex !important;
-      gap: 15px !important;
-      justify-content: center !important;
-      align-items: center !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
       border-radius: 16px !important;
-      z-index: 999999 !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
     }
     
     .detail-footer button {
@@ -8856,9 +8864,11 @@
 
     <!-- Sticky Footer -->
     <footer class="detail-footer">
-      <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
-      <button class="btn-primary" id="book-now-btn">Book Now</button>
-      <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
+      <div class="detail-footer-inner">
+        <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
+        <button class="btn-primary" id="book-now-btn">Book Now</button>
+        <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
+      </div>
     </footer>
   </div>
   
