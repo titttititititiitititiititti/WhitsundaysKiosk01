@@ -3352,12 +3352,14 @@
     .detail-footer-inner {
       display: flex !important;
       gap: 15px !important;
+      width: auto !important;
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(20px) !important;
       padding: 20px 30px !important;
       border-radius: 16px !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
       pointer-events: auto !important;
+      flex-shrink: 0 !important;
     }
     
     .detail-footer button {
@@ -3417,17 +3419,15 @@
     
     /* Mobile - Make buttons stack and larger */
     @media (max-width: 768px) {
-      .detail-footer {
-        flex-direction: column;
-        padding: 15px;
-        gap: 12px;
+      .detail-footer-inner {
+        flex-direction: column !important;
+        width: 90% !important;
       }
       
       .detail-footer button {
-        width: 100%;
-        max-width: none;
-        padding: 20px 24px;
-        font-size: 1.3em;
+        width: 100% !important;
+        padding: 20px 24px !important;
+        font-size: 1.3em !important;
       }
     }
     
