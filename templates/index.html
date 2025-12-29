@@ -159,7 +159,7 @@
       border: 3px solid rgba(255,255,255,0.4);
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
-      font-size: 1.5em;
+      font-size: 2.2em !important;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -2222,8 +2222,8 @@
       background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
       border: none;
       border-radius: 18px;
-      font-size: 1.8em;
-      font-weight: 600;
+      font-size: 2.4em !important;
+      font-weight: 700 !important;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -3024,12 +3024,12 @@
     .tour-hero .operator-chip {
       display: inline-block;
       padding: 12px 25px;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
       border-radius: 18px;
       font-size: 1.4em;
       font-weight: 600;
-      color: #0077b6 !important;
+      color: #ffffff !important;
       max-width: fit-content;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -3825,7 +3825,7 @@
       }
       
       .filter-option {
-        font-size: 1.3em;
+        font-size: 2.2em !important;
         padding: 25px 30px;
       }
       
@@ -4077,7 +4077,7 @@
     }
     #detail-company {
       font-size: 1.5em;
-      color: #005fa3 !important;
+      color: #ffffff !important;
       margin-bottom: 24px;
       font-weight: 600;
       cursor: pointer;
@@ -10763,7 +10763,7 @@
     });
     
     // Show map view from home page
-    async function showMapFromHome() {
+    window.showMapFromHome = async function() {
       console.log('🗺️ ============ SWITCHING TO MAP VIEW ============');
       console.log('   activeFilters:', JSON.stringify(activeFilters, null, 2));
       console.log('   Filter keys:', Object.keys(activeFilters));
@@ -13137,7 +13137,7 @@
           const slugFromCompany = (data.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
           const derivedCompanyKey = data.company_key || data.company_slug || key.split('__')[0] || slugFromCompany;
           companyElement.textContent = '🏢 ' + data.company + ' ›';
-          companyElement.style.color = '#0077b6'; // Force blue text color
+          companyElement.style.color = '#ffffff'; // Force white text color
           companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key for filtering
           companyElement.title = 'Click to see all tours by ' + data.company;
           
@@ -15158,29 +15158,32 @@
     }
     
     // Home page language menu
-    function toggleHomeLanguageMenu(event) {
+    window.toggleHomeLanguageMenu = function(event) {
+      console.log('🌐 toggleHomeLanguageMenu called');
       event.stopPropagation();
       const menu = document.getElementById('home-language-menu');
+      console.log('Menu element:', menu);
       menu.classList.toggle('active');
+      console.log('Menu active?', menu.classList.contains('active'));
       
       if (menu.classList.contains('active')) {
         setTimeout(() => {
-          document.addEventListener('click', closeHomeLanguageMenuOutside);
+          document.addEventListener('click', window.closeHomeLanguageMenuOutside);
         }, 100);
       }
     }
     
-    function closeHomeLanguageMenuOutside(e) {
+    window.closeHomeLanguageMenuOutside = function(e) {
       const menu = document.getElementById('home-language-menu');
       const selector = menu.closest('.language-selector');
       
       if (selector && !selector.contains(e.target)) {
         menu.classList.remove('active');
-        document.removeEventListener('click', closeHomeLanguageMenuOutside);
+        document.removeEventListener('click', window.closeHomeLanguageMenuOutside);
       }
     }
     
-    function selectHomeLanguage(lang) {
+    window.selectHomeLanguage = function(lang) {
       switchLanguage(lang);
       document.getElementById('home-language-menu').classList.remove('active');
     }
@@ -15209,7 +15212,7 @@
     }
     
     // Toggle language menu on detail page
-    function toggleDetailLanguageMenu(event) {
+    window.toggleDetailLanguageMenu = function(event) {
       event.stopPropagation();
       const menu = document.getElementById('detail-language-menu');
       const currencyMenu = document.getElementById('detail-currency-menu');
@@ -15222,22 +15225,22 @@
       // Close menu when clicking outside
       if (menu.classList.contains('active')) {
         setTimeout(() => {
-          document.addEventListener('click', closeDetailLanguageMenuOutside);
+          document.addEventListener('click', window.closeDetailLanguageMenuOutside);
         }, 100);
       }
     }
     
-    function closeDetailLanguageMenuOutside(e) {
+    window.closeDetailLanguageMenuOutside = function(e) {
       const menu = document.getElementById('detail-language-menu');
       const btn = document.getElementById('detail-language-btn');
       
       if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
         menu.classList.remove('active');
-        document.removeEventListener('click', closeDetailLanguageMenuOutside);
+        document.removeEventListener('click', window.closeDetailLanguageMenuOutside);
       }
     }
     
-    function selectLanguageFromDetail(langCode) {
+    window.selectLanguageFromDetail = function(langCode) {
       switchLanguage(langCode);
       const menu = document.getElementById('detail-language-menu');
       if (menu) menu.classList.remove('active');
@@ -15767,29 +15770,29 @@
     }
     
     // Home page currency menu
-    function toggleHomeCurrencyMenu(event) {
+    window.toggleHomeCurrencyMenu = function(event) {
       event.stopPropagation();
       const menu = document.getElementById('home-currency-menu');
       menu.classList.toggle('active');
       
       if (menu.classList.contains('active')) {
         setTimeout(() => {
-          document.addEventListener('click', closeHomeCurrencyMenuOutside);
+          document.addEventListener('click', window.closeHomeCurrencyMenuOutside);
         }, 100);
       }
     }
     
-    function closeHomeCurrencyMenuOutside(e) {
+    window.closeHomeCurrencyMenuOutside = function(e) {
       const menu = document.getElementById('home-currency-menu');
       const selector = menu.closest('.currency-selector');
       
       if (selector && !selector.contains(e.target)) {
         menu.classList.remove('active');
-        document.removeEventListener('click', closeHomeCurrencyMenuOutside);
+        document.removeEventListener('click', window.closeHomeCurrencyMenuOutside);
       }
     }
     
-    function selectHomeCurrency(curr) {
+    window.selectHomeCurrency = function(curr) {
       switchCurrency(curr);
       document.getElementById('home-currency-menu').classList.remove('active');
       
@@ -15879,7 +15882,7 @@
     }
     
     // Toggle currency menu on detail page
-    function toggleDetailCurrencyMenu(event) {
+    window.toggleDetailCurrencyMenu = function(event) {
       event.stopPropagation();
       const menu = document.getElementById('detail-currency-menu');
       const languageMenu = document.getElementById('detail-language-menu');
@@ -15892,22 +15895,22 @@
       // Close menu when clicking outside
       if (menu.classList.contains('active')) {
         setTimeout(() => {
-          document.addEventListener('click', closeDetailCurrencyMenuOutside);
+          document.addEventListener('click', window.closeDetailCurrencyMenuOutside);
         }, 100);
       }
     }
     
-    function closeDetailCurrencyMenuOutside(e) {
+    window.closeDetailCurrencyMenuOutside = function(e) {
       const menu = document.getElementById('detail-currency-menu');
       const btn = document.getElementById('detail-currency-btn');
       
       if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
         menu.classList.remove('active');
-        document.removeEventListener('click', closeDetailCurrencyMenuOutside);
+        document.removeEventListener('click', window.closeDetailCurrencyMenuOutside);
       }
     }
     
-    function selectCurrencyFromDetail(currency) {
+    window.selectCurrencyFromDetail = function(currency) {
       switchCurrency(currency);
       const menu = document.getElementById('detail-currency-menu');
       if (menu) menu.classList.remove('active');
