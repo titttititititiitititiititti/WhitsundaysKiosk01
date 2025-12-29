@@ -3296,10 +3296,66 @@
     
     }
     
+    /* ===================================================================
+       TOUR DETAIL FOOTER BUTTONS - Desktop & Mobile
+       =================================================================== */
+    .detail-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 20px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 99;
+    }
+    
+    .detail-footer button {
+      padding: 18px 32px;
+      font-size: 1.2em;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      max-width: 300px;
+      white-space: nowrap;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.5);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0088cc 0%, #0066a0 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(0, 119, 182, 0.6);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(147, 51, 234, 0.5);
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(147, 51, 234, 0.6);
+    }
+    
     .btn-tertiary {
       background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
       color: white;
-      border: none;
       box-shadow: 0 8px 25px rgba(72, 187, 120, 0.5);
     }
     
@@ -3313,6 +3369,22 @@
     .btn-secondary:active,
     .btn-tertiary:active {
       transform: scale(0.97);
+    }
+    
+    /* Mobile - Make buttons stack and larger */
+    @media (max-width: 768px) {
+      .detail-footer {
+        flex-direction: column;
+        padding: 15px;
+        gap: 12px;
+      }
+      
+      .detail-footer button {
+        width: 100%;
+        max-width: none;
+        padding: 20px 24px;
+        font-size: 1.3em;
+      }
     }
     
     /* ===================================================================
@@ -3786,8 +3858,16 @@
         background: rgba(255, 255, 255, 0.1) !important;
         backdrop-filter: blur(10px) !important;
         padding: 30px 50px !important;
-        justify-content: center !important;
         align-items: center !important;
+      }
+      
+      /* Tour detail page specific - NO centering */
+      .tour-detail-page .kiosk-header {
+        justify-content: flex-start !important;
+        position: relative !important;
+        height: 65px !important;
+        min-height: 65px !important;
+        padding: 12px 50px !important;
       }
       
       .tour-detail-page .header-left {
@@ -15390,6 +15470,15 @@
       if (homeAiAssistantBtn) homeAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       if (vqAiAssistantBtn) vqAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       if (detailAiAssistantBtn) detailAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
+      
+      // Update footer buttons on tour detail page
+      const bookNowBtn = document.getElementById('book-now-btn');
+      const shareTourBtn = document.getElementById('share-tour-btn');
+      const sendToPhoneBtn = document.getElementById('continue-phone-btn');
+      
+      if (bookNowBtn) bookNowBtn.textContent = lang.book_now;
+      if (shareTourBtn) shareTourBtn.textContent = lang.share_tour;
+      if (sendToPhoneBtn) sendToPhoneBtn.textContent = lang.send_to_phone;
       
       console.log('✓ Language applied:', lang.name);
     }
