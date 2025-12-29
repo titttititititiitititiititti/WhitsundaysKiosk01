@@ -3831,6 +3831,44 @@
         flex-shrink: 0 !important;
       }
     }
+    
+    /* Tour Detail Page - Force header layout to match home page */
+    .tour-detail-page .kiosk-header {
+      position: relative !important;
+    }
+    
+    .tour-detail-page .kiosk-header .header-left {
+      position: absolute !important;
+      left: 50px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      display: flex !important;
+      gap: 12px !important;
+      align-items: center !important;
+      z-index: 2 !important;
+    }
+    
+    .tour-detail-page .kiosk-header .logo-image {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      height: 40px !important;
+      width: auto !important;
+      z-index: 1 !important;
+    }
+    
+    .tour-detail-page .kiosk-header .header-right {
+      position: absolute !important;
+      right: 50px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      display: flex !important;
+      gap: 15px !important;
+      align-items: center !important;
+      z-index: 2 !important;
+    }
+    
     #detail-content {
       max-width: 1000px;
       margin: 120px auto 60px auto;
