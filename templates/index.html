@@ -3344,7 +3344,8 @@
       right: 0 !important;
       width: fit-content !important;
       max-width: 90% !important;
-      margin: 0 auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(20px) !important;
       padding: 20px 30px !important;
@@ -3354,7 +3355,14 @@
       align-items: center !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
       border-radius: 16px !important;
-      z-index: 99 !important;
+      z-index: 999999 !important;
+    }
+    
+    .tour-detail-page .detail-footer {
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
     }
     
     .detail-footer button {
