@@ -3342,21 +3342,22 @@
       bottom: 20px !important;
       left: 0 !important;
       right: 0 !important;
-      text-align: center !important;
-      background: transparent !important;
-      padding: 0 !important;
-      display: block !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      pointer-events: none !important;
       z-index: 999999 !important;
     }
     
     .detail-footer-inner {
-      display: inline-flex !important;
+      display: flex !important;
       gap: 15px !important;
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(20px) !important;
       padding: 20px 30px !important;
       border-radius: 16px !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+      pointer-events: auto !important;
     }
     
     .detail-footer button {
