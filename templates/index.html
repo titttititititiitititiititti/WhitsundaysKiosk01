@@ -3029,7 +3029,7 @@
       border-radius: 18px;
       font-size: 1.4em;
       font-weight: 600;
-      color: #0077b6;
+      color: #0077b6 !important;
       max-width: fit-content;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -4077,7 +4077,7 @@
     }
     #detail-company {
       font-size: 1.5em;
-      color: #ffffff;
+      color: #005fa3 !important;
       margin-bottom: 24px;
       font-weight: 600;
       cursor: pointer;
@@ -4847,6 +4847,7 @@
     
     /* AI Chat Assistant */
     .chat-button {
+      display: none !important;
       position: fixed;
       bottom: 30px;
       left: 30px;
@@ -8860,12 +8861,10 @@
     </main>
 
     <!-- Sticky Footer -->
-    <div style="position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; z-index: 999999; pointer-events: none;">
-      <div style="display: flex; gap: 15px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 20px 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); pointer-events: auto;">
-        <button class="btn-tertiary" id="share-tour-btn">Share Tour</button>
-        <button class="btn-primary" id="book-now-btn">Book Now</button>
-        <button class="btn-secondary" id="continue-phone-btn">Send to My Phone</button>
-      </div>
+    <div style="position: fixed; bottom: 30px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 999999;">
+      <button class="btn-tertiary" id="share-tour-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Share Tour</button>
+      <button class="btn-primary" id="book-now-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Send to My Phone</button>
     </div>
   </div>
   
