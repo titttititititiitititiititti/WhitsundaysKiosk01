@@ -4733,29 +4733,33 @@
     }
     
     /* Language Selector */
-    /* Language and Currency Selectors - SIMPLE WORKING VERSION */
+    /* Language and Currency Selectors - REBUILT */
     .language-selector,
     .currency-selector {
-      position: relative;
-      display: inline-block;
+      position: relative !important;
+      display: inline-block !important;
     }
     
     .language-menu,
     .currency-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-      min-width: 200px;
-      z-index: 99999;
-      display: none;
+      position: absolute !important;
+      top: calc(100% + 10px) !important;
+      right: 0 !important;
+      background: white !important;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+      min-width: 200px !important;
+      z-index: 99999 !important;
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
     }
     
     .language-menu.active,
     .currency-menu.active {
-      display: block;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     .language-option {
