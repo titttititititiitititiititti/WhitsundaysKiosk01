@@ -3324,8 +3324,8 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      flex: 1;
-      max-width: 300px;
+      flex: 0 0 auto;
+      min-width: 200px;
       white-space: nowrap;
     }
     
@@ -3873,9 +3873,12 @@
       .tour-detail-page .header-left {
         position: absolute !important;
         left: 50px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
         display: flex !important;
         gap: 12px !important;
         align-items: center !important;
+        z-index: 2 !important;
       }
       
       .tour-detail-page .quick-decision-btn-header,
@@ -3899,7 +3902,9 @@
         top: 50% !important;
         transform: translate(-50%, -50%) !important;
         height: 40px !important;
+        width: auto !important;
         z-index: 1 !important;
+        margin: 0 !important;
       }
       
       .tour-detail-page .back-button {
