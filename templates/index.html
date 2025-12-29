@@ -8569,7 +8569,8 @@
       </button>
     </div>
     
-    <!-- AI Chat Assistant -->
+    <!-- AI Chat Assistant - HIDDEN -->
+    <div style="display: none !important;">
     <button class="chat-button" id="chat-button" onclick="toggleChat()">
       <img src="{{ url_for('static', filename='microphone_icon.png') }}" alt="Microphone" style="width: 50px; height: 50px; object-fit: contain;">
     </button>
@@ -8651,6 +8652,7 @@
         </label>
       </div>
     </div>
+    </div> <!-- End hidden chat section -->
     
     <!-- Weather Widget -->
     <div class="weather-widget collapsed" id="weather-widget" onclick="toggleWeatherWidget()">
@@ -13135,6 +13137,7 @@
           const slugFromCompany = (data.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
           const derivedCompanyKey = data.company_key || data.company_slug || key.split('__')[0] || slugFromCompany;
           companyElement.textContent = '🏢 ' + data.company + ' ›';
+          companyElement.style.color = '#0077b6'; // Force blue text color
           companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key for filtering
           companyElement.title = 'Click to see all tours by ' + data.company;
           
