@@ -160,7 +160,7 @@
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
       font-size: 2.2em !important;
-      font-weight: 600;
+      font-weight: 700 !important;
       cursor: pointer;
       transition: all 0.3s ease;
       text-align: center;
@@ -4733,41 +4733,29 @@
     }
     
     /* Language Selector */
-    .language-selector {
+    /* Language and Currency Selectors - SIMPLE WORKING VERSION */
+    .language-selector,
+    .currency-selector {
       position: relative;
+      display: inline-block;
     }
     
-    .language-menu {
+    .language-menu,
+    .currency-menu {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 10px);
       right: 0;
-      margin-top: 10px;
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(10px);
-      border-radius: 10px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      overflow: hidden;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
       min-width: 200px;
-      display: none !important;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-15px);
-      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1000;
+      z-index: 99999;
+      display: none;
     }
     
-    .language-menu.active {
-      display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      transform: translateY(0) !important;
-      background: rgba(255,255,255,0.98) !important;
-      backdrop-filter: blur(10px) !important;
-      border-radius: 10px !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
-      z-index: 10000 !important;
+    .language-menu.active,
+    .currency-menu.active {
+      display: block;
     }
     
     .language-option {
@@ -4789,44 +4777,7 @@
       font-size: 1.4em;
     }
     
-    /* Currency Selector */
-    .currency-selector {
-      position: relative;
-    }
-    
-    .currency-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 10px;
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      min-width: 280px;
-      display: none !important;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-15px);
-      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-      z-index: 1000;
-    }
-    
-    .currency-menu.active {
-      display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      transform: translateY(0) !important;
-      background: rgba(255,255,255,0.98) !important;
-      backdrop-filter: blur(10px) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
-      z-index: 10000 !important;
-    }
-    
+    /* Currency Selector */    
     .currency-option {
       padding: 15px 20px;
       cursor: pointer;
@@ -7908,49 +7859,6 @@
       }
     }
     
-    /* CRITICAL: Force hide dropdown menus by default - highest specificity */
-    #home-language-menu:not(.active),
-    #home-currency-menu:not(.active),
-    #vq-language-menu:not(.active),
-    #vq-currency-menu:not(.active),
-    #global-language-menu:not(.active),
-    #global-currency-menu:not(.active),
-    #detail-language-menu:not(.active),
-    #detail-currency-menu:not(.active) {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-    
-    /* FORCE SHOW dropdown menus when active - MAXIMUM specificity */
-    #home-language-menu.active,
-    #home-currency-menu.active,
-    #vq-language-menu.active,
-    #vq-currency-menu.active,
-    #global-language-menu.active,
-    #global-currency-menu.active,
-    #detail-language-menu.active,
-    #detail-currency-menu.active {
-      display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      pointer-events: auto !important;
-      position: absolute !important;
-      top: calc(100% + 5px) !important;
-      right: 0 !important;
-      margin-top: 0 !important;
-      background: white !important;
-      backdrop-filter: blur(10px) !important;
-      border-radius: 12px !important;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
-      min-width: 160px !important;
-      max-width: 200px !important;
-      z-index: 10000 !important;
-      overflow: hidden !important;
-      transform: translateY(0) !important;
-      border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    }
     
     /* Better dropdown option styling */
     .language-menu .language-option,
