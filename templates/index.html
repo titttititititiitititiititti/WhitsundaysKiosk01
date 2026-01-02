@@ -8176,28 +8176,32 @@
         box-sizing: border-box !important;
       }
       
-      /* FORCE SINGLE COLUMN on grid containers */
-      #detail-info div[style*="grid-template-columns"],
+      /* FORCE SINGLE COLUMN on ALL grid containers in detail-info */
+      #detail-info div[style*="grid"],
+      #detail-info div[style*="display:grid"],
+      #detail-info div[style*="display: grid"],
       #detail-info .detail-section-grid,
-      .tour-detail-page .detail-section-grid {
-        display: flex !important;
-        flex-direction: column !important;
+      .tour-detail-page .detail-section-grid,
+      .tour-detail-page div[style*="grid-template-columns"] {
+        display: block !important;
         width: 94% !important;
         max-width: 94% !important;
         margin-left: 3% !important;
         margin-right: 3% !important;
-        gap: 10px !important;
         padding: 0 !important;
       }
       
-      /* Children inside grid containers - full width of parent */
-      #detail-info div[style*="grid-template-columns"] > div,
-      #detail-info .detail-section-grid > div {
+      /* Children inside grid containers - full width, stacked */
+      #detail-info div[style*="grid"] > div,
+      #detail-info .detail-section-grid > div,
+      .tour-detail-page div[style*="grid-template-columns"] > div {
+        display: block !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 0 10px 0 !important;
         padding: 15px !important;
         box-sizing: border-box !important;
+        float: none !important;
       }
       
       /* ALL sections - consistent width */
@@ -9572,9 +9576,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="tour-detail-main">
+    <main class="tour-detail-main" style="width:100% !important;max-width:100% !important;padding:0 !important;margin:0 !important;">
       <!-- Hero Section -->
-      <section class="tour-hero">
+      <section class="tour-hero" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;">
         <h1 class="tour-title" id="detail-title"></h1>
         <div class="operator-chip" id="detail-company"></div>
         <p class="tour-summary" id="detail-summary"></p>
@@ -9584,7 +9588,7 @@
       </section>
 
       <!-- Pricing Section -->
-      <section class="pricing-section" id="pricing-section">
+      <section class="pricing-section" id="pricing-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;">
         <h2>Pricing</h2>
         <p class="pricing-hint">Tap to select your pricing option.</p>
         <div class="pricing-card" id="pricing-tiers-container"></div>
@@ -9602,7 +9606,7 @@
       </section>
 
       <!-- Additional Info -->
-      <div id="detail-info"></div>
+      <div id="detail-info" style="width:100% !important;max-width:100% !important;padding:0 !important;margin:0 !important;display:flex !important;flex-direction:column !important;"></div>
 
       <!-- Fine Print -->
       <section class="fine-print" id="fine-print">
