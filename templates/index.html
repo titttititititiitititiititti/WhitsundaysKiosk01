@@ -8163,42 +8163,39 @@
         overflow-x: hidden !important;
       }
       
-      /* OVERRIDE INLINE max-width:1200px on ALL divs */
-      .tour-detail-page div[style*="max-width"],
-      .tour-detail-page div[style*="1200px"],
-      .tour-detail-page div[style*="1000px"],
+      /* OVERRIDE INLINE max-width:1200px on ALL divs in detail-info */
+      #detail-info > div,
       #detail-info div[style*="max-width"],
-      #detail-info > div {
+      #detail-info div[style*="1200px"] {
         width: 94% !important;
         max-width: 94% !important;
         margin-left: 3% !important;
         margin-right: 3% !important;
         margin-bottom: 10px !important;
+        padding: 15px !important;
         box-sizing: border-box !important;
       }
       
-      /* OVERRIDE INLINE grid-template-columns - force single column */
-      .tour-detail-page div[style*="grid-template-columns"],
-      .tour-detail-page .detail-section-grid,
-      #detail-info div[style*="grid"] {
+      /* FORCE SINGLE COLUMN on grid containers */
+      #detail-info div[style*="grid-template-columns"],
+      #detail-info .detail-section-grid,
+      .tour-detail-page .detail-section-grid {
         display: flex !important;
         flex-direction: column !important;
-        grid-template-columns: 1fr !important;
         width: 94% !important;
         max-width: 94% !important;
         margin-left: 3% !important;
         margin-right: 3% !important;
         gap: 10px !important;
+        padding: 0 !important;
       }
       
-      /* Children of grid containers - full width */
-      .tour-detail-page div[style*="grid-template-columns"] > div,
-      .tour-detail-page .detail-section-grid > div,
-      #detail-info div[style*="grid"] > div {
+      /* Children inside grid containers - full width of parent */
+      #detail-info div[style*="grid-template-columns"] > div,
+      #detail-info .detail-section-grid > div {
         width: 100% !important;
         max-width: 100% !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        margin: 0 0 10px 0 !important;
         padding: 15px !important;
         box-sizing: border-box !important;
       }
@@ -8218,13 +8215,41 @@
         border-radius: 12px !important;
       }
       
-      /* Info cards */
-      .tour-detail-page .info-card {
+      /* Info-grid section (Highlights, What's Included) */
+      section.info-grid,
+      section#info-grid,
+      .tour-detail-page section.info-grid {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin: 0 3% 10px 3% !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+      }
+      
+      /* Info cards inside info-grid */
+      .tour-detail-page .info-card,
+      section.info-grid .info-card,
+      #info-grid .info-card {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 0 10px 0 !important;
-        padding: 12px !important;
+        padding: 15px !important;
         box-sizing: border-box !important;
+        border-radius: 12px !important;
+      }
+      
+      /* About This Tour section */
+      section.details-section,
+      section#about-tour-section,
+      .tour-detail-page section.details-section {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin: 0 3% 10px 3% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
       }
       
       /* OVERRIDE inline padding on divs */
@@ -9566,12 +9591,12 @@
       </section>
 
       <!-- Info Grid (What's Included & Highlights) -->
-      <section class="info-grid" id="info-grid">
+      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;">
         <!-- Cards will be populated by JavaScript -->
       </section>
 
       <!-- Description & Details -->
-      <section class="details-section">
+      <section class="details-section" id="about-tour-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;">
         <h3>About This Tour</h3>
       <div id="detail-description"></div>
       </section>
