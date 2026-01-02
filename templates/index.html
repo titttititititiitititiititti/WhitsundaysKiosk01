@@ -6361,138 +6361,100 @@
       /* Mobile tour detail - handled in main mobile block below */
       
       /* ============================================
-         TOUR DETAIL - COMPACT BOXES
+         TOUR DETAIL - UNIFORM FULL-WIDTH DESIGN
          ============================================ */
       
-      /* Container - tight */
+      /* Container - edge to edge */
       #detail-content {
-        padding: 5px !important;
-        margin: 50px 5px 10px 5px !important;
-        width: calc(100% - 10px) !important;
+        padding: 0 !important;
+        margin: 50px 0 10px 0 !important;
+        width: 100% !important;
         max-width: 100% !important;
+        background: transparent !important;
+        box-shadow: none !important;
       }
       
-      /* All grids - tight gaps */
+      /* All grids - uniform gaps */
+      #detail-content > div,
       #detail-content > div[style*="display"],
       #detail-content > div[style*="grid"],
       #detail-content div[style*="grid-template-columns"] {
         display: flex !important;
         flex-direction: column !important;
-        gap: 4px !important;
-        padding: 0 !important;
+        gap: 6px !important;
+        padding: 0 5px !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
       
-      /* ALL boxes - minimal padding, auto height */
+      /* ALL boxes - UNIFORM styling */
       #detail-content > div > div,
       #detail-content section,
       .tour-detail-page .info-card {
-        padding: 6px 8px !important;
-        margin: 2px 0 !important;
-        border-radius: 6px !important;
+        padding: 10px 12px !important;
+        margin: 0 !important;
+        border-radius: 10px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        height: auto !important;
-        min-height: 0 !important;
+        background: rgba(255,255,255,0.95) !important;
       }
       
-      /* ALL headings - compact */
+      /* ALL headings - UNIFORM */
       #detail-content h3 {
-        font-size: 0.8rem !important;
-        margin: 0 0 4px 0 !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        margin: 0 0 6px 0 !important;
         padding: 0 !important;
         line-height: 1.2 !important;
+        color: #0077b6 !important;
       }
       
-      /* ALL text - tight */
-      #detail-content p {
-        font-size: 0.7rem !important;
-        line-height: 1.25 !important;
-        margin: 0 0 4px 0 !important;
-        padding: 0 !important;
-      }
-      
-      /* ALL list items - very tight */
+      /* ALL body text - UNIFORM */
+      #detail-content p,
       #detail-content li {
-        font-size: 0.7rem !important;
-        line-height: 1.2 !important;
-        margin: 0 0 2px 0 !important;
+        font-size: 0.75rem !important;
+        line-height: 1.35 !important;
+        margin: 0 0 4px 0 !important;
         padding: 0 !important;
+        color: #333 !important;
       }
       
-      /* ALL lists - compact */
+      /* ALL lists - UNIFORM */
       #detail-content ul {
-        padding-left: 12px !important;
+        padding-left: 16px !important;
         margin: 0 !important;
-        list-style-position: outside !important;
       }
       
-      /* Title */
+      /* Title - prominent */
       #detail-title {
-        font-size: 0.95rem !important;
-        margin: 5px !important;
+        font-size: 1.1rem !important;
+        margin: 8px 5px !important;
         padding: 0 !important;
         line-height: 1.2 !important;
+        font-weight: 700 !important;
       }
       
-      /* Pricing - compact */
+      /* Pricing - uniform with others */
       .tour-detail-page .pricing-section {
-        padding: 5px !important;
-        margin: 3px 0 !important;
+        padding: 10px 12px !important;
+        margin: 0 !important;
+        background: rgba(255,255,255,0.95) !important;
+        border-radius: 10px !important;
       }
       
       .tour-detail-page .price-row,
       .tour-detail-page .price-option {
-        padding: 5px 6px !important;
-        font-size: 0.65rem !important;
-        margin: 2px 0 !important;
+        padding: 8px 10px !important;
+        font-size: 0.75rem !important;
+        margin: 4px 0 !important;
       }
       
-      /* Chips - tiny */
+      /* Chips */
       .tour-detail-page .company-chip,
       .tour-detail-page .duration-badge {
-        font-size: 0.55rem !important;
-        padding: 2px 5px !important;
-      }
-      
-      /* What's Included & Highlights - slightly more padding */
-      #detail-content > div > div:nth-child(1),
-      #detail-content > div > div:nth-child(2) {
-        padding: 8px 10px !important;
-      }
-      
-      #detail-content > div > div:nth-child(1) h3,
-      #detail-content > div > div:nth-child(2) h3 {
-        font-size: 0.85rem !important;
-        margin-bottom: 5px !important;
-      }
-      
-      #detail-content > div > div:nth-child(1) li,
-      #detail-content > div > div:nth-child(2) li {
-        font-size: 0.75rem !important;
-        margin-bottom: 3px !important;
-      }
-      
-      /* ============================================
-         ABOUT THIS TOUR - FORCE FULL WIDTH
-         ============================================ */
-      #detail-content div[style*="About"],
-      #detail-content div:has(h3:first-child),
-      .tour-detail-page [class*="about"],
-      #detail-content > div:first-child,
-      #detail-content > div > div:has(p:only-of-type) {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        box-sizing: border-box !important;
-      }
-      
-      #detail-content > div:first-child p,
-      #detail-content div[style*="About"] p {
-        width: 100% !important;
-        max-width: 100% !important;
+        font-size: 0.6rem !important;
+        padding: 3px 8px !important;
       }
       
       /* HIDE QR code section completely on mobile */
