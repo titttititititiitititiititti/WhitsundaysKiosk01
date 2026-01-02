@@ -8149,38 +8149,76 @@
       }
       
       /* =============================================
-         FORCE TOUR DETAIL MAIN TO BE FULL WIDTH
+         MOBILE TOUR DETAIL - OVERRIDE ALL INLINE STYLES
          ============================================= */
+      
+      /* Force main container full width */
+      .tour-detail-page,
       .tour-detail-page .tour-detail-main,
-      .tour-detail-page main,
-      .tour-detail-main {
-        width: 100vw !important;
-        max-width: 100vw !important;
+      .tour-detail-page main {
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
         overflow-x: hidden !important;
       }
       
-      /* ALL sections inside - 92% width with auto margins */
+      /* OVERRIDE INLINE max-width:1200px on ALL divs */
+      .tour-detail-page div[style*="max-width"],
+      .tour-detail-page div[style*="1200px"],
+      .tour-detail-page div[style*="1000px"],
+      #detail-info div[style*="max-width"],
+      #detail-info > div {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin-left: 3% !important;
+        margin-right: 3% !important;
+        margin-bottom: 10px !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* OVERRIDE INLINE grid-template-columns - force single column */
+      .tour-detail-page div[style*="grid-template-columns"],
+      .tour-detail-page .detail-section-grid,
+      #detail-info div[style*="grid"] {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        width: 94% !important;
+        max-width: 94% !important;
+        margin-left: 3% !important;
+        margin-right: 3% !important;
+        gap: 10px !important;
+      }
+      
+      /* Children of grid containers - full width */
+      .tour-detail-page div[style*="grid-template-columns"] > div,
+      .tour-detail-page .detail-section-grid > div,
+      #detail-info div[style*="grid"] > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* ALL sections - consistent width */
       .tour-detail-page .details-section,
       .tour-detail-page .info-grid,
       .tour-detail-page .pricing-section,
       .tour-detail-page .fine-print,
-      .tour-detail-page #detail-info,
-      .tour-detail-page .tour-hero,
-      .details-section,
-      section.details-section {
-        width: 92% !important;
-        max-width: 92% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-bottom: 12px !important;
+      .tour-detail-page .departure-section,
+      .details-section {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin: 0 3% 10px 3% !important;
         padding: 15px !important;
         box-sizing: border-box !important;
         border-radius: 12px !important;
       }
       
-      /* Info cards inside grid */
+      /* Info cards */
       .tour-detail-page .info-card {
         width: 100% !important;
         max-width: 100% !important;
@@ -8189,16 +8227,27 @@
         box-sizing: border-box !important;
       }
       
-      /* Detail-info children (What To Bring, etc) */
-      .tour-detail-page #detail-info > div,
-      #detail-info > div {
-        width: 92% !important;
-        max-width: 92% !important;
-        margin: 0 auto 12px auto !important;
+      /* OVERRIDE inline padding on divs */
+      .tour-detail-page div[style*="padding:40px"],
+      .tour-detail-page div[style*="padding: 40px"],
+      #detail-info div[style*="padding:40px"],
+      #detail-info div[style*="padding: 40px"] {
         padding: 15px !important;
-        box-sizing: border-box !important;
-        border-radius: 12px !important;
-        background: rgba(255,255,255,0.95) !important;
+      }
+      
+      /* Text sizing */
+      .tour-detail-page div[style*="font-size:2.2em"] h3,
+      .tour-detail-page h3[style*="font-size:2.2em"],
+      #detail-info h3 {
+        font-size: 1.1em !important;
+        margin: 0 0 8px 0 !important;
+      }
+      
+      .tour-detail-page div[style*="font-size:1.25em"],
+      .tour-detail-page div[style*="font-size: 1.25em"],
+      #detail-info div[style*="font-size"] {
+        font-size: 0.9em !important;
+        line-height: 1.4 !important;
       }
       
       .details-section h3 {
