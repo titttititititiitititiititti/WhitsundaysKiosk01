@@ -8152,13 +8152,17 @@
          DETAILS SECTION (About This Tour) - FULL WIDTH
          ============================================= */
       .tour-detail-page .details-section,
-      .details-section {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 8px !important;
+      .details-section,
+      section.details-section {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        min-width: calc(100vw - 20px) !important;
+        margin: 0 10px 10px 10px !important;
         padding: 15px !important;
         box-sizing: border-box !important;
         border-radius: 12px !important;
+        left: 0 !important;
+        right: 0 !important;
       }
       
       .details-section h3 {
@@ -8172,14 +8176,17 @@
         line-height: 1.5 !important;
       }
       
-      /* ALL tour detail sections - add small margins */
+      /* ALL tour detail sections - viewport based width with margins */
       .tour-detail-page .info-card,
       .tour-detail-page .fine-print,
       .tour-detail-page .pricing-section,
-      .tour-detail-page #detail-info > div {
-        margin: 8px !important;
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
+      .tour-detail-page #detail-info > div,
+      .tour-detail-page section {
+        margin: 0 10px 10px 10px !important;
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
       
       /* Make weather and chat widgets visible and properly styled */
