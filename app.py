@@ -818,7 +818,7 @@ def apply_filters(tours, criteria):
         if isinstance(selected_activities, str):
             selected_activities = [selected_activities]
         
-        print(f"   🎯 Filtering by activities: {selected_activities}")
+            print(f"   Filtering by activities: {selected_activities}")
         
         # OR logic: Show tours that match ANY of the selected activities
         def tour_matches_any_activity(tour):
@@ -835,7 +835,7 @@ def apply_filters(tours, criteria):
             return False
         
         filtered_tours = [t for t in filtered_tours if tour_matches_any_activity(t)]
-        print(f"   ✅ After activity filter: {len(filtered_tours)} tours")
+        print(f"   After activity filter: {len(filtered_tours)} tours")
     
     if criteria.get('family') == True:
         filtered_tours = [t for t in filtered_tours if t['family_friendly']]
@@ -863,7 +863,7 @@ def filter_tours():
     equipment = request.args.get('equipment', '')
     company = request.args.get('company', '')
     
-    print(f"🔍 Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}")
+    print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}")
     
     # Load all tours in the specified language
     tours = load_all_tours(language)
