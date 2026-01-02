@@ -6386,91 +6386,69 @@
         border-radius: 4px !important;
       }
       
-      /* Stack sections vertically */
+      /* ============================================
+         TOUR DETAIL - ALL SECTIONS SCALED DOWN
+         ============================================ */
+      
+      /* Container */
+      #detail-content {
+        padding: 8px !important;
+        margin: 50px 5px 10px 5px !important;
+        width: calc(100% - 10px) !important;
+        max-width: 100% !important;
+      }
+      
+      /* All grids become single column */
       #detail-content > div[style*="display"],
       #detail-content > div[style*="grid"],
       #detail-content div[style*="grid-template-columns"] {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;
-        padding: 0 6px !important;
+        gap: 5px !important;
       }
       
-      /* ============================================
-         MAIN SECTIONS: What's Included, Highlights
-         Make these prominent and readable
-         ============================================ */
-      #detail-content div[class*="included"],
-      #detail-content div[class*="highlight"],
-      .tour-detail-page div[class*="included"],
-      .tour-detail-page div[class*="highlight"],
-      #detail-content > div > div:has(h3:is([class*="included"], :contains("Included"), :contains("Highlights"))) {
-        padding: 14px 16px !important;
-        margin: 6px 0 !important;
+      /* ALL sections - base small size */
+      #detail-content > div > div,
+      #detail-content section,
+      .tour-detail-page .info-card {
+        padding: 8px 10px !important;
+        margin: 4px 0 !important;
+        border-radius: 8px !important;
         width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
       }
       
-      #detail-content div[class*="included"] h3,
-      #detail-content div[class*="highlight"] h3 {
-        font-size: 1rem !important;
-        margin-bottom: 10px !important;
-      }
-      
-      #detail-content div[class*="included"] li,
-      #detail-content div[class*="highlight"] li {
+      /* ALL headings - small */
+      #detail-content h3 {
         font-size: 0.85rem !important;
-        line-height: 1.4 !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 5px !important;
       }
       
-      /* ============================================
-         ABOUT THIS TOUR - Full width, compact height
-         ============================================ */
-      #detail-content div[class*="about"],
-      .tour-detail-page div[class*="about"],
-      #detail-content > div > div:first-child {
-        width: 100% !important;
-        padding: 12px 14px !important;
-        margin: 6px 0 !important;
+      /* ALL text - small */
+      #detail-content p,
+      #detail-content li {
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 3px !important;
       }
       
-      #detail-content div[class*="about"] h3 {
+      /* ALL lists - compact */
+      #detail-content ul {
+        padding-left: 15px !important;
+        margin: 0 !important;
+      }
+      
+      /* Title */
+      #detail-title {
         font-size: 1rem !important;
-        margin-bottom: 8px !important;
+        margin: 8px 5px !important;
+        padding: 0 !important;
       }
       
-      #detail-content div[class*="about"] p {
-        font-size: 0.8rem !important;
-        line-height: 1.4 !important;
-      }
-      
-      /* ============================================
-         OTHER SECTIONS - Scale way down
-         Ages, Ideal For, Important Info, etc.
-         ============================================ */
-      #detail-content > div > div:not([class*="included"]):not([class*="highlight"]):not([class*="about"]):not([class*="pricing"]),
-      .tour-detail-page .info-card:not([class*="included"]):not([class*="highlight"]):not([class*="about"]) {
-        padding: 6px 8px !important;
-        margin: 3px 0 !important;
-      }
-      
-      #detail-content > div > div:not([class*="included"]):not([class*="highlight"]):not([class*="about"]):not([class*="pricing"]) h3 {
-        font-size: 0.75rem !important;
-        margin-bottom: 4px !important;
-      }
-      
-      #detail-content > div > div:not([class*="included"]):not([class*="highlight"]):not([class*="about"]):not([class*="pricing"]) p,
-      #detail-content > div > div:not([class*="included"]):not([class*="highlight"]):not([class*="about"]):not([class*="pricing"]) li {
-        font-size: 0.65rem !important;
-        line-height: 1.25 !important;
-        margin-bottom: 2px !important;
-      }
-      
-      /* Pricing section - compact */
-      .tour-detail-page .pricing-section,
-      #detail-content .pricing-section {
-        padding: 6px !important;
-        margin: 6px 0 !important;
+      /* Pricing */
+      .tour-detail-page .pricing-section {
+        padding: 8px !important;
       }
       
       .tour-detail-page .price-row,
@@ -6480,36 +6458,32 @@
         margin: 3px 0 !important;
       }
       
-      /* Title */
-      #detail-title,
-      .tour-detail-page h1 {
-        font-size: 1.1rem !important;
-        margin: 8px 6px !important;
-      }
-      
-      /* Company/duration chips */
+      /* Chips */
       .tour-detail-page .company-chip,
       .tour-detail-page .duration-badge {
-        font-size: 0.65rem !important;
+        font-size: 0.6rem !important;
         padding: 3px 6px !important;
       }
       
-      /* Important Information section - very compact */
-      #detail-content div[class*="important"],
-      #detail-content div[class*="info"]:not([class*="included"]) {
-        padding: 6px 8px !important;
-        font-size: 0.65rem !important;
+      /* ============================================
+         EXCEPTION: What's Included & Highlights
+         Slightly bigger than other sections
+         ============================================ */
+      #detail-content > div > div:nth-child(1),
+      #detail-content > div > div:nth-child(2) {
+        padding: 10px 12px !important;
       }
       
-      #detail-content div[class*="important"] h3,
-      #detail-content div[class*="info"]:not([class*="included"]) h3 {
-        font-size: 0.75rem !important;
+      #detail-content > div > div:nth-child(1) h3,
+      #detail-content > div > div:nth-child(2) h3 {
+        font-size: 0.95rem !important;
+        margin-bottom: 8px !important;
       }
       
-      #detail-content div[class*="important"] li,
-      #detail-content div[class*="info"]:not([class*="included"]) li {
-        font-size: 0.6rem !important;
-        margin-bottom: 2px !important;
+      #detail-content > div > div:nth-child(1) li,
+      #detail-content > div > div:nth-child(2) li {
+        font-size: 0.8rem !important;
+        margin-bottom: 5px !important;
       }
       
       /* HIDE QR code section completely on mobile */
