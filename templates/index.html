@@ -13988,10 +13988,11 @@
             });
           }
           
-          // Render quick info items - use grid for 2-3 items, full width for 1 or 4+
+          // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
+          const isMobile = window.innerWidth <= 768;
           if (quickInfoItems.length > 0) {
-            // If we have exactly 2 or 3 items, render in a grid for better symmetry
-            if (quickInfoItems.length === 2 || quickInfoItems.length === 3) {
+            // On mobile: always single column. On desktop: grid for 2-3 items
+            if (!isMobile && (quickInfoItems.length === 2 || quickInfoItems.length === 3)) {
               const gridCols = quickInfoItems.length === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
               info += `<div class="detail-section-grid" style="display:grid;grid-template-columns:${gridCols};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
               quickInfoItems.forEach((item) => {
@@ -14002,23 +14003,26 @@
               });
               info += '</div>';
             } else {
-              // For 1 or 4+ items, render full width
+              // Mobile OR 1 or 4+ items: render full width single column
               quickInfoItems.forEach((item) => {
-                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
-                info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
-                info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
+                const mobileStyles = isMobile ? 'width:94%;margin:0 3% 10px 3%;padding:15px;' : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;';
+                const headingSize = isMobile ? '1.1em' : '2.2em';
+                const textSize = isMobile ? '0.9em' : '1.25em';
+                info += `<div style="background:${item.color};backdrop-filter:blur(10px);${mobileStyles}border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+                info += `<h3 style="font-size:${headingSize};font-weight:700;color:${item.titleColor};margin:0 0 ${isMobile ? '8px' : '25px'} 0;">${item.icon} ${item.title}</h3>`;
+                info += `<div style="font-size:${textSize};color:#2c3e50;line-height:1.${isMobile ? '4' : '6'};">${item.content}</div>`;
                 info += '</div>';
               });
             }
           }
           
-          // ITINERARY & MENU - Side by side like Includes/Highlights, EXACT same styling
+          // ITINERARY & MENU - Side by side on desktop, single column on mobile
           const hasItinerary = data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A';
           const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
           
           if (hasItinerary || hasMenu) {
-            // If both exist, use side-by-side grid; if single, apply margin directly
-            if (hasItinerary && hasMenu) {
+            // If both exist AND desktop, use side-by-side grid; otherwise single column
+            if (hasItinerary && hasMenu && !isMobile) {
               info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
@@ -14052,13 +14056,13 @@
               info += '</div>';
             }
             
-            // Close grid if both exist
-            if (hasItinerary && hasMenu) {
+            // Close grid if both exist AND desktop
+            if (hasItinerary && hasMenu && !isMobile) {
               info += '</div>';
             }
           }
           
-          // INCLUDES & HIGHLIGHTS - Smart layout based on content length
+          // INCLUDES & HIGHLIGHTS - Single column on mobile, smart layout on desktop
           if (data.includes || data.highlights) {
             // Calculate content lengths to determine layout
             const includesLength = data.includes ? data.includes.length : 0;
@@ -14066,12 +14070,14 @@
             const bothExist = data.includes && data.highlights;
             const avgLength = bothExist ? (includesLength + highlightsLength) / 2 : (includesLength || highlightsLength);
             
-            // Use 2 columns (squares) if both exist and content is moderate length
-            // Otherwise use 1 column (full-width rectangles)
-            const useSquares = bothExist && avgLength < 400;
+            // Mobile: always single column. Desktop: 2 columns if both exist and content is moderate
+            const useSquares = !isMobile && bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
+            const containerStyle = isMobile 
+              ? 'display:flex;flex-direction:column;gap:10px;width:94%;margin:0 3% 10px 3%;'
+              : `display:grid;grid-template-columns:${columns};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;`;
             
-            info += `<div style="display:grid;grid-template-columns:${columns};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
+            info += `<div style="${containerStyle}">`;
             
             if (data.includes) {
               info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
@@ -14104,8 +14110,8 @@
           const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
           
           if (hasBring || hasExtra) {
-            // If both exist, use side-by-side grid; if single, apply margin directly
-            if (hasBring && hasExtra) {
+            // If both exist AND desktop, use side-by-side grid; otherwise single column
+            if (hasBring && hasExtra && !isMobile) {
               info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
@@ -14139,8 +14145,8 @@
             info += '</div>';
           }
           
-            // Close grid if both exist
-            if (hasBring && hasExtra) {
+            // Close grid if both exist AND desktop
+            if (hasBring && hasExtra && !isMobile) {
               info += '</div>';
             }
           }
