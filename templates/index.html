@@ -9595,14 +9595,14 @@
       </section>
 
       <!-- Info Grid (What's Included & Highlights) -->
-      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;">
+      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;gap:10px !important;">
         <!-- Cards will be populated by JavaScript -->
       </section>
 
       <!-- Description & Details -->
-      <section class="details-section" id="about-tour-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;">
-        <h3>About This Tour</h3>
-      <div id="detail-description"></div>
+      <section class="details-section" id="about-tour-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;border-radius:12px !important;">
+        <h3 style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;">About This Tour</h3>
+      <div id="detail-description" style="font-size:0.9em !important;line-height:1.4 !important;"></div>
       </section>
 
       <!-- Additional Info -->
@@ -13990,6 +13990,14 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
+          // MOBILE UNIFORM STYLES
+          const mPad = '15px';
+          const mGap = '10px';
+          const mRadius = '12px';
+          const mHeading = '1.1em';
+          const mText = '0.9em';
+          const mWidth = 'width:94%;margin:0 3% ' + mGap + ' 3%;';
+          
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
             if (!isMobile && (quickInfoItems.length === 2 || quickInfoItems.length === 3)) {
@@ -14005,12 +14013,15 @@
             } else {
               // Mobile OR 1 or 4+ items: render full width single column
               quickInfoItems.forEach((item) => {
-                const mobileStyles = isMobile ? 'width:94%;margin:0 3% 10px 3%;padding:15px;' : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;';
-                const headingSize = isMobile ? '1.1em' : '2.2em';
-                const textSize = isMobile ? '0.9em' : '1.25em';
-                info += `<div style="background:${item.color};backdrop-filter:blur(10px);${mobileStyles}border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-                info += `<h3 style="font-size:${headingSize};font-weight:700;color:${item.titleColor};margin:0 0 ${isMobile ? '8px' : '25px'} 0;">${item.icon} ${item.title}</h3>`;
-                info += `<div style="font-size:${textSize};color:#2c3e50;line-height:1.${isMobile ? '4' : '6'};">${item.content}</div>`;
+                const styles = isMobile 
+                  ? `${mWidth}padding:${mPad};border-radius:${mRadius};` 
+                  : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
+                const hSize = isMobile ? mHeading : '2.2em';
+                const tSize = isMobile ? mText : '1.25em';
+                const hMargin = isMobile ? '8px' : '25px';
+                info += `<div style="background:${item.color};backdrop-filter:blur(10px);${styles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+                info += `<h3 style="font-size:${hSize};font-weight:600;color:${item.titleColor};margin:0 0 ${hMargin} 0;">${item.icon} ${item.title}</h3>`;
+                info += `<div style="font-size:${tSize};color:#2c3e50;line-height:1.4;">${item.content}</div>`;
                 info += '</div>';
               });
             }
@@ -14064,86 +14075,101 @@
           
           // INCLUDES & HIGHLIGHTS - Single column on mobile, smart layout on desktop
           if (data.includes || data.highlights) {
-            // Calculate content lengths to determine layout
             const includesLength = data.includes ? data.includes.length : 0;
             const highlightsLength = data.highlights ? data.highlights.length : 0;
             const bothExist = data.includes && data.highlights;
             const avgLength = bothExist ? (includesLength + highlightsLength) / 2 : (includesLength || highlightsLength);
             
-            // Mobile: always single column. Desktop: 2 columns if both exist and content is moderate
             const useSquares = !isMobile && bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             const containerStyle = isMobile 
-              ? 'display:flex;flex-direction:column;gap:10px;width:94%;margin:0 3% 10px 3%;'
+              ? `display:flex;flex-direction:column;gap:${mGap};width:94%;margin:0 3% ${mGap} 3%;`
               : `display:grid;grid-template-columns:${columns};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;`;
             
             info += `<div style="${containerStyle}">`;
             
             if (data.includes) {
-              info += '<div style="background:#e8f5e9;padding:25px;border-radius:12px;border-left:5px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
-              info += '<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:1.6em;">✅ ' + t('whats_included') + '</h3>';
+              const incPad = isMobile ? mPad : '25px';
+              const incHead = isMobile ? mHeading : '1.6em';
+              const incText = isMobile ? mText : '1.15em';
+              info += `<div style="background:#e8f5e9;padding:${incPad};border-radius:${mRadius};border-left:4px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              info += `<div style="font-size:1.15em;line-height:1.8;color:#2c3e50;">${formattedIncludes}</div>`;
+              info += `<div style="font-size:${incText};line-height:1.4;color:#2c3e50;">${formattedIncludes}</div>`;
               info += '</div>';
             }
             if (data.highlights) {
-              info += '<div style="background:#fff3e0;padding:25px;border-radius:12px;border-left:5px solid #ff9800;box-shadow:0 8px 20px rgba(0,0,0,0.15);">';
-              info += '<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:1.6em;">⭐ ' + t('highlights') + '</h3>';
+              const hlPad = isMobile ? mPad : '25px';
+              const hlHead = isMobile ? mHeading : '1.6em';
+              const hlText = isMobile ? mText : '1.15em';
+              info += `<div style="background:#fff3e0;padding:${hlPad};border-radius:${mRadius};border-left:4px solid #ff9800;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              info += `<div style="font-size:1.15em;line-height:1.8;color:#2c3e50;">${formattedHighlights}</div>`;
+              info += `<div style="font-size:${hlText};line-height:1.4;color:#2c3e50;">${formattedHighlights}</div>`;
               info += '</div>';
             }
             info += '</div>';
           }
           
-          // IMPORTANT INFORMATION SECTION (Separate card - full width, new white style)
+          // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⚠️ ' + t('important_information') + '</h3>';
+            const impStyles = isMobile 
+              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
+            const impHead = isMobile ? mHeading : '2.2em';
+            const impText = isMobile ? mText : '1.25em';
+            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${impStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+            info += `<h3 style="font-size:${impHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">⚠️ ${t('important_information')}</h3>`;
             let formattedInfo = cleanBracketFormatting(data.important_information);
-            info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedInfo}</div>`;
+            info += `<div style="font-size:${impText};color:#2c3e50;line-height:1.4;">${formattedInfo}</div>`;
             info += '</div>';
           }
           
-          // WHAT TO BRING & WHAT'S EXTRA - Side by side like Includes/Highlights, EXACT same styling
+          // WHAT TO BRING & WHAT'S EXTRA
           const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
           const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
           
           if (hasBring || hasExtra) {
-            // If both exist AND desktop, use side-by-side grid; otherwise single column
+            // Desktop: side-by-side grid. Mobile: single column
             if (hasBring && hasExtra && !isMobile) {
               info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
             if (hasBring) {
-              // Match .info-card styling EXACTLY
-              const bringMargin = !hasExtra ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
-              info += '<div style="' + bringMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-              info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🎒 ' + t('what_to_bring') + '</h3>';
-            let formattedBring = cleanBracketFormatting(data.what_to_bring);
-              // Convert to list items with blue checkmarks
+              const bStyles = isMobile 
+                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+                : (!hasExtra ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
+              const bHead = isMobile ? mHeading : '2.2em';
+              const bText = isMobile ? mText : '1.25em';
+              const bGap = isMobile ? '8px' : '15px';
+              info += `<div style="${bStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="font-size:${bHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">🎒 ${t('what_to_bring')}</h3>`;
+              let formattedBring = cleanBracketFormatting(data.what_to_bring);
               formattedBring = formattedBring
-                .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
-                .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
+                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${bGap};">`)
+                .replace(/<li[^>]*>/gi, `<li style="font-size:${bText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
-              info += formattedBring || '<div style="color:#666;font-size:1.15em;">No items specified</div>';
-            info += '</div>';
-          }
+              info += formattedBring || `<div style="color:#666;font-size:${bText};">No items specified</div>`;
+              info += '</div>';
+            }
           
             if (hasExtra) {
-              // Match .info-card styling EXACTLY
-              const extraMargin = !hasBring ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
-              info += '<div style="' + extraMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-              info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">💰 ' + t('whats_extra') + '</h3>';
-            let formattedExtra = cleanBracketFormatting(data.whats_extra);
-              // Convert to list items with blue checkmarks
+              const eStyles = isMobile 
+                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+                : (!hasBring ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
+              const eHead = isMobile ? mHeading : '2.2em';
+              const eText = isMobile ? mText : '1.25em';
+              const eGap = isMobile ? '8px' : '15px';
+              info += `<div style="${eStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="font-size:${eHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">💰 ${t('whats_extra')}</h3>`;
+              let formattedExtra = cleanBracketFormatting(data.whats_extra);
               formattedExtra = formattedExtra
-                .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
-                .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
+                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${eGap};">`)
+                .replace(/<li[^>]*>/gi, `<li style="font-size:${eText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
-              info += formattedExtra || '<div style="color:#666;font-size:1.15em;">No extra costs specified</div>';
-            info += '</div>';
-          }
+              info += formattedExtra || `<div style="color:#666;font-size:${eText};">No extra costs specified</div>`;
+              info += '</div>';
+            }
           
             // Close grid if both exist AND desktop
             if (hasBring && hasExtra && !isMobile) {
@@ -14151,12 +14177,17 @@
             }
           }
           
-          // CANCELLATION POLICY SECTION (Separate card - full width, new white style)
+          // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📋 ' + t('cancellation_policy') + '</h3>';
+            const cpStyles = isMobile 
+              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
+            const cpHead = isMobile ? mHeading : '2.2em';
+            const cpText = isMobile ? mText : '1.25em';
+            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${cpStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+            info += `<h3 style="font-size:${cpHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📋 ${t('cancellation_policy')}</h3>`;
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
-            info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${formattedPolicy}</div>`;
+            info += `<div style="font-size:${cpText};color:#2c3e50;line-height:1.4;">${formattedPolicy}</div>`;
             info += '</div>';
           }
           
@@ -14170,12 +14201,18 @@
             info += '</em></p></div>';
           }
           
-          // DEPARTURE LOCATION SECTION (Full width)
+          // DEPARTURE LOCATION SECTION
           if (data.departure_location && data.departure_location.trim()) {
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📍 Departure Location</h3>';
-            info += `<div style="font-size:1.4em;font-weight:600;color:#2c3e50;margin-bottom:15px;">${data.departure_location}</div>`;
-            info += '<div style="font-size:1.1em;color:#666;line-height:1.7;margin-bottom:20px;">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>';
+            const depStyles = isMobile 
+              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
+            const depHead = isMobile ? mHeading : '2.2em';
+            const depLoc = isMobile ? '1em' : '1.4em';
+            const depText = isMobile ? mText : '1.1em';
+            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${depStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+            info += `<h3 style="font-size:${depHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📍 Departure Location</h3>`;
+            info += `<div style="font-size:${depLoc};font-weight:600;color:#2c3e50;margin-bottom:8px;">${data.departure_location}</div>`;
+            info += `<div style="font-size:${depText};color:#666;line-height:1.4;margin-bottom:${isMobile ? '10px' : '20px'};">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>`;
             
             // Add mini map if coordinates are available
             const coords = getCoordinatesForLocation(data.departure_location);
