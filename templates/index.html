@@ -49,33 +49,52 @@
       
       /* Header - simplified for mobile */
       .kiosk-header {
-        padding: 8px 10px !important;
-        gap: 8px !important;
+        padding: 8px 8px !important;
+        gap: 0 !important;
         flex-wrap: nowrap !important;
         justify-content: space-between !important;
         align-items: center !important;
+        width: 100% !important;
       }
       
       .kiosk-header .header-left {
-        flex: 1 !important;
+        flex: 0 0 auto !important;
         gap: 6px !important;
         flex-wrap: nowrap !important;
         min-width: 0 !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
       }
       
       .kiosk-header .header-right {
         flex: 0 0 auto !important;
-        gap: 5px !important;
+        gap: 6px !important;
         flex-wrap: nowrap !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
       }
       
-      .kiosk-header button,
-      .kiosk-header .chip {
+      .kiosk-header button {
         padding: 8px 12px !important;
         font-size: 0.7rem !important;
         min-width: auto !important;
         white-space: nowrap !important;
         border-radius: 20px !important;
+      }
+      
+      /* Language/Currency chips - SAME SIZE */
+      .kiosk-header .chip {
+        padding: 0 !important;
+        font-size: 0.7rem !important;
+        min-width: 42px !important;
+        width: 42px !important;
+        max-width: 42px !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 18px !important;
       }
       
       /* Hide logo on mobile - takes too much space */
@@ -90,12 +109,14 @@
         display: none !important;
       }
       
-      /* Back button smaller */
+      /* Back button - far left */
       .kiosk-header .back-button {
         width: 36px !important;
         height: 36px !important;
+        min-width: 36px !important;
         padding: 0 !important;
         font-size: 1.2rem !important;
+        margin-right: 6px !important;
       }
       
       /* Dropdowns - proper positioning and hidden by default */
@@ -8260,6 +8281,17 @@
         display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
+        background: transparent !important;
+      }
+      
+      /* Preserve colored backgrounds for Highlights/What's Included */
+      #info-grid > div > div[style*="background:#fff3e0"],
+      #info-grid div[style*="background:#fff3e0"] {
+        background: #fff3e0 !important;
+      }
+      #info-grid > div > div[style*="background:#e8f5e9"],
+      #info-grid div[style*="background:#e8f5e9"] {
+        background: #e8f5e9 !important;
       }
       
       /* Info cards inside info-grid */
