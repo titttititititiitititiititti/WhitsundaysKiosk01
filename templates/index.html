@@ -38,6 +38,151 @@
       overflow-x: hidden; /* Prevent horizontal scroll */
     }
     
+    /* =======================================================================
+       MOBILE PROPORTIONAL SCALING - DO NOT TOUCH
+       This scales the entire app proportionally on mobile devices
+       ======================================================================= */
+    @media (max-width: 768px) {
+      html {
+        font-size: clamp(11px, 2.2vw, 14px);
+      }
+      
+      /* Header - single row, compact */
+      .kiosk-header {
+        padding: 8px 10px !important;
+        gap: 5px !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+      }
+      
+      .kiosk-header .header-left,
+      .kiosk-header .header-right {
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+      }
+      
+      .kiosk-header button,
+      .kiosk-header .chip {
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+        min-width: auto !important;
+        white-space: nowrap !important;
+      }
+      
+      .kiosk-header .logo-image {
+        height: 35px !important;
+        max-width: 80px !important;
+      }
+      
+      /* Hide less important header buttons on small screens */
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header #home-map-toggle-btn {
+        display: none !important;
+      }
+      
+      /* Dropdowns - proper positioning */
+      .language-menu,
+      .currency-menu {
+        position: fixed !important;
+        top: 60px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+        z-index: 999999 !important;
+      }
+      
+      /* Weather widget - smaller and repositioned */
+      .weather-widget-launcher {
+        width: 55px !important;
+        height: 55px !important;
+        bottom: 12px !important;
+        right: 12px !important;
+        font-size: 1.6em !important;
+      }
+      
+      .weather-widget {
+        bottom: 75px !important;
+        right: 8px !important;
+        left: 8px !important;
+        width: auto !important;
+        max-width: none !important;
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+      }
+      
+      /* Question cards and buttons - proportional */
+      .video-question-card,
+      .filter-question-card {
+        padding: 15px !important;
+        margin: 10px !important;
+      }
+      
+      .vq-question,
+      .hero-question {
+        font-size: 1.3rem !important;
+        margin-bottom: 15px !important;
+      }
+      
+      .vq-answer-btn,
+      .duration-pill {
+        padding: 12px 15px !important;
+        font-size: 0.9rem !important;
+        min-height: 50px !important;
+      }
+      
+      .duration-grid,
+      .vq-answers {
+        gap: 10px !important;
+      }
+      
+      /* Swipe buttons */
+      .swipe-btn {
+        width: 70px !important;
+        height: 70px !important;
+      }
+      
+      .swipe-btn-icon {
+        font-size: 1.5em !important;
+      }
+      
+      .swipe-btn-text {
+        font-size: 0.6em !important;
+      }
+      
+      /* Search bar */
+      #home-search-input {
+        font-size: 1rem !important;
+        padding: 12px 15px 12px 45px !important;
+      }
+      
+      /* Tour cards */
+      .carousel-card,
+      .tour-card {
+        min-width: 250px !important;
+      }
+    }
+    
+    /* Extra small screens */
+    @media (max-width: 400px) {
+      html {
+        font-size: clamp(10px, 2.5vw, 12px);
+      }
+      
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .browse-all-btn-header {
+        font-size: 0.65rem !important;
+        padding: 5px 8px !important;
+      }
+      
+      .weather-widget-launcher {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.4em !important;
+      }
+    }
+    
     html::-webkit-scrollbar {
       display: none; /* Chrome, Safari, Opera */
     }
@@ -5725,24 +5870,7 @@
       color: #b71c1c !important;
     }
     
-    /* Weather Widget Mobile Styles */
-    @media (max-width: 768px) {
-      .weather-widget-launcher {
-        width: 65px !important;
-        height: 65px !important;
-        bottom: 15px !important;
-        right: 15px !important;
-        font-size: 2em !important;
-      }
-      
-      .weather-widget {
-        bottom: 90px !important;
-        right: 10px !important;
-        left: 10px !important;
-        width: auto !important;
-        max-width: none !important;
-      }
-    }
+    /* Weather Widget Mobile Styles - Handled in main mobile block at top */
     
     .leaflet-popup-content-wrapper {
       border-radius: 12px;
@@ -7916,24 +8044,11 @@
         font-size: 0.95em !important;
       }
       
+      /* Swipe buttons - handled in main mobile block at top */
       .swipe-actions {
         flex-direction: row !important;
-        gap: 15px !important;
-        padding: 15px !important;
-      }
-      
-      .swipe-btn {
-        width: 90px !important;
-        height: 90px !important;
-        padding: 0 !important;
-      }
-      
-      .swipe-btn-icon {
-        font-size: 1.8em !important;
-      }
-      
-      .swipe-btn-text {
-        font-size: 0.7em !important;
+        gap: 12px !important;
+        padding: 10px !important;
       }
       
       /* Progress bar */
