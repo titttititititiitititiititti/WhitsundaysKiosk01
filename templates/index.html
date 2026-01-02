@@ -13364,45 +13364,21 @@
         }
       }
       
-      // Create info-grid cards for What's Included and Highlights
+      // Info-grid (Highlights/Includes) is now populated directly by renderInfoSections
+      // Only process if info-grid is empty (backwards compatibility)
       const infoGrid = document.getElementById('info-grid');
-      if (infoGrid && detailInfo) {
-        infoGrid.innerHTML = '';
-        
+      if (infoGrid && infoGrid.innerHTML.trim() === '' && detailInfo) {
         // Find includes and highlights sections by border color (works in any language)
-        const includesSection = detailInfo.querySelector('div[style*="border-left:5px solid #4caf50"]');
-        const highlightsSection = detailInfo.querySelector('div[style*="border-left:5px solid #ff9800"]');
+        const includesSection = detailInfo.querySelector('div[style*="border-left:4px solid #4caf50"], div[style*="border-left:5px solid #4caf50"]');
+        const highlightsSection = detailInfo.querySelector('div[style*="border-left:4px solid #ff9800"], div[style*="border-left:5px solid #ff9800"]');
         
         if (includesSection || highlightsSection) {
-          // Create What's Included card
           if (includesSection) {
-            const includesCard = document.createElement('article');
-            includesCard.className = 'info-card';
-            const heading = includesSection.querySelector('h3');
-            const headingText = heading ? heading.textContent : 'What\'s Included';
-            includesCard.innerHTML = `
-              <h3>${headingText}</h3>
-              <ul>
-                ${extractListItems(includesSection.innerHTML)}
-              </ul>
-            `;
-            infoGrid.appendChild(includesCard);
+            infoGrid.appendChild(includesSection.cloneNode(true));
             includesSection.remove();
           }
-          
-          // Create Highlights card
           if (highlightsSection) {
-            const highlightsCard = document.createElement('article');
-            highlightsCard.className = 'info-card';
-            const heading = highlightsSection.querySelector('h3');
-            const headingText = heading ? heading.textContent : 'Highlights';
-            highlightsCard.innerHTML = `
-              <h3>${headingText}</h3>
-              <ul>
-                ${extractListItems(highlightsSection.innerHTML)}
-              </ul>
-            `;
-            infoGrid.appendChild(highlightsCard);
+            infoGrid.appendChild(highlightsSection.cloneNode(true));
             highlightsSection.remove();
           }
         }
@@ -14062,36 +14038,42 @@
           const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
           
           if (hasItinerary || hasMenu) {
-            // If both exist AND desktop, use side-by-side grid; otherwise single column
+            // Desktop: side-by-side grid. Mobile: single column
             if (hasItinerary && hasMenu && !isMobile) {
               info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
             }
             
             if (hasItinerary) {
-              // Match .info-card styling EXACTLY
-              const itineraryMargin = !hasMenu ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
-              info += '<div style="' + itineraryMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-              info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">📅 ' + t('itinerary') + '</h3>';
+              const itStyles = isMobile 
+                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+                : (!hasMenu ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
+              const itHead = isMobile ? mHeading : '2.2em';
+              const itText = isMobile ? mText : '1.25em';
+              const itGap = isMobile ? '8px' : '15px';
+              info += `<div style="${itStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="font-size:${itHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📅 ${t('itinerary')}</h3>`;
               let formattedItinerary = cleanBracketFormatting(data.itinerary);
-              // Convert to list items with blue checkmarks
               formattedItinerary = formattedItinerary
-                .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
-                .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
+                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${itGap};">`)
+                .replace(/<li[^>]*>/gi, `<li style="font-size:${itText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
               info += formattedItinerary;
-            info += '</div>';
+              info += '</div>';
             }
             
             if (hasMenu) {
-              // Match .info-card styling EXACTLY
-              const menuMargin = !hasItinerary ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;' : '';
-              info += '<div style="' + menuMargin + 'background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">';
-              info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">🍽️ ' + t('menu') + '</h3>';
+              const mnStyles = isMobile 
+                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+                : (!hasItinerary ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
+              const mnHead = isMobile ? mHeading : '2.2em';
+              const mnText = isMobile ? mText : '1.25em';
+              const mnGap = isMobile ? '8px' : '15px';
+              info += `<div style="${mnStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              info += `<h3 style="font-size:${mnHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">🍽️ ${t('menu')}</h3>`;
               let formattedMenu = cleanBracketFormatting(data.menu);
-              // Convert to list items with blue checkmarks
               formattedMenu = formattedMenu
-                .replace(/<ul[^>]*>/gi, '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:15px;">')
-                .replace(/<li[^>]*>/gi, '<li style="font-size:1.25em;color:#2c3e50;padding-left:40px;position:relative;line-height:1.6;"><span style="content:\'\';position:absolute;left:0;color:#00b4d8;font-weight:900;font-size:1.4em;top:1px;">✓</span> ')
+                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${mnGap};">`)
+                .replace(/<li[^>]*>/gi, `<li style="font-size:${mnText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
               info += formattedMenu;
               info += '</div>';
