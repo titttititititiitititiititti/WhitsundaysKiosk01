@@ -239,13 +239,17 @@
         margin: 0 !important;
       }
       
-      /* Info cards - side by side like swipe view */
+      /* Info cards - SINGLE COLUMN on mobile */
       .tour-detail-page .info-sections,
-      .tour-detail-page .detail-sections {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-        padding: 0 10px !important;
+      .tour-detail-page .detail-sections,
+      .tour-detail-page .info-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
       
       .tour-detail-page .info-card,
@@ -8072,6 +8076,74 @@
       .tour-detail-page .pricing-section p {
         font-size: 0.9em !important;
         margin: 5px 0 !important;
+      }
+      
+      /* =============================================
+         FORCE ALL TOUR DETAIL CONTENT TO FULL WIDTH
+         ============================================= */
+      
+      /* Detail-info container - single column, full width */
+      .tour-detail-page #detail-info,
+      #detail-info {
+        display: flex !important;
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 8px !important;
+      }
+      
+      /* Fine-print section - full width */
+      .tour-detail-page .fine-print,
+      .fine-print,
+      #fine-print {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 8px 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* ALL divs inside detail-info - full width, stacked */
+      .tour-detail-page #detail-info > div,
+      #detail-info > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        margin: 0 0 8px 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+        flex: 0 0 100% !important;
+      }
+      
+      /* Override any inline styles on divs with border-left */
+      .tour-detail-page div[style*="border-left"],
+      div[style*="border-left"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 8px 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Tour hero section - full width */
+      .tour-detail-page .tour-hero {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 8px 0 !important;
+        margin: 0 !important;
+      }
+      
+      /* Tour summary text - full width */
+      .tour-detail-page .tour-summary,
+      .tour-detail-page #detail-summary {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 0.95em !important;
+        line-height: 1.4 !important;
+        margin: 8px 0 !important;
       }
       
       /* Make weather and chat widgets visible and properly styled */
