@@ -3789,6 +3789,23 @@
         padding: 20px 24px !important;
         font-size: 1.3em !important;
       }
+      
+      /* Tour detail footer - small round buttons on mobile */
+      .tour-detail-footer {
+        bottom: 10px !important;
+        gap: 8px !important;
+        padding: 0 8px !important;
+      }
+      
+      .tour-detail-footer button {
+        padding: 10px 14px !important;
+        font-size: 0.75em !important;
+        font-weight: 600 !important;
+        border-radius: 20px !important;
+        min-width: auto !important;
+        flex: 1 !important;
+        white-space: nowrap !important;
+      }
     }
     
     /* ===================================================================
@@ -7046,17 +7063,21 @@
       /* Reduce fixed widths */
       /* Global header mobile styles */
       .global-header {
-        height: 60px !important;
-        padding: 10px 15px !important;
+        height: 55px !important;
+        padding: 8px 10px !important;
+        justify-content: space-between !important;
       }
       
       .global-back-button {
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.5em !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        font-size: 1.1em !important;
         flex-shrink: 0 !important;
         z-index: 10001 !important;
         display: flex !important;
+        margin-left: 0 !important;
       }
       
       .global-logo-image {
@@ -7069,25 +7090,34 @@
       }
       
       .global-header-left {
-        gap: 10px !important;
+        gap: 8px !important;
         flex: 0 0 auto !important;
-        min-width: 50px !important;
+        min-width: auto !important;
         z-index: 10001 !important;
+        margin-left: 0 !important;
       }
       
       .global-header-right {
-        gap: 8px !important;
+        gap: 6px !important;
         flex: 0 0 auto !important;
         justify-content: flex-end !important;
         z-index: 10001 !important;
+        margin-right: 0 !important;
       }
       
+      /* Language & Currency buttons - SAME SIZE */
       .global-header .chip {
-        font-size: 0.75em !important;
-        padding: 6px 10px !important;
-        min-height: 32px !important;
-        height: 32px !important;
+        font-size: 0.7em !important;
+        padding: 0 !important;
+        min-height: 36px !important;
+        height: 36px !important;
+        width: 45px !important;
         min-width: 45px !important;
+        max-width: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 18px !important;
       }
       
       .page {
@@ -9625,10 +9655,10 @@
     </main>
 
     <!-- Sticky Footer -->
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 999999;">
-      <button class="btn-tertiary" id="share-tour-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Share Tour</button>
-      <button class="btn-primary" id="book-now-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Book Now</button>
-      <button class="btn-secondary" id="continue-phone-btn" style="padding: 22px 40px; font-size: 1.4em; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 12px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">Send to My Phone</button>
+    <div class="tour-detail-footer" style="position: fixed; bottom: 15px; left: 0; right: 0; display: flex; justify-content: center; gap: 10px; z-index: 999999; padding: 0 10px;">
+      <button class="btn-tertiary" id="share-tour-btn" style="padding: 12px 18px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Share Tour</button>
+      <button class="btn-primary" id="book-now-btn" style="padding: 12px 22px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn" style="padding: 12px 18px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Send to My Phone</button>
     </div>
   </div>
   
