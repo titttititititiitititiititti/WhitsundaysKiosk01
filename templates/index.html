@@ -2279,10 +2279,12 @@
     }
     
     /* Kiosk Header */
-    /* Hide mobile-only emoji buttons on desktop */
-    .mobile-quick-btn,
-    .mobile-ai-btn {
-      display: none !important;
+    /* Hide mobile-only emoji buttons on desktop (NOT on mobile) */
+    @media (min-width: 769px) {
+      .mobile-quick-btn,
+      .mobile-ai-btn {
+        display: none !important;
+      }
     }
     
     /* Global Header - Always visible on all pages */
@@ -8323,12 +8325,24 @@
       }
       
       /* Preserve colored backgrounds for Highlights/What's Included */
-      #info-grid > div > div[style*="background:#fff3e0"],
-      #info-grid div[style*="background:#fff3e0"] {
+      #info-grid div[style*="border-left:4px solid #ff9800"],
+      #info-grid div[style*="border-left: 4px solid #ff9800"],
+      section.info-grid div[style*="ff9800"] {
+        background: #fff3e0 !important;
+        background-color: #fff3e0 !important;
+      }
+      #info-grid div[style*="border-left:4px solid #4caf50"],
+      #info-grid div[style*="border-left: 4px solid #4caf50"],
+      section.info-grid div[style*="4caf50"] {
+        background: #e8f5e9 !important;
+        background-color: #e8f5e9 !important;
+      }
+      
+      /* Force backgrounds on all info-grid children */
+      #info-grid > div > div:first-child {
         background: #fff3e0 !important;
       }
-      #info-grid > div > div[style*="background:#e8f5e9"],
-      #info-grid div[style*="background:#e8f5e9"] {
+      #info-grid > div > div:last-child {
         background: #e8f5e9 !important;
       }
       
@@ -9631,6 +9645,8 @@
     <header class="kiosk-header">
       <div class="header-left">
         <button class="back-button" id="back-arrow">←</button>
+        <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
+        <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
         <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
         <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
       </div>
