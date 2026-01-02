@@ -225,31 +225,51 @@
         max-width: 300px !important;
       }
       
-      /* Tour detail page - full width */
+      /* Tour detail page - MATCH swipe card layout */
       .tour-detail-page {
         padding: 0 !important;
       }
       
-      .tour-detail-page .tour-detail-content {
+      .tour-detail-page .tour-detail-content,
+      .tour-detail-page .detail-content,
+      .tour-detail-page > div {
         max-width: 100% !important;
         width: 100% !important;
-        padding: 10px !important;
+        padding: 0 10px !important;
+        margin: 0 !important;
       }
       
-      .tour-detail-page .info-card {
-        margin: 10px 0 !important;
-        padding: 15px !important;
+      /* Info cards - side by side like swipe view */
+      .tour-detail-page .info-sections,
+      .tour-detail-page .detail-sections {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        padding: 0 10px !important;
+      }
+      
+      .tour-detail-page .info-card,
+      .tour-detail-page .detail-section {
+        margin: 0 !important;
+        padding: 12px !important;
         width: 100% !important;
         max-width: 100% !important;
+        border-radius: 12px !important;
       }
       
-      .tour-detail-page .info-card h3 {
-        font-size: 1.1rem !important;
+      .tour-detail-page .info-card h3,
+      .tour-detail-page .detail-section h3 {
+        font-size: 1rem !important;
+        margin-bottom: 8px !important;
       }
       
       .tour-detail-page .info-card p,
-      .tour-detail-page .info-card li {
-        font-size: 0.9rem !important;
+      .tour-detail-page .info-card li,
+      .tour-detail-page .detail-section p,
+      .tour-detail-page .detail-section li {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 6px !important;
       }
       
       /* Pricing section full width */
@@ -257,32 +277,54 @@
         width: 100% !important;
         max-width: 100% !important;
         padding: 10px !important;
+        margin: 10px 0 !important;
       }
       
       .tour-detail-page .price-row,
-      .tour-detail-page .pricing-card {
-        padding: 12px !important;
-        margin: 8px 0 !important;
-        font-size: 0.9rem !important;
+      .tour-detail-page .pricing-card,
+      .tour-detail-page .price-option {
+        padding: 10px 12px !important;
+        margin: 6px 0 !important;
+        font-size: 0.85rem !important;
       }
       
       /* Gallery */
       .tour-detail-page .image-gallery {
-        height: 200px !important;
+        height: 180px !important;
+        margin: 0 10px !important;
+      }
+      
+      /* HIDE QR Code section on mobile */
+      .tour-detail-page .qr-section,
+      .tour-detail-page [class*="qr-code"],
+      .tour-detail-page [class*="scan-to-book"],
+      .qr-code-section,
+      .scan-to-book,
+      #qr-section,
+      [id*="qr-code"],
+      [id*="scan-book"] {
+        display: none !important;
       }
       
       /* Footer buttons */
       .detail-footer {
-        padding: 10px !important;
+        padding: 8px 10px !important;
       }
       
       .detail-footer-inner {
-        gap: 8px !important;
+        gap: 6px !important;
       }
       
       .detail-footer button {
-        padding: 12px 15px !important;
-        font-size: 0.85rem !important;
+        padding: 10px 12px !important;
+        font-size: 0.8rem !important;
+      }
+      
+      /* About This Tour - single column full width */
+      .tour-detail-page .about-section,
+      .tour-detail-page .tour-description {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
       }
     }
     
