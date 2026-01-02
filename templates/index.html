@@ -14073,7 +14073,8 @@
             }
           }
           
-          // INCLUDES & HIGHLIGHTS - Single column on mobile, smart layout on desktop
+          // INCLUDES & HIGHLIGHTS - Goes into info-grid (before About This Tour)
+          let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
             const includesLength = data.includes ? data.includes.length : 0;
             const highlightsLength = data.highlights ? data.highlights.length : 0;
@@ -14083,33 +14084,37 @@
             const useSquares = !isMobile && bothExist && avgLength < 400;
             const columns = useSquares ? '1fr 1fr' : '1fr';
             const containerStyle = isMobile 
-              ? `display:flex;flex-direction:column;gap:${mGap};width:94%;margin:0 3% ${mGap} 3%;`
-              : `display:grid;grid-template-columns:${columns};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;`;
+              ? `display:flex;flex-direction:column;gap:${mGap};`
+              : `display:grid;grid-template-columns:${columns};gap:30px;`;
             
-            info += `<div style="${containerStyle}">`;
+            highlightsIncludesHtml += `<div style="${containerStyle}">`;
             
-            if (data.includes) {
-              const incPad = isMobile ? mPad : '25px';
-              const incHead = isMobile ? mHeading : '1.6em';
-              const incText = isMobile ? mText : '1.15em';
-              info += `<div style="background:#e8f5e9;padding:${incPad};border-radius:${mRadius};border-left:4px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
-              let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              info += `<div style="font-size:${incText};line-height:1.4;color:#2c3e50;">${formattedIncludes}</div>`;
-              info += '</div>';
-            }
+            // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
               const hlPad = isMobile ? mPad : '25px';
               const hlHead = isMobile ? mHeading : '1.6em';
               const hlText = isMobile ? mText : '1.15em';
-              info += `<div style="background:#fff3e0;padding:${hlPad};border-radius:${mRadius};border-left:4px solid #ff9800;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
+              highlightsIncludesHtml += `<div style="background:#fff3e0;padding:${hlPad};border-radius:${mRadius};border-left:4px solid #ff9800;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              info += `<div style="font-size:${hlText};line-height:1.4;color:#2c3e50;">${formattedHighlights}</div>`;
-              info += '</div>';
+              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.4;color:#2c3e50;">${formattedHighlights}</div>`;
+              highlightsIncludesHtml += '</div>';
             }
-            info += '</div>';
+            // WHAT'S INCLUDED SECOND
+            if (data.includes) {
+              const incPad = isMobile ? mPad : '25px';
+              const incHead = isMobile ? mHeading : '1.6em';
+              const incText = isMobile ? mText : '1.15em';
+              highlightsIncludesHtml += `<div style="background:#e8f5e9;padding:${incPad};border-radius:${mRadius};border-left:4px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
+              let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.4;color:#2c3e50;">${formattedIncludes}</div>`;
+              highlightsIncludesHtml += '</div>';
+            }
+            highlightsIncludesHtml += '</div>';
           }
+          // Set highlights/includes into info-grid element (positioned before About This Tour)
+          document.getElementById('info-grid').innerHTML = highlightsIncludesHtml;
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
