@@ -47,50 +47,110 @@
         font-size: clamp(11px, 2.2vw, 14px);
       }
       
-      /* Header - single row, compact */
+      /* Header - simplified for mobile */
       .kiosk-header {
         padding: 8px 10px !important;
-        gap: 5px !important;
+        gap: 8px !important;
         flex-wrap: nowrap !important;
         justify-content: space-between !important;
+        align-items: center !important;
       }
       
-      .kiosk-header .header-left,
+      .kiosk-header .header-left {
+        flex: 1 !important;
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+        min-width: 0 !important;
+      }
+      
       .kiosk-header .header-right {
-        gap: 4px !important;
+        flex: 0 0 auto !important;
+        gap: 5px !important;
         flex-wrap: nowrap !important;
       }
       
       .kiosk-header button,
       .kiosk-header .chip {
-        padding: 6px 10px !important;
-        font-size: 0.75rem !important;
+        padding: 8px 12px !important;
+        font-size: 0.7rem !important;
         min-width: auto !important;
         white-space: nowrap !important;
+        border-radius: 20px !important;
       }
       
+      /* Hide logo on mobile - takes too much space */
       .kiosk-header .logo-image {
-        height: 35px !important;
-        max-width: 80px !important;
-      }
-      
-      /* Hide less important header buttons on small screens */
-      .kiosk-header .ai-assistant-btn-header,
-      .kiosk-header #home-map-toggle-btn {
         display: none !important;
       }
       
-      /* Dropdowns - proper positioning */
+      /* Hide less important header buttons on mobile */
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header #home-map-toggle-btn,
+      .kiosk-header .browse-all-btn-header {
+        display: none !important;
+      }
+      
+      /* Back button smaller */
+      .kiosk-header .back-button {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        font-size: 1.2rem !important;
+      }
+      
+      /* Dropdowns - proper positioning and hidden by default */
       .language-menu,
       .currency-menu {
         position: fixed !important;
-        top: 60px !important;
-        left: 10px !important;
-        right: 10px !important;
-        width: auto !important;
-        max-height: 70vh !important;
+        top: 55px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: 90vw !important;
+        max-width: 300px !important;
+        max-height: 60vh !important;
         overflow-y: auto !important;
         z-index: 999999 !important;
+        display: none !important;
+        background: white !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3) !important;
+        padding: 8px 0 !important;
+      }
+      
+      .language-menu[style*="display: block"],
+      .language-menu[style*="display:block"],
+      .currency-menu[style*="display: block"],
+      .currency-menu[style*="display:block"] {
+        display: block !important;
+      }
+      
+      /* Full width content on mobile */
+      .tour-detail-page .info-card,
+      .tour-detail-page .pricing-section,
+      .tour-detail-page .detail-section,
+      .swipe-card,
+      .filter-question-card,
+      .video-question-card {
+        width: calc(100% - 20px) !important;
+        max-width: none !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+      }
+      
+      /* Remove centering constraints */
+      .tour-detail-content,
+      .home-content,
+      .swipe-card-content {
+        max-width: 100% !important;
+        padding: 0 10px !important;
+      }
+      
+      /* Pricing cards full width */
+      .price-option,
+      .pricing-card {
+        width: 100% !important;
+        max-width: none !important;
       }
       
       /* Weather widget - smaller and repositioned */
@@ -160,7 +220,69 @@
       /* Tour cards */
       .carousel-card,
       .tour-card {
-        min-width: 250px !important;
+        min-width: 200px !important;
+        width: 85vw !important;
+        max-width: 300px !important;
+      }
+      
+      /* Tour detail page - full width */
+      .tour-detail-page {
+        padding: 0 !important;
+      }
+      
+      .tour-detail-page .tour-detail-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 10px !important;
+      }
+      
+      .tour-detail-page .info-card {
+        margin: 10px 0 !important;
+        padding: 15px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      .tour-detail-page .info-card h3 {
+        font-size: 1.1rem !important;
+      }
+      
+      .tour-detail-page .info-card p,
+      .tour-detail-page .info-card li {
+        font-size: 0.9rem !important;
+      }
+      
+      /* Pricing section full width */
+      .tour-detail-page .pricing-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 10px !important;
+      }
+      
+      .tour-detail-page .price-row,
+      .tour-detail-page .pricing-card {
+        padding: 12px !important;
+        margin: 8px 0 !important;
+        font-size: 0.9rem !important;
+      }
+      
+      /* Gallery */
+      .tour-detail-page .image-gallery {
+        height: 200px !important;
+      }
+      
+      /* Footer buttons */
+      .detail-footer {
+        padding: 10px !important;
+      }
+      
+      .detail-footer-inner {
+        gap: 8px !important;
+      }
+      
+      .detail-footer button {
+        padding: 12px 15px !important;
+        font-size: 0.85rem !important;
       }
     }
     
