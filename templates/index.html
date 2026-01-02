@@ -8148,6 +8148,40 @@
         margin: 8px 0 !important;
       }
       
+      /* =============================================
+         DETAILS SECTION (About This Tour) - FULL WIDTH
+         ============================================= */
+      .tour-detail-page .details-section,
+      .details-section {
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        margin: 8px !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+      }
+      
+      .details-section h3 {
+        font-size: 1.2em !important;
+        margin: 0 0 10px 0 !important;
+      }
+      
+      .details-section #detail-description,
+      #detail-description {
+        font-size: 0.9em !important;
+        line-height: 1.5 !important;
+      }
+      
+      /* ALL tour detail sections - add small margins */
+      .tour-detail-page .info-card,
+      .tour-detail-page .fine-print,
+      .tour-detail-page .pricing-section,
+      .tour-detail-page #detail-info > div {
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+      }
+      
       /* Make weather and chat widgets visible and properly styled */
       .weather-widget {
         bottom: 10px !important;
@@ -18288,7 +18322,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:24px !important;right:24px !important;width:80px !important;height:80px !important;border-radius:50% !important;border:4px solid rgba(255,255,255,0.9) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 8px 32px rgba(255,152,0,0.5) !important;font-size:2.5em !important;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:12px !important;right:12px !important;width:50px !important;height:50px !important;border-radius:50% !important;border:3px solid rgba(255,255,255,0.9) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 4px 16px rgba(255,152,0,0.4) !important;font-size:1.5em !important;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
