@@ -49,7 +49,7 @@
       
       /* Header - simplified for mobile */
       .kiosk-header {
-        padding: 8px 8px !important;
+        padding: 8px 6px !important;
         gap: 0 !important;
         flex-wrap: nowrap !important;
         justify-content: space-between !important;
@@ -59,7 +59,7 @@
       
       .kiosk-header .header-left {
         flex: 0 0 auto !important;
-        gap: 6px !important;
+        gap: 5px !important;
         flex-wrap: nowrap !important;
         min-width: 0 !important;
         margin-left: 0 !important;
@@ -68,45 +68,70 @@
       
       .kiosk-header .header-right {
         flex: 0 0 auto !important;
-        gap: 6px !important;
+        gap: 5px !important;
         flex-wrap: nowrap !important;
         margin-right: 0 !important;
         padding-right: 0 !important;
       }
       
-      .kiosk-header button {
-        padding: 8px 12px !important;
-        font-size: 0.7rem !important;
-        min-width: auto !important;
-        white-space: nowrap !important;
-        border-radius: 20px !important;
+      /* Show logo in center on mobile */
+      .kiosk-header .logo-image {
+        display: block !important;
+        height: 28px !important;
+        width: auto !important;
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
       }
       
-      /* Language/Currency chips - SAME SIZE */
+      /* Hide text buttons, show emoji versions */
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header #home-map-toggle-btn,
+      .kiosk-header .browse-all-btn-header {
+        display: none !important;
+      }
+      
+      /* Mobile emoji buttons - Quick Decision (green) and AI (purple) */
+      .kiosk-header .mobile-quick-btn,
+      .kiosk-header .mobile-ai-btn {
+        display: flex !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        padding: 0 !important;
+        font-size: 1.1rem !important;
+        border-radius: 50% !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: none !important;
+        cursor: pointer !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+      }
+      
+      .kiosk-header .mobile-quick-btn {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+      }
+      
+      .kiosk-header .mobile-ai-btn {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+        color: white !important;
+      }
+      
+      /* Language/Currency chips - SAME SIZE, closer to edge */
       .kiosk-header .chip {
         padding: 0 !important;
-        font-size: 0.7rem !important;
-        min-width: 42px !important;
-        width: 42px !important;
-        max-width: 42px !important;
+        font-size: 0.65rem !important;
+        min-width: 38px !important;
+        width: 38px !important;
+        max-width: 38px !important;
         height: 36px !important;
         min-height: 36px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         border-radius: 18px !important;
-      }
-      
-      /* Hide logo on mobile - takes too much space */
-      .kiosk-header .logo-image {
-        display: none !important;
-      }
-      
-      /* Hide less important header buttons on mobile */
-      .kiosk-header .ai-assistant-btn-header,
-      .kiosk-header #home-map-toggle-btn,
-      .kiosk-header .browse-all-btn-header {
-        display: none !important;
       }
       
       /* Back button - far left */
@@ -116,7 +141,7 @@
         min-width: 36px !important;
         padding: 0 !important;
         font-size: 1.2rem !important;
-        margin-right: 6px !important;
+        margin-right: 0 !important;
       }
       
       /* Dropdowns - proper positioning and hidden by default */
@@ -2254,6 +2279,12 @@
     }
     
     /* Kiosk Header */
+    /* Hide mobile-only emoji buttons on desktop */
+    .mobile-quick-btn,
+    .mobile-ai-btn {
+      display: none !important;
+    }
+    
     /* Global Header - Always visible on all pages */
     .global-header {
       position: fixed;
@@ -3819,13 +3850,20 @@
       }
       
       .tour-detail-footer button {
-        padding: 10px 14px !important;
-        font-size: 0.75em !important;
-        font-weight: 600 !important;
-        border-radius: 20px !important;
+        padding: 12px 16px !important;
+        font-size: 0.8em !important;
+        font-weight: 700 !important;
+        border-radius: 25px !important;
         min-width: auto !important;
         flex: 1 !important;
         white-space: nowrap !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        border: 2px solid rgba(255,255,255,0.4) !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+      }
+      
+      .tour-detail-footer button:active {
+        transform: scale(0.95) !important;
       }
     }
     
@@ -8995,6 +9033,8 @@
       <header class="kiosk-header">
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
+          <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
+          <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
@@ -9152,6 +9192,8 @@
       <header class="kiosk-header">
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
+          <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
+          <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
