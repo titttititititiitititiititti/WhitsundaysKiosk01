@@ -6386,14 +6386,33 @@
         border-radius: 4px !important;
       }
       
-      /* Force includes/highlights to stack vertically (1 column) on mobile */
+      /* Force includes/highlights SIDE BY SIDE (2 columns) on mobile - like swipe view */
       #detail-content > div[style*="display"],
       #detail-content > div[style*="grid"],
       #detail-content div[style*="grid-template-columns"] {
-        display: flex !important;
-        flex-direction: column !important;
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+      
+      /* HIDE QR code section completely on mobile */
+      .qr-code-wrapper,
+      .qr-code-container,
+      #qr-code-wrapper,
+      #qr-code-container,
+      #qr-payment-modal,
+      .qr-payment-modal,
+      [class*="qr-"],
+      [id*="qr-"] {
+        display: none !important;
+      }
+      
+      /* Also hide in tour detail footer */
+      .tour-detail-page button[onclick*="QR"],
+      .tour-detail-page button[onclick*="qr"],
+      .tour-detail-page .btn-tertiary,
+      .detail-footer .btn-tertiary {
+        display: none !important;
       }
       
       #detail-content > div > div[style*="background"],
