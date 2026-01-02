@@ -6473,6 +6473,28 @@
         margin-bottom: 3px !important;
       }
       
+      /* ============================================
+         ABOUT THIS TOUR - FORCE FULL WIDTH
+         ============================================ */
+      #detail-content div[style*="About"],
+      #detail-content div:has(h3:first-child),
+      .tour-detail-page [class*="about"],
+      #detail-content > div:first-child,
+      #detail-content > div > div:has(p:only-of-type) {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+      }
+      
+      #detail-content > div:first-child p,
+      #detail-content div[style*="About"] p {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
       /* HIDE QR code section completely on mobile */
       .qr-code-wrapper,
       .qr-code-container,
