@@ -280,6 +280,35 @@
         text-orientation: mixed !important;
       }
       
+      /* VIDEO QUESTION PAGE (Quick Decision) - Scale questionnaire like desktop */
+      .video-question-page {
+        overflow-x: hidden !important;
+      }
+      
+      /* Scale start screen and question container (NOT results, NOT header) */
+      .video-question-page .video-start-screen,
+      .video-question-page .video-question-container {
+        transform: scale(0.48) !important;
+        transform-origin: top center !important;
+        width: 208vw !important;
+        margin-left: -54vw !important;
+      }
+      
+      /* Don't scale the header */
+      .video-question-page .kiosk-header {
+        transform: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      
+      /* Don't scale filtered results - they already look good */
+      .video-question-page .filtered-results-container,
+      .video-question-page #filtered-results-container {
+        transform: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+      
       /* Swipe buttons */
       .swipe-btn {
         width: 70px !important;
