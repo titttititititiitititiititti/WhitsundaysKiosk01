@@ -14855,18 +14855,12 @@
             window.detailGalleryImages = gallery;
             window.detailGalleryIndex = detailGalleryIndex;
             
-            // Define the lightbox open function
-            window.openDetailGalleryLightbox = function() {
-              console.log('Detail lightbox opening...');
-              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-            };
-            
             galleryHtml = `
               <div class="swipe-gallery-wrapper">
                 <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
                 <div class="swipe-gallery-spread" id="detail-gallery-spread">
                   <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center" id="detail-center-image" style="cursor:pointer;z-index:100;" onclick="event.stopPropagation(); window.openDetailGalleryLightbox();"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image center" id="detail-center-image" style="cursor:pointer;z-index:100;"><img src="${images[1]}" alt="${data.name}"></div>
                   <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
                 </div>
                 <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
@@ -14907,21 +14901,20 @@
           setTimeout(() => {
             const detailCenterImg = document.getElementById('detail-center-image');
             if (detailCenterImg) {
-              detailCenterImg.onclick = function(e) {
+              // Remove any existing handlers first
+              detailCenterImg.onclick = null;
+              detailCenterImg.ontouchstart = null;
+              detailCenterImg.ontouchend = null;
+              
+              // Use a single click handler that works for both mouse and touch
+              detailCenterImg.addEventListener('click', function openDetailLightboxHandler(e) {
                 e.stopPropagation();
-                e.preventDefault();
+                e.stopImmediatePropagation();
                 console.log('Browse All Tours lightbox opening...');
                 window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-              };
-              // Also add touch handler for mobile
-              detailCenterImg.ontouchend = function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                console.log('Browse All Tours lightbox (touch) opening...');
-                window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-              };
+              }, { once: false, capture: true });
             }
-          }, 200);
+          }, 300);
           
           // Show the NEW modern tour detail page (it will overlay on top)
           console.log('🎬 Showing tour detail page...');
