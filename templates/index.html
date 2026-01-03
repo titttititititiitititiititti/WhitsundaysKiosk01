@@ -85,12 +85,35 @@
         transform: translate(-50%, -50%) !important;
       }
       
-      /* Hide text buttons, show emoji versions */
+      /* Hide ALL text buttons on mobile - FORCE HIDE */
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header,
       .kiosk-header #home-map-toggle-btn,
-      .kiosk-header .browse-all-btn-header {
+      .kiosk-header .browse-all-btn-header,
+      .browse-all-btn-header,
+      #vq-browse-all-btn,
+      #home-browse-all-btn,
+      button[id*="browse-all"],
+      button[class*="browse-all-btn-header"] {
         display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        left: -9999px !important;
+      }
+      
+      /* Progress indicator - STATIC not fixed, sits above questions */
+      .vq-progress-container,
+      #vq-progress-container {
+        position: static !important;
+        top: unset !important;
+        left: unset !important;
+        transform: none !important;
+        margin: 0 auto 10px auto !important;
+        width: auto !important;
+        z-index: 1 !important;
       }
       
       /* Mobile emoji buttons - Quick Decision (green) and AI (purple) */
