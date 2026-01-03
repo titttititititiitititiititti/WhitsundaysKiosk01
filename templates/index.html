@@ -183,9 +183,22 @@
       
       .tour-detail-page .kiosk-header .header-left {
         position: absolute !important;
-        left: 4px !important;
+        left: 2px !important;
         transform: none !important;
-        gap: 3px !important;
+        gap: 2px !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+      }
+      
+      .tour-detail-page .kiosk-header .back-button,
+      .tour-detail-page .kiosk-header .mobile-quick-btn,
+      .tour-detail-page .kiosk-header .mobile-ai-btn,
+      .tour-detail-page .kiosk-header .mobile-browse-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       
       /* FORCE white backgrounds on highlights/includes sections */
@@ -202,25 +215,108 @@
         border-left: 4px solid #0077b6 !important;
       }
       
-      /* Carousel images - show more of image, less cropped */
+      /* Carousel images - fill the frames */
       .swipe-gallery-spread,
       .swipe-gallery-image,
+      .swipe-gallery-image img,
       .photo-carousel img,
       .carousel-slide img,
       .tour-hero img {
-        object-fit: contain !important;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
-      }
-      
-      /* Tour card images in Browse All Tours - taller aspect ratio */
-      .tour-card-image-container {
-        height: 180px !important;
-        min-height: 180px !important;
-      }
-      
-      .tour-card-image {
         object-fit: cover !important;
-        object-position: center !important;
+      }
+      
+      /* Tap for full images hint */
+      .gallery-tap-hint {
+        text-align: center !important;
+        font-size: 0.75em !important;
+        color: rgba(255,255,255,0.8) !important;
+        margin-top: 8px !important;
+        font-style: italic !important;
+      }
+      
+      /* Fullscreen Image Lightbox */
+      .image-lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.95);
+        z-index: 99999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      
+      .image-lightbox.active {
+        display: flex !important;
+      }
+      
+      .lightbox-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        font-size: 2em;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 100000;
+      }
+      
+      .lightbox-image-container {
+        width: 100%;
+        height: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      
+      .lightbox-image-container img {
+        max-width: 95%;
+        max-height: 95%;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+      
+      .lightbox-counter {
+        color: white;
+        font-size: 0.9em;
+        margin-top: 15px;
+        opacity: 0.8;
+      }
+      
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        font-size: 1.8em;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      
+      .lightbox-nav.prev {
+        left: 10px;
+      }
+      
+      .lightbox-nav.next {
+        right: 10px;
+      }
+      
+      .lightbox-hint {
+        color: rgba(255,255,255,0.6);
+        font-size: 0.8em;
+        margin-top: 10px;
       }
       
       .tour-detail-page .kiosk-header .header-right {
@@ -10553,6 +10649,13 @@
       centerCard.className = 'swipe-gallery-image center';
       centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
       centerCard.dataset.tourId = tour.key;
+      centerCard.style.cursor = 'pointer';
+      // Open lightbox on tap
+      centerCard.onclick = (e) => {
+        e.stopPropagation();
+        const allImages = currentTourGallery.length > 0 ? currentTourGallery : images;
+        window.openLightbox(allImages, currentGalleryIndex);
+      };
       spreadContainer.appendChild(centerCard);
       
       const rightImg = document.createElement('div');
@@ -10573,6 +10676,13 @@
       galleryWrapper.appendChild(rightArrow);
       
       stack.appendChild(galleryWrapper);
+      
+      // Add tap hint below gallery
+      const tapHint = document.createElement('div');
+      tapHint.className = 'gallery-tap-hint';
+      tapHint.textContent = 'Tap image for full view';
+      stack.appendChild(tapHint);
+      
       // Disabled page swiping - users use carousel arrows or bottom buttons instead
       // setupSwipeHandlers(centerCard);
     }
@@ -14706,12 +14816,16 @@
                 <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
                 <div class="swipe-gallery-spread" id="detail-gallery-spread">
                   <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image center" style="cursor:pointer;" onclick="window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0)"><img src="${images[1]}" alt="${data.name}"></div>
                   <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
                 </div>
                 <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
               </div>
+              <div class="gallery-tap-hint">Tap image for full view</div>
             `;
+            // Store gallery images globally for lightbox access
+            window.detailGalleryImages = gallery;
+            window.detailGalleryIndex = detailGalleryIndex;
             
             window.rotateDetailGallery = function(direction) {
               if (gallery.length <= 1) return;
@@ -14722,6 +14836,7 @@
                 detailGalleryIndex = direction === 'right' 
                   ? (detailGalleryIndex + 1) % gallery.length
                   : (detailGalleryIndex - 1 + gallery.length) % gallery.length;
+                window.detailGalleryIndex = detailGalleryIndex; // Update global for lightbox
                 const nextImages = [
                   gallery[(detailGalleryIndex - 1 + gallery.length) % gallery.length],
                   gallery[detailGalleryIndex],
@@ -18806,6 +18921,18 @@
     </div>
   </div>
   
+  <!-- Fullscreen Image Lightbox -->
+  <div class="image-lightbox" id="image-lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <button class="lightbox-nav prev" onclick="lightboxPrev()">‹</button>
+    <button class="lightbox-nav next" onclick="lightboxNext()">›</button>
+    <div class="lightbox-image-container">
+      <img id="lightbox-img" src="" alt="Full image">
+    </div>
+    <div class="lightbox-counter" id="lightbox-counter">1 / 5</div>
+    <div class="lightbox-hint">Swipe or tap arrows to navigate</div>
+  </div>
+  
   <script>
     // Simple weather widget toggle
     window.toggleWeatherWidget = function() {
@@ -18814,6 +18941,77 @@
         widget.style.display = widget.style.display === 'none' ? 'block' : 'none';
       }
     };
+    
+    // Lightbox functionality
+    let lightboxImages = [];
+    let lightboxIndex = 0;
+    let lightboxTouchStartX = 0;
+    
+    window.openLightbox = function(images, startIndex) {
+      lightboxImages = images || [];
+      lightboxIndex = startIndex || 0;
+      if (lightboxImages.length === 0) return;
+      
+      const lightbox = document.getElementById('image-lightbox');
+      const img = document.getElementById('lightbox-img');
+      const counter = document.getElementById('lightbox-counter');
+      
+      img.src = lightboxImages[lightboxIndex];
+      counter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Add touch swipe support
+      lightbox.addEventListener('touchstart', lightboxTouchStart);
+      lightbox.addEventListener('touchend', lightboxTouchEnd);
+    };
+    
+    window.closeLightbox = function() {
+      const lightbox = document.getElementById('image-lightbox');
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+      lightbox.removeEventListener('touchstart', lightboxTouchStart);
+      lightbox.removeEventListener('touchend', lightboxTouchEnd);
+    };
+    
+    window.lightboxNext = function() {
+      lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+      updateLightboxImage();
+    };
+    
+    window.lightboxPrev = function() {
+      lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+      updateLightboxImage();
+    };
+    
+    function updateLightboxImage() {
+      const img = document.getElementById('lightbox-img');
+      const counter = document.getElementById('lightbox-counter');
+      img.src = lightboxImages[lightboxIndex];
+      counter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+    }
+    
+    function lightboxTouchStart(e) {
+      lightboxTouchStartX = e.touches[0].clientX;
+    }
+    
+    function lightboxTouchEnd(e) {
+      const diff = e.changedTouches[0].clientX - lightboxTouchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          lightboxPrev();
+        } else {
+          lightboxNext();
+        }
+      }
+    }
+    
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') lightboxNext();
+      if (e.key === 'ArrowLeft') lightboxPrev();
+    });
   </script>
 </body>
 </html>
