@@ -252,6 +252,15 @@
         object-fit: cover !important;
       }
       
+      /* Make center image clickable on mobile */
+      .swipe-gallery-image.center,
+      .swipe-gallery-image.center img {
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0,0,0,0.1) !important;
+        pointer-events: auto !important;
+      }
+      
       /* Tap for full images hint */
       .gallery-tap-hint {
         text-align: center !important;
@@ -14855,23 +14864,15 @@
             window.detailGalleryImages = gallery;
             window.detailGalleryIndex = detailGalleryIndex;
             
-            // Define the click handler as a global function BEFORE the HTML uses it
-            window.openBrowseGalleryLightbox = function() {
-              console.log('Opening Browse All Tours lightbox');
-              if (window.openLightbox && window.detailGalleryImages) {
-                window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-              }
-            };
-            
             galleryHtml = `
               <div class="swipe-gallery-wrapper">
-                <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
+                <button class="gallery-nav-arrow left" onclick="rotateDetailGallery('left')">‹</button>
                 <div class="swipe-gallery-spread" id="detail-gallery-spread">
                   <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center" style="cursor:pointer;z-index:100;" onclick="window.openBrowseGalleryLightbox()"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image center" style="cursor:pointer;"><img src="${images[1]}" alt="${data.name}" onclick="window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0)"></div>
                   <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
                 </div>
-                <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
+                <button class="gallery-nav-arrow right" onclick="rotateDetailGallery('right')">›</button>
               </div>
               <div class="gallery-tap-hint">Tap image for full view</div>
             `;
