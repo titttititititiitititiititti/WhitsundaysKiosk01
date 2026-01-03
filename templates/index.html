@@ -220,39 +220,35 @@
         overflow-y: auto !important;
       }
       
-      /* Video Question Page - EXACT desktop layout scaled to fit mobile */
-      .video-question-page {
+      /* HOME PAGE (Browse All Tours) - EXACT desktop layout scaled to fit mobile */
+      .home-page {
         overflow-x: hidden !important;
       }
       
-      /* Scale ALL content except header */
-      .video-question-page > *:not(.kiosk-header) {
+      /* Scale ALL content except header on HOME PAGE ONLY */
+      .home-page > *:not(.kiosk-header) {
         transform: scale(0.48) !important;
         transform-origin: top center !important;
         width: 208vw !important;
         margin-left: -54vw !important;
-        margin-top: -5vh !important;
       }
       
       /* Don't scale the header */
-      .video-question-page .kiosk-header {
+      .home-page .kiosk-header {
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
-        margin-top: 0 !important;
       }
       
-      /* Ensure tour cards display properly */
-      .video-question-page .tour-card,
-      .video-question-page .carousel-card,
-      .video-question-page .swipe-card {
+      /* Ensure tour cards display properly on home page */
+      .home-page .tour-card,
+      .home-page .carousel-card {
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
       }
       
-      .video-question-page .tour-card *,
-      .video-question-page .carousel-card *,
-      .video-question-page .swipe-card * {
+      .home-page .tour-card *,
+      .home-page .carousel-card * {
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
       }
@@ -277,9 +273,9 @@
         padding: 12px 15px 12px 45px !important;
       }
       
-      /* Tour cards - RESET to desktop defaults, parent handles scaling */
-      .video-question-page .carousel-card,
-      .video-question-page .tour-card {
+      /* Tour cards on HOME PAGE - RESET to desktop defaults, parent handles scaling */
+      .home-page .carousel-card,
+      .home-page .tour-card {
         transform: none !important;
         writing-mode: horizontal-tb !important;
       }
