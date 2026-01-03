@@ -145,6 +145,33 @@
         margin-right: 0 !important;
       }
       
+      /* Tour detail page header - less cramped on mobile */
+      .tour-detail-page .kiosk-header {
+        padding: 8px 6px !important;
+      }
+      
+      .tour-detail-page .kiosk-header .header-left {
+        position: relative !important;
+        left: 0 !important;
+        transform: none !important;
+        gap: 4px !important;
+      }
+      
+      .tour-detail-page .kiosk-header .header-right {
+        position: relative !important;
+        right: 0 !important;
+        transform: none !important;
+        gap: 4px !important;
+      }
+      
+      .tour-detail-page .kiosk-header .logo-image {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        height: 30px !important;
+      }
+      
       /* Dropdowns - proper positioning and hidden by default */
       .language-menu,
       .currency-menu {
@@ -8332,26 +8359,28 @@
         background: transparent !important;
       }
       
-      /* Preserve colored backgrounds for Highlights/What's Included */
+      /* WHITE backgrounds for Highlights/What's Included on tour detail */
       #info-grid div[style*="border-left:4px solid #ff9800"],
       #info-grid div[style*="border-left: 4px solid #ff9800"],
-      section.info-grid div[style*="ff9800"] {
-        background: #fff3e0 !important;
-        background-color: #fff3e0 !important;
+      section.info-grid div[style*="ff9800"],
+      .tour-detail-page #info-grid div {
+        background: rgba(255,255,255,0.95) !important;
+        background-color: rgba(255,255,255,0.95) !important;
       }
       #info-grid div[style*="border-left:4px solid #4caf50"],
       #info-grid div[style*="border-left: 4px solid #4caf50"],
       section.info-grid div[style*="4caf50"] {
-        background: #e8f5e9 !important;
-        background-color: #e8f5e9 !important;
+        background: rgba(255,255,255,0.95) !important;
+        background-color: rgba(255,255,255,0.95) !important;
       }
       
-      /* Force backgrounds on all info-grid children */
-      #info-grid > div > div:first-child {
-        background: #fff3e0 !important;
-      }
-      #info-grid > div > div:last-child {
-        background: #e8f5e9 !important;
+      /* Force WHITE backgrounds on all info-grid children */
+      #info-grid > div > div,
+      .tour-detail-page #info-grid > div > div {
+        background: rgba(255,255,255,0.95) !important;
+        padding: 15px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
       }
       
       /* Info cards inside info-grid */
