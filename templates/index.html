@@ -183,9 +183,10 @@
       
       .tour-detail-page .kiosk-header .header-left {
         position: absolute !important;
-        left: 8px !important;
-        transform: none !important;
-        gap: 4px !important;
+        left: 5px !important;
+        transform: translateY(-50%) !important;
+        top: 50% !important;
+        gap: 3px !important;
         margin-left: 0 !important;
         padding-left: 0 !important;
       }
@@ -194,17 +195,26 @@
       .tour-detail-page .kiosk-header .mobile-quick-btn,
       .tour-detail-page .kiosk-header .mobile-ai-btn,
       .tour-detail-page .kiosk-header .mobile-browse-btn {
-        width: 34px !important;
-        height: 34px !important;
-        min-width: 34px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
         padding: 0 !important;
         margin: 0 !important;
       }
       
-      /* Balance header - right side should match left side spacing */
+      /* Balance header - right side matches left */
       .tour-detail-page .kiosk-header .header-right {
         position: absolute !important;
-        right: 8px !important;
+        right: 5px !important;
+        transform: translateY(-50%) !important;
+        top: 50% !important;
+      }
+      
+      /* FORCE header visible in Quick Decision mode results */
+      .video-question-page .kiosk-header {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
       
       /* Info-grid container itself - NO background */
@@ -1604,10 +1614,10 @@
       align-items: center;
     }
     
-    /* Video Question Page - hide header on language selection and start screen */
-    /* Video question page - hide header by default (for language selection) */
+    /* Video Question Page - header visible during questions and results */
+    /* Only hide header on actual start screen, not during questions/results */
     .video-question-page .kiosk-header {
-      display: none;
+      display: flex;
     }
     
     /* Show header when questions are active */
