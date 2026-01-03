@@ -183,7 +183,7 @@
       
       .tour-detail-page .kiosk-header .header-left {
         position: absolute !important;
-        left: 5px !important;
+        left: -5px !important;
         transform: translateY(-50%) !important;
         top: 50% !important;
         gap: 3px !important;
@@ -10674,18 +10674,13 @@
       
       const centerCard = document.createElement('div');
       centerCard.className = 'swipe-gallery-image center';
-      centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
       centerCard.dataset.tourId = tour.key;
       centerCard.style.cursor = 'pointer';
-      // Open lightbox on tap - use touchend for mobile
-      const openGalleryLightbox = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const allImages = currentTourGallery.length > 0 ? currentTourGallery : images;
-        window.openLightbox(allImages, currentGalleryIndex);
-      };
-      centerCard.addEventListener('click', openGalleryLightbox);
-      centerCard.addEventListener('touchend', openGalleryLightbox);
+      // Store images globally for lightbox
+      window.swipeGalleryImages = currentTourGallery.length > 0 ? currentTourGallery : images;
+      window.swipeGalleryIndex = currentGalleryIndex;
+      // Use inline onclick for reliable mobile tap
+      centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}" onclick="event.stopPropagation(); window.openLightbox(window.swipeGalleryImages, window.swipeGalleryIndex || 0);" style="cursor:pointer;">`;
       spreadContainer.appendChild(centerCard);
       
       const rightImg = document.createElement('div');
@@ -10730,6 +10725,8 @@
       } else {
         currentGalleryIndex = (currentGalleryIndex - 1 + gallery.length) % gallery.length;
       }
+      // Update global for lightbox
+      window.swipeGalleryIndex = currentGalleryIndex;
       
       // Get the 3 images to display (wrapping around if needed)
       const img1 = gallery[currentGalleryIndex];
@@ -14841,35 +14838,22 @@
             
             let detailGalleryIndex = 0;
             
+            // Store gallery images globally BEFORE creating HTML
+            window.detailGalleryImages = gallery;
+            window.detailGalleryIndex = detailGalleryIndex;
+            
             galleryHtml = `
               <div class="swipe-gallery-wrapper">
                 <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
                 <div class="swipe-gallery-spread" id="detail-gallery-spread">
                   <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center" id="detail-center-image" style="cursor:pointer;"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image center" id="detail-center-image" style="cursor:pointer;" onclick="event.stopPropagation(); window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);"><img src="${images[1]}" alt="${data.name}"></div>
                   <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
                 </div>
                 <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
               </div>
               <div class="gallery-tap-hint">Tap image for full view</div>
             `;
-            // Store gallery images globally for lightbox access
-            window.detailGalleryImages = gallery;
-            window.detailGalleryIndex = detailGalleryIndex;
-            
-            // Add click handler after DOM is ready
-            setTimeout(() => {
-              const centerImg = document.getElementById('detail-center-image');
-              if (centerImg) {
-                const openDetailLightbox = (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-                };
-                centerImg.addEventListener('click', openDetailLightbox);
-                centerImg.addEventListener('touchend', openDetailLightbox);
-              }
-            }, 100);
             
             window.rotateDetailGallery = function(direction) {
               if (gallery.length <= 1) return;
