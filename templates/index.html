@@ -280,18 +280,24 @@
         text-orientation: mixed !important;
       }
       
-      /* VIDEO QUESTION PAGE (Quick Decision) - Scale questionnaire like desktop */
+      /* VIDEO QUESTION PAGE (Quick Decision) - Scale ONLY questions like desktop */
       .video-question-page {
         overflow-x: hidden !important;
       }
       
-      /* Scale start screen and question container (NOT results, NOT header) */
-      .video-question-page .video-start-screen,
+      /* Scale ONLY the question container (NOT start screen, NOT results, NOT header) */
       .video-question-page .video-question-container {
         transform: scale(0.48) !important;
         transform-origin: top center !important;
         width: 208vw !important;
         margin-left: -54vw !important;
+      }
+      
+      /* DON'T scale the start screen - keep mobile layout */
+      .video-question-page .video-start-screen {
+        transform: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
       }
       
       /* Don't scale the header */
@@ -307,6 +313,29 @@
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
+      }
+      
+      /* Hide desktop Browse All Tours button, show mobile emoji version */
+      .video-question-page .browse-all-btn-header {
+        display: none !important;
+      }
+      
+      /* Mobile Browse All Tours emoji button (orange circle) */
+      .kiosk-header .mobile-browse-btn {
+        display: flex !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        padding: 0 !important;
+        font-size: 1.1rem !important;
+        border-radius: 50% !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 2px solid rgba(255,255,255,0.7) !important;
+        cursor: pointer !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25) !important;
+        background: linear-gradient(135deg, #f97316, #ea580c) !important;
+        color: white !important;
       }
       
       /* Swipe buttons */
@@ -2346,7 +2375,8 @@
     /* Hide mobile-only emoji buttons on desktop (NOT on mobile) */
     @media (min-width: 769px) {
       .mobile-quick-btn,
-      .mobile-ai-btn {
+      .mobile-ai-btn,
+      .mobile-browse-btn {
         display: none !important;
       }
     }
@@ -9115,6 +9145,7 @@
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
           <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
+          <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
