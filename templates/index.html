@@ -14860,22 +14860,62 @@
             
             let detailGalleryIndex = 0;
             
-            // Store gallery images globally BEFORE creating HTML
+            // Store gallery images globally
             window.detailGalleryImages = gallery;
             window.detailGalleryIndex = detailGalleryIndex;
             
-            galleryHtml = `
-              <div class="swipe-gallery-wrapper">
-                <button class="gallery-nav-arrow left" onclick="rotateDetailGallery('left')">‹</button>
-                <div class="swipe-gallery-spread" id="detail-gallery-spread">
-                  <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center" style="cursor:pointer;"><img src="${images[1]}" alt="${data.name}" onclick="window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0)"></div>
-                  <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
-                </div>
-                <button class="gallery-nav-arrow right" onclick="rotateDetailGallery('right')">›</button>
-              </div>
-              <div class="gallery-tap-hint">Tap image for full view</div>
-            `;
+            // BUILD WITH JAVASCRIPT like Quick Decision (which works)
+            const galleryContainer = document.getElementById('detail-gallery');
+            galleryContainer.innerHTML = '';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'swipe-gallery-wrapper';
+            
+            const leftArrow = document.createElement('button');
+            leftArrow.className = 'gallery-nav-arrow left';
+            leftArrow.innerHTML = '‹';
+            leftArrow.onclick = () => rotateDetailGallery('left');
+            wrapper.appendChild(leftArrow);
+            
+            const spread = document.createElement('div');
+            spread.className = 'swipe-gallery-spread';
+            spread.id = 'detail-gallery-spread';
+            
+            const leftImg = document.createElement('div');
+            leftImg.className = 'swipe-gallery-image left';
+            leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+            spread.appendChild(leftImg);
+            
+            const centerImg = document.createElement('div');
+            centerImg.className = 'swipe-gallery-image center';
+            centerImg.style.cursor = 'pointer';
+            centerImg.innerHTML = `<img src="${images[1]}" alt="${data.name}">`;
+            centerImg.onclick = function() {
+              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
+            };
+            spread.appendChild(centerImg);
+            
+            const rightImg = document.createElement('div');
+            rightImg.className = 'swipe-gallery-image right';
+            rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+            spread.appendChild(rightImg);
+            
+            wrapper.appendChild(spread);
+            
+            const rightArrow = document.createElement('button');
+            rightArrow.className = 'gallery-nav-arrow right';
+            rightArrow.innerHTML = '›';
+            rightArrow.onclick = () => rotateDetailGallery('right');
+            wrapper.appendChild(rightArrow);
+            
+            galleryContainer.appendChild(wrapper);
+            
+            const hint = document.createElement('div');
+            hint.className = 'gallery-tap-hint';
+            hint.textContent = 'Tap image for full view';
+            galleryContainer.appendChild(hint);
+            
+            galleryHtml = ''; // Already added to DOM
             
             window.rotateDetailGallery = function(direction) {
               if (gallery.length <= 1) return;
@@ -14901,7 +14941,10 @@
             };
           }
           
-          document.getElementById('detail-gallery').innerHTML = galleryHtml;
+          // Only set innerHTML if we used the string approach (galleryHtml is not empty)
+          if (galleryHtml) {
+            document.getElementById('detail-gallery').innerHTML = galleryHtml;
+          }
           
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
