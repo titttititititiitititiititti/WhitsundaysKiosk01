@@ -14513,44 +14513,51 @@
           }
           
           // INCLUDES & HIGHLIGHTS - Goes into info-grid (before About This Tour)
+          // NO WRAPPER DIV on mobile - each section is a direct child of info-grid
           let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
-            const includesLength = data.includes ? data.includes.length : 0;
-            const highlightsLength = data.highlights ? data.highlights.length : 0;
-            const bothExist = data.includes && data.highlights;
-            const avgLength = bothExist ? (includesLength + highlightsLength) / 2 : (includesLength || highlightsLength);
-            
-            const useSquares = !isMobile && bothExist && avgLength < 400;
-            const columns = useSquares ? '1fr 1fr' : '1fr';
-            const containerStyle = isMobile 
-              ? `display:flex;flex-direction:column;gap:${mGap};`
-              : `display:grid;grid-template-columns:${columns};gap:30px;`;
-            
-            highlightsIncludesHtml += `<div style="${containerStyle}">`;
+            // Mobile: No wrapper, sections are direct children with same styling as other sections
+            // Desktop: Grid wrapper for side-by-side
+            if (!isMobile) {
+              const includesLength = data.includes ? data.includes.length : 0;
+              const highlightsLength = data.highlights ? data.highlights.length : 0;
+              const bothExist = data.includes && data.highlights;
+              const useSquares = bothExist && (includesLength + highlightsLength) / 2 < 400;
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:${useSquares ? '1fr 1fr' : '1fr'};gap:30px;">`;
+            }
             
             // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
-              const hlPad = isMobile ? mPad : '25px';
-              const hlHead = isMobile ? mHeading : '1.6em';
-              const hlText = isMobile ? mText : '1.15em';
-              highlightsIncludesHtml += `<div style="background:#fff3e0;padding:${hlPad};border-radius:${mRadius};border-left:4px solid #ff9800;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
+              const hlPad = isMobile ? '15px' : '25px';
+              const hlHead = isMobile ? '1.1em' : '1.6em';
+              const hlText = isMobile ? '0.9em' : '1.15em';
+              // Mobile: same styling as other sections (white bg, blue border)
+              const hlBg = isMobile ? 'rgba(255,255,255,0.95)' : '#fff3e0';
+              const hlBorder = isMobile ? '#0077b6' : '#ff9800';
+              highlightsIncludesHtml += `<div style="background:${hlBg};padding:${hlPad};border-radius:12px;border-left:4px solid ${hlBorder};box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:${isMobile ? '#0077b6' : '#f57c00'};font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.4;color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             // WHAT'S INCLUDED SECOND
             if (data.includes) {
-              const incPad = isMobile ? mPad : '25px';
-              const incHead = isMobile ? mHeading : '1.6em';
-              const incText = isMobile ? mText : '1.15em';
-              highlightsIncludesHtml += `<div style="background:#e8f5e9;padding:${incPad};border-radius:${mRadius};border-left:4px solid #4caf50;box-shadow:0 8px 20px rgba(0,0,0,0.15);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
+              const incPad = isMobile ? '15px' : '25px';
+              const incHead = isMobile ? '1.1em' : '1.6em';
+              const incText = isMobile ? '0.9em' : '1.15em';
+              // Mobile: same styling as other sections (white bg, blue border)
+              const incBg = isMobile ? 'rgba(255,255,255,0.95)' : '#e8f5e9';
+              const incBorder = isMobile ? '#0077b6' : '#4caf50';
+              highlightsIncludesHtml += `<div style="background:${incBg};padding:${incPad};border-radius:12px;border-left:4px solid ${incBorder};box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:${isMobile ? '#0077b6' : '#2e7d32'};font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.4;color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
             }
-            highlightsIncludesHtml += '</div>';
+            
+            if (!isMobile) {
+              highlightsIncludesHtml += '</div>';
+            }
           }
           // Set highlights/includes into info-grid element (positioned before About This Tour)
           document.getElementById('info-grid').innerHTML = highlightsIncludesHtml;
@@ -14893,18 +14900,28 @@
           
           document.getElementById('detail-gallery').innerHTML = galleryHtml;
           
-          // Add click handler to center image AFTER DOM update
-          const detailCenterImg = document.getElementById('detail-center-image');
-          if (detailCenterImg) {
-            detailCenterImg.onclick = function(e) {
-              e.stopPropagation();
-              console.log('Browse All Tours lightbox opening...');
-              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-            };
-          }
-          
           // Reorganize content for modern kiosk layout
           reorganizeDetailPageContent(data, key);
+          
+          // Add click handler to center image AFTER reorganize (which may move elements)
+          setTimeout(() => {
+            const detailCenterImg = document.getElementById('detail-center-image');
+            if (detailCenterImg) {
+              detailCenterImg.onclick = function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('Browse All Tours lightbox opening...');
+                window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
+              };
+              // Also add touch handler for mobile
+              detailCenterImg.ontouchend = function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('Browse All Tours lightbox (touch) opening...');
+                window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
+              };
+            }
+          }, 200);
           
           // Show the NEW modern tour detail page (it will overlay on top)
           console.log('🎬 Showing tour detail page...');
