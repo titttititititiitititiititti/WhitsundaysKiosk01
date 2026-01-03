@@ -85,16 +85,13 @@
         transform: translate(-50%, -50%) !important;
       }
       
-      /* Hide ALL text buttons on mobile - FORCE HIDE */
+      /* Hide HEADER text buttons on mobile - FORCE HIDE (NOT start screen buttons) */
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header,
       .kiosk-header #home-map-toggle-btn,
       .kiosk-header .browse-all-btn-header,
-      .browse-all-btn-header,
       #vq-browse-all-btn,
-      #home-browse-all-btn,
-      button[id*="browse-all"],
-      button[class*="browse-all-btn-header"] {
+      #home-browse-all-btn {
         display: none !important;
         visibility: hidden !important;
         width: 0 !important;
@@ -104,14 +101,25 @@
         left: -9999px !important;
       }
       
-      /* Progress indicator - STATIC not fixed, sits above questions */
+      /* KEEP the start screen Browse All Tours button visible */
+      .video-start-screen .browse-all-tours-btn,
+      #browse-all-tours-btn {
+        display: flex !important;
+        visibility: visible !important;
+        width: auto !important;
+        height: auto !important;
+        position: relative !important;
+        left: auto !important;
+      }
+      
+      /* Progress indicator - STATIC not fixed, closer to question */
       .vq-progress-container,
       #vq-progress-container {
         position: static !important;
         top: unset !important;
         left: unset !important;
         transform: none !important;
-        margin: 0 auto 10px auto !important;
+        margin: 60px auto 20px auto !important;
         width: auto !important;
         z-index: 1 !important;
       }
