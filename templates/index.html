@@ -225,13 +225,13 @@
         overflow-x: hidden !important;
       }
       
-      .video-question-page .video-start-screen,
-      .video-question-page .question-flow-wrapper,
-      .video-question-page .filtered-results-container {
-        transform: scale(0.55) !important;
+      /* Scale ALL content except header */
+      .video-question-page > *:not(.kiosk-header) {
+        transform: scale(0.48) !important;
         transform-origin: top center !important;
-        width: 180vw !important;
-        margin-left: -40vw !important;
+        width: 208vw !important;
+        margin-left: -54vw !important;
+        margin-top: -5vh !important;
       }
       
       /* Don't scale the header */
@@ -239,6 +239,22 @@
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
+        margin-top: 0 !important;
+      }
+      
+      /* Ensure tour cards display properly */
+      .video-question-page .tour-card,
+      .video-question-page .carousel-card,
+      .video-question-page .swipe-card {
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+      }
+      
+      .video-question-page .tour-card *,
+      .video-question-page .carousel-card *,
+      .video-question-page .swipe-card * {
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
       }
       
       /* Swipe buttons */
@@ -261,12 +277,11 @@
         padding: 12px 15px 12px 45px !important;
       }
       
-      /* Tour cards - keep desktop sizing, scaled by parent */
+      /* Tour cards - RESET to desktop defaults, parent handles scaling */
       .video-question-page .carousel-card,
       .video-question-page .tour-card {
-        min-width: 320px !important;
-        width: 320px !important;
-        max-width: 320px !important;
+        transform: none !important;
+        writing-mode: horizontal-tb !important;
       }
       
       /* Tour detail page - MATCH swipe card layout */
