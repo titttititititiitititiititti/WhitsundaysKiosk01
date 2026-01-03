@@ -183,9 +183,9 @@
       
       .tour-detail-page .kiosk-header .header-left {
         position: absolute !important;
-        left: 2px !important;
+        left: 8px !important;
         transform: none !important;
-        gap: 2px !important;
+        gap: 4px !important;
         margin-left: 0 !important;
         padding-left: 0 !important;
       }
@@ -194,18 +194,33 @@
       .tour-detail-page .kiosk-header .mobile-quick-btn,
       .tour-detail-page .kiosk-header .mobile-ai-btn,
       .tour-detail-page .kiosk-header .mobile-browse-btn {
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
         padding: 0 !important;
         margin: 0 !important;
       }
       
-      /* FORCE white backgrounds on highlights/includes sections */
+      /* Balance header - right side should match left side spacing */
+      .tour-detail-page .kiosk-header .header-right {
+        position: absolute !important;
+        right: 8px !important;
+      }
+      
+      /* Info-grid container itself - NO background */
+      .tour-detail-page .info-grid,
+      .tour-detail-page #info-grid,
+      #info-grid,
+      section.info-grid {
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+      }
+      
+      /* FORCE white backgrounds on highlights/includes sections (children only) */
       .tour-detail-page .info-grid > div,
       .tour-detail-page #info-grid > div,
-      .tour-detail-page [style*="background:#fff3e0"],
-      .tour-detail-page [style*="background:#e8f5e9"],
       #info-grid > div {
         background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(10px) !important;
@@ -213,6 +228,8 @@
         border-radius: 12px !important;
         padding: 15px !important;
         border-left: 4px solid #0077b6 !important;
+        width: 100% !important;
+        margin-bottom: 10px !important;
       }
       
       /* Carousel images - fill the frames */
@@ -10003,8 +10020,8 @@
         <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
-      <!-- Info Grid (What's Included & Highlights) -->
-      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;gap:10px !important;">
+      <!-- Info Grid (What's Included & Highlights) - NO outer background -->
+      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;gap:10px !important;background:transparent !important;box-shadow:none !important;padding:0 !important;backdrop-filter:none !important;">
         <!-- Cards will be populated by JavaScript -->
       </section>
 
@@ -10650,12 +10667,15 @@
       centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
       centerCard.dataset.tourId = tour.key;
       centerCard.style.cursor = 'pointer';
-      // Open lightbox on tap
-      centerCard.onclick = (e) => {
+      // Open lightbox on tap - use touchend for mobile
+      const openGalleryLightbox = (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const allImages = currentTourGallery.length > 0 ? currentTourGallery : images;
         window.openLightbox(allImages, currentGalleryIndex);
       };
+      centerCard.addEventListener('click', openGalleryLightbox);
+      centerCard.addEventListener('touchend', openGalleryLightbox);
       spreadContainer.appendChild(centerCard);
       
       const rightImg = document.createElement('div');
@@ -14816,7 +14836,7 @@
                 <button class="gallery-nav-arrow left" onclick="event.stopPropagation(); rotateDetailGallery('left')">‹</button>
                 <div class="swipe-gallery-spread" id="detail-gallery-spread">
                   <div class="swipe-gallery-image left"><img src="${images[0]}" alt="Gallery 1"></div>
-                  <div class="swipe-gallery-image center" style="cursor:pointer;" onclick="window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0)"><img src="${images[1]}" alt="${data.name}"></div>
+                  <div class="swipe-gallery-image center" id="detail-center-image" style="cursor:pointer;"><img src="${images[1]}" alt="${data.name}"></div>
                   <div class="swipe-gallery-image right"><img src="${images[2]}" alt="Gallery 3"></div>
                 </div>
                 <button class="gallery-nav-arrow right" onclick="event.stopPropagation(); rotateDetailGallery('right')">›</button>
@@ -14826,6 +14846,20 @@
             // Store gallery images globally for lightbox access
             window.detailGalleryImages = gallery;
             window.detailGalleryIndex = detailGalleryIndex;
+            
+            // Add click handler after DOM is ready
+            setTimeout(() => {
+              const centerImg = document.getElementById('detail-center-image');
+              if (centerImg) {
+                const openDetailLightbox = (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
+                };
+                centerImg.addEventListener('click', openDetailLightbox);
+                centerImg.addEventListener('touchend', openDetailLightbox);
+              }
+            }, 100);
             
             window.rotateDetailGallery = function(direction) {
               if (gallery.length <= 1) return;
