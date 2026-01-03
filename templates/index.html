@@ -178,14 +178,49 @@
       
       /* Tour detail page header - less cramped on mobile */
       .tour-detail-page .kiosk-header {
-        padding: 8px 6px !important;
+        padding: 8px 4px !important;
       }
       
       .tour-detail-page .kiosk-header .header-left {
-        position: relative !important;
-        left: 0 !important;
+        position: absolute !important;
+        left: 4px !important;
         transform: none !important;
-        gap: 4px !important;
+        gap: 3px !important;
+      }
+      
+      /* FORCE white backgrounds on highlights/includes sections */
+      .tour-detail-page .info-grid > div,
+      .tour-detail-page #info-grid > div,
+      .tour-detail-page [style*="background:#fff3e0"],
+      .tour-detail-page [style*="background:#e8f5e9"],
+      #info-grid > div {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-radius: 12px !important;
+        padding: 15px !important;
+        border-left: 4px solid #0077b6 !important;
+      }
+      
+      /* Carousel images - show more of image, less cropped */
+      .swipe-gallery-spread,
+      .swipe-gallery-image,
+      .photo-carousel img,
+      .carousel-slide img,
+      .tour-hero img {
+        object-fit: contain !important;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+      }
+      
+      /* Tour card images in Browse All Tours - taller aspect ratio */
+      .tour-card-image-container {
+        height: 180px !important;
+        min-height: 180px !important;
+      }
+      
+      .tour-card-image {
+        object-fit: cover !important;
+        object-position: center !important;
       }
       
       .tour-detail-page .kiosk-header .header-right {
@@ -8232,11 +8267,12 @@
         margin: 10px auto 15px auto !important;
       }
       
-      /* Show swipe-style gallery on tour detail pages */
+      /* Show swipe-style gallery on tour detail pages - TALLER for more image visibility */
       .tour-detail-page .swipe-gallery-wrapper {
         display: flex !important;
         width: 100% !important;
-        max-height: 300px !important;
+        min-height: 350px !important;
+        max-height: 400px !important;
         margin-bottom: 10px !important;
       }
       
@@ -8765,13 +8801,18 @@
       }
       
       .swipe-gallery-image {
-        width: 140px !important;
-        height: 180px !important;
+        width: 100px !important;
+        height: 130px !important;
       }
       
       .swipe-gallery-image.center {
-        width: 200px !important;
-        height: 260px !important;
+        width: 220px !important;
+        height: 300px !important;
+      }
+      
+      .swipe-gallery-image img {
+        object-fit: cover !important;
+        object-position: center !important;
       }
       
       .swipe-info-sections {
@@ -10532,7 +10573,8 @@
       galleryWrapper.appendChild(rightArrow);
       
       stack.appendChild(galleryWrapper);
-      setupSwipeHandlers(centerCard);
+      // Disabled page swiping - users use carousel arrows or bottom buttons instead
+      // setupSwipeHandlers(centerCard);
     }
     
     function rotateGallery(direction, tour) {
