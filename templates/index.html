@@ -315,14 +315,32 @@
         margin-left: 0 !important;
       }
       
-      /* Hide desktop Browse All Tours button, show mobile emoji version */
-      .video-question-page .browse-all-btn-header {
+      /* Hide ALL desktop text buttons on mobile */
+      .video-question-page .browse-all-btn-header,
+      .video-question-page .quick-decision-btn-header,
+      .home-page .browse-all-btn-header,
+      .home-page .quick-decision-btn-header {
+        display: none !important;
+      }
+      
+      /* In Quick Decision mode: show Browse btn, hide Quick Decision btn */
+      .video-question-page .mobile-browse-btn {
+        display: flex !important;
+      }
+      .video-question-page .mobile-quick-btn {
+        display: none !important;
+      }
+      
+      /* In Browse All Tours mode: show Quick Decision btn, hide Browse btn */
+      .home-page .mobile-quick-btn {
+        display: flex !important;
+      }
+      .home-page .mobile-browse-btn {
         display: none !important;
       }
       
       /* Mobile Browse All Tours emoji button (orange circle) */
       .kiosk-header .mobile-browse-btn {
-        display: flex !important;
         width: 36px !important;
         height: 36px !important;
         min-width: 36px !important;
@@ -8554,9 +8572,14 @@
         max-height: calc(100vh - 50px) !important;
       }
       
-      /* Progress indicator positioning for mobile */
+      /* Progress indicator - NOT fixed on mobile, sits above questions */
       .vq-progress-container {
-        top: 75px !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        margin: 10px auto 15px auto !important;
+        width: fit-content !important;
       }
       
       /* Kiosk header adjustments */
@@ -9304,6 +9327,7 @@
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
+          <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
           <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
