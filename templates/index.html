@@ -6910,7 +6910,28 @@
       .tour-detail-page ~ .weather-widget-launcher,
       body:has(.tour-detail-page.active) .weather-widget-launcher,
       body:has(.tour-detail-page.active) #weather-widget-launcher {
-        bottom: 160px !important;
+        bottom: 200px !important;
+      }
+      
+      /* FORCE ALL TOUR DETAIL SECTIONS FULL WIDTH - OVERRIDE EVERYTHING */
+      .tour-detail-page .tour-detail-main > *,
+      .tour-detail-page .tour-detail-main section,
+      .tour-detail-page .tour-detail-main > section,
+      .tour-detail-page .tour-detail-main > div,
+      .tour-detail-page section.details-section,
+      .tour-detail-page section.info-grid,
+      .tour-detail-page section.pricing-section,
+      .tour-detail-page section.fine-print,
+      .tour-detail-page #info-grid,
+      .tour-detail-page #detail-info,
+      .tour-detail-page #detail-info > div,
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box {
+        width: 98vw !important;
+        max-width: 98vw !important;
+        margin-left: 1vw !important;
+        margin-right: 1vw !important;
+        box-sizing: border-box !important;
       }
       
       /* Hero section */
