@@ -36,6 +36,7 @@
       -ms-overflow-style: none;  /* IE and Edge */
       font-size: 16px; /* Base for rem calculations */
       overflow-x: hidden; /* Prevent horizontal scroll */
+      background: #0a5a7a; /* Fallback color if video doesn't load */
     }
     
     /* =======================================================================
@@ -823,7 +824,7 @@
       font-family: 'Inter', 'Roboto', 'Open Sans', Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+      background: transparent !important;
       min-height: 100vh;
       line-height: 1.6;
       overflow-x: hidden;
@@ -1284,15 +1285,8 @@
       height: 100%;
       z-index: -1; /* Behind all pages */
       object-fit: cover;
-      filter: blur(8px);
-      display: none; /* Hidden by default */
+      display: block !important; /* ALWAYS visible */
       pointer-events: none; /* Don't block clicks */
-    }
-    
-    /* Show video when body has video-bg-active class */
-    body.video-bg-active #bg-video {
-      display: block !important;
-      z-index: 1 !important; /* Bring above body but below home page */
     }
     
     /* Prevent scrolling when video page is active */
@@ -2687,7 +2681,7 @@
       min-height: auto;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+      background: transparent !important;
       overflow-y: auto;
       overflow-x: hidden;
       position: relative;
@@ -3342,7 +3336,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+      background: transparent !important;
     }
     
     /* Tour List Main Content */
@@ -3718,7 +3712,7 @@
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%);
+      background: transparent !important;
       display: none;
       flex-direction: column;
       z-index: 10 !important; /* Above video (z-index 1) */
@@ -4285,10 +4279,10 @@
        =================================================================== */
     /* Keep desktop layout on mobile, just let the browser zoom out */
     
-    /* Ensure tour detail page is on top with gradient visible */
+    /* Ensure tour detail page is on top - video shows through */
     html:has(.tour-detail-page.active),
     body:has(.tour-detail-page.active) {
-      background: linear-gradient(180deg, #005fa3 0%, #0cb4e7 40%, #0edfcc 100%) !important;
+      background: transparent !important;
       overflow: hidden;
       min-height: 100vh !important;
     }
@@ -9281,7 +9275,7 @@
       /* DESKTOP: Questionnaire logo size */
       .page.video-question-page .logo-image,
       .page.video-question-page .kiosk-header .logo-image {
-        height: 60px !important;
+        height: 70px !important;
         width: auto !important;
       }
       
@@ -19184,7 +19178,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:6px;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
