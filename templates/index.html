@@ -9506,10 +9506,31 @@
     </header>
     
     <!-- Global Video Background - Visible on video flow and tour detail pages -->
+    <!-- Video from: https://streamable.com/1br41l -->
     <video id="bg-video" autoplay muted loop playsinline style="filter: blur(3px); transform: scale(1.05);">
-      <source src="https://cdn-cf-east.streamable.com/video/mp4/1br41l.mp4" type="video/mp4">
-      <source src="{{ url_for('static', filename='b_roll/background.mp4') }}" type="video/mp4">
+      <!-- Streamable video will be loaded dynamically -->
     </video>
+    <script>
+      // Load Streamable video dynamically
+      (function() {
+        fetch('https://api.streamable.com/videos/1br41l')
+          .then(r => r.json())
+          .then(data => {
+            const video = document.getElementById('bg-video');
+            if (data.files && data.files.mp4) {
+              video.src = data.files.mp4.url;
+              video.load();
+              video.play().catch(e => console.log('Video autoplay blocked:', e));
+            }
+          })
+          .catch(e => {
+            console.log('Streamable load failed, using fallback');
+            const video = document.getElementById('bg-video');
+            video.src = "{{ url_for('static', filename='b_roll/background.mp4') }}";
+            video.load();
+          });
+      })();
+    </script>
     
     <!-- Video Question Page - NEW PRIMARY FLOW -->
     <div class="page video-question-page active" id="video-question-page">
