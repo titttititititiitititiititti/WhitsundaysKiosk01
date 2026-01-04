@@ -151,6 +151,35 @@
         height: 0 !important;
         overflow: hidden !important;
       }
+      
+      /* DESKTOP: Bigger logo */
+      .kiosk-header .logo-image {
+        height: 90px !important;
+      }
+      
+      /* DESKTOP: Bigger header buttons (Quick Decision, AI Assistant) */
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .ai-assistant-btn-header {
+        padding: 18px 36px !important;
+        font-size: 1.15em !important;
+        min-width: 180px !important;
+      }
+      
+      /* DESKTOP: Bigger footer buttons */
+      .tour-detail-footer button {
+        padding: 16px 28px !important;
+        font-size: 1.1em !important;
+        border-radius: 28px !important;
+      }
+      
+      /* DESKTOP: Bigger weather widget */
+      #weather-widget-launcher {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 2em !important;
+        bottom: 20px !important;
+        right: 20px !important;
+      }
     }
     
     /* FORCE white backgrounds on highlights/includes boxes */
@@ -388,9 +417,23 @@
       .gallery-tap-hint {
         text-align: center !important;
         font-size: 0.75em !important;
-        color: rgba(255,255,255,0.8) !important;
+        color: rgba(255,255,255,0.9) !important;
         margin-top: 8px !important;
         font-style: italic !important;
+        background: rgba(0,0,0,0.3) !important;
+        border: 1px solid rgba(255,255,255,0.4) !important;
+        border-radius: 12px !important;
+        padding: 6px 16px !important;
+        display: inline-block !important;
+        width: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      
+      .photo-carousel {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
       }
       
       .tour-detail-page .kiosk-header .header-right {
