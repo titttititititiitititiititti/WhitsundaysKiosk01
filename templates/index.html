@@ -737,15 +737,16 @@
         margin-bottom: 6px !important;
       }
       
-      /* Tour detail page sections - 94% width with 3% margins on mobile */
+      /* Tour detail page sections - consolidated width rule */
       .tour-detail-page .tour-hero,
       .tour-detail-page .pricing-section,
       .tour-detail-page .info-grid,
       .tour-detail-page .details-section,
       .tour-detail-page #about-tour-section {
-        width: 98% !important;
-        max-width: 98% !important;
-        margin: 0 1% 10px 2% !important;
+        width: calc(100% - 12px) !important;
+        max-width: calc(100% - 12px) !important;
+        margin: 0 6px 10px 6px !important;
+        box-sizing: border-box !important;
       }
       
       .tour-detail-page .pricing-section {
@@ -8822,17 +8823,7 @@
         border-radius: 12px !important;
       }
       
-      /* About This Tour section */
-      section.details-section,
-      section#about-tour-section,
-      .tour-detail-page section.details-section {
-        width: 98% !important;
-        max-width: 98% !important;
-        margin: 0 1% 10px 2% !important;
-        padding: 15px !important;
-        box-sizing: border-box !important;
-        border-radius: 12px !important;
-      }
+      /* About This Tour section - uses the consolidated rule above */
       
       /* OVERRIDE inline padding on divs */
       .tour-detail-page div[style*="padding:40px"],
@@ -10294,7 +10285,7 @@
       </section>
 
       <!-- Additional Info -->
-      <div id="detail-info" style="width:100% !important;max-width:100% !important;padding:0 !important;margin:0 !important;display:flex !important;flex-direction:column !important;"></div>
+      <div id="detail-info" style="padding:0 !important;margin:0 !important;display:flex !important;flex-direction:column !important;align-items:stretch !important;"></div>
 
       <!-- Fine Print -->
       <section class="fine-print" id="fine-print">
@@ -19302,7 +19293,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
