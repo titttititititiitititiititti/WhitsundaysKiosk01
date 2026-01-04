@@ -526,14 +526,18 @@
         max-width: none !important;
       }
       
-      /* Weather widget - SMALL */
+      /* Weather widget - Mobile size */
       .weather-widget-launcher {
-        width: 40px !important;
-        height: 40px !important;
+        width: 55px !important;
+        height: 55px !important;
         bottom: 10px !important;
         right: 10px !important;
-        font-size: 1.2em !important;
-        border-width: 2px !important;
+        font-size: 1.6em !important;
+        border-width: 3px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
       }
       
       .weather-widget {
@@ -762,16 +766,27 @@
         margin: 0 10px !important;
       }
       
-      /* HIDE QR Code section on mobile */
+      /* HIDE ALL QR Code sections on mobile - AGGRESSIVE */
       .tour-detail-page .qr-section,
       .tour-detail-page [class*="qr-code"],
       .tour-detail-page [class*="scan-to-book"],
       .qr-code-section,
       .scan-to-book,
       #qr-section,
+      #qr-modal,
+      #qr-payment-modal,
       [id*="qr-code"],
-      [id*="scan-book"] {
+      [id*="scan-book"],
+      [class*="qr-modal"],
+      [class*="qr-overlay"],
+      .qr-code-container,
+      .qr-modal-content {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        height: 0 !important;
+        overflow: hidden !important;
       }
       
       /* Footer buttons */
@@ -809,10 +824,14 @@
       }
       
       .weather-widget-launcher {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1em !important;
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.4em !important;
         border-width: 2px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
       }
     }
     
@@ -9540,45 +9559,51 @@
       <!-- Streamable video will be loaded dynamically -->
     </video>
     <script>
-      // Load Streamable video dynamically and prevent pausing
+      // Load Streamable video and ensure continuous playback
       (function() {
         const video = document.getElementById('bg-video');
         
-        // Prevent video from pausing - always resume play
-        video.addEventListener('pause', function() {
-          // Only resume if not intentionally stopped (e.g., page hidden)
-          if (!document.hidden) {
-            video.play().catch(e => console.log('Resume blocked:', e));
+        // Function to try playing the video
+        function tryPlay() {
+          if (video.paused) {
+            video.play().catch(e => {
+              console.log('Autoplay blocked, will retry on user interaction');
+            });
           }
+        }
+        
+        // Try to play on any user interaction (for iOS Safari)
+        ['touchstart', 'click', 'scroll'].forEach(event => {
+          document.addEventListener(event, tryPlay, { once: true, passive: true });
         });
         
-        // Resume video when page becomes visible again
+        // Keep playing when page becomes visible
         document.addEventListener('visibilitychange', function() {
-          if (!document.hidden && video.paused) {
-            video.play().catch(e => console.log('Visibility resume blocked:', e));
+          if (!document.hidden) tryPlay();
+        });
+        
+        // Periodically check and resume if paused
+        setInterval(function() {
+          if (!document.hidden && video.paused && video.readyState >= 2) {
+            tryPlay();
           }
-        });
+        }, 2000);
         
-        // Disable video controls (prevent user from pausing)
-        video.controls = false;
-        video.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-        });
-        
+        // Load video from Streamable
         fetch('https://api.streamable.com/videos/1br41l')
           .then(r => r.json())
           .then(data => {
             if (data.files && data.files.mp4) {
               video.src = data.files.mp4.url;
               video.load();
-              video.play().catch(e => console.log('Video autoplay blocked:', e));
+              tryPlay();
             }
           })
           .catch(e => {
             console.log('Streamable load failed, using fallback');
             video.src = "{{ url_for('static', filename='b_roll/background.mp4') }}";
             video.load();
+            tryPlay();
           });
       })();
     </script>
