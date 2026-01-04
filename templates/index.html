@@ -39,6 +39,102 @@
     }
     
     /* =======================================================================
+       GLOBAL LIGHTBOX - Works on ALL screen sizes
+       ======================================================================= */
+    .image-lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.95);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .image-lightbox.active {
+      display: flex !important;
+    }
+    
+    .lightbox-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 2em;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 100000;
+    }
+    
+    .lightbox-image-container {
+      width: 100%;
+      height: 80%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    .lightbox-image-container img {
+      max-width: 95%;
+      max-height: 95%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    
+    .lightbox-counter {
+      color: white;
+      font-size: 0.9em;
+      margin-top: 15px;
+      opacity: 0.8;
+    }
+    
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 1.8em;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .lightbox-nav.prev {
+      left: 10px;
+    }
+    
+    .lightbox-nav.next {
+      right: 10px;
+    }
+    
+    .lightbox-hint {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.8em;
+      margin-top: 10px;
+    }
+    
+    /* =======================================================================
+       HIDE MOBILE BUTTONS ON DESKTOP - Must be global
+       ======================================================================= */
+    .mobile-quick-btn,
+    .mobile-ai-btn,
+    .mobile-browse-btn {
+      display: none !important;
+    }
+    
+    /* =======================================================================
        MOBILE PROPORTIONAL SCALING - DO NOT TOUCH
        This scales the entire app proportionally on mobile devices
        ======================================================================= */
@@ -268,91 +364,6 @@
         color: rgba(255,255,255,0.8) !important;
         margin-top: 8px !important;
         font-style: italic !important;
-      }
-      
-      /* Fullscreen Image Lightbox */
-      .image-lightbox {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0,0,0,0.95);
-        z-index: 99999;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-      
-      .image-lightbox.active {
-        display: flex !important;
-      }
-      
-      .lightbox-close {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        font-size: 2em;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        cursor: pointer;
-        z-index: 100000;
-      }
-      
-      .lightbox-image-container {
-        width: 100%;
-        height: 80%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-      }
-      
-      .lightbox-image-container img {
-        max-width: 95%;
-        max-height: 95%;
-        object-fit: contain;
-        border-radius: 8px;
-      }
-      
-      .lightbox-counter {
-        color: white;
-        font-size: 0.9em;
-        margin-top: 15px;
-        opacity: 0.8;
-      }
-      
-      .lightbox-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        font-size: 1.8em;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      
-      .lightbox-nav.prev {
-        left: 10px;
-      }
-      
-      .lightbox-nav.next {
-        right: 10px;
-      }
-      
-      .lightbox-hint {
-        color: rgba(255,255,255,0.6);
-        font-size: 0.8em;
-        margin-top: 10px;
       }
       
       .tour-detail-page .kiosk-header .header-right {
@@ -2588,15 +2599,6 @@
     }
     
     /* Kiosk Header */
-    /* Hide mobile-only emoji buttons on desktop (NOT on mobile) */
-    @media (min-width: 769px) {
-      .mobile-quick-btn,
-      .mobile-ai-btn,
-      .mobile-browse-btn {
-        display: none !important;
-      }
-    }
-    
     /* Global Header - Always visible on all pages */
     .global-header {
       position: fixed;
