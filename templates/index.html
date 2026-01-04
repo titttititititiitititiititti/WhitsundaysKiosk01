@@ -152,17 +152,33 @@
         overflow: hidden !important;
       }
       
-      /* DESKTOP: Bigger logo */
-      .kiosk-header .logo-image {
-        height: 100px !important;
+      /* DESKTOP: Logo sizes - different per page */
+      .page.home-page .kiosk-header .logo-image {
+        height: 60px !important;
+      }
+      .page.tour-detail-page .kiosk-header .logo-image,
+      .tour-detail-page .kiosk-header .logo-image {
+        height: 80px !important;
       }
       
-      /* DESKTOP: Bigger header buttons (Quick Decision, AI Assistant) */
+      /* DESKTOP: Header buttons - slightly shorter than header */
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header {
-        padding: 22px 44px !important;
-        font-size: 1.3em !important;
-        min-width: 240px !important;
+        padding: 12px 24px !important;
+        font-size: 1em !important;
+        min-width: 160px !important;
+      }
+      
+      /* DESKTOP: Gallery tap hint with background */
+      .gallery-tap-hint {
+        background: rgba(0,0,0,0.4) !important;
+        border: 1px solid rgba(255,255,255,0.5) !important;
+        border-radius: 15px !important;
+        padding: 8px 20px !important;
+        color: white !important;
+        font-style: italic !important;
+        font-size: 0.9em !important;
+        display: inline-block !important;
       }
       
       /* DESKTOP: Bigger footer buttons */
@@ -1683,10 +1699,10 @@
 
     .kiosk-header .header-left .quick-decision-btn-header,
     .kiosk-header .header-left .ai-assistant-btn-header {
-      padding: 20px 40px !important;
-      font-size: 1.2em !important;
-      min-width: 220px !important;
-      border-radius: 30px !important;
+      padding: 12px 24px !important;
+      font-size: 1em !important;
+      min-width: 160px !important;
+      border-radius: 25px !important;
     }
     
     .page.home-page .quick-decision-btn-header,
@@ -4741,10 +4757,10 @@
 
     .tour-detail-page .header-left .quick-decision-btn-header,
     .tour-detail-page .header-left .ai-assistant-btn-header {
-      padding: 20px 40px !important;
-      font-size: 1.2em !important;
-      min-width: 220px !important;
-      border-radius: 30px !important;
+      padding: 12px 24px !important;
+      font-size: 1em !important;
+      min-width: 160px !important;
+      border-radius: 25px !important;
     }
       
       .tour-detail-page .header-right,
@@ -9245,33 +9261,36 @@
        DESKTOP SCALING - BIGGER ELEMENTS (at end to win cascade)
        ======================================================================= */
     @media (min-width: 769px) {
-      /* DESKTOP: Bigger logo - ONLY on home and tour detail pages */
+      /* DESKTOP: Logo sizes - home smaller, tour detail bigger */
       .page.home-page .logo-image,
-      .page.home-page .kiosk-header .logo-image,
+      .page.home-page .kiosk-header .logo-image {
+        height: 60px !important;
+        width: auto !important;
+      }
       .page.tour-detail-page .logo-image,
       .page.tour-detail-page .kiosk-header .logo-image,
       .tour-detail-page .kiosk-header .logo-image {
-        height: 100px !important;
+        height: 80px !important;
         width: auto !important;
       }
       
       /* DESKTOP: Keep questionnaire logo smaller */
       .page.video-question-page .logo-image,
       .page.video-question-page .kiosk-header .logo-image {
-        height: 50px !important;
+        height: 40px !important;
         width: auto !important;
       }
       
-      /* DESKTOP: Bigger header buttons */
+      /* DESKTOP: Header buttons - slightly shorter than header */
       .quick-decision-btn-header,
       .ai-assistant-btn-header,
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header,
       .header-left .quick-decision-btn-header,
       .header-left .ai-assistant-btn-header {
-        padding: 18px 36px !important;
-        font-size: 1.15em !important;
-        min-width: 200px !important;
+        padding: 12px 24px !important;
+        font-size: 1em !important;
+        min-width: 160px !important;
       }
       
       /* DESKTOP: Bigger tour detail footer buttons */
@@ -9699,10 +9718,10 @@
       </header>
 
       <!-- Main Content -->
-      <main class="home-main">
+      <main class="home-main" style="padding-top: 30px;">
         
         <!-- Search Bar -->
-        <div style="margin-bottom: 20px; padding: 0 2%;">
+        <div style="margin-bottom: 20px; margin-top: 20px; padding: 0 2%;">
           <div style="max-width: 100%; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center;">
             <span style="position:absolute;left:20px;font-size:1.5em;color:#666;pointer-events:none;z-index:1;">🔍</span>
             <input type="text" id="home-search-input" placeholder="Search tours, activities, destinations..." style="
@@ -10101,10 +10120,10 @@
         <button class="back-button" id="back-arrow">←</button>
         <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
         <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
-        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="padding: 18px 36px; font-size: 1.15em; min-width: 200px;">⚡ Quick Decision</button>
-        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')" style="padding: 18px 36px; font-size: 1.15em; min-width: 220px;">🤖 Talk To Our AI Assistant</button>
+        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
       </div>
-      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" style="height: 90px;">
+      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       <div class="header-right">
         <!-- Language Button with Dropdown - SAME AS HOME PAGE -->
         <div class="language-selector" style="position:relative;">
