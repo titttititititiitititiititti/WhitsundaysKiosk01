@@ -4328,6 +4328,13 @@
       pointer-events: none !important;
     }
     
+    /* MOVE weather widget up on tour detail page - MOBILE ONLY */
+    @media (max-width: 768px) {
+      body:has(.tour-detail-page.active) #weather-widget-launcher {
+        bottom: 140px !important;
+      }
+    }
+    
     /* ===================================================================
        QR PAYMENT MODAL
        =================================================================== */
@@ -6895,25 +6902,8 @@
         align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* ALL sections must stretch to parent width, then use margins */
-      .tour-detail-page .tour-detail-main > * {
-        width: 98% !important;
-        max-width: 98% !important;
-        margin-left: 1% !important;
-        margin-right: 1% !important;
-        margin-bottom: 10px !important;
-        box-sizing: border-box !important;
-      }
-      
-      /* Move weather widget up on tour detail page to not cover footer buttons */
-      .tour-detail-page .weather-widget-launcher,
-      .tour-detail-page ~ .weather-widget-launcher,
-      body:has(.tour-detail-page.active) .weather-widget-launcher,
-      body:has(.tour-detail-page.active) #weather-widget-launcher {
-        bottom: 140px !important;
-      }
-      
-      /* FIX: ALL sections on mobile - wider with small margins */
+      /* ALL sections - WIDER with small margins */
+      .tour-detail-page .tour-detail-main > *,
       .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
       .tour-detail-page .highlights-box,
@@ -6922,7 +6912,9 @@
       section#about-tour-section {
         width: calc(100% - 12px) !important;
         max-width: calc(100% - 12px) !important;
-        margin: 0 6px 10px 6px !important;
+        margin-left: 6px !important;
+        margin-right: 6px !important;
+        margin-bottom: 10px !important;
         padding: 15px !important;
         box-sizing: border-box !important;
       }
