@@ -126,12 +126,39 @@
     }
     
     /* =======================================================================
-       HIDE MOBILE BUTTONS ON DESKTOP - Must be global
+       GLOBAL - Clickable Gallery Center Image (works on ALL screen sizes)
        ======================================================================= */
-    .mobile-quick-btn,
-    .mobile-ai-btn,
-    .mobile-browse-btn {
-      display: none !important;
+    .swipe-gallery-image.center {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      z-index: 10;
+    }
+    .swipe-gallery-image.center img {
+      pointer-events: none !important; /* Clicks pass through to parent div */
+    }
+    
+    /* =======================================================================
+       DESKTOP ONLY FIXES - Hide mobile buttons
+       ======================================================================= */
+    @media (min-width: 769px) {
+      /* Hide mobile emoji buttons on desktop */
+      .mobile-quick-btn,
+      .mobile-ai-btn,
+      .mobile-browse-btn {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+      }
+    }
+    
+    /* FORCE white backgrounds on highlights/includes boxes */
+    .highlights-box,
+    .includes-box,
+    #info-grid > div > div {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
     }
     
     /* =======================================================================
@@ -404,7 +431,9 @@
       .language-menu[style*="display: block"],
       .language-menu[style*="display:block"],
       .currency-menu[style*="display: block"],
-      .currency-menu[style*="display:block"] {
+      .currency-menu[style*="display:block"],
+      .language-menu.active,
+      .currency-menu.active {
         display: block !important;
       }
       
@@ -643,12 +672,19 @@
         margin-bottom: 6px !important;
       }
       
-      /* Pricing section full width */
+      /* Tour detail page sections - 94% width with 3% margins on mobile */
+      .tour-detail-page .tour-hero,
+      .tour-detail-page .pricing-section,
+      .tour-detail-page .info-grid,
+      .tour-detail-page .details-section,
+      .tour-detail-page #about-tour-section {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin: 0 3% 10px 3% !important;
+      }
+      
       .tour-detail-page .pricing-section {
-        width: 100% !important;
-        max-width: 100% !important;
         padding: 10px !important;
-        margin: 10px 0 !important;
       }
       
       .tour-detail-page .price-row,
@@ -3649,9 +3685,16 @@
     }
     
     /* Ensure all child sections within tour detail are transparent unless styled */
-    .tour-detail-page section:not(.pricing-section):not(.details-section):not(.fine-print):not(.departure-section),
-    .tour-detail-page section:not(.pricing-section):not(.details-section):not(.fine-print):not(.departure-section) *:not(.info-card):not(.pricing-card):not(.price-row) {
+    .tour-detail-page section:not(.pricing-section):not(.details-section):not(.fine-print):not(.departure-section):not(.info-grid),
+    .tour-detail-page section:not(.pricing-section):not(.details-section):not(.fine-print):not(.departure-section):not(.info-grid) *:not(.info-card):not(.pricing-card):not(.price-row):not(.highlights-box):not(.includes-box) {
       background: transparent !important;
+    }
+    
+    /* FORCE white backgrounds on highlights/includes - override everything */
+    .highlights-box,
+    .includes-box {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
     }
     
     .tour-detail-page .tour-hero,
@@ -3714,7 +3757,7 @@
       align-items: center; /* Center all child sections */
       gap: 40px;
       width: 100%;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
       background: transparent !important;
       scrollbar-width: none; /* Firefox */
@@ -3869,22 +3912,16 @@
       justify-content: flex-start;
     }
     
-    /* Info Grid - Two Cards Side by Side */
+    /* Info Grid - Container for Highlights/What's Included (JS handles the grid) */
     .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 30px;
+      display: block; /* Let JS-generated content handle layout */
       margin: 32px auto;
       width: 100%;
       max-width: 1200px;
       background: transparent !important;
     }
     
-    @media (max-width: 900px) {
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    /* Info-grid layout is handled by JavaScript for mobile vs desktop */
     
     .info-card {
       background: rgba(255, 255, 255, 0.95);
@@ -4056,8 +4093,6 @@
     #reviews-section-detail .review-title {
       font-size: 1.35em !important;
       margin-bottom: 12px !important;
-    }
-    
     }
     
     /* ===================================================================
@@ -9196,13 +9231,13 @@
     // Close all dropdowns when clicking outside
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.language-selector')) {
-        ['home-language-menu', 'vq-language-menu'].forEach(function(id) {
+        ['home-language-menu', 'vq-language-menu', 'detail-language-menu'].forEach(function(id) {
           var m = document.getElementById(id);
           if (m) m.style.display = 'none';
         });
       }
       if (!e.target.closest('.currency-selector')) {
-        ['home-currency-menu', 'vq-currency-menu'].forEach(function(id) {
+        ['home-currency-menu', 'vq-currency-menu', 'detail-currency-menu'].forEach(function(id) {
           var m = document.getElementById(id);
           if (m) m.style.display = 'none';
         });
@@ -9979,53 +10014,38 @@
       </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
       <div class="header-right">
-        <div class="language-selector">
-          <button class="chip" id="detail-language-btn" onclick="toggleDetailLanguageMenu(event)">EN</button>
-          <div class="language-menu" id="detail-language-menu">
-            <div class="language-option" data-lang="en" onclick="selectLanguageFromDetail('en')">
-              <span class="language-flag">🇬🇧</span>
-              <span class="language-name">English</span>
-            </div>
-            <div class="language-option" data-lang="zh" onclick="selectLanguageFromDetail('zh')">
-              <span class="language-flag">🇨🇳</span>
-              <span class="language-name">中文</span>
-            </div>
-            <div class="language-option" data-lang="ja" onclick="selectLanguageFromDetail('ja')">
-              <span class="language-flag">🇯🇵</span>
-              <span class="language-name">日本語</span>
-            </div>
-            <div class="language-option" data-lang="ko" onclick="selectLanguageFromDetail('ko')">
-              <span class="language-flag">🇰🇷</span>
-              <span class="language-name">한국어</span>
-            </div>
-            <div class="language-option" data-lang="de" onclick="selectLanguageFromDetail('de')">
-              <span class="language-flag">🇩🇪</span>
-              <span class="language-name">Deutsch</span>
-            </div>
-            <div class="language-option" data-lang="fr" onclick="selectLanguageFromDetail('fr')">
-              <span class="language-flag">🇫🇷</span>
-              <span class="language-name">Français</span>
-            </div>
+        <!-- Language Button with Dropdown - SAME AS HOME PAGE -->
+        <div class="language-selector" style="position:relative;">
+          <button class="chip" id="detail-language-btn" onclick="event.stopPropagation(); var m=document.getElementById('detail-language-menu'); var c=document.getElementById('detail-currency-menu'); if(c) c.style.display='none'; m.style.display=m.style.display==='block'?'none':'block';">EN</button>
+          <div id="detail-language-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:200px;z-index:99999;padding:10px;overflow:hidden;">
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('en')"><span style="font-size:1.4em;">🇬🇧</span><span style="font-weight:600;color:#0a2540;">English</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('es')"><span style="font-size:1.4em;">🇪🇸</span><span style="font-weight:600;color:#0a2540;">Español</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('zh')"><span style="font-size:1.4em;">🇨🇳</span><span style="font-weight:600;color:#0a2540;">中文</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('ja')"><span style="font-size:1.4em;">🇯🇵</span><span style="font-weight:600;color:#0a2540;">日本語</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('ko')"><span style="font-size:1.4em;">🇰🇷</span><span style="font-weight:600;color:#0a2540;">한국어</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('de')"><span style="font-size:1.4em;">🇩🇪</span><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailLanguage('fr')"><span style="font-size:1.4em;">🇫🇷</span><span style="font-weight:600;color:#0a2540;">Français</span></div>
           </div>
         </div>
-        <div class="currency-selector">
-          <button class="chip" id="detail-currency-btn" onclick="toggleDetailCurrencyMenu(event)">AUD</button>
-          <div class="currency-menu" id="detail-currency-menu">
-            <div class="currency-option" data-currency="AUD" onclick="selectCurrencyFromDetail('AUD')"><span>A$</span> AUD - Australian Dollar</div>
-            <div class="currency-option" data-currency="USD" onclick="selectCurrencyFromDetail('USD')"><span>$</span> USD - US Dollar</div>
-            <div class="currency-option" data-currency="EUR" onclick="selectCurrencyFromDetail('EUR')"><span>€</span> EUR - Euro</div>
-            <div class="currency-option" data-currency="GBP" onclick="selectCurrencyFromDetail('GBP')"><span>£</span> GBP - British Pound</div>
-            <div class="currency-option" data-currency="CNY" onclick="selectCurrencyFromDetail('CNY')"><span>¥</span> CNY - Chinese Yuan</div>
-            <div class="currency-option" data-currency="JPY" onclick="selectCurrencyFromDetail('JPY')"><span>¥</span> JPY - Japanese Yen</div>
+        <!-- Currency Button with Dropdown - SAME AS HOME PAGE -->
+        <div class="currency-selector" style="position:relative;">
+          <button class="chip" id="detail-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('detail-currency-menu'); var l=document.getElementById('detail-language-menu'); if(l) l.style.display='none'; m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
+          <div id="detail-currency-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:180px;z-index:99999;padding:10px;overflow:hidden;">
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('AUD')"><span style="font-weight:700;color:#0077b6;">A$</span><span style="font-weight:600;color:#0a2540;">AUD</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('USD')"><span style="font-weight:700;color:#0077b6;">$</span><span style="font-weight:600;color:#0a2540;">USD</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
           </div>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="tour-detail-main" style="width:100% !important;max-width:100% !important;padding:0 !important;margin:0 !important;">
+    <main class="tour-detail-main">
       <!-- Hero Section -->
-      <section class="tour-hero" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;">
+      <section class="tour-hero">
         <h1 class="tour-title" id="detail-title"></h1>
         <div class="operator-chip" id="detail-company"></div>
         <p class="tour-summary" id="detail-summary"></p>
@@ -10035,19 +10055,19 @@
       </section>
 
       <!-- Pricing Section -->
-      <section class="pricing-section" id="pricing-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;">
+      <section class="pricing-section" id="pricing-section">
         <h2>Pricing</h2>
         <p class="pricing-hint">Tap to select your pricing option.</p>
         <div class="pricing-card" id="pricing-tiers-container"></div>
       </section>
 
       <!-- Info Grid (What's Included & Highlights) - NO outer background -->
-      <section class="info-grid" id="info-grid" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;display:flex !important;flex-direction:column !important;gap:10px !important;background:transparent !important;box-shadow:none !important;padding:0 !important;backdrop-filter:none !important;">
+      <section class="info-grid" id="info-grid">
         <!-- Cards will be populated by JavaScript -->
       </section>
 
       <!-- Description & Details -->
-      <section class="details-section" id="about-tour-section" style="width:94% !important;max-width:94% !important;margin:0 3% 10px 3% !important;padding:15px !important;border-radius:12px !important;">
+      <section class="details-section" id="about-tour-section">
         <h3 style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;">About This Tour</h3>
       <div id="detail-description" style="font-size:0.9em !important;line-height:1.4 !important;"></div>
       </section>
@@ -14527,42 +14547,37 @@
           // NO WRAPPER DIV on mobile - each section is a direct child of info-grid
           let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
-            // Mobile: No wrapper, sections are direct children with same styling as other sections
-            // Desktop: Grid wrapper for side-by-side
-            if (!isMobile) {
-              const includesLength = data.includes ? data.includes.length : 0;
-              const highlightsLength = data.highlights ? data.highlights.length : 0;
-              const bothExist = data.includes && data.highlights;
-              const useSquares = bothExist && (includesLength + highlightsLength) / 2 < 400;
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:${useSquares ? '1fr 1fr' : '1fr'};gap:30px;">`;
+            const bothExist = data.includes && data.highlights;
+            
+            // Desktop: Always side-by-side grid if both exist, centered with max-width
+            if (!isMobile && bothExist) {
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1200px;margin:0 auto;">`;
+            } else if (!isMobile) {
+              highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
             }
             
             // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
-              const hlPad = isMobile ? '15px' : '25px';
-              const hlHead = isMobile ? '1.1em' : '1.6em';
+              const hlPad = isMobile ? '15px' : '40px 45px';
+              const hlHead = isMobile ? '1.1em' : '1.8em';
               const hlText = isMobile ? '0.9em' : '1.15em';
-              // Mobile: same styling as other sections (white bg, blue border)
-              const hlBg = isMobile ? 'rgba(255,255,255,0.95)' : '#fff3e0';
-              const hlBorder = isMobile ? '#0077b6' : '#ff9800';
-              highlightsIncludesHtml += `<div style="background:${hlBg};padding:${hlPad};border-radius:12px;border-left:4px solid ${hlBorder};box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:${isMobile ? '#0077b6' : '#f57c00'};font-size:${hlHead};font-weight:600;">⭐ ${t('highlights')}</h3>`;
+              // FORCED WHITE BACKGROUND
+              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${hlPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.4;color:#2c3e50;">${formattedHighlights}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.6;color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             // WHAT'S INCLUDED SECOND
             if (data.includes) {
-              const incPad = isMobile ? '15px' : '25px';
-              const incHead = isMobile ? '1.1em' : '1.6em';
+              const incPad = isMobile ? '15px' : '40px 45px';
+              const incHead = isMobile ? '1.1em' : '1.8em';
               const incText = isMobile ? '0.9em' : '1.15em';
-              // Mobile: same styling as other sections (white bg, blue border)
-              const incBg = isMobile ? 'rgba(255,255,255,0.95)' : '#e8f5e9';
-              const incBorder = isMobile ? '#0077b6' : '#4caf50';
-              highlightsIncludesHtml += `<div style="background:${incBg};padding:${incPad};border-radius:12px;border-left:4px solid ${incBorder};box-shadow:0 4px 15px rgba(0,0,0,0.1);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:${isMobile ? '#0077b6' : '#2e7d32'};font-size:${incHead};font-weight:600;">✅ ${t('whats_included')}</h3>`;
+              // FORCED WHITE BACKGROUND
+              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${incPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.4;color:#2c3e50;">${formattedIncludes}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.6;color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             
@@ -14883,32 +14898,71 @@
             spread.className = 'swipe-gallery-spread';
             spread.id = 'detail-gallery-spread';
             
+            // Left image
             const leftImg = document.createElement('div');
             leftImg.className = 'swipe-gallery-image left';
             leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
             spread.appendChild(leftImg);
             
+            // Center image - CLICKABLE - use direct function assignment
             const centerImg = document.createElement('div');
             centerImg.className = 'swipe-gallery-image center';
-            centerImg.style.cursor = 'pointer';
-            centerImg.style.zIndex = '100';
-            centerImg.style.position = 'relative';
+            centerImg.style.cssText = 'cursor:pointer !important; pointer-events:auto !important; z-index:9999 !important;';
             centerImg.innerHTML = `<img src="${images[1]}" alt="${data.name}" style="pointer-events:none;">`;
-            centerImg.addEventListener('click', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('BROWSE GALLERY CLICKED!', window.detailGalleryImages);
-              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-            }, true);
-            // Also add touch handler for mobile
+            // Capture gallery array in closure
+            const galleryImages = [...gallery];
+            const startIdx = detailGalleryIndex;
+            // Use both click and touchend for maximum compatibility
+            function openGalleryLightbox(e) {
+              if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+              console.log('=== GALLERY TAP/CLICK ===');
+              console.log('Gallery images count:', galleryImages.length);
+              
+              var currentIdx = window.detailGalleryIndex || 0;
+              
+              // Directly manipulate the lightbox without going through openLightbox
+              var lightbox = document.getElementById('image-lightbox');
+              var img = document.getElementById('lightbox-img');
+              var counter = document.getElementById('lightbox-counter');
+              
+              if (!lightbox) {
+                console.error('Lightbox element not found!');
+                alert('ERROR: Lightbox element not found');
+                return;
+              }
+              
+              if (galleryImages.length === 0) {
+                alert('No images in gallery!');
+                return;
+              }
+              
+              console.log('Setting image to:', galleryImages[currentIdx]);
+              img.src = galleryImages[currentIdx];
+              counter.textContent = (currentIdx + 1) + ' / ' + galleryImages.length;
+              
+              // Force display
+              lightbox.style.display = 'flex';
+              lightbox.classList.add('active');
+              document.body.style.overflow = 'hidden';
+              
+              // Store images globally for nav
+              window.lightboxImages = galleryImages;
+              window.lightboxIndex = currentIdx;
+              
+              console.log('Lightbox should now be visible');
+            }
+            
+            centerImg.onclick = openGalleryLightbox;
             centerImg.addEventListener('touchend', function(e) {
               e.preventDefault();
-              e.stopPropagation();
-              console.log('BROWSE GALLERY TOUCHED!', window.detailGalleryImages);
-              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-            }, {passive: false, capture: true});
+              openGalleryLightbox(e);
+            }, {passive: false});
             spread.appendChild(centerImg);
             
+            // Right image
             const rightImg = document.createElement('div');
             rightImg.className = 'swipe-gallery-image right';
             rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
@@ -17118,6 +17172,23 @@
       if (btn) btn.textContent = curr;
     }
     
+    // Detail page language/currency functions
+    window.selectDetailLanguage = function(lang) {
+      switchLanguage(lang);
+      var menu = document.getElementById('detail-language-menu');
+      if (menu) menu.style.display = 'none';
+      var btn = document.getElementById('detail-language-btn');
+      if (btn) btn.textContent = lang.toUpperCase();
+    }
+    
+    window.selectDetailCurrency = function(curr) {
+      switchCurrency(curr);
+      var menu = document.getElementById('detail-currency-menu');
+      if (menu) menu.style.display = 'none';
+      var btn = document.getElementById('detail-currency-btn');
+      if (btn) btn.textContent = curr;
+    }
+    
     // VQ (Video Question) page menu functions
     function toggleVQLanguageMenu(event) {
       event.stopPropagation();
@@ -19056,17 +19127,25 @@
     let lightboxTouchStartX = 0;
     
     window.openLightbox = function(images, startIndex) {
+      console.log('openLightbox called with:', images, startIndex);
       lightboxImages = images || [];
       lightboxIndex = startIndex || 0;
-      if (lightboxImages.length === 0) return;
+      if (lightboxImages.length === 0) {
+        console.log('No images, returning');
+        return;
+      }
       
       const lightbox = document.getElementById('image-lightbox');
       const img = document.getElementById('lightbox-img');
       const counter = document.getElementById('lightbox-counter');
       
+      console.log('Lightbox element:', lightbox);
+      console.log('Setting image src to:', lightboxImages[lightboxIndex]);
+      
       img.src = lightboxImages[lightboxIndex];
       counter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
       lightbox.classList.add('active');
+      console.log('Lightbox classes after adding active:', lightbox.className);
       document.body.style.overflow = 'hidden';
       
       // Add touch swipe support
@@ -19077,18 +19156,27 @@
     window.closeLightbox = function() {
       const lightbox = document.getElementById('image-lightbox');
       lightbox.classList.remove('active');
+      lightbox.style.display = 'none';  // Force hide
       document.body.style.overflow = '';
       lightbox.removeEventListener('touchstart', lightboxTouchStart);
       lightbox.removeEventListener('touchend', lightboxTouchEnd);
     };
     
     window.lightboxNext = function() {
+      // Update local vars from global if set directly
+      if (window.lightboxImages) lightboxImages = window.lightboxImages;
+      if (typeof window.lightboxIndex === 'number') lightboxIndex = window.lightboxIndex;
       lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+      window.lightboxIndex = lightboxIndex;
       updateLightboxImage();
     };
     
     window.lightboxPrev = function() {
+      // Update local vars from global if set directly
+      if (window.lightboxImages) lightboxImages = window.lightboxImages;
+      if (typeof window.lightboxIndex === 'number') lightboxIndex = window.lightboxIndex;
       lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+      window.lightboxIndex = lightboxIndex;
       updateLightboxImage();
     };
     
