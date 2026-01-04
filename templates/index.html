@@ -4291,6 +4291,14 @@
       height: 100% !important;
     }
     
+    /* HIDE home page when tour detail is open */
+    body:has(.tour-detail-page.active) .page.home-page {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    
     /* ===================================================================
        QR PAYMENT MODAL
        =================================================================== */
@@ -11082,7 +11090,7 @@
       
       const rejectBtn = document.getElementById('reject-btn');
       if (rejectBtn) {
-        rejectBtn.querySelector('.swipe-btn-text').textContent = t('more_info');
+        rejectBtn.querySelector('.swipe-btn-text').textContent = t('next_tour') || 'Next Tour';
         rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
         rejectBtn.onclick = () => rejectCard();
       }
