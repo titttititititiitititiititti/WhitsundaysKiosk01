@@ -6913,13 +6913,15 @@
         bottom: 130px !important;
       }
       
-      /* FIX: About This Tour section needs to be wider on mobile */
+      /* FIX: About This Tour section - MUCH WIDER on mobile */
       .tour-detail-page section.details-section,
-      .tour-detail-page #about-tour-section {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+      .tour-detail-page #about-tour-section,
+      section#about-tour-section {
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        margin: 0 8px 10px 8px !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
       }
       
       /* Hero section */
