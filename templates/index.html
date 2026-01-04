@@ -10105,10 +10105,10 @@
         <button class="back-button" id="back-arrow">←</button>
         <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
         <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
-        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
-        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="padding: 18px 36px; font-size: 1.15em; min-width: 200px;">⚡ Quick Decision</button>
+        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')" style="padding: 18px 36px; font-size: 1.15em; min-width: 220px;">🤖 Talk To Our AI Assistant</button>
       </div>
-      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
+      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" style="height: 90px;">
       <div class="header-right">
         <!-- Language Button with Dropdown - SAME AS HOME PAGE -->
         <div class="language-selector" style="position:relative;">
@@ -10188,10 +10188,10 @@
     </main>
 
     <!-- Sticky Footer -->
-    <div class="tour-detail-footer" style="position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 15px; z-index: 999999; padding: 0 20px;">
-      <button class="btn-tertiary" id="share-tour-btn" style="padding: 16px 28px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Share Tour</button>
-      <button class="btn-primary" id="book-now-btn" style="padding: 16px 32px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Book Now</button>
-      <button class="btn-secondary" id="continue-phone-btn" style="padding: 16px 28px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Send to My Phone</button>
+    <div class="tour-detail-footer" style="position: fixed; bottom: 25px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; z-index: 999999; padding: 0 30px;">
+      <button class="btn-tertiary" id="share-tour-btn" style="padding: 20px 36px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Share Tour</button>
+      <button class="btn-primary" id="book-now-btn" style="padding: 20px 42px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn" style="padding: 20px 36px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Send to My Phone</button>
     </div>
   </div>
   
@@ -19164,7 +19164,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:20px !important;right:20px !important;width:70px;height:70px;border-radius:50% !important;border:3px solid rgba(255,255,255,0.9) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 4px 16px rgba(255,152,0,0.4) !important;font-size:2em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
