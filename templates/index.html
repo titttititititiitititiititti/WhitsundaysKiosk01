@@ -9246,6 +9246,34 @@
       pointer-events: auto !important;
     }
 
+    /* =======================================================================
+       DESKTOP SCALING - BIGGER ELEMENTS (at end to win cascade)
+       ======================================================================= */
+    @media (min-width: 769px) {
+      /* DESKTOP: Bigger logo - override all other rules */
+      .logo-image,
+      .kiosk-header .logo-image,
+      .page .kiosk-header .logo-image,
+      .page.home-page .logo-image,
+      .page.tour-detail-page .logo-image,
+      .tour-detail-page .kiosk-header .logo-image {
+        height: 90px !important;
+        width: auto !important;
+      }
+      
+      /* DESKTOP: Bigger header buttons */
+      .quick-decision-btn-header,
+      .ai-assistant-btn-header,
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .ai-assistant-btn-header,
+      .header-left .quick-decision-btn-header,
+      .header-left .ai-assistant-btn-header {
+        padding: 18px 36px !important;
+        font-size: 1.15em !important;
+        min-width: 200px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -10135,10 +10163,10 @@
     </main>
 
     <!-- Sticky Footer -->
-    <div class="tour-detail-footer" style="position: fixed; bottom: 15px; left: 0; right: 0; display: flex; justify-content: center; gap: 10px; z-index: 999999; padding: 0 10px;">
-      <button class="btn-tertiary" id="share-tour-btn" style="padding: 12px 18px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Share Tour</button>
-      <button class="btn-primary" id="book-now-btn" style="padding: 12px 22px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Book Now</button>
-      <button class="btn-secondary" id="continue-phone-btn" style="padding: 12px 18px; font-size: 0.85em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Send to My Phone</button>
+    <div class="tour-detail-footer" style="position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 15px; z-index: 999999; padding: 0 20px;">
+      <button class="btn-tertiary" id="share-tour-btn" style="padding: 16px 28px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Share Tour</button>
+      <button class="btn-primary" id="book-now-btn" style="padding: 16px 32px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Book Now</button>
+      <button class="btn-secondary" id="continue-phone-btn" style="padding: 16px 28px; font-size: 1.1em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); font-weight: 600;">Send to My Phone</button>
     </div>
   </div>
   
@@ -19111,7 +19139,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:12px !important;right:12px !important;width:50px !important;height:50px !important;border-radius:50% !important;border:3px solid rgba(255,255,255,0.9) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 4px 16px rgba(255,152,0,0.4) !important;font-size:1.5em !important;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:20px !important;right:20px !important;width:70px;height:70px;border-radius:50% !important;border:3px solid rgba(255,255,255,0.9) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 4px 16px rgba(255,152,0,0.4) !important;font-size:2em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
