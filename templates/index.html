@@ -9250,14 +9250,20 @@
        DESKTOP SCALING - BIGGER ELEMENTS (at end to win cascade)
        ======================================================================= */
     @media (min-width: 769px) {
-      /* DESKTOP: Bigger logo - override all other rules */
-      .logo-image,
-      .kiosk-header .logo-image,
-      .page .kiosk-header .logo-image,
+      /* DESKTOP: Bigger logo - ONLY on home and tour detail pages */
       .page.home-page .logo-image,
+      .page.home-page .kiosk-header .logo-image,
       .page.tour-detail-page .logo-image,
+      .page.tour-detail-page .kiosk-header .logo-image,
       .tour-detail-page .kiosk-header .logo-image {
         height: 90px !important;
+        width: auto !important;
+      }
+      
+      /* DESKTOP: Keep questionnaire logo smaller */
+      .page.video-question-page .logo-image,
+      .page.video-question-page .kiosk-header .logo-image {
+        height: 50px !important;
         width: auto !important;
       }
       
@@ -9271,6 +9277,25 @@
         padding: 18px 36px !important;
         font-size: 1.15em !important;
         min-width: 200px !important;
+      }
+      
+      /* DESKTOP: Bigger tour detail footer buttons */
+      .tour-detail-footer button,
+      .tour-detail-footer .btn-primary,
+      .tour-detail-footer .btn-secondary,
+      .tour-detail-footer .btn-tertiary {
+        padding: 18px 32px !important;
+        font-size: 1.15em !important;
+        border-radius: 30px !important;
+      }
+      
+      /* DESKTOP: Bigger weather widget */
+      #weather-widget-launcher.weather-widget-launcher {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 2em !important;
+        bottom: 20px !important;
+        right: 20px !important;
       }
     }
 
