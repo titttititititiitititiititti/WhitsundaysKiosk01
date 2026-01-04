@@ -743,9 +743,9 @@
       .tour-detail-page .info-grid,
       .tour-detail-page .details-section,
       .tour-detail-page #about-tour-section {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin: 0 3% 10px 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 2% 10px 2% !important;
       }
       
       .tour-detail-page .pricing-section {
@@ -6897,12 +6897,20 @@
       
       /* ALL sections must stretch to parent width, then use margins */
       .tour-detail-page .tour-detail-main > * {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin-left: 3% !important;
-        margin-right: 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin-left: 2% !important;
+        margin-right: 2% !important;
         margin-bottom: 10px !important;
         box-sizing: border-box !important;
+      }
+      
+      /* Move weather widget up on tour detail page to not cover footer buttons */
+      .tour-detail-page .weather-widget-launcher,
+      .tour-detail-page ~ .weather-widget-launcher,
+      body:has(.tour-detail-page.active) .weather-widget-launcher,
+      body:has(.tour-detail-page.active) #weather-widget-launcher {
+        bottom: 85px !important;
       }
       
       /* Hero section */
@@ -8706,10 +8714,10 @@
       #detail-info > div,
       #detail-info div[style*="max-width"],
       #detail-info div[style*="1200px"] {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin-left: 3% !important;
-        margin-right: 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin-left: 2% !important;
+        margin-right: 2% !important;
         margin-bottom: 10px !important;
         padding: 15px !important;
         box-sizing: border-box !important;
@@ -8723,10 +8731,10 @@
       .tour-detail-page .detail-section-grid,
       .tour-detail-page div[style*="grid-template-columns"] {
         display: block !important;
-        width: 94% !important;
-        max-width: 94% !important;
-        margin-left: 3% !important;
-        margin-right: 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin-left: 2% !important;
+        margin-right: 2% !important;
         padding: 0 !important;
       }
       
@@ -8750,9 +8758,9 @@
       .tour-detail-page .fine-print,
       .tour-detail-page .departure-section,
       .details-section {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin: 0 3% 10px 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 2% 10px 2% !important;
         padding: 15px !important;
         box-sizing: border-box !important;
         border-radius: 12px !important;
@@ -8762,9 +8770,9 @@
       section.info-grid,
       section#info-grid,
       .tour-detail-page section.info-grid {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin: 0 3% 10px 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 2% 10px 2% !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
@@ -8812,9 +8820,9 @@
       section.details-section,
       section#about-tour-section,
       .tour-detail-page section.details-section {
-        width: 94% !important;
-        max-width: 94% !important;
-        margin: 0 3% 10px 3% !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 2% 10px 2% !important;
         padding: 15px !important;
         box-sizing: border-box !important;
         border-radius: 12px !important;
@@ -14667,7 +14675,7 @@
           const mRadius = '12px';
           const mHeading = '1.1em';
           const mText = '0.9em';
-          const mWidth = 'width:94%;margin:0 3% ' + mGap + ' 3%;';
+          const mWidth = 'width:96%;margin:0 2% ' + mGap + ' 2%;';
           
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
