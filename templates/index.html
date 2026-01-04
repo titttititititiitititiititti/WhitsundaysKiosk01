@@ -10927,8 +10927,27 @@
       window.swipeGalleryImages = currentTourGallery.length > 0 ? currentTourGallery : images;
       window.swipeGalleryIndex = currentGalleryIndex;
       centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
-      // Direct onclick on the div
-      centerCard.onclick = function(e) {
+      // Track touch to distinguish tap vs scroll
+      let qTouchStartX = 0, qTouchStartY = 0, qTouchMoved = false;
+      centerCard.addEventListener('touchstart', function(e) {
+        qTouchStartX = e.touches[0].clientX;
+        qTouchStartY = e.touches[0].clientY;
+        qTouchMoved = false;
+      }, {passive: true});
+      centerCard.addEventListener('touchmove', function(e) {
+        const dx = Math.abs(e.touches[0].clientX - qTouchStartX);
+        const dy = Math.abs(e.touches[0].clientY - qTouchStartY);
+        if (dx > 10 || dy > 10) qTouchMoved = true;
+      }, {passive: true});
+      centerCard.addEventListener('touchend', function(e) {
+        if (!qTouchMoved) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Lightbox opening...');
+          window.openLightbox(window.swipeGalleryImages, window.swipeGalleryIndex || 0);
+        }
+      }, {passive: false});
+      centerCard.onclick = function(e) { // Keep for non-touch devices
         e.stopPropagation();
         console.log('Lightbox opening...');
         window.openLightbox(window.swipeGalleryImages, window.swipeGalleryIndex || 0);
@@ -15172,11 +15191,25 @@
               console.log('Lightbox should now be visible');
             }
             
-            centerImg.onclick = openGalleryLightbox;
+            // Track touch to distinguish tap vs scroll
+            let touchStartX = 0, touchStartY = 0, touchMoved = false;
+            centerImg.addEventListener('touchstart', function(e) {
+              touchStartX = e.touches[0].clientX;
+              touchStartY = e.touches[0].clientY;
+              touchMoved = false;
+            }, {passive: true});
+            centerImg.addEventListener('touchmove', function(e) {
+              const dx = Math.abs(e.touches[0].clientX - touchStartX);
+              const dy = Math.abs(e.touches[0].clientY - touchStartY);
+              if (dx > 10 || dy > 10) touchMoved = true; // User is scrolling
+            }, {passive: true});
             centerImg.addEventListener('touchend', function(e) {
-              e.preventDefault();
-              openGalleryLightbox(e);
+              if (!touchMoved) { // Only open if it was a tap, not a scroll
+                e.preventDefault();
+                openGalleryLightbox(e);
+              }
             }, {passive: false});
+            centerImg.onclick = openGalleryLightbox; // Keep for non-touch devices
             spread.appendChild(centerImg);
             
             // Right image
