@@ -6910,16 +6910,19 @@
       .tour-detail-page ~ .weather-widget-launcher,
       body:has(.tour-detail-page.active) .weather-widget-launcher,
       body:has(.tour-detail-page.active) #weather-widget-launcher {
-        bottom: 130px !important;
+        bottom: 140px !important;
       }
       
-      /* FIX: About This Tour section - MUCH WIDER on mobile */
+      /* FIX: ALL sections on mobile - wider with small margins */
       .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box,
+      .tour-detail-page #detail-info > div,
       section#about-tour-section {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px 10px 8px !important;
+        width: calc(100% - 12px) !important;
+        max-width: calc(100% - 12px) !important;
+        margin: 0 6px 10px 6px !important;
         padding: 15px !important;
         box-sizing: border-box !important;
       }
@@ -10294,7 +10297,7 @@
 
       <!-- Description & Details -->
       <section class="details-section" id="about-tour-section">
-        <h3 style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;">About This Tour</h3>
+        <h3 id="about-tour-title" style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;color:#0077b6;">About This Tour</h3>
       <div id="detail-description" style="font-size:0.9em !important;line-height:1.4 !important;"></div>
       </section>
 
@@ -14705,7 +14708,7 @@
           const mRadius = '12px';
           const mHeading = '1.1em';
           const mText = '0.9em';
-          const mWidth = 'width:94%;margin:0 auto ' + mGap + ' auto;';
+          const mWidth = 'width:calc(100% - 12px);margin:0 6px ' + mGap + ' 6px;box-sizing:border-box;';
           
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
@@ -14806,7 +14809,7 @@
               const hlPad = isMobile ? '15px' : '40px 45px';
               const hlHead = isMobile ? '1.1em' : '1.8em';
               const hlText = isMobile ? '0.9em' : '1.15em';
-              const hlWidth = isMobile ? 'width:94%;margin:0 auto 10px auto;' : '';
+              const hlWidth = isMobile ? 'width:calc(100% - 12px);margin:0 6px 10px 6px;box-sizing:border-box;' : '';
               // FORCED WHITE BACKGROUND
               highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;${hlWidth}padding:${hlPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
               highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
@@ -14819,7 +14822,7 @@
               const incPad = isMobile ? '15px' : '40px 45px';
               const incHead = isMobile ? '1.1em' : '1.8em';
               const incText = isMobile ? '0.9em' : '1.15em';
-              const incWidth = isMobile ? 'width:94%;margin:0 auto 10px auto;' : '';
+              const incWidth = isMobile ? 'width:calc(100% - 12px);margin:0 6px 10px 6px;box-sizing:border-box;' : '';
               // FORCED WHITE BACKGROUND
               highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;${incWidth}padding:${incPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
               highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
@@ -17218,6 +17221,10 @@
       if (bookNowBtn) bookNowBtn.textContent = lang.book_now;
       if (shareTourBtn) shareTourBtn.textContent = lang.share_tour;
       if (sendToPhoneBtn) sendToPhoneBtn.textContent = lang.send_to_phone;
+      
+      // Update "About This Tour" section title
+      const aboutTourTitle = document.getElementById('about-tour-title');
+      if (aboutTourTitle && lang.about_this_tour) aboutTourTitle.textContent = lang.about_this_tour;
       
       console.log('✓ Language applied:', lang.name);
     }
