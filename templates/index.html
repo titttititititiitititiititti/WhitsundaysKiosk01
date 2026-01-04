@@ -6910,28 +6910,16 @@
       .tour-detail-page ~ .weather-widget-launcher,
       body:has(.tour-detail-page.active) .weather-widget-launcher,
       body:has(.tour-detail-page.active) #weather-widget-launcher {
-        bottom: 280px !important;
+        bottom: 130px !important;
       }
       
-      /* FORCE ALL TOUR DETAIL SECTIONS FULL WIDTH - OVERRIDE EVERYTHING */
-      .tour-detail-page .tour-detail-main > *,
-      .tour-detail-page .tour-detail-main section,
-      .tour-detail-page .tour-detail-main > section,
-      .tour-detail-page .tour-detail-main > div,
+      /* FIX: About This Tour section needs to be wider on mobile */
       .tour-detail-page section.details-section,
-      .tour-detail-page section.info-grid,
-      .tour-detail-page section.pricing-section,
-      .tour-detail-page section.fine-print,
-      .tour-detail-page #info-grid,
-      .tour-detail-page #detail-info,
-      .tour-detail-page #detail-info > div,
-      .tour-detail-page .highlights-box,
-      .tour-detail-page .includes-box {
-        width: 98vw !important;
-        max-width: 98vw !important;
-        margin-left: 1vw !important;
-        margin-right: 1vw !important;
-        box-sizing: border-box !important;
+      .tour-detail-page #about-tour-section {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
       
       /* Hero section */
@@ -14709,13 +14697,13 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - USE VIEWPORT WIDTH for guaranteed full width
+          // MOBILE UNIFORM STYLES - simple percentages, centered
           const mPad = '15px';
           const mGap = '10px';
           const mRadius = '12px';
           const mHeading = '1.1em';
           const mText = '0.9em';
-          const mWidth = 'width:96vw !important;max-width:96vw !important;margin-left:2vw !important;margin-right:2vw !important;margin-bottom:' + mGap + ';box-sizing:border-box !important;';
+          const mWidth = 'width:94%;margin:0 auto ' + mGap + ' auto;';
           
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
@@ -14816,7 +14804,7 @@
               const hlPad = isMobile ? '15px' : '40px 45px';
               const hlHead = isMobile ? '1.1em' : '1.8em';
               const hlText = isMobile ? '0.9em' : '1.15em';
-              const hlWidth = isMobile ? 'width:96vw !important;max-width:96vw !important;margin-left:2vw !important;margin-right:2vw !important;margin-bottom:10px;box-sizing:border-box !important;' : '';
+              const hlWidth = isMobile ? 'width:94%;margin:0 auto 10px auto;' : '';
               // FORCED WHITE BACKGROUND
               highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;${hlWidth}padding:${hlPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
               highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
@@ -14829,7 +14817,7 @@
               const incPad = isMobile ? '15px' : '40px 45px';
               const incHead = isMobile ? '1.1em' : '1.8em';
               const incText = isMobile ? '0.9em' : '1.15em';
-              const incWidth = isMobile ? 'width:96vw !important;max-width:96vw !important;margin-left:2vw !important;margin-right:2vw !important;margin-bottom:10px;box-sizing:border-box !important;' : '';
+              const incWidth = isMobile ? 'width:94%;margin:0 auto 10px auto;' : '';
               // FORCED WHITE BACKGROUND
               highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;${incWidth}padding:${incPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
               highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
