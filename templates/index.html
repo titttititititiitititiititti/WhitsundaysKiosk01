@@ -14889,10 +14889,22 @@
             const centerImg = document.createElement('div');
             centerImg.className = 'swipe-gallery-image center';
             centerImg.style.cursor = 'pointer';
-            centerImg.innerHTML = `<img src="${images[1]}" alt="${data.name}">`;
-            centerImg.onclick = function() {
+            centerImg.style.zIndex = '100';
+            centerImg.style.position = 'relative';
+            centerImg.innerHTML = `<img src="${images[1]}" alt="${data.name}" style="pointer-events:none;">`;
+            centerImg.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('BROWSE GALLERY CLICKED!', window.detailGalleryImages);
               window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
-            };
+            }, true);
+            // Also add touch handler for mobile
+            centerImg.addEventListener('touchend', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('BROWSE GALLERY TOUCHED!', window.detailGalleryImages);
+              window.openLightbox(window.detailGalleryImages, window.detailGalleryIndex || 0);
+            }, {passive: false, capture: true});
             spread.appendChild(centerImg);
             
             const rightImg = document.createElement('div');
