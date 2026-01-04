@@ -835,10 +835,6 @@
       transition: background 0.4s ease;
     }
 
-    body.dev-update-red {
-      background: #ad0e0e !important;
-    }
-
     /* Responsive media defaults */
     img, video, iframe, embed, object {
       max-width: 100%;
@@ -1287,6 +1283,20 @@
       object-fit: cover;
       display: block !important; /* ALWAYS visible */
       pointer-events: none; /* Don't block clicks */
+    }
+    
+    /* Hide video play button on mobile browsers */
+    #bg-video::-webkit-media-controls {
+      display: none !important;
+    }
+    #bg-video::-webkit-media-controls-enclosure {
+      display: none !important;
+    }
+    #bg-video::-webkit-media-controls-panel {
+      display: none !important;
+    }
+    #bg-video::-webkit-media-controls-play-button {
+      display: none !important;
     }
     
     /* Prevent scrolling when video page is active */
@@ -6860,8 +6870,19 @@
       .tour-detail-page main {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 0 8px !important;
+        padding: 0 !important;
         margin: 0 !important;
+        box-sizing: border-box !important;
+        align-items: stretch !important; /* Override desktop centering */
+      }
+      
+      /* ALL sections must stretch to parent width, then use margins */
+      .tour-detail-page .tour-detail-main > * {
+        width: 94% !important;
+        max-width: 94% !important;
+        margin-left: 3% !important;
+        margin-right: 3% !important;
+        margin-bottom: 10px !important;
         box-sizing: border-box !important;
       }
       
@@ -9519,12 +9540,35 @@
       <!-- Streamable video will be loaded dynamically -->
     </video>
     <script>
-      // Load Streamable video dynamically
+      // Load Streamable video dynamically and prevent pausing
       (function() {
+        const video = document.getElementById('bg-video');
+        
+        // Prevent video from pausing - always resume play
+        video.addEventListener('pause', function() {
+          // Only resume if not intentionally stopped (e.g., page hidden)
+          if (!document.hidden) {
+            video.play().catch(e => console.log('Resume blocked:', e));
+          }
+        });
+        
+        // Resume video when page becomes visible again
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden && video.paused) {
+            video.play().catch(e => console.log('Visibility resume blocked:', e));
+          }
+        });
+        
+        // Disable video controls (prevent user from pausing)
+        video.controls = false;
+        video.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        
         fetch('https://api.streamable.com/videos/1br41l')
           .then(r => r.json())
           .then(data => {
-            const video = document.getElementById('bg-video');
             if (data.files && data.files.mp4) {
               video.src = data.files.mp4.url;
               video.load();
@@ -9533,7 +9577,6 @@
           })
           .catch(e => {
             console.log('Streamable load failed, using fallback');
-            const video = document.getElementById('bg-video');
             video.src = "{{ url_for('static', filename='b_roll/background.mp4') }}";
             video.load();
           });
@@ -19172,32 +19215,6 @@
       window.toggleWeatherWidget = toggleWeatherWidget;
     })();
 
-  </script>
-  <script>
-    (function () {
-      const FLASH_DURATION = 1100;
-
-      function ensureIndicator() {
-        const body = document.body;
-        if (!body) return;
-
-        const indicator = document.querySelector('.weather-test-dot');
-        if (!indicator) {
-          const dot = document.createElement('div');
-          dot.className = 'weather-test-dot';
-          body.appendChild(dot);
-        }
-
-        body.classList.add('dev-update-red');
-        setTimeout(() => body.classList.remove('dev-update-red'), FLASH_DURATION);
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ensureIndicator);
-      } else {
-        ensureIndicator();
-      }
-    })();
   </script>
   
   <!-- Voice Chat System -->
