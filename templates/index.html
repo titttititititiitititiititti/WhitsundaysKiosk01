@@ -2777,14 +2777,14 @@
       display: none !important;
     }
     
-    /* Video question page - ALWAYS show kiosk header */
+    /* Video question page - hide header by default (start screen, language selection) */
     .video-question-page .kiosk-header {
-      display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
     }
     
-    /* Show kiosk header when questions are showing */
+    /* Show kiosk header ONLY when questions are showing (not start screen) */
     .video-question-page.showing-questions .kiosk-header {
       display: flex !important;
       visibility: visible !important;
@@ -9278,10 +9278,10 @@
         width: auto !important;
       }
       
-      /* DESKTOP: Keep questionnaire logo smaller */
+      /* DESKTOP: Questionnaire logo size */
       .page.video-question-page .logo-image,
       .page.video-question-page .kiosk-header .logo-image {
-        height: 40px !important;
+        height: 60px !important;
         width: auto !important;
       }
       
@@ -19184,7 +19184,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:2px;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px !important;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:6px;">☀️</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:320px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
