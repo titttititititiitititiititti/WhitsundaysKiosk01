@@ -611,34 +611,67 @@
         text-orientation: mixed !important;
       }
       
-      /* VIDEO QUESTION PAGE (Quick Decision) - Scale ONLY questions like desktop */
+      /* VIDEO QUESTION PAGE (Quick Decision) - Fit on screen without scrolling */
       .video-question-page {
-        overflow-x: hidden !important;
+        overflow: hidden !important;
       }
       
-      /* Scale ONLY the question container (NOT start screen, NOT results, NOT header) */
+      /* Question container - fit on screen */
       .video-question-page .video-question-container {
-        transform: scale(0.48) !important;
-        transform-origin: top center !important;
-        width: 208vw !important;
-        margin-left: -54vw !important;
+        transform: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        padding-top: 80px !important;
+        min-height: auto !important;
+        height: calc(100vh - 60px) !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
       }
       
-      /* DON'T scale the start screen - keep mobile layout */
+      /* Question card - compact */
+      .video-question-page .video-question-card {
+        padding: 15px !important;
+        margin: 0 !important;
+      }
+      
+      /* Question text - smaller */
+      .video-question-page .video-question-card h2 {
+        font-size: 1.3em !important;
+        margin-bottom: 15px !important;
+      }
+      
+      /* Answer buttons - smaller and fit on screen */
+      .video-question-page .duration-pill,
+      .video-question-page .option-btn {
+        padding: 12px 20px !important;
+        font-size: 1em !important;
+        min-height: auto !important;
+      }
+      
+      /* Options grid - tighter */
+      .video-question-page .duration-options,
+      .video-question-page .options-grid {
+        gap: 10px !important;
+      }
+      
+      /* DON'T change the start screen */
       .video-question-page .video-start-screen {
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
       }
       
-      /* Don't scale the header */
+      /* Don't change the header */
       .video-question-page .kiosk-header {
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
       }
       
-      /* Don't scale filtered results - they already look good */
+      /* Don't change filtered results */
       .video-question-page .filtered-results-container,
       .video-question-page #filtered-results-container {
         transform: none !important;
@@ -701,10 +734,16 @@
         font-size: 0.6em !important;
       }
       
-      /* Search bar */
+      /* Search bar - BIGGER on mobile */
       #home-search-input {
-        font-size: 1rem !important;
-        padding: 12px 15px 12px 45px !important;
+        font-size: 1.2rem !important;
+        padding: 18px 20px 18px 50px !important;
+        border-radius: 30px !important;
+      }
+      
+      .search-wrapper {
+        margin: 15px auto !important;
+        width: 95% !important;
       }
       
       /* Tour cards on HOME PAGE - RESET to desktop defaults, parent handles scaling */
@@ -11137,6 +11176,7 @@
       const leftArrow = document.createElement('button');
       leftArrow.className = 'gallery-nav-arrow left';
       leftArrow.innerHTML = '‹';
+      leftArrow.style.cssText = 'position:absolute;left:5px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:#fff;border:none;border-radius:50%;font-size:24px;color:#222;cursor:pointer;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;';
       leftArrow.onclick = (e) => {
         e.stopPropagation();
         rotateGallery('left', tour);
@@ -11199,6 +11239,7 @@
       const rightArrow = document.createElement('button');
       rightArrow.className = 'gallery-nav-arrow right';
       rightArrow.innerHTML = '›';
+      rightArrow.style.cssText = 'position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:#fff;border:none;border-radius:50%;font-size:24px;color:#222;cursor:pointer;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;';
       rightArrow.onclick = (e) => {
         e.stopPropagation();
         rotateGallery('right', tour);
@@ -15357,6 +15398,7 @@
             const leftArrow = document.createElement('button');
             leftArrow.className = 'gallery-nav-arrow left';
             leftArrow.innerHTML = '‹';
+            leftArrow.style.cssText = 'position:absolute;left:5px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:#fff;border:none;border-radius:50%;font-size:24px;color:#222;cursor:pointer;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;';
             leftArrow.onclick = () => rotateDetailGallery('left');
             wrapper.appendChild(leftArrow);
             
@@ -15453,6 +15495,7 @@
             const rightArrow = document.createElement('button');
             rightArrow.className = 'gallery-nav-arrow right';
             rightArrow.innerHTML = '›';
+            rightArrow.style.cssText = 'position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:40px;background:#fff;border:none;border-radius:50%;font-size:24px;color:#222;cursor:pointer;z-index:99999;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;';
             rightArrow.onclick = () => rotateDetailGallery('right');
             wrapper.appendChild(rightArrow);
             
