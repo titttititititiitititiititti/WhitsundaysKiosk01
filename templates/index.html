@@ -642,23 +642,23 @@
         text-orientation: mixed !important;
       }
       
-      /* VIDEO QUESTION PAGE (Quick Decision) - Fit on screen WITHOUT SCROLLING */
+      /* VIDEO QUESTION PAGE (Quick Decision) - Fit ALL on screen */
       .video-question-page {
         overflow: hidden !important;
         height: 100vh !important;
         max-height: 100vh !important;
       }
       
-      /* Question container - fit on screen */
+      /* Question container - MOVED UP, tight spacing */
       .video-question-page .video-question-container {
         transform: none !important;
         width: 100% !important;
         margin: 0 !important;
-        padding: 15px !important;
-        padding-top: 70px !important;
-        padding-bottom: 20px !important;
+        padding: 10px !important;
+        padding-top: 5px !important;
+        padding-bottom: 10px !important;
         min-height: auto !important;
-        max-height: calc(100vh - 60px) !important;
+        max-height: calc(100vh - 120px) !important;
         height: auto !important;
         overflow: hidden !important;
         display: flex !important;
@@ -667,59 +667,114 @@
         align-items: center !important;
       }
       
-      /* Question card - compact */
+      /* Question card - VERY compact */
       .video-question-page .video-question-card,
       .video-question-page .filter-question-card {
-        padding: 10px !important;
+        padding: 5px 10px !important;
         margin: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
       }
       
-      /* Question text - smaller */
+      /* Question text - smaller, less margin */
       .video-question-page .video-question-card h2,
       .video-question-page .filter-question-card h2,
       .video-question-page h2 {
-        font-size: 1.2em !important;
-        margin-bottom: 12px !important;
+        font-size: 1.1em !important;
+        margin-bottom: 8px !important;
+        margin-top: 0 !important;
         line-height: 1.2 !important;
       }
       
-      /* FORCE small answer buttons - MAXIMUM SPECIFICITY */
+      /* Subtitle text */
+      .video-question-page .video-question-card p,
+      .video-question-page .filter-question-card p {
+        font-size: 0.85em !important;
+        margin: 0 0 8px 0 !important;
+      }
+      
+      /* FORCE SMALL answer buttons */
       .video-question-page .duration-pill,
       .video-question-page .video-question-card .duration-pill,
       .video-question-page .filter-question-card .duration-pill,
       .video-question-page .duration-options .duration-pill,
       .video-question-page button.duration-pill {
-        padding: 12px 15px !important;
-        font-size: 1em !important;
+        padding: 10px 12px !important;
+        font-size: 0.95em !important;
         min-height: auto !important;
         height: auto !important;
         min-width: auto !important;
-        max-height: 70px !important;
+        max-height: 60px !important;
+        line-height: 1.1 !important;
       }
       
       .video-question-page .duration-pill span,
       .video-question-page button.duration-pill span {
-        font-size: 0.75em !important;
+        font-size: 0.7em !important;
         margin-top: 2px !important;
+        line-height: 1 !important;
       }
       
-      /* Options grid - single column, fit all on screen */
+      /* Options grid - TIGHT gaps, fit all */
       .video-question-page .duration-options,
       .video-question-page .video-question-card .duration-options {
-        gap: 8px !important;
+        gap: 6px !important;
         grid-template-columns: 1fr !important;
         width: 100% !important;
         max-width: 100% !important;
-        max-height: calc(100vh - 200px) !important;
-        overflow-y: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       
-      /* Progress bar - smaller */
+      /* Progress bar - at top, minimal */
       .video-question-page .vq-progress-container {
-        margin: 8px auto !important;
-        padding: 5px !important;
+        margin: 5px auto 8px auto !important;
+        padding: 3px !important;
+        position: relative !important;
+        top: 0 !important;
+      }
+      
+      .video-question-page .vq-progress-text {
+        font-size: 0.8em !important;
+        margin-bottom: 3px !important;
+      }
+      
+      .video-question-page .vq-progress-bar {
+        height: 6px !important;
+      }
+      
+      /* VQ Answer buttons - MUST fit on screen */
+      .video-question-page .vq-answers,
+      .vq-answers {
+        gap: 8px !important;
+        padding: 0 !important;
+        padding-bottom: 60px !important;
+        width: 100% !important;
+      }
+      
+      .video-question-page .vq-answer-btn,
+      .vq-answer-btn {
+        padding: 12px 15px !important;
+        font-size: 1em !important;
+        min-height: auto !important;
+        max-height: 65px !important;
+        line-height: 1.15 !important;
+        border-radius: 18px !important;
+      }
+      
+      .video-question-page .vq-answer-btn span,
+      .vq-answer-btn span {
+        font-size: 0.7em !important;
+        display: block !important;
+        margin-top: 2px !important;
+      }
+      
+      /* Tour counter at bottom */
+      .video-question-page .vq-tour-counter,
+      .vq-tour-counter {
+        font-size: 0.9em !important;
+        padding: 8px 15px !important;
+        bottom: 75px !important;
       }
       
       /* DON'T change the start screen */
@@ -10971,6 +11026,35 @@
         answersContainer.appendChild(subtitle);
       }
       
+      // Calculate button size based on number of answers (for mobile)
+      const numAnswers = question.answers.length;
+      const isMobile = window.innerWidth <= 768;
+      let buttonPadding = '12px 15px';
+      let buttonFontSize = '1em';
+      let buttonMaxHeight = '65px';
+      let containerGap = '8px';
+      
+      if (isMobile) {
+        if (numAnswers >= 6) {
+          buttonPadding = '8px 12px';
+          buttonFontSize = '0.85em';
+          buttonMaxHeight = '50px';
+          containerGap = '5px';
+        } else if (numAnswers >= 5) {
+          buttonPadding = '10px 12px';
+          buttonFontSize = '0.9em';
+          buttonMaxHeight = '55px';
+          containerGap = '6px';
+        } else if (numAnswers >= 4) {
+          buttonPadding = '11px 14px';
+          buttonFontSize = '0.95em';
+          buttonMaxHeight = '60px';
+          containerGap = '7px';
+        }
+        // Apply container gap
+        answersContainer.style.gap = containerGap;
+      }
+      
       question.answers.forEach((answer, idx) => {
         const btn = document.createElement('button');
         btn.className = 'vq-answer-btn';
@@ -10978,6 +11062,15 @@
         btn.dataset.index = idx;
         btn.dataset.value = answer.value;
         btn.dataset.isSkip = answer.isSkip || false;
+        
+        // Apply dynamic sizing on mobile
+        if (isMobile) {
+          btn.style.padding = buttonPadding;
+          btn.style.fontSize = buttonFontSize;
+          btn.style.maxHeight = buttonMaxHeight;
+          btn.style.minHeight = 'auto';
+          btn.style.height = 'auto';
+        }
         
         if (question.multiple && !answer.isSkip && videoAnswers[answer.filter] && videoAnswers[answer.filter].includes(answer.value)) {
           btn.classList.add('selected');
