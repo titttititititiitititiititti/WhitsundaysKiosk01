@@ -14867,48 +14867,50 @@
           }
           
           // INCLUDES & HIGHLIGHTS - Goes into info-grid (before About This Tour)
-          // NO WRAPPER DIV on mobile - each section is a direct child of info-grid
+          // Side-by-side on both mobile and desktop when both exist
           let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
             const bothExist = data.includes && data.highlights;
             
-            // Desktop: Always side-by-side grid if both exist, centered with max-width
-            if (!isMobile && bothExist) {
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1200px;margin:0 auto;">`;
+            // Side-by-side grid if both exist (on both mobile and desktop)
+            if (bothExist) {
+              const gridGap = isMobile ? '8px' : '30px';
+              const gridWidth = isMobile ? 'width:calc(100% - 16px);margin:0 8px 15px 8px;' : 'width:100%;max-width:1200px;margin:0 auto;';
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:${gridGap};${gridWidth}box-sizing:border-box;">`;
             } else if (!isMobile) {
               highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
+            } else {
+              // Single item on mobile - wrap it
+              highlightsIncludesHtml += `<div style="width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;">`;
             }
             
             // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
-              const hlPad = isMobile ? '16px' : '40px 45px';
-              const hlHead = isMobile ? '1.2em' : '1.8em';
-              const hlText = isMobile ? '1em' : '1.15em';
-              const hlWidth = isMobile ? 'width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;' : '';
-              // FORCED WHITE BACKGROUND - use same styles as other sections
-              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;${hlWidth}padding:${hlPad};border-radius:${isMobile ? '16px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '12px' : '15px'} 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
+              const hlPad = isMobile ? '12px' : '40px 45px';
+              const hlHead = isMobile ? '1em' : '1.8em';
+              const hlText = isMobile ? '0.85em' : '1.15em';
+              // No extra width/margin when in grid - parent handles it
+              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${hlPad};border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);height:fit-content;">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '8px' : '15px'} 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:${isMobile ? '1.5' : '1.6'};color:#2c3e50;">${formattedHighlights}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:${isMobile ? '1.4' : '1.6'};color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             // WHAT'S INCLUDED SECOND
             if (data.includes) {
-              const incPad = isMobile ? '16px' : '40px 45px';
-              const incHead = isMobile ? '1.2em' : '1.8em';
-              const incText = isMobile ? '1em' : '1.15em';
-              const incWidth = isMobile ? 'width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;' : '';
-              // FORCED WHITE BACKGROUND - use same styles as other sections
-              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;${incWidth}padding:${incPad};border-radius:${isMobile ? '16px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '12px' : '15px'} 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
+              const incPad = isMobile ? '12px' : '40px 45px';
+              const incHead = isMobile ? '1em' : '1.8em';
+              const incText = isMobile ? '0.85em' : '1.15em';
+              // No extra width/margin when in grid - parent handles it
+              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${incPad};border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);height:fit-content;">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '8px' : '15px'} 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:${isMobile ? '1.5' : '1.6'};color:#2c3e50;">${formattedIncludes}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:${isMobile ? '1.4' : '1.6'};color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             
-            if (!isMobile) {
-              highlightsIncludesHtml += '</div>';
-            }
+            // Close wrapper div
+            highlightsIncludesHtml += '</div>';
           }
           // Set highlights/includes into info-grid element (positioned before About This Tour)
           document.getElementById('info-grid').innerHTML = highlightsIncludesHtml;
@@ -15004,22 +15006,25 @@
           }
           
           // DEPARTURE LOCATION SECTION
+          // DEPARTURE LOCATION SECTION - WIDER for better map visibility
           if (data.departure_location && data.departure_location.trim()) {
+            // Make departure section wider than other sections
             const depStyles = isMobile 
-              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
+              ? 'width:calc(100% - 8px);margin:0 4px 15px 4px;padding:12px;border-radius:16px;box-sizing:border-box;'
               : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
-            const depHead = isMobile ? mHeading : '2.2em';
+            const depHead = isMobile ? '1.1em' : '2.2em';
             const depLoc = isMobile ? '1em' : '1.4em';
-            const depText = isMobile ? mText : '1.1em';
-            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${depStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-            info += `<h3 style="font-size:${depHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📍 Departure Location</h3>`;
+            const depText = isMobile ? '0.9em' : '1.1em';
+            const mapHeight = isMobile ? '300px' : '500px';
+            info += `<div class="departure-location-section" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${depStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+            info += `<h3 style="font-size:${depHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📍 ${t('departure_location')}</h3>`;
             info += `<div style="font-size:${depLoc};font-weight:600;color:#2c3e50;margin-bottom:8px;">${data.departure_location}</div>`;
             info += `<div style="font-size:${depText};color:#666;line-height:1.4;margin-bottom:${isMobile ? '10px' : '20px'};">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>`;
             
-            // Add mini map if coordinates are available
+            // Add mini map if coordinates are available - LARGER on mobile
             const coords = getCoordinatesForLocation(data.departure_location);
             if (coords) {
-              info += `<div id="detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:100%;height:500px;margin-top:20px;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.15);"></div>`;
+              info += `<div id="detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:100%;height:${mapHeight};margin-top:10px;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.15);"></div>`;
               // Store coords for map initialization
               window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
             }
