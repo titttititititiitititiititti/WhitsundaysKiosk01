@@ -4321,8 +4321,11 @@
       height: 100% !important;
     }
     
-    /* HIDE home page when tour detail is open */
-    body:has(.tour-detail-page.active) .page.home-page {
+    /* HIDE all other pages when tour detail is open */
+    body:has(.tour-detail-page.active) .page.home-page,
+    body:has(.tour-detail-page.active) .page.language-selection-screen,
+    body:has(.tour-detail-page.active) .page.video-start-screen,
+    body:has(.tour-detail-page.active) .page:not(.tour-detail-page) {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
@@ -8853,24 +8856,34 @@
         margin: 0 0 10px 0 !important;
       }
       
-      /* About This Tour section - reduce internal padding */
+      /* About This Tour section - reduce internal padding and force full width text */
       #about-tour-section,
       section#about-tour-section,
       .tour-detail-page #about-tour-section {
-        padding: 10px 8px !important;
+        padding: 12px 10px !important;
+        display: block !important;
       }
       
       #about-tour-section h3,
       #about-tour-title {
         padding: 0 !important;
         margin: 0 0 8px 0 !important;
+        width: 100% !important;
+        display: block !important;
       }
       
       #about-tour-section #detail-description,
-      #detail-description {
+      #detail-description,
+      .tour-detail-page #detail-description {
         padding: 0 !important;
         margin: 0 !important;
         width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
       }
       
       .details-section #detail-description,
