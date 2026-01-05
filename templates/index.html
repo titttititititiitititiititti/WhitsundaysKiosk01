@@ -6906,7 +6906,7 @@
         align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* ALL sections - WIDER with small margins */
+      /* ALL sections - WIDER with consistent gaps */
       .tour-detail-page .tour-detail-main > *,
       .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
@@ -6914,12 +6914,12 @@
       .tour-detail-page .includes-box,
       .tour-detail-page #detail-info > div,
       section#about-tour-section {
-        width: calc(100% - 12px) !important;
-        max-width: calc(100% - 12px) !important;
-        margin-left: 6px !important;
-        margin-right: 6px !important;
-        margin-bottom: 10px !important;
-        padding: 15px !important;
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        margin-left: 8px !important;
+        margin-right: 8px !important;
+        margin-bottom: 16px !important;
+        padding: 18px !important;
         box-sizing: border-box !important;
       }
       
@@ -6934,67 +6934,67 @@
       .tour-detail-page .info-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
       }
       
-      /* ALL info cards - FULL WIDTH */
+      /* ALL info cards - FULL WIDTH, LARGER */
       .tour-detail-page .info-card {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
-        padding: 12px !important;
-        border-radius: 10px !important;
+        padding: 18px !important;
+        border-radius: 14px !important;
         box-sizing: border-box !important;
       }
       
-      /* ALL headings in tour detail */
+      /* ALL headings in tour detail - LARGER */
       .tour-detail-page .info-card h3,
       .tour-detail-page h3 {
-        font-size: 1rem !important;
+        font-size: 1.15rem !important;
         font-weight: 600 !important;
-        margin: 0 0 8px 0 !important;
+        margin: 0 0 10px 0 !important;
         line-height: 1.3 !important;
         color: #0077b6 !important;
       }
       
-      /* ALL body text */
+      /* ALL body text - LARGER */
       .tour-detail-page .info-card p,
       .tour-detail-page .info-card li,
       .tour-detail-page p,
       .tour-detail-page li {
-        font-size: 0.85rem !important;
-        line-height: 1.4 !important;
-        margin: 0 0 5px 0 !important;
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+        margin: 0 0 6px 0 !important;
         color: #333 !important;
       }
       
       /* Lists */
       .tour-detail-page ul {
-        padding-left: 18px !important;
+        padding-left: 20px !important;
         margin: 0 !important;
       }
       
-      /* Title */
+      /* Title - LARGER */
       .tour-detail-page #detail-title,
       .tour-detail-page .tour-title {
-        font-size: 1.2rem !important;
-        margin: 8px 0 !important;
+        font-size: 1.4rem !important;
+        margin: 10px 0 !important;
         line-height: 1.3 !important;
         font-weight: 700 !important;
         max-width: 100% !important;
       }
       
-      /* Pricing section - full width */
+      /* Pricing section - full width, consistent gap */
       .tour-detail-page .pricing-section {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 12px !important;
-        margin: 8px 0 !important;
-        border-radius: 10px !important;
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        padding: 18px !important;
+        margin: 8px 8px 16px 8px !important;
+        border-radius: 14px !important;
         box-sizing: border-box !important;
       }
       
@@ -14618,13 +14618,13 @@
             
             // Completely replace the section's innerHTML with properly structured content
             const isMobile = window.innerWidth <= 768;
-            const padding = isMobile ? '12px' : '50px 60px';
+            const padding = isMobile ? '18px' : '50px 60px';
             
             aboutSection.innerHTML = `
-              <h3 style="font-size:${isMobile ? '1.1em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '8px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
-              <p style="font-size:${isMobile ? '0.9em' : '1.35em'};line-height:${isMobile ? '1.4' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
+              <h3 style="font-size:${isMobile ? '1.15em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '10px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
+              <p style="font-size:${isMobile ? '0.95em' : '1.35em'};line-height:${isMobile ? '1.5' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
             `;
-            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '12px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;`;
+            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '14px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;margin-bottom:16px;`;
           }
           
           let info = '';
