@@ -6906,7 +6906,7 @@
         align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* ALL sections - WIDER with consistent gaps */
+      /* ALL sections - COPY SWIPE-DETAIL-SECTION STYLING */
       .tour-detail-page .tour-detail-main > *,
       .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
@@ -6914,12 +6914,16 @@
       .tour-detail-page .includes-box,
       .tour-detail-page #detail-info > div,
       section#about-tour-section {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin-left: 8px !important;
-        margin-right: 8px !important;
-        margin-bottom: 16px !important;
-        padding: 18px !important;
+        width: calc(100% - 20px) !important;
+        max-width: calc(100% - 20px) !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        margin-bottom: 12px !important;
+        padding: 20px 25px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
         box-sizing: border-box !important;
       }
       
@@ -6951,37 +6955,54 @@
         box-sizing: border-box !important;
       }
       
-      /* ALL headings in tour detail - LARGER */
+      /* ALL headings - MATCH SWIPE-DETAIL-SECTION */
       .tour-detail-page .info-card h3,
       .tour-detail-page h3 {
-        font-size: 1.15rem !important;
-        font-weight: 600 !important;
-        margin: 0 0 10px 0 !important;
+        font-size: 1.05em !important;
+        font-weight: 700 !important;
+        margin: 0 0 8px 0 !important;
         line-height: 1.3 !important;
         color: #0077b6 !important;
       }
       
-      /* ALL body text - LARGER */
+      /* ALL body text - MATCH SWIPE-DETAIL-SECTION */
       .tour-detail-page .info-card p,
       .tour-detail-page .info-card li,
       .tour-detail-page p,
-      .tour-detail-page li {
-        font-size: 0.95rem !important;
+      .tour-detail-page li,
+      .tour-detail-page div {
+        font-size: 0.95em !important;
         line-height: 1.5 !important;
-        margin: 0 0 6px 0 !important;
-        color: #333 !important;
-      }
-      
-      /* Lists */
-      .tour-detail-page ul {
-        padding-left: 20px !important;
         margin: 0 !important;
+        color: #2c3e50 !important;
       }
       
-      /* Title - LARGER */
+      /* Lists - MATCH SWIPE-DETAIL-SECTION */
+      .tour-detail-page ul {
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+      }
+      
+      .tour-detail-page li {
+        padding-left: 26px !important;
+        position: relative !important;
+        margin-bottom: 8px !important;
+      }
+      
+      .tour-detail-page li:before {
+        content: '✓' !important;
+        position: absolute !important;
+        left: 0 !important;
+        color: #00b4d8 !important;
+        font-weight: 900 !important;
+        font-size: 1.2em !important;
+      }
+      
+      /* Title */
       .tour-detail-page #detail-title,
       .tour-detail-page .tour-title {
-        font-size: 1.4rem !important;
+        font-size: 1.4em !important;
         margin: 10px 0 !important;
         line-height: 1.3 !important;
         font-weight: 700 !important;
@@ -14609,7 +14630,7 @@
           document.getElementById('detail-summary').textContent = data.summary;
           
           // Enhanced description with markdown-style formatting
-          // REBUILD the entire About section to fix mobile width issue
+          // REBUILD the entire About section - MATCH SWIPE-DETAIL-SECTION
           const aboutSection = document.getElementById('about-tour-section');
           if (aboutSection) {
             let formattedDesc = (data.description || 'N/A')
@@ -14618,13 +14639,14 @@
             
             // Completely replace the section's innerHTML with properly structured content
             const isMobile = window.innerWidth <= 768;
-            const padding = isMobile ? '18px' : '50px 60px';
+            const padding = isMobile ? '20px 25px' : '50px 60px';
+            const shadow = isMobile ? '0 8px 30px rgba(0,0,0,0.2)' : '0 20px 60px rgba(0,0,0,0.3)';
             
             aboutSection.innerHTML = `
-              <h3 style="font-size:${isMobile ? '1.15em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '10px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
-              <p style="font-size:${isMobile ? '0.95em' : '1.35em'};line-height:${isMobile ? '1.5' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
+              <h3 style="font-size:${isMobile ? '1.05em' : '2.8em'};font-weight:700;margin:0 0 8px 0;color:#0077b6;">${t('about_this_tour')}</h3>
+              <p style="font-size:0.95em;line-height:1.5;color:#2c3e50;margin:0;padding:0;">${formattedDesc}</p>
             `;
-            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '14px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;margin-bottom:16px;`;
+            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:16px;box-shadow:${shadow};box-sizing:border-box;margin-bottom:12px;`;
           }
           
           let info = '';
@@ -14736,13 +14758,13 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - consistent 16px gaps, 8px margins
-          const mPad = '18px';
-          const mGap = '16px';
-          const mRadius = '14px';
-          const mHeading = '1.15em';
+          // MOBILE UNIFORM STYLES - MATCH SWIPE-DETAIL-SECTION
+          const mPad = '20px 25px';
+          const mGap = '12px';
+          const mRadius = '16px';
+          const mHeading = '1.05em';
           const mText = '0.95em';
-          const mWidth = 'width:calc(100% - 16px);margin-left:8px;margin-right:8px;margin-bottom:' + mGap + ';box-sizing:border-box;';
+          const mWidth = 'width:calc(100% - 20px);margin-left:10px;margin-right:10px;margin-bottom:' + mGap + ';box-sizing:border-box;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(0,0,0,0.2);';
           
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
@@ -14838,28 +14860,28 @@
               highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
             }
             
-            // HIGHLIGHTS FIRST (user requested order)
+            // HIGHLIGHTS FIRST (user requested order) - MATCH SWIPE-DETAIL-SECTION
             if (data.highlights) {
-              const hlPad = isMobile ? '18px' : '40px 45px';
-              const hlHead = isMobile ? '1.15em' : '1.8em';
+              const hlPad = isMobile ? '20px 25px' : '40px 45px';
+              const hlHead = isMobile ? '1.05em' : '1.8em';
               const hlText = isMobile ? '0.95em' : '1.15em';
-              const hlWidth = isMobile ? 'width:calc(100% - 16px);margin-left:8px;margin-right:8px;margin-bottom:16px;box-sizing:border-box;' : '';
-              // FORCED WHITE BACKGROUND
-              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;${hlWidth}padding:${hlPad};border-radius:14px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 10px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
+              const hlWidth = isMobile ? 'width:calc(100% - 20px);margin-left:10px;margin-right:10px;margin-bottom:12px;box-sizing:border-box;' : '';
+              const hlShadow = isMobile ? 'box-shadow:0 8px 30px rgba(0,0,0,0.2);' : 'box-shadow:0 15px 50px rgba(0,0,0,0.25);';
+              highlightsIncludesHtml += `<div class="highlights-box" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${hlWidth}padding:${hlPad};border-radius:16px;${hlShadow}">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.5;color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
-            // WHAT'S INCLUDED SECOND
+            // WHAT'S INCLUDED SECOND - MATCH SWIPE-DETAIL-SECTION
             if (data.includes) {
-              const incPad = isMobile ? '18px' : '40px 45px';
-              const incHead = isMobile ? '1.15em' : '1.8em';
+              const incPad = isMobile ? '20px 25px' : '40px 45px';
+              const incHead = isMobile ? '1.05em' : '1.8em';
               const incText = isMobile ? '0.95em' : '1.15em';
-              const incWidth = isMobile ? 'width:calc(100% - 16px);margin-left:8px;margin-right:8px;margin-bottom:16px;box-sizing:border-box;' : '';
-              // FORCED WHITE BACKGROUND
-              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;${incWidth}padding:${incPad};border-radius:14px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 10px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
+              const incWidth = isMobile ? 'width:calc(100% - 20px);margin-left:10px;margin-right:10px;margin-bottom:12px;box-sizing:border-box;' : '';
+              const incShadow = isMobile ? 'box-shadow:0 8px 30px rgba(0,0,0,0.2);' : 'box-shadow:0 15px 50px rgba(0,0,0,0.25);';
+              highlightsIncludesHtml += `<div class="includes-box" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${incWidth}padding:${incPad};border-radius:16px;${incShadow}">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
               highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.5;color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
