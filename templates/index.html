@@ -781,13 +781,32 @@
       .tour-detail-page .departure-section,
       .tour-detail-page .highlights-box,
       .tour-detail-page .includes-box,
-      .tour-detail-page #detail-info > div {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px 15px 8px !important;
+      .tour-detail-page #detail-info > div,
+      .tour-detail-page .swipe-detail-section,
+      .tour-detail-page .swipe-expanded-details {
+        width: calc(100% - 30px) !important;
+        max-width: calc(100% - 30px) !important;
+        margin: 0 15px 15px 15px !important;
         padding: 16px !important;
         box-sizing: border-box !important;
         border-radius: 16px !important;
+      }
+      
+      /* Make swipe-expanded-details a simple column layout on mobile */
+      .tour-detail-page .swipe-expanded-details {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      
+      /* All children of swipe-expanded-details get uniform width */
+      .tour-detail-page .swipe-expanded-details > .swipe-detail-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 0 0 !important;
       }
       
       /* Uniform gap between all sections */
@@ -795,37 +814,49 @@
         gap: 15px !important;
       }
       
-      /* Pricing section - match swipe-detail-section style */
+      /* Pricing section - COMPACT and match swipe-detail-section style */
       .tour-detail-page .pricing-section {
         background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(10px) !important;
-        padding: 20px 25px !important;
+        padding: 15px 20px !important;
         border-radius: 16px !important;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        width: calc(100% - 20px) !important;
-        max-width: calc(100% - 20px) !important;
-        margin: 0 10px 15px 10px !important;
+        width: calc(100% - 30px) !important;
+        max-width: calc(100% - 30px) !important;
+        margin: 0 15px 15px 15px !important;
         box-sizing: border-box !important;
       }
       
       .tour-detail-page .pricing-section h2 {
-        font-size: 1.1em !important;
-        margin: 0 0 8px 0 !important;
+        font-size: 1em !important;
+        margin: 0 0 6px 0 !important;
         color: #0077b6 !important;
       }
       
       .tour-detail-page .pricing-section .pricing-hint {
-        font-size: 0.9em !important;
-        margin-bottom: 12px !important;
+        font-size: 0.8em !important;
+        margin-bottom: 10px !important;
+      }
+      
+      .tour-detail-page .pricing-card,
+      .tour-detail-page #pricing-tiers-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center !important;
       }
       
       .tour-detail-page .price-row,
-      .tour-detail-page .pricing-card,
       .tour-detail-page .price-option {
-        padding: 12px 16px !important;
-        margin: 6px 0 !important;
-        font-size: 0.95rem !important;
-        border-radius: 12px !important;
+        padding: 10px 12px !important;
+        margin: 0 !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+        flex: 1 1 calc(33% - 8px) !important;
+        min-width: 90px !important;
+        max-width: 120px !important;
+        text-align: center !important;
       }
       
       /* Scale up section headers */
@@ -9183,25 +9214,58 @@
         padding: 0 20px !important;
       }
       
+      /* Language selection - fit all buttons on screen */
+      .language-selection-screen {
+        padding: 40px 15px 20px 15px !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+      }
+      
+      .language-selection-title {
+        font-size: 1.8em !important;
+        margin-bottom: 15px !important;
+      }
+      
+      .language-selection-buttons {
+        gap: 8px !important;
+        padding-bottom: 10px !important;
+        max-height: calc(100vh - 120px) !important;
+        overflow-y: auto !important;
+      }
+      
       .language-select-btn {
-        font-size: 1.4em !important;
-        padding: 20px 35px !important;
+        font-size: 1.1em !important;
+        padding: 12px 25px !important;
         width: 90% !important;
-        max-width: 400px !important;
+        max-width: 320px !important;
+        min-height: 48px !important;
       }
       
       .language-select-btn .flag {
-        font-size: 1.2em !important;
+        font-size: 1.1em !important;
       }
       
-      /* Mobile styling for start screen buttons */
+      /* Mobile styling for start screen - fit on screen */
+      .video-start-screen {
+        gap: 15px !important;
+        padding: 20px !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+      }
+      
+      .video-start-screen h2 {
+        font-size: 1.4em !important;
+        margin-bottom: 10px !important;
+      }
+      
       .quick-decision-btn-start,
       .browse-all-tours-btn,
       .ai-assistant-btn {
-        font-size: 1.2em !important;
-        padding: 18px 40px !important;
+        font-size: 1em !important;
+        padding: 14px 30px !important;
         width: 85% !important;
-        max-width: 350px !important;
+        max-width: 320px !important;
+        min-height: 50px !important;
       }
       
       .video-question-card {
@@ -9811,7 +9875,7 @@
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
-        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
           <!-- Video Question Page Language/Currency - uses unique IDs -->
           <div class="language-selector" style="position:relative;">
@@ -9971,7 +10035,7 @@
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
         </div>
-        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
+        <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
           <!-- Language Button with Dropdown -->
           <div class="language-selector" style="position:relative;">
@@ -10409,7 +10473,7 @@
         <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
         <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
       </div>
-      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image">
+      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
       <div class="header-right">
         <!-- Language Button with Dropdown - SAME AS HOME PAGE -->
         <div class="language-selector" style="position:relative;">
