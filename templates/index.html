@@ -611,9 +611,11 @@
         text-orientation: mixed !important;
       }
       
-      /* VIDEO QUESTION PAGE (Quick Decision) - Fit on screen without scrolling */
+      /* VIDEO QUESTION PAGE (Quick Decision) - Fit on screen WITHOUT SCROLLING */
       .video-question-page {
         overflow: hidden !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
       }
       
       /* Question container - fit on screen */
@@ -621,40 +623,62 @@
         transform: none !important;
         width: 100% !important;
         margin: 0 !important;
-        padding: 10px !important;
-        padding-top: 80px !important;
+        padding: 15px !important;
+        padding-top: 70px !important;
+        padding-bottom: 20px !important;
         min-height: auto !important;
-        height: calc(100vh - 60px) !important;
+        max-height: calc(100vh - 60px) !important;
+        height: auto !important;
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
-        justify-content: center !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
       }
       
       /* Question card - compact */
-      .video-question-page .video-question-card {
-        padding: 15px !important;
+      .video-question-page .video-question-card,
+      .video-question-page .filter-question-card {
+        padding: 10px !important;
         margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
       
       /* Question text - smaller */
-      .video-question-page .video-question-card h2 {
-        font-size: 1.3em !important;
-        margin-bottom: 15px !important;
+      .video-question-page .video-question-card h2,
+      .video-question-page .filter-question-card h2,
+      .video-question-page h2 {
+        font-size: 1.2em !important;
+        margin-bottom: 12px !important;
+        line-height: 1.2 !important;
       }
       
-      /* Answer buttons - smaller and fit on screen */
-      .video-question-page .duration-pill,
-      .video-question-page .option-btn {
-        padding: 12px 20px !important;
-        font-size: 1em !important;
+      /* FORCE small answer buttons */
+      .video-question-page .duration-pill {
+        padding: 10px 15px !important;
+        font-size: 0.9em !important;
         min-height: auto !important;
+        height: auto !important;
+        min-width: auto !important;
       }
       
-      /* Options grid - tighter */
-      .video-question-page .duration-options,
-      .video-question-page .options-grid {
-        gap: 10px !important;
+      .video-question-page .duration-pill span {
+        font-size: 0.8em !important;
+      }
+      
+      /* Options grid - MUCH tighter */
+      .video-question-page .duration-options {
+        gap: 8px !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      /* Progress bar - smaller */
+      .video-question-page .vq-progress-container {
+        margin: 10px auto !important;
+        padding: 5px !important;
       }
       
       /* DON'T change the start screen */
@@ -677,6 +701,7 @@
         transform: none !important;
         width: 100% !important;
         margin-left: 0 !important;
+        overflow-y: auto !important;
       }
       
       /* Hide ALL desktop text buttons on mobile */
@@ -734,16 +759,30 @@
         font-size: 0.6em !important;
       }
       
-      /* Search bar - BIGGER on mobile */
-      #home-search-input {
-        font-size: 1.2rem !important;
-        padding: 18px 20px 18px 50px !important;
-        border-radius: 30px !important;
+      /* Search bar - BIGGER on mobile - FORCE with high specificity */
+      input#home-search-input,
+      .home-page input#home-search-input,
+      .page.home-page input#home-search-input {
+        font-size: 1.1em !important;
+        padding: 16px 20px 16px 45px !important;
+        border-radius: 25px !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        min-width: auto !important;
       }
       
-      .search-wrapper {
-        margin: 15px auto !important;
-        width: 95% !important;
+      .search-wrapper,
+      .home-page .search-wrapper {
+        margin: 12px auto !important;
+        width: 96% !important;
+        padding: 0 !important;
+      }
+      
+      /* Search icon smaller */
+      .home-page div[style*="Search Bar"] + div span,
+      input#home-search-input + span {
+        font-size: 1.2em !important;
+        left: 15px !important;
       }
       
       /* Tour cards on HOME PAGE - RESET to desktop defaults, parent handles scaling */
