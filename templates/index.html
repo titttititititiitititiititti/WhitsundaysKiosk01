@@ -6906,45 +6906,31 @@
         align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* MATCH QUICK DECISION GRID LAYOUT */
-      .tour-detail-page #detail-info,
-      .tour-detail-page #info-grid {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-        gap: 12px !important;
+      /* Tour detail uses Quick Decision styling on mobile - swipe-expanded-details handles layout */
+      .tour-detail-page #detail-info {
         padding: 0 10px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
       }
       
-      /* ALL sections - COPY SWIPE-DETAIL-SECTION STYLING */
-      .tour-detail-page .tour-detail-main > section,
-      .tour-detail-page section.details-section,
+      /* About section styling */
       .tour-detail-page #about-tour-section,
-      .tour-detail-page .highlights-box,
-      .tour-detail-page .includes-box,
-      .tour-detail-page #detail-info > div,
-      .tour-detail-page #info-grid > div,
       section#about-tour-section {
-        padding: 20px 25px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
+        margin: 0 10px 12px 10px !important;
         box-sizing: border-box !important;
-        margin: 0 !important;
       }
       
-      /* Full-width sections span all columns (like description-section in Quick Decision) */
-      .tour-detail-page #about-tour-section,
-      .tour-detail-page section.details-section,
-      .tour-detail-page .pricing-section,
-      .tour-detail-page .fine-print,
-      .tour-detail-page .departure-section,
-      .tour-detail-page #detail-info > div[style*="width:100%"],
-      .tour-detail-page #detail-info > div:only-child {
-        grid-column: 1 / -1 !important;
+      /* Info grid for highlights/includes */
+      .tour-detail-page #info-grid {
+        padding: 0 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box {
+        margin-bottom: 12px !important;
       }
       
       /* Hero section */
@@ -15073,7 +15059,82 @@
             }
           }
           
-          document.getElementById('detail-info').innerHTML = info;
+          // ON MOBILE: Use Quick Decision style layout (swipe-detail-section classes)
+          if (isMobile) {
+            let mobileInfo = '<div class="swipe-expanded-details">';
+            
+            // Duration, Ages, Ideal For - paired sections
+            const hasAgeInfo = data.age_requirements && data.age_requirements.trim() && data.age_requirements !== 'N/A';
+            const hasIdealFor = data.ideal_for && data.ideal_for.trim() && data.ideal_for !== 'N/A';
+            
+            if (data.duration && data.duration !== 'N/A') {
+              const durationClass = !hasAgeInfo && !hasIdealFor ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${durationClass}"><h3>⏱️ ${t('duration')}</h3><div>${data.duration}</div></div>`;
+            }
+            if (hasAgeInfo) {
+              const ageClass = !hasIdealFor ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${ageClass}"><h3>👥 ${t('ages')}</h3><div>${cleanBracketFormatting(data.age_requirements)}</div></div>`;
+            }
+            if (hasIdealFor) {
+              const idealClass = !hasAgeInfo ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${idealClass}"><h3>🎯 ${t('ideal_for')}</h3><div>${cleanBracketFormatting(data.ideal_for)}</div></div>`;
+            }
+            if (data.departure_times && data.departure_times.trim()) {
+              mobileInfo += `<div class="swipe-detail-section description-section"><h3>🕐 ${t('times')}</h3><div>${cleanBracketFormatting(data.departure_times)}</div></div>`;
+            }
+            
+            // Itinerary & Menu - paired
+            const hasItinerary = data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A';
+            const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
+            if (hasItinerary) {
+              const itClass = !hasMenu ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${itClass}"><h3>📅 ${t('itinerary')}</h3><div>${cleanBracketFormatting(data.itinerary)}</div></div>`;
+            }
+            if (hasMenu) {
+              const mnClass = !hasItinerary ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${mnClass}"><h3>🍽️ ${t('menu')}</h3><div>${cleanBracketFormatting(data.menu)}</div></div>`;
+            }
+            
+            // Important Information
+            if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
+              mobileInfo += `<div class="swipe-detail-section description-section"><h3>⚠️ ${t('important_information')}</h3><div>${cleanBracketFormatting(data.important_information)}</div></div>`;
+            }
+            
+            // What to Bring & What's Extra - paired
+            const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
+            const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
+            if (hasBring) {
+              const bringClass = !hasExtra ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${bringClass}"><h3>🎒 ${t('what_to_bring')}</h3><div>${cleanBracketFormatting(data.what_to_bring)}</div></div>`;
+            }
+            if (hasExtra) {
+              const extraClass = !hasBring ? 'description-section' : '';
+              mobileInfo += `<div class="swipe-detail-section ${extraClass}"><h3>💰 ${t('whats_extra')}</h3><div>${cleanBracketFormatting(data.whats_extra)}</div></div>`;
+            }
+            
+            // Cancellation Policy
+            if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
+              mobileInfo += `<div class="swipe-detail-section description-section"><h3>📋 ${t('cancellation_policy')}</h3><div>${cleanBracketFormatting(data.cancellation_policy)}</div></div>`;
+            }
+            
+            // Departure Location with map
+            if (data.departure_location && data.departure_location.trim()) {
+              mobileInfo += `
+                <div class="swipe-detail-section description-section">
+                  <h3>📍 ${t('departure_location')}</h3>
+                  <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50;">${data.departure_location}</div>
+                  <div style="width: 100%; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
+                    <iframe width="100%" height="100%" frameborder="0" style="border:0;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14" allowfullscreen></iframe>
+                  </div>
+                  <div style="color: #2c3e50; font-size: 0.95em; margin-top: 10px;">Please arrive at least 15 minutes before departure.</div>
+                </div>`;
+            }
+            
+            mobileInfo += '</div>';
+            document.getElementById('detail-info').innerHTML = mobileInfo;
+          } else {
+            document.getElementById('detail-info').innerHTML = info;
+          }
           
           // Initialize mini map if location exists - wait longer for DOM to be ready
           if (window.pendingMiniMap) {
