@@ -8520,16 +8520,16 @@
         display: none !important;
       }
       
-      /* Info sections - stack vertically on mobile (What To Bring, What's Included) */
+      /* Info sections - SIDE BY SIDE on mobile, full width */
       .swipe-info-sections,
       .tour-detail-page .swipe-info-sections,
-      .info-sections,
-      .detail-section-grid {
+      .info-sections {
         display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 15px !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 auto 15px auto !important;
         overflow-x: hidden !important;
       }
       
@@ -8539,6 +8539,30 @@
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
+        padding: 15px !important;
+        border-radius: 16px !important;
+      }
+      
+      .swipe-info-box h3,
+      .tour-detail-page .swipe-info-box h3 {
+        font-size: 1.1em !important;
+        margin-bottom: 10px !important;
+      }
+      
+      .swipe-info-box li,
+      .tour-detail-page .swipe-info-box li {
+        font-size: 0.95em !important;
+        padding: 4px 0 !important;
+      }
+      
+      /* Single column grid for other sections */
+      .detail-section-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        width: 96% !important;
+        max-width: 96% !important;
+        margin: 0 auto !important;
       }
       
       /* Force info-grid to single column on tour detail */
@@ -14886,50 +14910,50 @@
             }
           }
           
-          // INCLUDES & HIGHLIGHTS - Goes into info-grid (before About This Tour)
-          // FULL WIDTH side-by-side like quick decision mode
+          // INCLUDES & HIGHLIGHTS - USE SAME CLASSES AS QUICK DECISION MODE
           let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
-            const bothExist = data.includes && data.highlights;
+            // Use swipe-info-sections class - same as quick decision mode
+            highlightsIncludesHtml += '<div class="swipe-info-sections" style="opacity:1;animation:none;">';
             
-            // Side-by-side grid - 96% width centered
-            if (bothExist && isMobile) {
-              // Mobile: 96% width centered with small gap
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;">`;
-            } else if (bothExist) {
-              // Desktop: centered with max-width
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;">`;
-            } else if (isMobile) {
-              // Single item on mobile - 96% centered
-              highlightsIncludesHtml += `<div style="width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;">`;
-            } else {
-              highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
-            }
-            
-            // HIGHLIGHTS FIRST (user requested order)
+            // HIGHLIGHTS FIRST
             if (data.highlights) {
-              const hlPad = isMobile ? '12px' : '40px 45px';
-              const hlHead = isMobile ? '1.1em' : '1.8em';
-              const hlText = isMobile ? '0.9em' : '1.15em';
-              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;padding:${hlPad};border-radius:${isMobile ? '14px' : '22px'};box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '10px' : '15px'} 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
-              let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.5;color:#2c3e50;">${formattedHighlights}</div>`;
-              highlightsIncludesHtml += '</div>';
+              let highlights = (data.highlights || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+              if (highlights.length === 1) {
+                highlights = data.highlights.split(/[;,]/).filter(item => item.trim());
+              }
+              const highlightsList = highlights.map(item => {
+                const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+                return cleaned ? `<li>${cleaned}</li>` : '';
+              }).filter(item => item).join('');
+              
+              if (highlightsList) {
+                highlightsIncludesHtml += `<div class="swipe-info-box" style="opacity:1;animation:none;">
+                  <h3>⭐ ${t('highlights')}</h3>
+                  <ul>${highlightsList}</ul>
+                </div>`;
+              }
             }
+            
             // WHAT'S INCLUDED SECOND
             if (data.includes) {
-              const incPad = isMobile ? '12px' : '40px 45px';
-              const incHead = isMobile ? '1.1em' : '1.8em';
-              const incText = isMobile ? '0.9em' : '1.15em';
-              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;padding:${incPad};border-radius:${isMobile ? '14px' : '22px'};box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '10px' : '15px'} 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
-              let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.5;color:#2c3e50;">${formattedIncludes}</div>`;
-              highlightsIncludesHtml += '</div>';
+              let includes = (data.includes || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+              if (includes.length === 1) {
+                includes = data.includes.split(/[;,]/).filter(item => item.trim());
+              }
+              const includesList = includes.map(item => {
+                const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+                return cleaned ? `<li>${cleaned}</li>` : '';
+              }).filter(item => item).join('');
+              
+              if (includesList) {
+                highlightsIncludesHtml += `<div class="swipe-info-box" style="opacity:1;animation:none;">
+                  <h3>✅ ${t('whats_included')}</h3>
+                  <ul>${includesList}</ul>
+                </div>`;
+              }
             }
             
-            // Close wrapper div
             highlightsIncludesHtml += '</div>';
           }
           // Set highlights/includes into info-grid element (positioned before About This Tour)
