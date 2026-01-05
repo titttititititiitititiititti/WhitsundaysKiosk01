@@ -4321,8 +4321,11 @@
       height: 100% !important;
     }
     
-    /* HIDE home page when tour detail is open */
-    body:has(.tour-detail-page.active) .page.home-page {
+    /* HIDE all other pages when tour detail is open */
+    body:has(.tour-detail-page.active) .page.home-page,
+    body:has(.tour-detail-page.active) .page.language-selection-screen,
+    body:has(.tour-detail-page.active) .page.video-start-screen,
+    body:has(.tour-detail-page.active) .page:not(.tour-detail-page) {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
@@ -4804,7 +4807,7 @@
       font-size: 1em !important;
       min-width: 160px !important;
       border-radius: 25px !important;
-    }
+      }
       
       .tour-detail-page .header-right,
       .kiosk-header .header-right {
@@ -6347,7 +6350,7 @@
       transform: translateY(0) scale(1) !important;
       pointer-events: auto !important;
     }
-
+    
     .weather-header {
       padding: 16px 20px !important;
       background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%) !important;
@@ -6358,7 +6361,7 @@
       margin: 0 !important;
       border-radius: 0 !important;
     }
-
+    
     .weather-title {
       display: flex !important;
       align-items: center !important;
@@ -6370,7 +6373,7 @@
       font-weight: 700 !important;
       letter-spacing: 0.02em !important;
     }
-
+    
     .weather-toggle {
       border: none !important;
       background: rgba(255,255,255,0.2) !important;
@@ -9679,7 +9682,7 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('de')"><span style="font-size:1.4em;">🇩🇪</span><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeLanguage('fr')"><span style="font-size:1.4em;">🇫🇷</span><span style="font-weight:600;color:#0a2540;">Français</span></div>
             </div>
-          </div>
+            </div>
           <div class="currency-selector" style="position:relative;">
             <button class="chip" id="vq-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('vq-currency-menu'); m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
             <div id="vq-currency-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:180px;z-index:99999;padding:10px;overflow:hidden;">
@@ -9690,7 +9693,7 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
             </div>
-          </div>
+            </div>
           <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
         </div>
       </header>
@@ -9838,8 +9841,8 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('ko')"><span style="font-size:1.4em;">🇰🇷</span><span style="font-weight:600;color:#0a2540;">한국어</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('de')"><span style="font-size:1.4em;">🇩🇪</span><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeLanguage('fr')"><span style="font-size:1.4em;">🇫🇷</span><span style="font-weight:600;color:#0a2540;">Français</span></div>
-            </div>
-          </div>
+              </div>
+              </div>
           <!-- Currency Button with Dropdown -->
           <div class="currency-selector" style="position:relative;">
             <button class="chip" id="header-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('home-currency-menu'); m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
@@ -9850,8 +9853,8 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
-            </div>
-          </div>
+              </div>
+              </div>
           <!-- Map View Button -->
           <button class="chip chip-outline" id="home-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
         </div>
@@ -10276,8 +10279,8 @@
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('ko')"><span style="font-size:1.4em;">🇰🇷</span><span style="font-weight:600;color:#0a2540;">한국어</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailLanguage('de')"><span style="font-size:1.4em;">🇩🇪</span><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailLanguage('fr')"><span style="font-size:1.4em;">🇫🇷</span><span style="font-weight:600;color:#0a2540;">Français</span></div>
-          </div>
-        </div>
+            </div>
+            </div>
         <!-- Currency Button with Dropdown - SAME AS HOME PAGE -->
         <div class="currency-selector" style="position:relative;">
           <button class="chip" id="detail-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('detail-currency-menu'); var l=document.getElementById('detail-language-menu'); if(l) l.style.display='none'; m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
@@ -10288,7 +10291,7 @@
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
-          </div>
+            </div>
         </div>
       </div>
     </header>
@@ -10317,8 +10320,11 @@
         <!-- Cards will be populated by JavaScript -->
       </section>
 
-      <!-- Description & Details - Generated by JavaScript -->
-      <div id="about-tour-container"></div>
+      <!-- Description & Details -->
+      <section class="details-section" id="about-tour-section" style="display:block !important;width:100% !important;">
+        <h3 id="about-tour-title" style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;color:#0077b6;width:100% !important;">About This Tour</h3>
+      <div id="detail-description" style="font-size:0.9em !important;line-height:1.4 !important;width:100% !important;max-width:100% !important;display:block !important;"></div>
+      </section>
 
       <!-- Additional Info -->
       <div id="detail-info" style="padding:0 !important;margin:0 !important;display:flex !important;flex-direction:column !important;align-items:stretch !important;"></div>
@@ -14602,51 +14608,24 @@
           
           document.getElementById('detail-summary').textContent = data.summary;
           
-          // GENERATE About This Tour section completely from scratch
-          const aboutContainer = document.getElementById('about-tour-container');
-          let formattedDesc = (data.description || 'N/A')
-            .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#0077b6;font-weight:600;">$1</strong>')
-            .replace(/\n/g, '<br>');
-          
-          // Detect mobile
-          const isMobile = window.innerWidth <= 768;
-          const padding = isMobile ? '12px' : '50px 60px';
-          const titleSize = isMobile ? '1.1em' : '2.8em';
-          const textSize = isMobile ? '0.9em' : '1.35em';
-          const lineH = isMobile ? '1.4' : '1.9';
-          const borderR = isMobile ? '12px' : '25px';
-          const marginSide = isMobile ? '6px' : 'auto';
-          const sectionWidth = isMobile ? 'calc(100% - 12px)' : '100%';
-          
-          aboutContainer.innerHTML = `
-            <div style="
-              background: rgba(255, 255, 255, 0.95);
-              backdrop-filter: blur(10px);
-              padding: ${padding};
-              border-radius: ${borderR};
-              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-              margin: 10px ${marginSide};
-              width: ${sectionWidth};
-              max-width: 1200px;
-              box-sizing: border-box;
-            ">
-              <h3 style="
-                font-size: ${titleSize};
-                font-weight: 600;
-                color: #0077b6;
-                margin: 0 0 8px 0;
-                width: 100%;
-              ">${t('about_this_tour')}</h3>
-              <p style="
-                font-size: ${textSize};
-                line-height: ${lineH};
-                color: #1a1a1a;
-                margin: 0;
-                width: 100%;
-                word-wrap: break-word;
-              ">${formattedDesc}</p>
-            </div>
-          `;
+          // Enhanced description with markdown-style formatting
+          // REBUILD the entire About section to fix mobile width issue
+          const aboutSection = document.getElementById('about-tour-section');
+          if (aboutSection) {
+            let formattedDesc = (data.description || 'N/A')
+              .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#0077b6;font-weight:600;">$1</strong>')
+              .replace(/\n/g, '<br>');
+            
+            // Completely replace the section's innerHTML with properly structured content
+            const isMobile = window.innerWidth <= 768;
+            const padding = isMobile ? '12px' : '50px 60px';
+            
+            aboutSection.innerHTML = `
+              <h3 style="font-size:${isMobile ? '1.1em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '8px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
+              <p style="font-size:${isMobile ? '0.9em' : '1.35em'};line-height:${isMobile ? '1.4' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
+            `;
+            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '12px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;`;
+          }
           
           let info = '';
           
@@ -14819,7 +14798,7 @@
                 .replace(/<li[^>]*>/gi, `<li style="font-size:${itText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
               info += formattedItinerary;
-              info += '</div>';
+            info += '</div>';
             }
             
             if (hasMenu) {
@@ -14926,14 +14905,14 @@
               const bGap = isMobile ? '8px' : '15px';
               info += `<div style="${bStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
               info += `<h3 style="font-size:${bHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">🎒 ${t('what_to_bring')}</h3>`;
-              let formattedBring = cleanBracketFormatting(data.what_to_bring);
+            let formattedBring = cleanBracketFormatting(data.what_to_bring);
               formattedBring = formattedBring
                 .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${bGap};">`)
                 .replace(/<li[^>]*>/gi, `<li style="font-size:${bText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
               info += formattedBring || `<div style="color:#666;font-size:${bText};">No items specified</div>`;
-              info += '</div>';
-            }
+            info += '</div>';
+          }
           
             if (hasExtra) {
               const eStyles = isMobile 
@@ -14944,14 +14923,14 @@
               const eGap = isMobile ? '8px' : '15px';
               info += `<div style="${eStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
               info += `<h3 style="font-size:${eHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">💰 ${t('whats_extra')}</h3>`;
-              let formattedExtra = cleanBracketFormatting(data.whats_extra);
+            let formattedExtra = cleanBracketFormatting(data.whats_extra);
               formattedExtra = formattedExtra
                 .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${eGap};">`)
                 .replace(/<li[^>]*>/gi, `<li style="font-size:${eText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
                 .replace(/<\/li>/gi, '</li>');
               info += formattedExtra || `<div style="color:#666;font-size:${eText};">No extra costs specified</div>`;
-              info += '</div>';
-            }
+            info += '</div>';
+          }
           
             // Close grid if both exist AND desktop
             if (hasBring && hasExtra && !isMobile) {
@@ -15330,7 +15309,7 @@
           
           // Only set innerHTML if we used the string approach (galleryHtml is not empty)
           if (galleryHtml) {
-            document.getElementById('detail-gallery').innerHTML = galleryHtml;
+          document.getElementById('detail-gallery').innerHTML = galleryHtml;
           }
           
           // Reorganize content for modern kiosk layout
@@ -18896,7 +18875,7 @@
       document.body.classList.remove('video-bg-active');
     };
     disableVideoBg();
-
+    
     document.addEventListener('DOMContentLoaded', () => {
       setupWeatherLauncher();
 
@@ -19493,7 +19472,7 @@
       if (Math.abs(diff) > 50) {
         if (diff > 0) {
           lightboxPrev();
-        } else {
+      } else {
           lightboxNext();
         }
       }
