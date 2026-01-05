@@ -11225,6 +11225,7 @@
       const spreadContainer = document.createElement('div');
       spreadContainer.className = 'swipe-gallery-spread';
       spreadContainer.id = 'swipe-gallery-spread';
+      spreadContainer.style.cssText = 'width:calc(100% - 100px);margin:0 auto;';
       
       const leftImg = document.createElement('div');
       leftImg.className = 'swipe-gallery-image left';
@@ -12716,11 +12717,61 @@
       currentQuestion = 1;
       activeFilters = {};
       
+      // Apply mobile styles if on mobile
+      applyMobileStyles();
+      
       // Load initial tours immediately
       loadInitialFeaturedTours();
       
       // Setup infinite scroll
       setupInfiniteScroll();
+    
+    // Mobile styles function - runs on load and observes DOM changes
+    function applyMobileStyles() {
+      if (window.innerWidth > 768) return; // Only on mobile
+      
+      // Fix search bar
+      const searchInput = document.getElementById('home-search-input');
+      if (searchInput) {
+        searchInput.style.cssText = 'width:94%!important;max-width:94%!important;font-size:1.1em!important;padding:14px 18px 14px 45px!important;border-radius:25px!important;background:rgba(255,255,255,0.95)!important;border:2px solid #fff!important;box-shadow:0 3px 12px rgba(0,0,0,0.2)!important;';
+      }
+      
+      // Fix duration pills (questionnaire buttons)
+      function fixQuestionButtons() {
+        const pills = document.querySelectorAll('.duration-pill');
+        const pillCount = pills.length;
+        
+        pills.forEach(pill => {
+          // Size based on number of options
+          if (pillCount <= 4) {
+            pill.style.cssText += 'padding:18px 20px!important;font-size:1.1em!important;height:auto!important;min-height:60px!important;';
+          } else if (pillCount <= 6) {
+            pill.style.cssText += 'padding:12px 15px!important;font-size:0.95em!important;height:auto!important;min-height:50px!important;';
+          } else {
+            pill.style.cssText += 'padding:10px 12px!important;font-size:0.85em!important;height:auto!important;min-height:40px!important;';
+          }
+          
+          // Fix spans inside
+          const span = pill.querySelector('span');
+          if (span) {
+            span.style.cssText = 'font-size:0.75em!important;margin-top:2px!important;';
+          }
+        });
+        
+        // Fix duration options container
+        const optionsContainer = document.querySelector('.duration-options');
+        if (optionsContainer) {
+          optionsContainer.style.cssText = 'gap:8px!important;grid-template-columns:repeat(2,1fr)!important;width:100%!important;';
+        }
+      }
+      
+      // Run initially and observe for changes
+      fixQuestionButtons();
+      
+      // Observe DOM for new question buttons
+      const observer = new MutationObserver(fixQuestionButtons);
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
       
       console.log('Home page initialized - Question 1 ready, tours loading');
     });
@@ -15444,6 +15495,7 @@
             const spread = document.createElement('div');
             spread.className = 'swipe-gallery-spread';
             spread.id = 'detail-gallery-spread';
+            spread.style.cssText = 'width:calc(100% - 100px);margin:0 auto;';
             
             // Left image
             const leftImg = document.createElement('div');
