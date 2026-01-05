@@ -14696,17 +14696,13 @@
               .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#0077b6;font-weight:600;">$1</strong>')
               .replace(/\n/g, '<br>');
             
-            // Completely replace the section's innerHTML with properly structured content
-            const isMobile = window.innerWidth <= 768;
-            const padding = isMobile ? '16px' : '50px 60px';
-            
-            aboutSection.innerHTML = `
-              <h3 style="font-size:${isMobile ? '1.2em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '12px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
-              <p style="font-size:${isMobile ? '1em' : '1.35em'};line-height:${isMobile ? '1.5' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
-            `;
-            // 96% width centered - matches other sections
-            const aboutWidth = isMobile ? 'width:96%;max-width:96%;margin:0 auto 15px auto;' : 'width:100%;max-width:1200px;margin:0 auto 30px auto;';
-            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '16px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;${aboutWidth}`;
+            // Hide the original about section - we'll add it to detail-info with other sections
+            aboutSection.style.display = 'none';
+            // Store formatted description to add later
+            window.pendingAboutContent = {
+              title: t('about_this_tour'),
+              content: formattedDesc
+            };
           }
           
           let info = '';
@@ -14910,9 +14906,11 @@
             }
           }
           
-          // BUILD ALL SECTIONS USING QUICK DECISION MODE TEMPLATE
-          // Use swipe-expanded-details container and swipe-detail-section for each section
-          let allSectionsHtml = '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
+          // Clear info-grid - we'll put everything in detail-info
+          document.getElementById('info-grid').innerHTML = '';
+          
+          // ALL SECTIONS IN ONE swipe-expanded-details CONTAINER
+          info += '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
           
           // HIGHLIGHTS
           if (data.highlights) {
@@ -14923,7 +14921,7 @@
               return cleaned ? `<li>${cleaned}</li>` : '';
             }).filter(item => item).join('');
             if (highlightsList) {
-              allSectionsHtml += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
                 <h3>⭐ ${t('highlights')}</h3>
                 <ul>${highlightsList}</ul>
               </div>`;
@@ -14939,20 +14937,21 @@
               return cleaned ? `<li>${cleaned}</li>` : '';
             }).filter(item => item).join('');
             if (includesList) {
-              allSectionsHtml += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
                 <h3>✅ ${t('whats_included')}</h3>
                 <ul>${includesList}</ul>
               </div>`;
             }
           }
           
-          allSectionsHtml += '</div>';
-          // Set into info-grid
-          document.getElementById('info-grid').innerHTML = allSectionsHtml;
-          
-          // ALL REMAINING SECTIONS USE SWIPE-DETAIL-SECTION CLASS
-          // Wrap everything in swipe-expanded-details container
-          info += '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
+          // ABOUT THIS TOUR - add from pending content
+          if (window.pendingAboutContent) {
+            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+              <h3>📝 ${window.pendingAboutContent.title}</h3>
+              <div>${window.pendingAboutContent.content}</div>
+            </div>`;
+            window.pendingAboutContent = null;
+          }
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
