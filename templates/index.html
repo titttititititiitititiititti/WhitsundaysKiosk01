@@ -15521,26 +15521,39 @@
       // Update URL hash
       window.location.hash = `tour/${key}`;
       
-      // Hide home page
-      const homePage = document.querySelector('.home-page');
-      if (homePage) {
-        homePage.style.display = 'none';
-        homePage.classList.remove('active');
-      }
+      // Hide ALL other pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+        page.classList.remove('active');
+      });
       
       // Show the swipe results overlay
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (!swipeOverlay) {
         console.error('Swipe overlay not found, falling back to desktop mode');
-        // Fall back to desktop mode
         window.location.reload();
         return;
       }
       
+      // Set high z-index to appear above everything
+      swipeOverlay.style.zIndex = '999999';
+      
       // Fetch tour data
-      const tourData = await fetchTourDetails(key);
-      if (!tourData) {
-        console.error('Failed to fetch tour data');
+      let tourData;
+      try {
+        tourData = await fetchTourDetails(key);
+        if (!tourData) {
+          throw new Error('No tour data returned');
+        }
+      } catch (err) {
+        console.error('Failed to fetch tour data:', err);
+        // Show overlay anyway with error message
+        swipeOverlay.style.display = 'flex';
+        swipeOverlay.classList.add('active');
+        const scrollableContent = document.getElementById('swipe-scrollable-content');
+        if (scrollableContent) {
+          scrollableContent.innerHTML = '<div class="swipe-detail-section description-section"><h3>Error</h3><div>Failed to load tour details. Please try again.</div></div>';
+        }
         return;
       }
       
@@ -15691,10 +15704,13 @@
       swipeOverlay.style.display = 'flex';
       swipeOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('video-bg-active');
       
       // Hide skip button since we're not in swipe mode
       const skipBtn = document.getElementById('skip-to-list-btn');
       if (skipBtn) skipBtn.style.display = 'none';
+      
+      console.log('📱 Mobile tour detail overlay shown');
     }
     
     function filterByCompany(companyKey, companyName, fromTourKey = null) {
