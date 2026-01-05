@@ -398,22 +398,16 @@
         padding: 0 !important;
       }
       
-      /* FORCE white backgrounds on highlights/includes sections (children only) */
-      .tour-detail-page .info-grid > div,
-      .tour-detail-page #info-grid > div,
-      #info-grid > div,
+      /* FORCE white backgrounds on highlights/includes sections - let JS handle layout */
       .tour-detail-page .highlights-box,
       .tour-detail-page .includes-box {
         background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(10px) !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
-        border-radius: 16px !important;
-        padding: 16px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        border-radius: 14px !important;
         border-left: none !important;
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px 15px 8px !important;
         box-sizing: border-box !important;
+        /* Let JS inline styles handle width/margin/padding */
       }
       
       /* Carousel images - fill the frames */
@@ -706,15 +700,23 @@
       
       /* Info cards - SINGLE COLUMN on mobile */
       .tour-detail-page .info-sections,
-      .tour-detail-page .detail-sections,
-      .tour-detail-page .info-grid {
+      .tour-detail-page .detail-sections {
         display: flex !important;
         flex-direction: column !important;
-        grid-template-columns: 1fr !important;
         gap: 8px !important;
         padding: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
+      }
+      
+      /* Info-grid - let JS handle the grid layout */
+      .tour-detail-page .info-grid,
+      .tour-detail-page #info-grid {
+        display: block !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        background: transparent !important;
       }
       
       .tour-detail-page .info-card,
@@ -14867,45 +14869,45 @@
           }
           
           // INCLUDES & HIGHLIGHTS - Goes into info-grid (before About This Tour)
-          // Side-by-side on both mobile and desktop when both exist
+          // FULL WIDTH side-by-side like quick decision mode
           let highlightsIncludesHtml = '';
           if (data.includes || data.highlights) {
             const bothExist = data.includes && data.highlights;
             
-            // Side-by-side grid if both exist (on both mobile and desktop)
-            if (bothExist) {
-              const gridGap = isMobile ? '8px' : '30px';
-              const gridWidth = isMobile ? 'width:calc(100% - 16px);margin:0 8px 15px 8px;' : 'width:100%;max-width:1200px;margin:0 auto;';
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:${gridGap};${gridWidth}box-sizing:border-box;">`;
-            } else if (!isMobile) {
-              highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
+            // Side-by-side grid using FULL SCREEN WIDTH
+            if (bothExist && isMobile) {
+              // Mobile: Full width grid, minimal margins
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:calc(100% - 8px);margin:0 4px 15px 4px;box-sizing:border-box;">`;
+            } else if (bothExist) {
+              // Desktop: centered with max-width
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;">`;
+            } else if (isMobile) {
+              // Single item on mobile - full width
+              highlightsIncludesHtml += `<div style="width:calc(100% - 8px);margin:0 4px 15px 4px;box-sizing:border-box;">`;
             } else {
-              // Single item on mobile - wrap it
-              highlightsIncludesHtml += `<div style="width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;">`;
+              highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
             }
             
             // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
               const hlPad = isMobile ? '12px' : '40px 45px';
-              const hlHead = isMobile ? '1em' : '1.8em';
-              const hlText = isMobile ? '0.85em' : '1.15em';
-              // No extra width/margin when in grid - parent handles it
-              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${hlPad};border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);height:fit-content;">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '8px' : '15px'} 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
+              const hlHead = isMobile ? '1.1em' : '1.8em';
+              const hlText = isMobile ? '0.9em' : '1.15em';
+              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;padding:${hlPad};border-radius:${isMobile ? '14px' : '22px'};box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '10px' : '15px'} 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:${isMobile ? '1.4' : '1.6'};color:#2c3e50;">${formattedHighlights}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.5;color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             // WHAT'S INCLUDED SECOND
             if (data.includes) {
               const incPad = isMobile ? '12px' : '40px 45px';
-              const incHead = isMobile ? '1em' : '1.8em';
-              const incText = isMobile ? '0.85em' : '1.15em';
-              // No extra width/margin when in grid - parent handles it
-              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;padding:${incPad};border-radius:${isMobile ? '12px' : '22px'};box-shadow:0 15px 50px rgba(0,0,0,0.25);height:fit-content;">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '8px' : '15px'} 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
+              const incHead = isMobile ? '1.1em' : '1.8em';
+              const incText = isMobile ? '0.9em' : '1.15em';
+              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;padding:${incPad};border-radius:${isMobile ? '14px' : '22px'};box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 ${isMobile ? '10px' : '15px'} 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:${isMobile ? '1.4' : '1.6'};color:#2c3e50;">${formattedIncludes}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.5;color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             
