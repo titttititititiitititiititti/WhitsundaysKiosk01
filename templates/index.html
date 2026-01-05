@@ -411,13 +411,44 @@
       }
       
       /* Carousel images - fill the frames */
-      .swipe-gallery-spread,
       .swipe-gallery-image,
       .swipe-gallery-image img,
       .photo-carousel img,
       .carousel-slide img,
       .tour-hero img {
         object-fit: cover !important;
+      }
+      
+      /* Gallery spread - narrower to make room for arrows on sides */
+      .swipe-gallery-spread {
+        width: calc(100% - 100px) !important;
+        max-width: calc(100% - 100px) !important;
+        margin: 0 auto !important;
+      }
+      
+      /* Gallery arrows - positioned outside the spread */
+      .gallery-nav-arrow {
+        position: absolute !important;
+        width: 38px !important;
+        height: 38px !important;
+        background: #ffffff !important;
+        border: none !important;
+        border-radius: 50% !important;
+        font-size: 22px !important;
+        color: #333 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      
+      .gallery-nav-arrow.left {
+        left: 8px !important;
+      }
+      
+      .gallery-nav-arrow.right {
+        right: 8px !important;
       }
       
       /* Make center image clickable on mobile */
@@ -654,30 +685,40 @@
         line-height: 1.2 !important;
       }
       
-      /* FORCE small answer buttons */
-      .video-question-page .duration-pill {
-        padding: 10px 15px !important;
-        font-size: 0.9em !important;
+      /* FORCE small answer buttons - MAXIMUM SPECIFICITY */
+      .video-question-page .duration-pill,
+      .video-question-page .video-question-card .duration-pill,
+      .video-question-page .filter-question-card .duration-pill,
+      .video-question-page .duration-options .duration-pill,
+      .video-question-page button.duration-pill {
+        padding: 12px 15px !important;
+        font-size: 1em !important;
         min-height: auto !important;
         height: auto !important;
         min-width: auto !important;
+        max-height: 70px !important;
       }
       
-      .video-question-page .duration-pill span {
-        font-size: 0.8em !important;
+      .video-question-page .duration-pill span,
+      .video-question-page button.duration-pill span {
+        font-size: 0.75em !important;
+        margin-top: 2px !important;
       }
       
-      /* Options grid - MUCH tighter */
-      .video-question-page .duration-options {
+      /* Options grid - single column, fit all on screen */
+      .video-question-page .duration-options,
+      .video-question-page .video-question-card .duration-options {
         gap: 8px !important;
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         width: 100% !important;
         max-width: 100% !important;
+        max-height: calc(100vh - 200px) !important;
+        overflow-y: auto !important;
       }
       
       /* Progress bar - smaller */
       .video-question-page .vq-progress-container {
-        margin: 10px auto !important;
+        margin: 8px auto !important;
         padding: 5px !important;
       }
       
@@ -10126,16 +10167,16 @@
       <main class="home-main" style="padding-top: 30px;">
         
         <!-- Search Bar -->
-        <div style="margin-bottom: 20px; margin-top: 20px; padding: 0 2%;">
+        <div style="margin-bottom: 15px; margin-top: 15px; padding: 0 3%; width: 94%; box-sizing: border-box;">
           <div style="max-width: 100%; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center;">
-            <span style="position:absolute;left:20px;font-size:1.5em;color:#666;pointer-events:none;z-index:1;">🔍</span>
-            <input type="text" id="home-search-input" placeholder="Search tours, activities, destinations..." style="
+            <span style="position:absolute;left:15px;font-size:1.3em;color:#666;pointer-events:none;z-index:1;">🔍</span>
+            <input type="text" id="home-search-input" placeholder="Search tours..." style="
               width: 100%;
               max-width: 800px;
-              padding: 20px 30px 20px 55px;
-              font-size: 1.4em;
+              padding: 16px 20px 16px 45px;
+              font-size: 1.1em;
               border: 3px solid #fff;
-              border-radius: 50px;
+              border-radius: 35px;
               outline: none;
               transition: all 0.3s;
               background: rgba(255,255,255,0.95);
@@ -11225,7 +11266,6 @@
       const spreadContainer = document.createElement('div');
       spreadContainer.className = 'swipe-gallery-spread';
       spreadContainer.id = 'swipe-gallery-spread';
-      spreadContainer.style.cssText = 'width:calc(100% - 100px);margin:0 auto;';
       
       const leftImg = document.createElement('div');
       leftImg.className = 'swipe-gallery-image left';
@@ -12717,61 +12757,11 @@
       currentQuestion = 1;
       activeFilters = {};
       
-      // Apply mobile styles if on mobile
-      applyMobileStyles();
-      
       // Load initial tours immediately
       loadInitialFeaturedTours();
       
       // Setup infinite scroll
       setupInfiniteScroll();
-    
-    // Mobile styles function - runs on load and observes DOM changes
-    function applyMobileStyles() {
-      if (window.innerWidth > 768) return; // Only on mobile
-      
-      // Fix search bar
-      const searchInput = document.getElementById('home-search-input');
-      if (searchInput) {
-        searchInput.style.cssText = 'width:94%!important;max-width:94%!important;font-size:1.1em!important;padding:14px 18px 14px 45px!important;border-radius:25px!important;background:rgba(255,255,255,0.95)!important;border:2px solid #fff!important;box-shadow:0 3px 12px rgba(0,0,0,0.2)!important;';
-      }
-      
-      // Fix duration pills (questionnaire buttons)
-      function fixQuestionButtons() {
-        const pills = document.querySelectorAll('.duration-pill');
-        const pillCount = pills.length;
-        
-        pills.forEach(pill => {
-          // Size based on number of options
-          if (pillCount <= 4) {
-            pill.style.cssText += 'padding:18px 20px!important;font-size:1.1em!important;height:auto!important;min-height:60px!important;';
-          } else if (pillCount <= 6) {
-            pill.style.cssText += 'padding:12px 15px!important;font-size:0.95em!important;height:auto!important;min-height:50px!important;';
-          } else {
-            pill.style.cssText += 'padding:10px 12px!important;font-size:0.85em!important;height:auto!important;min-height:40px!important;';
-          }
-          
-          // Fix spans inside
-          const span = pill.querySelector('span');
-          if (span) {
-            span.style.cssText = 'font-size:0.75em!important;margin-top:2px!important;';
-          }
-        });
-        
-        // Fix duration options container
-        const optionsContainer = document.querySelector('.duration-options');
-        if (optionsContainer) {
-          optionsContainer.style.cssText = 'gap:8px!important;grid-template-columns:repeat(2,1fr)!important;width:100%!important;';
-        }
-      }
-      
-      // Run initially and observe for changes
-      fixQuestionButtons();
-      
-      // Observe DOM for new question buttons
-      const observer = new MutationObserver(fixQuestionButtons);
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
       
       console.log('Home page initialized - Question 1 ready, tours loading');
     });
@@ -15495,7 +15485,6 @@
             const spread = document.createElement('div');
             spread.className = 'swipe-gallery-spread';
             spread.id = 'detail-gallery-spread';
-            spread.style.cssText = 'width:calc(100% - 100px);margin:0 auto;';
             
             // Left image
             const leftImg = document.createElement('div');
