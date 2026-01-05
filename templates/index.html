@@ -6908,121 +6908,29 @@
         flex-direction: column !important;
       }
       
-      /* Tour detail page - MATCH QUICK DECISION STYLING */
+      /* Tour detail page on mobile - use EXACT same container as Quick Decision */
       .tour-detail-page #detail-info {
-        padding: 0 15px !important;
+        padding: 0 25px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
       }
       
-      /* All sections inside detail-info - MATCH swipe-detail-section */
-      .tour-detail-page #detail-info > div {
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        padding: 20px 25px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-      }
+      /* swipe-expanded-details in tour-detail-page uses SAME CSS as in Quick Decision */
+      /* The existing .swipe-expanded-details and .swipe-detail-section CSS handles styling */
       
-      .tour-detail-page #detail-info > div h3 {
-        margin: 0 0 8px 0 !important;
-        font-size: 1.05em !important;
-        font-weight: 700 !important;
-        color: #0077b6 !important;
-      }
-      
-      .tour-detail-page #detail-info > div p,
-      .tour-detail-page #detail-info > div div {
-        margin: 0 !important;
-        line-height: 1.5 !important;
-        color: #2c3e50 !important;
-        font-size: 0.95em !important;
-      }
-      
-      /* About section styling */
+      /* About section - match swipe-detail-section */
       .tour-detail-page #about-tour-section,
       section#about-tour-section {
-        margin: 0 15px 12px 15px !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        padding: 20px 25px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+        margin: 0 25px 20px 25px !important;
         box-sizing: border-box !important;
       }
       
       /* Info grid for highlights/includes */
       .tour-detail-page #info-grid {
-        padding: 0 15px !important;
+        padding: 0 25px !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-      }
-      
-      /* Highlights and Includes boxes - WHITE BACKGROUND */
-      .tour-detail-page #info-grid .highlights-box,
-      .tour-detail-page #info-grid .includes-box,
-      .tour-detail-page .highlights-box,
-      .tour-detail-page .includes-box {
-        width: 100% !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        padding: 20px 25px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        box-sizing: border-box !important;
-      }
-      
-      /* Map container fix */
-      .tour-detail-page #detail-info iframe {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 180px !important;
-        border-radius: 12px !important;
-      }
-      
-      /* swipe-detail-section inside tour-detail-page */
-      .tour-detail-page .swipe-detail-section,
-      .tour-detail-page .swipe-expanded-details > div {
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        padding: 20px 25px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        box-sizing: border-box !important;
-        width: 100% !important;
-      }
-      
-      .tour-detail-page .swipe-detail-section h3 {
-        margin: 0 0 8px 0 !important;
-        font-size: 1.05em !important;
-        font-weight: 700 !important;
-        color: #0077b6 !important;
-      }
-      
-      .tour-detail-page .swipe-detail-section > div,
-      .tour-detail-page .swipe-detail-section p {
-        margin: 0 !important;
-        line-height: 1.5 !important;
-        color: #2c3e50 !important;
-        font-size: 0.95em !important;
-      }
-      
-      /* swipe-expanded-details container */
-      .tour-detail-page .swipe-expanded-details {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        width: 100% !important;
-        padding: 0 !important;
       }
       
       /* Hero section */
@@ -15154,114 +15062,182 @@
             }
           }
           
-          // ON MOBILE: Use Quick Decision style layout (swipe-detail-section classes)
+          // ON MOBILE: Use EXACT SAME HTML as Quick Decision's expandTourDetails function
           if (isMobile) {
-            let mobileInfo = '<div class="swipe-expanded-details">';
+            // This is COPIED DIRECTLY from expandTourDetails - EXACT SAME CODE
+            let detailsHtml = '<div class="swipe-expanded-details">';
             
-            // Duration, Ages, Ideal For - paired sections
-            const hasAgeInfo = data.age_requirements && data.age_requirements.trim() && data.age_requirements !== 'N/A';
-            const hasIdealFor = data.ideal_for && data.ideal_for.trim() && data.ideal_for !== 'N/A';
+            const hasTimeInfo = data.departure_times && data.departure_times.trim();
+            const hasAgeInfo = data.age_requirements && data.age_requirements.trim() && !/\band\s+under\b/i.test(data.age_requirements);
+            const hasIdealFor = data.ideal_for && data.ideal_for.trim();
             
-            if (data.duration && data.duration !== 'N/A') {
-              const durationClass = !hasAgeInfo && !hasIdealFor ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${durationClass}"><h3>⏱️ ${t('duration')}</h3><div>${data.duration}</div></div>`;
+            if (hasTimeInfo) {
+              const cleanedTimes = cleanBracketFormatting(data.departure_times);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>🕐 ${t('times')}</h3>
+                  <div>${cleanedTimes}</div>
+                </div>
+              `;
             }
+            
             if (hasAgeInfo) {
               const ageClass = !hasIdealFor ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${ageClass}"><h3>👥 ${t('ages')}</h3><div>${cleanBracketFormatting(data.age_requirements)}</div></div>`;
+              const cleanedAges = cleanBracketFormatting(data.age_requirements);
+              detailsHtml += `
+                <div class="swipe-detail-section ${ageClass}">
+                  <h3>👥 ${t('ages')}</h3>
+                  <div>${cleanedAges}</div>
+                </div>
+              `;
             }
+            
             if (hasIdealFor) {
               const idealClass = !hasAgeInfo ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${idealClass}"><h3>🎯 ${t('ideal_for')}</h3><div>${cleanBracketFormatting(data.ideal_for)}</div></div>`;
-            }
-            if (data.departure_times && data.departure_times.trim()) {
-              mobileInfo += `<div class="swipe-detail-section description-section"><h3>🕐 ${t('times')}</h3><div>${cleanBracketFormatting(data.departure_times)}</div></div>`;
-            }
-            
-            // Itinerary & Menu - paired
-            const hasItinerary = data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A';
-            const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
-            if (hasItinerary) {
-              const itClass = !hasMenu ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${itClass}"><h3>📅 ${t('itinerary')}</h3><div>${cleanBracketFormatting(data.itinerary)}</div></div>`;
-            }
-            if (hasMenu) {
-              const mnClass = !hasItinerary ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${mnClass}"><h3>🍽️ ${t('menu')}</h3><div>${cleanBracketFormatting(data.menu)}</div></div>`;
+              const cleanedIdealFor = cleanBracketFormatting(data.ideal_for);
+              detailsHtml += `
+                <div class="swipe-detail-section ${idealClass}">
+                  <h3>🎯 ${t('ideal_for')}</h3>
+                  <div>${cleanedIdealFor}</div>
+                </div>
+              `;
             }
             
-            // Important Information
+            if (data.description) {
+              const cleanedDescription = cleanBracketFormatting(data.description);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>📝 ${t('about_this_tour')}</h3>
+                  <div>${cleanedDescription}</div>
+                </div>
+              `;
+            }
+            
+            if (data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A') {
+              const formattedItinerary = cleanBracketFormatting(data.itinerary);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>📅 ${t('itinerary')}</h3>
+                  <div>${formattedItinerary}</div>
+                </div>
+              `;
+            }
+            
+            if (data.menu && data.menu.trim() && data.menu !== 'N/A') {
+              const formattedMenu = cleanBracketFormatting(data.menu);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>🍽️ ${t('menu')}</h3>
+                  <div>${formattedMenu}</div>
+                </div>
+              `;
+            }
+            
             if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-              mobileInfo += `<div class="swipe-detail-section description-section"><h3>⚠️ ${t('important_information')}</h3><div>${cleanBracketFormatting(data.important_information)}</div></div>`;
+              const formattedInfo = cleanBracketFormatting(data.important_information);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>⚠️ ${t('important_information')}</h3>
+                  <div>${formattedInfo}</div>
+                </div>
+              `;
             }
             
-            // What to Bring & What's Extra - paired
             const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
             const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
+            
             if (hasBring) {
+              const formattedBring = cleanBracketFormatting(data.what_to_bring);
               const bringClass = !hasExtra ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${bringClass}"><h3>🎒 ${t('what_to_bring')}</h3><div>${cleanBracketFormatting(data.what_to_bring)}</div></div>`;
+              detailsHtml += `
+                <div class="swipe-detail-section ${bringClass}">
+                  <h3>🎒 ${t('what_to_bring')}</h3>
+                  <div>${formattedBring}</div>
+                </div>
+              `;
             }
+            
             if (hasExtra) {
+              const formattedExtra = cleanBracketFormatting(data.whats_extra);
               const extraClass = !hasBring ? 'description-section' : '';
-              mobileInfo += `<div class="swipe-detail-section ${extraClass}"><h3>💰 ${t('whats_extra')}</h3><div>${cleanBracketFormatting(data.whats_extra)}</div></div>`;
+              detailsHtml += `
+                <div class="swipe-detail-section ${extraClass}">
+                  <h3>💰 ${t('whats_extra')}</h3>
+                  <div>${formattedExtra}</div>
+                </div>
+              `;
             }
             
-            // Cancellation Policy
             if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-              mobileInfo += `<div class="swipe-detail-section description-section"><h3>📋 ${t('cancellation_policy')}</h3><div>${cleanBracketFormatting(data.cancellation_policy)}</div></div>`;
+              const formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
+              detailsHtml += `
+                <div class="swipe-detail-section description-section">
+                  <h3>📋 ${t('cancellation_policy')}</h3>
+                  <div>${formattedPolicy}</div>
+                </div>
+              `;
             }
             
-            // Departure Location with map
             if (data.departure_location && data.departure_location.trim()) {
-              mobileInfo += `
+              detailsHtml += `
                 <div class="swipe-detail-section description-section">
                   <h3>📍 ${t('departure_location')}</h3>
-                  <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50;">${data.departure_location}</div>
-                  <div style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
-                    <iframe width="100%" height="180" frameborder="0" style="border:0;display:block;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14" allowfullscreen></iframe>
+                  <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${data.departure_location}</div>
+                  <div style="width: 100%; height: 350px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
+                    <iframe 
+                      width="100%" 
+                      height="100%"
+                      frameborder="0" 
+                      style="border:0; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14"
+                      allowfullscreen>
+                    </iframe>
                   </div>
-                  <div style="color: #666; font-size: 0.85em; margin-top: 8px;">Please arrive at least 15 minutes before departure.</div>
-                </div>`;
+                  <div style="color: #2c3e50; font-size: 1.05em;">Please arrive at least 15 minutes before departure time.</div>
+                </div>
+              `;
             }
             
-            // Reviews section
             if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
-              mobileInfo += `
+              detailsHtml += `
                 <div class="swipe-detail-section description-section">
-                  <h3>⭐ ${t('customer_reviews')}</h3>
+                  <h3 style="margin-bottom: 12px;">⭐ ${t('customer_reviews')}</h3>
                   <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
-                    <div style="font-size: 1.8em; font-weight: 700; color: #0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>
-                    <div>
-                      <div style="font-size: 1.1em; color: #ffa500;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
-                      <div style="color: #666; font-size: 0.85em;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
+                    <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${data.reviews.overall_rating.toFixed(1)}</div>
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                      <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
+                      <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
                     </div>
-                  </div>`;
+                  </div>
+                  <div class="swipe-reviews-grid">
+              `;
               
               if (data.reviews.reviews && data.reviews.reviews.length > 0) {
-                mobileInfo += '<div style="display:flex;flex-direction:column;gap:10px;">';
-                data.reviews.reviews.slice(0, 3).forEach(review => {
-                  mobileInfo += `
-                    <div style="background:#f8f9fa;padding:12px;border-radius:10px;">
-                      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                        <strong style="color:#2c3e50;">${review.author || 'Customer'}</strong>
-                        ${review.rating ? `<span style="color:#ffa500;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
+                data.reviews.reviews.slice(0, 10).forEach(review => {
+                  detailsHtml += `
+                    <div class="swipe-review-card">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                        <strong style="font-size: 1.15em; color: #2c3e50;">${review.author || 'Customer'}</strong>
+                        ${review.rating ? `<span style="color: #ffa500; font-size: 1.3em; white-space: nowrap; margin-left: 10px;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
                       </div>
-                      ${review.title ? `<div style="font-weight:600;color:#0077b6;margin-bottom:6px;">${review.title}</div>` : ''}
-                      ${review.text ? `<p style="margin:0;color:#2c3e50;font-size:0.9em;line-height:1.4;">${review.text.substring(0, 150)}${review.text.length > 150 ? '...' : ''}</p>` : ''}
-                    </div>`;
+                      ${review.title ? `<div style="font-weight: 600; color: #0077b6; margin-bottom: 10px; font-size: 1.1em; line-height: 1.3;">${review.title}</div>` : ''}
+                      ${review.text ? `<p style="margin: 0 0 10px 0; color: #2c3e50; line-height: 1.6; font-size: 1.05em;">${review.text}</p>` : ''}
+                      ${review.date ? `<div style="font-size: 0.9em; color: #999; margin-top: auto;">${review.date}</div>` : ''}
+                    </div>
+                  `;
                 });
-                mobileInfo += '</div>';
               }
               
+              detailsHtml += '</div>';
+              
               if (data.reviews.source_url) {
-                mobileInfo += `<a href="${data.reviews.source_url}" target="_blank" style="display:block;margin-top:10px;color:#0077b6;font-weight:600;font-size:0.9em;">Read all ${data.reviews.review_count} reviews →</a>`;
+                detailsHtml += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;display:block;margin-top:15px;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
               }
-              mobileInfo += '</div>';
+              detailsHtml += '</div>';
             }
             
-            mobileInfo += '</div>';
-            document.getElementById('detail-info').innerHTML = mobileInfo;
+            detailsHtml += '</div>';
+            document.getElementById('detail-info').innerHTML = detailsHtml;
           } else {
             document.getElementById('detail-info').innerHTML = info;
           }
