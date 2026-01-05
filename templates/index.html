@@ -15521,11 +15521,29 @@
       // Update URL hash
       window.location.hash = `tour/${key}`;
       
-      // Hide ALL other pages
+      // Hide ALL other pages EXCEPT video-question-page (which contains the overlay)
       document.querySelectorAll('.page').forEach(page => {
-        page.style.display = 'none';
-        page.classList.remove('active');
+        if (!page.classList.contains('video-question-page')) {
+          page.style.display = 'none';
+          page.classList.remove('active');
+        }
       });
+      
+      // Show the video-question-page (parent of swipe overlay) but hide its other content
+      const videoPage = document.querySelector('.video-question-page');
+      if (videoPage) {
+        videoPage.style.display = 'block';
+        videoPage.classList.add('active');
+        // Hide internal elements except overlay
+        const startScreen = document.getElementById('video-start-screen');
+        const questionContainer = document.getElementById('video-question-container');
+        const progressContainer = document.getElementById('vq-progress-container');
+        const backBtn = document.getElementById('vq-back-btn');
+        if (startScreen) startScreen.style.display = 'none';
+        if (questionContainer) questionContainer.style.display = 'none';
+        if (progressContainer) progressContainer.style.display = 'none';
+        if (backBtn) backBtn.style.display = 'none';
+      }
       
       // Show the swipe results overlay
       const swipeOverlay = document.getElementById('swipe-results-overlay');
