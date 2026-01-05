@@ -457,9 +457,9 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 22px !important;
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 20px !important;
         background: white !important;
         color: #333 !important;
         border-radius: 50% !important;
@@ -474,11 +474,11 @@
       }
       
       .gallery-nav-arrow.left {
-        left: -5px !important;
+        left: -18px !important;
       }
       
       .gallery-nav-arrow.right {
-        right: -5px !important;
+        right: -18px !important;
       }
       
       .tour-detail-page .kiosk-header .header-right {
@@ -794,23 +794,6 @@
       /* Uniform gap between all sections */
       .tour-detail-page .tour-detail-main {
         gap: 15px !important;
-      }
-      
-      /* ALL sections inside swipe-expanded-details - same width on mobile */
-      .tour-detail-page .swipe-expanded-details {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        width: 100% !important;
-        padding: 0 !important;
-      }
-      
-      .tour-detail-page .swipe-expanded-details .swipe-detail-section,
-      .tour-detail-page #detail-info .swipe-detail-section {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px !important;
-        box-sizing: border-box !important;
       }
       
       /* Pricing section - match swipe-detail-section style exactly */
@@ -2383,12 +2366,12 @@
     
     .swipe-gallery-wrapper {
       position: relative;
-      width: calc(100% - 50px);
+      width: calc(100% - 80px);
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 25px;
+      margin: 0 40px;
       overflow: visible;
     }
     
@@ -2426,11 +2409,11 @@
     }
     
     .gallery-nav-arrow.left {
-      left: -8px;
+      left: -25px;
     }
     
     .gallery-nav-arrow.right {
-      right: -8px;
+      right: -25px;
     }
     
     .swipe-gallery-spread {
@@ -14976,15 +14959,15 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - wide but centered, close to edges
+          // MOBILE UNIFORM STYLES - match highlights/includes width exactly
           const mPad = '16px';
           const mGap = '15px';
           const mRadius = '16px';
           const mHeading = '1.2em';
           const mText = '1em';
-          // 96% width centered - close to edges but not overlapping
+          // Match other sections: calc(100% - 16px) with 8px margins
           const mWidth = isMobile 
-            ? 'width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;'
+            ? 'width:calc(100% - 16px);max-width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;'
             : 'width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;';
           
           if (quickInfoItems.length > 0) {
