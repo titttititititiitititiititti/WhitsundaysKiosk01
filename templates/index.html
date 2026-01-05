@@ -6938,25 +6938,28 @@
          TOUR DETAIL - FULL WIDTH EDGE TO EDGE
          ============================================ */
       
-      /* Main container - full viewport width on mobile */
+      /* Main container - full width, centered children */
       .tour-detail-page .tour-detail-main,
       .tour-detail-page main {
-        width: 100vw !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
-        align-items: stretch !important;
+        align-items: center !important;
         overflow-x: hidden !important;
       }
       
-      /* Allow children to use viewport width */
+      /* Container for sections - full width, centered */
       .tour-detail-page #detail-info,
       .tour-detail-page #info-grid {
-        width: 100vw !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
       }
       
       /* ALL sections - WIDER with small margins */
@@ -14677,8 +14680,8 @@
               <h3 style="font-size:${isMobile ? '1.2em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '12px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
               <p style="font-size:${isMobile ? '1em' : '1.35em'};line-height:${isMobile ? '1.5' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
             `;
-            // Use viewport width for true full screen on mobile
-            const aboutWidth = isMobile ? 'width:calc(100vw - 16px);margin:0 8px 15px 8px;' : 'width:100%;max-width:1200px;margin:0 auto 30px auto;';
+            // 96% width centered - matches other sections
+            const aboutWidth = isMobile ? 'width:96%;max-width:96%;margin:0 auto 15px auto;' : 'width:100%;max-width:1200px;margin:0 auto 30px auto;';
             aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '16px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;${aboutWidth}`;
           }
           
@@ -14791,15 +14794,15 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - USE VIEWPORT WIDTH for full screen
+          // MOBILE UNIFORM STYLES - wide but centered, close to edges
           const mPad = '16px';
           const mGap = '15px';
           const mRadius = '16px';
           const mHeading = '1.2em';
           const mText = '1em';
-          // Use calc with 100vw to ensure full screen width regardless of parent constraints
+          // 96% width centered - close to edges but not overlapping
           const mWidth = isMobile 
-            ? 'width:calc(100vw - 16px);margin:0 8px 15px 8px;box-sizing:border-box;'
+            ? 'width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;'
             : 'width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;';
           
           if (quickInfoItems.length > 0) {
@@ -14889,16 +14892,16 @@
           if (data.includes || data.highlights) {
             const bothExist = data.includes && data.highlights;
             
-            // Side-by-side grid using FULL SCREEN WIDTH (viewport-based)
+            // Side-by-side grid - 96% width centered
             if (bothExist && isMobile) {
-              // Mobile: Use viewport width for true full screen
-              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:calc(100vw - 16px);margin:0 8px 15px 8px;box-sizing:border-box;">`;
+              // Mobile: 96% width centered with small gap
+              highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;">`;
             } else if (bothExist) {
               // Desktop: centered with max-width
               highlightsIncludesHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;">`;
             } else if (isMobile) {
-              // Single item on mobile - viewport width
-              highlightsIncludesHtml += `<div style="width:calc(100vw - 16px);margin:0 8px 15px 8px;box-sizing:border-box;">`;
+              // Single item on mobile - 96% centered
+              highlightsIncludesHtml += `<div style="width:96%;max-width:96%;margin:0 auto 15px auto;box-sizing:border-box;">`;
             } else {
               highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
             }
@@ -15023,11 +15026,10 @@
           }
           
           // DEPARTURE LOCATION SECTION
-          // DEPARTURE LOCATION SECTION - WIDER for better map visibility
+          // DEPARTURE LOCATION SECTION - 96% width centered like other sections
           if (data.departure_location && data.departure_location.trim()) {
-            // Use viewport width on mobile for true full screen
             const depStyles = isMobile 
-              ? 'width:calc(100vw - 16px);margin:0 8px 15px 8px;padding:16px;border-radius:16px;box-sizing:border-box;'
+              ? 'width:96%;max-width:96%;margin:0 auto 15px auto;padding:16px;border-radius:16px;box-sizing:border-box;'
               : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
             const depHead = isMobile ? '1.1em' : '2.2em';
             const depLoc = isMobile ? '1em' : '1.4em';
