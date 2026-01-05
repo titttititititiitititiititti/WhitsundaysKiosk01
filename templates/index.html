@@ -14910,133 +14910,84 @@
             }
           }
           
-          // INCLUDES & HIGHLIGHTS - USE SAME CLASSES AS QUICK DECISION MODE
-          let highlightsIncludesHtml = '';
-          if (data.includes || data.highlights) {
-            // Use swipe-info-sections class - same as quick decision mode
-            highlightsIncludesHtml += '<div class="swipe-info-sections" style="opacity:1;animation:none;">';
-            
-            // HIGHLIGHTS FIRST
-            if (data.highlights) {
-              let highlights = (data.highlights || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
-              if (highlights.length === 1) {
-                highlights = data.highlights.split(/[;,]/).filter(item => item.trim());
-              }
-              const highlightsList = highlights.map(item => {
-                const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
-                return cleaned ? `<li>${cleaned}</li>` : '';
-              }).filter(item => item).join('');
-              
-              if (highlightsList) {
-                highlightsIncludesHtml += `<div class="swipe-info-box" style="opacity:1;animation:none;">
-                  <h3>⭐ ${t('highlights')}</h3>
-                  <ul>${highlightsList}</ul>
-                </div>`;
-              }
+          // BUILD ALL SECTIONS USING QUICK DECISION MODE TEMPLATE
+          // Use swipe-expanded-details container and swipe-detail-section for each section
+          let allSectionsHtml = '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
+          
+          // HIGHLIGHTS
+          if (data.highlights) {
+            let highlights = (data.highlights || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+            if (highlights.length === 1) highlights = data.highlights.split(/[;,]/).filter(item => item.trim());
+            const highlightsList = highlights.map(item => {
+              const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+              return cleaned ? `<li>${cleaned}</li>` : '';
+            }).filter(item => item).join('');
+            if (highlightsList) {
+              allSectionsHtml += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+                <h3>⭐ ${t('highlights')}</h3>
+                <ul>${highlightsList}</ul>
+              </div>`;
             }
-            
-            // WHAT'S INCLUDED SECOND
-            if (data.includes) {
-              let includes = (data.includes || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
-              if (includes.length === 1) {
-                includes = data.includes.split(/[;,]/).filter(item => item.trim());
-              }
-              const includesList = includes.map(item => {
-                const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
-                return cleaned ? `<li>${cleaned}</li>` : '';
-              }).filter(item => item).join('');
-              
-              if (includesList) {
-                highlightsIncludesHtml += `<div class="swipe-info-box" style="opacity:1;animation:none;">
-                  <h3>✅ ${t('whats_included')}</h3>
-                  <ul>${includesList}</ul>
-                </div>`;
-              }
-            }
-            
-            highlightsIncludesHtml += '</div>';
           }
-          // Set highlights/includes into info-grid element (positioned before About This Tour)
-          document.getElementById('info-grid').innerHTML = highlightsIncludesHtml;
+          
+          // WHAT'S INCLUDED
+          if (data.includes) {
+            let includes = (data.includes || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
+            if (includes.length === 1) includes = data.includes.split(/[;,]/).filter(item => item.trim());
+            const includesList = includes.map(item => {
+              const cleaned = item.replace(/^[-•✓\s]+/, '').trim();
+              return cleaned ? `<li>${cleaned}</li>` : '';
+            }).filter(item => item).join('');
+            if (includesList) {
+              allSectionsHtml += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+                <h3>✅ ${t('whats_included')}</h3>
+                <ul>${includesList}</ul>
+              </div>`;
+            }
+          }
+          
+          allSectionsHtml += '</div>';
+          // Set into info-grid
+          document.getElementById('info-grid').innerHTML = allSectionsHtml;
+          
+          // ALL REMAINING SECTIONS USE SWIPE-DETAIL-SECTION CLASS
+          // Wrap everything in swipe-expanded-details container
+          info += '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
           
           // IMPORTANT INFORMATION SECTION
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-            const impStyles = isMobile 
-              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
-            const impHead = isMobile ? mHeading : '2.2em';
-            const impText = isMobile ? mText : '1.25em';
-            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${impStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-            info += `<h3 style="font-size:${impHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">⚠️ ${t('important_information')}</h3>`;
             let formattedInfo = cleanBracketFormatting(data.important_information);
-            info += `<div style="font-size:${impText};color:#2c3e50;line-height:1.4;">${formattedInfo}</div>`;
-            info += '</div>';
+            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+              <h3>⚠️ ${t('important_information')}</h3>
+              <div>${formattedInfo}</div>
+            </div>`;
           }
           
-          // WHAT TO BRING & WHAT'S EXTRA
-          const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
-          const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
-          
-          if (hasBring || hasExtra) {
-            // Desktop: side-by-side grid. Mobile: single column
-            if (hasBring && hasExtra && !isMobile) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            }
-            
-            if (hasBring) {
-              const bStyles = isMobile 
-                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-                : (!hasExtra ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
-              const bHead = isMobile ? mHeading : '2.2em';
-              const bText = isMobile ? mText : '1.25em';
-              const bGap = isMobile ? '8px' : '15px';
-              info += `<div style="${bStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="font-size:${bHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">🎒 ${t('what_to_bring')}</h3>`;
+          // WHAT TO BRING
+          if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
-              formattedBring = formattedBring
-                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${bGap};">`)
-                .replace(/<li[^>]*>/gi, `<li style="font-size:${bText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
-                .replace(/<\/li>/gi, '</li>');
-              info += formattedBring || `<div style="color:#666;font-size:${bText};">No items specified</div>`;
-            info += '</div>';
+            info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              <h3>🎒 ${t('what_to_bring')}</h3>
+              <div>${formattedBring}</div>
+            </div>`;
           }
           
-            if (hasExtra) {
-              const eStyles = isMobile 
-                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-                : (!hasBring ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
-              const eHead = isMobile ? mHeading : '2.2em';
-              const eText = isMobile ? mText : '1.25em';
-              const eGap = isMobile ? '8px' : '15px';
-              info += `<div style="${eStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="font-size:${eHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">💰 ${t('whats_extra')}</h3>`;
+          // WHAT'S EXTRA
+          if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
-              formattedExtra = formattedExtra
-                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${eGap};">`)
-                .replace(/<li[^>]*>/gi, `<li style="font-size:${eText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
-                .replace(/<\/li>/gi, '</li>');
-              info += formattedExtra || `<div style="color:#666;font-size:${eText};">No extra costs specified</div>`;
-            info += '</div>';
-          }
-          
-            // Close grid if both exist AND desktop
-            if (hasBring && hasExtra && !isMobile) {
-              info += '</div>';
-            }
+            info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              <h3>💰 ${t('whats_extra')}</h3>
+              <div>${formattedExtra}</div>
+            </div>`;
           }
           
           // CANCELLATION POLICY SECTION
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-            const cpStyles = isMobile 
-              ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
-            const cpHead = isMobile ? mHeading : '2.2em';
-            const cpText = isMobile ? mText : '1.25em';
-            info += `<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${cpStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-            info += `<h3 style="font-size:${cpHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📋 ${t('cancellation_policy')}</h3>`;
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
-            info += `<div style="font-size:${cpText};color:#2c3e50;line-height:1.4;">${formattedPolicy}</div>`;
-            info += '</div>';
+            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+              <h3>📋 ${t('cancellation_policy')}</h3>
+              <div>${formattedPolicy}</div>
+            </div>`;
           }
           
           // Add Cruise Whitsundays disclaimer (only for their tours)
@@ -15050,30 +15001,24 @@
           }
           
           // DEPARTURE LOCATION SECTION
-          // DEPARTURE LOCATION SECTION - 96% width centered like other sections
           if (data.departure_location && data.departure_location.trim()) {
-            const depStyles = isMobile 
-              ? 'width:96%;max-width:96%;margin:0 auto 15px auto;padding:16px;border-radius:16px;box-sizing:border-box;'
-              : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
-            const depHead = isMobile ? '1.1em' : '2.2em';
-            const depLoc = isMobile ? '1em' : '1.4em';
-            const depText = isMobile ? '0.9em' : '1.1em';
-            const mapHeight = isMobile ? '300px' : '500px';
-            info += `<div class="departure-location-section" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);${depStyles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-            info += `<h3 style="font-size:${depHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📍 ${t('departure_location')}</h3>`;
-            info += `<div style="font-size:${depLoc};font-weight:600;color:#2c3e50;margin-bottom:8px;">${data.departure_location}</div>`;
-            info += `<div style="font-size:${depText};color:#666;line-height:1.4;margin-bottom:${isMobile ? '10px' : '20px'};">This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>`;
-            
-            // Add mini map if coordinates are available - LARGER on mobile
+            const mapHeight = isMobile ? '250px' : '400px';
+            let mapHtml = '';
             const coords = getCoordinatesForLocation(data.departure_location);
             if (coords) {
-              info += `<div id="detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:100%;height:${mapHeight};margin-top:10px;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.15);"></div>`;
-              // Store coords for map initialization
+              mapHtml = `<div id="detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:100%;height:${mapHeight};margin-top:15px;border-radius:12px;overflow:hidden;"></div>`;
               window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
             }
-            
-            info += '</div>';
+            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+              <h3>📍 ${t('departure_location')}</h3>
+              <div style="font-weight:600;margin-bottom:8px;">${data.departure_location}</div>
+              <div>This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>
+              ${mapHtml}
+            </div>`;
           }
+          
+          // Close the swipe-expanded-details container
+          info += '</div>';
           
           // REVIEWS SECTION - Header in floating box, each review in its own box
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
