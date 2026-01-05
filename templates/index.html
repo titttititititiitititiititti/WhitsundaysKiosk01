@@ -4332,7 +4332,7 @@
     /* MOVE weather widget up on tour detail page - MOBILE ONLY */
     @media (max-width: 768px) {
       body:has(.tour-detail-page.active) #weather-widget-launcher {
-        bottom: 65px !important;
+        bottom: 140px !important;
       }
     }
     
@@ -8851,6 +8851,26 @@
       .details-section h3 {
         font-size: 1.2em !important;
         margin: 0 0 10px 0 !important;
+      }
+      
+      /* About This Tour section - reduce internal padding */
+      #about-tour-section,
+      section#about-tour-section,
+      .tour-detail-page #about-tour-section {
+        padding: 10px 8px !important;
+      }
+      
+      #about-tour-section h3,
+      #about-tour-title {
+        padding: 0 !important;
+        margin: 0 0 8px 0 !important;
+      }
+      
+      #about-tour-section #detail-description,
+      #detail-description {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
       }
       
       .details-section #detail-description,
@@ -14983,28 +15003,6 @@
           }
           
           document.getElementById('detail-info').innerHTML = info;
-          
-          // MOBILE: Apply section widths via JavaScript (CSS not working)
-          if (window.innerWidth <= 768) {
-            setTimeout(() => {
-              // Target all sections in the tour detail page
-              const selectors = [
-                '.tour-detail-page .details-section',
-                '.tour-detail-page #about-tour-section',
-                '.tour-detail-page .highlights-box',
-                '.tour-detail-page .includes-box',
-                '#detail-info > div',
-                '.tour-detail-page .pricing-section',
-                '.tour-detail-page .info-grid'
-              ];
-              selectors.forEach(selector => {
-                document.querySelectorAll(selector).forEach(el => {
-                  el.style.cssText += 'width: calc(100% - 12px) !important; max-width: calc(100% - 12px) !important; margin-left: 6px !important; margin-right: 6px !important; box-sizing: border-box !important;';
-                });
-              });
-              console.log('📱 Mobile section widths applied via JavaScript');
-            }, 100);
-          }
           
           // Initialize mini map if location exists - wait longer for DOM to be ready
           if (window.pendingMiniMap) {
