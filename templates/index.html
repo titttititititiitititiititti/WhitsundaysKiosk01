@@ -737,28 +737,65 @@
         margin-bottom: 6px !important;
       }
       
-      /* Tour detail page sections - MATCH QUICK DECISION */
+      /* Tour detail page sections - consolidated width rule - SCALED UP */
       .tour-detail-page .tour-hero,
       .tour-detail-page .pricing-section,
       .tour-detail-page .info-grid,
       .tour-detail-page .details-section,
-      .tour-detail-page #about-tour-section {
-        width: calc(100% - 30px) !important;
-        max-width: 900px !important;
-        margin: 0 15px 12px 15px !important;
+      .tour-detail-page #about-tour-section,
+      .tour-detail-page .fine-print,
+      .tour-detail-page .departure-section,
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box,
+      .tour-detail-page #detail-info > div {
+        width: calc(100% - 16px) !important;
+        max-width: calc(100% - 16px) !important;
+        margin: 0 8px 15px 8px !important;
+        padding: 16px !important;
         box-sizing: border-box !important;
+        border-radius: 16px !important;
+      }
+      
+      /* Uniform gap between all sections */
+      .tour-detail-page .tour-detail-main {
+        gap: 15px !important;
       }
       
       .tour-detail-page .pricing-section {
-        padding: 15px !important;
+        padding: 16px !important;
       }
       
       .tour-detail-page .price-row,
       .tour-detail-page .pricing-card,
       .tour-detail-page .price-option {
-        padding: 10px 12px !important;
-        margin: 6px 0 !important;
-        font-size: 0.85rem !important;
+        padding: 14px 16px !important;
+        margin: 8px 0 !important;
+        font-size: 1rem !important;
+      }
+      
+      /* Scale up section headers */
+      .tour-detail-page section h2,
+      .tour-detail-page section h3,
+      .tour-detail-page .info-card h3,
+      .tour-detail-page .highlights-box h3,
+      .tour-detail-page .includes-box h3,
+      .tour-detail-page #detail-info h3 {
+        font-size: 1.2em !important;
+        margin-bottom: 12px !important;
+      }
+      
+      /* Scale up section text */
+      .tour-detail-page section p,
+      .tour-detail-page section li,
+      .tour-detail-page .info-card p,
+      .tour-detail-page .info-card li,
+      .tour-detail-page .highlights-box li,
+      .tour-detail-page .includes-box li,
+      .tour-detail-page #detail-info p,
+      .tour-detail-page #detail-info li {
+        font-size: 1em !important;
+        line-height: 1.5 !important;
+        margin-bottom: 8px !important;
       }
       
       /* Gallery */
@@ -6895,41 +6932,31 @@
          TOUR DETAIL - FULL WIDTH EDGE TO EDGE
          ============================================ */
       
-      /* Main container - MATCH QUICK DECISION: centered content */
+      /* Main container - full width */
       .tour-detail-page .tour-detail-main,
       .tour-detail-page main {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 0 15px !important;
+        padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
-        align-items: center !important;
-        display: flex !important;
-        flex-direction: column !important;
+        align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* Tour detail page on mobile - use EXACT same container as Quick Decision */
-      .tour-detail-page #detail-info {
-        padding: 0 25px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-      }
-      
-      /* swipe-expanded-details in tour-detail-page uses SAME CSS as in Quick Decision */
-      /* The existing .swipe-expanded-details and .swipe-detail-section CSS handles styling */
-      
-      /* About section - match swipe-detail-section */
+      /* ALL sections - WIDER with small margins */
+      .tour-detail-page .tour-detail-main > *,
+      .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box,
+      .tour-detail-page #detail-info > div,
       section#about-tour-section {
-        margin: 0 25px 20px 25px !important;
-        box-sizing: border-box !important;
-      }
-      
-      /* Info grid for highlights/includes */
-      .tour-detail-page #info-grid {
-        padding: 0 25px !important;
-        width: 100% !important;
+        width: calc(100% - 12px) !important;
+        max-width: calc(100% - 12px) !important;
+        margin-left: 6px !important;
+        margin-right: 6px !important;
+        margin-bottom: 10px !important;
+        padding: 15px !important;
         box-sizing: border-box !important;
       }
       
@@ -6944,84 +6971,67 @@
       .tour-detail-page .info-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 16px !important;
+        gap: 8px !important;
         width: 100% !important;
         max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
       }
       
-      /* ALL info cards - FULL WIDTH, LARGER */
+      /* ALL info cards - FULL WIDTH */
       .tour-detail-page .info-card {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
-        padding: 18px !important;
-        border-radius: 14px !important;
+        padding: 12px !important;
+        border-radius: 10px !important;
         box-sizing: border-box !important;
       }
       
-      /* ALL headings - MATCH SWIPE-DETAIL-SECTION */
+      /* ALL headings in tour detail */
       .tour-detail-page .info-card h3,
       .tour-detail-page h3 {
-        font-size: 1.05em !important;
-        font-weight: 700 !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
         margin: 0 0 8px 0 !important;
         line-height: 1.3 !important;
         color: #0077b6 !important;
       }
       
-      /* ALL body text - MATCH SWIPE-DETAIL-SECTION */
+      /* ALL body text */
       .tour-detail-page .info-card p,
       .tour-detail-page .info-card li,
       .tour-detail-page p,
-      .tour-detail-page li,
-      .tour-detail-page div {
-        font-size: 0.95em !important;
-        line-height: 1.5 !important;
-        margin: 0 !important;
-        color: #2c3e50 !important;
-      }
-      
-      /* Lists - MATCH SWIPE-DETAIL-SECTION */
-      .tour-detail-page ul {
-        margin: 0 !important;
-        padding: 0 !important;
-        list-style: none !important;
-      }
-      
       .tour-detail-page li {
-        padding-left: 26px !important;
-        position: relative !important;
-        margin-bottom: 8px !important;
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+        margin: 0 0 5px 0 !important;
+        color: #333 !important;
       }
       
-      .tour-detail-page li:before {
-        content: '✓' !important;
-        position: absolute !important;
-        left: 0 !important;
-        color: #00b4d8 !important;
-        font-weight: 900 !important;
-        font-size: 1.2em !important;
+      /* Lists */
+      .tour-detail-page ul {
+        padding-left: 18px !important;
+        margin: 0 !important;
       }
       
       /* Title */
       .tour-detail-page #detail-title,
       .tour-detail-page .tour-title {
-        font-size: 1.4em !important;
-        margin: 10px 0 !important;
+        font-size: 1.2rem !important;
+        margin: 8px 0 !important;
         line-height: 1.3 !important;
         font-weight: 700 !important;
         max-width: 100% !important;
       }
       
-      /* Pricing section - full width, consistent gap */
+      /* Pricing section - full width */
       .tour-detail-page .pricing-section {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        padding: 18px !important;
-        margin: 8px 8px 16px 8px !important;
-        border-radius: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 12px !important;
+        margin: 8px 0 !important;
+        border-radius: 10px !important;
         box-sizing: border-box !important;
       }
       
@@ -14599,9 +14609,6 @@
       console.log('   isInVideoFlow:', isInVideoFlow);
       console.log('   video-bg-active class present:', document.body.classList.contains('video-bg-active'));
       
-      // Mobile uses same tour-detail-page but with Quick Decision CSS styling
-      const isMobile = window.innerWidth <= 768;
-      
       // Add to navigation history
       addToNavigationHistory('tour-' + key);
       
@@ -14639,7 +14646,7 @@
           document.getElementById('detail-summary').textContent = data.summary;
           
           // Enhanced description with markdown-style formatting
-          // REBUILD the entire About section - MATCH SWIPE-DETAIL-SECTION
+          // REBUILD the entire About section to fix mobile width issue
           const aboutSection = document.getElementById('about-tour-section');
           if (aboutSection) {
             let formattedDesc = (data.description || 'N/A')
@@ -14648,14 +14655,13 @@
             
             // Completely replace the section's innerHTML with properly structured content
             const isMobile = window.innerWidth <= 768;
-            const padding = isMobile ? '20px 25px' : '50px 60px';
-            const shadow = isMobile ? '0 8px 30px rgba(0,0,0,0.2)' : '0 20px 60px rgba(0,0,0,0.3)';
+            const padding = isMobile ? '16px' : '50px 60px';
             
             aboutSection.innerHTML = `
-              <h3 style="font-size:${isMobile ? '1.05em' : '2.8em'};font-weight:700;margin:0 0 8px 0;color:#0077b6;">${t('about_this_tour')}</h3>
-              <p style="font-size:0.95em;line-height:1.5;color:#2c3e50;margin:0;padding:0;">${formattedDesc}</p>
+              <h3 style="font-size:${isMobile ? '1.2em' : '2.8em'};font-weight:${isMobile ? '600' : '700'};margin:0 0 ${isMobile ? '12px' : '25px'} 0;color:#0077b6;">${t('about_this_tour')}</h3>
+              <p style="font-size:${isMobile ? '1em' : '1.35em'};line-height:${isMobile ? '1.5' : '1.9'};color:#1a1a1a;margin:0;padding:0;">${formattedDesc}</p>
             `;
-            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:16px;box-shadow:${shadow};box-sizing:border-box;margin-bottom:12px;`;
+            aboutSection.style.cssText = `background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${padding};border-radius:${isMobile ? '16px' : '25px'};box-shadow:0 20px 60px rgba(0,0,0,0.3);box-sizing:border-box;margin-bottom:15px;`;
           }
           
           let info = '';
@@ -14767,13 +14773,13 @@
           
           // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
           const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - MATCH SWIPE-DETAIL-SECTION (grid handles margins)
-          const mPad = '20px 25px';
-          const mGap = '12px';
-          const mRadius = '16px';
-          const mHeading = '1.05em';
-          const mText = '0.95em';
-          const mWidth = 'box-sizing:border-box;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(0,0,0,0.2);';
+          // MOBILE UNIFORM STYLES - simple percentages, centered
+          const mPad = '15px';
+          const mGap = '10px';
+          const mRadius = '12px';
+          const mHeading = '1.1em';
+          const mText = '0.9em';
+          const mWidth = 'width:calc(100% - 12px);margin:0 6px ' + mGap + ' 6px;box-sizing:border-box;';
           
           if (quickInfoItems.length > 0) {
             // On mobile: always single column. On desktop: grid for 2-3 items
@@ -14869,28 +14875,30 @@
               highlightsIncludesHtml += `<div style="width:100%;max-width:1200px;margin:0 auto;">`;
             }
             
-            // HIGHLIGHTS FIRST (user requested order) - MATCH SWIPE-DETAIL-SECTION
+            // HIGHLIGHTS FIRST (user requested order)
             if (data.highlights) {
-              const hlPad = isMobile ? '20px 25px' : '40px 45px';
-              const hlHead = isMobile ? '1.05em' : '1.8em';
-              const hlText = isMobile ? '0.95em' : '1.15em';
-              const hlShadow = isMobile ? 'box-shadow:0 8px 30px rgba(0,0,0,0.2);' : 'box-shadow:0 15px 50px rgba(0,0,0,0.25);';
-              highlightsIncludesHtml += `<div class="highlights-box" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${hlPad};border-radius:16px;${hlShadow}box-sizing:border-box;">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
+              const hlPad = isMobile ? '15px' : '40px 45px';
+              const hlHead = isMobile ? '1.1em' : '1.8em';
+              const hlText = isMobile ? '0.9em' : '1.15em';
+              const hlWidth = isMobile ? 'width:calc(100% - 12px);margin:0 6px 10px 6px;box-sizing:border-box;' : '';
+              // FORCED WHITE BACKGROUND
+              highlightsIncludesHtml += `<div class="highlights-box" style="background:#ffffff !important;background-color:#ffffff !important;${hlWidth}padding:${hlPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#f57c00;font-size:${hlHead};font-weight:700;">⭐ ${t('highlights')}</h3>`;
               let formattedHighlights = (data.highlights || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.5;color:#2c3e50;">${formattedHighlights}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${hlText};line-height:1.6;color:#2c3e50;">${formattedHighlights}</div>`;
               highlightsIncludesHtml += '</div>';
             }
-            // WHAT'S INCLUDED SECOND - MATCH SWIPE-DETAIL-SECTION
+            // WHAT'S INCLUDED SECOND
             if (data.includes) {
-              const incPad = isMobile ? '20px 25px' : '40px 45px';
-              const incHead = isMobile ? '1.05em' : '1.8em';
-              const incText = isMobile ? '0.95em' : '1.15em';
-              const incShadow = isMobile ? 'box-shadow:0 8px 30px rgba(0,0,0,0.2);' : 'box-shadow:0 15px 50px rgba(0,0,0,0.25);';
-              highlightsIncludesHtml += `<div class="includes-box" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:${incPad};border-radius:16px;${incShadow}box-sizing:border-box;">`;
-              highlightsIncludesHtml += `<h3 style="margin:0 0 8px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
+              const incPad = isMobile ? '15px' : '40px 45px';
+              const incHead = isMobile ? '1.1em' : '1.8em';
+              const incText = isMobile ? '0.9em' : '1.15em';
+              const incWidth = isMobile ? 'width:calc(100% - 12px);margin:0 6px 10px 6px;box-sizing:border-box;' : '';
+              // FORCED WHITE BACKGROUND
+              highlightsIncludesHtml += `<div class="includes-box" style="background:#ffffff !important;background-color:#ffffff !important;${incWidth}padding:${incPad};border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
+              highlightsIncludesHtml += `<h3 style="margin:0 0 15px 0;color:#2e7d32;font-size:${incHead};font-weight:700;">✅ ${t('whats_included')}</h3>`;
               let formattedIncludes = (data.includes || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.5;color:#2c3e50;">${formattedIncludes}</div>`;
+              highlightsIncludesHtml += `<div style="font-size:${incText};line-height:1.6;color:#2c3e50;">${formattedIncludes}</div>`;
               highlightsIncludesHtml += '</div>';
             }
             
@@ -15062,185 +15070,7 @@
             }
           }
           
-          // ON MOBILE: Use EXACT SAME HTML as Quick Decision's expandTourDetails function
-          if (isMobile) {
-            // This is COPIED DIRECTLY from expandTourDetails - EXACT SAME CODE
-            let detailsHtml = '<div class="swipe-expanded-details">';
-            
-            const hasTimeInfo = data.departure_times && data.departure_times.trim();
-            const hasAgeInfo = data.age_requirements && data.age_requirements.trim() && !/\band\s+under\b/i.test(data.age_requirements);
-            const hasIdealFor = data.ideal_for && data.ideal_for.trim();
-            
-            if (hasTimeInfo) {
-              const cleanedTimes = cleanBracketFormatting(data.departure_times);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>🕐 ${t('times')}</h3>
-                  <div>${cleanedTimes}</div>
-                </div>
-              `;
-            }
-            
-            if (hasAgeInfo) {
-              const ageClass = !hasIdealFor ? 'description-section' : '';
-              const cleanedAges = cleanBracketFormatting(data.age_requirements);
-              detailsHtml += `
-                <div class="swipe-detail-section ${ageClass}">
-                  <h3>👥 ${t('ages')}</h3>
-                  <div>${cleanedAges}</div>
-                </div>
-              `;
-            }
-            
-            if (hasIdealFor) {
-              const idealClass = !hasAgeInfo ? 'description-section' : '';
-              const cleanedIdealFor = cleanBracketFormatting(data.ideal_for);
-              detailsHtml += `
-                <div class="swipe-detail-section ${idealClass}">
-                  <h3>🎯 ${t('ideal_for')}</h3>
-                  <div>${cleanedIdealFor}</div>
-                </div>
-              `;
-            }
-            
-            if (data.description) {
-              const cleanedDescription = cleanBracketFormatting(data.description);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>📝 ${t('about_this_tour')}</h3>
-                  <div>${cleanedDescription}</div>
-                </div>
-              `;
-            }
-            
-            if (data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A') {
-              const formattedItinerary = cleanBracketFormatting(data.itinerary);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>📅 ${t('itinerary')}</h3>
-                  <div>${formattedItinerary}</div>
-                </div>
-              `;
-            }
-            
-            if (data.menu && data.menu.trim() && data.menu !== 'N/A') {
-              const formattedMenu = cleanBracketFormatting(data.menu);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>🍽️ ${t('menu')}</h3>
-                  <div>${formattedMenu}</div>
-                </div>
-              `;
-            }
-            
-            if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
-              const formattedInfo = cleanBracketFormatting(data.important_information);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>⚠️ ${t('important_information')}</h3>
-                  <div>${formattedInfo}</div>
-                </div>
-              `;
-            }
-            
-            const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
-            const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
-            
-            if (hasBring) {
-              const formattedBring = cleanBracketFormatting(data.what_to_bring);
-              const bringClass = !hasExtra ? 'description-section' : '';
-              detailsHtml += `
-                <div class="swipe-detail-section ${bringClass}">
-                  <h3>🎒 ${t('what_to_bring')}</h3>
-                  <div>${formattedBring}</div>
-                </div>
-              `;
-            }
-            
-            if (hasExtra) {
-              const formattedExtra = cleanBracketFormatting(data.whats_extra);
-              const extraClass = !hasBring ? 'description-section' : '';
-              detailsHtml += `
-                <div class="swipe-detail-section ${extraClass}">
-                  <h3>💰 ${t('whats_extra')}</h3>
-                  <div>${formattedExtra}</div>
-                </div>
-              `;
-            }
-            
-            if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
-              const formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>📋 ${t('cancellation_policy')}</h3>
-                  <div>${formattedPolicy}</div>
-                </div>
-              `;
-            }
-            
-            if (data.departure_location && data.departure_location.trim()) {
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3>📍 ${t('departure_location')}</h3>
-                  <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${data.departure_location}</div>
-                  <div style="width: 100%; height: 350px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
-                    <iframe 
-                      width="100%" 
-                      height="100%"
-                      frameborder="0" 
-                      style="border:0; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14"
-                      allowfullscreen>
-                    </iframe>
-                  </div>
-                  <div style="color: #2c3e50; font-size: 1.05em;">Please arrive at least 15 minutes before departure time.</div>
-                </div>
-              `;
-            }
-            
-            if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
-              detailsHtml += `
-                <div class="swipe-detail-section description-section">
-                  <h3 style="margin-bottom: 12px;">⭐ ${t('customer_reviews')}</h3>
-                  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
-                    <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${data.reviews.overall_rating.toFixed(1)}</div>
-                    <div style="display: flex; flex-direction: column; gap: 3px;">
-                      <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
-                      <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
-                    </div>
-                  </div>
-                  <div class="swipe-reviews-grid">
-              `;
-              
-              if (data.reviews.reviews && data.reviews.reviews.length > 0) {
-                data.reviews.reviews.slice(0, 10).forEach(review => {
-                  detailsHtml += `
-                    <div class="swipe-review-card">
-                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                        <strong style="font-size: 1.15em; color: #2c3e50;">${review.author || 'Customer'}</strong>
-                        ${review.rating ? `<span style="color: #ffa500; font-size: 1.3em; white-space: nowrap; margin-left: 10px;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
-                      </div>
-                      ${review.title ? `<div style="font-weight: 600; color: #0077b6; margin-bottom: 10px; font-size: 1.1em; line-height: 1.3;">${review.title}</div>` : ''}
-                      ${review.text ? `<p style="margin: 0 0 10px 0; color: #2c3e50; line-height: 1.6; font-size: 1.05em;">${review.text}</p>` : ''}
-                      ${review.date ? `<div style="font-size: 0.9em; color: #999; margin-top: auto;">${review.date}</div>` : ''}
-                    </div>
-                  `;
-                });
-              }
-              
-              detailsHtml += '</div>';
-              
-              if (data.reviews.source_url) {
-                detailsHtml += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;display:block;margin-top:15px;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
-              }
-              detailsHtml += '</div>';
-            }
-            
-            detailsHtml += '</div>';
-            document.getElementById('detail-info').innerHTML = detailsHtml;
-          } else {
-            document.getElementById('detail-info').innerHTML = info;
-          }
+          document.getElementById('detail-info').innerHTML = info;
           
           // Initialize mini map if location exists - wait longer for DOM to be ready
           if (window.pendingMiniMap) {
@@ -15586,226 +15416,6 @@
             filterByCompany(companyKey, companyName, key); // Pass the current tour key
           };
         });
-    }
-    
-    // MOBILE: Open tour detail using Quick Decision overlay (same exact styling)
-    async function openTourDetailMobile(key) {
-      console.log('📱 openTourDetailMobile called with key:', key);
-      
-      // Add to navigation history
-      addToNavigationHistory('tour-' + key);
-      
-      // Update URL hash
-      window.location.hash = `tour/${key}`;
-      
-      // Hide ALL other pages EXCEPT video-question-page (which contains the overlay)
-      document.querySelectorAll('.page').forEach(page => {
-        if (!page.classList.contains('video-question-page')) {
-          page.style.display = 'none';
-          page.classList.remove('active');
-        }
-      });
-      
-      // Show the video-question-page (parent of swipe overlay) but hide its other content
-      const videoPage = document.querySelector('.video-question-page');
-      if (videoPage) {
-        videoPage.style.display = 'block';
-        videoPage.classList.add('active');
-        // Hide internal elements except overlay
-        const startScreen = document.getElementById('video-start-screen');
-        const questionContainer = document.getElementById('video-question-container');
-        const progressContainer = document.getElementById('vq-progress-container');
-        const backBtn = document.getElementById('vq-back-btn');
-        if (startScreen) startScreen.style.display = 'none';
-        if (questionContainer) questionContainer.style.display = 'none';
-        if (progressContainer) progressContainer.style.display = 'none';
-        if (backBtn) backBtn.style.display = 'none';
-      }
-      
-      // Show the swipe results overlay
-      const swipeOverlay = document.getElementById('swipe-results-overlay');
-      if (!swipeOverlay) {
-        console.error('Swipe overlay not found, falling back to desktop mode');
-        window.location.reload();
-        return;
-      }
-      
-      // Set high z-index to appear above everything
-      swipeOverlay.style.zIndex = '999999';
-      
-      // Fetch tour data
-      let tourData;
-      try {
-        tourData = await fetchTourDetails(key);
-        if (!tourData) {
-          throw new Error('No tour data returned');
-        }
-      } catch (err) {
-        console.error('Failed to fetch tour data:', err);
-        // Show overlay anyway with error message
-        swipeOverlay.style.display = 'flex';
-        swipeOverlay.classList.add('active');
-        const scrollableContent = document.getElementById('swipe-scrollable-content');
-        if (scrollableContent) {
-          scrollableContent.innerHTML = '<div class="swipe-detail-section description-section"><h3>Error</h3><div>Failed to load tour details. Please try again.</div></div>';
-        }
-        return;
-      }
-      
-      // Populate the swipe card header
-      const cardStack = document.getElementById('swipe-card-stack');
-      if (cardStack) {
-        cardStack.innerHTML = `
-          <div class="swipe-card-header">
-            <h2>${tourData.name}</h2>
-            <span class="company-chip">🏢 ${tourData.company}</span>
-          </div>
-          <div class="swipe-gallery-wrapper">
-            ${tourData.images && tourData.images.length > 0 ? 
-              `<div class="swipe-gallery-spread">
-                ${tourData.images.slice(0, 5).map((img, i) => `<img src="${img}" alt="Tour image ${i+1}" class="swipe-gallery-image" style="--i:${i}">`).join('')}
-              </div>` : 
-              `<img src="${tourData.thumbnail || '/static/placeholder.jpg'}" alt="${tourData.name}" class="swipe-gallery-image">`
-            }
-          </div>
-        `;
-      }
-      
-      // Populate highlights/includes
-      const infoSections = document.getElementById('swipe-info-sections');
-      if (infoSections) {
-        let infoHtml = '';
-        if (tourData.highlights) {
-          infoHtml += `<div class="swipe-info-card highlights"><h4>⭐ ${t('highlights')}</h4><div>${cleanBracketFormatting(tourData.highlights)}</div></div>`;
-        }
-        if (tourData.includes) {
-          infoHtml += `<div class="swipe-info-card includes"><h4>✅ ${t('whats_included')}</h4><div>${cleanBracketFormatting(tourData.includes)}</div></div>`;
-        }
-        infoSections.innerHTML = infoHtml;
-      }
-      
-      // Use the EXACT same expandTourDetails function for the details
-      const scrollableContent = document.getElementById('swipe-scrollable-content');
-      if (scrollableContent) {
-        // Generate details HTML exactly like Quick Decision mode
-        let detailsHtml = '<div class="swipe-expanded-details">';
-        
-        // Pricing
-        if (tourData.price_tiers || tourData.price_adult) {
-          const priceText = tourData.price_tiers ? tourData.price_tiers.split('|')[0] : `${t('adult')}: ${tourData.price_adult}`;
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>💰 ${t('pricing')}</h3><div class="pricing-display">${priceText}</div></div>`;
-        }
-        
-        // Duration
-        if (tourData.duration && tourData.duration !== 'N/A') {
-          detailsHtml += `<div class="swipe-detail-section"><h3>⏱️ ${t('duration')}</h3><div>${tourData.duration}</div></div>`;
-        }
-        
-        // Times
-        if (tourData.departure_times && tourData.departure_times.trim()) {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>🕐 ${t('times')}</h3><div>${cleanBracketFormatting(tourData.departure_times)}</div></div>`;
-        }
-        
-        // Ages & Ideal For
-        const hasAgeInfo = tourData.age_requirements && tourData.age_requirements.trim() && tourData.age_requirements !== 'N/A';
-        const hasIdealFor = tourData.ideal_for && tourData.ideal_for.trim() && tourData.ideal_for !== 'N/A';
-        if (hasAgeInfo) {
-          const ageClass = !hasIdealFor ? 'description-section' : '';
-          detailsHtml += `<div class="swipe-detail-section ${ageClass}"><h3>👥 ${t('ages')}</h3><div>${cleanBracketFormatting(tourData.age_requirements)}</div></div>`;
-        }
-        if (hasIdealFor) {
-          const idealClass = !hasAgeInfo ? 'description-section' : '';
-          detailsHtml += `<div class="swipe-detail-section ${idealClass}"><h3>🎯 ${t('ideal_for')}</h3><div>${cleanBracketFormatting(tourData.ideal_for)}</div></div>`;
-        }
-        
-        // About This Tour
-        if (tourData.description) {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>📝 ${t('about_this_tour')}</h3><div>${cleanBracketFormatting(tourData.description)}</div></div>`;
-        }
-        
-        // Itinerary
-        if (tourData.itinerary && tourData.itinerary.trim() && tourData.itinerary !== 'N/A') {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>📅 ${t('itinerary')}</h3><div>${cleanBracketFormatting(tourData.itinerary)}</div></div>`;
-        }
-        
-        // Menu
-        if (tourData.menu && tourData.menu.trim() && tourData.menu !== 'N/A') {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>🍽️ ${t('menu')}</h3><div>${cleanBracketFormatting(tourData.menu)}</div></div>`;
-        }
-        
-        // Important Information
-        if (tourData.important_information && tourData.important_information.trim() && tourData.important_information !== 'N/A' && tourData.important_information !== 'null') {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>⚠️ ${t('important_information')}</h3><div>${cleanBracketFormatting(tourData.important_information)}</div></div>`;
-        }
-        
-        // What to Bring & What's Extra
-        const hasBring = tourData.what_to_bring && tourData.what_to_bring.trim() && tourData.what_to_bring !== 'N/A';
-        const hasExtra = tourData.whats_extra && tourData.whats_extra.trim() && tourData.whats_extra !== 'N/A';
-        if (hasBring) {
-          const bringClass = !hasExtra ? 'description-section' : '';
-          detailsHtml += `<div class="swipe-detail-section ${bringClass}"><h3>🎒 ${t('what_to_bring')}</h3><div>${cleanBracketFormatting(tourData.what_to_bring)}</div></div>`;
-        }
-        if (hasExtra) {
-          const extraClass = !hasBring ? 'description-section' : '';
-          detailsHtml += `<div class="swipe-detail-section ${extraClass}"><h3>💰 ${t('whats_extra')}</h3><div>${cleanBracketFormatting(tourData.whats_extra)}</div></div>`;
-        }
-        
-        // Cancellation Policy
-        if (tourData.cancellation_policy && tourData.cancellation_policy.trim() && tourData.cancellation_policy !== 'N/A') {
-          detailsHtml += `<div class="swipe-detail-section description-section"><h3>📋 ${t('cancellation_policy')}</h3><div>${cleanBracketFormatting(tourData.cancellation_policy)}</div></div>`;
-        }
-        
-        // Departure Location
-        if (tourData.departure_location && tourData.departure_location.trim()) {
-          detailsHtml += `
-            <div class="swipe-detail-section description-section">
-              <h3>📍 ${t('departure_location')}</h3>
-              <div style="font-weight: 600; margin-bottom: 15px;">${tourData.departure_location}</div>
-              <div style="width: 100%; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
-                <iframe width="100%" height="100%" frameborder="0" style="border:0;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(tourData.departure_location)}&zoom=14" allowfullscreen></iframe>
-              </div>
-            </div>`;
-        }
-        
-        detailsHtml += '</div>';
-        scrollableContent.innerHTML = detailsHtml;
-      }
-      
-      // Set up buttons - Book Now goes to booking, Back goes to home
-      const acceptBtn = document.getElementById('accept-btn');
-      if (acceptBtn) {
-        acceptBtn.querySelector('.swipe-btn-text').textContent = t('book_now');
-        acceptBtn.querySelector('.swipe-btn-icon').textContent = '✓';
-        acceptBtn.onclick = () => {
-          // Open booking URL
-          if (tourData.booking_url) {
-            window.open(tourData.booking_url, '_blank');
-          }
-        };
-      }
-      
-      const rejectBtn = document.getElementById('reject-btn');
-      if (rejectBtn) {
-        rejectBtn.querySelector('.swipe-btn-text').textContent = t('back') || 'Back';
-        rejectBtn.querySelector('.swipe-btn-icon').textContent = '←';
-        rejectBtn.onclick = () => {
-          // Go back to home
-          swipeOverlay.classList.remove('active');
-          goToHomePage();
-        };
-      }
-      
-      // Show the overlay
-      swipeOverlay.style.display = 'flex';
-      swipeOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('video-bg-active');
-      
-      // Hide skip button since we're not in swipe mode
-      const skipBtn = document.getElementById('skip-to-list-btn');
-      if (skipBtn) skipBtn.style.display = 'none';
-      
-      console.log('📱 Mobile tour detail overlay shown');
     }
     
     function filterByCompany(companyKey, companyName, fromTourKey = null) {
