@@ -6906,30 +6906,49 @@
         align-items: stretch !important; /* Override desktop centering */
       }
       
-      /* Tour detail uses Quick Decision styling on mobile - swipe-expanded-details handles layout */
+      /* Tour detail uses EXACT Quick Decision styling on mobile */
       .tour-detail-page #detail-info {
-        padding: 0 10px !important;
+        padding: 0 15px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+      
+      /* Make swipe-expanded-details match Quick Decision exactly */
+      .tour-detail-page .swipe-expanded-details {
+        width: 100% !important;
+        max-width: 900px !important;
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+        gap: 12px !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       
       /* About section styling */
       .tour-detail-page #about-tour-section,
       section#about-tour-section {
-        margin: 0 10px 12px 10px !important;
+        margin: 0 15px 12px 15px !important;
         box-sizing: border-box !important;
       }
       
       /* Info grid for highlights/includes */
       .tour-detail-page #info-grid {
-        padding: 0 10px !important;
+        padding: 0 15px !important;
         width: 100% !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
       }
       
-      .tour-detail-page .highlights-box,
-      .tour-detail-page .includes-box {
+      .tour-detail-page #info-grid .highlights-box,
+      .tour-detail-page #info-grid .includes-box {
+        width: 100% !important;
+        max-width: 900px !important;
         margin-bottom: 12px !important;
       }
       
