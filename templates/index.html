@@ -4321,11 +4321,8 @@
       height: 100% !important;
     }
     
-    /* HIDE all other pages when tour detail is open */
-    body:has(.tour-detail-page.active) .page.home-page,
-    body:has(.tour-detail-page.active) .page.language-selection-screen,
-    body:has(.tour-detail-page.active) .page.video-start-screen,
-    body:has(.tour-detail-page.active) .page:not(.tour-detail-page) {
+    /* HIDE home page when tour detail is open */
+    body:has(.tour-detail-page.active) .page.home-page {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
