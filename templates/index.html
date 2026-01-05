@@ -737,20 +737,20 @@
         margin-bottom: 6px !important;
       }
       
-      /* Tour detail page sections - consolidated width rule */
+      /* Tour detail page sections - MATCH QUICK DECISION */
       .tour-detail-page .tour-hero,
       .tour-detail-page .pricing-section,
       .tour-detail-page .info-grid,
       .tour-detail-page .details-section,
       .tour-detail-page #about-tour-section {
-        width: calc(100% - 12px) !important;
-        max-width: calc(100% - 12px) !important;
-        margin: 0 6px 10px 6px !important;
+        width: calc(100% - 30px) !important;
+        max-width: 900px !important;
+        margin: 0 15px 12px 15px !important;
         box-sizing: border-box !important;
       }
       
       .tour-detail-page .pricing-section {
-        padding: 10px !important;
+        padding: 15px !important;
       }
       
       .tour-detail-page .price-row,
@@ -6895,15 +6895,17 @@
          TOUR DETAIL - FULL WIDTH EDGE TO EDGE
          ============================================ */
       
-      /* Main container - full width */
+      /* Main container - MATCH QUICK DECISION: centered content */
       .tour-detail-page .tour-detail-main,
       .tour-detail-page main {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 0 !important;
+        padding: 0 15px !important;
         margin: 0 !important;
         box-sizing: border-box !important;
-        align-items: stretch !important; /* Override desktop centering */
+        align-items: center !important;
+        display: flex !important;
+        flex-direction: column !important;
       }
       
       /* Tour detail uses EXACT Quick Decision styling on mobile */
