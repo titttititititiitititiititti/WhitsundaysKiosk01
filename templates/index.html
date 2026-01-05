@@ -6908,7 +6908,7 @@
         flex-direction: column !important;
       }
       
-      /* Tour detail uses EXACT Quick Decision styling on mobile */
+      /* Tour detail page - MATCH QUICK DECISION STYLING */
       .tour-detail-page #detail-info {
         padding: 0 15px !important;
         width: 100% !important;
@@ -6916,24 +6916,44 @@
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
+        gap: 12px !important;
       }
       
-      /* Make swipe-expanded-details match Quick Decision exactly */
-      .tour-detail-page .swipe-expanded-details {
+      /* All sections inside detail-info - MATCH swipe-detail-section */
+      .tour-detail-page #detail-info > div {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 20px 25px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+        box-sizing: border-box !important;
         width: 100% !important;
-        max-width: 900px !important;
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-        gap: 12px !important;
-        padding: 0 !important;
+      }
+      
+      .tour-detail-page #detail-info > div h3 {
+        margin: 0 0 8px 0 !important;
+        font-size: 1.05em !important;
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+      }
+      
+      .tour-detail-page #detail-info > div p,
+      .tour-detail-page #detail-info > div div {
         margin: 0 !important;
+        line-height: 1.5 !important;
+        color: #2c3e50 !important;
+        font-size: 0.95em !important;
       }
       
       /* About section styling */
       .tour-detail-page #about-tour-section,
       section#about-tour-section {
         margin: 0 15px 12px 15px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 20px 25px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
         box-sizing: border-box !important;
       }
       
@@ -6944,14 +6964,65 @@
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
+        gap: 12px !important;
       }
       
+      /* Highlights and Includes boxes - WHITE BACKGROUND */
       .tour-detail-page #info-grid .highlights-box,
-      .tour-detail-page #info-grid .includes-box {
+      .tour-detail-page #info-grid .includes-box,
+      .tour-detail-page .highlights-box,
+      .tour-detail-page .includes-box {
         width: 100% !important;
-        max-width: 900px !important;
-        margin-bottom: 12px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 20px 25px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Map container fix */
+      .tour-detail-page #detail-info iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 180px !important;
+        border-radius: 12px !important;
+      }
+      
+      /* swipe-detail-section inside tour-detail-page */
+      .tour-detail-page .swipe-detail-section,
+      .tour-detail-page .swipe-expanded-details > div {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 20px 25px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+      }
+      
+      .tour-detail-page .swipe-detail-section h3 {
+        margin: 0 0 8px 0 !important;
+        font-size: 1.05em !important;
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+      }
+      
+      .tour-detail-page .swipe-detail-section > div,
+      .tour-detail-page .swipe-detail-section p {
+        margin: 0 !important;
+        line-height: 1.5 !important;
+        color: #2c3e50 !important;
+        font-size: 0.95em !important;
+      }
+      
+      /* swipe-expanded-details container */
+      .tour-detail-page .swipe-expanded-details {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+        padding: 0 !important;
       }
       
       /* Hero section */
@@ -14620,13 +14691,8 @@
       console.log('   isInVideoFlow:', isInVideoFlow);
       console.log('   video-bg-active class present:', document.body.classList.contains('video-bg-active'));
       
-      // MOBILE: Use Quick Decision overlay instead of tour-detail-page
+      // Mobile uses same tour-detail-page but with Quick Decision CSS styling
       const isMobile = window.innerWidth <= 768;
-      if (isMobile) {
-        console.log('📱 Mobile detected - using Quick Decision overlay');
-        openTourDetailMobile(key);
-        return;
-      }
       
       // Add to navigation history
       addToNavigationHistory('tour-' + key);
@@ -15151,12 +15217,47 @@
               mobileInfo += `
                 <div class="swipe-detail-section description-section">
                   <h3>📍 ${t('departure_location')}</h3>
-                  <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50;">${data.departure_location}</div>
-                  <div style="width: 100%; height: 250px; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
-                    <iframe width="100%" height="100%" frameborder="0" style="border:0;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14" allowfullscreen></iframe>
+                  <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50;">${data.departure_location}</div>
+                  <div style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);">
+                    <iframe width="100%" height="180" frameborder="0" style="border:0;display:block;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14" allowfullscreen></iframe>
                   </div>
-                  <div style="color: #2c3e50; font-size: 0.95em; margin-top: 10px;">Please arrive at least 15 minutes before departure.</div>
+                  <div style="color: #666; font-size: 0.85em; margin-top: 8px;">Please arrive at least 15 minutes before departure.</div>
                 </div>`;
+            }
+            
+            // Reviews section
+            if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
+              mobileInfo += `
+                <div class="swipe-detail-section description-section">
+                  <h3>⭐ ${t('customer_reviews')}</h3>
+                  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 1.8em; font-weight: 700; color: #0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>
+                    <div>
+                      <div style="font-size: 1.1em; color: #ffa500;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
+                      <div style="color: #666; font-size: 0.85em;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
+                    </div>
+                  </div>`;
+              
+              if (data.reviews.reviews && data.reviews.reviews.length > 0) {
+                mobileInfo += '<div style="display:flex;flex-direction:column;gap:10px;">';
+                data.reviews.reviews.slice(0, 3).forEach(review => {
+                  mobileInfo += `
+                    <div style="background:#f8f9fa;padding:12px;border-radius:10px;">
+                      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <strong style="color:#2c3e50;">${review.author || 'Customer'}</strong>
+                        ${review.rating ? `<span style="color:#ffa500;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
+                      </div>
+                      ${review.title ? `<div style="font-weight:600;color:#0077b6;margin-bottom:6px;">${review.title}</div>` : ''}
+                      ${review.text ? `<p style="margin:0;color:#2c3e50;font-size:0.9em;line-height:1.4;">${review.text.substring(0, 150)}${review.text.length > 150 ? '...' : ''}</p>` : ''}
+                    </div>`;
+                });
+                mobileInfo += '</div>';
+              }
+              
+              if (data.reviews.source_url) {
+                mobileInfo += `<a href="${data.reviews.source_url}" target="_blank" style="display:block;margin-top:10px;color:#0077b6;font-weight:600;font-size:0.9em;">Read all ${data.reviews.review_count} reviews →</a>`;
+              }
+              mobileInfo += '</div>';
             }
             
             mobileInfo += '</div>';
