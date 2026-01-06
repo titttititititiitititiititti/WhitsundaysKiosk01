@@ -20891,10 +20891,8 @@
         ttsAudio.pause();
         ttsAudio.currentTime = 0;
         
-        // Start orb animation immediately (shows activity while loading)
-        if (window.aiOrb) {
-          window.aiOrb.startSpeaking();
-        }
+        // Don't start animation yet - wait for actual audio to play
+        // The 'play' event listener will trigger startSpeaking
         
         // Request TTS from server
         console.log('📡 Fetching TTS from /api/tts...');
@@ -20997,14 +20995,9 @@
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
       
-      // Start visualizer animation during typing
-      console.log('✨ Checking for visualizer:', window.particleVisualizer);
-      if (window.particleVisualizer) {
-        console.log('✨ Calling startSpeaking on visualizer');
-        window.particleVisualizer.startSpeaking();
-      } else {
-        console.warn('⚠️ No visualizer instance found!');
-      }
+      // Don't start speaking yet - wait for actual audio to play
+      // This prevents the flicker before speech starts
+      console.log('✨ Visualizer ready, waiting for audio to start...');
       
       // Wait 1.5 seconds
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -21031,9 +21024,13 @@
             console.log('✅ Welcome audio connected to visualizer');
           }
           
-          welcomeAudio.currentTime = 0;
-          await welcomeAudio.play();
-          console.log('🔊 Welcome audio playing');
+          // Start visualizer ONLY when audio actually starts playing
+          welcomeAudio.onplay = () => {
+            console.log('🔊 Welcome audio started - activating visualizer');
+            if (window.particleVisualizer) {
+              window.particleVisualizer.startSpeaking();
+            }
+          };
           
           // Stop visualizer when audio ends
           welcomeAudio.onended = () => {
@@ -21042,6 +21039,11 @@
               window.particleVisualizer.stopSpeaking();
             }
           };
+          
+          welcomeAudio.currentTime = 0;
+          await welcomeAudio.play();
+          console.log('🔊 Welcome audio playing');
+          
         } catch (error) {
           console.error('Welcome audio error:', error);
           if (window.particleVisualizer) {
@@ -21049,10 +21051,8 @@
           }
         }
       } else {
-        // No audio, stop visualizer after a moment
-        setTimeout(() => {
-          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-        }, 2000);
+        // No audio available
+        console.log('⚠️ No welcome audio found');
       }
     }
     
