@@ -482,20 +482,24 @@ class AIOrb {
   }
   
   show() {
-    this.container.classList.add('visible');
-    this.container.classList.remove('hidden');
+    if (this.container) {
+      this.container.classList.remove('hidden');
+      console.log('🔮 Orb shown');
+    }
   }
   
   hide() {
-    this.container.classList.remove('visible');
-    this.container.classList.add('hidden');
+    if (this.container) {
+      this.container.classList.add('hidden');
+      console.log('🔮 Orb hidden');
+    }
   }
   
   toggle() {
-    if (this.container.classList.contains('visible')) {
-      this.hide();
-    } else {
+    if (this.container.classList.contains('hidden')) {
       this.show();
+    } else {
+      this.hide();
     }
   }
   
@@ -527,21 +531,34 @@ let aiOrb = null;
  * Initialize the AI Orb visualizer
  */
 function initAIOrb() {
-  if (aiOrb) {
-    console.log('AI Orb already initialized');
-    return aiOrb;
-  }
-  
   const container = document.getElementById('ai-orb-container');
   if (!container) {
-    console.log('Orb container not found, will init when available');
+    console.log('🔮 Orb container not found, will init when available');
     return null;
   }
   
-  aiOrb = new AIOrb('ai-orb-container');
-  window.aiOrb = aiOrb;
+  // If already initialized, just return existing instance
+  if (aiOrb && aiOrb.renderer) {
+    console.log('🔮 AI Orb already initialized, returning existing');
+    container.classList.remove('hidden');
+    return aiOrb;
+  }
   
-  return aiOrb;
+  console.log('🔮 Creating new AI Orb instance...');
+  
+  try {
+    aiOrb = new AIOrb('ai-orb-container');
+    window.aiOrb = aiOrb;
+    
+    // Make sure container is visible
+    container.classList.remove('hidden');
+    
+    console.log('🔮 AI Orb initialized successfully');
+    return aiOrb;
+  } catch (error) {
+    console.error('🔮 Error initializing orb:', error);
+    return null;
+  }
 }
 
 /**
