@@ -11175,10 +11175,10 @@
         continueBtn.style.opacity = '1';
         continueBtn.style.transform = 'translateY(0)';
         
-        // Auto-scroll to make continue button visible on mobile
+        // Subtle scroll to make continue button visible on mobile
         if (window.innerWidth <= 768) {
           setTimeout(() => {
-            continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            continueBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }, 100);
         }
       }, 10);
@@ -11259,9 +11259,25 @@
       const tourCounter = document.getElementById('vq-tour-counter');
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       const videoQuestionPage = document.getElementById('video-question-page');
+      const questionContainer = document.getElementById('video-question-container');
       
       // Add class to show header on results
-      if (videoQuestionPage) videoQuestionPage.classList.add('showing-results');
+      if (videoQuestionPage) {
+        videoQuestionPage.classList.add('showing-results');
+        // Also explicitly show the header
+        const header = videoQuestionPage.querySelector('.kiosk-header');
+        if (header) {
+          header.style.display = 'flex';
+          header.style.visibility = 'visible';
+          header.style.height = 'auto';
+          header.style.overflow = 'visible';
+        }
+      }
+      
+      // Hide questionnaire container
+      if (questionContainer) {
+        questionContainer.style.display = 'none';
+      }
       
       if (questionCard) questionCard.classList.add('exit-animation');
       if (backBtn) backBtn.style.opacity = '0';
