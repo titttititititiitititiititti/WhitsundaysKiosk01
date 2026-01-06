@@ -11235,12 +11235,12 @@
     <!-- Chat messages container -->
     <div class="ai-chat-container" id="ai-chat-container">
       <div class="ai-messages" id="ai-messages">
-        <!-- Welcome message -->
-        <div class="ai-message assistant">
-          G'day! 🌊 Welcome to the Whitsundays - you're about to discover one of the most beautiful places on Earth! I'm here to help you find your perfect adventure. Whether you're dreaming of snorkeling the Great Barrier Reef, walking the world-famous Whitehaven Beach, or sailing through paradise - I've got you covered! What sounds exciting to you?
-        </div>
+        <!-- Welcome message will be added dynamically with animation -->
       </div>
     </div>
+    
+    <!-- Pre-recorded welcome audio -->
+    <audio id="welcome-audio" src="{{ url_for('static', filename='audio/welcome_message.mp3') }}" preload="auto"></audio>
     
     <!-- Input area at bottom -->
     <div class="ai-input-area">
@@ -20974,6 +20974,75 @@
       }
     }
     
+    // Welcome message content (with emojis)
+    const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
+    
+    /**
+     * Play the welcome message with animation and pre-recorded audio
+     */
+    async function playWelcomeMessage() {
+      const messagesContainer = document.getElementById('ai-messages');
+      if (!messagesContainer) return;
+      
+      // Clear any existing messages
+      messagesContainer.innerHTML = '';
+      
+      // Show typing indicator immediately
+      const typingMsg = document.createElement('div');
+      typingMsg.className = 'ai-message assistant typing';
+      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
+      messagesContainer.appendChild(typingMsg);
+      
+      // Wait 0.8 seconds
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Remove typing indicator and add the real message
+      typingMsg.remove();
+      
+      const welcomeMsg = document.createElement('div');
+      welcomeMsg.className = 'ai-message assistant';
+      welcomeMsg.textContent = WELCOME_MESSAGE;
+      messagesContainer.appendChild(welcomeMsg);
+      
+      // Add to conversation history
+      aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
+      
+      // Play the pre-recorded welcome audio
+      const welcomeAudio = document.getElementById('welcome-audio');
+      if (welcomeAudio) {
+        try {
+          // Connect to orb visualizer
+          if (window.aiOrb && !window.welcomeAudioConnected) {
+            window.aiOrb.connectAudio(welcomeAudio);
+            window.welcomeAudioConnected = true;
+            console.log('✅ Welcome audio connected to orb');
+          }
+          
+          // Start orb animation
+          if (window.aiOrb) {
+            window.aiOrb.startSpeaking();
+          }
+          
+          welcomeAudio.currentTime = 0;
+          await welcomeAudio.play();
+          console.log('🔊 Welcome audio playing');
+          
+          // Stop orb when audio ends
+          welcomeAudio.onended = () => {
+            console.log('🔊 Welcome audio ended');
+            if (window.aiOrb) {
+              window.aiOrb.stopSpeaking();
+            }
+          };
+        } catch (error) {
+          console.error('Welcome audio error:', error);
+          if (window.aiOrb) {
+            window.aiOrb.stopSpeaking();
+          }
+        }
+      }
+    }
+    
     // Initialize when AI assistant opens
     const originalOpenAIAssistant = window.openAIAssistant;
     window.openAIAssistant = function() {
@@ -20995,6 +21064,11 @@
           orbContainer.classList.remove('hidden');
           console.log('🔮 Orb container visible');
         }
+        
+        // Play welcome message after a small delay
+        setTimeout(() => {
+          playWelcomeMessage();
+        }, 200);
       }, 300);
     };
     

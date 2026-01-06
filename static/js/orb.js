@@ -230,46 +230,57 @@ class AIOrb {
       return;
     }
     
+    // Store reference to audio element
+    this.audioElement = audioElement;
+    
     try {
       // Create audio context if needed
       if (!this.audioContext) {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('🔊 Created new AudioContext');
       }
       
       // Resume context if suspended (required by browsers)
       if (this.audioContext.state === 'suspended') {
-        this.audioContext.resume();
+        this.audioContext.resume().then(() => {
+          console.log('🔊 AudioContext resumed');
+        });
       }
       
-      // Create analyser
+      // Create analyser if needed
       if (!this.analyser) {
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;
-        this.analyser.smoothingTimeConstant = 0.8;
+        this.analyser.smoothingTimeConstant = 0.7;
         this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+        console.log('🔊 Created analyser node');
       }
       
-      // Disconnect previous source if any
-      if (this.audioSource) {
-        try {
-          this.audioSource.disconnect();
-        } catch (e) {
-          // Ignore disconnect errors
-        }
+      // Check if this audio element already has a source
+      if (audioElement._orbSourceNode) {
+        console.log('🔊 Audio element already connected, reusing');
+        this.audioSource = audioElement._orbSourceNode;
+        this.isAudioConnected = true;
+        return;
       }
       
       // Create and connect new source
       this.audioSource = this.audioContext.createMediaElementSource(audioElement);
+      audioElement._orbSourceNode = this.audioSource; // Store reference to avoid re-creating
+      
       this.audioSource.connect(this.analyser);
       this.analyser.connect(this.audioContext.destination);
       
       this.isAudioConnected = true;
-      console.log('🔊 Audio connected to orb visualizer');
+      console.log('🔊 Audio connected to orb visualizer successfully');
       
     } catch (error) {
       console.error('Error connecting audio:', error);
-      // Audio might already be connected, that's okay
-      this.isAudioConnected = true;
+      // If error is about already connected source, that's okay
+      if (error.message && error.message.includes('already connected')) {
+        this.isAudioConnected = true;
+        console.log('🔊 Audio was already connected');
+      }
     }
   }
   
@@ -278,7 +289,14 @@ class AIOrb {
    */
   startSpeaking() {
     this.isSpeaking = true;
+    this.targetAmplitude = 0.3; // Start with some amplitude for immediate feedback
     this.updateUIState(true);
+    
+    // Resume audio context if needed
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    
     console.log('🔮 Orb speaking...');
   }
   
@@ -288,6 +306,7 @@ class AIOrb {
   stopSpeaking() {
     this.isSpeaking = false;
     this.targetAmplitude = 0;
+    this.currentAmplitude = 0;
     this.updateUIState(false);
     console.log('🔮 Orb idle');
   }
@@ -315,20 +334,49 @@ class AIOrb {
    * Calculate RMS amplitude from audio data
    */
   getAmplitude() {
-    if (!this.isAudioConnected || !this.analyser || !this.isSpeaking) {
+    // If not speaking, return 0
+    if (!this.isSpeaking) {
       return 0;
     }
     
-    this.analyser.getByteFrequencyData(this.dataArray);
-    
-    // Calculate RMS
-    let sum = 0;
-    for (let i = 0; i < this.dataArray.length; i++) {
-      sum += this.dataArray[i] * this.dataArray[i];
+    // If no analyser connected, return simulated amplitude for visual feedback
+    if (!this.isAudioConnected || !this.analyser) {
+      // Return simulated pulsing when speaking but no audio connected
+      const time = this.clock.getElapsedTime();
+      return 0.3 + Math.sin(time * 8) * 0.2;
     }
-    const rms = Math.sqrt(sum / this.dataArray.length) / 255;
     
-    return rms;
+    try {
+      // Resume audio context if needed
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      
+      this.analyser.getByteFrequencyData(this.dataArray);
+      
+      // Calculate RMS with emphasis on voice frequencies (85-255 Hz range, indices ~2-15)
+      let sum = 0;
+      let count = 0;
+      for (let i = 2; i < Math.min(30, this.dataArray.length); i++) {
+        sum += this.dataArray[i] * this.dataArray[i];
+        count++;
+      }
+      const rms = Math.sqrt(sum / count) / 255;
+      
+      // Boost the signal for better visual response
+      const boostedRms = Math.min(1, rms * 2.5);
+      
+      // If we're getting no data but supposed to be speaking, use simulated
+      if (boostedRms < 0.01 && this.isSpeaking) {
+        const time = this.clock.getElapsedTime();
+        return 0.25 + Math.sin(time * 6) * 0.15;
+      }
+      
+      return boostedRms;
+    } catch (e) {
+      console.warn('Error getting amplitude:', e);
+      return 0;
+    }
   }
   
   /**
