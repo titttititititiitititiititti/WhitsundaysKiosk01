@@ -329,92 +329,159 @@ class ParticleVisualizer {
   }
   
   /**
-   * Draw the central glowing orb
+   * Draw the central glowing orb - 3D sphere effect
    * AUDIO DRIVES VISUAL: orb size and brightness react to amplitude
    */
   drawCentralOrb() {
-    const baseRadius = this.settings.sphereRadius * 0.35;
+    const baseRadius = this.settings.sphereRadius * 0.38;
     // AUDIO DRIVES VISUAL: orb pulses with amplitude
-    const radius = baseRadius * (1 + this.currentAmplitude * 0.3);
+    const radius = baseRadius * (1 + this.currentAmplitude * 0.25);
+    const hue = this.settings.baseHue + this.currentAmplitude * 20;
     
-    // Outer glow layers
-    const glowLayers = 5;
-    for (let i = glowLayers; i >= 0; i--) {
-      const layerRadius = radius * (1 + i * 0.25);
-      const alpha = (0.15 - i * 0.025) * (1 + this.currentAmplitude * 0.5);
-      
-      const hue = this.settings.baseHue + this.currentAmplitude * 15;
+    // === OUTER GLOW (soft ambient light) ===
+    for (let i = 4; i >= 0; i--) {
+      const glowRadius = radius * (1.8 - i * 0.15);
+      const alpha = 0.08 - i * 0.015;
       
       this.ctx.beginPath();
-      this.ctx.arc(this.centerX, this.centerY, layerRadius, 0, Math.PI * 2);
-      this.ctx.fillStyle = `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness + 10}%, ${Math.max(0, alpha)})`;
+      this.ctx.arc(this.centerX, this.centerY, glowRadius, 0, Math.PI * 2);
+      this.ctx.fillStyle = `hsla(${hue}, ${this.settings.saturation}%, 70%, ${Math.max(0, alpha * (1 + this.currentAmplitude))})`;
       this.ctx.fill();
     }
     
-    // Main orb body - gradient from center
-    const orbGradient = this.ctx.createRadialGradient(
-      this.centerX - radius * 0.3, this.centerY - radius * 0.3, 0,
-      this.centerX, this.centerY, radius
+    // === SHADOW (bottom edge for 3D depth) ===
+    const shadowGradient = this.ctx.createRadialGradient(
+      this.centerX, this.centerY + radius * 0.15, radius * 0.5,
+      this.centerX, this.centerY + radius * 0.1, radius * 1.1
+    );
+    shadowGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    shadowGradient.addColorStop(0.7, 'rgba(30, 0, 60, 0.15)');
+    shadowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, radius * 1.1, 0, Math.PI * 2);
+    this.ctx.fillStyle = shadowGradient;
+    this.ctx.fill();
+    
+    // === MAIN SPHERE BODY (3D gradient - light from top-left) ===
+    const sphereGradient = this.ctx.createRadialGradient(
+      this.centerX - radius * 0.4, this.centerY - radius * 0.4, 0,
+      this.centerX + radius * 0.1, this.centerY + radius * 0.1, radius * 1.2
     );
     
-    // AUDIO DRIVES VISUAL: colors brighten with amplitude
-    const hue = this.settings.baseHue + this.currentAmplitude * 20;
-    const brightness = this.settings.lightness + this.currentAmplitude * 20;
+    const brightness = 70 + this.currentAmplitude * 15;
     
-    orbGradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation - 20}%, 95%, 0.95)`); // Bright center
-    orbGradient.addColorStop(0.3, `hsla(${hue}, ${this.settings.saturation}%, ${brightness + 15}%, 0.9)`);
-    orbGradient.addColorStop(0.6, `hsla(${hue}, ${this.settings.saturation}%, ${brightness}%, 0.85)`);
-    orbGradient.addColorStop(1, `hsla(${hue + 10}, ${this.settings.saturation}%, ${brightness - 10}%, 0.7)`);
+    sphereGradient.addColorStop(0, `hsla(${hue - 10}, 70%, 95%, 1)`);      // Bright highlight
+    sphereGradient.addColorStop(0.15, `hsla(${hue}, 80%, ${brightness + 15}%, 0.98)`);  // Light area
+    sphereGradient.addColorStop(0.4, `hsla(${hue}, ${this.settings.saturation}%, ${brightness}%, 0.95)`);  // Mid tone
+    sphereGradient.addColorStop(0.7, `hsla(${hue + 15}, ${this.settings.saturation}%, ${brightness - 15}%, 0.9)`); // Shadow
+    sphereGradient.addColorStop(1, `hsla(${hue + 20}, ${this.settings.saturation - 10}%, ${brightness - 30}%, 0.85)`); // Dark edge
     
     this.ctx.beginPath();
     this.ctx.arc(this.centerX, this.centerY, radius, 0, Math.PI * 2);
-    this.ctx.fillStyle = orbGradient;
+    this.ctx.fillStyle = sphereGradient;
     this.ctx.fill();
     
-    // Inner bright core
-    const coreRadius = radius * 0.4;
+    // === RIM LIGHT (subtle edge highlight from behind) ===
+    const rimGradient = this.ctx.createRadialGradient(
+      this.centerX + radius * 0.5, this.centerY + radius * 0.3, 0,
+      this.centerX, this.centerY, radius
+    );
+    rimGradient.addColorStop(0, `hsla(${hue + 30}, 90%, 85%, ${0.3 + this.currentAmplitude * 0.2})`);
+    rimGradient.addColorStop(0.3, `hsla(${hue + 20}, 80%, 75%, 0.1)`);
+    rimGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, radius, 0, Math.PI * 2);
+    this.ctx.fillStyle = rimGradient;
+    this.ctx.fill();
+    
+    // === INNER GLOW (energy core) ===
+    const coreRadius = radius * 0.5;
     const coreGradient = this.ctx.createRadialGradient(
       this.centerX, this.centerY, 0,
       this.centerX, this.centerY, coreRadius
     );
     
-    coreGradient.addColorStop(0, `rgba(255, 255, 255, ${0.9 + this.currentAmplitude * 0.1})`);
-    coreGradient.addColorStop(0.5, `hsla(${hue}, 60%, 90%, ${0.6 + this.currentAmplitude * 0.3})`);
-    coreGradient.addColorStop(1, 'transparent');
+    const coreIntensity = 0.4 + this.currentAmplitude * 0.4;
+    coreGradient.addColorStop(0, `rgba(255, 255, 255, ${coreIntensity})`);
+    coreGradient.addColorStop(0.3, `hsla(${hue - 10}, 70%, 90%, ${coreIntensity * 0.7})`);
+    coreGradient.addColorStop(0.7, `hsla(${hue}, 60%, 80%, ${coreIntensity * 0.3})`);
+    coreGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
     
     this.ctx.beginPath();
     this.ctx.arc(this.centerX, this.centerY, coreRadius, 0, Math.PI * 2);
     this.ctx.fillStyle = coreGradient;
     this.ctx.fill();
     
-    // Highlight reflection
-    const highlightX = this.centerX - radius * 0.25;
-    const highlightY = this.centerY - radius * 0.25;
-    const highlightRadius = radius * 0.2;
+    // === PRIMARY HIGHLIGHT (top-left shine) ===
+    const highlightX = this.centerX - radius * 0.35;
+    const highlightY = this.centerY - radius * 0.35;
+    const highlightRadius = radius * 0.35;
     
     const highlightGradient = this.ctx.createRadialGradient(
       highlightX, highlightY, 0,
       highlightX, highlightY, highlightRadius
     );
     
-    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
-    highlightGradient.addColorStop(1, 'transparent');
+    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+    highlightGradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
+    highlightGradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.1)');
+    highlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
     
     this.ctx.beginPath();
     this.ctx.arc(highlightX, highlightY, highlightRadius, 0, Math.PI * 2);
     this.ctx.fillStyle = highlightGradient;
     this.ctx.fill();
+    
+    // === SECONDARY HIGHLIGHT (smaller, sharper) ===
+    const shine2X = this.centerX - radius * 0.45;
+    const shine2Y = this.centerY - radius * 0.45;
+    const shine2Radius = radius * 0.12;
+    
+    const shine2Gradient = this.ctx.createRadialGradient(
+      shine2X, shine2Y, 0,
+      shine2X, shine2Y, shine2Radius
+    );
+    
+    shine2Gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+    shine2Gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+    shine2Gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(shine2X, shine2Y, shine2Radius, 0, Math.PI * 2);
+    this.ctx.fillStyle = shine2Gradient;
+    this.ctx.fill();
+    
+    // === FRESNEL EDGE (bright rim on dark side for glass effect) ===
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, radius, 0, Math.PI * 2);
+    this.ctx.clip();
+    
+    const fresnelGradient = this.ctx.createRadialGradient(
+      this.centerX, this.centerY, radius * 0.7,
+      this.centerX, this.centerY, radius
+    );
+    fresnelGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    fresnelGradient.addColorStop(0.8, `hsla(${hue}, 80%, 80%, 0.1)`);
+    fresnelGradient.addColorStop(1, `hsla(${hue - 20}, 90%, 90%, ${0.2 + this.currentAmplitude * 0.15})`);
+    
+    this.ctx.fillStyle = fresnelGradient;
+    this.ctx.fillRect(this.centerX - radius, this.centerY - radius, radius * 2, radius * 2);
+    this.ctx.restore();
   }
   
   /**
    * Draw ambient glow behind particles
    * AUDIO DRIVES VISUAL: glow intensity based on amplitude
+   * Uses circular fill to avoid square edges
    */
   drawGlow() {
-    const glowIntensity = this.settings.glowIntensity + this.currentAmplitude * 0.5;
-    const glowRadius = this.settings.glowRadius * (1 + this.currentAmplitude * 0.4);
+    const glowIntensity = this.settings.glowIntensity + this.currentAmplitude * 0.4;
+    const glowRadius = this.settings.glowRadius * (1 + this.currentAmplitude * 0.3);
     
-    // Create radial gradient for glow - BRIGHTER
+    // Create radial gradient for glow - fades to fully transparent
     const gradient = this.ctx.createRadialGradient(
       this.centerX, this.centerY, 0,
       this.centerX, this.centerY, glowRadius
@@ -423,15 +490,18 @@ class ParticleVisualizer {
     // Color shifts with amplitude
     const hue = this.settings.baseHue + this.currentAmplitude * 20;
     
-    // More intense glow for visibility
-    gradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation}%, 85%, ${glowIntensity * 0.7})`);
-    gradient.addColorStop(0.2, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.5})`);
-    gradient.addColorStop(0.4, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.3})`);
-    gradient.addColorStop(0.7, `hsla(${hue + 20}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.15})`);
-    gradient.addColorStop(1, 'transparent');
+    // Glow fades completely to transparent - NO SQUARE EDGES
+    gradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation}%, 80%, ${glowIntensity * 0.5})`);
+    gradient.addColorStop(0.3, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.3})`);
+    gradient.addColorStop(0.6, `hsla(${hue + 10}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.1})`);
+    gradient.addColorStop(0.85, `hsla(${hue + 20}, ${this.settings.saturation}%, ${this.settings.lightness}%, 0.02)`);
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)'); // Fully transparent at edge
     
+    // Draw as circle, not rectangle - prevents square edges
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, glowRadius, 0, Math.PI * 2);
     this.ctx.fillStyle = gradient;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fill();
   }
   
   /**
