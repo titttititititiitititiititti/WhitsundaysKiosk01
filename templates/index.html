@@ -2460,6 +2460,215 @@
     }
     
     /* ===================================================================
+       AI ASSISTANT PAGE - Chat Interface
+       =================================================================== */
+    
+    .ai-assistant-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: transparent;
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+    }
+    
+    .ai-assistant-page.active {
+      display: flex;
+    }
+    
+    .ai-chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      padding-top: 80px;
+      padding-bottom: 200px;
+      overflow-y: auto;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .ai-messages {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding-bottom: 20px;
+    }
+    
+    .ai-message {
+      max-width: 85%;
+      padding: 15px 20px;
+      border-radius: 20px;
+      font-size: 1.1em;
+      line-height: 1.5;
+      animation: messageSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .ai-message.assistant {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a1a2e;
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .ai-message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+      border-bottom-right-radius: 5px;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+    
+    .ai-message.assistant::before {
+      content: '🤖';
+      display: block;
+      font-size: 0.8em;
+      margin-bottom: 5px;
+      opacity: 0.7;
+    }
+    
+    .ai-input-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+      padding: 20px;
+      padding-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .ai-text-input-wrapper {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      gap: 10px;
+    }
+    
+    .ai-text-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: 1em;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .ai-text-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .ai-text-input:focus {
+      border-color: #8b5cf6;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .ai-send-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      border: none;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .ai-send-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 20px rgba(139, 92, 246, 0.5);
+    }
+    
+    .ai-mic-hint {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      margin-bottom: 5px;
+    }
+    
+    .ai-mic-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      border: 4px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      font-size: 2.2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+    }
+    
+    .ai-mic-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.7);
+    }
+    
+    .ai-mic-btn.recording {
+      animation: micPulse 1s ease-in-out infinite;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-color: #fca5a5;
+    }
+    
+    @keyframes micPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5); }
+      50% { transform: scale(1.1); box-shadow: 0 12px 50px rgba(239, 68, 68, 0.8); }
+    }
+    
+    .ai-close-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10001;
+    }
+    
+    .ai-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    /* ===================================================================
        SWIPE RESULTS OVERLAY - APPEARS ON TOP OF VIDEO PAGE
        =================================================================== */
     
@@ -10068,11 +10277,11 @@
         <div class="header-left">
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
-          <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
+          <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
           <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
-          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
         </div>
         <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -10142,7 +10351,7 @@
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
         <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
-        <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); console.log('AI Assistant - Coming Soon!')">
+        <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); openAIAssistant()">
           <span id="ai-assistant-text">🤖 Talk To Our AI Assistant</span>
         </button>
         <button class="quick-decision-btn-start" id="quick-decision-btn" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
@@ -10229,10 +10438,10 @@
           <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
           <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
           <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
-          <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
+          <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
-          <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+          <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
         </div>
         <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -10668,9 +10877,9 @@
       <div class="header-left">
         <button class="back-button" id="back-arrow">←</button>
         <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
-        <button class="mobile-ai-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖</button>
+        <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
         <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
-        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="console.log('AI Assistant - Coming Soon!')">🤖 Talk To Our AI Assistant</button>
+        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
       </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
       <div class="header-right">
@@ -10756,6 +10965,35 @@
       <button class="btn-tertiary" id="share-tour-btn" style="padding: 20px 36px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Share Tour</button>
       <button class="btn-primary" id="book-now-btn" style="padding: 20px 42px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Book Now</button>
       <button class="btn-secondary" id="continue-phone-btn" style="padding: 20px 36px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Send to My Phone</button>
+    </div>
+  </div>
+  
+  <!-- AI Assistant Page -->
+  <div class="page ai-assistant-page" id="ai-assistant-page">
+    <!-- Close button -->
+    <button class="ai-close-btn" onclick="closeAIAssistant()">✕</button>
+    
+    <!-- Chat messages container -->
+    <div class="ai-chat-container" id="ai-chat-container">
+      <div class="ai-messages" id="ai-messages">
+        <!-- Welcome message -->
+        <div class="ai-message assistant">
+          G'day! I'm your AI tour guide for the Whitsundays. I can help you find the perfect tour based on your interests, budget, and travel style. What kind of adventure are you looking for today?
+        </div>
+      </div>
+    </div>
+    
+    <!-- Input area at bottom -->
+    <div class="ai-input-area">
+      <!-- Text input -->
+      <div class="ai-text-input-wrapper">
+        <input type="text" class="ai-text-input" id="ai-text-input" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendAIMessage()">
+        <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+      </div>
+      
+      <!-- Microphone button -->
+      <span class="ai-mic-hint">Tap before speaking</span>
+      <button class="ai-mic-btn" id="ai-mic-btn" onclick="toggleAIMicrophone()">🎤</button>
     </div>
   </div>
   
@@ -12125,6 +12363,95 @@
       }
       
       console.log('✅ Quick Decision mode started fresh');
+    }
+    
+    // ===================================================================
+    // AI ASSISTANT FUNCTIONS
+    // ===================================================================
+    
+    let isRecording = false;
+    let aiMessages = [];
+    
+    window.openAIAssistant = function() {
+      console.log('🤖 Opening AI Assistant');
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.classList.add('active');
+        // Focus the text input
+        setTimeout(() => {
+          const input = document.getElementById('ai-text-input');
+          if (input) input.focus();
+        }, 300);
+      }
+    }
+    
+    window.closeAIAssistant = function() {
+      console.log('🤖 Closing AI Assistant');
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.classList.remove('active');
+      }
+      // Stop recording if active
+      if (isRecording) {
+        toggleAIMicrophone();
+      }
+    }
+    
+    window.sendAIMessage = function() {
+      const input = document.getElementById('ai-text-input');
+      const messagesContainer = document.getElementById('ai-messages');
+      
+      if (!input || !messagesContainer) return;
+      
+      const message = input.value.trim();
+      if (!message) return;
+      
+      // Add user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'ai-message user';
+      userMsg.textContent = message;
+      messagesContainer.appendChild(userMsg);
+      
+      // Clear input
+      input.value = '';
+      
+      // Scroll to bottom
+      const container = document.getElementById('ai-chat-container');
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+      
+      // TODO: Send to AI backend and get response
+      // For now, show a placeholder response
+      setTimeout(() => {
+        const assistantMsg = document.createElement('div');
+        assistantMsg.className = 'ai-message assistant';
+        assistantMsg.textContent = "I'm still learning! Soon I'll be able to help you find the perfect Whitsundays tour. For now, try our Quick Decision mode for personalized recommendations!";
+        messagesContainer.appendChild(assistantMsg);
+        
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }, 1000);
+    }
+    
+    window.toggleAIMicrophone = function() {
+      const micBtn = document.getElementById('ai-mic-btn');
+      if (!micBtn) return;
+      
+      isRecording = !isRecording;
+      
+      if (isRecording) {
+        micBtn.classList.add('recording');
+        micBtn.innerHTML = '⏹️';
+        console.log('🎤 Recording started...');
+        // TODO: Start actual voice recording
+      } else {
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = '🎤';
+        console.log('🎤 Recording stopped');
+        // TODO: Process voice recording
+      }
     }
     
     function initializeApp() {
