@@ -20,18 +20,8 @@
   <!-- QR Code Generator -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
-  <!-- Three.js for Orb Visualizer -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Postprocessing scripts - order matters! -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-  
-  <!-- AI Orb Visualizer CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/orb.css') }}">
+  <!-- AI Particle Visualizer CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/particle-visualizer.css') }}">
   
   <style>
     /* ===================================================================
@@ -11220,26 +11210,11 @@
       </div>
     </header>
     
-    <!-- AI Orb Visualizer - Audio Reactive -->
-    <div class="ai-orb-container" id="ai-orb-container" style="background: transparent !important; border: none !important;">
-      <!-- Three.js canvas will be inserted here by orb.js -->
-      <div class="orb-glow-ring"></div>
-      <div class="orb-particle-halo">
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-        <div class="orb-particle"></div>
-      </div>
-      <div class="orb-status">
-        Speaking<span class="orb-speaking-dots"><span></span><span></span><span></span></span>
+    <!-- AI Particle Visualizer - Audio Reactive -->
+    <div class="ai-visualizer-container" id="ai-visualizer-container">
+      <!-- Canvas will be inserted here by particle-visualizer.js -->
+      <div class="visualizer-status">
+        Speaking<span class="speaking-dots"><span></span><span></span><span></span></span>
       </div>
     </div>
     
@@ -12697,7 +12672,7 @@
     // Display tour recommendation cards
     async function displayAITourCards(tourNames) {
       const container = document.getElementById('ai-tour-cards');
-      const orbContainer = document.getElementById('ai-orb-container');
+      const visualizerContainer = document.getElementById('ai-visualizer-container');
       if (!container) return;
       
       // Clear existing cards
@@ -12708,13 +12683,13 @@
       const limitedNames = tourNames.slice(0, 4);
       
       if (limitedNames.length === 0) {
-        // No cards - orb stays centered
-        if (orbContainer) orbContainer.classList.remove('with-cards');
+        // No cards - visualizer stays centered
+        if (visualizerContainer) visualizerContainer.classList.remove('with-cards');
         return;
       }
       
-      // Cards showing - move orb to left
-      if (orbContainer) orbContainer.classList.add('with-cards');
+      // Cards showing - move visualizer to left
+      if (visualizerContainer) visualizerContainer.classList.add('with-cards');
       
       // Find matching tours from mapTourData
       for (const name of limitedNames) {
@@ -20810,8 +20785,8 @@
     });
   </script>
   
-  <!-- AI Orb Visualizer Script -->
-  <script src="{{ url_for('static', filename='js/orb.js') }}"></script>
+  <!-- AI Particle Visualizer Script -->
+  <script src="{{ url_for('static', filename='js/particle-visualizer.js') }}"></script>
   
   <!-- ElevenLabs TTS Integration for AI Assistant -->
   <script>
@@ -20840,28 +20815,28 @@
       // Set up event listeners
       ttsAudio.addEventListener('play', () => {
         console.log('🔊 TTS started playing');
-        if (window.aiOrb) {
-          window.aiOrb.startSpeaking();
+        if (window.particleVisualizer) {
+          window.particleVisualizer.startSpeaking();
         }
       });
       
       ttsAudio.addEventListener('ended', () => {
         console.log('🔊 TTS finished');
-        if (window.aiOrb) {
-          window.aiOrb.stopSpeaking();
+        if (window.particleVisualizer) {
+          window.particleVisualizer.stopSpeaking();
         }
       });
       
       ttsAudio.addEventListener('pause', () => {
-        if (window.aiOrb) {
-          window.aiOrb.stopSpeaking();
+        if (window.particleVisualizer) {
+          window.particleVisualizer.stopSpeaking();
         }
       });
       
       ttsAudio.addEventListener('error', (e) => {
         console.error('❌ TTS audio error:', e);
-        if (window.aiOrb) {
-          window.aiOrb.stopSpeaking();
+        if (window.particleVisualizer) {
+          window.particleVisualizer.stopSpeaking();
         }
       });
       
@@ -20954,14 +20929,14 @@
         // Set audio source
         ttsAudio.src = audioUrl;
         
-        // Connect audio to orb visualizer (only once)
-        if (!ttsConnectedToOrb && window.aiOrb) {
+        // Connect audio to particle visualizer (only once)
+        if (!ttsConnectedToOrb && window.particleVisualizer) {
           try {
-            window.aiOrb.connectAudio(ttsAudio);
+            window.particleVisualizer.connectAudio(ttsAudio);
             ttsConnectedToOrb = true;
-            console.log('✅ Connected audio to orb visualizer');
+            console.log('✅ Connected audio to particle visualizer');
           } catch (e) {
-            console.warn('Could not connect audio to orb:', e);
+            console.warn('Could not connect audio to visualizer:', e);
           }
         }
         
@@ -20972,9 +20947,9 @@
         
       } catch (error) {
         console.error('❌ TTS error:', error);
-        // Stop orb animation on error
-        if (window.aiOrb) {
-          window.aiOrb.stopSpeaking();
+        // Stop visualizer animation on error
+        if (window.particleVisualizer) {
+          window.particleVisualizer.stopSpeaking();
         }
       }
     }
@@ -20988,8 +20963,8 @@
         ttsAudio.pause();
         ttsAudio.currentTime = 0;
       }
-      if (window.aiOrb) {
-        window.aiOrb.stopSpeaking();
+      if (window.particleVisualizer) {
+        window.particleVisualizer.stopSpeaking();
       }
     }
     
@@ -21022,13 +20997,13 @@
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
       
-      // Start orb animation during typing
-      console.log('🔮 Checking for orb:', window.aiOrb);
-      if (window.aiOrb) {
-        console.log('🔮 Calling startSpeaking on orb');
-        window.aiOrb.startSpeaking();
+      // Start visualizer animation during typing
+      console.log('✨ Checking for visualizer:', window.particleVisualizer);
+      if (window.particleVisualizer) {
+        console.log('✨ Calling startSpeaking on visualizer');
+        window.particleVisualizer.startSpeaking();
       } else {
-        console.warn('⚠️ No orb instance found!');
+        console.warn('⚠️ No visualizer instance found!');
       }
       
       // Wait 1.5 seconds
@@ -21049,34 +21024,34 @@
       const welcomeAudio = document.getElementById('welcome-audio');
       if (welcomeAudio) {
         try {
-          // Connect to orb visualizer
-          if (window.aiOrb && !window.welcomeAudioConnected) {
-            window.aiOrb.connectAudio(welcomeAudio);
+          // Connect to particle visualizer
+          if (window.particleVisualizer && !window.welcomeAudioConnected) {
+            window.particleVisualizer.connectAudio(welcomeAudio);
             window.welcomeAudioConnected = true;
-            console.log('✅ Welcome audio connected to orb');
+            console.log('✅ Welcome audio connected to visualizer');
           }
           
           welcomeAudio.currentTime = 0;
           await welcomeAudio.play();
           console.log('🔊 Welcome audio playing');
           
-          // Stop orb when audio ends
+          // Stop visualizer when audio ends
           welcomeAudio.onended = () => {
             console.log('🔊 Welcome audio ended');
-            if (window.aiOrb) {
-              window.aiOrb.stopSpeaking();
+            if (window.particleVisualizer) {
+              window.particleVisualizer.stopSpeaking();
             }
           };
         } catch (error) {
           console.error('Welcome audio error:', error);
-          if (window.aiOrb) {
-            window.aiOrb.stopSpeaking();
+          if (window.particleVisualizer) {
+            window.particleVisualizer.stopSpeaking();
           }
         }
       } else {
-        // No audio, stop orb after a moment
+        // No audio, stop visualizer after a moment
         setTimeout(() => {
-          if (window.aiOrb) window.aiOrb.stopSpeaking();
+          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
         }, 2000);
       }
     }
@@ -21089,18 +21064,18 @@
         originalOpenAIAssistant();
       }
       
-      // Initialize TTS and orb
+      // Initialize TTS and particle visualizer
       setTimeout(() => {
         initTTSAudio();
-        if (window.initAIOrb) {
-          const orb = window.initAIOrb();
-          console.log('🔮 Orb initialized:', orb);
+        if (window.initParticleVisualizer) {
+          const visualizer = window.initParticleVisualizer();
+          console.log('✨ Particle visualizer initialized:', visualizer);
         }
-        // Remove the orb hidden class if present
-        const orbContainer = document.getElementById('ai-orb-container');
-        if (orbContainer) {
-          orbContainer.classList.remove('hidden');
-          console.log('🔮 Orb container visible');
+        // Remove the visualizer hidden class if present
+        const visualizerContainer = document.getElementById('ai-visualizer-container');
+        if (visualizerContainer) {
+          visualizerContainer.classList.remove('hidden');
+          console.log('✨ Visualizer container visible');
         }
         
         // Play welcome message after a small delay
@@ -21110,7 +21085,7 @@
       }, 300);
     };
     
-    // Hide orb when assistant closes
+    // Hide visualizer when assistant closes
     const originalCloseAIAssistant = window.closeAIAssistant;
     window.closeAIAssistant = function() {
       console.log('🤖 Closing AI Assistant');
@@ -21127,11 +21102,11 @@
       welcomeMessagePlayed = false;
       window.welcomeAudioConnected = false;
       
-      // Reset orb position (remove with-cards class)
-      const orbContainer = document.getElementById('ai-orb-container');
-      if (orbContainer) {
-        orbContainer.classList.add('hidden');
-        orbContainer.classList.remove('with-cards');
+      // Reset visualizer position (remove with-cards class)
+      const visualizerContainer = document.getElementById('ai-visualizer-container');
+      if (visualizerContainer) {
+        visualizerContainer.classList.add('hidden');
+        visualizerContainer.classList.remove('with-cards');
       }
       
       if (originalCloseAIAssistant) {
@@ -21139,7 +21114,7 @@
       }
     };
     
-    // Also clear orb position when cards are cleared
+    // Also clear visualizer position when cards are cleared
     const originalClearCards = window.displayAITourCards;
     // Will be handled in displayAITourCards function
   </script>
