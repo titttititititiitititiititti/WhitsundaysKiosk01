@@ -11175,10 +11175,10 @@
         continueBtn.style.opacity = '1';
         continueBtn.style.transform = 'translateY(0)';
         
-        // Subtle scroll to make continue button visible on mobile
+        // Scroll to make continue button visible on mobile (at bottom of view)
         if (window.innerWidth <= 768) {
           setTimeout(() => {
-            continueBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            continueBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
           }, 100);
         }
       }, 10);
