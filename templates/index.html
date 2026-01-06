@@ -20989,6 +20989,8 @@
      * Play the welcome message with animation and pre-recorded audio
      */
     async function playWelcomeMessage() {
+      console.log('🎬 playWelcomeMessage called, welcomeMessagePlayed:', welcomeMessagePlayed);
+      
       // Prevent duplicate calls
       if (welcomeMessagePlayed) {
         console.log('⚠️ Welcome message already played, skipping');
@@ -20997,7 +20999,11 @@
       welcomeMessagePlayed = true;
       
       const messagesContainer = document.getElementById('ai-messages');
-      if (!messagesContainer) return;
+      console.log('📝 Messages container:', messagesContainer);
+      if (!messagesContainer) {
+        console.error('❌ Messages container not found!');
+        return;
+      }
       
       // Clear any existing messages completely
       messagesContainer.innerHTML = '';
@@ -21007,9 +21013,9 @@
       typingMsg.className = 'ai-message assistant typing';
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
+      console.log('⏳ Showing typing indicator...');
       
       // Don't start speaking yet - wait for actual audio to play
-      // This prevents the flicker before speech starts
       console.log('✨ Visualizer ready, waiting for audio to start...');
       
       // Wait 1.5 seconds
@@ -21017,11 +21023,13 @@
       
       // Remove typing indicator and add the real message
       typingMsg.remove();
+      console.log('📝 Adding welcome message to chat...');
       
       const welcomeMsg = document.createElement('div');
       welcomeMsg.className = 'ai-message assistant';
       welcomeMsg.textContent = WELCOME_MESSAGE;
       messagesContainer.appendChild(welcomeMsg);
+      console.log('✅ Welcome message added to DOM');
       
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
