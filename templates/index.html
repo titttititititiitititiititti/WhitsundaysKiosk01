@@ -21021,8 +21021,12 @@
       messagesContainer.appendChild(typingMsg);
       
       // Start orb animation during typing
+      console.log('🔮 Checking for orb:', window.aiOrb);
       if (window.aiOrb) {
+        console.log('🔮 Calling startSpeaking on orb');
         window.aiOrb.startSpeaking();
+      } else {
+        console.warn('⚠️ No orb instance found!');
       }
       
       // Wait 1.5 seconds

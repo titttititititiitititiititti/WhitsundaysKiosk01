@@ -306,42 +306,52 @@ class AIOrb {
   }
   
   /**
-   * Start speaking animation
+   * Start speaking animation - orb will pulse dramatically
    */
   startSpeaking() {
+    console.log('🔮 START SPEAKING - Orb activating!');
     this.isSpeaking = true;
-    this.targetAmplitude = 0.3; // Start with some amplitude for immediate feedback
+    this.targetAmplitude = 0.5; // Start with strong amplitude
+    this.currentAmplitude = 0.3; // Immediate visual feedback
     this.updateUIState(true);
     
     // Resume audio context if needed
     if (this.audioContext && this.audioContext.state === 'suspended') {
       this.audioContext.resume();
     }
-    
-    console.log('🔮 Orb speaking...');
   }
   
   /**
-   * Stop speaking animation
+   * Stop speaking animation - return to gentle breathing
    */
   stopSpeaking() {
+    console.log('🔮 STOP SPEAKING - Orb returning to idle');
     this.isSpeaking = false;
     this.targetAmplitude = 0;
-    this.currentAmplitude = 0;
+    // Smooth transition back to idle (don't instantly set to 0)
     this.updateUIState(false);
-    console.log('🔮 Orb idle');
   }
   
   /**
    * Update CSS elements for speaking state
    */
   updateUIState(speaking) {
+    console.log('🔮 updateUIState:', speaking, 'container:', this.container);
+    
+    if (!this.container) {
+      console.warn('⚠️ No container for UI state update');
+      return;
+    }
+    
     const glowRing = this.container.querySelector('.orb-glow-ring');
     const particles = this.container.querySelectorAll('.orb-particle');
     const status = this.container.querySelector('.orb-status');
     
+    console.log('🔮 Found elements - glowRing:', !!glowRing, 'particles:', particles.length, 'status:', !!status);
+    
     if (glowRing) {
       glowRing.classList.toggle('speaking', speaking);
+      console.log('🔮 Glow ring speaking class:', glowRing.classList.contains('speaking'));
     }
     
     particles.forEach(p => p.classList.toggle('speaking', speaking));
@@ -352,52 +362,54 @@ class AIOrb {
   }
   
   /**
-   * Calculate RMS amplitude from audio data
+   * Calculate amplitude - uses audio if available, otherwise simulates speech pattern
    */
   getAmplitude() {
-    // If not speaking, return 0
+    // If not speaking, return 0 (just breathing animation)
     if (!this.isSpeaking) {
       return 0;
     }
     
-    // If no analyser connected, return simulated amplitude for visual feedback
-    if (!this.isAudioConnected || !this.analyser) {
-      // Return simulated pulsing when speaking but no audio connected
-      const time = this.clock.getElapsedTime();
-      return 0.3 + Math.sin(time * 8) * 0.2;
+    const time = this.clock.getElapsedTime();
+    
+    // Try to get real audio data if connected
+    if (this.isAudioConnected && this.analyser && this.audioContext) {
+      try {
+        // Resume audio context if needed
+        if (this.audioContext.state === 'suspended') {
+          this.audioContext.resume();
+        }
+        
+        this.analyser.getByteFrequencyData(this.dataArray);
+        
+        // Calculate RMS with emphasis on voice frequencies
+        let sum = 0;
+        let count = 0;
+        for (let i = 2; i < Math.min(40, this.dataArray.length); i++) {
+          sum += this.dataArray[i] * this.dataArray[i];
+          count++;
+        }
+        const rms = Math.sqrt(sum / count) / 255;
+        
+        // If we got real audio data, use it (boosted)
+        if (rms > 0.02) {
+          return Math.min(1, rms * 3.0);
+        }
+      } catch (e) {
+        // Fall through to simulated
+      }
     }
     
-    try {
-      // Resume audio context if needed
-      if (this.audioContext && this.audioContext.state === 'suspended') {
-        this.audioContext.resume();
-      }
-      
-      this.analyser.getByteFrequencyData(this.dataArray);
-      
-      // Calculate RMS with emphasis on voice frequencies (85-255 Hz range, indices ~2-15)
-      let sum = 0;
-      let count = 0;
-      for (let i = 2; i < Math.min(30, this.dataArray.length); i++) {
-        sum += this.dataArray[i] * this.dataArray[i];
-        count++;
-      }
-      const rms = Math.sqrt(sum / count) / 255;
-      
-      // Boost the signal for better visual response
-      const boostedRms = Math.min(1, rms * 2.5);
-      
-      // If we're getting no data but supposed to be speaking, use simulated
-      if (boostedRms < 0.01 && this.isSpeaking) {
-        const time = this.clock.getElapsedTime();
-        return 0.25 + Math.sin(time * 6) * 0.15;
-      }
-      
-      return boostedRms;
-    } catch (e) {
-      console.warn('Error getting amplitude:', e);
-      return 0;
-    }
+    // SIMULATED SPEECH PATTERN - always works when speaking
+    // Create a natural-feeling speech rhythm with multiple waves
+    const wave1 = Math.sin(time * 6) * 0.2;           // Fast pulse
+    const wave2 = Math.sin(time * 2.5) * 0.15;        // Medium rhythm
+    const wave3 = Math.sin(time * 0.8) * 0.1;         // Slow variation
+    const noise = Math.random() * 0.1;                // Random variation
+    
+    // Combine for natural speech feel (0.2 to 0.75 range)
+    const simulated = 0.4 + wave1 + wave2 + wave3 + noise;
+    return Math.max(0.15, Math.min(0.85, simulated));
   }
   
   /**
@@ -476,12 +488,13 @@ class AIOrb {
     const time = this.clock.getElapsedTime();
     const delta = this.clock.getDelta();
     
-    // Get audio amplitude
+    // Get audio amplitude (real or simulated)
     const rawAmplitude = this.getAmplitude();
     
-    // Smooth amplitude changes
+    // Smooth amplitude changes - faster when speaking for responsiveness
+    const smoothing = this.isSpeaking ? 0.3 : 0.1;
     this.targetAmplitude = rawAmplitude;
-    this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * this.settings.amplitudeSmoothing;
+    this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * smoothing;
     
     // Idle breathing animation - more pronounced
     const breathing = Math.sin(time * this.settings.breathingSpeed) * this.settings.breathingAmount;
