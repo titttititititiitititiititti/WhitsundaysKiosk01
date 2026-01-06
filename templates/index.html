@@ -12639,6 +12639,32 @@
           const input = document.getElementById('ai-text-input');
           if (input) input.focus();
         }, 300);
+        
+        // Initialize TTS, visualizer, and play welcome message
+        setTimeout(() => {
+          // Initialize TTS audio
+          if (typeof initTTSAudio === 'function') {
+            initTTSAudio();
+          }
+          
+          // Initialize particle visualizer
+          if (window.initParticleVisualizer) {
+            window.initParticleVisualizer();
+          }
+          
+          // Show visualizer
+          const visualizerContainer = document.getElementById('ai-visualizer-container');
+          if (visualizerContainer) {
+            visualizerContainer.classList.remove('hidden');
+          }
+          
+          // Play welcome message
+          setTimeout(() => {
+            if (typeof playWelcomeMessage === 'function') {
+              playWelcomeMessage();
+            }
+          }, 200);
+        }, 300);
       }
     }
     
@@ -21076,35 +21102,6 @@
         console.log('⚠️ No welcome audio found');
       }
     }
-    
-    // Initialize when AI assistant opens
-    const originalOpenAIAssistant = window.openAIAssistant;
-    window.openAIAssistant = function() {
-      console.log('🤖 Opening AI Assistant with TTS');
-      if (originalOpenAIAssistant) {
-        originalOpenAIAssistant();
-      }
-      
-      // Initialize TTS and particle visualizer
-      setTimeout(() => {
-        initTTSAudio();
-        if (window.initParticleVisualizer) {
-          const visualizer = window.initParticleVisualizer();
-          console.log('✨ Particle visualizer initialized:', visualizer);
-        }
-        // Remove the visualizer hidden class if present
-        const visualizerContainer = document.getElementById('ai-visualizer-container');
-        if (visualizerContainer) {
-          visualizerContainer.classList.remove('hidden');
-          console.log('✨ Visualizer container visible');
-        }
-        
-        // Play welcome message after a small delay
-        setTimeout(() => {
-          playWelcomeMessage();
-        }, 200);
-      }, 300);
-    };
     
     // Hide visualizer when assistant closes
     const originalCloseAIAssistant = window.closeAIAssistant;
