@@ -15,6 +15,12 @@
   pointer-events: none; /* Don't block clicks */
   opacity: 1; /* Visible by default when in AI assistant */
   transition: all 0.5s ease;
+  /* Ensure no visible background or border */
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  overflow: visible; /* Allow glow effects to extend */
 }
 
 .ai-orb-container.hidden {
@@ -35,6 +41,9 @@
   width: 100%;
   height: 100%;
   display: block;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
 }
 
 /* Outer glow ring effect (CSS-based enhancement) - VERY VISIBLE */
@@ -43,31 +52,31 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 260px;
-  height: 260px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(196, 181, 253, 0.6) 0%, rgba(167, 139, 250, 0.4) 30%, rgba(139, 92, 246, 0.2) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(196, 181, 253, 0.5) 0%, rgba(167, 139, 250, 0.3) 30%, rgba(139, 92, 246, 0.15) 50%, transparent 70%);
   box-shadow: 
-    0 0 60px rgba(167, 139, 250, 0.7),
-    0 0 100px rgba(139, 92, 246, 0.5),
-    0 0 150px rgba(139, 92, 246, 0.3),
-    0 0 200px rgba(96, 165, 250, 0.2);
+    0 0 40px rgba(167, 139, 250, 0.5),
+    0 0 80px rgba(139, 92, 246, 0.3),
+    0 0 120px rgba(139, 92, 246, 0.2);
   pointer-events: none;
   animation: glowPulse 3s ease-in-out infinite;
   opacity: 1;
   transition: all 0.3s ease;
+  z-index: -1; /* Behind the Three.js canvas */
 }
 
 .orb-glow-ring.speaking {
   opacity: 1;
   animation: glowPulseFast 0.4s ease-in-out infinite;
-  width: 300px;
-  height: 300px;
+  width: 110%;
+  height: 110%;
   background: radial-gradient(circle, rgba(196, 181, 253, 0.5) 0%, rgba(167, 139, 250, 0.3) 40%, transparent 70%);
   box-shadow: 
-    0 0 100px rgba(167, 139, 250, 0.6),
-    0 0 150px rgba(139, 92, 246, 0.4),
-    0 0 220px rgba(96, 165, 250, 0.3);
+    0 0 80px rgba(167, 139, 250, 0.5),
+    0 0 120px rgba(139, 92, 246, 0.3),
+    0 0 180px rgba(96, 165, 250, 0.2);
 }
 
 @keyframes glowPulse {
@@ -98,9 +107,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
-  height: 300px;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  z-index: 1; /* In front of the Three.js canvas */
 }
 
 /* Individual particles - centered in halo */
@@ -128,18 +138,18 @@
 }
 
 /* Particle positions - distributed around the orb */
-.orb-particle:nth-child(1) { animation-delay: 0s; --orbit-radius: 140px; --start-angle: 0deg; }
-.orb-particle:nth-child(2) { animation-delay: -0.5s; --orbit-radius: 145px; --start-angle: 30deg; }
-.orb-particle:nth-child(3) { animation-delay: -1s; --orbit-radius: 138px; --start-angle: 60deg; }
-.orb-particle:nth-child(4) { animation-delay: -1.5s; --orbit-radius: 142px; --start-angle: 90deg; }
-.orb-particle:nth-child(5) { animation-delay: -2s; --orbit-radius: 148px; --start-angle: 120deg; }
-.orb-particle:nth-child(6) { animation-delay: -2.5s; --orbit-radius: 135px; --start-angle: 150deg; }
-.orb-particle:nth-child(7) { animation-delay: -3s; --orbit-radius: 143px; --start-angle: 180deg; }
-.orb-particle:nth-child(8) { animation-delay: -3.5s; --orbit-radius: 140px; --start-angle: 210deg; }
-.orb-particle:nth-child(9) { animation-delay: -4s; --orbit-radius: 147px; --start-angle: 240deg; }
-.orb-particle:nth-child(10) { animation-delay: -4.5s; --orbit-radius: 136px; --start-angle: 270deg; }
-.orb-particle:nth-child(11) { animation-delay: -5s; --orbit-radius: 144px; --start-angle: 300deg; }
-.orb-particle:nth-child(12) { animation-delay: -5.5s; --orbit-radius: 139px; --start-angle: 330deg; }
+.orb-particle:nth-child(1) { animation-delay: 0s; --orbit-radius: 130px; --start-angle: 0deg; }
+.orb-particle:nth-child(2) { animation-delay: -0.5s; --orbit-radius: 135px; --start-angle: 30deg; }
+.orb-particle:nth-child(3) { animation-delay: -1s; --orbit-radius: 128px; --start-angle: 60deg; }
+.orb-particle:nth-child(4) { animation-delay: -1.5s; --orbit-radius: 132px; --start-angle: 90deg; }
+.orb-particle:nth-child(5) { animation-delay: -2s; --orbit-radius: 138px; --start-angle: 120deg; }
+.orb-particle:nth-child(6) { animation-delay: -2.5s; --orbit-radius: 125px; --start-angle: 150deg; }
+.orb-particle:nth-child(7) { animation-delay: -3s; --orbit-radius: 133px; --start-angle: 180deg; }
+.orb-particle:nth-child(8) { animation-delay: -3.5s; --orbit-radius: 130px; --start-angle: 210deg; }
+.orb-particle:nth-child(9) { animation-delay: -4s; --orbit-radius: 137px; --start-angle: 240deg; }
+.orb-particle:nth-child(10) { animation-delay: -4.5s; --orbit-radius: 126px; --start-angle: 270deg; }
+.orb-particle:nth-child(11) { animation-delay: -5s; --orbit-radius: 134px; --start-angle: 300deg; }
+.orb-particle:nth-child(12) { animation-delay: -5.5s; --orbit-radius: 129px; --start-angle: 330deg; }
 
 @keyframes particleOrbit {
   0% {
@@ -207,19 +217,9 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .ai-orb-container {
-    width: 240px;
-    height: 240px;
-    transform: translate(-50%, -65%);
-  }
-  
-  .orb-glow-ring {
-    width: 200px;
-    height: 200px;
-  }
-  
-  .orb-particle-halo {
     width: 220px;
     height: 220px;
+    transform: translate(-50%, -50%);
   }
   
   .orb-particle:nth-child(1) { --orbit-radius: 100px; }
@@ -239,31 +239,22 @@
 /* Large screens / kiosk mode */
 @media (min-width: 1200px) {
   .ai-orb-container {
-    width: 400px;
-    height: 400px;
-  }
-  
-  .orb-glow-ring {
     width: 350px;
     height: 350px;
   }
   
-  .orb-particle-halo {
-    width: 380px;
-    height: 380px;
-  }
-  
-  .orb-particle:nth-child(1) { --orbit-radius: 175px; }
-  .orb-particle:nth-child(2) { --orbit-radius: 180px; }
-  .orb-particle:nth-child(3) { --orbit-radius: 172px; }
-  .orb-particle:nth-child(4) { --orbit-radius: 178px; }
-  .orb-particle:nth-child(5) { --orbit-radius: 185px; }
-  .orb-particle:nth-child(6) { --orbit-radius: 168px; }
-  .orb-particle:nth-child(7) { --orbit-radius: 179px; }
-  .orb-particle:nth-child(8) { --orbit-radius: 175px; }
-  .orb-particle:nth-child(9) { --orbit-radius: 183px; }
-  .orb-particle:nth-child(10) { --orbit-radius: 170px; }
-  .orb-particle:nth-child(11) { --orbit-radius: 180px; }
-  .orb-particle:nth-child(12) { --orbit-radius: 173px; }
+  .orb-particle:nth-child(1) { --orbit-radius: 160px; }
+  .orb-particle:nth-child(2) { --orbit-radius: 165px; }
+  .orb-particle:nth-child(3) { --orbit-radius: 158px; }
+  .orb-particle:nth-child(4) { --orbit-radius: 162px; }
+  .orb-particle:nth-child(5) { --orbit-radius: 168px; }
+  .orb-particle:nth-child(6) { --orbit-radius: 155px; }
+  .orb-particle:nth-child(7) { --orbit-radius: 163px; }
+  .orb-particle:nth-child(8) { --orbit-radius: 160px; }
+  .orb-particle:nth-child(9) { --orbit-radius: 167px; }
+  .orb-particle:nth-child(10) { --orbit-radius: 156px; }
+  .orb-particle:nth-child(11) { --orbit-radius: 164px; }
+  .orb-particle:nth-child(12) { --orbit-radius: 159px; }
 }
+
 

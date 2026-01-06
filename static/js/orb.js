@@ -67,20 +67,23 @@ class AIOrb {
   }
   
   setupScene() {
-    const width = this.container.clientWidth || 320;
-    const height = this.container.clientHeight || 320;
+    const width = this.container.clientWidth || 280;
+    const height = this.container.clientHeight || 280;
     
-    // Scene
+    // Scene - completely transparent
     this.scene = new THREE.Scene();
+    this.scene.background = null; // Ensure no background
     
-    // Camera
+    // Camera - centered on origin
     this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    this.camera.position.z = 5;
+    this.camera.position.set(0, 0, 5); // Exactly centered
+    this.camera.lookAt(0, 0, 0); // Look at center
     
-    // Renderer with transparency
+    // Renderer with full transparency
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
+      premultipliedAlpha: false,
       powerPreference: 'high-performance'
     });
     
@@ -88,7 +91,8 @@ class AIOrb {
     const maxPixelRatio = Math.min(window.devicePixelRatio, 2);
     this.renderer.setPixelRatio(maxPixelRatio);
     this.renderer.setSize(width, height);
-    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setClearColor(0x000000, 0); // Fully transparent
+    this.renderer.autoClear = true;
     
     // Get or create canvas
     let canvas = this.container.querySelector('#orb-canvas');
@@ -96,6 +100,7 @@ class AIOrb {
       this.container.removeChild(canvas);
     }
     this.renderer.domElement.id = 'orb-canvas';
+    this.renderer.domElement.style.background = 'transparent';
     this.container.appendChild(this.renderer.domElement);
   }
   
@@ -118,6 +123,7 @@ class AIOrb {
     });
     
     this.orb = new THREE.Mesh(geometry, material);
+    this.orb.position.set(0, 0, 0); // Explicitly center the orb
     this.scene.add(this.orb);
     
     // Inner core glow - brighter
@@ -352,34 +358,22 @@ class AIOrb {
    * Update CSS elements for speaking state
    */
   updateUIState(speaking) {
-    console.log('🔮 updateUIState:', speaking, 'container:', this.container);
-    
     if (!this.container) {
-      console.warn('⚠️ No container for UI state update');
       return;
     }
     
     const glowRing = this.container.querySelector('.orb-glow-ring');
     const particles = this.container.querySelectorAll('.orb-particle');
     const status = this.container.querySelector('.orb-status');
-    const debugIndicator = this.container.querySelector('#orb-debug');
-    
-    console.log('🔮 Found elements - glowRing:', !!glowRing, 'particles:', particles.length, 'debug:', !!debugIndicator);
     
     if (glowRing) {
       glowRing.classList.toggle('speaking', speaking);
-      console.log('🔮 Glow ring speaking class:', glowRing.classList.contains('speaking'));
     }
     
     particles.forEach(p => p.classList.toggle('speaking', speaking));
     
     if (status) {
       status.classList.toggle('visible', speaking);
-    }
-    
-    // DEBUG: Show/hide speaking indicator
-    if (debugIndicator) {
-      debugIndicator.style.opacity = speaking ? '1' : '0';
     }
   }
   
