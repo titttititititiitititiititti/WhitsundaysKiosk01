@@ -36,16 +36,16 @@ class AIOrb {
     this.clock = new THREE.Clock();
     this.animationId = null;
     
-    // Settings
+    // Settings - BRIGHT and VISIBLE
     this.settings = {
-      orbColor: 0x8b5cf6,        // Purple
-      orbEmissive: 0x4c1d95,     // Dark purple glow
-      glowColor: 0x3b82f6,       // Blue accent
-      idleRotationSpeed: 0.2,
-      breathingSpeed: 0.5,
-      breathingAmount: 0.03,
-      amplitudeSmoothing: 0.15,
-      maxScale: 1.25,
+      orbColor: 0xa78bfa,        // Bright purple
+      orbEmissive: 0x8b5cf6,     // Strong purple glow
+      glowColor: 0x60a5fa,       // Bright blue accent
+      idleRotationSpeed: 0.3,
+      breathingSpeed: 0.6,
+      breathingAmount: 0.05,
+      amplitudeSmoothing: 0.2,
+      maxScale: 1.4,             // More dramatic scaling
       particleCount: 12
     };
     
@@ -106,29 +106,40 @@ class AIOrb {
     // Store original vertex positions for displacement
     this.originalPositions = geometry.attributes.position.array.slice();
     
-    // Material with emissive glow
+    // Material with STRONG emissive glow - very visible
     const material = new THREE.MeshStandardMaterial({
       color: this.settings.orbColor,
       emissive: this.settings.orbEmissive,
-      emissiveIntensity: 0.3,
-      metalness: 0.3,
-      roughness: 0.4,
+      emissiveIntensity: 0.8,  // Much brighter!
+      metalness: 0.2,
+      roughness: 0.3,
       transparent: true,
-      opacity: 0.95
+      opacity: 1.0
     });
     
     this.orb = new THREE.Mesh(geometry, material);
     this.scene.add(this.orb);
     
-    // Inner core glow
-    const coreGeometry = new THREE.IcosahedronGeometry(0.8, 3);
+    // Inner core glow - brighter
+    const coreGeometry = new THREE.IcosahedronGeometry(0.9, 3);
     const coreMaterial = new THREE.MeshBasicMaterial({
-      color: this.settings.glowColor,
+      color: 0xffffff,  // White hot core
       transparent: true,
-      opacity: 0.15
+      opacity: 0.4
     });
     this.core = new THREE.Mesh(coreGeometry, coreMaterial);
     this.orb.add(this.core);
+    
+    // Outer glow shell
+    const glowGeometry = new THREE.IcosahedronGeometry(1.4, 3);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+      color: this.settings.orbColor,
+      transparent: true,
+      opacity: 0.15,
+      side: THREE.BackSide
+    });
+    this.glowShell = new THREE.Mesh(glowGeometry, glowMaterial);
+    this.orb.add(this.glowShell);
   }
   
   setupLighting() {
@@ -462,24 +473,40 @@ class AIOrb {
     this.targetAmplitude = rawAmplitude;
     this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * this.settings.amplitudeSmoothing;
     
-    // Idle breathing animation
+    // Idle breathing animation - more pronounced
     const breathing = Math.sin(time * this.settings.breathingSpeed) * this.settings.breathingAmount;
+    const secondaryBreath = Math.sin(time * 0.8) * 0.02;
     
     // Calculate scale based on amplitude + breathing
     const amplitudeScale = 1 + (this.currentAmplitude * (this.settings.maxScale - 1));
-    const finalScale = (this.baseScale + breathing) * (this.isSpeaking ? amplitudeScale : 1);
+    const finalScale = (this.baseScale + breathing + secondaryBreath) * (this.isSpeaking ? amplitudeScale : 1);
     
     if (this.orb) {
-      // Apply scale
+      // Apply scale with smooth transition
       this.orb.scale.setScalar(finalScale);
       
-      // Idle rotation
-      this.orb.rotation.y += this.settings.idleRotationSpeed * 0.01;
-      this.orb.rotation.x = Math.sin(time * 0.3) * 0.1;
+      // More dynamic rotation when speaking
+      const rotationSpeed = this.isSpeaking ? 0.03 : 0.01;
+      this.orb.rotation.y += this.settings.idleRotationSpeed * rotationSpeed;
+      this.orb.rotation.x = Math.sin(time * 0.3) * 0.15;
+      this.orb.rotation.z = Math.cos(time * 0.25) * 0.05;
       
-      // Update emissive intensity based on amplitude
-      const emissiveIntensity = 0.3 + this.currentAmplitude * 0.7;
-      this.orb.material.emissiveIntensity = emissiveIntensity;
+      // Update emissive intensity based on amplitude - MUCH stronger
+      const emissiveIntensity = 0.6 + this.currentAmplitude * 1.2;
+      this.orb.material.emissiveIntensity = Math.min(2.0, emissiveIntensity);
+      
+      // Change color slightly when speaking
+      if (this.isSpeaking && this.currentAmplitude > 0.1) {
+        // Shift towards brighter purple/white when loud
+        const colorShift = this.currentAmplitude * 0.3;
+        this.orb.material.color.setRGB(
+          0.65 + colorShift,
+          0.55 + colorShift * 0.5,
+          0.98
+        );
+      } else {
+        this.orb.material.color.setHex(this.settings.orbColor);
+      }
       
       // Apply surface displacement
       if (this.isSpeaking) {
@@ -487,24 +514,35 @@ class AIOrb {
       }
     }
     
-    // Update core glow
+    // Update core glow - much more reactive
     if (this.core) {
-      this.core.material.opacity = 0.1 + this.currentAmplitude * 0.3;
-      this.core.scale.setScalar(0.95 + this.currentAmplitude * 0.1);
+      const coreOpacity = this.isSpeaking ? (0.3 + this.currentAmplitude * 0.5) : 0.25;
+      this.core.material.opacity = coreOpacity;
+      this.core.scale.setScalar(0.9 + this.currentAmplitude * 0.15);
+      // Pulse the core
+      this.core.rotation.y -= 0.02;
+    }
+    
+    // Update outer glow shell
+    if (this.glowShell) {
+      const glowOpacity = this.isSpeaking ? (0.1 + this.currentAmplitude * 0.25) : 0.08;
+      this.glowShell.material.opacity = glowOpacity;
+      this.glowShell.scale.setScalar(1 + this.currentAmplitude * 0.2);
     }
     
     // Update particles
     this.updateParticles(this.currentAmplitude);
     
-    // Rotate particle system slowly
+    // Rotate particle system - faster when speaking
     if (this.particleSystem) {
-      this.particleSystem.rotation.y += 0.001;
+      const particleSpeed = this.isSpeaking ? 0.005 : 0.001;
+      this.particleSystem.rotation.y += particleSpeed;
       this.particleSystem.rotation.x = Math.sin(time * 0.2) * 0.1;
     }
     
     // Update bloom intensity based on speech
     if (this.bloomPass) {
-      this.bloomPass.strength = 0.6 + this.currentAmplitude * 0.8;
+      this.bloomPass.strength = 0.8 + this.currentAmplitude * 1.0;
     }
     
     // Render

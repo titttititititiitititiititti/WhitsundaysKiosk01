@@ -20977,14 +20977,24 @@
     // Welcome message content (with emojis)
     const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
     
+    // Flag to prevent duplicate welcome messages
+    let welcomeMessagePlayed = false;
+    
     /**
      * Play the welcome message with animation and pre-recorded audio
      */
     async function playWelcomeMessage() {
+      // Prevent duplicate calls
+      if (welcomeMessagePlayed) {
+        console.log('⚠️ Welcome message already played, skipping');
+        return;
+      }
+      welcomeMessagePlayed = true;
+      
       const messagesContainer = document.getElementById('ai-messages');
       if (!messagesContainer) return;
       
-      // Clear any existing messages
+      // Clear any existing messages completely
       messagesContainer.innerHTML = '';
       
       // Show typing indicator immediately
@@ -20993,8 +21003,13 @@
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
       
-      // Wait 0.8 seconds
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Start orb animation during typing
+      if (window.aiOrb) {
+        window.aiOrb.startSpeaking();
+      }
+      
+      // Wait 1.5 seconds
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Remove typing indicator and add the real message
       typingMsg.remove();
@@ -21018,11 +21033,6 @@
             console.log('✅ Welcome audio connected to orb');
           }
           
-          // Start orb animation
-          if (window.aiOrb) {
-            window.aiOrb.startSpeaking();
-          }
-          
           welcomeAudio.currentTime = 0;
           await welcomeAudio.play();
           console.log('🔊 Welcome audio playing');
@@ -21040,6 +21050,11 @@
             window.aiOrb.stopSpeaking();
           }
         }
+      } else {
+        // No audio, stop orb after a moment
+        setTimeout(() => {
+          if (window.aiOrb) window.aiOrb.stopSpeaking();
+        }, 2000);
       }
     }
     
@@ -21077,6 +21092,17 @@
     window.closeAIAssistant = function() {
       console.log('🤖 Closing AI Assistant');
       stopTTS();
+      
+      // Stop welcome audio if playing
+      const welcomeAudio = document.getElementById('welcome-audio');
+      if (welcomeAudio) {
+        welcomeAudio.pause();
+        welcomeAudio.currentTime = 0;
+      }
+      
+      // Reset welcome message flag so it plays again next time
+      welcomeMessagePlayed = false;
+      window.welcomeAudioConnected = false;
       
       // Reset orb position (remove with-cards class)
       const orbContainer = document.getElementById('ai-orb-container');
