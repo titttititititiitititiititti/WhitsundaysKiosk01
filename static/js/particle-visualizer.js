@@ -51,20 +51,20 @@ class ParticleVisualizer {
       
       // Particle properties
       particleMinSize: 3,
-      particleMaxSize: 10,
+      particleMaxSize: 9,
       
-      // Sphere properties - particles orbit at this radius
-      sphereRadius: 80,       // Base orbit radius (will scale with container)
-      sphereRadiusVariation: 40, // Variation in orbit distances
+      // Sphere properties - SMALLER to stay away from container edges
+      sphereRadius: 55,       // Small base orbit radius
+      sphereRadiusVariation: 25,
       
       // Motion
       idleSpeed: 0.35,
       speakingSpeed: 1.2,
-      turbulence: 0.8,        // More turbulence for organic feel
+      turbulence: 0.6,
       
-      // Glow
-      glowIntensity: 0.6,
-      glowRadius: 120,
+      // Glow - smaller to match
+      glowIntensity: 0.5,
+      glowRadius: 90,
       
       // Audio reactivity
       amplitudeSmoothing: 0.15,
@@ -122,9 +122,10 @@ class ParticleVisualizer {
     this.centerX = this.width / 2;
     this.centerY = this.height / 2;
     
-    // Adjust sphere radius based on container size
-    this.settings.sphereRadius = Math.min(this.width, this.height) * 0.35;
-    this.settings.glowRadius = this.settings.sphereRadius * 1.6;
+    // Keep sphere radius FIXED - don't scale with container
+    // This keeps the orb small while container is large (no cutoff)
+    this.settings.sphereRadius = 55;  // Fixed small size
+    this.settings.glowRadius = 90;    // Fixed glow size
   }
   
   createParticles() {
@@ -335,7 +336,7 @@ class ParticleVisualizer {
    * AUDIO DRIVES VISUAL: orb size and brightness react to amplitude
    */
   drawCentralOrb() {
-    const baseRadius = this.settings.sphereRadius * 0.38;
+    const baseRadius = this.settings.sphereRadius * 0.5; // Slightly larger relative to orbit
     // AUDIO DRIVES VISUAL: orb pulses with amplitude
     const radius = baseRadius * (1 + this.currentAmplitude * 0.25);
     const hue = this.settings.baseHue + this.currentAmplitude * 20;
