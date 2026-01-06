@@ -94,7 +94,7 @@ class ParticleVisualizer {
     // Create canvas
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'particle-canvas';
-    this.canvas.style.cssText = 'width: 100%; height: 100%; display: block; background: transparent;';
+    this.canvas.style.cssText = 'width: 100%; height: 100%; display: block; background: transparent; position: absolute; top: 0; left: 0;';
     
     // Remove any existing canvas
     const existingCanvas = this.container.querySelector('canvas');
@@ -107,6 +107,14 @@ class ParticleVisualizer {
     
     // Set size
     this.onResize();
+    
+    // DEBUG: Draw a test circle to verify canvas is working
+    console.log('✨ Testing canvas render...');
+    this.ctx.fillStyle = 'rgba(167, 139, 250, 0.8)';
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, 50, 0, Math.PI * 2);
+    this.ctx.fill();
+    console.log('✨ Test circle drawn at:', this.centerX, this.centerY);
   }
   
   onResize() {
