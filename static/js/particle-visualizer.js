@@ -329,17 +329,21 @@ class ParticleVisualizer {
     // Clear canvas completely
     this.ctx.clearRect(0, 0, this.width, this.height);
     
-    // NO CLIPPING - let particles flow freely!
-    
     // Draw background glow
     this.drawGlow();
     
-    // Draw central orb
+    // Update particle positions first
+    this.updateParticles();
+    
+    // DEPTH SORTING: Draw in correct order for 3D effect
+    // 1. Draw particles BEHIND the orb (negative Z)
+    this.drawParticlesBehind();
+    
+    // 2. Draw central orb
     this.drawCentralOrb();
     
-    // Update and draw particles
-    this.updateParticles();
-    this.drawParticles();
+    // 3. Draw particles IN FRONT of the orb (positive Z)
+    this.drawParticlesInFront();
   }
   
   /**
@@ -567,45 +571,72 @@ class ParticleVisualizer {
   }
   
   /**
-   * Draw all particles
-   * AUDIO DRIVES VISUAL: colors and brightness react to amplitude
+   * Draw a single particle
    */
-  drawParticles() {
-    for (const p of this.particles) {
-      // Depth-based size and alpha (closer = larger, more opaque)
-      const depthFactor = (p.z + 1) / 2; // 0 to 1
-      const size = p.currentSize * (0.5 + depthFactor * 0.5);
-      const alpha = p.currentAlpha * (0.4 + depthFactor * 0.6);
-      
-      // AUDIO DRIVES VISUAL: Color shifts with amplitude
-      const hue = this.settings.baseHue + p.hueOffset + this.currentAmplitude * 30;
-      const saturation = this.settings.saturation + this.currentAmplitude * 10;
-      const lightness = this.settings.lightness + this.currentAmplitude * 15;
-      
-      // Draw particle with glow
+  drawParticle(p, isBehind = false) {
+    // Depth-based size and alpha (closer = larger, more opaque)
+    const depthFactor = (p.z + 1) / 2; // 0 to 1
+    let size = p.currentSize * (0.5 + depthFactor * 0.5);
+    let alpha = p.currentAlpha * (0.4 + depthFactor * 0.6);
+    
+    // Particles behind the orb are dimmer and slightly smaller
+    if (isBehind) {
+      alpha *= 0.5;  // Much dimmer behind
+      size *= 0.85;  // Slightly smaller
+    }
+    
+    // AUDIO DRIVES VISUAL: Color shifts with amplitude
+    const hue = this.settings.baseHue + p.hueOffset + this.currentAmplitude * 30;
+    const saturation = this.settings.saturation + this.currentAmplitude * 10;
+    const lightness = this.settings.lightness + this.currentAmplitude * 15;
+    
+    // Draw particle with glow
+    this.ctx.beginPath();
+    this.ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+    
+    // Create gradient for soft particle
+    const particleGradient = this.ctx.createRadialGradient(
+      p.x, p.y, 0,
+      p.x, p.y, size
+    );
+    
+    particleGradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness + 20}%, ${alpha})`);
+    particleGradient.addColorStop(0.4, `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.8})`);
+    particleGradient.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness - 10}%, 0)`);
+    
+    this.ctx.fillStyle = particleGradient;
+    this.ctx.fill();
+    
+    // Add bright center point for closest particles (only in front)
+    if (!isBehind && depthFactor > 0.7) {
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-      
-      // Create gradient for soft particle
-      const particleGradient = this.ctx.createRadialGradient(
-        p.x, p.y, 0,
-        p.x, p.y, size
-      );
-      
-      particleGradient.addColorStop(0, `hsla(${hue}, ${saturation}%, ${lightness + 20}%, ${alpha})`);
-      particleGradient.addColorStop(0.4, `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.8})`);
-      particleGradient.addColorStop(1, `hsla(${hue}, ${saturation}%, ${lightness - 10}%, 0)`);
-      
-      this.ctx.fillStyle = particleGradient;
+      this.ctx.arc(p.x, p.y, size * 0.3, 0, Math.PI * 2);
+      this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, 90%, ${alpha * 0.6})`;
       this.ctx.fill();
-      
-      // Add bright center point for closest particles
-      if (depthFactor > 0.7) {
-        this.ctx.beginPath();
-        this.ctx.arc(p.x, p.y, size * 0.3, 0, Math.PI * 2);
-        this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, 90%, ${alpha * 0.6})`;
-        this.ctx.fill();
-      }
+    }
+  }
+  
+  /**
+   * Draw particles that are BEHIND the orb (z < 0)
+   */
+  drawParticlesBehind() {
+    // Sort by Z so furthest back are drawn first
+    const behindParticles = this.particles.filter(p => p.z < 0).sort((a, b) => a.z - b.z);
+    
+    for (const p of behindParticles) {
+      this.drawParticle(p, true);
+    }
+  }
+  
+  /**
+   * Draw particles that are IN FRONT of the orb (z >= 0)
+   */
+  drawParticlesInFront() {
+    // Sort by Z so closest are drawn last (on top)
+    const frontParticles = this.particles.filter(p => p.z >= 0).sort((a, b) => a.z - b.z);
+    
+    for (const p of frontParticles) {
+      this.drawParticle(p, false);
     }
   }
   
