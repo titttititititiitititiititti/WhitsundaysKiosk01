@@ -37,7 +37,7 @@
   display: block;
 }
 
-/* Outer glow ring effect (CSS-based enhancement) */
+/* Outer glow ring effect (CSS-based enhancement) - VERY VISIBLE */
 .orb-glow-ring {
   position: absolute;
   top: 50%;
@@ -46,11 +46,12 @@
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, rgba(139, 92, 246, 0.2) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(196, 181, 253, 0.6) 0%, rgba(167, 139, 250, 0.4) 30%, rgba(139, 92, 246, 0.2) 50%, transparent 70%);
   box-shadow: 
-    0 0 80px rgba(139, 92, 246, 0.5),
-    0 0 120px rgba(139, 92, 246, 0.3),
-    0 0 180px rgba(96, 165, 250, 0.2);
+    0 0 60px rgba(167, 139, 250, 0.7),
+    0 0 100px rgba(139, 92, 246, 0.5),
+    0 0 150px rgba(139, 92, 246, 0.3),
+    0 0 200px rgba(96, 165, 250, 0.2);
   pointer-events: none;
   animation: glowPulse 3s ease-in-out infinite;
   opacity: 1;
@@ -72,11 +73,11 @@
 @keyframes glowPulse {
   0%, 100% { 
     transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
+    opacity: 0.8;
   }
   50% { 
-    transform: translate(-50%, -50%) scale(1.05);
-    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 1;
   }
 }
 
@@ -102,17 +103,21 @@
   pointer-events: none;
 }
 
-/* Individual particles */
+/* Individual particles - centered in halo */
 .orb-particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(139, 92, 246, 0.8);
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px; /* Center the particle itself */
+  background: rgba(167, 139, 250, 0.9);
   border-radius: 50%;
   filter: blur(1px);
   animation: particleOrbit 8s linear infinite;
-  opacity: 0.6;
+  opacity: 0.7;
   transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
 }
 
 .orb-particle.speaking {

@@ -2665,7 +2665,7 @@
       transform: translateX(-50%) !important;
     }
     
-    /* Show both header buttons */
+    /* Show both header buttons - SAME SIZE */
     .ai-assistant-page .quick-decision-btn-header,
     .ai-assistant-page .browse-all-btn-header {
       display: inline-flex !important;
@@ -2674,24 +2674,41 @@
       left: auto !important;
       width: auto !important;
       height: auto !important;
-      padding: 10px 20px !important;
-      font-size: 0.9em !important;
+      padding: 12px 24px !important;
+      font-size: 0.95em !important;
       border-radius: 25px !important;
       font-weight: 600 !important;
       cursor: pointer !important;
-      border: none !important;
+      border: 2px solid rgba(255, 255, 255, 0.3) !important;
+      min-width: 170px !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
     }
     
-    /* Quick Decision - GREEN */
+    /* Quick Decision - GREEN (with green glow, not orange!) */
     .ai-assistant-page .quick-decision-btn-header {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
       color: white !important;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+    }
+    
+    .ai-assistant-page .quick-decision-btn-header:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5) !important;
+      transform: translateY(-2px) !important;
     }
     
     /* Browse All Tours - ORANGE */
     .ai-assistant-page .browse-all-btn-header {
       background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
       color: white !important;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4) !important;
+    }
+    
+    .ai-assistant-page .browse-all-btn-header:hover {
+      background: linear-gradient(135deg, #ffa05c 0%, #ff7b45 100%) !important;
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5) !important;
+      transform: translateY(-2px) !important;
     }
     
     .ai-messages {

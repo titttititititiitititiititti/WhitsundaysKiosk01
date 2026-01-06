@@ -143,24 +143,34 @@ class AIOrb {
   }
   
   setupLighting() {
-    // Ambient light for base visibility
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // Strong ambient light for high visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     this.scene.add(ambientLight);
     
-    // Main directional light
-    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    // Main directional light - bright
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
     mainLight.position.set(2, 3, 4);
     this.scene.add(mainLight);
     
-    // Accent light (purple tint)
-    const accentLight = new THREE.PointLight(this.settings.orbColor, 0.6, 10);
+    // Fill light from below
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    fillLight.position.set(-2, -2, 2);
+    this.scene.add(fillLight);
+    
+    // Accent light (purple tint) - brighter
+    const accentLight = new THREE.PointLight(0xa78bfa, 1.5, 15);
     accentLight.position.set(-2, -1, 3);
     this.scene.add(accentLight);
     
-    // Blue rim light
-    const rimLight = new THREE.PointLight(this.settings.glowColor, 0.4, 8);
+    // Blue rim light - brighter
+    const rimLight = new THREE.PointLight(0x60a5fa, 1.0, 12);
     rimLight.position.set(0, 2, -3);
     this.scene.add(rimLight);
+    
+    // Front purple light
+    const frontLight = new THREE.PointLight(0xc4b5fd, 1.0, 10);
+    frontLight.position.set(0, 0, 5);
+    this.scene.add(frontLight);
   }
   
   setupPostProcessing() {
