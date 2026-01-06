@@ -20,6 +20,17 @@
   <!-- QR Code Generator -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   
+  <!-- Three.js for Orb Visualizer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  
+  <!-- AI Orb Visualizer CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/orb.css') }}">
+  
   <style>
     /* ===================================================================
        GLOBAL RESPONSIVE FOUNDATIONS
@@ -2518,6 +2529,12 @@
       gap: 20px;
       padding: 20px;
       z-index: 100;
+    }
+    
+    /* Adjust orb position when tour cards are showing */
+    .ai-tour-cards-container:not(:empty) ~ .ai-orb-container,
+    .ai-assistant-page.has-cards .ai-orb-container {
+      transform: translate(-50%, -85%);
     }
     
     .ai-tour-card {
@@ -11195,6 +11212,32 @@
       </div>
     </header>
     
+    <!-- AI Orb Visualizer - Audio Reactive -->
+    <div class="ai-orb-container" id="ai-orb-container">
+      <!-- Three.js canvas will be inserted here -->
+      <div class="orb-glow-ring"></div>
+      <div class="orb-particle-halo">
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+        <div class="orb-particle"></div>
+      </div>
+      <div class="orb-status">
+        Speaking<span class="orb-speaking-dots"><span></span><span></span><span></span></span>
+      </div>
+    </div>
+    
+    <!-- Hidden audio element for ElevenLabs TTS -->
+    <audio id="ai-tts-audio" style="display: none;"></audio>
+    
     <!-- Tour recommendation cards - above chat -->
     <div class="ai-tour-cards-container" id="ai-tour-cards">
       <!-- Tour cards will be inserted here dynamically -->
@@ -12832,6 +12875,12 @@
         
         // Add to conversation history
         aiConversationHistory.push({ role: 'assistant', content: responseText });
+        
+        // Speak the response using ElevenLabs TTS
+        if (typeof speakWithElevenLabs === 'function') {
+          const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+          speakWithElevenLabs(responseText, lang);
+        }
         
         // Check for tour recommendations and display cards
         const recommendedTours = parseTourRecommendations(responseText);
@@ -20749,6 +20798,198 @@
       if (e.key === 'ArrowRight') lightboxNext();
       if (e.key === 'ArrowLeft') lightboxPrev();
     });
+  </script>
+  
+  <!-- AI Orb Visualizer Script -->
+  <script src="{{ url_for('static', filename='js/orb.js') }}"></script>
+  
+  <!-- ElevenLabs TTS Integration for AI Assistant -->
+  <script>
+    // TTS Audio element and state
+    let ttsAudio = null;
+    let ttsAudioContext = null;
+    let ttsConnectedToOrb = false;
+    
+    /**
+     * Initialize TTS audio element and connect to orb
+     */
+    function initTTSAudio() {
+      ttsAudio = document.getElementById('ai-tts-audio');
+      if (!ttsAudio) {
+        ttsAudio = document.createElement('audio');
+        ttsAudio.id = 'ai-tts-audio';
+        document.body.appendChild(ttsAudio);
+      }
+      
+      // Set up event listeners
+      ttsAudio.addEventListener('play', () => {
+        console.log('🔊 TTS started playing');
+        if (window.orbStartSpeaking) {
+          window.orbStartSpeaking();
+        }
+      });
+      
+      ttsAudio.addEventListener('ended', () => {
+        console.log('🔊 TTS finished');
+        if (window.orbStopSpeaking) {
+          window.orbStopSpeaking();
+        }
+      });
+      
+      ttsAudio.addEventListener('pause', () => {
+        if (window.orbStopSpeaking) {
+          window.orbStopSpeaking();
+        }
+      });
+      
+      ttsAudio.addEventListener('error', (e) => {
+        console.error('TTS audio error:', e);
+        if (window.orbStopSpeaking) {
+          window.orbStopSpeaking();
+        }
+      });
+      
+      return ttsAudio;
+    }
+    
+    /**
+     * Speak text using ElevenLabs TTS
+     * @param {string} text - Text to speak
+     * @param {string} language - Language code (default: 'en')
+     */
+    async function speakWithElevenLabs(text, language = 'en') {
+      if (!text || text.trim().length === 0) {
+        console.log('No text to speak');
+        return;
+      }
+      
+      // Clean the text - remove markdown, emojis for cleaner speech
+      let cleanText = text
+        .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove bold markers
+        .replace(/\[TOUR:[^\]]+\]/g, '')    // Remove tour markers
+        .replace(/\[FILTER:[^\]]+\]/g, '')  // Remove filter markers
+        .replace(/\[OPTIONS:[^\]]+\]/g, '') // Remove options markers
+        .replace(/[🌊🐠✨🏝️🚤🌅⚡🏠]/g, '') // Remove emojis
+        .replace(/\n{2,}/g, '. ')           // Convert double newlines to periods
+        .replace(/\n/g, ' ')                // Convert single newlines to spaces
+        .trim();
+      
+      // Limit text length for TTS (to avoid very long API calls)
+      if (cleanText.length > 800) {
+        cleanText = cleanText.substring(0, 800) + '...';
+      }
+      
+      console.log('🎤 Requesting TTS for:', cleanText.substring(0, 100) + '...');
+      
+      try {
+        // Initialize audio if needed
+        if (!ttsAudio) {
+          initTTSAudio();
+        }
+        
+        // Stop any currently playing audio
+        ttsAudio.pause();
+        ttsAudio.currentTime = 0;
+        
+        // Show orb
+        if (window.aiOrb) {
+          window.aiOrb.show();
+        }
+        
+        // Request TTS from server
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: cleanText,
+            language: language,
+            gender: 'female'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`TTS request failed: ${response.status}`);
+        }
+        
+        // Get audio blob
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Connect audio to orb visualizer (only once)
+        if (!ttsConnectedToOrb && window.connectOrbToAudio) {
+          // Need to play briefly to allow connection
+          ttsAudio.src = audioUrl;
+          await ttsAudio.play().catch(() => {});
+          ttsAudio.pause();
+          ttsAudio.currentTime = 0;
+          
+          window.connectOrbToAudio(ttsAudio);
+          ttsConnectedToOrb = true;
+        } else {
+          ttsAudio.src = audioUrl;
+        }
+        
+        // Play the audio
+        await ttsAudio.play();
+        
+        console.log('🔊 TTS playing');
+        
+      } catch (error) {
+        console.error('TTS error:', error);
+        // Still show orb briefly even on error
+        if (window.aiOrb) {
+          window.aiOrb.show();
+          setTimeout(() => {
+            if (window.orbStopSpeaking) window.orbStopSpeaking();
+          }, 1000);
+        }
+      }
+    }
+    
+    /**
+     * Stop current TTS playback
+     */
+    function stopTTS() {
+      if (ttsAudio) {
+        ttsAudio.pause();
+        ttsAudio.currentTime = 0;
+      }
+      if (window.orbStopSpeaking) {
+        window.orbStopSpeaking();
+      }
+    }
+    
+    // Initialize when AI assistant opens
+    const originalOpenAIAssistant = window.openAIAssistant;
+    window.openAIAssistant = function() {
+      if (originalOpenAIAssistant) {
+        originalOpenAIAssistant();
+      }
+      
+      // Initialize TTS and orb
+      setTimeout(() => {
+        initTTSAudio();
+        if (window.initAIOrb) {
+          window.initAIOrb();
+        }
+        // Show orb when assistant opens
+        if (window.aiOrb) {
+          window.aiOrb.show();
+        }
+      }, 300);
+    };
+    
+    // Hide orb when assistant closes
+    const originalCloseAIAssistant = window.closeAIAssistant;
+    window.closeAIAssistant = function() {
+      stopTTS();
+      if (window.aiOrb) {
+        window.aiOrb.hide();
+      }
+      if (originalCloseAIAssistant) {
+        originalCloseAIAssistant();
+      }
+    };
   </script>
 </body>
 </html>

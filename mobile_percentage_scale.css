@@ -1,0 +1,409 @@
+    /* ===================================================================
+       PERCENTAGE-BASED MOBILE SCALING - Desktop Model at 1920px width
+       All elements scale proportionally based on viewport width
+       Formula: calc((desktop_px / 1920) * 100vw)
+       =================================================================== */
+    
+    @media (max-width: 768px) {
+      /* ONLY APPLY TO VIDEO QUESTIONNAIRE AND SWIPE INTERFACE */
+      
+      .version-indicator {
+        display: none !important;
+      }
+      
+      body.video-bg-active {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+        overflow-y: auto;
+      }
+      
+      #bg-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: none !important;
+      }
+      
+      /* VIDEO QUESTION PAGE - Desktop baseline values from lines 490-740 */
+      .video-question-page {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+        overflow-x: hidden;
+      }
+      
+      .video-question-container {
+        width: 100%;
+        height: 100vh;
+        padding: calc(20 / 1920 * 100vw);
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .video-question-card {
+        width: 100%;
+        max-height: 90vh;
+        padding: calc(80 / 1920 * 100vw) calc(100 / 1920 * 100vw) !important;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      
+      /* Question text - Desktop: 3.5em = 56px */
+      h2.vq-question,
+      #vq-question-text {
+        font-size: calc(56 / 1920 * 100vw) !important;
+        margin: 0 0 calc(60 / 1920 * 100vw) 0 !important;
+        line-height: 1.3 !important;
+      }
+      
+      /* Answers - Desktop: gap 25px, padding-bottom 80px */
+      .vq-answers,
+      #vq-answers {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: calc(25 / 1920 * 100vw) !important;
+        width: 100% !important;
+        padding: 0 0 calc(80 / 1920 * 100vw) 0 !important;
+        margin: 0 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+      }
+      
+      /* Answer buttons - Desktop: padding 35px 50px, font 2em = 32px */
+      .vq-answer-btn,
+      .vq-answers button,
+      #vq-answers button {
+        width: 100% !important;
+        font-size: calc(32 / 1920 * 100vw) !important;
+        padding: calc(35 / 1920 * 100vw) calc(50 / 1920 * 100vw) !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        line-height: 1.3 !important;
+        border: calc(3 / 1920 * 100vw) solid transparent !important;
+        border-radius: calc(25 / 1920 * 100vw) !important;
+        outline: none !important;
+      }
+      
+      .vq-answer-btn.selected {
+        border: calc(5 / 1920 * 100vw) solid #ffffff !important;
+      }
+      
+      .vq-continue-btn {
+        margin-top: calc(30 / 1920 * 100vw) !important;
+        font-size: calc(35 / 1920 * 100vw) !important;
+      }
+      
+      /* Back button - Desktop: top 40px, left 40px, padding 20px 40px, font 1.8em = 29px */
+      .vq-back-btn {
+        position: fixed !important;
+        top: calc(40 / 1920 * 100vw) !important;
+        left: calc(40 / 1920 * 100vw) !important;
+        font-size: calc(29 / 1920 * 100vw) !important;
+        padding: calc(20 / 1920 * 100vw) calc(40 / 1920 * 100vw) !important;
+        border-radius: calc(50 / 1920 * 100vw) !important;
+        z-index: 1000 !important;
+      }
+      
+      /* Progress - Desktop: top 30px, center, font 1.3em = 21px */
+      .vq-progress-container {
+        position: fixed !important;
+        top: calc(30 / 1920 * 100vw) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 1000 !important;
+      }
+      
+      .vq-progress-text {
+        font-size: calc(21 / 1920 * 100vw) !important;
+        padding: calc(10 / 1920 * 100vw) calc(25 / 1920 * 100vw) !important;
+        border-radius: calc(30 / 1920 * 100vw) !important;
+      }
+      
+      .vq-progress-bar {
+        width: calc(300 / 1920 * 100vw) !important;
+        height: calc(8 / 1920 * 100vw) !important;
+        border-radius: calc(10 / 1920 * 100vw) !important;
+      }
+      
+      .vq-progress-fill {
+        height: 100% !important;
+        border-radius: calc(10 / 1920 * 100vw) !important;
+      }
+      
+      /* Browse All Tours - Desktop: top 30px, right 30px, padding 18px 40px, font 1.3em = 21px */
+      #browse-all-tours-btn,
+      .browse-all-tours-btn-questions {
+        position: fixed !important;
+        top: calc(30 / 1920 * 100vw) !important;
+        right: calc(30 / 1920 * 100vw) !important;
+        font-size: calc(21 / 1920 * 100vw) !important;
+        padding: calc(18 / 1920 * 100vw) calc(40 / 1920 * 100vw) !important;
+        border-radius: calc(50 / 1920 * 100vw) !important;
+        border: calc(3 / 1920 * 100vw) solid rgba(255, 255, 255, 0.6) !important;
+        z-index: 1000 !important;
+      }
+      
+      /* Tour counter - Desktop: font 1.5em = 24px, padding 15px 30px */
+      .vq-tour-counter {
+        font-size: calc(24 / 1920 * 100vw) !important;
+        padding: calc(15 / 1920 * 100vw) calc(30 / 1920 * 100vw) !important;
+        border-radius: calc(40 / 1920 * 100vw) !important;
+      }
+      
+      /* Widgets - Desktop: 100px circles, bottom 30px, font 3em = 48px */
+      .weather-widget,
+      .weather-widget.collapsed {
+        position: fixed !important;
+        bottom: calc(30 / 1920 * 100vw) !important;
+        right: calc(30 / 1920 * 100vw) !important;
+        left: auto !important;
+        width: calc(100 / 1920 * 100vw) !important;
+        height: calc(100 / 1920 * 100vw) !important;
+        min-width: calc(100 / 1920 * 100vw) !important;
+        max-width: calc(100 / 1920 * 100vw) !important;
+        min-height: calc(100 / 1920 * 100vw) !important;
+        max-height: calc(100 / 1920 * 100vw) !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        border: calc(2 / 1920 * 100vw) solid rgba(255, 255, 255, 0.25) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 999 !important;
+      }
+      
+      .weather-widget.collapsed::before {
+        content: "🌤️" !important;
+        font-size: calc(48 / 1920 * 100vw) !important;
+        display: block !important;
+      }
+      
+      .weather-widget.collapsed .weather-header,
+      .weather-widget.collapsed .weather-content,
+      .weather-widget.collapsed .weather-toggle,
+      .weather-widget.collapsed h4,
+      .weather-widget.collapsed > * {
+        display: none !important;
+      }
+      
+      .chat-button,
+      .chat-toggle-btn {
+        position: fixed !important;
+        bottom: calc(30 / 1920 * 100vw) !important;
+        left: calc(30 / 1920 * 100vw) !important;
+        width: calc(100 / 1920 * 100vw) !important;
+        height: calc(100 / 1920 * 100vw) !important;
+        min-width: calc(100 / 1920 * 100vw) !important;
+        max-width: calc(100 / 1920 * 100vw) !important;
+        min-height: calc(100 / 1920 * 100vw) !important;
+        max-height: calc(100 / 1920 * 100vw) !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: calc(2 / 1920 * 100vw) solid rgba(255, 255, 255, 0.25) !important;
+        z-index: 999 !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        overflow: hidden !important;
+      }
+      
+      .chat-button img,
+      .chat-toggle-btn img {
+        width: 50% !important;
+        height: 50% !important;
+        object-fit: contain !important;
+      }
+      
+      /* Start screen - Desktop: font 3em = 48px, padding 20px 40px */
+      .video-start-text {
+        font-size: calc(48 / 1920 * 100vw) !important;
+        padding: calc(20 / 1920 * 100vw) calc(40 / 1920 * 100vw) !important;
+        border-radius: calc(20 / 1920 * 100vw) !important;
+      }
+      
+      .browse-all-tours-btn {
+        font-size: calc(29 / 1920 * 100vw) !important;
+        padding: calc(25 / 1920 * 100vw) calc(60 / 1920 * 100vw) !important;
+        border-radius: calc(60 / 1920 * 100vw) !important;
+        border: calc(3 / 1920 * 100vw) solid rgba(255, 255, 255, 0.6) !important;
+      }
+      
+      /* SWIPE RESULTS */
+      .swipe-results-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+      }
+      
+      .swipe-results-overlay > div {
+        padding: calc(40 / 1920 * 100vw);
+      }
+      
+      .skip-to-list-btn {
+        top: calc(40 / 1920 * 100vw) !important;
+        right: calc(40 / 1920 * 100vw) !important;
+        font-size: calc(21 / 1920 * 100vw) !important;
+        padding: calc(15 / 1920 * 100vw) calc(30 / 1920 * 100vw) !important;
+        border-radius: calc(40 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-card-header h2 {
+        font-size: calc(48 / 1920 * 100vw) !important;
+        margin-bottom: calc(20 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-card-header .company-chip {
+        font-size: calc(24 / 1920 * 100vw) !important;
+        padding: calc(12 / 1920 * 100vw) calc(30 / 1920 * 100vw) !important;
+        border-radius: calc(50 / 1920 * 100vw) !important;
+      }
+      
+      /* Gallery */
+      .swipe-gallery-wrapper {
+        margin-bottom: calc(40 / 1920 * 100vw);
+      }
+      
+      .swipe-gallery-spread {
+        display: flex;
+        flex-direction: column;
+        gap: calc(30 / 1920 * 100vw);
+      }
+      
+      .swipe-gallery-image {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9 !important;
+        object-fit: cover !important;
+        border-radius: calc(30 / 1920 * 100vw) !important;
+      }
+      
+      .gallery-nav-arrow {
+        width: calc(70 / 1920 * 100vw) !important;
+        height: calc(70 / 1920 * 100vw) !important;
+        font-size: calc(48 / 1920 * 100vw) !important;
+      }
+      
+      /* Info sections */
+      .swipe-info-sections {
+        display: flex;
+        flex-direction: column;
+        gap: calc(30 / 1920 * 100vw);
+        margin-bottom: calc(40 / 1920 * 100vw);
+      }
+      
+      .swipe-info-box {
+        padding: calc(30 / 1920 * 100vw);
+        border-radius: calc(30 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-info-box h3 {
+        font-size: calc(32 / 1920 * 100vw) !important;
+        margin-bottom: calc(15 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-info-box ul li {
+        font-size: calc(22 / 1920 * 100vw) !important;
+        padding: calc(8 / 1920 * 100vw) 0 !important;
+        padding-left: calc(25 / 1920 * 100vw) !important;
+      }
+      
+      /* Action buttons - Desktop: 220px circles */
+      .swipe-actions {
+        display: flex;
+        gap: calc(50 / 1920 * 100vw);
+        margin-top: calc(40 / 1920 * 100vw);
+        justify-content: center;
+      }
+      
+      .swipe-btn {
+        width: calc(220 / 1920 * 100vw) !important;
+        height: calc(220 / 1920 * 100vw) !important;
+        min-width: calc(220 / 1920 * 100vw) !important;
+        max-width: calc(220 / 1920 * 100vw) !important;
+        min-height: calc(220 / 1920 * 100vw) !important;
+        max-height: calc(220 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-btn-icon {
+        font-size: calc(72 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-btn-text {
+        font-size: calc(22 / 1920 * 100vw) !important;
+      }
+      
+      /* Expanded details */
+      .swipe-scrollable-content {
+        padding: calc(40 / 1920 * 100vw) 0;
+      }
+      
+      .swipe-expanded-details {
+        display: flex;
+        flex-direction: column;
+        gap: calc(30 / 1920 * 100vw);
+      }
+      
+      .swipe-detail-section {
+        padding: calc(40 / 1920 * 100vw);
+        border-radius: calc(30 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-detail-section h3 {
+        font-size: calc(35 / 1920 * 100vw) !important;
+        margin-bottom: calc(25 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-detail-section div,
+      .swipe-detail-section p,
+      .swipe-detail-section li {
+        font-size: calc(20 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-detail-section li {
+        padding-left: calc(40 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-detail-section iframe {
+        min-height: calc(400 / 1920 * 100vw) !important;
+        border-radius: calc(20 / 1920 * 100vw) !important;
+      }
+      
+      /* Reviews */
+      .swipe-reviews-grid {
+        display: flex;
+        flex-direction: column;
+        gap: calc(25 / 1920 * 100vw);
+      }
+      
+      .swipe-review-card {
+        padding: calc(30 / 1920 * 100vw);
+        border-radius: calc(20 / 1920 * 100vw) !important;
+        margin-bottom: calc(25 / 1920 * 100vw);
+      }
+      
+      .swipe-review-card strong {
+        font-size: calc(18 / 1920 * 100vw) !important;
+      }
+      
+      .swipe-review-card p {
+        font-size: calc(16 / 1920 * 100vw) !important;
+      }
+    }
+

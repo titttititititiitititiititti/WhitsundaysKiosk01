@@ -1,0 +1,257 @@
+/* ===========================================
+   AI Speaking Orb - Audio Visualizer Styles
+   Premium geometric orb that reacts to speech
+   =========================================== */
+
+/* Main container - positioned for AI assistant page */
+.ai-orb-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%); /* Slightly above center for visual balance */
+  width: 320px;
+  height: 320px;
+  z-index: 100;
+  pointer-events: none; /* Don't block clicks */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.ai-orb-container.visible {
+  opacity: 1;
+}
+
+.ai-orb-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Canvas for Three.js rendering */
+#orb-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Outer glow ring effect (CSS-based enhancement) */
+.orb-glow-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 
+    0 0 60px rgba(139, 92, 246, 0.15),
+    0 0 100px rgba(139, 92, 246, 0.1),
+    0 0 140px rgba(59, 130, 246, 0.05);
+  pointer-events: none;
+  animation: glowPulse 4s ease-in-out infinite;
+  opacity: 0.6;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.orb-glow-ring.speaking {
+  opacity: 1;
+  animation: glowPulseFast 0.5s ease-in-out infinite;
+  box-shadow: 
+    0 0 80px rgba(139, 92, 246, 0.3),
+    0 0 120px rgba(139, 92, 246, 0.2),
+    0 0 180px rgba(59, 130, 246, 0.1);
+}
+
+@keyframes glowPulse {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glowPulseFast {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Particle halo container */
+.orb-particle-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+}
+
+/* Individual particles */
+.orb-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(139, 92, 246, 0.8);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: particleOrbit 8s linear infinite;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.orb-particle.speaking {
+  animation-duration: 2s;
+  opacity: 1;
+  filter: blur(0px);
+  background: rgba(167, 139, 250, 1);
+}
+
+/* Particle positions - distributed around the orb */
+.orb-particle:nth-child(1) { animation-delay: 0s; --orbit-radius: 140px; --start-angle: 0deg; }
+.orb-particle:nth-child(2) { animation-delay: -0.5s; --orbit-radius: 145px; --start-angle: 30deg; }
+.orb-particle:nth-child(3) { animation-delay: -1s; --orbit-radius: 138px; --start-angle: 60deg; }
+.orb-particle:nth-child(4) { animation-delay: -1.5s; --orbit-radius: 142px; --start-angle: 90deg; }
+.orb-particle:nth-child(5) { animation-delay: -2s; --orbit-radius: 148px; --start-angle: 120deg; }
+.orb-particle:nth-child(6) { animation-delay: -2.5s; --orbit-radius: 135px; --start-angle: 150deg; }
+.orb-particle:nth-child(7) { animation-delay: -3s; --orbit-radius: 143px; --start-angle: 180deg; }
+.orb-particle:nth-child(8) { animation-delay: -3.5s; --orbit-radius: 140px; --start-angle: 210deg; }
+.orb-particle:nth-child(9) { animation-delay: -4s; --orbit-radius: 147px; --start-angle: 240deg; }
+.orb-particle:nth-child(10) { animation-delay: -4.5s; --orbit-radius: 136px; --start-angle: 270deg; }
+.orb-particle:nth-child(11) { animation-delay: -5s; --orbit-radius: 144px; --start-angle: 300deg; }
+.orb-particle:nth-child(12) { animation-delay: -5.5s; --orbit-radius: 139px; --start-angle: 330deg; }
+
+@keyframes particleOrbit {
+  0% {
+    transform: 
+      rotate(var(--start-angle)) 
+      translateX(var(--orbit-radius)) 
+      rotate(calc(-1 * var(--start-angle)));
+  }
+  100% {
+    transform: 
+      rotate(calc(var(--start-angle) + 360deg)) 
+      translateX(var(--orbit-radius)) 
+      rotate(calc(-1 * (var(--start-angle) + 360deg)));
+  }
+}
+
+/* Status indicator */
+.orb-status {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85em;
+  font-weight: 500;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.orb-status.visible {
+  opacity: 1;
+}
+
+/* Speaking indicator dots */
+.orb-speaking-dots {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.orb-speaking-dots span {
+  width: 6px;
+  height: 6px;
+  background: rgba(139, 92, 246, 0.9);
+  border-radius: 50%;
+  animation: speakingDot 1.2s ease-in-out infinite;
+}
+
+.orb-speaking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.orb-speaking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes speakingDot {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .ai-orb-container {
+    width: 240px;
+    height: 240px;
+    transform: translate(-50%, -65%);
+  }
+  
+  .orb-glow-ring {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .orb-particle-halo {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .orb-particle:nth-child(1) { --orbit-radius: 100px; }
+  .orb-particle:nth-child(2) { --orbit-radius: 105px; }
+  .orb-particle:nth-child(3) { --orbit-radius: 98px; }
+  .orb-particle:nth-child(4) { --orbit-radius: 102px; }
+  .orb-particle:nth-child(5) { --orbit-radius: 108px; }
+  .orb-particle:nth-child(6) { --orbit-radius: 95px; }
+  .orb-particle:nth-child(7) { --orbit-radius: 103px; }
+  .orb-particle:nth-child(8) { --orbit-radius: 100px; }
+  .orb-particle:nth-child(9) { --orbit-radius: 107px; }
+  .orb-particle:nth-child(10) { --orbit-radius: 96px; }
+  .orb-particle:nth-child(11) { --orbit-radius: 104px; }
+  .orb-particle:nth-child(12) { --orbit-radius: 99px; }
+}
+
+/* Large screens / kiosk mode */
+@media (min-width: 1200px) {
+  .ai-orb-container {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .orb-glow-ring {
+    width: 350px;
+    height: 350px;
+  }
+  
+  .orb-particle-halo {
+    width: 380px;
+    height: 380px;
+  }
+  
+  .orb-particle:nth-child(1) { --orbit-radius: 175px; }
+  .orb-particle:nth-child(2) { --orbit-radius: 180px; }
+  .orb-particle:nth-child(3) { --orbit-radius: 172px; }
+  .orb-particle:nth-child(4) { --orbit-radius: 178px; }
+  .orb-particle:nth-child(5) { --orbit-radius: 185px; }
+  .orb-particle:nth-child(6) { --orbit-radius: 168px; }
+  .orb-particle:nth-child(7) { --orbit-radius: 179px; }
+  .orb-particle:nth-child(8) { --orbit-radius: 175px; }
+  .orb-particle:nth-child(9) { --orbit-radius: 183px; }
+  .orb-particle:nth-child(10) { --orbit-radius: 170px; }
+  .orb-particle:nth-child(11) { --orbit-radius: 180px; }
+  .orb-particle:nth-child(12) { --orbit-radius: 173px; }
+}
+
