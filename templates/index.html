@@ -397,6 +397,18 @@
         overflow: visible !important;
       }
       
+      /* Hide questionnaire content when results are showing */
+      .video-question-page.showing-results #video-question-container,
+      .video-question-page.showing-results #vq-card,
+      .video-question-page.showing-results .video-question-card,
+      .video-question-page.showing-results #vq-progress-container,
+      .video-question-page.showing-results #vq-back-btn,
+      .video-question-page.showing-results #vq-tour-counter {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+      }
+      
       /* Info-grid container itself - NO background */
       .tour-detail-page .info-grid,
       .tour-detail-page #info-grid,
@@ -660,11 +672,32 @@
         padding-top: 0 !important;
       }
       
-      /* HIDE header on questionnaire pages */
-      .video-question-page ~ .header,
-      .video-question-page.active ~ .header,
-      body:has(.video-question-page.active) .header {
+      /* HIDE header during questions only */
+      .video-question-page:not(.showing-results) .kiosk-header {
         display: none !important;
+        height: 0 !important;
+        overflow: hidden !important;
+      }
+      
+      /* SHOW header when results are showing */
+      .video-question-page.showing-results .kiosk-header {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        overflow: visible !important;
+        position: relative !important;
+        z-index: 1000 !important;
+      }
+      
+      /* HIDE questionnaire when results showing */
+      .video-question-page.showing-results #video-question-container {
+        display: none !important;
+      }
+      
+      /* Make results overlay visible */
+      .video-question-page.showing-results .swipe-results-overlay {
+        z-index: 100 !important;
       }
       
       /* Question container - starts from very top */
