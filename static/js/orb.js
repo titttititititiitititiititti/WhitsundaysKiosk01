@@ -365,6 +365,10 @@ class AIOrb {
    * Calculate amplitude - uses audio if available, otherwise simulates speech pattern
    */
   getAmplitude() {
+    // DEBUG: Force speaking mode for testing
+    // Remove this line once working!
+    // this.isSpeaking = true;
+    
     // If not speaking, return 0 (just breathing animation)
     if (!this.isSpeaking) {
       return 0;
@@ -488,6 +492,12 @@ class AIOrb {
     const time = this.clock.getElapsedTime();
     const delta = this.clock.getDelta();
     
+    // DEBUG: Log speaking state every 2 seconds
+    if (Math.floor(time) % 2 === 0 && Math.floor(time) !== this._lastLogTime) {
+      this._lastLogTime = Math.floor(time);
+      console.log('🔮 Animation tick - isSpeaking:', this.isSpeaking, 'amplitude:', this.currentAmplitude.toFixed(2));
+    }
+    
     // Get audio amplitude (real or simulated)
     const rawAmplitude = this.getAmplitude();
     
@@ -501,8 +511,14 @@ class AIOrb {
     const secondaryBreath = Math.sin(time * 0.8) * 0.02;
     
     // Calculate scale based on amplitude + breathing
-    const amplitudeScale = 1 + (this.currentAmplitude * (this.settings.maxScale - 1));
-    const finalScale = (this.baseScale + breathing + secondaryBreath) * (this.isSpeaking ? amplitudeScale : 1);
+    // When speaking, scale varies from 1.0 to 1.5 based on amplitude
+    const speakingScale = this.isSpeaking ? (1.0 + this.currentAmplitude * 0.5) : 1.0;
+    const finalScale = (this.baseScale + breathing + secondaryBreath) * speakingScale;
+    
+    // DEBUG: Log when speaking with significant amplitude
+    if (this.isSpeaking && this.currentAmplitude > 0.2) {
+      console.log('🔮 SPEAKING - amplitude:', this.currentAmplitude.toFixed(2), 'scale:', finalScale.toFixed(2));
+    }
     
     if (this.orb) {
       // Apply scale with smooth transition
@@ -716,4 +732,26 @@ window.initAIOrb = initAIOrb;
 window.connectOrbToAudio = connectOrbToAudio;
 window.orbStartSpeaking = orbStartSpeaking;
 window.orbStopSpeaking = orbStopSpeaking;
+
+// DEBUG: Test function - call from browser console: testOrb()
+window.testOrb = function() {
+  console.log('🧪 Testing orb...');
+  console.log('🧪 window.aiOrb:', window.aiOrb);
+  
+  if (window.aiOrb) {
+    console.log('🧪 Current isSpeaking:', window.aiOrb.isSpeaking);
+    console.log('🧪 Current amplitude:', window.aiOrb.currentAmplitude);
+    console.log('🧪 Calling startSpeaking...');
+    window.aiOrb.startSpeaking();
+    console.log('🧪 After startSpeaking - isSpeaking:', window.aiOrb.isSpeaking);
+    
+    // Auto-stop after 5 seconds
+    setTimeout(() => {
+      console.log('🧪 Auto-stopping after 5 seconds');
+      window.aiOrb.stopSpeaking();
+    }, 5000);
+  } else {
+    console.log('🧪 No orb instance found! Try calling initAIOrb() first');
+  }
+};
 
