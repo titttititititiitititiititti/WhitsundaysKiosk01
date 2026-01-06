@@ -113,19 +113,25 @@ class ParticleVisualizer {
     const rect = this.container.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio, 2); // Cap for performance
     
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
+    // Use rect dimensions or fallback to 350px
+    const containerWidth = rect.width > 0 ? rect.width : 350;
+    const containerHeight = rect.height > 0 ? rect.height : 350;
+    
+    this.canvas.width = containerWidth * dpr;
+    this.canvas.height = containerHeight * dpr;
     
     this.ctx.scale(dpr, dpr);
     
-    this.width = rect.width;
-    this.height = rect.height;
+    this.width = containerWidth;
+    this.height = containerHeight;
     this.centerX = this.width / 2;
     this.centerY = this.height / 2;
     
     // Adjust sphere radius based on container size
-    this.settings.sphereRadius = Math.min(this.width, this.height) * 0.3;
-    this.settings.glowRadius = this.settings.sphereRadius * 1.5;
+    this.settings.sphereRadius = Math.min(this.width, this.height) * 0.35;
+    this.settings.glowRadius = this.settings.sphereRadius * 1.6;
+    
+    console.log('✨ Canvas resized:', this.width, 'x', this.height, 'sphere radius:', this.settings.sphereRadius);
   }
   
   createParticles() {
