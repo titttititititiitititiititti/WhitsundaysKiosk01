@@ -41,30 +41,30 @@ class ParticleVisualizer {
     this.animationId = null;
     this.time = 0;
     
-    // Visual settings - premium purple/blue palette - BRIGHT and VISIBLE
+    // Visual settings - premium purple/blue palette
     this.settings = {
       // Colors (HSL for easy manipulation)
       baseHue: 260,           // Purple
       accentHue: 220,         // Blue
-      saturation: 90,         // High saturation for vivid colors
-      lightness: 70,          // Bright
+      saturation: 85,
+      lightness: 70,
       
-      // Particle properties - LARGER for visibility
-      particleMinSize: 4,
-      particleMaxSize: 12,
+      // Particle properties
+      particleMinSize: 3,
+      particleMaxSize: 10,
       
-      // Sphere properties
-      sphereRadius: 120,
-      sphereRadiusVariation: 25,
+      // Sphere properties - particles orbit at this radius
+      sphereRadius: 80,       // Base orbit radius (will scale with container)
+      sphereRadiusVariation: 40, // Variation in orbit distances
       
       // Motion
-      idleSpeed: 0.4,
-      speakingSpeed: 1.5,
-      turbulence: 0.6,
+      idleSpeed: 0.35,
+      speakingSpeed: 1.2,
+      turbulence: 0.8,        // More turbulence for organic feel
       
-      // Glow - STRONGER
-      glowIntensity: 0.8,
-      glowRadius: 180,
+      // Glow
+      glowIntensity: 0.6,
+      glowRadius: 120,
       
       // Audio reactivity
       amplitudeSmoothing: 0.15,
@@ -317,12 +317,7 @@ class ParticleVisualizer {
     // Clear canvas completely
     this.ctx.clearRect(0, 0, this.width, this.height);
     
-    // Create circular clipping mask - PREVENTS SQUARE EDGES
-    const clipRadius = Math.min(this.width, this.height) / 2 - 5;
-    this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, clipRadius, 0, Math.PI * 2);
-    this.ctx.clip();
+    // NO CLIPPING - let particles flow freely!
     
     // Draw background glow
     this.drawGlow();
@@ -333,40 +328,6 @@ class ParticleVisualizer {
     // Update and draw particles
     this.updateParticles();
     this.drawParticles();
-    
-    // Restore context (remove clip)
-    this.ctx.restore();
-    
-    // Draw soft fade at edges to ensure no hard boundary
-    this.drawEdgeFade(clipRadius);
-  }
-  
-  /**
-   * Draw a soft fade at the edges to ensure smooth circular boundary
-   */
-  drawEdgeFade(radius) {
-    const fadeGradient = this.ctx.createRadialGradient(
-      this.centerX, this.centerY, radius * 0.85,
-      this.centerX, this.centerY, radius
-    );
-    fadeGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    fadeGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    
-    // This effectively does nothing visible but ensures the edge is clean
-    this.ctx.globalCompositeOperation = 'destination-out';
-    const edgeFade = this.ctx.createRadialGradient(
-      this.centerX, this.centerY, radius * 0.9,
-      this.centerX, this.centerY, radius + 10
-    );
-    edgeFade.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    edgeFade.addColorStop(0.5, 'rgba(0, 0, 0, 0.5)');
-    edgeFade.addColorStop(1, 'rgba(0, 0, 0, 1)');
-    
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, radius + 10, 0, Math.PI * 2);
-    this.ctx.fillStyle = edgeFade;
-    this.ctx.fill();
-    this.ctx.globalCompositeOperation = 'source-over';
   }
   
   /**
