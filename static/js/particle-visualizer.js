@@ -41,30 +41,30 @@ class ParticleVisualizer {
     this.animationId = null;
     this.time = 0;
     
-    // Visual settings - premium purple/blue palette
+    // Visual settings - premium purple/blue palette - BRIGHT and VISIBLE
     this.settings = {
       // Colors (HSL for easy manipulation)
       baseHue: 260,           // Purple
       accentHue: 220,         // Blue
-      saturation: 80,
-      lightness: 65,
+      saturation: 90,         // High saturation for vivid colors
+      lightness: 70,          // Bright
       
-      // Particle properties
-      particleMinSize: 2,
-      particleMaxSize: 6,
+      // Particle properties - LARGER for visibility
+      particleMinSize: 4,
+      particleMaxSize: 12,
       
       // Sphere properties
-      sphereRadius: 100,
-      sphereRadiusVariation: 20,
+      sphereRadius: 120,
+      sphereRadiusVariation: 25,
       
       // Motion
-      idleSpeed: 0.3,
-      speakingSpeed: 1.2,
-      turbulence: 0.5,
+      idleSpeed: 0.4,
+      speakingSpeed: 1.5,
+      turbulence: 0.6,
       
-      // Glow
-      glowIntensity: 0.6,
-      glowRadius: 150,
+      // Glow - STRONGER
+      glowIntensity: 0.8,
+      glowRadius: 180,
       
       // Audio reactivity
       amplitudeSmoothing: 0.15,
@@ -83,6 +83,11 @@ class ParticleVisualizer {
     window.addEventListener('resize', () => this.onResize());
     
     console.log('✨ Particle Visualizer initialized');
+    console.log('✨ Container:', this.container);
+    console.log('✨ Container size:', this.width, 'x', this.height);
+    console.log('✨ Canvas:', this.canvas);
+    console.log('✨ Particles count:', this.particles.length);
+    console.log('✨ Sphere radius:', this.settings.sphereRadius);
   }
   
   setupCanvas() {
@@ -326,10 +331,10 @@ class ParticleVisualizer {
    * AUDIO DRIVES VISUAL: glow intensity based on amplitude
    */
   drawGlow() {
-    const glowIntensity = this.settings.glowIntensity + this.currentAmplitude * 0.4;
-    const glowRadius = this.settings.glowRadius * (1 + this.currentAmplitude * 0.3);
+    const glowIntensity = this.settings.glowIntensity + this.currentAmplitude * 0.5;
+    const glowRadius = this.settings.glowRadius * (1 + this.currentAmplitude * 0.4);
     
-    // Create radial gradient for glow
+    // Create radial gradient for glow - BRIGHTER
     const gradient = this.ctx.createRadialGradient(
       this.centerX, this.centerY, 0,
       this.centerX, this.centerY, glowRadius
@@ -338,9 +343,11 @@ class ParticleVisualizer {
     // Color shifts with amplitude
     const hue = this.settings.baseHue + this.currentAmplitude * 20;
     
-    gradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.4})`);
-    gradient.addColorStop(0.3, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.2})`);
-    gradient.addColorStop(0.6, `hsla(${hue + 20}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.1})`);
+    // More intense glow for visibility
+    gradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation}%, 85%, ${glowIntensity * 0.7})`);
+    gradient.addColorStop(0.2, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.5})`);
+    gradient.addColorStop(0.4, `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.3})`);
+    gradient.addColorStop(0.7, `hsla(${hue + 20}, ${this.settings.saturation}%, ${this.settings.lightness}%, ${glowIntensity * 0.15})`);
     gradient.addColorStop(1, 'transparent');
     
     this.ctx.fillStyle = gradient;

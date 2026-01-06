@@ -7,12 +7,12 @@
 /* Main visualizer container */
 .ai-visualizer-container {
   position: fixed;
-  top: 30%;
+  top: 28%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 320px;
-  height: 320px;
-  z-index: 100;
+  width: 350px;
+  height: 350px;
+  z-index: 1000; /* High z-index to ensure visibility */
   pointer-events: none; /* Don't block clicks */
   opacity: 1;
   transition: all 0.5s ease;
@@ -21,6 +21,13 @@
   background: transparent;
   border: none;
   outline: none;
+}
+
+/* Ensure visibility when AI assistant is active */
+body.ai-assistant-open .ai-visualizer-container {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .ai-visualizer-container.hidden {
