@@ -310,9 +310,16 @@ class AIOrb {
    */
   startSpeaking() {
     console.log('🔮 START SPEAKING - Orb activating!');
+    console.log('🔮 this:', this);
+    console.log('🔮 this === window.aiOrb:', this === window.aiOrb);
+    console.log('🔮 Before: isSpeaking =', this.isSpeaking);
+    
     this.isSpeaking = true;
     this.targetAmplitude = 0.5; // Start with strong amplitude
     this.currentAmplitude = 0.3; // Immediate visual feedback
+    
+    console.log('🔮 After: isSpeaking =', this.isSpeaking);
+    
     this.updateUIState(true);
     
     // Resume audio context if needed
@@ -346,8 +353,9 @@ class AIOrb {
     const glowRing = this.container.querySelector('.orb-glow-ring');
     const particles = this.container.querySelectorAll('.orb-particle');
     const status = this.container.querySelector('.orb-status');
+    const debugIndicator = this.container.querySelector('#orb-debug');
     
-    console.log('🔮 Found elements - glowRing:', !!glowRing, 'particles:', particles.length, 'status:', !!status);
+    console.log('🔮 Found elements - glowRing:', !!glowRing, 'particles:', particles.length, 'debug:', !!debugIndicator);
     
     if (glowRing) {
       glowRing.classList.toggle('speaking', speaking);
@@ -358,6 +366,11 @@ class AIOrb {
     
     if (status) {
       status.classList.toggle('visible', speaking);
+    }
+    
+    // DEBUG: Show/hide speaking indicator
+    if (debugIndicator) {
+      debugIndicator.style.opacity = speaking ? '1' : '0';
     }
   }
   
