@@ -10,17 +10,19 @@
   top: 28%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 350px;
-  height: 350px;
+  width: 400px;
+  height: 400px;
   z-index: 1000; /* High z-index to ensure visibility */
   pointer-events: none; /* Don't block clicks */
   opacity: 1;
   transition: all 0.5s ease;
   
-  /* Ensure completely transparent */
-  background: transparent;
-  border: none;
-  outline: none;
+  /* Ensure completely transparent - NO SQUARE */
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  overflow: visible !important; /* Allow glow to extend beyond */
+  box-shadow: none !important;
 }
 
 /* Ensure visibility when AI assistant is active */
@@ -43,13 +45,15 @@ body.ai-assistant-open .ai-visualizer-container {
   height: 250px;
 }
 
-/* Canvas styles */
+/* Canvas styles - NO VISIBLE BOUNDARY */
 #particle-canvas {
   width: 100%;
   height: 100%;
   display: block;
-  background: transparent;
-  border: none;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /* Speaking indicator (optional, for debugging) */

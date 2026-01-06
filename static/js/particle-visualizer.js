@@ -82,16 +82,11 @@ class ParticleVisualizer {
     // Handle resize
     window.addEventListener('resize', () => this.onResize());
     
-    console.log('✨ Particle Visualizer initialized');
-    console.log('✨ Container:', this.container);
-    console.log('✨ Container size:', this.width, 'x', this.height);
-    console.log('✨ Canvas:', this.canvas);
-    console.log('✨ Particles count:', this.particles.length);
-    console.log('✨ Sphere radius:', this.settings.sphereRadius);
+    console.log('✨ Particle Visualizer initialized -', this.particles.length, 'particles');
   }
   
   setupCanvas() {
-    // Create canvas
+    // Create canvas - no visible boundary
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'particle-canvas';
     this.canvas.style.cssText = 'width: 100%; height: 100%; display: block; background: transparent; position: absolute; top: 0; left: 0;';
@@ -107,14 +102,6 @@ class ParticleVisualizer {
     
     // Set size
     this.onResize();
-    
-    // DEBUG: Draw a test circle to verify canvas is working
-    console.log('✨ Testing canvas render...');
-    this.ctx.fillStyle = 'rgba(167, 139, 250, 0.8)';
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, 50, 0, Math.PI * 2);
-    this.ctx.fill();
-    console.log('✨ Test circle drawn at:', this.centerX, this.centerY);
   }
   
   onResize() {
@@ -138,8 +125,6 @@ class ParticleVisualizer {
     // Adjust sphere radius based on container size
     this.settings.sphereRadius = Math.min(this.width, this.height) * 0.35;
     this.settings.glowRadius = this.settings.sphereRadius * 1.6;
-    
-    console.log('✨ Canvas resized:', this.width, 'x', this.height, 'sphere radius:', this.settings.sphereRadius);
   }
   
   createParticles() {
@@ -335,9 +320,90 @@ class ParticleVisualizer {
     // Draw background glow
     this.drawGlow();
     
+    // Draw central orb
+    this.drawCentralOrb();
+    
     // Update and draw particles
     this.updateParticles();
     this.drawParticles();
+  }
+  
+  /**
+   * Draw the central glowing orb
+   * AUDIO DRIVES VISUAL: orb size and brightness react to amplitude
+   */
+  drawCentralOrb() {
+    const baseRadius = this.settings.sphereRadius * 0.35;
+    // AUDIO DRIVES VISUAL: orb pulses with amplitude
+    const radius = baseRadius * (1 + this.currentAmplitude * 0.3);
+    
+    // Outer glow layers
+    const glowLayers = 5;
+    for (let i = glowLayers; i >= 0; i--) {
+      const layerRadius = radius * (1 + i * 0.25);
+      const alpha = (0.15 - i * 0.025) * (1 + this.currentAmplitude * 0.5);
+      
+      const hue = this.settings.baseHue + this.currentAmplitude * 15;
+      
+      this.ctx.beginPath();
+      this.ctx.arc(this.centerX, this.centerY, layerRadius, 0, Math.PI * 2);
+      this.ctx.fillStyle = `hsla(${hue}, ${this.settings.saturation}%, ${this.settings.lightness + 10}%, ${Math.max(0, alpha)})`;
+      this.ctx.fill();
+    }
+    
+    // Main orb body - gradient from center
+    const orbGradient = this.ctx.createRadialGradient(
+      this.centerX - radius * 0.3, this.centerY - radius * 0.3, 0,
+      this.centerX, this.centerY, radius
+    );
+    
+    // AUDIO DRIVES VISUAL: colors brighten with amplitude
+    const hue = this.settings.baseHue + this.currentAmplitude * 20;
+    const brightness = this.settings.lightness + this.currentAmplitude * 20;
+    
+    orbGradient.addColorStop(0, `hsla(${hue}, ${this.settings.saturation - 20}%, 95%, 0.95)`); // Bright center
+    orbGradient.addColorStop(0.3, `hsla(${hue}, ${this.settings.saturation}%, ${brightness + 15}%, 0.9)`);
+    orbGradient.addColorStop(0.6, `hsla(${hue}, ${this.settings.saturation}%, ${brightness}%, 0.85)`);
+    orbGradient.addColorStop(1, `hsla(${hue + 10}, ${this.settings.saturation}%, ${brightness - 10}%, 0.7)`);
+    
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, radius, 0, Math.PI * 2);
+    this.ctx.fillStyle = orbGradient;
+    this.ctx.fill();
+    
+    // Inner bright core
+    const coreRadius = radius * 0.4;
+    const coreGradient = this.ctx.createRadialGradient(
+      this.centerX, this.centerY, 0,
+      this.centerX, this.centerY, coreRadius
+    );
+    
+    coreGradient.addColorStop(0, `rgba(255, 255, 255, ${0.9 + this.currentAmplitude * 0.1})`);
+    coreGradient.addColorStop(0.5, `hsla(${hue}, 60%, 90%, ${0.6 + this.currentAmplitude * 0.3})`);
+    coreGradient.addColorStop(1, 'transparent');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, coreRadius, 0, Math.PI * 2);
+    this.ctx.fillStyle = coreGradient;
+    this.ctx.fill();
+    
+    // Highlight reflection
+    const highlightX = this.centerX - radius * 0.25;
+    const highlightY = this.centerY - radius * 0.25;
+    const highlightRadius = radius * 0.2;
+    
+    const highlightGradient = this.ctx.createRadialGradient(
+      highlightX, highlightY, 0,
+      highlightX, highlightY, highlightRadius
+    );
+    
+    highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+    highlightGradient.addColorStop(1, 'transparent');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(highlightX, highlightY, highlightRadius, 0, Math.PI * 2);
+    this.ctx.fillStyle = highlightGradient;
+    this.ctx.fill();
   }
   
   /**
