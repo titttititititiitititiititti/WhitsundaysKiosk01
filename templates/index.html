@@ -708,12 +708,25 @@
         line-height: 1.2 !important;
       }
       
-      /* Subtitle text */
+      /* Subtitle text - "Select all that apply" bigger */
       .video-question-page .video-question-card p,
       .video-question-page .filter-question-card p,
       .video-question-page .vq-subtitle {
-        font-size: 0.75em !important;
-        margin: 0 0 5px 0 !important;
+        font-size: 0.95em !important;
+        margin: 0 0 8px 0 !important;
+        color: #90e0ef !important;
+      }
+      
+      /* Continue button - ORANGE and prominent */
+      .video-question-page .vq-continue-btn,
+      .vq-continue-btn {
+        background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
+        border: 3px solid #ffffff !important;
+        box-shadow: 0 0 20px rgba(255, 140, 66, 0.8), 0 6px 25px rgba(255, 107, 53, 0.5) !important;
+        padding: 12px 20px !important;
+        font-size: 1em !important;
+        font-weight: 700 !important;
+        margin-top: 10px !important;
       }
       
       /* Progress container - tiny at top */
@@ -2383,12 +2396,12 @@
     }
     
     .vq-continue-btn {
-      background: linear-gradient(135deg, #0cb4e7 0%, #0077b6 100%) !important;
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
       margin-top: 30px !important;
       font-size: 2.2em !important;
       animation: bounceIn 0.5s ease-out;
-      border: 3px solid #ffffff !important;
-      box-shadow: 0 0 20px rgba(12, 180, 231, 0.8) !important;
+      border: 4px solid #ffffff !important;
+      box-shadow: 0 0 25px rgba(255, 140, 66, 0.8), 0 8px 30px rgba(255, 107, 53, 0.5) !important;
     }
     
     .vq-tour-counter {
@@ -11128,6 +11141,13 @@
         continueBtn.style.transition = 'all 0.3s ease';
         continueBtn.style.opacity = '1';
         continueBtn.style.transform = 'translateY(0)';
+        
+        // Auto-scroll to make continue button visible on mobile
+        if (window.innerWidth <= 768) {
+          setTimeout(() => {
+            continueBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
       }, 10);
     }
     
