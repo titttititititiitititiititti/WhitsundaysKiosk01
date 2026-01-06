@@ -51,25 +51,25 @@ class ParticleVisualizer {
       
       // Particle properties
       particleMinSize: 3,
-      particleMaxSize: 8,
+      particleMaxSize: 9,
       
       // Sphere properties
       sphereRadius: 55,
-      sphereRadiusVariation: 22,
+      sphereRadiusVariation: 25,
       
-      // Motion - balanced
-      idleSpeed: 0.28,
-      speakingSpeed: 0.7,
-      turbulence: 0.35,
+      // Motion - slightly more active
+      idleSpeed: 0.3,
+      speakingSpeed: 0.85,
+      turbulence: 0.45,
       
       // Glow
-      glowIntensity: 0.48,
-      glowRadius: 90,
+      glowIntensity: 0.52,
+      glowRadius: 95,
       
-      // Audio reactivity - SMOOTHER, less sensitive
-      amplitudeSmoothing: 0.04,   // Very smooth transitions (less twitchy)
-      amplitudeMultiplier: 1.6,
-      amplitudeThreshold: 0.08,   // Ignore small fluctuations
+      // Audio reactivity - more responsive
+      amplitudeSmoothing: 0.06,   // Slightly faster response
+      amplitudeMultiplier: 1.8,
+      amplitudeThreshold: 0.05,   // More sensitive
     };
     
     this.init();
@@ -348,8 +348,8 @@ class ParticleVisualizer {
    */
   drawCentralOrb() {
     const baseRadius = this.settings.sphereRadius * 0.5;
-    // AUDIO DRIVES VISUAL: orb pulses gently with amplitude
-    const radius = baseRadius * (1 + this.currentAmplitude * 0.15); // Gentle pulse
+    // AUDIO DRIVES VISUAL: orb pulses with amplitude
+    const radius = baseRadius * (1 + this.currentAmplitude * 0.2);
     const hue = this.settings.baseHue + this.currentAmplitude * 20;
     
     // === OUTER GLOW (soft ambient light) ===
@@ -526,8 +526,8 @@ class ParticleVisualizer {
     const speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
     const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
     
-    // AUDIO DRIVES VISUAL: Sphere expands/contracts gently
-    const radiusMultiplier = 1 + this.currentAmplitude * 0.18;
+    // AUDIO DRIVES VISUAL: Sphere expands/contracts with speech
+    const radiusMultiplier = 1 + this.currentAmplitude * 0.22;
     
     for (const p of this.particles) {
       // Base rotation around Y axis (orbit)
@@ -550,13 +550,13 @@ class ParticleVisualizer {
       const turbY = Math.cos(this.time * 1.8 + p.phaseOffset * 1.3) * turbulence;
       const turbZ = Math.sin(this.time * 1.5 + p.phaseOffset * 0.7) * turbulence;
       
-      // Final position - gentle movement
-      p.x = this.centerX + (rotatedX * radius) + turbX * this.currentAmplitude * 15;
-      p.y = this.centerY + (p.baseY * radius) + turbY * this.currentAmplitude * 15;
+      // Final position
+      p.x = this.centerX + (rotatedX * radius) + turbX * this.currentAmplitude * 20;
+      p.y = this.centerY + (p.baseY * radius) + turbY * this.currentAmplitude * 20;
       p.z = rotatedZ; // Used for depth sorting and size
       
-      // AUDIO DRIVES VISUAL: Size pulses gently
-      p.currentSize = p.size * (1 + this.currentAmplitude * 0.35);
+      // AUDIO DRIVES VISUAL: Size pulses with speech
+      p.currentSize = p.size * (1 + this.currentAmplitude * 0.45);
       
       // AUDIO DRIVES VISUAL: Alpha increases when speaking
       p.currentAlpha = p.alpha * (0.7 + this.currentAmplitude * 0.5);
