@@ -174,31 +174,40 @@ class AIOrb {
   }
   
   setupPostProcessing() {
-    // Check if postprocessing is available
-    if (typeof THREE.EffectComposer === 'undefined') {
-      console.log('Postprocessing not available, using basic rendering');
+    // Check if ALL required postprocessing classes are available
+    if (typeof THREE.EffectComposer === 'undefined' || 
+        typeof THREE.RenderPass === 'undefined' ||
+        typeof THREE.ShaderPass === 'undefined') {
+      console.log('🔮 Postprocessing not fully available, using basic rendering (this is OK!)');
+      this.composer = null;
       return;
     }
     
-    const width = this.container.clientWidth || 320;
-    const height = this.container.clientHeight || 320;
-    
-    // Effect composer
-    this.composer = new THREE.EffectComposer(this.renderer);
-    
-    // Render pass
-    const renderPass = new THREE.RenderPass(this.scene, this.camera);
-    this.composer.addPass(renderPass);
-    
-    // Bloom pass for glow effect
-    if (typeof THREE.UnrealBloomPass !== 'undefined') {
-      this.bloomPass = new THREE.UnrealBloomPass(
-        new THREE.Vector2(width, height),
-        0.8,  // strength
-        0.4,  // radius
-        0.85  // threshold
-      );
-      this.composer.addPass(this.bloomPass);
+    try {
+      const width = this.container.clientWidth || 320;
+      const height = this.container.clientHeight || 320;
+      
+      // Effect composer
+      this.composer = new THREE.EffectComposer(this.renderer);
+      
+      // Render pass
+      const renderPass = new THREE.RenderPass(this.scene, this.camera);
+      this.composer.addPass(renderPass);
+      
+      // Bloom pass for glow effect
+      if (typeof THREE.UnrealBloomPass !== 'undefined') {
+        this.bloomPass = new THREE.UnrealBloomPass(
+          new THREE.Vector2(width, height),
+          0.8,  // strength
+          0.4,  // radius
+          0.85  // threshold
+        );
+        this.composer.addPass(this.bloomPass);
+        console.log('🔮 Bloom postprocessing enabled');
+      }
+    } catch (e) {
+      console.warn('🔮 Postprocessing setup failed, using basic rendering:', e.message);
+      this.composer = null;
     }
   }
   
