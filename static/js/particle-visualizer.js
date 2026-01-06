@@ -314,8 +314,15 @@ class ParticleVisualizer {
     this.targetAmplitude = rawAmplitude;
     this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * smoothing;
     
-    // Clear canvas
+    // Clear canvas completely
     this.ctx.clearRect(0, 0, this.width, this.height);
+    
+    // Create circular clipping mask - PREVENTS SQUARE EDGES
+    const clipRadius = Math.min(this.width, this.height) / 2 - 5;
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, clipRadius, 0, Math.PI * 2);
+    this.ctx.clip();
     
     // Draw background glow
     this.drawGlow();
@@ -326,6 +333,40 @@ class ParticleVisualizer {
     // Update and draw particles
     this.updateParticles();
     this.drawParticles();
+    
+    // Restore context (remove clip)
+    this.ctx.restore();
+    
+    // Draw soft fade at edges to ensure no hard boundary
+    this.drawEdgeFade(clipRadius);
+  }
+  
+  /**
+   * Draw a soft fade at the edges to ensure smooth circular boundary
+   */
+  drawEdgeFade(radius) {
+    const fadeGradient = this.ctx.createRadialGradient(
+      this.centerX, this.centerY, radius * 0.85,
+      this.centerX, this.centerY, radius
+    );
+    fadeGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    fadeGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    
+    // This effectively does nothing visible but ensures the edge is clean
+    this.ctx.globalCompositeOperation = 'destination-out';
+    const edgeFade = this.ctx.createRadialGradient(
+      this.centerX, this.centerY, radius * 0.9,
+      this.centerX, this.centerY, radius + 10
+    );
+    edgeFade.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    edgeFade.addColorStop(0.5, 'rgba(0, 0, 0, 0.5)');
+    edgeFade.addColorStop(1, 'rgba(0, 0, 0, 1)');
+    
+    this.ctx.beginPath();
+    this.ctx.arc(this.centerX, this.centerY, radius + 10, 0, Math.PI * 2);
+    this.ctx.fillStyle = edgeFade;
+    this.ctx.fill();
+    this.ctx.globalCompositeOperation = 'source-over';
   }
   
   /**

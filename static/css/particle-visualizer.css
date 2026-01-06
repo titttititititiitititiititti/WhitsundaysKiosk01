@@ -17,12 +17,17 @@
   opacity: 1;
   transition: all 0.5s ease;
   
-  /* Ensure completely transparent - NO SQUARE */
-  background: transparent !important;
+  /* FORCE completely transparent - NO SQUARE EVER */
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
   border: none !important;
+  border-radius: 50% !important; /* Circular container */
   outline: none !important;
   overflow: visible !important; /* Allow glow to extend beyond */
   box-shadow: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
 }
 
 /* Ensure visibility when AI assistant is active */
@@ -45,15 +50,17 @@ body.ai-assistant-open .ai-visualizer-container {
   height: 250px;
 }
 
-/* Canvas styles - NO VISIBLE BOUNDARY */
+/* Canvas styles - ABSOLUTELY NO VISIBLE BOUNDARY */
 #particle-canvas {
   width: 100%;
   height: 100%;
   display: block;
-  background: transparent !important;
+  background: none !important;
+  background-color: transparent !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
+  border-radius: 50% !important; /* Circular canvas */
 }
 
 /* Speaking indicator (optional, for debugging) */
