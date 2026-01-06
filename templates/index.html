@@ -2479,17 +2479,213 @@
       display: flex;
     }
     
+    /* Hide ALL other page content when AI assistant is open */
+    body.ai-assistant-open .page:not(.ai-assistant-page),
+    body.ai-assistant-open .kiosk-header:not(.ai-header),
+    body.ai-assistant-open .video-question-container,
+    body.ai-assistant-open .video-start-screen,
+    body.ai-assistant-open .vq-progress-container,
+    body.ai-assistant-open .vq-back-btn,
+    body.ai-assistant-open .vq-tour-counter,
+    body.ai-assistant-open .tour-detail-footer,
+    body.ai-assistant-open .weather-widget,
+    body.ai-assistant-open .weather-widget-launcher,
+    body.ai-assistant-open .swipe-results-overlay,
+    body.ai-assistant-open #vq-card {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+    
+    /* Keep video background and AI page header visible */
+    body.ai-assistant-open .video-bg,
+    body.ai-assistant-open .ai-assistant-page .kiosk-header {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* Tour recommendation cards container - positioned ABOVE chat messages */
+    .ai-tour-cards-container {
+      position: fixed;
+      bottom: 420px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      z-index: 100;
+    }
+    
+    .ai-tour-card {
+      flex: 0 0 auto;
+      width: 220px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      transform: translateX(-100px);
+      opacity: 0;
+      animation: slideInCard 0.6s ease forwards;
+    }
+    
+    .ai-tour-card:nth-child(1) { animation-delay: 0.1s; }
+    .ai-tour-card:nth-child(2) { animation-delay: 0.2s; }
+    .ai-tour-card:nth-child(3) { animation-delay: 0.3s; }
+    .ai-tour-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    @keyframes slideInCard {
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .ai-tour-card:hover {
+      transform: scale(1.08) translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    }
+    
+    .ai-tour-card.highlighted {
+      transform: scale(1.15) translateY(-10px);
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.9), 0 20px 50px rgba(0, 0, 0, 0.5);
+      border: 4px solid #8b5cf6;
+      z-index: 10;
+    }
+    
+    .ai-tour-card-image {
+      width: 100%;
+      height: 130px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .ai-tour-card-info {
+      padding: 12px 15px;
+    }
+    
+    .ai-tour-card-name {
+      font-size: 1em;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 0 0 6px 0;
+      line-height: 1.25;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .ai-tour-card-company {
+      font-size: 0.8em;
+      color: #666;
+      margin: 0 0 6px 0;
+    }
+    
+    .ai-tour-card-price {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #0077b6;
+    }
+    
     .ai-chat-container {
-      flex: 1;
+      position: fixed;
+      bottom: 220px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 800px;
+      max-height: calc(100vh - 320px); /* Expand to fill more vertical space above */
+      min-height: 200px;
+      padding: 20px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      padding: 20px;
-      padding-top: 80px;
-      padding-bottom: 200px;
-      overflow-y: auto;
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    
+    .ai-chat-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .ai-chat-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .ai-chat-container::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+    }
+    
+    /* Adjust chat when tour cards are showing - stay at same position but shrink */
+    .ai-chat-container.with-cards {
+      max-height: 180px; /* Shrink to fit below tour cards */
+    }
+    
+    .ai-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      justify-content: flex-start;
+    }
+    
+    /* AI page header styling */
+    .ai-assistant-page .kiosk-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+    }
+    
+    /* Logo smaller and centered */
+    .ai-assistant-page .logo-image {
+      height: 40px !important;
+      position: absolute !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+    }
+    
+    /* Show both header buttons */
+    .ai-assistant-page .quick-decision-btn-header,
+    .ai-assistant-page .browse-all-btn-header {
+      display: inline-flex !important;
+      visibility: visible !important;
+      position: relative !important;
+      left: auto !important;
+      width: auto !important;
+      height: auto !important;
+      padding: 10px 20px !important;
+      font-size: 0.9em !important;
+      border-radius: 25px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      border: none !important;
+    }
+    
+    /* Quick Decision - GREEN */
+    .ai-assistant-page .quick-decision-btn-header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: white !important;
+    }
+    
+    /* Browse All Tours - ORANGE */
+    .ai-assistant-page .browse-all-btn-header {
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
+      color: white !important;
     }
     
     .ai-messages {
@@ -2542,6 +2738,20 @@
       font-size: 0.8em;
       margin-bottom: 5px;
       opacity: 0.7;
+    }
+    
+    .ai-message.typing {
+      padding: 15px 20px;
+    }
+    
+    .typing-dots {
+      animation: typingPulse 1.4s infinite;
+      letter-spacing: 3px;
+    }
+    
+    @keyframes typingPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
     }
     
     .ai-input-area {
@@ -2646,27 +2856,6 @@
       50% { transform: scale(1.1); box-shadow: 0 12px 50px rgba(239, 68, 68, 0.8); }
     }
     
-    .ai-close-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      font-size: 1.5em;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 10001;
-    }
-    
-    .ai-close-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(1.1);
-    }
     
     /* ===================================================================
        SWIPE RESULTS OVERLAY - APPEARS ON TOP OF VIDEO PAGE
@@ -10970,15 +11159,53 @@
   
   <!-- AI Assistant Page -->
   <div class="page ai-assistant-page" id="ai-assistant-page">
-    <!-- Close button -->
-    <button class="ai-close-btn" onclick="closeAIAssistant()">✕</button>
+    <!-- Header - same as other pages -->
+    <header class="kiosk-header ai-header">
+      <div class="header-left">
+        <button class="mobile-quick-btn" onclick="closeAIAssistant(); startQuickDecision();">⚡</button>
+        <button class="mobile-browse-btn" onclick="closeAIAssistant(); goToHomePage();">📁</button>
+        <button class="quick-decision-btn-header" onclick="closeAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
+        <button class="browse-all-btn-header" onclick="closeAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
+      </div>
+      <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
+      <div class="header-right">
+        <div class="language-selector" style="position:relative;">
+          <button class="chip" id="ai-language-btn" onclick="event.stopPropagation(); var m=document.getElementById('ai-language-menu'); m.style.display=m.style.display==='block'?'none':'block';">EN</button>
+          <div id="ai-language-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:200px;z-index:99999;padding:10px;overflow:hidden;">
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('en')"><span style="font-size:1.4em;">🇬🇧</span><span style="font-weight:600;color:#0a2540;">English</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('es')"><span style="font-size:1.4em;">🇪🇸</span><span style="font-weight:600;color:#0a2540;">Español</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('zh')"><span style="font-size:1.4em;">🇨🇳</span><span style="font-weight:600;color:#0a2540;">中文</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('ja')"><span style="font-size:1.4em;">🇯🇵</span><span style="font-weight:600;color:#0a2540;">日本語</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('ko')"><span style="font-size:1.4em;">🇰🇷</span><span style="font-weight:600;color:#0a2540;">한국어</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeLanguage('de')"><span style="font-size:1.4em;">🇩🇪</span><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeLanguage('fr')"><span style="font-size:1.4em;">🇫🇷</span><span style="font-weight:600;color:#0a2540;">Français</span></div>
+          </div>
+        </div>
+        <div class="currency-selector" style="position:relative;">
+          <button class="chip" id="ai-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('ai-currency-menu'); m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
+          <div id="ai-currency-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:180px;z-index:99999;padding:10px;overflow:hidden;">
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('AUD')"><span style="font-weight:700;color:#0077b6;">A$</span><span style="font-weight:600;color:#0a2540;">AUD</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('USD')"><span style="font-weight:700;color:#0077b6;">$</span><span style="font-weight:600;color:#0a2540;">USD</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Tour recommendation cards - above chat -->
+    <div class="ai-tour-cards-container" id="ai-tour-cards">
+      <!-- Tour cards will be inserted here dynamically -->
+    </div>
     
     <!-- Chat messages container -->
     <div class="ai-chat-container" id="ai-chat-container">
       <div class="ai-messages" id="ai-messages">
         <!-- Welcome message -->
         <div class="ai-message assistant">
-          G'day! I'm your AI tour guide for the Whitsundays. I can help you find the perfect tour based on your interests, budget, and travel style. What kind of adventure are you looking for today?
+          G'day! 🌊 Welcome to the Whitsundays - you're about to discover one of the most beautiful places on Earth! I'm here to help you find your perfect adventure. Whether you're dreaming of snorkeling the Great Barrier Reef, walking the world-famous Whitehaven Beach, or sailing through paradise - I've got you covered! What sounds exciting to you?
         </div>
       </div>
     </div>
@@ -12377,6 +12604,10 @@
       const aiPage = document.getElementById('ai-assistant-page');
       if (aiPage) {
         aiPage.classList.add('active');
+        // Add class to body to hide other page elements (but not AI header)
+        document.body.classList.add('ai-assistant-open');
+        // Set URL hash for AI assistant
+        window.location.hash = 'ai-assistant';
         // Focus the text input
         setTimeout(() => {
           const input = document.getElementById('ai-text-input');
@@ -12390,6 +12621,17 @@
       const aiPage = document.getElementById('ai-assistant-page');
       if (aiPage) {
         aiPage.classList.remove('active');
+        // Remove class from body to show other elements again
+        document.body.classList.remove('ai-assistant-open');
+      }
+      // Clear tour cards
+      const tourCardsContainer = document.getElementById('ai-tour-cards');
+      if (tourCardsContainer) {
+        tourCardsContainer.innerHTML = '';
+      }
+      const chatContainer = document.getElementById('ai-chat-container');
+      if (chatContainer) {
+        chatContainer.classList.remove('with-cards');
       }
       // Stop recording if active
       if (isRecording) {
@@ -12397,42 +12639,229 @@
       }
     }
     
-    window.sendAIMessage = function() {
+    // Store conversation history for AI context
+    let aiConversationHistory = [];
+    let currentAITourCards = []; // Currently displayed tour cards
+    
+    // Display tour recommendation cards
+    async function displayAITourCards(tourNames) {
+      const container = document.getElementById('ai-tour-cards');
+      const chatContainer = document.getElementById('ai-chat-container');
+      if (!container) return;
+      
+      // Clear existing cards
+      container.innerHTML = '';
+      currentAITourCards = [];
+      
+      // Limit to 4 cards
+      const limitedNames = tourNames.slice(0, 4);
+      
+      if (limitedNames.length === 0) {
+        chatContainer.classList.remove('with-cards');
+        return;
+      }
+      
+      chatContainer.classList.add('with-cards');
+      
+      // Find matching tours from mapTourData
+      for (const name of limitedNames) {
+        const searchName = name.toLowerCase().replace(/\*\*/g, '').trim();
+        
+        // Search for matching tour
+        let matchedTour = null;
+        if (typeof mapTourData !== 'undefined') {
+          for (const [key, tour] of Object.entries(mapTourData)) {
+            if (tour.name && tour.name.toLowerCase().includes(searchName.substring(0, 15))) {
+              matchedTour = { ...tour, key };
+              break;
+            }
+          }
+        }
+        
+        if (matchedTour) {
+          currentAITourCards.push(matchedTour);
+          const card = createAITourCard(matchedTour);
+          container.appendChild(card);
+        }
+      }
+    }
+    
+    // Create a tour card element
+    function createAITourCard(tour) {
+      const card = document.createElement('div');
+      card.className = 'ai-tour-card';
+      card.dataset.tourKey = tour.key;
+      card.dataset.tourName = tour.name;
+      
+      const thumbnail = tour.thumbnail || '/static/placeholder.jpg';
+      const price = tour.price ? `From $${tour.price}` : '';
+      
+      card.innerHTML = `
+        <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')"></div>
+        <div class="ai-tour-card-info">
+          <p class="ai-tour-card-name">${tour.name}</p>
+          <p class="ai-tour-card-company">${tour.company || ''}</p>
+          <p class="ai-tour-card-price">${price}</p>
+        </div>
+      `;
+      
+      card.onclick = () => {
+        if (typeof openTourDetail === 'function') {
+          closeAIAssistant();
+          openTourDetail(tour.key);
+        }
+      };
+      
+      return card;
+    }
+    
+    // Highlight a specific tour card
+    function highlightAITourCard(tourName) {
+      const cards = document.querySelectorAll('.ai-tour-card');
+      const searchName = tourName.toLowerCase();
+      
+      cards.forEach(card => {
+        const cardName = card.dataset.tourName?.toLowerCase() || '';
+        if (cardName.includes(searchName.substring(0, 10)) || searchName.includes(cardName.substring(0, 10))) {
+          card.classList.add('highlighted');
+        } else {
+          card.classList.remove('highlighted');
+        }
+      });
+    }
+    
+    // Clear all highlights
+    function clearAITourHighlights() {
+      document.querySelectorAll('.ai-tour-card').forEach(card => {
+        card.classList.remove('highlighted');
+      });
+    }
+    
+    // Parse tour names from AI response
+    function parseTourRecommendations(response) {
+      const tours = [];
+      
+      // Look for **Tour Name** pattern
+      const boldPattern = /\*\*([^*]+)\*\*/g;
+      let match;
+      while ((match = boldPattern.exec(response)) !== null) {
+        const name = match[1].trim();
+        // Filter out non-tour text
+        if (name.length > 5 && !name.toLowerCase().includes('enjoy') && !name.toLowerCase().includes('experience')) {
+          tours.push(name);
+        }
+      }
+      
+      // Also look for numbered list: 1. Tour Name -
+      const numberedPattern = /\d+\.\s*\*?\*?([^*\-–]+)/g;
+      while ((match = numberedPattern.exec(response)) !== null) {
+        const name = match[1].trim();
+        if (name.length > 5 && !tours.includes(name)) {
+          tours.push(name);
+        }
+      }
+      
+      return [...new Set(tours)].slice(0, 4); // Unique, max 4
+    }
+    
+    window.sendAIMessage = async function() {
       const input = document.getElementById('ai-text-input');
       const messagesContainer = document.getElementById('ai-messages');
+      const container = document.getElementById('ai-chat-container');
       
       if (!input || !messagesContainer) return;
       
       const message = input.value.trim();
       if (!message) return;
       
-      // Add user message
+      // Add user message to UI
       const userMsg = document.createElement('div');
       userMsg.className = 'ai-message user';
       userMsg.textContent = message;
       messagesContainer.appendChild(userMsg);
       
+      // Add to conversation history
+      aiConversationHistory.push({ role: 'user', content: message });
+      
       // Clear input
       input.value = '';
       
-      // Scroll to bottom
-      const container = document.getElementById('ai-chat-container');
+      // Auto-scroll to show new message
       if (container) {
-        container.scrollTop = container.scrollHeight;
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 50);
       }
       
-      // TODO: Send to AI backend and get response
-      // For now, show a placeholder response
-      setTimeout(() => {
+      // Show typing indicator
+      const typingMsg = document.createElement('div');
+      typingMsg.className = 'ai-message assistant typing';
+      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
+      messagesContainer.appendChild(typingMsg);
+      
+      if (container) {
+        setTimeout(() => {
+          container.scrollTop = container.scrollHeight;
+        }, 50);
+      }
+      
+      try {
+        // Send to /chat endpoint
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: message,
+            language: typeof currentLanguage !== 'undefined' ? currentLanguage : 'en',
+            history: aiConversationHistory.slice(-10) // Last 10 messages for context
+          })
+        });
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        typingMsg.remove();
+        
+        const responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
+        
+        // Add AI response
         const assistantMsg = document.createElement('div');
         assistantMsg.className = 'ai-message assistant';
-        assistantMsg.textContent = "I'm still learning! Soon I'll be able to help you find the perfect Whitsundays tour. For now, try our Quick Decision mode for personalized recommendations!";
+        assistantMsg.textContent = responseText;
         messagesContainer.appendChild(assistantMsg);
         
-        if (container) {
-          container.scrollTop = container.scrollHeight;
+        // Add to conversation history
+        aiConversationHistory.push({ role: 'assistant', content: responseText });
+        
+        // Check for tour recommendations and display cards
+        const recommendedTours = parseTourRecommendations(responseText);
+        if (recommendedTours.length > 0) {
+          displayAITourCards(recommendedTours);
+          
+          // Highlight first tour mentioned
+          if (recommendedTours[0]) {
+            setTimeout(() => highlightAITourCard(recommendedTours[0]), 600);
+            setTimeout(() => clearAITourHighlights(), 3000);
+          }
         }
-      }, 1000);
+        
+        // Auto-scroll to show new response
+        if (container) {
+          setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+          }, 50);
+        }
+      } catch (error) {
+        console.error('Chat error:', error);
+        // Remove typing indicator
+        typingMsg.remove();
+        
+        // Show error message
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'ai-message assistant';
+        errorMsg.textContent = "Sorry, I'm having trouble connecting. Please try again in a moment!";
+        messagesContainer.appendChild(errorMsg);
+      }
     }
     
     window.toggleAIMicrophone = function() {
@@ -12497,6 +12926,25 @@
     } else {
       initializeApp();
     }
+    
+    // Handle URL hash for AI assistant
+    function checkAIAssistantHash() {
+      if (window.location.hash === '#ai-assistant') {
+        setTimeout(() => {
+          openAIAssistant();
+        }, 500);
+      }
+    }
+    
+    // Check on page load
+    checkAIAssistantHash();
+    
+    // Also listen for hash changes
+    window.addEventListener('hashchange', function() {
+      if (window.location.hash === '#ai-assistant') {
+        openAIAssistant();
+      }
+    });
     
     // Helper function to generate star display
     function generateStars(rating, fullOnly = false) {
