@@ -12920,9 +12920,9 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Speak the response using ElevenLabs TTS
-        if (typeof speakWithElevenLabs === 'function') {
+        if (window.speakWithElevenLabs) {
           const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-          speakWithElevenLabs(responseText, lang);
+          window.speakWithElevenLabs(responseText, lang);
         }
         
         // Check for tour recommendations and display cards
@@ -20910,7 +20910,7 @@
      * @param {string} text - Text to speak
      * @param {string} language - Language code (default: 'en')
      */
-    async function speakWithElevenLabs(text, language = 'en') {
+    window.speakWithElevenLabs = async function(text, language = 'en') {
       if (!text || text.trim().length === 0) {
         console.log('No text to speak');
         return;
