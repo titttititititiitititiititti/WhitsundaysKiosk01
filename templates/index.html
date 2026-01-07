@@ -20790,6 +20790,8 @@
   
   <!-- ElevenLabs TTS Integration for AI Assistant -->
   <script>
+    console.log('🔧 TTS Script loading...');
+    
     // TTS Audio element and state
     let ttsAudio = null;
     let ttsAudioContext = null;
@@ -21064,9 +21066,12 @@
     }
     
     // Initialize when AI assistant opens
+    console.log('🔧 Setting up openAIAssistant override...');
     const originalOpenAIAssistant = window.openAIAssistant;
+    console.log('🔧 Original openAIAssistant:', typeof originalOpenAIAssistant);
+    
     window.openAIAssistant = function() {
-      console.log('🤖 Opening AI Assistant with TTS');
+      console.log('🤖 Opening AI Assistant with TTS (OVERRIDE CALLED)');
       if (originalOpenAIAssistant) {
         originalOpenAIAssistant();
       }
@@ -21124,6 +21129,10 @@
     // Also clear visualizer position when cards are cleared
     const originalClearCards = window.displayAITourCards;
     // Will be handled in displayAITourCards function
+    
+    console.log('🔧 TTS Script fully loaded. window.openAIAssistant is now:', typeof window.openAIAssistant);
+    console.log('🔧 window.playWelcomeMessage is:', typeof window.playWelcomeMessage);
+    console.log('🔧 window.speakWithElevenLabs is:', typeof window.speakWithElevenLabs);
   </script>
 </body>
 </html>
