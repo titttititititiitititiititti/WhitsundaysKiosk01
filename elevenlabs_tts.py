@@ -13,46 +13,48 @@ ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 
 # Voice IDs for different languages and styles
-# These are ElevenLabs' pre-made voices - very natural sounding!
+# Hannah - Natural Australian Voice (matches welcome message!)
+HANNAH_VOICE_ID = 'M7ya1YbaeFaPXljg9BpK'
+
 VOICE_MAP = {
     'en': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',  # Sarah - Professional female (great for tours!)
-        'female': 'EXAVITQu4vr4xnSDxMaL',   # Sarah
-        'male': 'TxGEqnHWrfWFTfGW9XjX',     # Josh - Friendly male
+        'default': HANNAH_VOICE_ID,  # Hannah - Natural Australian Voice
+        'female': HANNAH_VOICE_ID,   # Hannah
+        'male': 'TxGEqnHWrfWFTfGW9XjX',     # Josh - Friendly male (backup)
     },
     'zh': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',  # Sarah (multilingual)
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'ja': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'ko': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'de': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'fr': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'es': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
     'hi': {
-        'default': 'EXAVITQu4vr4xnSDxMaL',
-        'female': 'EXAVITQu4vr4xnSDxMaL',
+        'default': HANNAH_VOICE_ID,
+        'female': HANNAH_VOICE_ID,
         'male': 'TxGEqnHWrfWFTfGW9XjX',
     },
 }
