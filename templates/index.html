@@ -12641,29 +12641,46 @@
         }, 300);
         
         // Initialize TTS, visualizer, and play welcome message
+        console.log('🔧 Setting up TTS initialization timeout...');
         setTimeout(() => {
+          console.log('⏰ TTS init timeout fired');
+          console.log('  window.initTTSAudio:', typeof window.initTTSAudio);
+          console.log('  window.initParticleVisualizer:', typeof window.initParticleVisualizer);
+          console.log('  window.playWelcomeMessage:', typeof window.playWelcomeMessage);
+          
           // Initialize TTS audio
           if (window.initTTSAudio) {
+            console.log('🎤 Calling initTTSAudio...');
             window.initTTSAudio();
+          } else {
+            console.error('❌ initTTSAudio not found!');
           }
           
           // Initialize particle visualizer
           if (window.initParticleVisualizer) {
+            console.log('✨ Calling initParticleVisualizer...');
             window.initParticleVisualizer();
+          } else {
+            console.error('❌ initParticleVisualizer not found!');
           }
           
           // Show visualizer
           const visualizerContainer = document.getElementById('ai-visualizer-container');
           if (visualizerContainer) {
             visualizerContainer.classList.remove('hidden');
+            console.log('👁️ Visualizer container shown');
           }
           
           // Play welcome message
+          console.log('⏳ Setting up welcome message timeout...');
           setTimeout(() => {
+            console.log('⏰ Welcome message timeout fired');
+            console.log('  window.playWelcomeMessage:', typeof window.playWelcomeMessage);
             if (window.playWelcomeMessage) {
+              console.log('🎬 Calling playWelcomeMessage...');
               window.playWelcomeMessage();
             } else {
-              console.error('❌ playWelcomeMessage not found');
+              console.error('❌ playWelcomeMessage not found!');
             }
           }, 200);
         }, 300);
@@ -20818,6 +20835,8 @@
   
   <!-- ElevenLabs TTS Integration for AI Assistant -->
   <script>
+    console.log('🚀 TTS Script loaded - defining window functions');
+    
     // TTS Audio element and state
     let ttsAudio = null;
     let ttsAudioContext = null;
@@ -21137,6 +21156,9 @@
     // Also clear visualizer position when cards are cleared
     const originalClearCards = window.displayAITourCards;
     // Will be handled in displayAITourCards function
+    
+    console.log('✅ TTS Script finished - window.playWelcomeMessage:', typeof window.playWelcomeMessage);
+    console.log('✅ TTS Script finished - window.initTTSAudio:', typeof window.initTTSAudio);
   </script>
 </body>
 </html>
