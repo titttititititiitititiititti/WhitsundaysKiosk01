@@ -12862,9 +12862,9 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Speak the response using ElevenLabs TTS
-        if (typeof speakWithElevenLabs === 'function') {
+        if (typeof window.speakWithElevenLabs === 'function') {
           const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-          speakWithElevenLabs(responseText, lang);
+          window.speakWithElevenLabs(responseText, lang);
         }
         
         // Check for tour recommendations and display cards
@@ -20799,7 +20799,7 @@
     /**
      * Initialize TTS audio element and connect to orb
      */
-    function initTTSAudio() {
+    window.initTTSAudio = function() {
       if (ttsInitialized) return ttsAudio;
       
       console.log('🎤 Initializing TTS audio...');
@@ -20850,7 +20850,7 @@
      * @param {string} text - Text to speak
      * @param {string} language - Language code (default: 'en')
      */
-    async function speakWithElevenLabs(text, language = 'en') {
+    window.speakWithElevenLabs = async function(text, language = 'en') {
       if (!text || text.trim().length === 0) {
         console.log('No text to speak');
         return;
@@ -20891,7 +20891,7 @@
       try {
         // Initialize audio if needed
         if (!ttsAudio) {
-          initTTSAudio();
+          window.initTTSAudio();
         }
         
         // Stop any currently playing audio
@@ -21073,7 +21073,7 @@
       
       // Initialize TTS and particle visualizer
       setTimeout(() => {
-        initTTSAudio();
+        window.initTTSAudio();
         if (window.initParticleVisualizer) {
           const visualizer = window.initParticleVisualizer();
           console.log('✨ Particle visualizer initialized:', visualizer);
