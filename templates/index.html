@@ -12639,7 +12639,80 @@
           const input = document.getElementById('ai-text-input');
           if (input) input.focus();
         }, 300);
+        
+        // Initialize visualizer and play welcome message
+        setTimeout(() => {
+          // Initialize TTS
+          if (typeof window.initTTSAudio === 'function') {
+            window.initTTSAudio();
+          }
+          
+          // Initialize particle visualizer
+          if (typeof window.initParticleVisualizer === 'function') {
+            window.initParticleVisualizer();
+          }
+          
+          // Show visualizer
+          const visualizerContainer = document.getElementById('ai-visualizer-container');
+          if (visualizerContainer) {
+            visualizerContainer.classList.remove('hidden');
+          }
+          
+          // Play welcome message
+          setTimeout(() => {
+            if (typeof window.playWelcomeMessage === 'function') {
+              window.playWelcomeMessage();
+            } else {
+              // Fallback: show welcome message directly
+              showWelcomeMessageFallback();
+            }
+          }, 200);
+        }, 300);
       }
+    }
+    
+    // Fallback welcome message function
+    function showWelcomeMessageFallback() {
+      console.log('📝 Using fallback welcome message');
+      const messagesContainer = document.getElementById('ai-messages');
+      if (!messagesContainer) return;
+      
+      // Check if already shown
+      if (messagesContainer.querySelector('.ai-message')) return;
+      
+      const welcomeText = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
+      
+      // Show typing indicator
+      const typingMsg = document.createElement('div');
+      typingMsg.className = 'ai-message assistant typing';
+      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
+      messagesContainer.appendChild(typingMsg);
+      
+      // After delay, show actual message
+      setTimeout(() => {
+        typingMsg.remove();
+        const welcomeMsg = document.createElement('div');
+        welcomeMsg.className = 'ai-message assistant';
+        welcomeMsg.textContent = welcomeText;
+        messagesContainer.appendChild(welcomeMsg);
+        
+        // Initialize conversation history
+        aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
+        
+        // Try to play welcome audio
+        const welcomeAudio = document.getElementById('welcome-audio');
+        if (welcomeAudio) {
+          welcomeAudio.currentTime = 0;
+          welcomeAudio.play().catch(e => console.log('Audio autoplay blocked:', e));
+          
+          welcomeAudio.onplay = () => {
+            if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+          };
+          welcomeAudio.onended = () => {
+            if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          };
+        }
+      }, 1500);
     }
     
     window.closeAIAssistant = function() {
@@ -12662,6 +12735,34 @@
       // Stop recording if active
       if (isRecording) {
         toggleAIMicrophone();
+      }
+      
+      // Stop TTS if playing
+      if (typeof window.stopTTS === 'function') {
+        window.stopTTS();
+      }
+      
+      // Stop welcome audio if playing
+      const welcomeAudio = document.getElementById('welcome-audio');
+      if (welcomeAudio) {
+        welcomeAudio.pause();
+        welcomeAudio.currentTime = 0;
+      }
+      
+      // Reset welcome message flag so it plays again next time
+      window.welcomeMessagePlayed = false;
+      window.welcomeAudioConnected = false;
+      
+      // Hide visualizer
+      const visualizerContainer = document.getElementById('ai-visualizer-container');
+      if (visualizerContainer) {
+        visualizerContainer.classList.add('hidden');
+        visualizerContainer.classList.remove('with-cards');
+      }
+      
+      // Stop visualizer animation
+      if (window.particleVisualizer) {
+        window.particleVisualizer.stopSpeaking();
       }
     }
     
@@ -20978,19 +21079,19 @@
     // Welcome message content (with emojis)
     const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
     
-    // Flag to prevent duplicate welcome messages
-    let welcomeMessagePlayed = false;
+    // Flag to prevent duplicate welcome messages (global for reset on close)
+    window.welcomeMessagePlayed = false;
     
     /**
      * Play the welcome message with animation and pre-recorded audio
      */
     window.playWelcomeMessage = async function() {
       // Prevent duplicate calls
-      if (welcomeMessagePlayed) {
+      if (window.welcomeMessagePlayed) {
         console.log('⚠️ Welcome message already played, skipping');
         return;
       }
-      welcomeMessagePlayed = true;
+      window.welcomeMessagePlayed = true;
       
       const messagesContainer = document.getElementById('ai-messages');
       if (!messagesContainer) return;
@@ -21065,66 +21166,10 @@
       }
     }
     
-    // Initialize when AI assistant opens
-    console.log('🔧 Setting up openAIAssistant override...');
-    const originalOpenAIAssistant = window.openAIAssistant;
-    console.log('🔧 Original openAIAssistant:', typeof originalOpenAIAssistant);
+    // Note: openAIAssistant initialization moved to main script block
+    // This ensures it works even if this script doesn't load
     
-    window.openAIAssistant = function() {
-      console.log('🤖 Opening AI Assistant with TTS (OVERRIDE CALLED)');
-      if (originalOpenAIAssistant) {
-        originalOpenAIAssistant();
-      }
-      
-      // Initialize TTS and particle visualizer
-      setTimeout(() => {
-        window.initTTSAudio();
-        if (window.initParticleVisualizer) {
-          const visualizer = window.initParticleVisualizer();
-          console.log('✨ Particle visualizer initialized:', visualizer);
-        }
-        // Remove the visualizer hidden class if present
-        const visualizerContainer = document.getElementById('ai-visualizer-container');
-        if (visualizerContainer) {
-          visualizerContainer.classList.remove('hidden');
-          console.log('✨ Visualizer container visible');
-        }
-        
-        // Play welcome message after a small delay
-        setTimeout(() => {
-          window.playWelcomeMessage();
-        }, 200);
-      }, 300);
-    };
-    
-    // Hide visualizer when assistant closes
-    const originalCloseAIAssistant = window.closeAIAssistant;
-    window.closeAIAssistant = function() {
-      console.log('🤖 Closing AI Assistant');
-      window.stopTTS();
-      
-      // Stop welcome audio if playing
-      const welcomeAudio = document.getElementById('welcome-audio');
-      if (welcomeAudio) {
-        welcomeAudio.pause();
-        welcomeAudio.currentTime = 0;
-      }
-      
-      // Reset welcome message flag so it plays again next time
-      welcomeMessagePlayed = false;
-      window.welcomeAudioConnected = false;
-      
-      // Reset visualizer position (remove with-cards class)
-      const visualizerContainer = document.getElementById('ai-visualizer-container');
-      if (visualizerContainer) {
-        visualizerContainer.classList.add('hidden');
-        visualizerContainer.classList.remove('with-cards');
-      }
-      
-      if (originalCloseAIAssistant) {
-        originalCloseAIAssistant();
-      }
-    };
+    // Note: closeAIAssistant cleanup moved to main script block
     
     // Also clear visualizer position when cards are cleared
     const originalClearCards = window.displayAITourCards;
