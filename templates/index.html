@@ -12624,6 +12624,7 @@
     
     let isRecording = false;
     let aiMessages = [];
+    window.welcomeMessagePlayed = false; // Initialize early
     
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
@@ -12640,49 +12641,61 @@
           if (input) input.focus();
         }, 300);
         
-        // Initialize TTS, visualizer, and play welcome message
-        console.log('🔧 Setting up TTS initialization timeout...');
+        // Initialize visualizer and show welcome message
         setTimeout(() => {
-          console.log('⏰ TTS init timeout fired');
-          console.log('  window.initTTSAudio:', typeof window.initTTSAudio);
-          console.log('  window.initParticleVisualizer:', typeof window.initParticleVisualizer);
-          console.log('  window.playWelcomeMessage:', typeof window.playWelcomeMessage);
-          
-          // Initialize TTS audio
-          if (window.initTTSAudio) {
-            console.log('🎤 Calling initTTSAudio...');
-            window.initTTSAudio();
-          } else {
-            console.error('❌ initTTSAudio not found!');
-          }
-          
           // Initialize particle visualizer
           if (window.initParticleVisualizer) {
-            console.log('✨ Calling initParticleVisualizer...');
             window.initParticleVisualizer();
-          } else {
-            console.error('❌ initParticleVisualizer not found!');
           }
           
           // Show visualizer
           const visualizerContainer = document.getElementById('ai-visualizer-container');
           if (visualizerContainer) {
             visualizerContainer.classList.remove('hidden');
-            console.log('👁️ Visualizer container shown');
           }
           
-          // Play welcome message
-          console.log('⏳ Setting up welcome message timeout...');
-          setTimeout(() => {
-            console.log('⏰ Welcome message timeout fired');
-            console.log('  window.playWelcomeMessage:', typeof window.playWelcomeMessage);
-            if (window.playWelcomeMessage) {
-              console.log('🎬 Calling playWelcomeMessage...');
-              window.playWelcomeMessage();
-            } else {
-              console.error('❌ playWelcomeMessage not found!');
-            }
-          }, 200);
+          // Show welcome message directly (no external function dependency)
+          const messagesContainer = document.getElementById('ai-messages');
+          if (messagesContainer && !window.welcomeMessagePlayed) {
+            window.welcomeMessagePlayed = true;
+            
+            // Clear existing and show typing indicator
+            messagesContainer.innerHTML = '';
+            const typingMsg = document.createElement('div');
+            typingMsg.className = 'ai-message assistant typing';
+            typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
+            messagesContainer.appendChild(typingMsg);
+            
+            // After 1.5 seconds, show the actual message
+            setTimeout(() => {
+              typingMsg.remove();
+              
+              const welcomeText = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
+              
+              const welcomeMsg = document.createElement('div');
+              welcomeMsg.className = 'ai-message assistant';
+              welcomeMsg.textContent = welcomeText;
+              messagesContainer.appendChild(welcomeMsg);
+              
+              // Initialize conversation history
+              if (typeof aiConversationHistory !== 'undefined') {
+                aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
+              }
+              
+              // Play welcome audio
+              const welcomeAudio = document.getElementById('welcome-audio');
+              if (welcomeAudio) {
+                welcomeAudio.play().catch(e => console.log('Audio autoplay blocked:', e));
+                
+                welcomeAudio.onplay = () => {
+                  if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+                };
+                welcomeAudio.onended = () => {
+                  if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+                };
+              }
+            }, 1500);
+          }
         }, 300);
       }
     }
