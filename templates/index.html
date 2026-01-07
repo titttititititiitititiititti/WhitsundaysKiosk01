@@ -12798,14 +12798,39 @@
       for (const name of limitedNames) {
         const searchName = name.toLowerCase().replace(/\*\*/g, '').trim();
         
-        // Search for matching tour
+        // Search for matching tour - try multiple matching strategies
         let matchedTour = null;
         if (typeof mapTourData !== 'undefined') {
+          // Extract key words from search name (ignore common words)
+          const searchWords = searchName.split(/\s+/).filter(w => 
+            w.length > 3 && !['the', 'and', 'day', 'full', 'half', 'tour'].includes(w)
+          );
+          
           for (const [key, tour] of Object.entries(mapTourData)) {
-            // Skip if already added
             if (addedTourKeys.has(key)) continue;
+            if (!tour.name) continue;
             
-            if (tour.name && tour.name.toLowerCase().includes(searchName.substring(0, 15))) {
+            const tourNameLower = tour.name.toLowerCase();
+            
+            // Strategy 1: Direct substring match (first 15 chars)
+            if (tourNameLower.includes(searchName.substring(0, 15))) {
+              matchedTour = { ...tour, key };
+              break;
+            }
+            
+            // Strategy 2: Match key words (at least 2 words must match)
+            let matchCount = 0;
+            for (const word of searchWords) {
+              if (tourNameLower.includes(word)) matchCount++;
+            }
+            if (matchCount >= 2) {
+              matchedTour = { ...tour, key };
+              break;
+            }
+            
+            // Strategy 3: Check tour key for matches
+            const keyLower = key.toLowerCase();
+            if (searchWords.some(w => keyLower.includes(w))) {
               matchedTour = { ...tour, key };
               break;
             }
@@ -12918,13 +12943,13 @@
     }
     
     function splitIntoChunks(text) {
-      // Split into sentences, aim for ~150 chars per chunk for fast response
+      // Split into sentences, aim for ~250 chars per chunk (balance speed vs gaps)
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       const chunks = [];
       let currentChunk = '';
       
       for (const sentence of sentences) {
-        if (currentChunk.length + sentence.length < 180) {
+        if (currentChunk.length + sentence.length < 280) {
           currentChunk += sentence;
         } else {
           if (currentChunk) chunks.push(currentChunk.trim());
@@ -12987,12 +13012,13 @@
           if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
         };
         ttsAudioElement.onended = () => {
-          console.log('🔊 TTS chunk ended');
-          playNextInQueue(); // Play next chunk
+          console.log('🔊 TTS chunk ended, queue length:', ttsAudioQueue.length);
+          // Small delay to let prefetch catch up if needed
+          setTimeout(() => playNextInQueue(), 100);
         };
         ttsAudioElement.onerror = () => {
           console.error('🔊 TTS playback error');
-          playNextInQueue();
+          setTimeout(() => playNextInQueue(), 100);
         };
         
         // Connect to visualizer
@@ -13014,24 +13040,36 @@
       console.log(`📝 Split into ${chunks.length} chunks`);
       
       try {
-        // Fetch first chunk immediately and start playing
-        console.log('📡 Fetching first chunk...');
-        const firstBlob = await fetchTTSChunk(chunks[0], language);
-        console.log('📡 First chunk ready, playing...');
-        
-        ttsAudioQueue.push(firstBlob);
-        playNextInQueue();
-        
-        // Prefetch remaining chunks while first plays
-        if (chunks.length > 1) {
-          console.log(`📡 Prefetching ${chunks.length - 1} more chunks...`);
-          for (let i = 1; i < chunks.length; i++) {
-            fetchTTSChunk(chunks[i], language)
-              .then(blob => {
-                ttsAudioQueue.push(blob);
-                console.log(`📡 Chunk ${i + 1} prefetched`);
-              })
-              .catch(e => console.error(`Chunk ${i + 1} failed:`, e));
+        if (chunks.length === 1) {
+          // Single chunk - just fetch and play
+          console.log('📡 Single chunk, fetching...');
+          const blob = await fetchTTSChunk(chunks[0], language);
+          ttsAudioQueue.push(blob);
+          playNextInQueue();
+        } else {
+          // Multiple chunks - fetch first two before playing, then prefetch rest
+          console.log('📡 Fetching first 2 chunks...');
+          const [first, second] = await Promise.all([
+            fetchTTSChunk(chunks[0], language),
+            fetchTTSChunk(chunks[1], language)
+          ]);
+          
+          ttsAudioQueue.push(first);
+          ttsAudioQueue.push(second);
+          console.log('📡 First 2 chunks ready, starting playback...');
+          playNextInQueue();
+          
+          // Prefetch remaining chunks
+          if (chunks.length > 2) {
+            console.log(`📡 Prefetching ${chunks.length - 2} more chunks...`);
+            for (let i = 2; i < chunks.length; i++) {
+              fetchTTSChunk(chunks[i], language)
+                .then(blob => {
+                  ttsAudioQueue.push(blob);
+                  console.log(`📡 Chunk ${i + 1}/${chunks.length} prefetched`);
+                })
+                .catch(e => console.error(`Chunk ${i + 1} failed:`, e));
+            }
           }
         }
         
