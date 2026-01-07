@@ -12920,9 +12920,14 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Speak the response using ElevenLabs TTS
+        console.log('🔊 Attempting to speak response...');
+        console.log('🔊 window.speakWithElevenLabs exists:', !!window.speakWithElevenLabs);
         if (window.speakWithElevenLabs) {
           const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+          console.log('🔊 Calling speakWithElevenLabs with lang:', lang);
           window.speakWithElevenLabs(responseText, lang);
+        } else {
+          console.error('❌ speakWithElevenLabs not found on window!');
         }
         
         // Check for tour recommendations and display cards
@@ -20957,7 +20962,7 @@
       try {
         // Initialize audio if needed
         if (!ttsAudio) {
-          initTTSAudio();
+          window.initTTSAudio();
         }
         
         // Stop any currently playing audio

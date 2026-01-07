@@ -277,17 +277,26 @@ class ParticleVisualizer {
         }
         const rms = Math.sqrt(sum / count) / 255;
         
-        // If we got real data, use it
-        if (rms > 0.015) {
+        // DEBUG: Log real audio data occasionally
+        if (Math.random() < 0.02) {
+          console.log('🎵 Real audio RMS:', rms.toFixed(4), 'Connected:', this.isAudioConnected);
+        }
+        
+        // If we got ANY real data, use it (very sensitive)
+        if (rms > 0.005) {
           return Math.min(1, rms * this.settings.amplitudeMultiplier);
         }
       } catch (e) {
-        // Fall through to simulated
+        console.warn('Audio analysis error:', e);
       }
     }
     
-    // SIMULATED SPEECH PATTERN - natural rhythm when speaking
-    // Creates organic, speech-like variations
+    // SIMULATED SPEECH PATTERN - fallback when no real audio
+    // Only used if real audio connection failed
+    if (Math.random() < 0.01) {
+      console.log('⚠️ Using simulated audio (no real connection)');
+    }
+    
     const t = this.time;
     const wave1 = Math.sin(t * 6) * 0.2;           // Fast pulse (syllables)
     const wave2 = Math.sin(t * 2.5) * 0.15;        // Medium rhythm (words)
@@ -772,4 +781,5 @@ window.testVisualizer = function() {
     initParticleVisualizer();
   }
 };
+
 
