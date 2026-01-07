@@ -20962,7 +20962,7 @@
     /**
      * Stop current TTS playback
      */
-    function stopTTS() {
+    window.stopTTS = function() {
       console.log('⏹️ Stopping TTS');
       if (ttsAudio) {
         ttsAudio.pause();
@@ -20982,7 +20982,7 @@
     /**
      * Play the welcome message with animation and pre-recorded audio
      */
-    async function playWelcomeMessage() {
+    window.playWelcomeMessage = async function() {
       // Prevent duplicate calls
       if (welcomeMessagePlayed) {
         console.log('⚠️ Welcome message already played, skipping');
@@ -21087,7 +21087,7 @@
         
         // Play welcome message after a small delay
         setTimeout(() => {
-          playWelcomeMessage();
+          window.playWelcomeMessage();
         }, 200);
       }, 300);
     };
@@ -21096,7 +21096,7 @@
     const originalCloseAIAssistant = window.closeAIAssistant;
     window.closeAIAssistant = function() {
       console.log('🤖 Closing AI Assistant');
-      stopTTS();
+      window.stopTTS();
       
       // Stop welcome audio if playing
       const welcomeAudio = document.getElementById('welcome-audio');
