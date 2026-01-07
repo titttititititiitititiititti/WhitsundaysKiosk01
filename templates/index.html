@@ -12792,7 +12792,9 @@
       // Cards showing - move visualizer to left
       if (visualizerContainer) visualizerContainer.classList.add('with-cards');
       
-      // Find matching tours from mapTourData
+      // Find matching tours from mapTourData (no duplicates)
+      const addedTourKeys = new Set();
+      
       for (const name of limitedNames) {
         const searchName = name.toLowerCase().replace(/\*\*/g, '').trim();
         
@@ -12800,6 +12802,9 @@
         let matchedTour = null;
         if (typeof mapTourData !== 'undefined') {
           for (const [key, tour] of Object.entries(mapTourData)) {
+            // Skip if already added
+            if (addedTourKeys.has(key)) continue;
+            
             if (tour.name && tour.name.toLowerCase().includes(searchName.substring(0, 15))) {
               matchedTour = { ...tour, key };
               break;
@@ -12807,7 +12812,8 @@
           }
         }
         
-        if (matchedTour) {
+        if (matchedTour && !addedTourKeys.has(matchedTour.key)) {
+          addedTourKeys.add(matchedTour.key);
           currentAITourCards.push(matchedTour);
           const card = createAITourCard(matchedTour);
           container.appendChild(card);
@@ -12893,16 +12899,13 @@
       return [...new Set(tours)].slice(0, 4); // Unique, max 4
     }
     
-    // Inline ElevenLabs TTS function (guaranteed to work)
-    let inlineTTSAudio = null;
+    // Chunked TTS for faster response - plays first chunk while loading rest
+    let ttsAudioElement = null;
+    let ttsAudioQueue = [];
+    let ttsIsPlaying = false;
     
-    async function speakResponseWithTTS(text, language = 'en') {
-      if (!text || text.trim().length < 5) return;
-      
-      console.log('🎤 Speaking response with TTS...');
-      
-      // Clean text for TTS - remove emojis and special chars
-      let cleanText = text
+    function cleanTextForTTS(text) {
+      return text
         .replace(/\*\*([^*]+)\*\*/g, '$1')
         .replace(/\[TOUR:[^\]]+\]/g, '')
         .replace(/\[FILTER:[^\]]+\]/g, '')
@@ -12912,61 +12915,125 @@
         .replace(/\n+/g, '. ')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+    
+    function splitIntoChunks(text) {
+      // Split into sentences, aim for ~150 chars per chunk for fast response
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      const chunks = [];
+      let currentChunk = '';
       
-      if (cleanText.length > 800) cleanText = cleanText.substring(0, 800) + '...';
+      for (const sentence of sentences) {
+        if (currentChunk.length + sentence.length < 180) {
+          currentChunk += sentence;
+        } else {
+          if (currentChunk) chunks.push(currentChunk.trim());
+          currentChunk = sentence;
+        }
+      }
+      if (currentChunk.trim()) chunks.push(currentChunk.trim());
+      
+      // If only one chunk and it's long, just use it
+      return chunks.length > 0 ? chunks : [text];
+    }
+    
+    async function fetchTTSChunk(text, language) {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language, gender: 'female' })
+      });
+      
+      if (!response.ok) throw new Error(`TTS error: ${response.status}`);
+      return await response.blob();
+    }
+    
+    async function playNextInQueue() {
+      if (ttsAudioQueue.length === 0) {
+        ttsIsPlaying = false;
+        if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+        return;
+      }
+      
+      ttsIsPlaying = true;
+      const audioBlob = ttsAudioQueue.shift();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      ttsAudioElement.src = audioUrl;
+      try {
+        await ttsAudioElement.play();
+      } catch (e) {
+        console.error('Playback error:', e);
+        playNextInQueue();
+      }
+    }
+    
+    async function speakResponseWithTTS(text, language = 'en') {
+      if (!text || text.trim().length < 5) return;
+      
+      console.log('🎤 Speaking response with TTS...');
+      
+      const cleanText = cleanTextForTTS(text);
+      if (cleanText.length < 5) return;
+      
+      // Initialize audio element
+      if (!ttsAudioElement) {
+        ttsAudioElement = document.createElement('audio');
+        ttsAudioElement.id = 'chunked-tts-audio';
+        document.body.appendChild(ttsAudioElement);
+        
+        ttsAudioElement.onplay = () => {
+          console.log('🔊 TTS playing');
+          if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+        };
+        ttsAudioElement.onended = () => {
+          console.log('🔊 TTS chunk ended');
+          playNextInQueue(); // Play next chunk
+        };
+        ttsAudioElement.onerror = () => {
+          console.error('🔊 TTS playback error');
+          playNextInQueue();
+        };
+        
+        // Connect to visualizer
+        if (window.particleVisualizer) {
+          try {
+            window.particleVisualizer.connectAudio(ttsAudioElement);
+            console.log('🔊 Audio connected to visualizer');
+          } catch (e) {}
+        }
+      }
+      
+      // Stop current playback
+      ttsAudioElement.pause();
+      ttsAudioQueue = [];
+      ttsIsPlaying = false;
+      
+      // Split into chunks
+      const chunks = splitIntoChunks(cleanText);
+      console.log(`📝 Split into ${chunks.length} chunks`);
       
       try {
-        // Create audio element if needed
-        if (!inlineTTSAudio) {
-          inlineTTSAudio = document.createElement('audio');
-          inlineTTSAudio.id = 'inline-tts-audio';
-          document.body.appendChild(inlineTTSAudio);
-          
-          inlineTTSAudio.onplay = () => {
-            console.log('🔊 TTS playing');
-            if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
-          };
-          inlineTTSAudio.onended = () => {
-            console.log('🔊 TTS ended');
-            if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-          };
-        }
+        // Fetch first chunk immediately and start playing
+        console.log('📡 Fetching first chunk...');
+        const firstBlob = await fetchTTSChunk(chunks[0], language);
+        console.log('📡 First chunk ready, playing...');
         
-        // Stop any current playback
-        inlineTTSAudio.pause();
+        ttsAudioQueue.push(firstBlob);
+        playNextInQueue();
         
-        console.log('📡 Fetching TTS from /api/tts...');
-        const response = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: cleanText, language: language, gender: 'female' })
-        });
-        
-        console.log('📡 TTS response:', response.status);
-        
-        if (!response.ok) {
-          const errText = await response.text();
-          console.error('❌ TTS error:', errText);
-          return;
-        }
-        
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        // Connect to visualizer for real audio reactivity
-        if (window.particleVisualizer && !inlineTTSAudio._connectedToVisualizer) {
-          try {
-            window.particleVisualizer.connectAudio(inlineTTSAudio);
-            inlineTTSAudio._connectedToVisualizer = true;
-            console.log('🔊 Audio connected to visualizer');
-          } catch (e) {
-            console.log('Could not connect audio to visualizer:', e);
+        // Prefetch remaining chunks while first plays
+        if (chunks.length > 1) {
+          console.log(`📡 Prefetching ${chunks.length - 1} more chunks...`);
+          for (let i = 1; i < chunks.length; i++) {
+            fetchTTSChunk(chunks[i], language)
+              .then(blob => {
+                ttsAudioQueue.push(blob);
+                console.log(`📡 Chunk ${i + 1} prefetched`);
+              })
+              .catch(e => console.error(`Chunk ${i + 1} failed:`, e));
           }
         }
-        
-        inlineTTSAudio.src = audioUrl;
-        await inlineTTSAudio.play();
-        console.log('🔊 TTS audio playing!');
         
       } catch (error) {
         console.error('TTS error:', error);
