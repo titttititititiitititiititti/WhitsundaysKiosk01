@@ -12893,6 +12893,92 @@
       return [...new Set(tours)].slice(0, 4); // Unique, max 4
     }
     
+    // Inline ElevenLabs TTS function (guaranteed to work)
+    let inlineTTSAudio = null;
+    
+    async function speakResponseWithTTS(text, language = 'en') {
+      if (!text || text.trim().length < 5) return;
+      
+      console.log('🎤 Speaking response with TTS...');
+      
+      // Clean text for TTS
+      let cleanText = text
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/\[TOUR:[^\]]+\]/g, '')
+        .replace(/\[FILTER:[^\]]+\]/g, '')
+        .replace(/\[OPTIONS:[^\]]+\]/g, '')
+        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
+        .replace(/[\u{2600}-\u{26FF}]/gu, '')
+        .replace(/[\u{2700}-\u{27BF}]/gu, '')
+        .replace(/[\u{FE00}-\u{FE0F}]/gu, '')
+        .replace(/[\u{200D}]/gu, '')
+        .replace(/[\u{D800}-\u{DFFF}]/g, '')
+        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '')
+        .replace(/\n+/g, '. ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      if (cleanText.length > 800) cleanText = cleanText.substring(0, 800) + '...';
+      
+      try {
+        // Create audio element if needed
+        if (!inlineTTSAudio) {
+          inlineTTSAudio = document.createElement('audio');
+          inlineTTSAudio.id = 'inline-tts-audio';
+          document.body.appendChild(inlineTTSAudio);
+          
+          inlineTTSAudio.onplay = () => {
+            console.log('🔊 TTS playing');
+            if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+          };
+          inlineTTSAudio.onended = () => {
+            console.log('🔊 TTS ended');
+            if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          };
+        }
+        
+        // Stop any current playback
+        inlineTTSAudio.pause();
+        
+        console.log('📡 Fetching TTS from /api/tts...');
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: cleanText, language: language, gender: 'female' })
+        });
+        
+        console.log('📡 TTS response:', response.status);
+        
+        if (!response.ok) {
+          const errText = await response.text();
+          console.error('❌ TTS error:', errText);
+          return;
+        }
+        
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Connect to visualizer for real audio reactivity
+        if (window.particleVisualizer && !inlineTTSAudio._connectedToVisualizer) {
+          try {
+            window.particleVisualizer.connectAudio(inlineTTSAudio);
+            inlineTTSAudio._connectedToVisualizer = true;
+            console.log('🔊 Audio connected to visualizer');
+          } catch (e) {
+            console.log('Could not connect audio to visualizer:', e);
+          }
+        }
+        
+        inlineTTSAudio.src = audioUrl;
+        await inlineTTSAudio.play();
+        console.log('🔊 TTS audio playing!');
+        
+      } catch (error) {
+        console.error('TTS error:', error);
+        if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+      }
+    }
+    
     window.sendAIMessage = async function() {
       const input = document.getElementById('ai-text-input');
       const messagesContainer = document.getElementById('ai-messages');
@@ -12963,10 +13049,8 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Speak the response using ElevenLabs TTS
-        if (typeof window.speakWithElevenLabs === 'function') {
-          const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-          window.speakWithElevenLabs(responseText, lang);
-        }
+        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+        speakResponseWithTTS(responseText, lang);
         
         // Check for tour recommendations and display cards
         const recommendedTours = parseTourRecommendations(responseText);
