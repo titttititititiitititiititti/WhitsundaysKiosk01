@@ -12624,7 +12624,6 @@
     
     let isRecording = false;
     let aiMessages = [];
-    window.welcomeMessagePlayed = false; // Initialize early
     
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
@@ -12639,63 +12638,6 @@
         setTimeout(() => {
           const input = document.getElementById('ai-text-input');
           if (input) input.focus();
-        }, 300);
-        
-        // Initialize visualizer and show welcome message
-        setTimeout(() => {
-          // Initialize particle visualizer
-          if (window.initParticleVisualizer) {
-            window.initParticleVisualizer();
-          }
-          
-          // Show visualizer
-          const visualizerContainer = document.getElementById('ai-visualizer-container');
-          if (visualizerContainer) {
-            visualizerContainer.classList.remove('hidden');
-          }
-          
-          // Show welcome message directly (no external function dependency)
-          const messagesContainer = document.getElementById('ai-messages');
-          if (messagesContainer && !window.welcomeMessagePlayed) {
-            window.welcomeMessagePlayed = true;
-            
-            // Clear existing and show typing indicator
-            messagesContainer.innerHTML = '';
-            const typingMsg = document.createElement('div');
-            typingMsg.className = 'ai-message assistant typing';
-            typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
-            messagesContainer.appendChild(typingMsg);
-            
-            // After 1.5 seconds, show the actual message
-            setTimeout(() => {
-              typingMsg.remove();
-              
-              const welcomeText = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
-              
-              const welcomeMsg = document.createElement('div');
-              welcomeMsg.className = 'ai-message assistant';
-              welcomeMsg.textContent = welcomeText;
-              messagesContainer.appendChild(welcomeMsg);
-              
-              // Initialize conversation history
-              if (typeof aiConversationHistory !== 'undefined') {
-                aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
-              }
-              
-              // Play welcome audio
-              const welcomeAudio = document.getElementById('welcome-audio');
-              if (welcomeAudio) {
-                welcomeAudio.play().catch(e => console.log('Audio autoplay blocked:', e));
-                
-                welcomeAudio.onplay = () => {
-                  if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
-                };
-                welcomeAudio.onended = () => {
-                  if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-                };
-              }
-            }, 1500);
-          }
         }, 300);
       }
     }
@@ -12920,14 +12862,9 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Speak the response using ElevenLabs TTS
-        console.log('🔊 Attempting to speak response...');
-        console.log('🔊 window.speakWithElevenLabs exists:', !!window.speakWithElevenLabs);
-        if (window.speakWithElevenLabs) {
+        if (typeof speakWithElevenLabs === 'function') {
           const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-          console.log('🔊 Calling speakWithElevenLabs with lang:', lang);
-          window.speakWithElevenLabs(responseText, lang);
-        } else {
-          console.error('❌ speakWithElevenLabs not found on window!');
+          speakWithElevenLabs(responseText, lang);
         }
         
         // Check for tour recommendations and display cards
@@ -20853,8 +20790,6 @@
   
   <!-- ElevenLabs TTS Integration for AI Assistant -->
   <script>
-    console.log('🚀 TTS Script loaded - defining window functions');
-    
     // TTS Audio element and state
     let ttsAudio = null;
     let ttsAudioContext = null;
@@ -20864,7 +20799,7 @@
     /**
      * Initialize TTS audio element and connect to orb
      */
-    window.initTTSAudio = function() {
+    function initTTSAudio() {
       if (ttsInitialized) return ttsAudio;
       
       console.log('🎤 Initializing TTS audio...');
@@ -20915,7 +20850,7 @@
      * @param {string} text - Text to speak
      * @param {string} language - Language code (default: 'en')
      */
-    window.speakWithElevenLabs = async function(text, language = 'en') {
+    async function speakWithElevenLabs(text, language = 'en') {
       if (!text || text.trim().length === 0) {
         console.log('No text to speak');
         return;
@@ -20927,19 +20862,13 @@
         .replace(/\[TOUR:[^\]]+\]/g, '')    // Remove tour markers
         .replace(/\[FILTER:[^\]]+\]/g, '')  // Remove filter markers
         .replace(/\[OPTIONS:[^\]]+\]/g, '') // Remove options markers
-        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Remove all emojis (misc symbols, emoticons)
+        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Remove emojis (misc symbols, emoticons)
         .replace(/[\u{2600}-\u{26FF}]/gu, '')   // Remove misc symbols
         .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Remove dingbats
         .replace(/[\u{FE00}-\u{FE0F}]/gu, '')   // Remove variation selectors
-        .replace(/[\u{1F000}-\u{1F02F}]/gu, '') // Remove mahjong tiles
-        .replace(/[\u{1F0A0}-\u{1F0FF}]/gu, '') // Remove playing cards
         .replace(/[\u{200D}]/gu, '')            // Remove zero-width joiner
-        .replace(/[\u{D800}-\u{DFFF}]/g, '')    // Remove surrogate pairs (fixes the error!)
-        .replace(/[^\x00-\x7F]/g, (char) => {   // Handle remaining non-ASCII
-          // Keep common accented characters, remove others
-          if (/[\u00C0-\u024F]/.test(char)) return char; // Latin extended
-          return '';
-        })
+        .replace(/[\u{D800}-\u{DFFF}]/g, '')    // Remove surrogate pairs (fixes ElevenLabs error!)
+        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '') // Keep only ASCII and Latin Extended
         .replace(/\n{2,}/g, '. ')           // Convert double newlines to periods
         .replace(/\n/g, ' ')                // Convert single newlines to spaces
         .replace(/\s+/g, ' ')               // Collapse multiple spaces
@@ -20962,7 +20891,7 @@
       try {
         // Initialize audio if needed
         if (!ttsAudio) {
-          window.initTTSAudio();
+          initTTSAudio();
         }
         
         // Stop any currently playing audio
@@ -21048,27 +20977,21 @@
     const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
     
     // Flag to prevent duplicate welcome messages
-    window.welcomeMessagePlayed = false;
+    let welcomeMessagePlayed = false;
     
     /**
      * Play the welcome message with animation and pre-recorded audio
      */
-    window.playWelcomeMessage = async function() {
-      console.log('🎬 playWelcomeMessage called, welcomeMessagePlayed:', window.welcomeMessagePlayed);
-      
+    async function playWelcomeMessage() {
       // Prevent duplicate calls
-      if (window.welcomeMessagePlayed) {
+      if (welcomeMessagePlayed) {
         console.log('⚠️ Welcome message already played, skipping');
         return;
       }
-      window.welcomeMessagePlayed = true;
+      welcomeMessagePlayed = true;
       
       const messagesContainer = document.getElementById('ai-messages');
-      console.log('📝 Messages container:', messagesContainer);
-      if (!messagesContainer) {
-        console.error('❌ Messages container not found!');
-        return;
-      }
+      if (!messagesContainer) return;
       
       // Clear any existing messages completely
       messagesContainer.innerHTML = '';
@@ -21078,9 +21001,9 @@
       typingMsg.className = 'ai-message assistant typing';
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
-      console.log('⏳ Showing typing indicator...');
       
       // Don't start speaking yet - wait for actual audio to play
+      // This prevents the flicker before speech starts
       console.log('✨ Visualizer ready, waiting for audio to start...');
       
       // Wait 1.5 seconds
@@ -21088,13 +21011,11 @@
       
       // Remove typing indicator and add the real message
       typingMsg.remove();
-      console.log('📝 Adding welcome message to chat...');
       
       const welcomeMsg = document.createElement('div');
       welcomeMsg.className = 'ai-message assistant';
       welcomeMsg.textContent = WELCOME_MESSAGE;
       messagesContainer.appendChild(welcomeMsg);
-      console.log('✅ Welcome message added to DOM');
       
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
@@ -21142,6 +21063,35 @@
       }
     }
     
+    // Initialize when AI assistant opens
+    const originalOpenAIAssistant = window.openAIAssistant;
+    window.openAIAssistant = function() {
+      console.log('🤖 Opening AI Assistant with TTS');
+      if (originalOpenAIAssistant) {
+        originalOpenAIAssistant();
+      }
+      
+      // Initialize TTS and particle visualizer
+      setTimeout(() => {
+        initTTSAudio();
+        if (window.initParticleVisualizer) {
+          const visualizer = window.initParticleVisualizer();
+          console.log('✨ Particle visualizer initialized:', visualizer);
+        }
+        // Remove the visualizer hidden class if present
+        const visualizerContainer = document.getElementById('ai-visualizer-container');
+        if (visualizerContainer) {
+          visualizerContainer.classList.remove('hidden');
+          console.log('✨ Visualizer container visible');
+        }
+        
+        // Play welcome message after a small delay
+        setTimeout(() => {
+          playWelcomeMessage();
+        }, 200);
+      }, 300);
+    };
+    
     // Hide visualizer when assistant closes
     const originalCloseAIAssistant = window.closeAIAssistant;
     window.closeAIAssistant = function() {
@@ -21156,7 +21106,7 @@
       }
       
       // Reset welcome message flag so it plays again next time
-      window.welcomeMessagePlayed = false;
+      welcomeMessagePlayed = false;
       window.welcomeAudioConnected = false;
       
       // Reset visualizer position (remove with-cards class)
@@ -21174,9 +21124,6 @@
     // Also clear visualizer position when cards are cleared
     const originalClearCards = window.displayAITourCards;
     // Will be handled in displayAITourCards function
-    
-    console.log('✅ TTS Script finished - window.playWelcomeMessage:', typeof window.playWelcomeMessage);
-    console.log('✅ TTS Script finished - window.initTTSAudio:', typeof window.initTTSAudio);
   </script>
 </body>
 </html>
