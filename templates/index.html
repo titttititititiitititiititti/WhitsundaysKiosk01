@@ -12901,19 +12901,14 @@
       
       console.log('🎤 Speaking response with TTS...');
       
-      // Clean text for TTS
+      // Clean text for TTS - remove emojis and special chars
       let cleanText = text
         .replace(/\*\*([^*]+)\*\*/g, '$1')
         .replace(/\[TOUR:[^\]]+\]/g, '')
         .replace(/\[FILTER:[^\]]+\]/g, '')
         .replace(/\[OPTIONS:[^\]]+\]/g, '')
-        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
-        .replace(/[\u{2600}-\u{26FF}]/gu, '')
-        .replace(/[\u{2700}-\u{27BF}]/gu, '')
-        .replace(/[\u{FE00}-\u{FE0F}]/gu, '')
-        .replace(/[\u{200D}]/gu, '')
-        .replace(/[\u{D800}-\u{DFFF}]/g, '')
-        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '')
+        .replace(/[\uD800-\uDFFF]/g, '')
+        .replace(/[^\x20-\x7E\u00C0-\u024F\s]/g, '')
         .replace(/\n+/g, '. ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -21049,17 +21044,10 @@
         .replace(/\[TOUR:[^\]]+\]/g, '')    // Remove tour markers
         .replace(/\[FILTER:[^\]]+\]/g, '')  // Remove filter markers
         .replace(/\[OPTIONS:[^\]]+\]/g, '') // Remove options markers
-        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Remove emojis (misc symbols, emoticons)
-        .replace(/[\u{2600}-\u{26FF}]/gu, '')   // Remove misc symbols
-        .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Remove dingbats
-        .replace(/[\u{FE00}-\u{FE0F}]/gu, '')   // Remove variation selectors
-        .replace(/[\u{200D}]/gu, '')            // Remove zero-width joiner
-        .replace(/[\u{D800}-\u{DFFF}]/g, '')    // Remove surrogate pairs (fixes ElevenLabs error!)
-        .replace(/[^\x00-\x7F\u00C0-\u024F]/g, '') // Keep only ASCII and Latin Extended
-        .replace(/\n{2,}/g, '. ')           // Convert double newlines to periods
-        .replace(/\n/g, ' ')                // Convert single newlines to spaces
+        .replace(/[\uD800-\uDFFF]/g, '')    // Remove surrogate pairs
+        .replace(/[^\x20-\x7E\u00C0-\u024F\s]/g, '') // Keep printable ASCII and Latin Extended
+        .replace(/\n+/g, '. ')              // Convert newlines to periods
         .replace(/\s+/g, ' ')               // Collapse multiple spaces
-        .replace(/\s*\.\s*\./g, '.')        // Fix double periods
         .trim();
       
       if (cleanText.length < 5) {
