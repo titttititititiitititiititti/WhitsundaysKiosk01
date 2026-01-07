@@ -12643,8 +12643,8 @@
         // Initialize TTS, visualizer, and play welcome message
         setTimeout(() => {
           // Initialize TTS audio
-          if (typeof initTTSAudio === 'function') {
-            initTTSAudio();
+          if (window.initTTSAudio) {
+            window.initTTSAudio();
           }
           
           // Initialize particle visualizer
@@ -12660,8 +12660,10 @@
           
           // Play welcome message
           setTimeout(() => {
-            if (typeof playWelcomeMessage === 'function') {
-              playWelcomeMessage();
+            if (window.playWelcomeMessage) {
+              window.playWelcomeMessage();
+            } else {
+              console.error('❌ playWelcomeMessage not found');
             }
           }, 200);
         }, 300);
@@ -20825,7 +20827,7 @@
     /**
      * Initialize TTS audio element and connect to orb
      */
-    function initTTSAudio() {
+    window.initTTSAudio = function() {
       if (ttsInitialized) return ttsAudio;
       
       console.log('🎤 Initializing TTS audio...');
@@ -21009,20 +21011,20 @@
     const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
     
     // Flag to prevent duplicate welcome messages
-    let welcomeMessagePlayed = false;
+    window.welcomeMessagePlayed = false;
     
     /**
      * Play the welcome message with animation and pre-recorded audio
      */
-    async function playWelcomeMessage() {
-      console.log('🎬 playWelcomeMessage called, welcomeMessagePlayed:', welcomeMessagePlayed);
+    window.playWelcomeMessage = async function() {
+      console.log('🎬 playWelcomeMessage called, welcomeMessagePlayed:', window.welcomeMessagePlayed);
       
       // Prevent duplicate calls
-      if (welcomeMessagePlayed) {
+      if (window.welcomeMessagePlayed) {
         console.log('⚠️ Welcome message already played, skipping');
         return;
       }
-      welcomeMessagePlayed = true;
+      window.welcomeMessagePlayed = true;
       
       const messagesContainer = document.getElementById('ai-messages');
       console.log('📝 Messages container:', messagesContainer);
@@ -21117,7 +21119,7 @@
       }
       
       // Reset welcome message flag so it plays again next time
-      welcomeMessagePlayed = false;
+      window.welcomeMessagePlayed = false;
       window.welcomeAudioConnected = false;
       
       // Reset visualizer position (remove with-cards class)
