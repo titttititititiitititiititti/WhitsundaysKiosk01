@@ -10856,82 +10856,105 @@
         border-radius: 16px !important;
       }
       
-      /* Tour cards container - mobile */
+      /* Tour cards container - mobile - HORIZONTAL ROW like desktop */
       .ai-tour-cards-container {
+        position: fixed !important;
         top: 55px !important;
-        padding: 10px !important;
-        gap: 10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        padding: 8px !important;
+        gap: 8px !important;
+        width: calc(100% - 16px) !important;
         max-width: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        overflow-x: auto !important;
       }
       
-      /* Individual tour cards - smaller on mobile */
+      /* Individual tour cards - SCALED DOWN proportionally */
       .ai-tour-card {
-        width: calc(50% - 10px) !important;
-        max-width: 180px !important;
-        border-radius: 12px !important;
+        flex: 0 0 auto !important;
+        width: 110px !important;
+        min-width: 110px !important;
+        max-width: 110px !important;
+        border-radius: 8px !important;
       }
       
       .ai-tour-card-image {
-        height: 100px !important;
-        border-radius: 10px !important;
+        height: 65px !important;
+        border-radius: 6px 6px 0 0 !important;
       }
       
       .ai-tour-card-info {
-        padding: 8px !important;
+        padding: 6px !important;
       }
       
-      .ai-tour-card-info h4 {
-        font-size: 0.85em !important;
-        margin-bottom: 4px !important;
+      .ai-tour-card-info h4,
+      .ai-tour-card-name {
+        font-size: 0.65em !important;
+        margin-bottom: 2px !important;
+        line-height: 1.2 !important;
       }
       
-      .ai-tour-card-info p {
-        font-size: 0.7em !important;
+      .ai-tour-card-info p,
+      .ai-tour-card-company,
+      .ai-tour-card-price {
+        font-size: 0.55em !important;
+        margin-bottom: 1px !important;
       }
       
-      /* Speaking state cards - mobile */
+      .ai-tour-card-duration {
+        font-size: 0.5em !important;
+      }
+      
+      /* Speaking state cards - mobile - slightly larger */
       .ai-tour-card.speaking {
-        width: calc(70% - 10px) !important;
-        max-width: 250px !important;
-        transform: translateY(-5px) scale(1.02) !important;
+        width: 130px !important;
+        min-width: 130px !important;
+        max-width: 130px !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
       }
       
       .ai-tour-card.speaking .ai-tour-card-image {
-        height: 140px !important;
+        height: 80px !important;
       }
       
-      /* Visualizer container - mobile - CENTERED */
+      /* Visualizer container - mobile - UPPER MIDDLE */
       .ai-visualizer-container {
         position: fixed !important;
-        top: 35% !important;
+        top: 20% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         bottom: auto !important;
-        width: 280px !important;
-        height: 280px !important;
-        max-width: 280px !important;
-        max-height: 280px !important;
+        width: 220px !important;
+        height: 220px !important;
+        max-width: 220px !important;
+        max-height: 220px !important;
         padding: 0 !important;
       }
       
       .ai-visualizer-container.with-cards {
-        top: 25% !important;
-        width: 180px !important;
-        height: 180px !important;
-        max-width: 180px !important;
-        max-height: 180px !important;
+        top: 15% !important;
+        width: 120px !important;
+        height: 120px !important;
+        max-width: 120px !important;
+        max-height: 120px !important;
       }
       
       /* Visualizer canvas - smaller on mobile */
       #ai-visualizer-container canvas,
       .ai-visualizer-container canvas {
-        max-width: 280px !important;
-        max-height: 280px !important;
+        max-width: 220px !important;
+        max-height: 220px !important;
       }
       
       .ai-visualizer-container.with-cards canvas {
-        max-width: 180px !important;
-        max-height: 180px !important;
+        max-width: 120px !important;
+        max-height: 120px !important;
       }
       
       /* Input container - mobile */
@@ -13454,13 +13477,27 @@
         ];
       }
       
-      // Target position: header is fixed at top, buttons go to top-left area
-      // Header is typically ~60px tall, buttons are ~40px, centered vertically = ~10px from top
-      const headerTop = 12; // Vertical position in header
-      const headerLeftStart = 70; // Start position from left (after back button space)
-      const buttonGap = 160; // Gap between buttons
-      const targetWidth = 140;
-      const targetHeight = 40;
+      // Detect if mobile
+      const isMobile = window.innerWidth <= 768;
+      
+      // Target positions vary by screen size
+      let headerTop, headerLeftStart, buttonGap, targetWidth, targetHeight;
+      
+      if (isMobile) {
+        // Mobile: buttons go to top-left, circular, smaller
+        headerTop = 8;
+        headerLeftStart = 10;
+        buttonGap = 48; // 38px button + 10px gap
+        targetWidth = 38;
+        targetHeight = 38;
+      } else {
+        // Desktop: buttons go to header-left area
+        headerTop = 12;
+        headerLeftStart = 70;
+        buttonGap = 160;
+        targetWidth = 140;
+        targetHeight = 40;
+      }
       
       // Create clones and animate
       const clones = [];
@@ -13472,7 +13509,7 @@
         // Create clone
         const clone = document.createElement('div');
         clone.className = `mode-button-clone ${btn.type}`;
-        clone.innerHTML = btn.text;
+        clone.innerHTML = isMobile ? btn.text.split(' ')[0] : btn.text; // Just emoji on mobile
         clone.style.cssText = `
           left: ${sourceRect.left}px;
           top: ${sourceRect.top}px;
@@ -13513,9 +13550,17 @@
           const currentTop = startTop + (targetTop - startTop) * eased;
           const currentWidth = startWidth + (targetWidth - startWidth) * eased;
           const currentHeight = startHeight + (targetHeight - startHeight) * eased;
-          const currentFontSize = startFontSize + (14 - startFontSize) * eased;
-          const currentPaddingV = 15 - (15 - 10) * eased;
-          const currentPaddingH = 25 - (25 - 20) * eased;
+          
+          // Font size and padding differ for mobile vs desktop
+          const targetFontSize = isMobile ? 18 : 14;
+          const currentFontSize = startFontSize + (targetFontSize - startFontSize) * eased;
+          const currentPaddingV = isMobile ? 0 : (15 - (15 - 10) * eased);
+          const currentPaddingH = isMobile ? 0 : (25 - (25 - 20) * eased);
+          
+          // Border radius: start at 30px, go to 50% on mobile (circular)
+          const targetBorderRadius = isMobile ? Math.min(currentWidth, currentHeight) / 2 : 25;
+          const startBorderRadius = 30;
+          const currentBorderRadius = startBorderRadius + (targetBorderRadius - startBorderRadius) * eased;
           
           clone.style.left = `${currentLeft}px`;
           clone.style.top = `${currentTop}px`;
@@ -13523,6 +13568,7 @@
           clone.style.height = `${currentHeight}px`;
           clone.style.fontSize = `${currentFontSize}px`;
           clone.style.padding = `${currentPaddingV}px ${currentPaddingH}px`;
+          clone.style.borderRadius = `${currentBorderRadius}px`;
           
           if (progress < 1) {
             requestAnimationFrame(animate);
