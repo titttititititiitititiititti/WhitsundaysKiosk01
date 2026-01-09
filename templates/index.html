@@ -10981,16 +10981,22 @@
         z-index: 50 !important;
       }
       
-      /* When cards are showing, position visualizer below cards area */
+      /* When cards are showing, position visualizer in middle - IN FRONT */
       .ai-visualizer-container.with-cards {
-        top: 370px !important;
+        top: 55% !important;
         transform: translate(-50%, -50%) !important;
         width: 150px !important;
         height: 150px !important;
         max-width: 150px !important;
         max-height: 150px !important;
-        z-index: 50 !important;
-        opacity: 0.85 !important;
+        z-index: 500 !important;
+        opacity: 0.95 !important;
+      }
+      
+      /* Hide chat messages when tour cards are showing */
+      body.ai-showing-cards .ai-assistant-page .ai-chat-container {
+        display: none !important;
+        visibility: hidden !important;
       }
       
       /* Visualizer canvas - mobile */
@@ -11163,11 +11169,12 @@
       }
       
       .ai-visualizer-container.with-cards {
-        top: 180px !important;
+        top: 55% !important;
         width: 130px !important;
         height: 130px !important;
         max-width: 130px !important;
         max-height: 130px !important;
+        z-index: 500 !important;
       }
       
       .ai-visualizer-container canvas,
@@ -11224,11 +11231,12 @@
       }
       
       .ai-visualizer-container.with-cards {
-        top: 320px !important;
+        top: 55% !important;
         width: 120px !important;
         height: 120px !important;
         max-width: 120px !important;
         max-height: 120px !important;
+        z-index: 500 !important;
       }
       
       /* Chat container - extra small - above input, transparent */
@@ -14004,6 +14012,7 @@
       if (chatContainer) {
         chatContainer.classList.remove('with-cards');
       }
+      document.body.classList.remove('ai-showing-cards');
       
       // Clear chat messages
       const aiMessages = document.getElementById('ai-chat-messages');
@@ -14041,6 +14050,7 @@
         visualizerContainer.classList.add('hidden');
         visualizerContainer.classList.remove('with-cards');
       }
+      document.body.classList.remove('ai-showing-cards');
       
       // Stop visualizer animation
       if (window.particleVisualizer) {
@@ -14100,9 +14110,10 @@
       const limitedTours = tours.slice(0, 3);
       console.log(`🎴 Displaying ${limitedTours.length} tour cards from API objects`);
       
-      // Add with-cards class to visualizer
+      // Add with-cards class to visualizer and body
       if (visualizerContainer && limitedTours.length > 0) {
         visualizerContainer.classList.add('with-cards');
+        document.body.classList.add('ai-showing-cards');
       }
       
       limitedTours.forEach((tour, index) => {
@@ -14223,11 +14234,13 @@
       if (limitedNames.length === 0) {
         // No cards - visualizer stays centered
         if (visualizerContainer) visualizerContainer.classList.remove('with-cards');
+        document.body.classList.remove('ai-showing-cards');
         return;
       }
       
-      // Cards showing - move visualizer to left
+      // Cards showing - move visualizer and add body class
       if (visualizerContainer) visualizerContainer.classList.add('with-cards');
+      document.body.classList.add('ai-showing-cards');
       
       // Find matching tours from mapTourData (no duplicates)
       const addedTourKeys = new Set();

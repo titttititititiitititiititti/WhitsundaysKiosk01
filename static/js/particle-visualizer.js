@@ -58,9 +58,9 @@ class ParticleVisualizer {
       sphereRadiusVariation: 25,
       
       // Motion - smooth and controlled
-      idleSpeed: 0.28,
+      idleSpeed: 0.6,        // Faster idle movement - more lively
       speakingSpeed: 0.55,   // Slower when speaking for cleaner orbits
-      turbulence: 0.3,       // Less chaotic
+      turbulence: 0.4,       // Slightly more movement
       
       // Glow
       glowIntensity: 0.52,
