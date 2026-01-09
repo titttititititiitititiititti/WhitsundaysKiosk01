@@ -10844,27 +10844,28 @@
         font-weight: 600 !important;
       }
       
-      /* Chat messages container - mobile - MIDDLE of screen */
+      /* Chat messages container - mobile - ABOVE input box, transparent */
       .ai-assistant-page .ai-chat-container {
         position: fixed !important;
-        top: 50% !important;
+        top: auto !important;
+        bottom: 85px !important;
         left: 10px !important;
         right: 10px !important;
-        transform: translateY(-50%) !important;
-        bottom: auto !important;
-        max-height: 40vh !important;
+        transform: none !important;
+        max-height: 50vh !important;
         padding: 0 !important;
         z-index: 100 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        border-radius: 16px !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
       
       .ai-assistant-page .ai-messages {
-        max-height: 38vh !important;
-        padding: 12px !important;
+        max-height: 48vh !important;
+        padding: 10px !important;
         overflow-y: auto !important;
-        gap: 8px !important;
+        gap: 10px !important;
+        background: transparent !important;
       }
       
       /* Message bubbles - smaller on mobile */
@@ -11075,7 +11076,7 @@
         margin: 0 !important;
       }
       
-      /* Weather widget - mobile - above mic button area */
+      /* Weather widget - mobile - centered above mic button */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
         display: flex !important;
@@ -11084,10 +11085,13 @@
         position: fixed !important;
         bottom: 80px !important;
         right: 10px !important;
+        left: auto !important;
         width: 50px !important;
         height: 50px !important;
         font-size: 1.5em !important;
         z-index: 10003 !important;
+        /* Center above mic button - mic is at right: ~10px, width 50px */
+        transform: translateX(0) !important;
       }
     }
     
@@ -11140,10 +11144,11 @@
         font-size: 1.3em !important;
       }
       
-      /* Weather widget smaller on extra small */
+      /* Weather widget smaller on extra small - centered above mic */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
         bottom: 70px !important;
+        right: 8px !important;
         width: 45px !important;
         height: 45px !important;
         font-size: 1.3em !important;
@@ -11226,17 +11231,17 @@
         max-height: 120px !important;
       }
       
-      /* Chat container - extra small - still middle positioned */
+      /* Chat container - extra small - above input, transparent */
       .ai-assistant-page .ai-chat-container {
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        bottom: auto !important;
-        max-height: 35vh !important;
+        top: auto !important;
+        bottom: 75px !important;
+        transform: none !important;
+        max-height: 45vh !important;
       }
       
       .ai-assistant-page .ai-messages {
-        max-height: 33vh !important;
-        padding: 10px !important;
+        max-height: 43vh !important;
+        padding: 8px !important;
       }
     }
     
