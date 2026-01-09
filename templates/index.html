@@ -1041,7 +1041,7 @@
         margin-bottom: 6px !important;
       }
       
-      /* Tour detail page sections - consolidated width rule - SCALED UP */
+      /* Tour detail page sections - consolidated width rule - MATCH PRICING */
       .tour-detail-page .tour-hero,
       .tour-detail-page .pricing-section,
       .tour-detail-page .info-grid,
@@ -1052,12 +1052,12 @@
       .tour-detail-page .highlights-box,
       .tour-detail-page .includes-box,
       .tour-detail-page #detail-info > div:not(.swipe-expanded-details) {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px 15px 8px !important;
-        padding: 16px !important;
+        width: calc(100% - 32px) !important;
+        max-width: calc(100% - 32px) !important;
+        margin: 0 16px 12px 16px !important;
+        padding: 12px !important;
         box-sizing: border-box !important;
-        border-radius: 16px !important;
+        border-radius: 12px !important;
       }
       
       /* Uniform gap between all sections */
@@ -1065,34 +1065,34 @@
         gap: 15px !important;
       }
       
-      /* Pricing section - match swipe-detail-section style exactly */
+      /* Pricing section - match other sections */
       .tour-detail-page .pricing-section {
         background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(10px) !important;
-        padding: 16px 20px !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
-        margin: 0 8px 15px 8px !important;
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+        width: calc(100% - 32px) !important;
+        max-width: calc(100% - 32px) !important;
+        margin: 0 16px 12px 16px !important;
         box-sizing: border-box !important;
       }
       
       .tour-detail-page .pricing-section h2 {
-        font-size: 1.05em !important;
-        margin: 0 0 6px 0 !important;
+        font-size: 0.95em !important;
+        margin: 0 0 5px 0 !important;
         color: #0077b6 !important;
         font-weight: 700 !important;
       }
       
       .tour-detail-page .pricing-section .pricing-hint {
-        font-size: 0.85em !important;
-        margin-bottom: 10px !important;
+        font-size: 0.75em !important;
+        margin-bottom: 8px !important;
         color: #666 !important;
       }
       
       .tour-detail-page .pricing-card {
-        gap: 8px !important;
+        gap: 6px !important;
         display: flex !important;
         flex-direction: column !important;
       }
@@ -1100,25 +1100,25 @@
       .tour-detail-page .pricing-tier-option,
       .tour-detail-page .price-row,
       .tour-detail-page .price-option {
-        padding: 10px 14px !important;
+        padding: 8px 12px !important;
         margin: 0 !important;
-        font-size: 0.9em !important;
-        border-radius: 10px !important;
+        font-size: 0.8em !important;
+        border-radius: 8px !important;
         min-height: auto !important;
       }
       
-      /* Scale up section headers */
+      /* Section headers - proportionally scaled */
       .tour-detail-page section h2,
       .tour-detail-page section h3,
       .tour-detail-page .info-card h3,
       .tour-detail-page .highlights-box h3,
       .tour-detail-page .includes-box h3,
       .tour-detail-page #detail-info h3 {
-        font-size: 1.2em !important;
-        margin-bottom: 12px !important;
+        font-size: 1em !important;
+        margin-bottom: 8px !important;
       }
       
-      /* Scale up section text */
+      /* Section text - proportionally scaled */
       .tour-detail-page section p,
       .tour-detail-page section li,
       .tour-detail-page .info-card p,
@@ -1127,9 +1127,9 @@
       .tour-detail-page .includes-box li,
       .tour-detail-page #detail-info p,
       .tour-detail-page #detail-info li {
-        font-size: 1em !important;
-        line-height: 1.5 !important;
-        margin-bottom: 8px !important;
+        font-size: 0.85em !important;
+        line-height: 1.4 !important;
+        margin-bottom: 5px !important;
       }
       
       /* Gallery */
@@ -10793,16 +10793,16 @@
       .ai-assistant-page .mobile-quick-btn,
       .ai-assistant-page .mobile-browse-btn {
         display: flex !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.2em !important;
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1.1em !important;
         padding: 0 !important;
-        border-radius: 10px !important;
-        background: rgba(255, 255, 255, 0.2) !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 50% !important;
+        border: 2px solid rgba(255, 255, 255, 0.8) !important;
         color: white !important;
         align-items: center !important;
         justify-content: center !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
       }
       
       .ai-assistant-page .mobile-quick-btn {
@@ -10824,11 +10824,16 @@
       }
       
       .ai-assistant-page .header-right .chip {
-        min-width: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 0.7em !important;
+        min-width: 38px !important;
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 0.65em !important;
         padding: 0 !important;
+        border-radius: 50% !important;
+        border: 2px solid rgba(255, 255, 255, 0.8) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        color: #333 !important;
+        font-weight: 600 !important;
       }
       
       /* Chat messages container - mobile */
@@ -10895,28 +10900,38 @@
         height: 140px !important;
       }
       
-      /* Visualizer container - mobile */
+      /* Visualizer container - mobile - CENTERED */
       .ai-visualizer-container {
-        bottom: 130px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 10px !important;
+        position: fixed !important;
+        top: 35% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        bottom: auto !important;
+        width: 280px !important;
+        height: 280px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
+        padding: 0 !important;
       }
       
       .ai-visualizer-container.with-cards {
-        bottom: auto !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        max-width: 200px !important;
-        max-height: 200px !important;
+        top: 25% !important;
+        width: 180px !important;
+        height: 180px !important;
+        max-width: 180px !important;
+        max-height: 180px !important;
       }
       
       /* Visualizer canvas - smaller on mobile */
       #ai-visualizer-container canvas,
       .ai-visualizer-container canvas {
-        max-width: 200px !important;
-        max-height: 200px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
+      }
+      
+      .ai-visualizer-container.with-cards canvas {
+        max-width: 180px !important;
+        max-height: 180px !important;
       }
       
       /* Input container - mobile */
@@ -10983,9 +10998,24 @@
         font-size: 1.6em !important;
       }
       
+      .ai-visualizer-container {
+        width: 220px !important;
+        height: 220px !important;
+        max-width: 220px !important;
+        max-height: 220px !important;
+      }
+      
       .ai-visualizer-container.with-cards {
-        max-width: 150px !important;
-        max-height: 150px !important;
+        width: 140px !important;
+        height: 140px !important;
+        max-width: 140px !important;
+        max-height: 140px !important;
+      }
+      
+      .ai-visualizer-container canvas,
+      .ai-visualizer-container.with-cards canvas {
+        max-width: 100% !important;
+        max-height: 100% !important;
       }
     }
     
