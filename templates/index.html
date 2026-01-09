@@ -171,6 +171,49 @@
         padding: 12px 24px !important;
         font-size: 1em !important;
         min-width: 160px !important;
+        border: none !important;
+        border-radius: 30px !important;
+        color: white !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        transition: transform 0.2s, box-shadow 0.2s !important;
+      }
+      
+      /* Browse All Tours button - hidden by default, only shown via JS when coming from AI Assistant */
+      .kiosk-header .browse-all-btn-header {
+        padding: 12px 24px !important;
+        font-size: 1em !important;
+        min-width: 160px !important;
+        border: none !important;
+        border-radius: 30px !important;
+        color: white !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        transition: transform 0.2s, box-shadow 0.2s !important;
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        /* Hidden by default - JS shows it when coming from AI Assistant */
+        display: none !important;
+      }
+      
+      /* Show browse-all-btn only when it has .show-btn class (added by JS) */
+      .kiosk-header .browse-all-btn-header.show-btn {
+        display: inline-flex !important;
+      }
+      
+      .kiosk-header .quick-decision-btn-header:hover,
+      .kiosk-header .ai-assistant-btn-header:hover,
+      .kiosk-header .browse-all-btn-header:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
       }
       
       /* DESKTOP: Gallery tap hint with background */
@@ -1008,7 +1051,7 @@
       .tour-detail-page .departure-section,
       .tour-detail-page .highlights-box,
       .tour-detail-page .includes-box,
-      .tour-detail-page #detail-info > div {
+      .tour-detail-page #detail-info > div:not(.swipe-expanded-details) {
         width: calc(100% - 16px) !important;
         max-width: calc(100% - 16px) !important;
         margin: 0 8px 15px 8px !important;
@@ -1984,31 +2027,31 @@
       box-shadow: 0 6px 20px rgba(106, 90, 161, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
-    /* Quick Decision Button in Header (Orange, smaller) */
+    /* Quick Decision Button in Header (GREEN) */
     .quick-decision-btn-header {
       padding: 12px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
-      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
       border: 2px solid rgba(255, 255, 255, 0.4);
       border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
       white-space: nowrap;
     }
     
     .quick-decision-btn-header:hover {
-      background: linear-gradient(135deg, #ffa05c 0%, #ff7b45 100%);
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
       border-color: rgba(255, 255, 255, 0.6);
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
     }
     
     .quick-decision-btn-header:active {
       transform: translateY(0) scale(1);
-      box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
     }
     
     /* Browse All Tours button in header (orange - same as Quick Decision) */
@@ -2083,10 +2126,15 @@
     }
     
     .page.home-page .quick-decision-btn-header,
-    .page.home-page .browse-all-btn-header,
     .page.home-page .ai-assistant-btn-header {
       padding: 8px 16px;
       font-size: 0.85em;
+    }
+    
+    /* Hide Browse All Tours button on home page - we're already here! */
+    .page.home-page .browse-all-btn-header,
+    .page.home-page #home-browse-all-btn {
+      display: none !important;
     }
     
     .page.home-page .logo-image {
@@ -2556,10 +2604,114 @@
     }
     
     .ai-tour-card.highlighted {
-      transform: scale(1.1) translateY(-8px);
-      box-shadow: 0 0 50px rgba(139, 92, 246, 0.9), 0 25px 60px rgba(0, 0, 0, 0.5);
-      border: 4px solid #8b5cf6;
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.7), 0 15px 40px rgba(0, 0, 0, 0.4);
+      border: 2px solid #8b5cf6;
       z-index: 10;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    /* Speaking state - when AI is actively talking about this tour */
+    .ai-tour-card.speaking {
+      box-shadow: 0 0 60px rgba(139, 92, 246, 1), 0 25px 60px rgba(0, 0, 0, 0.6) !important;
+      border: 3px solid #a78bfa !important;
+      z-index: 100 !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: scale(1.15) translateY(-10px) !important;
+      background: rgba(255, 255, 255, 1) !important;
+      width: 320px !important;
+      transition: all 0.4s ease !important;
+    }
+    
+    .ai-tour-card .ai-tour-card-image {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ai-tour-card.speaking .ai-tour-card-image {
+      height: 200px;
+    }
+    
+    /* Slideshow container for smooth transitions */
+    .ai-tour-card .slideshow-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    
+    .ai-tour-card .slideshow-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    
+    .ai-tour-card .slideshow-slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+    
+    .ai-tour-card.speaking .ai-tour-card-info {
+      padding: 16px 18px;
+    }
+    
+    .ai-tour-card.speaking .ai-tour-card-details {
+      display: block;
+      max-height: 100px;
+      opacity: 1;
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    
+    /* Flashing info section - cycles through departure times, ideal for, etc */
+    .ai-tour-card.speaking .ai-tour-card-flash {
+      display: flex !important;
+      align-items: center;
+      font-size: 0.9em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      transition: opacity 0.15s ease-out;
+    }
+    
+    .ai-tour-card .ai-tour-card-flash {
+      display: none;
+    }
+    
+    /* Info section styling (no animation) */
+    .ai-tour-card.speaking .ai-tour-card-flash {
+      border-top: 1px solid rgba(139, 92, 246, 0.3);
+      font-size: 0.9em;
+      color: #555;
+      line-height: 1.4;
+    }
+    
+    .ai-tour-card.speaking .ai-tour-card-details .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    
+    /* Hidden details that appear when speaking */
+    .ai-tour-card-details {
+      display: none;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      font-size: 0.85em;
+      color: #555;
+      line-height: 1.4;
     }
     
     .ai-tour-card-image {
@@ -2567,6 +2719,7 @@
       height: 160px;
       background-size: cover;
       background-position: center;
+      transition: height 0.4s ease, background-image 0.5s ease;
     }
     
     .ai-tour-card-info {
@@ -2848,27 +3001,49 @@
       color: white;
       font-size: 2.2em;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: transform 0.08s ease-out, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+      will-change: transform;
+      position: relative;
     }
     
-    .ai-mic-btn:hover {
+    .ai-mic-btn:hover:not(.recording) {
       transform: scale(1.05);
       box-shadow: 0 10px 40px rgba(139, 92, 246, 0.7);
     }
     
     .ai-mic-btn.recording {
-      animation: micPulse 1s ease-in-out infinite;
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       border-color: #fca5a5;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.6);
     }
     
-    @keyframes micPulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 8px 30px rgba(239, 68, 68, 0.5); }
-      50% { transform: scale(1.1); box-shadow: 0 12px 50px rgba(239, 68, 68, 0.8); }
+    /* Glow ring animation when recording (doesn't interfere with volume scaling) */
+    .ai-mic-btn.recording::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+      border: 3px solid rgba(239, 68, 68, 0.5);
+      animation: micGlowPulse 1.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes micGlowPulse {
+      0%, 100% { 
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.7;
+        transform: scale(1.15);
+      }
     }
     
     
@@ -3149,14 +3324,17 @@
     
     .swipe-expanded-details {
       width: 100%;
-      max-width: 900px;
+      max-width: 1200px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      padding: 15px 0;
+      grid-template-columns: repeat(2, 1fr); /* Always 2 columns for symmetry */
+      gap: 24px;
+      padding: 20px 0;
       opacity: 1;
       animation: fadeInUp 0.4s ease-out;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      margin-left: auto;
+      margin-right: auto;
+      justify-content: center;
     }
     
     /* Make full-width sections span all columns */
@@ -3218,9 +3396,9 @@
     .swipe-detail-section {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 20px 25px;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      padding: 40px 50px;
+      border-radius: 25px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       opacity: 0;
       animation: slideUpFadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -4504,7 +4682,8 @@
        MODERN KIOSK LAYOUT - Tour Detail Page
        =================================================================== */
     
-    .page.tour-detail-page.active {
+    /* Tour detail page - BASE state (hidden) */
+    .page.tour-detail-page {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -4513,7 +4692,7 @@
       background: transparent !important;
       display: none;
       flex-direction: column;
-      z-index: 10 !important; /* Above video (z-index 1) */
+      z-index: 10;
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: none; /* Firefox */
@@ -4523,21 +4702,22 @@
       pointer-events: none;
     }
     
-    /* Make background transparent when in video flow */
-    body.video-bg-active .page.tour-detail-page.active {
-      background: transparent !important;
-    }
-    
     .page.tour-detail-page::-webkit-scrollbar {
       display: none; /* Chrome, Safari, Opera */
     }
     
+    /* Tour detail page - ACTIVE state (visible) */
     .page.tour-detail-page.active {
       display: flex !important;
       visibility: visible !important;
       opacity: 1 !important;
       pointer-events: auto !important;
       z-index: 999999 !important;
+    }
+    
+    /* Make background transparent when in video flow */
+    body.video-bg-active .page.tour-detail-page.active {
+      background: transparent !important;
     }
     
     /* Ensure all child sections within tour detail are transparent unless styled */
@@ -4605,15 +4785,15 @@
     /* Tour Detail Main Content */
     .tour-detail-main {
       flex: 1;
-      padding: 40px 80px 120px 80px;
+      padding: 40px 20px 120px 20px;
       overflow-y: auto;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       align-items: center; /* Center all child sections */
-      gap: 40px;
+      gap: 24px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1240px; /* 1200px content + 20px each side */
       margin: 0 auto;
       background: transparent !important;
       scrollbar-width: none; /* Firefox */
@@ -4672,7 +4852,7 @@
       color: #ffffff;
       line-height: 1.7;
       margin: 0;
-      max-width: 1000px;
+      max-width: 1200px;
       text-shadow: 2px 3px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.4);
     }
     
@@ -7702,12 +7882,12 @@
       }
       
       /* ALL sections - WIDER with small margins */
-      .tour-detail-page .tour-detail-main > *,
+      .tour-detail-page .tour-detail-main > *:not(.swipe-expanded-details),
       .tour-detail-page section.details-section,
       .tour-detail-page #about-tour-section,
       .tour-detail-page .highlights-box,
       .tour-detail-page .includes-box,
-      .tour-detail-page #detail-info > div,
+      .tour-detail-page #detail-info > div:not(.swipe-expanded-details),
       section#about-tour-section {
         width: calc(100% - 12px) !important;
         max-width: calc(100% - 12px) !important;
@@ -9484,9 +9664,9 @@
         box-sizing: border-box !important;
       }
       
-      /* ALL divs inside detail-info - full width, stacked */
-      .tour-detail-page #detail-info > div,
-      #detail-info > div {
+      /* ALL divs inside detail-info - full width, stacked (except swipe-expanded-details) */
+      .tour-detail-page #detail-info > div:not(.swipe-expanded-details),
+      #detail-info > div:not(.swipe-expanded-details) {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 100% !important;
@@ -9494,6 +9674,85 @@
         padding: 12px !important;
         box-sizing: border-box !important;
         flex: 0 0 100% !important;
+      }
+      
+      /* EXCEPTION: Preserve swipe-expanded-details grid layout - symmetric 2 columns */
+      .tour-detail-page #detail-info .swipe-expanded-details,
+      #detail-info .swipe-expanded-details {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Always 2 equal columns for symmetry */
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 10px 0 !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+      }
+      
+      /* Swipe detail sections inside - mobile sized */
+      .tour-detail-page #detail-info .swipe-expanded-details > .swipe-detail-section,
+      #detail-info .swipe-expanded-details > .swipe-detail-section {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 20px 24px !important;
+        flex: none !important;
+        box-sizing: border-box !important;
+        border-radius: 16px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2) !important;
+      }
+      
+      /* Full width sections span all columns */
+      .tour-detail-page #detail-info .swipe-expanded-details > .swipe-detail-section.description-section,
+      #detail-info .swipe-expanded-details > .swipe-detail-section.description-section {
+        grid-column: 1 / -1 !important;
+      }
+      
+      /* Scale up text in detail sections to match pricing section */
+      .tour-detail-page #detail-info .swipe-detail-section h3,
+      #detail-info .swipe-detail-section h3 {
+        font-size: 2em !important;
+        margin-bottom: 20px !important;
+        color: #0077b6 !important;
+        font-weight: 700 !important;
+      }
+      
+      .tour-detail-page #detail-info .swipe-detail-section li,
+      #detail-info .swipe-detail-section li,
+      .tour-detail-page #detail-info .swipe-detail-section p,
+      #detail-info .swipe-detail-section p,
+      .tour-detail-page #detail-info .swipe-detail-section div:not(.swipe-detail-section),
+      #detail-info .swipe-detail-section div:not(.swipe-detail-section) {
+        font-size: 1.25em !important;
+        line-height: 1.8 !important;
+      }
+      
+      /* Make all major sections align at 1200px max-width to match pricing */
+      .tour-detail-page .pricing-section,
+      .tour-detail-page .tour-hero,
+      .tour-detail-page .photo-carousel,
+      .tour-detail-page .info-grid,
+      .tour-detail-page .details-section,
+      .tour-detail-page #about-tour-section,
+      .tour-detail-page .fine-print,
+      .tour-detail-page .departure-section,
+      .tour-detail-page #detail-info {
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+      }
+      
+      .tour-detail-page .pricing-section {
+        padding: 30px 40px !important;
+        margin-bottom: 20px !important;
       }
       
       /* Override any inline styles on divs with border-left */
@@ -10224,6 +10483,139 @@
         bottom: 20px !important;
         right: 20px !important;
       }
+      
+      /* =======================================================================
+         DESKTOP: Scale up tour detail sections - ALL SAME WIDTH
+         ======================================================================= */
+      
+      /* Main container - remove side padding so children can be full width */
+      .tour-detail-page .tour-detail-main {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        max-width: 1240px !important; /* 1200px + 20px each side */
+        margin: 0 auto !important;
+      }
+      
+      /* ALL sections inside tour detail - same max-width */
+      .tour-detail-page .tour-detail-main > *,
+      .tour-detail-page .pricing-section,
+      .tour-detail-page #detail-info,
+      .tour-detail-page #detail-info .swipe-expanded-details,
+      .tour-detail-page #about-tour-section,
+      .tour-detail-page .fine-print {
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Swipe expanded details grid - symmetric 2 columns */
+      .tour-detail-page #detail-info .swipe-expanded-details {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Always 2 equal columns */
+        gap: 24px !important;
+        padding: 0 !important;
+        justify-content: center !important;
+      }
+      
+      /* Individual detail sections - scaled styling */
+      .tour-detail-page #detail-info .swipe-detail-section {
+        padding: 40px 50px !important;
+        border-radius: 25px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+      }
+      
+      /* Full width sections span all columns */
+      .tour-detail-page #detail-info .swipe-detail-section.description-section {
+        grid-column: 1 / -1 !important;
+      }
+      
+      /* Section titles */
+      .tour-detail-page #detail-info .swipe-detail-section h3 {
+        font-size: 1.8em !important;
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+        margin: 0 0 20px 0 !important;
+      }
+      
+      /* Section content */
+      .tour-detail-page #detail-info .swipe-detail-section li,
+      .tour-detail-page #detail-info .swipe-detail-section p,
+      .tour-detail-page #detail-info .swipe-detail-section div:not(.swipe-detail-section) {
+        font-size: 1.15em !important;
+        line-height: 1.8 !important;
+      }
+      
+      /* About This Tour section */
+      .tour-detail-page #about-tour-section {
+        padding: 40px 50px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 25px !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        margin-bottom: 24px !important;
+      }
+      
+      .tour-detail-page #about-tour-title {
+        font-size: 1.8em !important;
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+        margin: 0 0 20px 0 !important;
+      }
+      
+      .tour-detail-page #detail-description {
+        font-size: 1.15em !important;
+        line-height: 1.8 !important;
+        color: #2c3e50 !important;
+      }
+      
+      /* Fine print section */
+      .tour-detail-page .fine-print {
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      
+      /* Child divs inside fine-print - these are the actual content boxes */
+      .tour-detail-page .fine-print > div {
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin: 0 auto 24px auto !important;
+        padding: 40px 50px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 25px !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        box-sizing: border-box !important;
+        border-left: none !important; /* Remove colored border */
+      }
+      
+      .tour-detail-page .fine-print h3 {
+        font-size: 1.8em !important;
+        font-weight: 700 !important;
+        color: #0077b6 !important;
+        margin: 0 0 20px 0 !important;
+      }
+      
+      .tour-detail-page .fine-print li,
+      .tour-detail-page .fine-print p,
+      .tour-detail-page .fine-print > div {
+        font-size: 1.15em !important;
+        line-height: 1.8 !important;
+      }
+      
+      /* Pricing section - same styling */
+      .tour-detail-page .pricing-section {
+        padding: 40px 50px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 25px !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+        margin-bottom: 24px !important;
+      }
     }
 
   </style>
@@ -10249,6 +10641,354 @@
       opacity: 1 !important;
       pointer-events: auto !important;
     }
+    
+    /* =========================================================
+       MODE BUTTON ANIMATION - Glide to header
+       ========================================================= */
+    .mode-button-clone {
+      position: fixed !important;
+      z-index: 999999 !important;
+      pointer-events: none !important;
+      border-radius: 30px !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      white-space: nowrap !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+      border: 2px solid rgba(255, 255, 255, 0.5) !important;
+      transition: none !important;
+    }
+    
+    .mode-button-clone.quick-decision {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: white !important;
+    }
+    
+    .mode-button-clone.ai-assistant {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%) !important;
+      color: white !important;
+    }
+    
+    .mode-button-clone.browse-all {
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
+      color: white !important;
+    }
+    
+    /* =========================================================
+       UNIFIED HEADER STYLES - Consistent across all pages
+       ========================================================= */
+    
+    /* Uniform logo size - desktop */
+    @media (min-width: 769px) {
+      .kiosk-header .logo-image,
+      .page .kiosk-header .logo-image,
+      .page.home-page .kiosk-header .logo-image,
+      .page.tour-detail-page .kiosk-header .logo-image,
+      .page.video-question-page .kiosk-header .logo-image,
+      .page.ai-assistant-page .kiosk-header .logo-image,
+      .ai-assistant-page .logo-image,
+      .tour-detail-page .logo-image {
+        height: 45px !important;
+        width: auto !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        z-index: 1 !important;
+      }
+      
+      /* Uniform header button styles - desktop */
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header .browse-all-btn-header,
+      .page .kiosk-header .quick-decision-btn-header,
+      .page .kiosk-header .ai-assistant-btn-header,
+      .page .kiosk-header .browse-all-btn-header {
+        padding: 10px 20px !important;
+        font-size: 0.95em !important;
+        min-width: 140px !important;
+        border-radius: 25px !important;
+        font-weight: 600 !important;
+        border: 2px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      }
+      
+      /* Quick Decision - green */
+      .kiosk-header .quick-decision-btn-header {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: white !important;
+      }
+      
+      /* AI Assistant - purple */
+      .kiosk-header .ai-assistant-btn-header {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+        color: white !important;
+      }
+      
+      /* Browse All Tours - orange */
+      .kiosk-header .browse-all-btn-header {
+        background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        color: white !important;
+      }
+      
+      .kiosk-header .quick-decision-btn-header:hover,
+      .kiosk-header .ai-assistant-btn-header:hover,
+      .kiosk-header .browse-all-btn-header:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+      }
+    }
+    
+    /* Uniform logo size - mobile */
+    @media (max-width: 768px) {
+      .kiosk-header .logo-image,
+      .page .kiosk-header .logo-image {
+        height: 32px !important;
+        width: auto !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        z-index: 1 !important;
+      }
+    }
+    
+    /* =========================================================
+       AI ASSISTANT PAGE - MOBILE RESPONSIVE STYLES
+       Scale all elements proportionally for mobile screens
+       ========================================================= */
+    @media (max-width: 768px) {
+      /* AI Assistant page container */
+      .ai-assistant-page {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height for mobile */
+      }
+      
+      /* AI Assistant header - compact on mobile */
+      .ai-assistant-page .kiosk-header {
+        padding: 8px 10px !important;
+        height: 50px !important;
+        min-height: 50px !important;
+      }
+      
+      .ai-assistant-page .kiosk-header .header-left {
+        gap: 5px !important;
+      }
+      
+      /* Hide text buttons, show mobile emoji buttons */
+      .ai-assistant-page .quick-decision-btn-header,
+      .ai-assistant-page .browse-all-btn-header {
+        display: none !important;
+      }
+      
+      .ai-assistant-page .mobile-quick-btn,
+      .ai-assistant-page .mobile-browse-btn {
+        display: flex !important;
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.2em !important;
+        padding: 0 !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: white !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      
+      .ai-assistant-page .mobile-quick-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      }
+      
+      .ai-assistant-page .mobile-browse-btn {
+        background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
+      }
+      
+      /* Logo size on mobile AI page */
+      .ai-assistant-page .logo-image {
+        height: 28px !important;
+      }
+      
+      /* Language/Currency dropdowns on mobile */
+      .ai-assistant-page .header-right {
+        gap: 5px !important;
+      }
+      
+      .ai-assistant-page .header-right .chip {
+        min-width: 36px !important;
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 0.7em !important;
+        padding: 0 !important;
+      }
+      
+      /* Chat messages container - mobile */
+      .ai-assistant-page .ai-chat-container {
+        padding-top: 60px !important;
+        padding-bottom: 130px !important;
+      }
+      
+      .ai-assistant-page #ai-chat-messages {
+        padding: 10px !important;
+        gap: 10px !important;
+      }
+      
+      /* Message bubbles - smaller on mobile */
+      .ai-assistant-page .ai-message {
+        max-width: 90% !important;
+        padding: 12px 15px !important;
+        font-size: 0.95em !important;
+        line-height: 1.5 !important;
+        border-radius: 16px !important;
+      }
+      
+      /* Tour cards container - mobile */
+      .ai-tour-cards-container {
+        top: 55px !important;
+        padding: 10px !important;
+        gap: 10px !important;
+        max-width: 100% !important;
+      }
+      
+      /* Individual tour cards - smaller on mobile */
+      .ai-tour-card {
+        width: calc(50% - 10px) !important;
+        max-width: 180px !important;
+        border-radius: 12px !important;
+      }
+      
+      .ai-tour-card-image {
+        height: 100px !important;
+        border-radius: 10px !important;
+      }
+      
+      .ai-tour-card-info {
+        padding: 8px !important;
+      }
+      
+      .ai-tour-card-info h4 {
+        font-size: 0.85em !important;
+        margin-bottom: 4px !important;
+      }
+      
+      .ai-tour-card-info p {
+        font-size: 0.7em !important;
+      }
+      
+      /* Speaking state cards - mobile */
+      .ai-tour-card.speaking {
+        width: calc(70% - 10px) !important;
+        max-width: 250px !important;
+        transform: translateY(-5px) scale(1.02) !important;
+      }
+      
+      .ai-tour-card.speaking .ai-tour-card-image {
+        height: 140px !important;
+      }
+      
+      /* Visualizer container - mobile */
+      .ai-visualizer-container {
+        bottom: 130px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 10px !important;
+      }
+      
+      .ai-visualizer-container.with-cards {
+        bottom: auto !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        max-width: 200px !important;
+        max-height: 200px !important;
+      }
+      
+      /* Visualizer canvas - smaller on mobile */
+      #ai-visualizer-container canvas,
+      .ai-visualizer-container canvas {
+        max-width: 200px !important;
+        max-height: 200px !important;
+      }
+      
+      /* Input container - mobile */
+      .ai-input-container {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        padding: 10px 15px 20px 15px !important;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%) !important;
+        z-index: 10001 !important;
+      }
+      
+      /* Input field - mobile */
+      .ai-input-container input[type="text"],
+      .ai-input-container #ai-text-input {
+        padding: 12px 15px !important;
+        font-size: 16px !important; /* Prevents iOS zoom */
+        border-radius: 25px !important;
+      }
+      
+      /* Microphone button - mobile (scaled down) */
+      .ai-mic-btn {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.8em !important;
+        border-width: 3px !important;
+      }
+      
+      .ai-mic-hint {
+        font-size: 0.8em !important;
+        margin-bottom: 3px !important;
+      }
+      
+      /* Send button - mobile */
+      .ai-input-container button[type="submit"],
+      .ai-input-container .send-btn {
+        padding: 12px 20px !important;
+        font-size: 0.9em !important;
+        border-radius: 25px !important;
+      }
+    }
+    
+    /* Extra small screens (phones in portrait) */
+    @media (max-width: 480px) {
+      .ai-assistant-page .ai-message {
+        max-width: 95% !important;
+        font-size: 0.9em !important;
+        padding: 10px 12px !important;
+      }
+      
+      .ai-tour-card {
+        width: calc(50% - 8px) !important;
+        max-width: 160px !important;
+      }
+      
+      .ai-tour-card-image {
+        height: 80px !important;
+      }
+      
+      .ai-mic-btn {
+        width: 55px !important;
+        height: 55px !important;
+        font-size: 1.6em !important;
+      }
+      
+      .ai-visualizer-container.with-cards {
+        max-width: 150px !important;
+        max-height: 150px !important;
+      }
+    }
+    
   </style>
   <script>
     // Close all dropdowns when clicking outside
@@ -10555,13 +11295,13 @@
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen">
         <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
-        <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); openAIAssistant()">
+        <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); startModeWithAnimation('ai-assistant')">
           <span id="ai-assistant-text">🤖 Talk To Our AI Assistant</span>
         </button>
-        <button class="quick-decision-btn-start" id="quick-decision-btn" onclick="event.stopPropagation(); window.startVideoQuestions && window.startVideoQuestions()">
+        <button class="quick-decision-btn-start" id="quick-decision-btn" onclick="event.stopPropagation(); startModeWithAnimation('quick-decision')">
           <span id="quick-decision-text">⚡ Quick Decision</span>
         </button>
-        <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); window.goToHomePage && window.goToHomePage()">
+        <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
           <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
       </div>
@@ -10684,12 +11424,11 @@
         
         <!-- Search Bar -->
         <div style="margin-bottom: 15px; margin-top: 15px; padding: 0 3%; width: 94%; box-sizing: border-box;">
-          <div style="max-width: 100%; margin: 0 auto; position: relative; display: flex; align-items: center; justify-content: center;">
-            <span style="position:absolute;left:15px;font-size:1.3em;color:#666;pointer-events:none;z-index:1;">🔍</span>
-            <input type="text" id="home-search-input" placeholder="Search tours..." style="
+          <div style="max-width: 800px; margin: 0 auto; position: relative;">
+            <span style="position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:1.3em;color:#666;pointer-events:none;z-index:2;">🔍</span>
+            <input type="text" id="home-search-input" placeholder="Search tours by name or company..." style="
               width: 100%;
-              max-width: 800px;
-              padding: 16px 20px 16px 45px;
+              padding: 16px 20px 16px 50px;
               font-size: 1.1em;
               border: 3px solid #fff;
               border-radius: 35px;
@@ -10698,6 +11437,7 @@
               background: rgba(255,255,255,0.95);
               box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
               color: #000;
+              box-sizing: border-box;
             " oninput="quickSearch(this.value)">
             <button onclick="document.getElementById('home-search-input').value=''; quickSearch('');" style="
               display: none;
@@ -11082,8 +11822,10 @@
         <button class="back-button" id="back-arrow">←</button>
         <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
         <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
-        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
+        <button class="mobile-browse-btn" onclick="goToHomePage()">📁</button>
+        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">⚡ Quick Decision</button>
         <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
+        <button class="browse-all-btn-header" id="detail-browse-all-btn" onclick="goToHomePage()" style="display: none; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📁 Browse All Tours</button>
       </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="goToLanguageSelection()" style="cursor:pointer;">
       <div class="header-right">
@@ -11140,13 +11882,13 @@
       </section>
 
       <!-- Description & Details -->
-      <section class="details-section" id="about-tour-section" style="display:block !important;width:100% !important;">
-        <h3 id="about-tour-title" style="font-size:1.1em !important;font-weight:600 !important;margin:0 0 8px 0 !important;color:#0077b6;width:100% !important;">About This Tour</h3>
-      <div id="detail-description" style="font-size:0.9em !important;line-height:1.4 !important;width:100% !important;max-width:100% !important;display:block !important;"></div>
+      <section class="details-section" id="about-tour-section">
+        <h3 id="about-tour-title">📝 About This Tour</h3>
+        <div id="detail-description"></div>
       </section>
 
       <!-- Additional Info -->
-      <div id="detail-info" style="padding:0 !important;margin:0 !important;display:flex !important;flex-direction:column !important;align-items:stretch !important;"></div>
+      <div id="detail-info"></div>
 
       <!-- Fine Print -->
       <section class="fine-print" id="fine-print">
@@ -11170,6 +11912,7 @@
       <button class="btn-primary" id="book-now-btn" style="padding: 20px 42px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Book Now</button>
       <button class="btn-secondary" id="continue-phone-btn" style="padding: 20px 36px; font-size: 1.25em; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 700;">Send to My Phone</button>
     </div>
+    
   </div>
   
   <!-- AI Assistant Page -->
@@ -11177,10 +11920,10 @@
     <!-- Header - same as other pages -->
     <header class="kiosk-header ai-header">
       <div class="header-left">
-        <button class="mobile-quick-btn" onclick="closeAIAssistant(); startQuickDecision();">⚡</button>
-        <button class="mobile-browse-btn" onclick="closeAIAssistant(); goToHomePage();">📁</button>
-        <button class="quick-decision-btn-header" onclick="closeAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
-        <button class="browse-all-btn-header" onclick="closeAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
+        <button class="mobile-quick-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡</button>
+        <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
+        <button class="quick-decision-btn-header" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
+        <button class="browse-all-btn-header" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
       </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
       <div class="header-right">
@@ -11741,6 +12484,7 @@
     let startX = 0;
     let currentX = 0;
     let isInVideoFlow = false; // Track if we're in the video question flow
+    window.cameFromAIAssistant = false; // Track if tour detail was opened from AI assistant
     
     async function showSwipeResults() {
       console.log('[TRANSITION] Starting swipe results transition');
@@ -12619,6 +13363,187 @@
     }
     
     // ===================================================================
+    // MODE BUTTON ANIMATION - Glide buttons to header
+    // ===================================================================
+    
+    // Wrapper function to start mode with animation
+    function startModeWithAnimation(mode) {
+      console.log('🚀 Starting mode with animation:', mode);
+      
+      // Start animation, then execute mode switch
+      animateModeButtonsToHeader(mode, function() {
+        if (mode === 'ai-assistant') {
+          window.openAIAssistant && window.openAIAssistant();
+        } else if (mode === 'quick-decision') {
+          window.startVideoQuestions && window.startVideoQuestions();
+        } else if (mode === 'browse-all') {
+          window.goToHomePage && window.goToHomePage();
+        }
+      });
+    }
+    
+    function animateModeButtonsToHeader(selectedMode, callback) {
+      console.log('🎬 Animating mode buttons to header for mode:', selectedMode);
+      
+      // Get the start screen buttons
+      const aiBtn = document.getElementById('ai-assistant-btn');
+      const quickBtn = document.getElementById('quick-decision-btn');
+      const browseBtn = document.getElementById('browse-all-tours-btn');
+      
+      if (!aiBtn || !quickBtn || !browseBtn) {
+        console.log('   ⚠️ Start screen buttons not found, skipping animation');
+        if (callback) callback();
+        return;
+      }
+      
+      // Check if we're on the start screen (buttons visible)
+      const startScreen = document.getElementById('video-start-screen');
+      if (!startScreen || startScreen.style.display === 'none') {
+        console.log('   ⚠️ Not on start screen, skipping animation');
+        if (callback) callback();
+        return;
+      }
+      
+      // Determine which buttons to animate based on selected mode
+      let buttonsToAnimate = [];
+      
+      if (selectedMode === 'ai-assistant') {
+        buttonsToAnimate = [
+          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
+        ];
+      } else if (selectedMode === 'quick-decision') {
+        buttonsToAnimate = [
+          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
+        ];
+      } else if (selectedMode === 'browse-all') {
+        buttonsToAnimate = [
+          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
+          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' }
+        ];
+      }
+      
+      // Target position: header is fixed at top, buttons go to top-left area
+      // Header is typically ~60px tall, buttons are ~40px, centered vertically = ~10px from top
+      const headerTop = 12; // Vertical position in header
+      const headerLeftStart = 70; // Start position from left (after back button space)
+      const buttonGap = 160; // Gap between buttons
+      const targetWidth = 140;
+      const targetHeight = 40;
+      
+      // Create clones and animate
+      const clones = [];
+      const animationDuration = 700; // ms - slow enough to see
+      
+      buttonsToAnimate.forEach((btn, index) => {
+        const sourceRect = btn.element.getBoundingClientRect();
+        
+        // Create clone
+        const clone = document.createElement('div');
+        clone.className = `mode-button-clone ${btn.type}`;
+        clone.innerHTML = btn.text;
+        clone.style.cssText = `
+          left: ${sourceRect.left}px;
+          top: ${sourceRect.top}px;
+          width: ${sourceRect.width}px;
+          height: ${sourceRect.height}px;
+          font-size: ${window.getComputedStyle(btn.element).fontSize};
+          padding: ${window.getComputedStyle(btn.element).padding};
+        `;
+        
+        document.body.appendChild(clone);
+        clones.push(clone);
+        
+        // Hide original button immediately
+        btn.element.style.opacity = '0';
+        btn.element.style.transform = 'scale(0.8)';
+        
+        // Calculate target position (fixed header position)
+        const targetLeft = headerLeftStart + (index * buttonGap);
+        const targetTop = headerTop;
+        
+        // Animate with requestAnimationFrame for smooth animation
+        const startTime = performance.now();
+        const startLeft = sourceRect.left;
+        const startTop = sourceRect.top;
+        const startWidth = sourceRect.width;
+        const startHeight = sourceRect.height;
+        const startFontSize = parseFloat(window.getComputedStyle(btn.element).fontSize);
+        
+        function animate(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / animationDuration, 1);
+          
+          // Easing function (ease-out-cubic) for smooth deceleration
+          const eased = 1 - Math.pow(1 - progress, 3);
+          
+          // Interpolate values
+          const currentLeft = startLeft + (targetLeft - startLeft) * eased;
+          const currentTop = startTop + (targetTop - startTop) * eased;
+          const currentWidth = startWidth + (targetWidth - startWidth) * eased;
+          const currentHeight = startHeight + (targetHeight - startHeight) * eased;
+          const currentFontSize = startFontSize + (14 - startFontSize) * eased;
+          const currentPaddingV = 15 - (15 - 10) * eased;
+          const currentPaddingH = 25 - (25 - 20) * eased;
+          
+          clone.style.left = `${currentLeft}px`;
+          clone.style.top = `${currentTop}px`;
+          clone.style.width = `${currentWidth}px`;
+          clone.style.height = `${currentHeight}px`;
+          clone.style.fontSize = `${currentFontSize}px`;
+          clone.style.padding = `${currentPaddingV}px ${currentPaddingH}px`;
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            // Animation complete - fade out clone smoothly
+            clone.style.transition = 'opacity 0.15s ease';
+            clone.style.opacity = '0';
+            setTimeout(() => {
+              clone.remove();
+            }, 150);
+          }
+        }
+        
+        requestAnimationFrame(animate);
+      });
+      
+      // Fade out the title text during animation
+      const titleText = document.getElementById('video-start-title');
+      if (titleText) {
+        titleText.style.transition = 'opacity 0.4s ease';
+        titleText.style.opacity = '0';
+      }
+      
+      // Also fade out the clicked button
+      const clickedBtn = selectedMode === 'ai-assistant' ? aiBtn : 
+                         selectedMode === 'quick-decision' ? quickBtn : browseBtn;
+      if (clickedBtn) {
+        clickedBtn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        clickedBtn.style.opacity = '0';
+        clickedBtn.style.transform = 'scale(1.1)';
+      }
+      
+      // Call callback after animation completes
+      setTimeout(() => {
+        // Reset all original buttons
+        [aiBtn, quickBtn, browseBtn].forEach(btn => {
+          if (btn) {
+            btn.style.opacity = '';
+            btn.style.transform = '';
+            btn.style.transition = '';
+          }
+        });
+        if (titleText) {
+          titleText.style.opacity = '';
+          titleText.style.transition = '';
+        }
+        if (callback) callback();
+      }, animationDuration + 50);
+    }
+    
+    // ===================================================================
     // AI ASSISTANT FUNCTIONS
     // ===================================================================
     
@@ -12629,28 +13554,17 @@
       console.log('🤖 Opening AI Assistant');
       const aiPage = document.getElementById('ai-assistant-page');
       if (aiPage) {
-        aiPage.classList.add('active');
-        // Add class to body to hide other page elements (but not AI header)
-        document.body.classList.add('ai-assistant-open');
-        // Set URL hash for AI assistant
-        window.location.hash = 'ai-assistant';
-        // Focus the text input
-        setTimeout(() => {
-          const input = document.getElementById('ai-text-input');
-          if (input) input.focus();
-        }, 300);
+        // Check if we have existing conversation to resume
+        const aiMessagesContainer = document.getElementById('ai-chat-messages');
+        const hasExistingMessages = aiMessagesContainer && aiMessagesContainer.children.length > 0;
         
-        // Initialize visualizer and play welcome message
-        setTimeout(() => {
-          // Initialize TTS
-          if (typeof window.initTTSAudio === 'function') {
-            window.initTTSAudio();
-          }
-          
-          // Initialize particle visualizer
-          if (typeof window.initParticleVisualizer === 'function') {
-            window.initParticleVisualizer();
-          }
+        if (hasExistingMessages) {
+          console.log('   ✓ Resuming existing conversation');
+          // Resume with existing state
+          aiPage.style.display = 'flex';
+          aiPage.classList.add('active');
+          document.body.classList.add('ai-assistant-open');
+          window.location.hash = 'ai-assistant';
           
           // Show visualizer
           const visualizerContainer = document.getElementById('ai-visualizer-container');
@@ -12658,16 +13572,55 @@
             visualizerContainer.classList.remove('hidden');
           }
           
-          // Play welcome message
+          // Focus input
           setTimeout(() => {
-            if (typeof window.playWelcomeMessage === 'function') {
-              window.playWelcomeMessage();
-            } else {
-              // Fallback: show welcome message directly
-              showWelcomeMessageFallback();
+            const input = document.getElementById('ai-text-input');
+            if (input) input.focus();
+          }, 300);
+        } else {
+          console.log('   ✓ Starting fresh conversation');
+          // Start fresh
+          aiPage.style.display = 'flex';
+          aiPage.classList.add('active');
+          // Add class to body to hide other page elements (but not AI header)
+          document.body.classList.add('ai-assistant-open');
+          // Set URL hash for AI assistant
+          window.location.hash = 'ai-assistant';
+          // Focus the text input
+          setTimeout(() => {
+            const input = document.getElementById('ai-text-input');
+            if (input) input.focus();
+          }, 300);
+          
+          // Initialize visualizer and play welcome message
+          setTimeout(() => {
+            // Initialize TTS
+            if (typeof window.initTTSAudio === 'function') {
+              window.initTTSAudio();
             }
-          }, 200);
-        }, 300);
+            
+            // Initialize particle visualizer
+            if (typeof window.initParticleVisualizer === 'function') {
+              window.initParticleVisualizer();
+            }
+            
+            // Show visualizer
+            const visualizerContainer = document.getElementById('ai-visualizer-container');
+            if (visualizerContainer) {
+              visualizerContainer.classList.remove('hidden');
+            }
+            
+            // Play welcome message
+            setTimeout(() => {
+              if (typeof window.playWelcomeMessage === 'function') {
+                window.playWelcomeMessage();
+              } else {
+                // Fallback: show welcome message directly
+                showWelcomeMessageFallback();
+              }
+            }, 200);
+          }, 300);
+        }
       }
     }
     
@@ -12715,14 +13668,54 @@
       }, 1500);
     }
     
+    // Hide AI Assistant but preserve state (for switching modes)
+    window.hideAIAssistant = function() {
+      console.log('🤖 Hiding AI Assistant (preserving state)');
+      
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.style.display = 'none';
+        aiPage.classList.remove('active');
+        document.body.classList.remove('ai-assistant-open');
+      }
+      
+      // Stop recording if active
+      if (isRecording) {
+        toggleAIMicrophone();
+      }
+      
+      // Stop TTS if playing
+      if (typeof window.stopTTS === 'function') {
+        window.stopTTS();
+      }
+      
+      // Stop welcome audio if playing
+      const welcomeAudio = document.getElementById('welcome-audio');
+      if (welcomeAudio) {
+        welcomeAudio.pause();
+      }
+      
+      // Pause visualizer but don't hide
+      if (window.particleVisualizer) {
+        window.particleVisualizer.stopSpeaking();
+      }
+    }
+    
+    // Close AI Assistant and clear state (for full reset)
     window.closeAIAssistant = function() {
-      console.log('🤖 Closing AI Assistant');
+      console.log('🤖 Closing AI Assistant (clearing state)');
+      
+      // Reset the flag since AI assistant is being properly closed
+      window.cameFromAIAssistant = false;
+      
       const aiPage = document.getElementById('ai-assistant-page');
       if (aiPage) {
         aiPage.classList.remove('active');
+        aiPage.style.display = 'none';
         // Remove class from body to show other elements again
         document.body.classList.remove('ai-assistant-open');
       }
+      
       // Clear tour cards
       const tourCardsContainer = document.getElementById('ai-tour-cards');
       if (tourCardsContainer) {
@@ -12732,6 +13725,16 @@
       if (chatContainer) {
         chatContainer.classList.remove('with-cards');
       }
+      
+      // Clear chat messages
+      const aiMessages = document.getElementById('ai-chat-messages');
+      if (aiMessages) {
+        aiMessages.innerHTML = '';
+      }
+      
+      // Clear conversation history
+      aiConversationHistory = [];
+      
       // Stop recording if active
       if (isRecording) {
         toggleAIMicrophone();
@@ -12766,11 +13769,166 @@
       }
     }
     
+    // Resume AI Assistant with existing state
+    window.resumeAIAssistant = function() {
+      console.log('🤖 Resuming AI Assistant (with existing state)');
+      
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.style.display = 'flex';
+        aiPage.classList.add('active');
+        document.body.classList.add('ai-assistant-open');
+        
+        // Check if there's existing content
+        const aiMessages = document.getElementById('ai-chat-messages');
+        const hasExistingMessages = aiMessages && aiMessages.children.length > 0;
+        
+        if (!hasExistingMessages) {
+          // No existing messages - start fresh with welcome
+          if (typeof window.playWelcomeMessage === 'function') {
+            window.playWelcomeMessage();
+          }
+        } else {
+          console.log('   ✓ Resuming with existing messages');
+          // Show visualizer without playing welcome
+          const visualizerContainer = document.getElementById('ai-visualizer-container');
+          if (visualizerContainer) {
+            visualizerContainer.classList.remove('hidden');
+          }
+        }
+      }
+    }
+    
     // Store conversation history for AI context
     let aiConversationHistory = [];
     let currentAITourCards = []; // Currently displayed tour cards
     
-    // Display tour recommendation cards
+    // Display tour cards from full tour objects (from API)
+    function displayAITourCardsFromObjects(tours) {
+      const container = document.getElementById('ai-tour-cards');
+      const visualizerContainer = document.getElementById('ai-visualizer-container');
+      
+      if (!container) {
+        console.error('❌ ai-tour-cards container not found!');
+        return;
+      }
+      
+      // Clear existing cards
+      container.innerHTML = '';
+      currentAITourCards = [];
+      
+      // Limit to 3 cards
+      const limitedTours = tours.slice(0, 3);
+      console.log(`🎴 Displaying ${limitedTours.length} tour cards from API objects`);
+      
+      // Add with-cards class to visualizer
+      if (visualizerContainer && limitedTours.length > 0) {
+        visualizerContainer.classList.add('with-cards');
+      }
+      
+      limitedTours.forEach((tour, index) => {
+        // Store for highlighting - use the EXACT name from API
+        currentAITourCards.push({
+          name: tour.name,
+          key: tour.key,
+          ...tour
+        });
+        
+        const card = document.createElement('div');
+        card.className = 'ai-tour-card';
+        card.dataset.tourKey = tour.key;
+        card.dataset.tourName = tour.name;
+        
+        const thumbnail = tour.thumbnail || tour.main_image || '/static/placeholder.jpg';
+        const price = tour.price_adult || tour.price || '';
+        const duration = tour.duration || '';
+        
+        // Store gallery images for cycling
+        const gallery = tour.gallery || [thumbnail];
+        card.dataset.gallery = JSON.stringify(gallery);
+        card.dataset.currentImageIndex = '0';
+        
+        // Get highlights for details
+        const highlights = tour.highlights || '';
+        const highlightsList = highlights.split('\n').filter(h => h.trim()).slice(0, 3);
+        const detailsHtml = highlightsList.length > 0 
+          ? highlightsList.map(h => `<div class="detail-item">✓ ${h.trim()}</div>`).join('')
+          : '';
+        
+        // Build flashing info sections for when card is highlighted
+        const flashingSections = [];
+        if (tour.departure_times && tour.departure_times.trim()) {
+          flashingSections.push({ icon: '🕐', label: 'Departs', text: tour.departure_times.split('|')[0].trim() });
+        }
+        if (tour.ideal_for && tour.ideal_for.trim()) {
+          const idealText = tour.ideal_for.split('\n')[0].split(',')[0].trim();
+          flashingSections.push({ icon: '🎯', label: 'Ideal for', text: idealText });
+        }
+        if (tour.departure_location && tour.departure_location.trim()) {
+          flashingSections.push({ icon: '📍', label: 'From', text: tour.departure_location });
+        }
+        if (highlightsList.length > 0) {
+          flashingSections.push({ icon: '⭐', label: 'Highlight', text: highlightsList[0].substring(0, 50) });
+        }
+        card.dataset.flashingSections = JSON.stringify(flashingSections);
+        
+        card.innerHTML = `
+          <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')"></div>
+          <div class="ai-tour-card-info">
+            <p class="ai-tour-card-name">${tour.name}</p>
+            <p class="ai-tour-card-company">${tour.company || ''}</p>
+            <p class="ai-tour-card-price">${price}</p>
+            ${duration ? `<p class="ai-tour-card-duration">⏱️ ${duration}</p>` : ''}
+            <div class="ai-tour-card-details">
+              ${detailsHtml}
+            </div>
+            <div class="ai-tour-card-flash" style="display: none; background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.22) 100%); border-radius: 10px; padding: 8px 12px; margin-top: 8px;">
+              <span class="flash-icon" style="font-size: 1.1em; margin-right: 6px;"></span>
+              <span class="flash-label" style="font-weight: 600; color: #7c3aed; margin-right: 4px;"></span>
+              <span class="flash-text" style="color: #333;"></span>
+            </div>
+          </div>
+        `;
+        
+        // Add click handler - hide AI assistant and open tour detail
+        card.addEventListener('click', () => {
+          console.log('🎯 AI Tour card clicked:', tour.key);
+          // Set flag so we know to return to AI assistant
+          window.cameFromAIAssistant = true;
+          
+          // Hide AI assistant page (don't close - preserve state for back button)
+          const aiPage = document.getElementById('ai-assistant-page');
+          if (aiPage) {
+            aiPage.style.display = 'none';
+            aiPage.classList.remove('active');
+            console.log('   ✓ AI assistant hidden');
+          }
+          document.body.classList.remove('ai-assistant-open');
+          
+          // Ensure home page is visible as base (needed for tour detail to show properly)
+          const homePage = document.querySelector('.page.home-page');
+          if (homePage) {
+            homePage.classList.add('active');
+            homePage.style.display = 'block';
+            homePage.style.visibility = 'visible';
+            console.log('   ✓ Home page shown as base');
+          }
+          
+          // Open tour detail (same as Browse All Tours mode)
+          if (typeof openTourDetail === 'function') {
+            console.log('   ✓ Opening tour detail...');
+            openTourDetail(tour.key);
+          } else {
+            window.location.hash = `tour/${tour.key}`;
+          }
+        });
+        
+        container.appendChild(card);
+        console.log(`   ✅ Card ${index + 1}: ${tour.name}`);
+      });
+    }
+    
+    // Display tour recommendation cards (from tour names - searches database)
     async function displayAITourCards(tourNames) {
       const container = document.getElementById('ai-tour-cards');
       const visualizerContainer = document.getElementById('ai-visualizer-container');
@@ -12854,7 +14012,20 @@
       card.dataset.tourName = tour.name;
       
       const thumbnail = tour.thumbnail || '/static/placeholder.jpg';
-      const price = tour.price ? `From $${tour.price}` : '';
+      const price = tour.price ? `From $${tour.price}` : (tour.price_adult || '');
+      const duration = tour.duration || '';
+      
+      // Get highlights for details
+      const highlights = tour.highlights || '';
+      const highlightsList = highlights.split('\n').filter(h => h.trim()).slice(0, 3);
+      const detailsHtml = highlightsList.length > 0 
+        ? highlightsList.map(h => `<div class="detail-item">✓ ${h.trim()}</div>`).join('')
+        : '';
+      
+      // Store gallery images for cycling
+      const gallery = tour.gallery || [thumbnail];
+      card.dataset.gallery = JSON.stringify(gallery);
+      card.dataset.currentImageIndex = '0';
       
       card.innerHTML = `
         <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')"></div>
@@ -12862,17 +14033,201 @@
           <p class="ai-tour-card-name">${tour.name}</p>
           <p class="ai-tour-card-company">${tour.company || ''}</p>
           <p class="ai-tour-card-price">${price}</p>
+          ${duration ? `<p class="ai-tour-card-duration">⏱️ ${duration}</p>` : ''}
+          <div class="ai-tour-card-details">
+            ${detailsHtml}
+          </div>
         </div>
       `;
       
       card.onclick = () => {
         if (typeof openTourDetail === 'function') {
-          closeAIAssistant();
+          console.log('🎯 AI Tour card clicked (createAITourCard):', tour.key);
+          // Set flag so we know to return to AI assistant
+          window.cameFromAIAssistant = true;
+          
+          // Hide AI assistant page (don't close - preserve state for back button)
+          const aiPage = document.getElementById('ai-assistant-page');
+          if (aiPage) {
+            aiPage.style.display = 'none';
+            aiPage.classList.remove('active');
+            console.log('   ✓ AI assistant hidden');
+          }
+          document.body.classList.remove('ai-assistant-open');
+          
+          // Ensure home page is visible as base (needed for tour detail to show properly)
+          const homePage = document.querySelector('.page.home-page');
+          if (homePage) {
+            homePage.classList.add('active');
+            homePage.style.display = 'block';
+            homePage.style.visibility = 'visible';
+            console.log('   ✓ Home page shown as base');
+          }
+          
+          // Open tour detail (same as Browse All Tours mode)
+          console.log('   ✓ Opening tour detail...');
           openTourDetail(tour.key);
         }
       };
       
       return card;
+    }
+    
+    // Image slideshow for speaking tour card
+    let imageCycleInterval = null;
+    let currentSlideshowCard = null;
+    
+    function startImageCycle(card) {
+      // Stop any existing slideshow
+      stopImageCycle();
+      
+      try {
+        const gallery = JSON.parse(card.dataset.gallery || '[]');
+        console.log(`🖼️ Starting slideshow with ${gallery.length} images`);
+        
+        if (gallery.length <= 1) {
+          console.log(`🖼️ Only 1 image, no slideshow needed`);
+          return;
+        }
+        
+        const imageDiv = card.querySelector('.ai-tour-card-image');
+        if (!imageDiv) {
+          console.log(`🖼️ No image div found`);
+          return;
+        }
+        
+        currentSlideshowCard = card;
+        
+        // Create slideshow container if not exists
+        let slideshowContainer = imageDiv.querySelector('.slideshow-container');
+        if (!slideshowContainer) {
+          console.log(`🖼️ Creating slideshow container`);
+          slideshowContainer = document.createElement('div');
+          slideshowContainer.className = 'slideshow-container';
+          
+          // Create slides for each image
+          gallery.forEach((imgUrl, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'slideshow-slide' + (index === 0 ? ' active' : '');
+            slide.style.backgroundImage = `url('${imgUrl}')`;
+            slideshowContainer.appendChild(slide);
+          });
+          
+          imageDiv.appendChild(slideshowContainer);
+        }
+        
+        let currentIndex = 0;
+        const slides = slideshowContainer.querySelectorAll('.slideshow-slide');
+        console.log(`🖼️ Slideshow ready with ${slides.length} slides`);
+        
+        imageCycleInterval = setInterval(() => {
+          // Fade out current slide
+          slides[currentIndex].classList.remove('active');
+          
+          // Move to next slide
+          currentIndex = (currentIndex + 1) % slides.length;
+          
+          // Fade in new slide
+          slides[currentIndex].classList.add('active');
+          
+          console.log(`🖼️ Slideshow: showing image ${currentIndex + 1}/${slides.length}`);
+        }, 3000); // Change image every 3 seconds
+        
+      } catch (e) {
+        console.error('🖼️ Slideshow error:', e);
+      }
+    }
+    
+    function stopImageCycle(card) {
+      if (imageCycleInterval) {
+        clearInterval(imageCycleInterval);
+        imageCycleInterval = null;
+      }
+      
+      // Clean up slideshow container
+      const targetCard = card || currentSlideshowCard;
+      if (targetCard) {
+        const imageDiv = targetCard.querySelector('.ai-tour-card-image');
+        const slideshowContainer = imageDiv?.querySelector('.slideshow-container');
+        if (slideshowContainer) {
+          // Reset to first slide
+          const slides = slideshowContainer.querySelectorAll('.slideshow-slide');
+          slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === 0);
+          });
+        }
+      }
+      currentSlideshowCard = null;
+    }
+    
+    // Flashing info sections cycle
+    let flashingInterval = null;
+    let currentFlashCard = null;
+    
+    function startFlashingCycle(card) {
+      stopFlashingCycle();
+      
+      try {
+        const sections = JSON.parse(card.dataset.flashingSections || '[]');
+        if (sections.length === 0) {
+          console.log('📋 No flashing sections available');
+          return;
+        }
+        
+        console.log(`📋 Starting flashing cycle with ${sections.length} sections`);
+        currentFlashCard = card;
+        
+        const flashDiv = card.querySelector('.ai-tour-card-flash');
+        if (!flashDiv) return;
+        
+        const iconEl = flashDiv.querySelector('.flash-icon');
+        const labelEl = flashDiv.querySelector('.flash-label');
+        const textEl = flashDiv.querySelector('.flash-text');
+        
+        let currentIndex = 0;
+        
+        // Show first section immediately
+        const updateSection = () => {
+          const section = sections[currentIndex];
+          if (iconEl) iconEl.textContent = section.icon;
+          if (labelEl) labelEl.textContent = section.label + ':';
+          if (textEl) textEl.textContent = section.text;
+          
+          // Add a subtle fade animation
+          flashDiv.style.opacity = '0';
+          setTimeout(() => {
+            flashDiv.style.opacity = '1';
+          }, 50);
+        };
+        
+        updateSection();
+        
+        // Cycle every 2 seconds
+        flashingInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % sections.length;
+          updateSection();
+          console.log(`📋 Flashing: ${sections[currentIndex].label} - ${sections[currentIndex].text}`);
+        }, 2000);
+        
+      } catch (e) {
+        console.error('📋 Flashing cycle error:', e);
+      }
+    }
+    
+    function stopFlashingCycle() {
+      if (flashingInterval) {
+        clearInterval(flashingInterval);
+        flashingInterval = null;
+      }
+      
+      // Hide flash div on current card
+      if (currentFlashCard) {
+        const flashDiv = currentFlashCard.querySelector('.ai-tour-card-flash');
+        if (flashDiv) {
+          flashDiv.style.display = 'none';
+        }
+      }
+      currentFlashCard = null;
     }
     
     // Highlight a specific tour card
@@ -12927,29 +14282,54 @@
     // Chunked TTS for faster response - plays first chunk while loading rest
     let ttsAudioElement = null;
     let ttsAudioQueue = [];
+    let ttsChunkTourMap = []; // Maps chunk index to tour names mentioned
+    let ttsCurrentChunkIndex = 0;
     let ttsIsPlaying = false;
     
     function cleanTextForTTS(text) {
       return text
-        .replace(/\*\*([^*]+)\*\*/g, '$1')
-        .replace(/\[TOUR:[^\]]+\]/g, '')
-        .replace(/\[FILTER:[^\]]+\]/g, '')
-        .replace(/\[OPTIONS:[^\]]+\]/g, '')
-        .replace(/[\uD800-\uDFFF]/g, '')
-        .replace(/[^\x20-\x7E\u00C0-\u024F\s]/g, '')
-        .replace(/\n+/g, '. ')
-        .replace(/\s+/g, ' ')
+        .replace(/\*\*([^*]+)\*\*/g, '$1')  // Remove markdown bold
+        .replace(/\[TOUR:[^\]]+\]/g, '')     // Remove tour tags
+        .replace(/\[FILTER:[^\]]+\]/g, '')   // Remove filter tags
+        .replace(/\[OPTIONS:[^\]]+\]/g, '')  // Remove options tags
+        .replace(/\n+/g, '. ')               // Convert newlines to pauses
+        .replace(/\s+/g, ' ')                // Normalize whitespace
         .trim();
+      // Note: Keeping emojis - ElevenLabs ignores them gracefully
     }
     
     function splitIntoChunks(text) {
-      // Split into sentences, aim for ~250 chars per chunk (balance speed vs gaps)
+      // SMART SPLITTING: Split by numbered tour items (1. 2. 3.)
+      // This ensures: intro = chunk 1, then each tour = its own chunk
+      
+      // Check if text has numbered list format
+      const hasNumberedList = /\d+\.\s*\*?\*?[A-Z]/.test(text);
+      
+      if (hasNumberedList) {
+        const chunks = [];
+        
+        // Split at numbered items (1. 2. 3. etc)
+        // But keep the number with its content
+        const parts = text.split(/(?=\d+\.\s*\*?\*?[A-Z])/);
+        
+        for (const part of parts) {
+          const trimmed = part.trim();
+          if (trimmed) {
+            chunks.push(trimmed);
+          }
+        }
+        
+        console.log(`📝 Smart split: ${chunks.length} chunks (intro + ${chunks.length - 1} tours)`);
+        return chunks;
+      }
+      
+      // Fallback: Split by sentences for non-list text
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       const chunks = [];
       let currentChunk = '';
       
       for (const sentence of sentences) {
-        if (currentChunk.length + sentence.length < 280) {
+        if (currentChunk.length + sentence.length < 300) {
           currentChunk += sentence;
         } else {
           if (currentChunk) chunks.push(currentChunk.trim());
@@ -12958,8 +14338,132 @@
       }
       if (currentChunk.trim()) chunks.push(currentChunk.trim());
       
-      // If only one chunk and it's long, just use it
       return chunks.length > 0 ? chunks : [text];
+    }
+    
+    // Find which tour names are mentioned in a chunk of text
+    function findToursInChunk(chunkText, chunkIndex) {
+      const toursInChunk = [];
+      const chunkLower = chunkText.toLowerCase();
+      
+      // Skip intro chunks (no numbered item means it's intro)
+      const hasNumberedItem = /^\d+\.\s/.test(chunkText.trim());
+      if (!hasNumberedItem && chunkIndex === 0) {
+        console.log(`📝 Chunk ${chunkIndex + 1} is intro, no highlighting`);
+        return [];
+      }
+      
+      // Check each tour card
+      for (const tour of currentAITourCards) {
+        const tourNameLower = tour.name.toLowerCase();
+        
+        // Get the first distinctive word(s) of the tour name
+        const commonWords = ['the', 'and', 'for', 'with', 'tour', 'tours', 'day', 'full', 'half', 'from', 'to', 'a', 'an', 'sailing', 'trip'];
+        const nameWords = tourNameLower.split(/\s+/).filter(w => w.length > 3 && !commonWords.includes(w));
+        const keyWord = nameWords[0] || tourNameLower.split(/\s+/)[0]; // First distinctive word
+        
+        // Simple check: does the chunk contain the key word?
+        if (chunkLower.includes(keyWord)) {
+          toursInChunk.push(tour.name);
+          console.log(`📝 Found tour "${tour.name}" (keyword: "${keyWord}")`);
+        }
+      }
+      
+      return toursInChunk;
+    }
+    
+    // Highlight the tour card that's currently being spoken about
+    function highlightSpeakingTour(tourName) {
+      const cards = document.querySelectorAll('.ai-tour-card');
+      const searchName = tourName.toLowerCase().replace(/\*\*/g, '').trim();
+      
+      console.log(`🔍 Looking for tour to highlight: "${searchName}"`);
+      
+      let matchedCard = null;
+      let bestMatchScore = 0;
+      
+      cards.forEach(card => {
+        const cardName = card.dataset.tourName?.toLowerCase() || '';
+        
+        // Score the match - more matching words = better match
+        const searchWords = searchName.split(/\s+/).filter(w => w.length > 2);
+        const cardWords = cardName.split(/\s+/).filter(w => w.length > 2);
+        
+        let matchScore = 0;
+        for (const word of searchWords) {
+          if (cardName.includes(word)) matchScore++;
+        }
+        for (const word of cardWords) {
+          if (searchName.includes(word)) matchScore++;
+        }
+        
+        // Also check for substring match
+        if (cardName.includes(searchName.substring(0, 15)) || 
+            searchName.includes(cardName.substring(0, 15))) {
+          matchScore += 3;
+        }
+        
+        if (matchScore > bestMatchScore) {
+          bestMatchScore = matchScore;
+          matchedCard = card;
+        }
+      });
+      
+      if (matchedCard && bestMatchScore >= 2) {
+        // Remove speaking state from all other cards
+        cards.forEach(c => {
+          if (c !== matchedCard) {
+            c.classList.remove('speaking');
+            c.classList.remove('highlighted');
+            stopImageCycle(c);
+          }
+        });
+        
+        // Add speaking state to matched card
+        if (!matchedCard.classList.contains('speaking')) {
+          matchedCard.classList.add('speaking');
+          matchedCard.classList.add('highlighted');
+          startImageCycle(matchedCard);
+          startFlashingCycle(matchedCard); // Start flashing sections
+          console.log(`🎯 Now speaking about: ${matchedCard.dataset.tourName}`);
+        }
+      } else {
+        console.log(`⚠️ No good match found for "${searchName}" (best score: ${bestMatchScore})`);
+      }
+    }
+    
+    function clearSpeakingHighlights() {
+      const cards = document.querySelectorAll('.ai-tour-card');
+      cards.forEach(card => {
+        card.classList.remove('speaking');
+        card.classList.remove('highlighted');
+        stopImageCycle(card);
+      });
+      stopFlashingCycle(); // Stop any flashing cycle
+    }
+    
+    // Highlight a card by its index (0, 1, 2)
+    function highlightCardByIndex(index) {
+      const cards = document.querySelectorAll('.ai-tour-card');
+      
+      cards.forEach((card, i) => {
+        if (i === index) {
+          // This is the card to highlight
+          if (!card.classList.contains('speaking')) {
+            card.classList.add('speaking');
+            card.classList.add('highlighted');
+            startImageCycle(card);
+            startFlashingCycle(card); // Start flashing sections
+            console.log(`🎯 Now speaking about: ${card.dataset.tourName}`);
+          }
+        } else {
+          // Remove highlight from other cards
+          card.classList.remove('speaking');
+          card.classList.remove('highlighted');
+          stopImageCycle(card);
+          stopFlashingCycle(); // Stop flashing when unhighlighted
+        }
+      });
     }
     
     async function fetchTTSChunk(text, language) {
@@ -12976,13 +14480,27 @@
     async function playNextInQueue() {
       if (ttsAudioQueue.length === 0) {
         ttsIsPlaying = false;
+        ttsCurrentChunkIndex = 0;
         if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+        clearSpeakingHighlights();
         return;
       }
       
       ttsIsPlaying = true;
       const audioBlob = ttsAudioQueue.shift();
       const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Highlight tour card based on chunk index (chunk 1=intro, chunk 2=card 0, etc.)
+      const cardIndex = ttsCurrentChunkIndex - 1; // Chunk 1 is intro, so card index = chunk - 1
+      if (cardIndex >= 0 && cardIndex < currentAITourCards.length) {
+        const tourName = currentAITourCards[cardIndex].name;
+        console.log(`🎙️ Chunk ${ttsCurrentChunkIndex + 1} → Highlighting card ${cardIndex + 1}: ${tourName}`);
+        highlightCardByIndex(cardIndex);
+      } else {
+        console.log(`🎙️ Chunk ${ttsCurrentChunkIndex + 1} → No card (intro/outro)`);
+        clearSpeakingHighlights();
+      }
+      ttsCurrentChunkIndex++;
       
       ttsAudioElement.src = audioUrl;
       try {
@@ -13030,14 +14548,35 @@
         }
       }
       
-      // Stop current playback
+      // Stop current playback and clear highlights
       ttsAudioElement.pause();
       ttsAudioQueue = [];
+      ttsChunkTourMap = [];
+      ttsCurrentChunkIndex = 0;
       ttsIsPlaying = false;
+      clearSpeakingHighlights();
       
       // Split into chunks
       const chunks = splitIntoChunks(cleanText);
       console.log(`📝 Split into ${chunks.length} chunks`);
+      
+      // Simple chunk-to-card mapping (chunk 1=intro, chunk 2=card1, chunk 3=card2, etc.)
+      console.log(`🎯 Available tour cards:`, currentAITourCards.map(t => t.name));
+      
+      for (let i = 0; i < chunks.length; i++) {
+        // Chunk 0 = intro (no tour), Chunk 1 = tour 0, Chunk 2 = tour 1, etc.
+        if (i === 0) {
+          ttsChunkTourMap[i] = []; // Intro chunk - no tours
+          console.log(`📝 Chunk ${i + 1}: INTRO (no highlight)`);
+        } else if (i - 1 < currentAITourCards.length) {
+          const tourName = currentAITourCards[i - 1].name;
+          ttsChunkTourMap[i] = [tourName];
+          console.log(`📝 Chunk ${i + 1}: → ${tourName}`);
+        } else {
+          ttsChunkTourMap[i] = []; // Extra chunks (outro)
+          console.log(`📝 Chunk ${i + 1}: OUTRO (no highlight)`);
+        }
+      }
       
       try {
         if (chunks.length === 1) {
@@ -13059,16 +14598,43 @@
           console.log('📡 First 2 chunks ready, starting playback...');
           playNextInQueue();
           
-          // Prefetch remaining chunks
+          // Prefetch remaining chunks IN ORDER
           if (chunks.length > 2) {
             console.log(`📡 Prefetching ${chunks.length - 2} more chunks...`);
+            // Pre-allocate slots to maintain order (use 'pending' as initial state)
+            const pendingChunks = new Array(chunks.length - 2).fill('pending');
+            let nextToAdd = 0;
+            
+            const processQueue = () => {
+              // Add all consecutive ready/skipped chunks to queue in order
+              while (nextToAdd < pendingChunks.length) {
+                const chunk = pendingChunks[nextToAdd];
+                if (chunk === 'pending') break; // Still waiting for this chunk
+                if (chunk === 'failed') {
+                  console.log(`📡 Chunk ${nextToAdd + 3}/${chunks.length} failed, skipping`);
+                  nextToAdd++;
+                  continue;
+                }
+                // It's a valid blob
+                ttsAudioQueue.push(chunk);
+                console.log(`📡 Chunk ${nextToAdd + 3}/${chunks.length} added to queue`);
+                nextToAdd++;
+              }
+            };
+            
             for (let i = 2; i < chunks.length; i++) {
+              const chunkIndex = i - 2; // Index in pendingChunks array
               fetchTTSChunk(chunks[i], language)
                 .then(blob => {
-                  ttsAudioQueue.push(blob);
-                  console.log(`📡 Chunk ${i + 1}/${chunks.length} prefetched`);
+                  pendingChunks[chunkIndex] = blob;
+                  console.log(`📡 Chunk ${i + 1}/${chunks.length} fetched`);
+                  processQueue();
                 })
-                .catch(e => console.error(`Chunk ${i + 1} failed:`, e));
+                .catch(e => {
+                  console.error(`Chunk ${i + 1} failed:`, e);
+                  pendingChunks[chunkIndex] = 'failed'; // Mark as failed so queue can continue
+                  processQueue();
+                });
             }
           }
         }
@@ -13078,6 +14644,7 @@
         if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
       }
     }
+    
     
     window.sendAIMessage = async function() {
       const input = document.getElementById('ai-text-input');
@@ -13137,32 +14704,68 @@
         // Remove typing indicator
         typingMsg.remove();
         
-        const responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
+        let responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
         
-        // Add AI response
+        // Check if response has tour recommendations
+        const recommendedTours = parseTourRecommendations(responseText);
+        const hasQuestion = responseText.includes('?');
+        const hasRecommendations = recommendedTours.length > 0 || (data.recommended_tours && data.recommended_tours.length > 0);
+        
+        // If AI gives a statement (no question) without recommendations, that's a problem
+        // Auto-trigger a follow-up to get recommendations
+        if (!hasQuestion && !hasRecommendations && aiConversationHistory.length >= 2) {
+          console.log('⚠️ AI gave statement without recommendations - requesting tours...');
+          // Don't show this response, instead ask for recommendations
+          const followUpResponse = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: "Please show me some tour recommendations based on what we discussed.",
+              language: typeof currentLanguage !== 'undefined' ? currentLanguage : 'en',
+              history: [...aiConversationHistory, { role: 'assistant', content: responseText }]
+            })
+          });
+          const followUpData = await followUpResponse.json();
+          if (followUpData.response && (parseTourRecommendations(followUpData.response).length > 0 || followUpData.recommended_tours?.length > 0)) {
+            responseText = followUpData.response;
+            data.recommended_tours = followUpData.recommended_tours;
+          }
+        }
+        
+        // Add AI response with formatting
         const assistantMsg = document.createElement('div');
         assistantMsg.className = 'ai-message assistant';
-        assistantMsg.textContent = responseText;
+        
+        // Format the response
+        let formattedText = responseText
+          // Convert **text** to <strong>text</strong>
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          // Convert line breaks to <br> for proper display
+          .replace(/\n/g, '<br>');
+        
+        assistantMsg.innerHTML = formattedText;
         messagesContainer.appendChild(assistantMsg);
         
         // Add to conversation history
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
-        // Speak the response using ElevenLabs TTS
-        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        speakResponseWithTTS(responseText, lang);
-        
-        // Check for tour recommendations and display cards
-        const recommendedTours = parseTourRecommendations(responseText);
-        if (recommendedTours.length > 0) {
-          displayAITourCards(recommendedTours);
-          
-          // Highlight first tour mentioned
-          if (recommendedTours[0]) {
-            setTimeout(() => highlightAITourCard(recommendedTours[0]), 600);
-            setTimeout(() => clearAITourHighlights(), 3000);
+        // Display tour cards - prefer full tour objects from API
+        if (data.recommended_tours && data.recommended_tours.length > 0) {
+          console.log('📦 Using full tour objects from API:', data.recommended_tours.map(t => t.name));
+          displayAITourCardsFromObjects(data.recommended_tours);
+          console.log('🎯 Displayed', currentAITourCards.length, 'tour cards for highlighting');
+        } else {
+          // Fallback to parsing tour names from text (less reliable)
+          const toursToDisplay = parseTourRecommendations(responseText);
+          if (toursToDisplay.length > 0) {
+            displayAITourCards(toursToDisplay);
+            console.log('🎯 Displayed', currentAITourCards.length, 'tour cards (parsed from text)');
           }
         }
+        
+        // NOW speak the response - TTS will highlight tours as it mentions them
+        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+        speakResponseWithTTS(responseText, lang);
         
         // Auto-scroll to show new response
         if (container) {
@@ -13187,18 +14790,90 @@
       const micBtn = document.getElementById('ai-mic-btn');
       if (!micBtn) return;
       
-      isRecording = !isRecording;
-      
-      if (isRecording) {
-        micBtn.classList.add('recording');
-        micBtn.innerHTML = '⏹️';
-        console.log('🎤 Recording started...');
-        // TODO: Start actual voice recording
+      // Use the VoiceChat system if available
+      if (window.voiceChat) {
+        // Stop any ongoing TTS to prevent feedback
+        if (window.voiceChat.isSpeaking) {
+          console.log('🔇 Stopping TTS before starting mic');
+          window.voiceChat.stopSpeaking();
+        }
+        
+        if (!window.voiceChat.isListening) {
+          // Start listening
+          console.log('🎤 Starting voice recognition via AI mic button...');
+          isRecording = true;
+          micBtn.classList.add('recording');
+          micBtn.innerHTML = '⏹️';
+          
+          // Set up audio level callback for volume-responsive button
+          window.voiceChat.setAudioLevelCallback((level) => {
+            // Scale button based on audio level (0-255 range)
+            // Map to scale range: 1.0 (quiet) to 1.4 (loud)
+            const normalizedLevel = Math.min(level / 100, 1); // Normalize to 0-1
+            const scale = 1 + (normalizedLevel * 0.4); // 1.0 to 1.4
+            micBtn.style.transform = `scale(${scale})`;
+          });
+          
+          // Override callbacks for this session to use AI chat input
+          const originalOnResult = window.voiceChat.onSpeechResult;
+          const originalUpdateUI = window.voiceChat.updateUI;
+          
+          window.voiceChat.onSpeechResult = (transcript) => {
+            console.log('✅ AI Voice input:', transcript);
+            isRecording = false;
+            // Clear audio level callback and reset button
+            window.voiceChat.clearAudioLevelCallback();
+            micBtn.style.transform = '';
+            // Put transcript in AI chat input (correct ID: ai-text-input)
+            const aiInput = document.getElementById('ai-text-input');
+            if (aiInput && transcript.trim()) {
+              aiInput.value = transcript;
+              console.log('📝 Set input value to:', transcript);
+              // Auto-send the message
+              sendAIMessage();
+              console.log('📤 sendAIMessage() called');
+            } else {
+              console.error('❌ Could not find ai-text-input element or transcript empty');
+            }
+            // Restore original callback
+            window.voiceChat.onSpeechResult = originalOnResult;
+          };
+          
+          window.voiceChat.updateUI = (state) => {
+            // Call original handler
+            if (originalUpdateUI) originalUpdateUI(state);
+            
+            // Also update AI mic button
+            if (state === 'listening') {
+              micBtn.classList.add('recording');
+              micBtn.innerHTML = '⏹️';
+              isRecording = true;
+            } else {
+              micBtn.classList.remove('recording');
+              micBtn.innerHTML = '🎤';
+              micBtn.style.transform = ''; // Reset scale when done
+              isRecording = false;
+              // Clear audio level callback
+              window.voiceChat.clearAudioLevelCallback();
+              // Restore original callback when done
+              window.voiceChat.updateUI = originalUpdateUI;
+            }
+          };
+          
+          window.voiceChat.startListening();
+        } else {
+          // Stop listening
+          console.log('🎤 Stopping voice recognition...');
+          isRecording = false;
+          micBtn.classList.remove('recording');
+          micBtn.innerHTML = '🎤';
+          micBtn.style.transform = ''; // Reset scale
+          window.voiceChat.clearAudioLevelCallback();
+          window.voiceChat.stopListening();
+        }
       } else {
-        micBtn.classList.remove('recording');
-        micBtn.innerHTML = '🎤';
-        console.log('🎤 Recording stopped');
-        // TODO: Process voice recording
+        console.error('❌ VoiceChat not initialized - voice features unavailable');
+        alert('Voice features are not available. Please refresh the page.');
       }
     }
     
@@ -16198,6 +17873,17 @@
       console.log('   isInVideoFlow:', isInVideoFlow);
       console.log('   video-bg-active class present:', document.body.classList.contains('video-bg-active'));
       
+      // IMPORTANT: Check if we're actually coming from AI assistant
+      // If AI assistant page is not visible/active, reset the flag
+      // (This prevents the flag from persisting incorrectly from previous sessions)
+      const aiPage = document.getElementById('ai-assistant-page');
+      const aiIsVisible = aiPage && (aiPage.classList.contains('active') || aiPage.style.display === 'flex');
+      if (!aiIsVisible && !window.cameFromAIAssistant) {
+        // Definitely not from AI assistant - ensure flag is false
+        window.cameFromAIAssistant = false;
+      }
+      console.log('   cameFromAIAssistant:', window.cameFromAIAssistant);
+      
       // Add to navigation history
       addToNavigationHistory('tour-' + key);
       
@@ -16358,108 +18044,25 @@
             });
           }
           
-          // Render quick info items - SINGLE COLUMN on mobile, grid on desktop
-          const isMobile = window.innerWidth <= 768;
-          // MOBILE UNIFORM STYLES - match highlights/includes width exactly
-          const mPad = '16px';
-          const mGap = '15px';
-          const mRadius = '16px';
-          const mHeading = '1.2em';
-          const mText = '1em';
-          // Match other sections: calc(100% - 16px) with 8px margins
-          const mWidth = isMobile 
-            ? 'width:calc(100% - 16px);max-width:calc(100% - 16px);margin:0 8px 15px 8px;box-sizing:border-box;'
-            : 'width:100%;max-width:1200px;margin:0 auto 30px auto;box-sizing:border-box;';
-          
-          if (quickInfoItems.length > 0) {
-            // On mobile: always single column. On desktop: grid for 2-3 items
-            if (!isMobile && (quickInfoItems.length === 2 || quickInfoItems.length === 3)) {
-              const gridCols = quickInfoItems.length === 2 ? '1fr 1fr' : '1fr 1fr 1fr';
-              info += `<div class="detail-section-grid" style="display:grid;grid-template-columns:${gridCols};gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">`;
-              quickInfoItems.forEach((item) => {
-                info += `<div style="background:${item.color};backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);">`;
-                info += `<h3 style="font-size:2.2em;font-weight:700;color:${item.titleColor};margin:0 0 25px 0;">${item.icon} ${item.title}</h3>`;
-                info += `<div style="font-size:1.25em;color:#2c3e50;line-height:1.6;">${item.content}</div>`;
-                info += '</div>';
-              });
-              info += '</div>';
-            } else {
-              // Mobile OR 1 or 4+ items: render full width single column
-              quickInfoItems.forEach((item) => {
-                const styles = isMobile 
-                  ? `${mWidth}padding:${mPad};border-radius:${mRadius};` 
-                  : 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;';
-                const hSize = isMobile ? mHeading : '2.2em';
-                const tSize = isMobile ? mText : '1.25em';
-                const hMargin = isMobile ? '8px' : '25px';
-                info += `<div style="background:${item.color};backdrop-filter:blur(10px);${styles}box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-                info += `<h3 style="font-size:${hSize};font-weight:600;color:${item.titleColor};margin:0 0 ${hMargin} 0;">${item.icon} ${item.title}</h3>`;
-                info += `<div style="font-size:${tSize};color:#2c3e50;line-height:1.4;">${item.content}</div>`;
-                info += '</div>';
-              });
-            }
-          }
-          
-          // ITINERARY & MENU - Side by side on desktop, single column on mobile
-          const hasItinerary = data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A';
-          const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
-          
-          if (hasItinerary || hasMenu) {
-            // Desktop: side-by-side grid. Mobile: single column
-            if (hasItinerary && hasMenu && !isMobile) {
-              info += '<div class="detail-section-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            }
-            
-            if (hasItinerary) {
-              const itStyles = isMobile 
-                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-                : (!hasMenu ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
-              const itHead = isMobile ? mHeading : '2.2em';
-              const itText = isMobile ? mText : '1.25em';
-              const itGap = isMobile ? '8px' : '15px';
-              info += `<div style="${itStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="font-size:${itHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">📅 ${t('itinerary')}</h3>`;
-              let formattedItinerary = cleanBracketFormatting(data.itinerary);
-              formattedItinerary = formattedItinerary
-                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${itGap};">`)
-                .replace(/<li[^>]*>/gi, `<li style="font-size:${itText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
-                .replace(/<\/li>/gi, '</li>');
-              info += formattedItinerary;
-            info += '</div>';
-            }
-            
-            if (hasMenu) {
-              const mnStyles = isMobile 
-                ? `${mWidth}padding:${mPad};border-radius:${mRadius};`
-                : (!hasItinerary ? 'margin:0 auto 30px auto;width:100%;max-width:1200px;padding:40px 45px;border-radius:22px;' : 'padding:40px 45px;border-radius:22px;');
-              const mnHead = isMobile ? mHeading : '2.2em';
-              const mnText = isMobile ? mText : '1.25em';
-              const mnGap = isMobile ? '8px' : '15px';
-              info += `<div style="${mnStyles}background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);box-shadow:0 8px 25px rgba(0,0,0,0.15);">`;
-              info += `<h3 style="font-size:${mnHead};font-weight:600;color:#0077b6;margin:0 0 8px 0;">🍽️ ${t('menu')}</h3>`;
-              let formattedMenu = cleanBracketFormatting(data.menu);
-              formattedMenu = formattedMenu
-                .replace(/<ul[^>]*>/gi, `<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:${mnGap};">`)
-                .replace(/<li[^>]*>/gi, `<li style="font-size:${mnText};color:#2c3e50;padding-left:30px;position:relative;line-height:1.4;"><span style="position:absolute;left:0;color:#00b4d8;font-weight:700;">✓</span> `)
-                .replace(/<\/li>/gi, '</li>');
-              info += formattedMenu;
-              info += '</div>';
-            }
-            
-            // Close grid if both exist AND desktop
-            if (hasItinerary && hasMenu && !isMobile) {
-              info += '</div>';
-            }
-          }
-          
           // Clear info-grid - we'll put everything in detail-info
           document.getElementById('info-grid').innerHTML = '';
           
-          // ALL SECTIONS IN ONE swipe-expanded-details CONTAINER
-          info += '<div class="swipe-expanded-details" style="opacity:1;animation:none;max-width:none;width:100%;padding:0 10px;box-sizing:border-box;">';
+          const isMobile = window.innerWidth <= 768;
+          const hasItinerary = data.itinerary && data.itinerary.trim() && data.itinerary !== 'N/A';
+          const hasMenu = data.menu && data.menu.trim() && data.menu !== 'N/A';
           
-          // HIGHLIGHTS
-          if (data.highlights) {
+          // ALL SECTIONS IN ONE swipe-expanded-details CONTAINER
+          // Use the same clean structure as Quick Decision mode - let CSS handle layout
+          info += '<div class="swipe-expanded-details">';
+          
+          // Check what sections are available for smart pairing
+          const hasHighlights = data.highlights && (data.highlights || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-').length > 0;
+          const hasIncludes = data.includes && (data.includes || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-').length > 0;
+          const hasBring = data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null';
+          const hasExtra = data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null';
+          
+          // === FIRST ROW: HIGHLIGHTS + WHAT'S INCLUDED (paired, first after pricing) ===
+          if (hasHighlights) {
             let highlights = (data.highlights || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
             if (highlights.length === 1) highlights = data.highlights.split(/[;,]/).filter(item => item.trim());
             const highlightsList = highlights.map(item => {
@@ -16467,15 +18070,16 @@
               return cleaned ? `<li>${cleaned}</li>` : '';
             }).filter(item => item).join('');
             if (highlightsList) {
-              info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              // If no includes to pair with, make full width
+              const highlightsClass = !hasIncludes ? 'description-section' : '';
+              info += `<div class="swipe-detail-section ${highlightsClass}">
                 <h3>⭐ ${t('highlights')}</h3>
                 <ul>${highlightsList}</ul>
               </div>`;
             }
           }
           
-          // WHAT'S INCLUDED
-          if (data.includes) {
+          if (hasIncludes) {
             let includes = (data.includes || '').split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
             if (includes.length === 1) includes = data.includes.split(/[;,]/).filter(item => item.trim());
             const includesList = includes.map(item => {
@@ -16483,53 +18087,108 @@
               return cleaned ? `<li>${cleaned}</li>` : '';
             }).filter(item => item).join('');
             if (includesList) {
-              info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+              // If no highlights to pair with, make full width
+              const includesClass = !hasHighlights ? 'description-section' : '';
+              info += `<div class="swipe-detail-section ${includesClass}">
                 <h3>✅ ${t('whats_included')}</h3>
                 <ul>${includesList}</ul>
               </div>`;
             }
           }
           
-          // ABOUT THIS TOUR - add from pending content
+          // === SECOND ROW: AGES + IDEAL FOR (paired if both exist) ===
+          const hasAgeInfo = quickInfoItems.find(i => i.title === t('ages'));
+          const hasIdealFor = quickInfoItems.find(i => i.title === t('ideal_for'));
+          
+          if (hasAgeInfo) {
+            const ageClass = !hasIdealFor ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${ageClass}">
+              <h3>${hasAgeInfo.icon} ${hasAgeInfo.title}</h3>
+              <div>${cleanBracketFormatting(hasAgeInfo.content)}</div>
+            </div>`;
+          }
+          
+          if (hasIdealFor) {
+            const idealClass = !hasAgeInfo ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${idealClass}">
+              <h3>${hasIdealFor.icon} ${hasIdealFor.title}</h3>
+              <div>${cleanBracketFormatting(hasIdealFor.content)}</div>
+            </div>`;
+          }
+          
+          // === THIRD ROW: TIMES (full width if present) ===
+          const hasTimesInfo = quickInfoItems.find(i => i.title === t('times'));
+          if (hasTimesInfo) {
+            info += `<div class="swipe-detail-section description-section">
+              <h3>${hasTimesInfo.icon} ${hasTimesInfo.title}</h3>
+              <div>${cleanBracketFormatting(hasTimesInfo.content)}</div>
+            </div>`;
+          }
+          
+          // === ABOUT THIS TOUR - always full width ===
           if (window.pendingAboutContent) {
-            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+            info += `<div class="swipe-detail-section description-section">
               <h3>📝 ${window.pendingAboutContent.title}</h3>
               <div>${window.pendingAboutContent.content}</div>
             </div>`;
             window.pendingAboutContent = null;
           }
           
-          // IMPORTANT INFORMATION SECTION
+          // ITINERARY - pair with Menu if both exist
+          if (hasItinerary) {
+            const formattedItinerary = cleanBracketFormatting(data.itinerary);
+            const itineraryClass = !hasMenu ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${itineraryClass}">
+              <h3>📅 ${t('itinerary')}</h3>
+              <div>${formattedItinerary}</div>
+            </div>`;
+          }
+          
+          // MENU - pair with Itinerary if both exist
+          if (hasMenu) {
+            const formattedMenu = cleanBracketFormatting(data.menu);
+            const menuClass = !hasItinerary ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${menuClass}">
+              <h3>🍽️ ${t('menu')}</h3>
+              <div>${formattedMenu}</div>
+            </div>`;
+          }
+          
+          // IMPORTANT INFORMATION SECTION - always full width
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
             let formattedInfo = cleanBracketFormatting(data.important_information);
-            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+            info += `<div class="swipe-detail-section description-section">
               <h3>⚠️ ${t('important_information')}</h3>
               <div>${formattedInfo}</div>
             </div>`;
           }
           
-          // WHAT TO BRING
-          if (data.what_to_bring && data.what_to_bring.trim() && data.what_to_bring !== 'N/A' && data.what_to_bring !== 'null') {
+          // WHAT TO BRING - pair with What's Extra if both exist
+          if (hasBring) {
             let formattedBring = cleanBracketFormatting(data.what_to_bring);
-            info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+            // If no extra to pair with, make full width
+            const bringClass = !hasExtra ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${bringClass}">
               <h3>🎒 ${t('what_to_bring')}</h3>
               <div>${formattedBring}</div>
             </div>`;
           }
           
-          // WHAT'S EXTRA
-          if (data.whats_extra && data.whats_extra.trim() && data.whats_extra !== 'N/A' && data.whats_extra !== 'null') {
+          // WHAT'S EXTRA - pair with What to Bring if both exist
+          if (hasExtra) {
             let formattedExtra = cleanBracketFormatting(data.whats_extra);
-            info += `<div class="swipe-detail-section" style="opacity:1;animation:none;">
+            // If no bring to pair with, make full width
+            const extraClass = !hasBring ? 'description-section' : '';
+            info += `<div class="swipe-detail-section ${extraClass}">
               <h3>💰 ${t('whats_extra')}</h3>
               <div>${formattedExtra}</div>
             </div>`;
           }
           
-          // CANCELLATION POLICY SECTION
+          // CANCELLATION POLICY SECTION - always full width
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
-            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+            info += `<div class="swipe-detail-section description-section">
               <h3>📋 ${t('cancellation_policy')}</h3>
               <div>${formattedPolicy}</div>
             </div>`;
@@ -16547,70 +18206,58 @@
           
           // DEPARTURE LOCATION SECTION
           if (data.departure_location && data.departure_location.trim()) {
-            const mapHeight = isMobile ? '250px' : '400px';
-            let mapHtml = '';
-            const coords = getCoordinatesForLocation(data.departure_location);
-            if (coords) {
-              mapHtml = `<div id="detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}" style="width:100%;height:${mapHeight};margin-top:15px;border-radius:12px;overflow:hidden;"></div>`;
-              window.pendingMiniMap = { elementId: `detail-mini-map-${key.replace(/[^a-zA-Z0-9]/g, '_')}`, coords: coords };
-            }
-            info += `<div class="swipe-detail-section description-section" style="opacity:1;animation:none;">
+            const mapHeight = isMobile ? '250px' : '350px';
+            // Use Google Maps embed like Quick Decision mode
+            info += `<div class="swipe-detail-section description-section">
               <h3>📍 ${t('departure_location')}</h3>
-              <div style="font-weight:600;margin-bottom:8px;">${data.departure_location}</div>
-              <div>This tour departs from the location shown below. Please arrive at least 15 minutes before departure time.</div>
-              ${mapHtml}
+              <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${data.departure_location}</div>
+              <div style="width: 100%; height: ${mapHeight}; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
+                <iframe 
+                  width="100%" 
+                  height="100%"
+                  frameborder="0" 
+                  style="border:0; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14"
+                  allowfullscreen>
+                </iframe>
+              </div>
+              <div style="color: #2c3e50; font-size: 1.05em;">Please arrive at least 15 minutes before departure time.</div>
             </div>`;
+          }
+          
+          // REVIEWS SECTION - Inside the grid, horizontally scrollable like Quick Decision
+          if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
+            info += `<div class="swipe-detail-section description-section">
+              <h3 style="margin-bottom: 12px;">⭐ ${t('customer_reviews')}</h3>
+              <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${data.reviews.overall_rating.toFixed(1)}</div>
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                  <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
+                  <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
+                </div>
+              </div>
+              <div class="swipe-reviews-grid">`;
+            
+            // Individual reviews - horizontally scrollable cards
+            if (data.reviews.reviews && data.reviews.reviews.length > 0) {
+              data.reviews.reviews.slice(0, 10).forEach(review => {
+                info += `<div class="swipe-review-card">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                    <strong style="font-size: 1.15em; color: #2c3e50;">${review.author || 'Customer'}</strong>
+                    ${review.rating ? `<span style="color: #ffa500; font-size: 1.3em; white-space: nowrap; margin-left: 10px;">${'★'.repeat(Math.floor(review.rating))}</span>` : ''}
+                  </div>
+                  ${review.title ? `<div style="font-weight: 600; color: #0077b6; margin-bottom: 10px; font-size: 1.1em; line-height: 1.3;">${review.title}</div>` : ''}
+                  ${review.text ? `<p style="margin: 0 0 10px 0; color: #2c3e50; line-height: 1.6; font-size: 1.05em;">${review.text}</p>` : ''}
+                  ${review.date ? `<div style="font-size: 0.9em; color: #999; margin-top: auto;">${review.date}</div>` : ''}
+                </div>`;
+              });
+            }
+            
+            info += '</div></div>';
           }
           
           // Close the swipe-expanded-details container
           info += '</div>';
-          
-          // REVIEWS SECTION - Header in floating box, each review in its own box
-          if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
-            // Reviews header box - matching other section styles
-            info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-            info += '<h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 25px 0;">⭐ Customer Reviews</h3>';
-            info += '<div class="reviews-summary" style="display:flex;gap:15px;align-items:center;">';
-            info += `<div class="overall-rating" style="font-size: 2.5em; font-weight: 700;color:#0077b6;">${data.reviews.overall_rating.toFixed(1)}</div>`;
-            info += '<div>';
-            info += `<div class="stars-large" style="font-size: 1.5em; display: flex; gap: 4px;">${generateStars(data.reviews.overall_rating, true)}</div>`;
-            info += `<div class="review-source" style="font-size: 1.1em;color:#666;">Based on ${data.reviews.review_count} ${data.reviews.source || ''} review${data.reviews.review_count !== 1 ? 's' : ''}</div>`;
-            info += '</div>';
-            info += '</div>';
-            info += '</div>'; // Close header box
-            
-            // Individual reviews - each in its own white floating box
-            if (data.reviews.reviews && data.reviews.reviews.length > 0) {
-              data.reviews.reviews.forEach(review => {
-                info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:40px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;">';
-                info += '<div class="review-header" style="display:flex;justify-content:space-between;align-items:start;margin-bottom:15px;">';
-                info += '<div>';
-                info += `<div class="review-author" style="font-size: 1.3em; font-weight: 600;color:#2c3e50;">${review.author || 'Anonymous'}</div>`;
-                if (review.date) {
-                  info += `<div class="review-date" style="font-size: 1.1em;color:#666;margin-top:5px;">${review.date}</div>`;
-                }
-                info += '</div>';
-                if (review.rating) {
-                  info += `<div class="review-stars" style="font-size: 1.3em;">${generateStars(review.rating, true)}</div>`;
-                }
-                info += '</div>';
-                if (review.title) {
-                  info += `<div class="review-title" style="font-size: 1.25em; font-weight: 600; margin-bottom: 12px;color:#0077b6;">${review.title}</div>`;
-                }
-                if (review.text) {
-                  info += `<div class="review-text" style="font-size: 1.15em; line-height: 1.6;color:#2c3e50;">${review.text}</div>`;
-                }
-                info += '</div>'; // Close review box
-              });
-            }
-            
-            // Link to more reviews if available - in its own small box
-            if (data.reviews.source_url) {
-              info += '<div style="background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:25px 45px;border-radius:22px;box-shadow:0 15px 50px rgba(0,0,0,0.25);margin:0 auto 30px auto;width:100%;max-width:1200px;text-align:center;">';
-              info += `<a href="${data.reviews.source_url}" target="_blank" style="color:#0077b6;text-decoration:none;font-weight:600;font-size:1.1em;">Read all ${data.reviews.review_count} reviews on ${data.reviews.source} →</a>`;
-              info += '</div>';
-            }
-          }
           
           document.getElementById('detail-info').innerHTML = info;
           
@@ -16914,30 +18561,69 @@
             
             // Use setTimeout to ensure display change happens before transform
             setTimeout(() => {
-          tourDetailPage.classList.add('active');
+              tourDetailPage.classList.add('active');
               console.log('✅ Active class added');
               
-              // Debug: Check computed styles
-              const computed = window.getComputedStyle(tourDetailPage);
-              console.log('🔍 COMPUTED STYLES:');
-              console.log('  - display:', computed.display);
-              console.log('  - visibility:', computed.visibility);
-              console.log('  - opacity:', computed.opacity);
-              console.log('  - z-index:', computed.zIndex);
-              console.log('  - position:', computed.position);
-              console.log('  - width:', computed.width);
-              console.log('  - height:', computed.height);
-              console.log('  - background:', computed.backgroundColor);
-              console.log('  - top:', computed.top);
-              console.log('  - left:', computed.left);
+              // Update header buttons based on where we came from
+              const quickDecisionBtn = document.getElementById('detail-quick-decision-btn');
+              const aiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
+              const browseAllBtn = document.getElementById('detail-browse-all-btn');
               
-              // Check if home page is still visible
-              const homePage = document.querySelector('.page.home-page');
-              if (homePage) {
-                const homeComputed = window.getComputedStyle(homePage);
-                console.log('🏠 HOME PAGE STYLES:');
-                console.log('  - display:', homeComputed.display);
-                console.log('  - z-index:', homeComputed.zIndex);
+              if (window.cameFromAIAssistant) {
+                console.log('🤖 Came from AI Assistant - updating header buttons');
+                // Show Quick Decision (green) and Browse All Tours (orange)
+                // Hide AI Assistant button (we're already in AI mode)
+                if (quickDecisionBtn) {
+                  quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
+                  // Ensure Quick Decision goes to Quick Decision mode, not back
+                  quickDecisionBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    console.log('🚀 Quick Decision clicked from AI tour detail');
+                    // Close tour detail and go to Quick Decision
+                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
+                    if (tourDetailPage) {
+                      tourDetailPage.classList.remove('active');
+                      tourDetailPage.style.display = 'none';
+                    }
+                    startQuickDecision();
+                  };
+                }
+                if (aiAssistantBtn) {
+                  aiAssistantBtn.style.cssText = 'display: none !important;';
+                }
+                if (browseAllBtn) {
+                  browseAllBtn.style.cssText = 'display: inline-flex !important;';
+                  browseAllBtn.classList.add('show-btn');
+                  browseAllBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    console.log('📁 Browse All Tours clicked from AI tour detail');
+                    window.cameFromAIAssistant = false;
+                    // Close AI assistant properly
+                    closeAIAssistant();
+                    // Close tour detail
+                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
+                    if (tourDetailPage) {
+                      tourDetailPage.classList.remove('active');
+                      tourDetailPage.style.display = 'none';
+                    }
+                    // Go to home page
+                    goToHomePage();
+                  };
+                }
+              } else {
+                // Default: show Quick Decision and AI Assistant buttons, hide Browse All
+                if (quickDecisionBtn) {
+                  quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
+                  // Reset onclick to default
+                  quickDecisionBtn.onclick = function() { startQuickDecision(); };
+                }
+                if (aiAssistantBtn) {
+                  aiAssistantBtn.style.cssText = 'display: inline-flex !important;';
+                }
+                if (browseAllBtn) {
+                  browseAllBtn.style.cssText = 'display: none !important;';
+                  browseAllBtn.classList.remove('show-btn');
+                }
               }
             }, 50);
             
@@ -17180,6 +18866,7 @@
     document.getElementById('back-arrow').onclick = function() {
       console.log('⬅️ Back button clicked');
       console.log('   isInVideoFlow:', isInVideoFlow);
+      console.log('   cameFromAIAssistant:', window.cameFromAIAssistant);
       
       // URL stays on home page - no need to change it
       
@@ -17197,6 +18884,29 @@
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
+      
+      // If we came from AI assistant, return to it with state preserved
+      if (window.cameFromAIAssistant) {
+        console.log('🔙 Returning to AI Assistant');
+        window.cameFromAIAssistant = false; // Reset flag
+        
+        // Hide home page again (it was shown just for tour detail)
+        const homePage = document.querySelector('.page.home-page');
+        if (homePage) {
+          homePage.classList.remove('active');
+          homePage.style.display = '';
+        }
+        
+        // Show AI assistant page again (it was just hidden, not closed - state preserved!)
+        const aiPage = document.getElementById('ai-assistant-page');
+        if (aiPage) {
+          aiPage.style.display = 'flex';
+          aiPage.classList.add('active');
+          document.body.classList.add('ai-assistant-open');
+          console.log('   ✓ AI assistant restored with preserved state');
+        }
+        return; // Exit early
+      }
       
       // If we're in the video flow, return to swipe results
       if (isInVideoFlow) {
@@ -17356,8 +19066,8 @@
     });
   </script>
   
-  <!-- QR Code Modal -->
-  <div id="qr-modal">
+  <!-- QR Code Modal - HIDDEN BY DEFAULT -->
+  <div id="qr-modal" style="display: none !important; visibility: hidden;">
     <div class="qr-modal-content">
       <button class="qr-modal-close" onclick="closeQRModal()">×</button>
       <div class="qr-modal-title">📱 Scan to Book</div>
@@ -17386,10 +19096,13 @@
       qrImage.src = qrApiUrl;
       tourNameEl.textContent = tourName;
       modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
     }
     
     function closeQRModal() {
-      document.getElementById('qr-modal').style.display = 'none';
+      const modal = document.getElementById('qr-modal');
+      modal.style.display = 'none';
+      modal.style.visibility = 'hidden';
     }
     
     // Close modal when clicking outside
@@ -21300,9 +23013,10 @@
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
       
-      // Play the pre-recorded welcome audio
+      // Play the pre-recorded welcome audio (DISABLED FOR TESTING)
+      const DISABLE_WELCOME_AUDIO = true; // Set to false to re-enable
       const welcomeAudio = document.getElementById('welcome-audio');
-      if (welcomeAudio) {
+      if (welcomeAudio && !DISABLE_WELCOME_AUDIO) {
         try {
           // Connect to particle visualizer
           if (window.particleVisualizer && !window.welcomeAudioConnected) {

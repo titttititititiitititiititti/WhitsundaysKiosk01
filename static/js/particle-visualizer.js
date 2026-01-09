@@ -66,10 +66,10 @@ class ParticleVisualizer {
       glowIntensity: 0.52,
       glowRadius: 95,
       
-      // Audio reactivity - balanced for good sync
-      amplitudeSmoothing: 0.08,   // Smooth but responsive
-      amplitudeMultiplier: 2.2,   // Good amplification
-      amplitudeThreshold: 0.03,   // Sensitive but not too twitchy
+      // Audio reactivity - more responsive
+      amplitudeSmoothing: 0.06,
+      amplitudeMultiplier: 1.8,
+      amplitudeThreshold: 0.05,
     };
     
     this.init();
@@ -83,7 +83,31 @@ class ParticleVisualizer {
     // Handle resize
     window.addEventListener('resize', () => this.onResize());
     
+    // Watch for class changes on container (e.g., 'with-cards' added/removed)
+    this.setupClassObserver();
+    
     console.log('✨ Particle Visualizer initialized -', this.particles.length, 'particles');
+  }
+  
+  setupClassObserver() {
+    // Watch for class changes to adjust orb size
+    let lastHasCards = this.container.classList.contains('with-cards');
+    
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.attributeName === 'class') {
+          const hasCards = this.container.classList.contains('with-cards');
+          // Only resize if the with-cards state actually changed
+          if (hasCards !== lastHasCards) {
+            console.log('✨ Cards state changed:', hasCards ? 'showing cards' : 'no cards');
+            lastHasCards = hasCards;
+            this.onResize();
+          }
+        }
+      }
+    });
+    
+    observer.observe(this.container, { attributes: true });
   }
   
   setupCanvas() {
@@ -99,7 +123,14 @@ class ParticleVisualizer {
     }
     
     this.container.appendChild(this.canvas);
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d', { 
+      alpha: true,
+      willReadFrequently: false
+    });
+    
+    // Enable high-quality rendering
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
     
     // Set size
     this.onResize();
@@ -118,15 +149,29 @@ class ParticleVisualizer {
     
     this.ctx.scale(dpr, dpr);
     
+    // Re-apply high-quality rendering after scale
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
+    
     this.width = containerWidth;
     this.height = containerHeight;
     this.centerX = this.width / 2;
     this.centerY = this.height / 2;
     
-    // Keep sphere radius FIXED - don't scale with container
-    // This keeps the orb reasonably sized while container is large (no cutoff)
-    this.settings.sphereRadius = 70;  // Good visible size
-    this.settings.glowRadius = 110;   // Matching glow size
+    // Set sphere size based on whether tour cards are visible
+    const hasCards = this.container.classList.contains('with-cards');
+    if (hasCards) {
+      // With cards - still nice and visible
+      this.settings.sphereRadius = 80;
+      this.settings.glowRadius = 130;
+    } else {
+      // No cards - full size
+      this.settings.sphereRadius = 90;
+      this.settings.glowRadius = 150;
+    }
+    this.settings.sphereRadiusVariation = 25;
+    
+    console.log(`✨ Resize: container=${containerWidth}x${containerHeight}, hasCards=${hasCards}, sphereRadius=${this.settings.sphereRadius}`);
   }
   
   createParticles() {
@@ -277,26 +322,17 @@ class ParticleVisualizer {
         }
         const rms = Math.sqrt(sum / count) / 255;
         
-        // DEBUG: Log real audio data occasionally
-        if (Math.random() < 0.02) {
-          console.log('🎵 Real audio RMS:', rms.toFixed(4), 'Connected:', this.isAudioConnected);
-        }
-        
-        // If we got ANY real data, use it (very sensitive)
-        if (rms > 0.005) {
+        // If we got real data, use it
+        if (rms > 0.02) {
           return Math.min(1, rms * this.settings.amplitudeMultiplier);
         }
       } catch (e) {
-        console.warn('Audio analysis error:', e);
+        // Fall through to simulated
       }
     }
     
-    // SIMULATED SPEECH PATTERN - fallback when no real audio
-    // Only used if real audio connection failed
-    if (Math.random() < 0.01) {
-      console.log('⚠️ Using simulated audio (no real connection)');
-    }
-    
+    // SIMULATED SPEECH PATTERN - natural rhythm when speaking
+    // Creates organic, speech-like variations
     const t = this.time;
     const wave1 = Math.sin(t * 6) * 0.2;           // Fast pulse (syllables)
     const wave2 = Math.sin(t * 2.5) * 0.15;        // Medium rhythm (words)
@@ -331,7 +367,7 @@ class ParticleVisualizer {
     this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * smoothing;
     
     // Floor very small values to zero for cleaner idle state
-    if (this.currentAmplitude < 0.015) {
+    if (this.currentAmplitude < 0.02) {
       this.currentAmplitude = 0;
     }
     
@@ -781,5 +817,4 @@ window.testVisualizer = function() {
     initParticleVisualizer();
   }
 };
-
 

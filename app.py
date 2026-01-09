@@ -328,6 +328,16 @@ def load_all_tours(language='en'):
                         key = f"{company}__{tid}"
                         thumb_path = find_thumbnail(company, tid, name)
                         
+                        # Build gallery from image_urls (max 5 images for slideshow)
+                        gallery = [thumb_path] if thumb_path else []
+                        if row.get('image_urls'):
+                            for img in row['image_urls'].split(',')[:4]:  # Max 4 more images (5 total with thumb)
+                                img_path = img.strip()
+                                if img_path and os.path.exists(img_path):
+                                    img_url = '/' + img_path
+                                    if img_url not in gallery:
+                                        gallery.append(img_url)
+                        
                         # Load review data
                         review_data = load_reviews(company, tid)
                         
@@ -350,6 +360,7 @@ def load_all_tours(language='en'):
                             'ideal_for': row.get('ideal_for', ''),
                             'age_requirements': row.get('age_requirements', ''),
                             'departure_location': row.get('departure_location', ''),
+                            'gallery': gallery,  # Gallery images for slideshow
                             # Parsed filter fields
                             'duration_category': parse_duration(row.get('duration', '')),
                             'price_category': parse_price(row.get('price_adult', '')),
@@ -1195,6 +1206,9 @@ def build_tour_context(language='en'):
 def chat():
     """AI-powered chat endpoint for tour recommendations"""
     try:
+        # Import price conversion for display
+        from elevenlabs_tts import convert_price_for_display
+        
         data = request.get_json()
         user_message = data.get('message', '')
         language = data.get('language', 'en')
@@ -1239,11 +1253,13 @@ Our tour categories:
 
 CONVERSATION STRATEGY - RECOMMEND AFTER 2 PREFERENCES:
 1. **GATHER 2 PREFERENCES** before recommending (e.g., activity + duration, OR activity + group type)
-2. **ONCE YOU HAVE 2 PREFERENCES → RECOMMEND TOURS IMMEDIATELY!**
-3. **NEVER SAY "Let me find..." WITHOUT ACTUALLY GIVING TOURS** in the same message!
+2. **ONCE YOU HAVE 2 PREFERENCES → USE [FILTER:...] IMMEDIATELY!**
+3. **NEVER SAY "Let me show you..." WITHOUT INCLUDING [FILTER:...] in the SAME message!**
 4. Be SUPER enthusiastic - you're a passionate local who LOVES the Whitsundays!
-5. **ALWAYS INCLUDE TOUR NAMES** formatted as **Tour Name** when recommending
-6. Example: User says "reef snorkeling" (1 preference) → Ask about duration. User says "full day" (2 preferences) → SHOW TOURS NOW!
+5. **ALWAYS use [FILTER:{{...}}] syntax to show tours** - this is REQUIRED!
+6. Example flow:
+   - User: "sailing tours" (1 preference) → Ask about duration
+   - User: "full day" (2 preferences) → MUST include [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
 
 **YOU ARE REPLACING A REAL PERSON!** 
 - Be warm, personable, and genuinely excited about these tours
@@ -1269,9 +1285,21 @@ Keep responses SHORT but ALWAYS include tour recommendations once you have 2 pre
 
 **WHEN TO RECOMMEND TOURS**: Once user has given 2 preferences!
 - 1 preference (e.g., "reef") → Ask ONE follow-up question (duration or group type)
-- 2 preferences (e.g., "reef" + "full day") → **RECOMMEND TOURS NOW!**
-- User gives 2+ preferences in one message → **RECOMMEND TOURS IMMEDIATELY!**
-- **NEVER respond with "Let me find..." without actually listing tours in the SAME message!**
+- 2 preferences (e.g., "reef" + "full day") → **USE [FILTER:...] IMMEDIATELY!**
+- User gives 2+ preferences in one message → **USE [FILTER:...] IMMEDIATELY!**
+- **CRITICAL: You MUST include [FILTER:{{...}}] to show any tours!** 
+- Without [FILTER:...], NO TOURS WILL BE DISPLAYED even if you describe them!
+
+**NEVER GIVE EMPTY RESPONSES:**
+- If you say "Let me show you..." or "Here are some options..." → YOU MUST include [FILTER:...] in the SAME message
+- If you commit to showing tours, SHOW THEM - don't make the user wait or ask again
+- If no tours match, be HONEST: "I couldn't find exact matches, but here are similar options: [FILTER:...]"
+
+**EXAMPLE - CORRECT:**
+"Speed boat tours are thrilling! 🚤 [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]"
+
+**EXAMPLE - WRONG (NO TOURS WILL SHOW!):**
+"Speed boat tours sound exciting! Let me find some for you. Hang tight!" (MISSING [FILTER:...] = NOTHING HAPPENS!)
 
 **QUICK REPLIES**: When asking multiple-choice questions, you can suggest options using [OPTIONS:option1,option2,option3] format.
 Example: "How long can you be away? [OPTIONS:Half Day,Full Day,Multi-day]"
@@ -1296,11 +1324,17 @@ Return filter criteria in this format: [FILTER:{{"duration":"X","activity":"Y"}}
 - "Whitehaven Beach", "beach", "white sand" → activity: "whitehaven_beach"  
 - "Sailing", "cruise", "island hopping", "multi-day sailing" → activity: "island_tours"
 - "Scenic", "helicopter", "seaplane", "flight" → activity: "scenic_adventure"
+- "Speed boat", "jet boat", "fast boat", "adrenaline", "thrill" → activity: "scenic_adventure"
 
-**WHEN TO USE FILTERS (use these liberally!):**
+**WHEN TO USE FILTERS (REQUIRED to show tours!):**
 ✅ "multi-day diving and snorkeling" → [FILTER:{{"duration":"multi_day","activity":"great_barrier_reef"}}]
 ✅ "full-day reef tour" → [FILTER:{{"duration":"full_day","activity":"great_barrier_reef"}}]
 ✅ "half-day beach tour" → [FILTER:{{"duration":"half_day","activity":"whitehaven_beach"}}]
+✅ "full-day sailing" → [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
+✅ "day sailing and cruise tours" → [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
+✅ "speed boat tour" → [FILTER:{{"activity":"scenic_adventure"}}]
+✅ "half-day speed boat" → [FILTER:{{"duration":"half_day","activity":"scenic_adventure"}}]
+✅ "full-day speed boat" → [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]
 ✅ "multi-day sailing with meals" → [FILTER:{{"duration":"multi_day","activity":"island_tours","meals":true}}]
 ✅ "family-friendly full-day tour" → [FILTER:{{"duration":"full_day","family":true}}]
 ✅ "reef tour with equipment provided" → [FILTER:{{"activity":"great_barrier_reef","equipment":true}}]
@@ -1312,22 +1346,39 @@ Available filter options:
 - meals: true (meals included)
 - equipment: true (equipment provided)
 
-**WHEN USING FILTERS, STILL GIVE AN EXCITING INTRO!**
-Even when using [FILTER:...], write an enthusiastic message like:
-"Perfect choice! Let me show you some amazing [activity type] tours! 🌊 These are the absolute best options for [what they asked for] - you're going to love them!"
+**HOW TO RECOMMEND TOURS - USE [TOUR:key] TAGS:**
+When recommending specific tours, use [TOUR:company__tour_id] tags so the cards MATCH your descriptions!
 
-The system will display the tour cards automatically, but YOUR message sets the excitement!
+✅ CORRECT FORMAT:
+"[Exciting 2-3 sentence intro about the activity type] ⛵
 
-**METHOD 2 - Recommend Specific Tours (ONLY for non-filterable queries):**
+1. **Camira Sailing Adventure** [TOUR:cruisewhitsundays__camira_sailing_adventure] - [2-3 exciting sentences about THIS specific tour]
+
+2. **Lady Enid Adults Only Sailing Day Trip** [TOUR:lady_enid__lady_enid_adults_only_sailing_day_trip] - [2-3 exciting sentences]
+
+3. **Tongarra Day Sailing Tour** [TOUR:tongarra__tongarra_day_sailing_tour] - [2-3 exciting sentences]
+
+Ready to set sail? 🌊"
+
+**CRITICAL RULES:**
+- Describe exactly 3 tours
+- Use REAL tour names AND their [TOUR:key] tags from the available tours list
+- Each description should be 2-3 compelling sentences with emojis
+- The [TOUR:key] tag ensures the card shown MATCHES your description
+- Include emojis throughout for personality! ⛵🏝️🌊✨🐠
+- ALWAYS end with a follow-up question like "Would you like more details on any of these, or shall I show you different options? 🌟"
+
+**METHOD 2 - Recommend Specific Tours (RARE - only when filters don't work):**
 Use this ONLY when user asks for something that doesn't map to our filters:
-❌ "kayaking tours" (not a standard filter option)
-❌ "tours with Ocean Rafting company" (specific company)
-❌ "romantic sunset cruise for couples" (very specific vibe)
+- "kayaking tours" (not a standard filter option)
+- "tours with Ocean Rafting company" (specific company)
 
-For these edge cases, recommend 3-5 specific tours with keys:
-1. **Tour Name** [TOUR:company__id] - Description
+For these RARE cases, use [TOUR:company__id] tags with descriptions.
 
-IMPORTANT: The tour key [TOUR:...] will be hidden from the user, but it MUST be included for the system to display the tours on the main screen. Recommend 3-5 top tours that best match their needs!
+⚠️ **WHEN TO USE WHICH METHOD:**
+- "overnight sailing" → USE [FILTER:...] (matches multi_day + island_tours) - SHORT INTRO ONLY!
+- "full day reef tour" → USE [FILTER:...] (matches full_day + great_barrier_reef) - SHORT INTRO ONLY!
+- "Ocean Rafting specifically" → USE [TOUR:...] with descriptions (can't filter by company)
 
 **CRITICAL TOUR DESCRIPTION RULES - YOU ARE REPLACING A REAL PERSON:**
 When describing tours, you MUST give a compelling 3-4 sentence pitch for EACH tour that:
@@ -1384,6 +1435,10 @@ Be conversational, ask questions, and help them discover their perfect adventure
         
         ai_message = response.choices[0].message.content
         
+        # Check for specific tour tags FIRST (takes priority over filters)
+        tour_pattern = r'\[TOUR:([a-zA-Z0-9\-_]+__[a-zA-Z0-9_]+)\]'
+        tour_matches = re.findall(tour_pattern, ai_message)
+        
         # Check if AI wants to use filter system
         filter_pattern = r'\[FILTER:({[^}]+})\]'
         filter_match = re.search(filter_pattern, ai_message)
@@ -1404,7 +1459,45 @@ Be conversational, ask questions, and help them discover their perfect adventure
         
         print(f"AI Response: {ai_message[:200]}...")
         
-        if filter_match:
+        # PRIORITY: Use specific [TOUR:] tags if provided (they match the AI's descriptions!)
+        if tour_matches:
+            print(f"🎯 AI recommending specific tours with [TOUR:] tags")
+            print(f"   Found {len(tour_matches)} tour keys: {tour_matches}")
+            
+            # Get full tour details for the specified tours
+            tours = load_all_tours(language)
+            tour_details = []
+            for tour_key in tour_matches:
+                tour = next((t for t in tours if t.get('key') == tour_key), None)
+                if tour:
+                    tour_copy = tour.copy()
+                    if tour_copy.get('price_adult'):
+                        tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
+                    if tour_copy.get('price_child'):
+                        tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
+                    tour_details.append(tour_copy)
+                    print(f"   ✅ Found tour: {tour.get('name')} ({tour_key})")
+                else:
+                    print(f"   ❌ Tour not found: {tour_key}")
+            
+            # Remove both tour markers AND filter markers from display message
+            display_message = re.sub(tour_pattern, '', ai_message).strip()
+            display_message = re.sub(filter_pattern, '', display_message).strip()
+            display_message = convert_price_for_display(display_message, language)
+            
+            # Limit to 3 tours
+            tour_details = tour_details[:3]
+            
+            response_data = {
+                'success': True,
+                'message': display_message,
+                'recommended_tours': tour_details,
+                'tour_keys': [t['key'] for t in tour_details],
+                'used_filters': False,
+                'quick_reply_options': quick_reply_options
+            }
+            
+        elif filter_match:
             # AI wants to use filter system!
             print(f"🎯 AI requesting filter-based search")
             try:
@@ -1418,10 +1511,29 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 print(f"   ✅ Showing all {len(filtered_tours)} matching tours")
                 
                 # Show ALL matching tours (removed 6-tour limit)
-                tour_details = filtered_tours
+                # Convert prices in tour data for display
+                tour_details = []
+                for tour in filtered_tours:
+                    tour_copy = tour.copy()
+                    if tour_copy.get('price_adult'):
+                        tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
+                    if tour_copy.get('price_child'):
+                        tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
+                    tour_details.append(tour_copy)
                 
                 # Remove filter marker from message
                 display_message = re.sub(filter_pattern, '', ai_message).strip()
+                
+                # Convert prices in display message to appropriate currency
+                display_message = convert_price_for_display(display_message, language)
+                
+                # Limit to 3 tours
+                tour_details = tour_details[:3]
+                
+                # Don't append duplicate descriptions - the AI already describes the tours
+                # Just add a follow-up question if not already present
+                if '?' not in display_message[-50:]:
+                    display_message = display_message.rstrip() + "\n\nWould you like more details on any of these, or shall I show you different options?"
                 
                 response_data = {
                     'success': True,
@@ -1435,40 +1547,21 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 
             except Exception as e:
                 print(f"❌ Error parsing filter criteria: {e}")
-                # Fall back to manual recommendation
+                # Fall back to no-tour response
                 filter_match = None
         
-        if not filter_match:
-            # AI is recommending specific tours manually
-            print(f"🤖 AI using manual tour recommendations")
+        # Only reach here if neither [TOUR:] tags nor [FILTER:] were found/worked
+        if not tour_matches and not filter_match:
+            print(f"🤖 AI response has no tour recommendations")
             
-            # Extract tour keys from response
-            tour_pattern = r'\[TOUR:([a-zA-Z0-9\-_]+__[a-zA-Z0-9_]+)\]'
-            recommended_tours = re.findall(tour_pattern, ai_message)
-            
-            print(f"   Extracted tour keys: {recommended_tours}")
-            
-            # Remove tour markers from display message
-            display_message = re.sub(tour_pattern, '', ai_message).strip()
-            
-            # Get full tour details for recommended tours
-            tours = load_all_tours(language)
-            tour_details = []
-            for tour_key in recommended_tours:
-                tour = next((t for t in tours if t.get('key') == tour_key), None)
-                if tour:
-                    tour_details.append(tour)
-                    print(f"✅ Found tour: {tour.get('name')} ({tour_key})")
-                else:
-                    print(f"❌ Tour not found: {tour_key}")
-            
-            print(f"Total tours to return: {len(tour_details)}")
+            # Just return the message as-is (conversational response)
+            display_message = convert_price_for_display(ai_message, language)
             
             response_data = {
                 'success': True,
                 'message': display_message,
-                'recommended_tours': tour_details,  # Show all manually recommended tours
-                'tour_keys': [tour_key for tour_key in recommended_tours],
+                'recommended_tours': [],
+                'tour_keys': [],
                 'used_filters': False,
                 'quick_reply_options': quick_reply_options
             }
