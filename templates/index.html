@@ -2914,6 +2914,24 @@
       opacity: 0.7;
     }
     
+    /* Tap prompt after tour recommendations */
+    .ai-tap-prompt {
+      font-size: 0.85em;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      padding: 8px 15px;
+      margin-top: 10px;
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 20px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 1; background: rgba(139, 92, 246, 0.5); }
+    }
+    
     .ai-message.typing {
       padding: 15px 20px;
     }
@@ -3111,21 +3129,44 @@
       height: 50px;
       border-radius: 50%;
       background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      border: 3px solid rgba(255, 255, 255, 0.5);  /* Match mic button border */
+      border: 3px solid rgba(255, 255, 255, 0.5);
       color: white;
       font-size: 1.3em;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+      /* Make touch target larger */
+      position: relative;
+      z-index: 100;
+      -webkit-tap-highlight-color: rgba(139, 92, 246, 0.3);
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
     }
     
-    .ai-send-btn:hover {
+    /* Larger invisible touch target */
+    .ai-send-btn::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border-radius: 50%;
+    }
+    
+    .ai-send-btn:hover,
+    .ai-send-btn:active {
       transform: scale(1.1);
       box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
       border-color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .ai-send-btn:active {
+      transform: scale(0.95);
     }
     
     .ai-mic-hint {
@@ -14592,6 +14633,94 @@
     // Store conversation history for AI context
     let aiConversationHistory = [];
     let currentAITourCards = []; // Currently displayed tour cards
+    let lastHighlightedTour = null; // Track the last tour that was highlighted/spoken about
+    
+    /**
+     * Detect if user wants to book or learn more about a tour
+     * Returns the tour object if found, null otherwise
+     */
+    function detectBookingIntent(userMessage) {
+      const msg = userMessage.toLowerCase();
+      
+      // Booking/interest phrases
+      const bookingPhrases = [
+        'book', 'booking', 'reserve', 'buy', 'purchase', 'sign up',
+        'interested', 'want that', 'want this', 'yes', 'yeah', 'yep', 'sure',
+        'let\'s do', 'lets do', 'sounds good', 'perfect', 'great', 'love it',
+        'tell me more', 'more info', 'more about', 'learn more', 'details',
+        'that one', 'this one', 'i\'ll take', 'ill take', 'i will take',
+        'how do i', 'how can i', 'can i book', 'can you book', 'can we book'
+      ];
+      
+      const hasBookingIntent = bookingPhrases.some(phrase => msg.includes(phrase));
+      
+      if (!hasBookingIntent) return null;
+      
+      // Try to find which tour they mean
+      
+      // 1. Check if they mentioned a specific tour name
+      for (const tour of currentAITourCards) {
+        const tourNameLower = tour.name.toLowerCase();
+        const tourWords = tourNameLower.split(' ').filter(w => w.length > 3);
+        
+        // Check for partial matches (at least 2 significant words)
+        let matchCount = 0;
+        for (const word of tourWords) {
+          if (msg.includes(word)) matchCount++;
+        }
+        
+        if (matchCount >= 2 || msg.includes(tourNameLower)) {
+          console.log(`🎯 Booking intent detected for: ${tour.name} (explicit mention)`);
+          return tour;
+        }
+      }
+      
+      // 2. Check for numbered references ("the first one", "number 2", etc.)
+      const numberPatterns = [
+        { pattern: /first|1st|number\s*1|option\s*1/i, index: 0 },
+        { pattern: /second|2nd|number\s*2|option\s*2/i, index: 1 },
+        { pattern: /third|3rd|number\s*3|option\s*3/i, index: 2 }
+      ];
+      
+      for (const np of numberPatterns) {
+        if (np.pattern.test(msg) && currentAITourCards[np.index]) {
+          console.log(`🎯 Booking intent detected for: ${currentAITourCards[np.index].name} (numbered reference)`);
+          return currentAITourCards[np.index];
+        }
+      }
+      
+      // 3. Use the last highlighted tour (from TTS speaking)
+      if (lastHighlightedTour) {
+        console.log(`🎯 Booking intent detected for: ${lastHighlightedTour.name} (last highlighted)`);
+        return lastHighlightedTour;
+      }
+      
+      // 4. If only one tour is displayed, assume that one
+      if (currentAITourCards.length === 1) {
+        console.log(`🎯 Booking intent detected for: ${currentAITourCards[0].name} (only option)`);
+        return currentAITourCards[0];
+      }
+      
+      return null;
+    }
+    
+    /**
+     * Open tour detail page
+     */
+    function openTourDetail(tour) {
+      if (!tour || !tour.key) return;
+      
+      console.log(`🚀 Opening tour detail: ${tour.name} (${tour.key})`);
+      
+      // Find the tour card element and click it
+      const card = document.querySelector(`.ai-tour-card[data-tour-key="${tour.key}"]`);
+      if (card) {
+        card.click();
+      } else {
+        // Fallback: navigate directly
+        window.location.href = `/tour/${tour.key}?from=ai&lang=${currentLanguage || 'en'}`;
+      }
+    }
     
     // Display tour cards from full tour objects (from API)
     function displayAITourCardsFromObjects(tours) {
@@ -15219,6 +15348,9 @@
           startImageCycle(matchedCard);
           startFlashingCycle(matchedCard); // Start flashing sections
           console.log(`🎯 Now speaking about: ${matchedCard.dataset.tourName}`);
+          
+          // Track the last highlighted tour for booking intent
+          lastHighlightedTour = currentAITourCards.find(t => t.name === matchedCard.dataset.tourName);
         }
       } else {
         console.log(`⚠️ No good match found for "${searchName}" (best score: ${bestMatchScore})`);
@@ -15248,6 +15380,9 @@
             startImageCycle(card);
             startFlashingCycle(card); // Start flashing sections
             console.log(`🎯 Now speaking about: ${card.dataset.tourName}`);
+            
+            // Track the last highlighted tour for booking intent
+            lastHighlightedTour = currentAITourCards.find(t => t.name === card.dataset.tourName);
           }
         } else {
           // Remove highlight from other cards
@@ -15591,6 +15726,27 @@
         }, 50);
       }
       
+      // CHECK FOR BOOKING INTENT - Auto-open tour detail if user wants to book
+      if (currentAITourCards.length > 0) {
+        const intendedTour = detectBookingIntent(message);
+        if (intendedTour) {
+          console.log(`🎫 User wants to book/learn more: ${intendedTour.name}`);
+          
+          // Show a quick response before opening
+          const bookingMsg = document.createElement('div');
+          bookingMsg.className = 'ai-message assistant';
+          bookingMsg.innerHTML = `Great choice! Opening <strong>${intendedTour.name}</strong> for you... 🎉`;
+          messagesContainer.appendChild(bookingMsg);
+          
+          // Brief delay then open the tour
+          setTimeout(() => {
+            openTourDetail(intendedTour);
+          }, 1000);
+          
+          return; // Don't continue to API call
+        }
+      }
+      
       // Show simple typing indicator while waiting for API response
       const typingMsg = document.createElement('div');
       typingMsg.className = 'ai-message assistant typing';
@@ -15759,6 +15915,11 @@
           
           // Display tour cards with staggered reveal animation (only if we have them)
           if (hasTourCards) {
+            // Add tap prompt after the message
+            const tapPrompt = document.createElement('div');
+            tapPrompt.className = 'ai-tap-prompt';
+            tapPrompt.innerHTML = '👆 <em>Tap a tour card to learn more or book!</em>';
+            messagesContainer.appendChild(tapPrompt);
             const cardsContainer = document.getElementById('ai-tour-cards');
             if (cardsContainer) cardsContainer.classList.add('cards-revealing');
             
@@ -24064,21 +24225,63 @@
       let audioReady = false;
       
       if (isEnglish) {
-        // ENGLISH: Use pre-loaded audio file (fast!)
+        // ENGLISH: Try pre-loaded audio file first, fallback to TTS
         audioElement = document.getElementById('welcome-audio');
-        if (audioElement) {
-          audioElement.currentTime = 0;
-          // Wait for it to be ready
-          await new Promise(resolve => {
-            if (audioElement.readyState >= 3) {
-              resolve();
+        if (audioElement && audioElement.src) {
+          try {
+            audioElement.currentTime = 0;
+            // Wait for it to be ready with timeout
+            await Promise.race([
+              new Promise(resolve => {
+                if (audioElement.readyState >= 3) {
+                  resolve();
+                } else {
+                  audioElement.oncanplaythrough = resolve;
+                  audioElement.onerror = () => resolve(); // Don't hang on error
+                  audioElement.load();
+                }
+              }),
+              new Promise(resolve => setTimeout(resolve, 3000)) // 3s timeout
+            ]);
+            
+            // Check if audio is actually ready
+            if (audioElement.readyState >= 3 && audioElement.duration > 0) {
+              audioReady = true;
+              console.log('✅ English welcome audio ready (pre-loaded)');
             } else {
-              audioElement.oncanplaythrough = resolve;
-              audioElement.load();
+              console.log('⚠️ Pre-loaded audio not ready, falling back to TTS');
+              audioElement = null; // Fall through to TTS
             }
-          });
-          audioReady = true;
-          console.log('✅ English welcome audio ready (pre-loaded)');
+          } catch (e) {
+            console.log('⚠️ Pre-loaded audio failed, falling back to TTS:', e);
+            audioElement = null;
+          }
+        }
+        
+        // Fallback to TTS if pre-loaded failed
+        if (!audioReady) {
+          console.log('📡 Fetching English welcome audio from TTS (fallback)...');
+          try {
+            const response = await fetch('/api/tts', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: welcomeText, language: 'en', gender: 'female' })
+            });
+            
+            if (response.ok) {
+              const blob = await response.blob();
+              const audioUrl = URL.createObjectURL(blob);
+              audioElement = new Audio(audioUrl);
+              await new Promise(resolve => {
+                audioElement.oncanplaythrough = resolve;
+                audioElement.load();
+              });
+              audioReady = true;
+              console.log('✅ English welcome audio ready (TTS fallback)');
+            }
+          } catch (e) {
+            console.error('TTS fallback also failed:', e);
+          }
         }
       } else {
         // OTHER LANGUAGES: Fetch from TTS API
