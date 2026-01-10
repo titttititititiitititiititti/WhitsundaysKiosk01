@@ -24211,7 +24211,7 @@
     window.welcomeMessagePlayed = false;
     
     /**
-     * Play the welcome message - SIMPLE: Always use TTS API
+     * Play the welcome message - Uses TTS API
      */
     window.playWelcomeMessage = async function() {
       // Prevent duplicate calls
@@ -24226,6 +24226,7 @@
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
       console.log(`🎤 Playing welcome message in ${lang}`);
+      console.log(`📝 TTS text: "${welcomeTextForTTS.substring(0, 50)}..."`);
       
       const messagesContainer = document.getElementById('ai-messages');
       if (!messagesContainer) {
@@ -24247,8 +24248,8 @@
       if (orbContainer) orbContainer.classList.add('loading');
       
       // Fetch TTS audio
-      console.log('📡 Fetching welcome audio from TTS...');
-      let audioElement = null;
+      console.log('📡 Fetching welcome audio from /api/tts...');
+      let audioBlob = null;
       
       try {
         const response = await fetch('/api/tts', {
@@ -24257,27 +24258,14 @@
           body: JSON.stringify({ text: welcomeTextForTTS, language: lang, gender: 'female' })
         });
         
-        console.log('📡 TTS response:', response.status);
+        console.log('📡 TTS response status:', response.status);
         
         if (response.ok) {
-          const blob = await response.blob();
-          console.log('✅ TTS blob received:', blob.size, 'bytes');
-          
-          if (blob.size > 100) {
-            const audioUrl = URL.createObjectURL(blob);
-            audioElement = new Audio(audioUrl);
-            
-            // Wait for audio to be ready
-            await new Promise((resolve, reject) => {
-              audioElement.oncanplaythrough = resolve;
-              audioElement.onerror = reject;
-              audioElement.load();
-            });
-            
-            console.log('✅ Welcome audio ready');
-          }
+          audioBlob = await response.blob();
+          console.log('✅ TTS blob received:', audioBlob.size, 'bytes, type:', audioBlob.type);
         } else {
-          console.error('❌ TTS request failed:', response.status);
+          const errorText = await response.text();
+          console.error('❌ TTS request failed:', response.status, errorText);
         }
       } catch (e) {
         console.error('❌ TTS fetch error:', e);
@@ -24298,8 +24286,11 @@
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: welcomeTextForDisplay }];
       
-      // Play the audio
-      if (audioElement) {
+      // Play the audio if we got it
+      if (audioBlob && audioBlob.size > 100) {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioElement = new Audio(audioUrl);
+        
         // Connect to visualizer
         if (window.particleVisualizer) {
           try {
@@ -24310,21 +24301,30 @@
         }
         
         audioElement.onplay = () => {
-          console.log('🔊 Welcome audio started');
+          console.log('🔊 Welcome audio PLAYING');
           if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
         };
         
         audioElement.onended = () => {
-          console.log('🔊 Welcome audio ended');
+          console.log('🔊 Welcome audio ENDED');
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
         };
         
-        // Start audio 0.2s after message
-        setTimeout(() => {
-          console.log('▶️ Playing welcome audio...');
-          audioElement.play().catch(e => {
-            console.error('❌ Welcome audio play failed:', e);
-          });
+        audioElement.onerror = (e) => {
+          console.error('❌ Welcome audio ERROR:', e);
+        };
+        
+        // Try to play immediately (0.2s after message)
+        setTimeout(async () => {
+          console.log('▶️ Attempting to play welcome audio...');
+          try {
+            await audioElement.play();
+            console.log('✅ Welcome audio play() succeeded');
+          } catch (e) {
+            console.error('❌ Welcome audio play() failed:', e.name, e.message);
+            // This is often due to autoplay policy - user interaction required
+            console.log('💡 Audio may require user interaction to play');
+          }
         }, 200);
       } else {
         console.log('⚠️ No welcome audio available - showing text only');

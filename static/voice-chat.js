@@ -178,7 +178,8 @@ class VoiceChat {
     // No match found
     this.recognition.onnomatch = () => {
       console.log('🎤 No speech was recognized');
-      this.showError("I couldn't understand that. Could you try again?");
+      // Don't show error - just let them try again
+      // Some phones trigger this even when speech is being processed
     };
     
     // Error handling
@@ -189,30 +190,38 @@ class VoiceChat {
       
       // User-friendly error messages
       let errorMsg = '';
+      let showErrorToUser = true;
+      
       switch(event.error) {
         case 'no-speech':
-          errorMsg = "I didn't hear anything. Try speaking louder or closer to the microphone.";
+          // Don't show error - common on mobile when mic is still warming up
+          console.log('🎤 No speech detected - user may not have spoken yet');
+          showErrorToUser = false;
           break;
         case 'audio-capture':
-          errorMsg = "Microphone not available. Please check permissions.";
+          errorMsg = "Microphone not available. Please check that no other app is using it.";
           break;
         case 'not-allowed':
-          errorMsg = "Microphone access denied. Please allow microphone access in your browser settings.";
+          errorMsg = "Please allow microphone access to use voice input.";
           break;
         case 'network':
-          errorMsg = "Network error. Please check your internet connection.";
+          errorMsg = "Network error. Please check your connection and try again.";
           break;
         case 'aborted':
           console.log('🎤 Recognition was aborted');
-          return; // Don't show error for user-initiated abort
+          showErrorToUser = false;
+          break;
         case 'service-not-allowed':
-          errorMsg = "Speech service not allowed. This may be a browser restriction.";
+          errorMsg = "Voice service not available. Try typing instead.";
           break;
         default:
-          errorMsg = `Voice error: ${event.error}`;
+          console.log('🎤 Unknown error:', event.error);
+          showErrorToUser = false;
       }
       
-      this.showError(errorMsg);
+      if (showErrorToUser && errorMsg) {
+        this.showError(errorMsg);
+      }
     };
   }
   
