@@ -304,43 +304,44 @@ class ParticleVisualizer {
       return 0;
     }
     
-    // Try real audio data first
+    // Try real audio data first - USE TIME DOMAIN for instant volume
     if (this.isAudioConnected && this.analyser && this.audioContext) {
       try {
         if (this.audioContext.state === 'suspended') {
           this.audioContext.resume();
         }
         
-        this.analyser.getByteFrequencyData(this.dataArray);
+        // Use TIME DOMAIN data for instant volume response (waveform)
+        this.analyser.getByteTimeDomainData(this.dataArray);
         
-        // Calculate RMS with emphasis on voice frequencies (85-255 Hz range)
-        let sum = 0;
-        let count = 0;
-        for (let i = 2; i < Math.min(40, this.dataArray.length); i++) {
-          sum += this.dataArray[i] * this.dataArray[i];
-          count++;
+        // Calculate peak amplitude from waveform (how loud RIGHT NOW)
+        let peak = 0;
+        for (let i = 0; i < this.dataArray.length; i++) {
+          // Data is centered at 128, deviation shows volume
+          const deviation = Math.abs(this.dataArray[i] - 128);
+          if (deviation > peak) peak = deviation;
         }
-        const rms = Math.sqrt(sum / count) / 255;
+        // Normalize: 0 = silence, 128 = max
+        const normalizedPeak = peak / 128;
         
-        // React to even tiny audio levels - VERY sensitive
-        if (rms > 0.001) {
-          return Math.min(1, rms * this.settings.amplitudeMultiplier);
+        // Return scaled amplitude - very responsive to volume changes
+        if (normalizedPeak > 0.01) {
+          return Math.min(1, normalizedPeak * this.settings.amplitudeMultiplier);
         }
       } catch (e) {
         // Fall through to simulated
       }
     }
     
-    // SIMULATED SPEECH PATTERN - natural rhythm when speaking
-    // Creates organic, speech-like variations
+    // SIMULATED SPEECH PATTERN - MORE VARIATION for speaking effect
     const t = this.time;
-    const wave1 = Math.sin(t * 6) * 0.2;           // Fast pulse (syllables)
-    const wave2 = Math.sin(t * 2.5) * 0.15;        // Medium rhythm (words)
-    const wave3 = Math.sin(t * 0.8) * 0.1;         // Slow variation (phrases)
-    const noise = (Math.random() - 0.5) * 0.15;    // Natural variation
+    const wave1 = Math.sin(t * 12) * 0.25;         // Very fast pulse (syllables)
+    const wave2 = Math.sin(t * 5) * 0.2;           // Fast rhythm (words)
+    const wave3 = Math.sin(t * 1.5) * 0.15;        // Medium variation (phrases)
+    const noise = (Math.random() - 0.5) * 0.2;     // More random variation
     
-    const simulated = 0.45 + wave1 + wave2 + wave3 + noise;
-    return Math.max(0.15, Math.min(0.9, simulated));
+    const simulated = 0.5 + wave1 + wave2 + wave3 + noise;
+    return Math.max(0.1, Math.min(1, simulated));
   }
   
   /**

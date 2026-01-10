@@ -11036,27 +11036,19 @@
         background: transparent !important;
       }
       
-      /* Loading animation for orb while waiting for TTS */
+      /* Loading animation for orb while waiting for TTS - NO POSITION CHANGE */
       .ai-visualizer-container.loading canvas {
-        animation: orbLoading 1.5s ease-in-out infinite !important;
+        animation: orbLoading 1s ease-in-out infinite !important;
       }
       
       @keyframes orbLoading {
         0%, 100% { 
-          transform: translate(-50%, -50%) scale(1);
           filter: brightness(1) hue-rotate(0deg);
-        }
-        25% { 
-          transform: translate(-50%, -50%) scale(1.08);
-          filter: brightness(1.2) hue-rotate(15deg);
+          opacity: 1;
         }
         50% { 
-          transform: translate(-50%, -50%) scale(1);
-          filter: brightness(1.3) hue-rotate(30deg);
-        }
-        75% { 
-          transform: translate(-50%, -50%) scale(1.08);
-          filter: brightness(1.2) hue-rotate(15deg);
+          filter: brightness(1.4) hue-rotate(30deg);
+          opacity: 0.85;
         }
       }
       
@@ -15249,51 +15241,30 @@
           console.log('📡 First chunk ready, starting playback immediately...');
           playNextInQueue();
           
-          // Fetch second chunk in parallel with playback
-          fetchTTSChunk(chunks[1], language).then(second => {
-            ttsAudioQueue.push(second);
-            console.log('📡 Second chunk fetched');
-          }).catch(e => console.error('Second chunk failed:', e));
-          
-          // Prefetch remaining chunks IN ORDER
-          if (chunks.length > 2) {
-            console.log(`📡 Prefetching ${chunks.length - 2} more chunks...`);
-            // Pre-allocate slots to maintain order (use 'pending' as initial state)
-            const pendingChunks = new Array(chunks.length - 2).fill('pending');
-            let nextToAdd = 0;
-            
-            const processQueue = () => {
-              // Add all consecutive ready/skipped chunks to queue in order
-              while (nextToAdd < pendingChunks.length) {
-                const chunk = pendingChunks[nextToAdd];
-                if (chunk === 'pending') break; // Still waiting for this chunk
-                if (chunk === 'failed') {
-                  console.log(`📡 Chunk ${nextToAdd + 3}/${chunks.length} failed, skipping`);
-                  nextToAdd++;
-                  continue;
-                }
-                // It's a valid blob
-                ttsAudioQueue.push(chunk);
-                console.log(`📡 Chunk ${nextToAdd + 3}/${chunks.length} added to queue`);
-                nextToAdd++;
-              }
-            };
-            
-            for (let i = 2; i < chunks.length; i++) {
-              const chunkIndex = i - 2; // Index in pendingChunks array
-              fetchTTSChunk(chunks[i], language)
-                .then(blob => {
-                  pendingChunks[chunkIndex] = blob;
-                  console.log(`📡 Chunk ${i + 1}/${chunks.length} fetched`);
-                  processQueue();
-                })
-                .catch(e => {
-                  console.error(`Chunk ${i + 1} failed:`, e);
-                  pendingChunks[chunkIndex] = 'failed'; // Mark as failed so queue can continue
-                  processQueue();
-                });
+          // Fetch ALL remaining chunks IN ORDER - wait for each to be added before next
+          // This ensures correct order: 1 (playing) -> 2 -> 3 -> 4...
+          (async () => {
+            // Fetch chunk 2 and add to queue
+            try {
+              const second = await fetchTTSChunk(chunks[1], language);
+              ttsAudioQueue.push(second);
+              console.log('📡 Chunk 2 fetched and added to queue');
+            } catch (e) {
+              console.error('Chunk 2 failed:', e);
             }
-          }
+            
+            // Now fetch remaining chunks IN ORDER (3, 4, ...)
+            for (let i = 2; i < chunks.length; i++) {
+              try {
+                const blob = await fetchTTSChunk(chunks[i], language);
+                ttsAudioQueue.push(blob);
+                console.log(`📡 Chunk ${i + 1}/${chunks.length} fetched and added to queue`);
+              } catch (e) {
+                console.error(`Chunk ${i + 1} failed:`, e);
+              }
+            }
+          })();
+          
         }
         
       } catch (error) {
@@ -15338,6 +15309,10 @@
       typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
       messagesContainer.appendChild(typingMsg);
       
+      // Start orb loading animation during typing
+      const orbContainer = document.querySelector('.ai-visualizer-container');
+      if (orbContainer) orbContainer.classList.add('loading');
+      
       if (container) {
         setTimeout(() => {
           container.scrollTop = container.scrollHeight;
@@ -15358,7 +15333,7 @@
         
         const data = await response.json();
         
-        // Remove typing indicator
+        // Remove typing indicator (loading animation continues until TTS ready)
         typingMsg.remove();
         
         let responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
