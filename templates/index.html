@@ -11206,15 +11206,32 @@
         pointer-events: none !important;
       }
       
-      /* Canvas MUCH BIGGER when cards showing */
+      /* Canvas MUCH BIGGER when cards showing (tray CLOSED) */
       .ai-visualizer-container.with-cards canvas {
-        width: 360px !important;  /* Even bigger with cards */
+        width: 360px !important;  /* Big with cards, tray closed */
         height: 360px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         overflow: visible !important;
+        transition: width 0.4s ease, height 0.4s ease !important;
+      }
+      
+      /* When TRAY IS OPEN - orb shrinks and moves up */
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
+        bottom: 200px !important;  /* Move up above the message box */
+        transition: bottom 0.4s ease, width 0.4s ease, height 0.4s ease !important;
+      }
+      
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
+        width: 200px !important;  /* Shrink when tray open */
+        height: 200px !important;
+      }
+      
+      /* Smooth transition for orb container */
+      .ai-visualizer-container.with-cards {
+        transition: bottom 0.4s ease, width 0.4s ease, height 0.4s ease !important;
       }
       
       /* Message tray when tour cards are showing - COMPLETELY HIDDEN */
@@ -11317,6 +11334,19 @@
       .ai-visualizer-container.with-cards canvas {
         max-width: 200px !important;
         max-height: 200px !important;
+        transition: width 0.4s ease, height 0.4s ease, max-width 0.4s ease, max-height 0.4s ease !important;
+      }
+      
+      /* Mobile: When TRAY IS OPEN - orb shrinks and moves up */
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
+        bottom: 180px !important;
+      }
+      
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
+        max-width: 140px !important;
+        max-height: 140px !important;
+        width: 140px !important;
+        height: 140px !important;
       }
       
       /* Input area at bottom - mobile - HORIZONTAL BAR */
@@ -11607,6 +11637,17 @@
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
+        transition: width 0.4s ease, height 0.4s ease !important;
+      }
+      
+      /* 480px: When TRAY IS OPEN - orb shrinks and moves up */
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
+        bottom: 170px !important;
+      }
+      
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
+        width: 160px !important;
+        height: 160px !important;
       }
       
       /* Extra small: smaller cards that still maintain 2-column grid */
@@ -11680,6 +11721,17 @@
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         overflow: visible !important;
+        transition: width 0.4s ease, height 0.4s ease !important;
+      }
+      
+      /* 390px: When TRAY IS OPEN - orb shrinks and moves up */
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
+        bottom: 150px !important;
+      }
+      
+      body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
+        width: 130px !important;
+        height: 130px !important;
       }
       
       /* Chat container - extra small - above input, transparent */
@@ -23953,14 +24005,25 @@
       }
     }
     
-    // Welcome message content (with emojis)
-    const WELCOME_MESSAGE = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
+    // Welcome messages for each language
+    const WELCOME_MESSAGES = {
+      'en': "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?",
+      'zh': "你好！👋 我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。让我们从简单开始，您想体验什么？🐠 大堡礁、🏖️ 白天堂海滩、⛵ 帆船和游轮，还是其他？",
+      'ja': "こんにちは！👋 私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。まずは簡単に、何を体験したいですか？🐠 グレートバリアリーフ、🏖️ ホワイトヘブンビーチ、⛵ セーリングとクルーズ、それとも他のもの？",
+      'ko': "안녕하세요! 👋 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 간단하게 시작해볼까요? 무엇을 경험하고 싶으세요? 🐠 그레이트 배리어 리프, 🏖️ 화이트헤이븐 비치, ⛵ 세일링과 크루즈, 아니면 다른 것?",
+      'de': "Hallo! 👋 Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Fangen wir einfach an: Was möchten Sie erleben? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ Segeln und Kreuzfahrten oder etwas anderes?",
+      'fr': "Bonjour! 👋 Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Commençons simplement : que souhaitez-vous vivre? 🐠 Grande Barrière de Corail, 🏖️ Whitehaven Beach, ⛵ voile et croisières, ou autre chose?",
+      'es': "¡Hola! 👋 Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. Empecemos de forma sencilla: ¿qué te gustaría experimentar? 🐠 Gran Barrera de Coral, 🏖️ Playa Whitehaven, ⛵ navegación y cruceros, ¿o algo más?",
+      'it': "Ciao! 👋 Sono il tuo assistente AI per i tour. Ti aiuterò a trovare il tour perfetto alle Whitsundays. Iniziamo in modo semplice: cosa vorresti vivere? 🐠 Grande Barriera Corallina, 🏖️ Whitehaven Beach, ⛵ vela e crociere, o qualcos'altro?"
+    };
     
     // Flag to prevent duplicate welcome messages (global for reset on close)
     window.welcomeMessagePlayed = false;
     
     /**
-     * Play the welcome message with animation and pre-recorded audio
+     * Play the welcome message with animation
+     * English: uses pre-loaded audio file (instant)
+     * Other languages: fetches from TTS API (shows loading animation)
      */
     window.playWelcomeMessage = async function() {
       // Prevent duplicate calls
@@ -23970,22 +24033,13 @@
       }
       window.welcomeMessagePlayed = true;
       
-      // Prime audio context to enable autoplay
-      const welcomeAudio = document.getElementById('welcome-audio');
-      if (welcomeAudio) {
-        try {
-          // Play and immediately pause to prime the audio
-          welcomeAudio.volume = 0.01;
-          welcomeAudio.play().then(() => {
-            welcomeAudio.pause();
-            welcomeAudio.currentTime = 0;
-            welcomeAudio.volume = 1;
-            console.log('🔊 Welcome audio primed');
-          }).catch(e => console.log('Welcome audio prime failed:', e));
-        } catch (e) {}
-      }
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+      const welcomeText = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
+      const isEnglish = lang === 'en';
       
-      // Also resume AudioContext if it exists
+      console.log(`🎤 Playing welcome message in ${lang} (${isEnglish ? 'pre-loaded' : 'TTS fetch'})`);
+      
+      // Resume AudioContext if it exists
       if (window.particleVisualizer && window.particleVisualizer.audioContext) {
         window.particleVisualizer.audioContext.resume();
       }
@@ -23993,74 +24047,105 @@
       const messagesContainer = document.getElementById('ai-messages');
       if (!messagesContainer) return;
       
-      // Clear any existing messages completely
+      // Clear any existing messages
       messagesContainer.innerHTML = '';
       
-      // Show typing indicator immediately
+      // Show typing indicator
       const typingMsg = document.createElement('div');
       typingMsg.className = 'ai-message assistant typing';
-      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
+      typingMsg.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
       messagesContainer.appendChild(typingMsg);
       
-      // Don't start speaking yet - wait for actual audio to play
-      // This prevents the flicker before speech starts
-      console.log('✨ Visualizer ready, waiting for audio to start...');
+      // Start orb loading animation
+      const orbContainer = document.querySelector('.ai-visualizer-container');
+      if (orbContainer) orbContainer.classList.add('loading');
       
-      // Wait 1.5 seconds
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      let audioElement = null;
+      let audioReady = false;
       
-      // Remove typing indicator and add the real message
+      if (isEnglish) {
+        // ENGLISH: Use pre-loaded audio file (fast!)
+        audioElement = document.getElementById('welcome-audio');
+        if (audioElement) {
+          audioElement.currentTime = 0;
+          // Wait for it to be ready
+          await new Promise(resolve => {
+            if (audioElement.readyState >= 3) {
+              resolve();
+            } else {
+              audioElement.oncanplaythrough = resolve;
+              audioElement.load();
+            }
+          });
+          audioReady = true;
+          console.log('✅ English welcome audio ready (pre-loaded)');
+        }
+      } else {
+        // OTHER LANGUAGES: Fetch from TTS API
+        console.log(`📡 Fetching ${lang} welcome audio from TTS...`);
+        try {
+          const response = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: welcomeText, language: lang, gender: 'female' })
+          });
+          
+          if (response.ok) {
+            const blob = await response.blob();
+            const audioUrl = URL.createObjectURL(blob);
+            audioElement = new Audio(audioUrl);
+            
+            // Wait for it to be ready
+            await new Promise(resolve => {
+              audioElement.oncanplaythrough = resolve;
+              audioElement.load();
+            });
+            audioReady = true;
+            console.log(`✅ ${lang} welcome audio ready (TTS fetched)`);
+          }
+        } catch (e) {
+          console.error('TTS fetch failed:', e);
+        }
+      }
+      
+      // Remove typing indicator
       typingMsg.remove();
       
+      // Remove orb loading animation
+      if (orbContainer) orbContainer.classList.remove('loading');
+      
+      // Show the welcome message
       const welcomeMsg = document.createElement('div');
       welcomeMsg.className = 'ai-message assistant';
-      welcomeMsg.textContent = WELCOME_MESSAGE;
+      welcomeMsg.textContent = welcomeText;
       messagesContainer.appendChild(welcomeMsg);
       
       // Add to conversation history
-      aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
+      aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
       
-      // Play the pre-recorded welcome audio
-      const DISABLE_WELCOME_AUDIO = false; // Re-enabled for production
-      const welcomeAudio = document.getElementById('welcome-audio');
-      if (welcomeAudio && !DISABLE_WELCOME_AUDIO) {
-        try {
-          // Connect to particle visualizer
-          if (window.particleVisualizer && !window.welcomeAudioConnected) {
-            window.particleVisualizer.connectAudio(welcomeAudio);
-            window.welcomeAudioConnected = true;
-            console.log('✅ Welcome audio connected to visualizer');
-          }
-          
-          // Start visualizer ONLY when audio actually starts playing
-          welcomeAudio.onplay = () => {
-            console.log('🔊 Welcome audio started - activating visualizer');
-            if (window.particleVisualizer) {
-              window.particleVisualizer.startSpeaking();
-            }
-          };
-          
-          // Stop visualizer when audio ends
-          welcomeAudio.onended = () => {
-            console.log('🔊 Welcome audio ended');
-            if (window.particleVisualizer) {
-              window.particleVisualizer.stopSpeaking();
-            }
-          };
-          
-          welcomeAudio.currentTime = 0;
-          await welcomeAudio.play();
-          console.log('🔊 Welcome audio playing');
-          
-        } catch (error) {
-          console.error('Welcome audio error:', error);
-          if (window.particleVisualizer) {
-            window.particleVisualizer.stopSpeaking();
-          }
+      // Play the audio (0.2s after message appears)
+      if (audioElement && audioReady) {
+        // Connect to visualizer
+        if (window.particleVisualizer && !audioElement._particleSourceNode) {
+          window.particleVisualizer.connectAudio(audioElement);
         }
+        
+        audioElement.onplay = () => {
+          console.log('🔊 Welcome audio started');
+          if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+        };
+        
+        audioElement.onended = () => {
+          console.log('🔊 Welcome audio ended');
+          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+        };
+        
+        // Start audio 0.2s after message
+        setTimeout(() => {
+          audioElement.play().catch(e => console.log('Welcome audio play failed:', e));
+        }, 200);
       } else {
-        // No audio available
-        console.log('⚠️ No welcome audio found');
+        console.log('⚠️ No welcome audio available');
       }
     }
     
