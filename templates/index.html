@@ -10895,10 +10895,63 @@
         z-index: 100 !important;
       }
       
-      /* Third card spans full width and centers */
+      /* Third card spans full width and centers BY DEFAULT */
       .ai-tour-card:nth-child(3) {
         grid-column: 1 / -1 !important;
         justify-self: center !important;
+      }
+      
+      /* SMART CARD REFLOW: When first card is expanded/speaking */
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(1).speaking) .ai-tour-card:nth-child(1) {
+        grid-column: 1 / -1 !important;  /* Expanded card takes full width */
+        justify-self: center !important;
+        order: 1 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(1).speaking) .ai-tour-card:nth-child(2) {
+        grid-column: 1 !important;  /* Move to left column */
+        order: 2 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(1).speaking) .ai-tour-card:nth-child(3) {
+        grid-column: 2 !important;  /* Move to right column */
+        justify-self: start !important;
+        order: 3 !important;
+      }
+      
+      /* SMART CARD REFLOW: When second card is expanded/speaking */
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(2).speaking) .ai-tour-card:nth-child(2) {
+        grid-column: 1 / -1 !important;  /* Expanded card takes full width */
+        justify-self: center !important;
+        order: 1 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(2).speaking) .ai-tour-card:nth-child(1) {
+        grid-column: 1 !important;  /* Stay in left column */
+        order: 2 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(2).speaking) .ai-tour-card:nth-child(3) {
+        grid-column: 2 !important;  /* Move to right column */
+        justify-self: start !important;
+        order: 3 !important;
+      }
+      
+      /* SMART CARD REFLOW: When third card is expanded/speaking */
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(3).speaking) .ai-tour-card:nth-child(3) {
+        grid-column: 1 / -1 !important;  /* Expanded card takes full width */
+        justify-self: center !important;
+        order: 1 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(3).speaking) .ai-tour-card:nth-child(1) {
+        grid-column: 1 !important;
+        order: 2 !important;
+      }
+      .ai-tour-cards-container:has(.ai-tour-card:nth-child(3).speaking) .ai-tour-card:nth-child(2) {
+        grid-column: 2 !important;
+        order: 3 !important;
+      }
+      
+      /* Expanded card styling */
+      .ai-tour-card.speaking {
+        max-width: 280px !important;
+        width: 280px !important;
       }
       
       /* Individual tour cards - Fixed size like desktop at 775px */
@@ -10983,14 +11036,14 @@
         background: transparent !important;
       }
       
-      /* When cards are showing, position visualizer to LEFT side - SMALL and NO CLIPPING */
+      /* When cards are showing - LARGE container for glow, CENTERED above input */
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 120px !important;
-        left: 20px !important;
-        transform: none !important;
-        width: 120px !important;
-        height: 120px !important;
+        bottom: 60px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 300px !important;  /* Large container for glow */
+        height: 300px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -10999,11 +11052,17 @@
         background: transparent !important;
         clip-path: none !important;
         -webkit-clip-path: none !important;
+        pointer-events: none !important;
       }
       
+      /* Canvas stays small - centered in large container */
       .ai-visualizer-container.with-cards canvas {
-        width: 120px !important;
-        height: 120px !important;
+        width: 100px !important;
+        height: 100px !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
         overflow: visible !important;
       }
       
@@ -11131,47 +11190,47 @@
         min-width: 0 !important;
       }
       
-      /* Send button - mobile - SAME SIZE as mic button */
+      /* Send button - mobile - UNIFORM SIZE 42px */
       .ai-input-container button[type="submit"],
       .ai-input-container .send-btn {
         flex-shrink: 0 !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
         padding: 0 !important;
-        font-size: 1.2em !important;
+        font-size: 1.1em !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
       }
       
-      /* Microphone button - mobile - SAME SIZE as send button */
+      /* Microphone button - mobile - UNIFORM SIZE 42px */
       .ai-mic-btn {
         flex-shrink: 0 !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
-        font-size: 1.2em !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        font-size: 1.1em !important;
         border-width: 2px !important;
         margin: 0 !important;
       }
       
-      /* Weather widget - mobile - ABOVE the input bar */
+      /* Weather widget - mobile - SAME ROW as mic button, UNIFORM SIZE 42px */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         position: fixed !important;
-        bottom: 80px !important;
-        right: 15px !important;
+        bottom: 15px !important;  /* Same as input area */
+        right: calc(10px + 42px + 8px) !important;  /* After mic button */
         left: auto !important;
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1.3em !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.1em !important;
         z-index: 10003 !important;
         transform: none !important;
       }
@@ -11226,37 +11285,37 @@
         font-size: 1.3em !important;
       }
       
-      /* Weather widget smaller on extra small - ABOVE input bar */
+      /* Weather widget - extra small - SAME ROW, UNIFORM SIZE 38px */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
-        bottom: 70px !important;
-        right: 10px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.2em !important;
+        bottom: 10px !important;
+        right: calc(8px + 38px + 6px) !important;  /* After mic button */
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1em !important;
       }
       
-      /* Extra small buttons */
+      /* Extra small buttons - ALL UNIFORM 38px */
       .ai-mic-btn {
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        font-size: 1.1em !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+        font-size: 1em !important;
       }
       
       .ai-input-container button[type="submit"],
       .ai-input-container .send-btn {
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
         font-size: 1em !important;
       }
       
       /* Tray toggle smaller */
       .ai-tray-toggle {
-        bottom: 68px !important;
+        bottom: 58px !important;
         width: 44px !important;
         height: 20px !important;
         font-size: 12px !important;
@@ -11272,16 +11331,18 @@
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 110px !important;
-        left: 15px !important;
-        width: 100px !important;
-        height: 100px !important;
+        bottom: 55px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 250px !important;  /* Large for glow */
+        height: 250px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
         overflow: visible !important;
         clip-path: none !important;
         -webkit-clip-path: none !important;
+        pointer-events: none !important;
       }
       
       .ai-visualizer-container canvas,
@@ -11292,8 +11353,12 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 100px !important;
-        height: 100px !important;
+        width: 80px !important;
+        height: 80px !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
       }
       
       /* Extra small: smaller cards that still maintain 2-column grid */
@@ -11345,21 +11410,27 @@
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 105px !important;
-        left: 10px !important;
-        width: 90px !important;
-        height: 90px !important;
+        bottom: 50px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 220px !important;  /* Large for glow */
+        height: 220px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
         overflow: visible !important;
         clip-path: none !important;
         -webkit-clip-path: none !important;
+        pointer-events: none !important;
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 90px !important;
-        height: 90px !important;
+        width: 70px !important;
+        height: 70px !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
         overflow: visible !important;
       }
       
