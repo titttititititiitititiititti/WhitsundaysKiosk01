@@ -11095,28 +11095,34 @@
         bottom: 85px !important;
         max-height: 0px !important;
         overflow: hidden !important;
-        background: transparent !important;
-        border-radius: 16px 16px 0 0 !important;
+        background: none !important;
+        background-color: transparent !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
         transition: max-height 0.3s ease !important;
       }
       
-      /* When tray is expanded */
+      /* When tray is expanded - STILL TRANSPARENT */
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-chat-container {
         max-height: 200px !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2) !important;
+        background: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
       }
       
       body.ai-showing-cards .ai-assistant-page .ai-messages {
         max-height: 0px !important;
         padding: 0 !important;
         transition: max-height 0.3s ease, padding 0.3s ease !important;
+        background: none !important;
+        background-color: transparent !important;
       }
       
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-messages {
         max-height: 180px !important;
         padding: 10px !important;
+        background: none !important;
+        background-color: transparent !important;
       }
       
       /* Tray toggle button */
@@ -11214,43 +11220,60 @@
         min-width: 0 !important;
       }
       
-      /* Send button - mobile - UNIFORM SIZE 42px - HIGH SPECIFICITY */
+      /* BOTH BUTTONS - EXACTLY 46px, PERFECTLY ALIGNED */
       .ai-assistant-page .ai-input-area .ai-text-input-wrapper .ai-send-btn,
       .ai-assistant-page .ai-input-area button.ai-send-btn,
       .ai-input-container button[type="submit"],
       .ai-input-container .send-btn,
-      button.ai-send-btn {
+      button.ai-send-btn,
+      .ai-send-btn {
         flex-shrink: 0 !important;
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        min-height: 42px !important;
-        max-width: 42px !important;
-        max-height: 42px !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        min-height: 46px !important;
+        max-width: 46px !important;
+        max-height: 46px !important;
         padding: 0 !important;
-        font-size: 1.1em !important;
+        margin: 0 !important;
+        font-size: 1.2em !important;
         border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        box-sizing: border-box !important;
+        line-height: 1 !important;
       }
       
-      /* Microphone button - mobile - UNIFORM SIZE 42px - HIGH SPECIFICITY */
+      /* Microphone button - EXACTLY 46px, SAME AS SEND */
       .ai-assistant-page .ai-input-area .ai-mic-btn,
       .ai-assistant-page button.ai-mic-btn,
       button.ai-mic-btn,
       .ai-mic-btn {
         flex-shrink: 0 !important;
-        width: 42px !important;
-        height: 42px !important;
-        min-width: 42px !important;
-        min-height: 42px !important;
-        max-width: 42px !important;
-        max-height: 42px !important;
-        font-size: 1.1em !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        min-height: 46px !important;
+        max-width: 46px !important;
+        max-height: 46px !important;
+        font-size: 1.2em !important;
         border-width: 2px !important;
         margin: 0 !important;
         padding: 0 !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+      }
+      
+      /* Input area - ensure vertical alignment */
+      .ai-assistant-page .ai-input-area,
+      .ai-input-area {
+        align-items: center !important;
+        display: flex !important;
+        flex-direction: row !important;
       }
       
       /* Weather widget - mobile - ABOVE buttons, not overlapping */
@@ -11275,20 +11298,32 @@
         transform: none !important;
       }
       
-      /* TRANSPARENT background for chat messages */
+      /* FULLY TRANSPARENT background for chat - NO WHITE BOX */
       .ai-assistant-page .ai-chat-container,
-      .ai-assistant-page .ai-messages {
-        background: transparent !important;
+      .ai-assistant-page .ai-messages,
+      .ai-chat-container,
+      .ai-messages,
+      #ai-chat-container,
+      #ai-messages {
+        background: none !important;
+        background-color: transparent !important;
         box-shadow: none !important;
+        border: none !important;
       }
       
-      .ai-assistant-page .ai-message.assistant {
-        background: rgba(255, 255, 255, 0.85) !important;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+      /* Message bubbles sit directly on video background */
+      .ai-assistant-page .ai-message.assistant,
+      .ai-message.assistant {
+        background: rgba(255, 255, 255, 0.9) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
       }
       
-      .ai-assistant-page .ai-message.user {
+      .ai-assistant-page .ai-message.user,
+      .ai-message.user {
         background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
       }
     }
     
@@ -11351,22 +11386,33 @@
         font-size: 1em !important;
       }
       
-      /* Extra small buttons - ALL UNIFORM 38px */
-      .ai-mic-btn {
-        width: 38px !important;
-        height: 38px !important;
-        min-width: 38px !important;
-        min-height: 38px !important;
-        font-size: 1em !important;
+      /* Extra small buttons - BOTH EXACTLY 42px, ALIGNED */
+      .ai-mic-btn,
+      button.ai-mic-btn {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
+        font-size: 1.1em !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
       
       .ai-input-container button[type="submit"],
-      .ai-input-container .send-btn {
-        width: 38px !important;
-        height: 38px !important;
-        min-width: 38px !important;
-        min-height: 38px !important;
-        font-size: 1em !important;
+      .ai-input-container .send-btn,
+      button.ai-send-btn,
+      .ai-send-btn {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
+        font-size: 1.1em !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
       
       /* Tray toggle smaller */

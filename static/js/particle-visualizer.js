@@ -66,10 +66,10 @@ class ParticleVisualizer {
       glowIntensity: 0.52,
       glowRadius: 95,
       
-      // Audio reactivity - MORE SENSITIVE
-      amplitudeSmoothing: 0.08,      // Faster response
-      amplitudeMultiplier: 3.5,      // Much more sensitive to volume
-      amplitudeThreshold: 0.02,      // React to quieter sounds
+      // Audio reactivity - VERY HIGH SENSITIVITY - reacts to small changes
+      amplitudeSmoothing: 0.25,      // MUCH faster response - reacts quickly
+      amplitudeMultiplier: 5.0,      // Very sensitive to volume changes
+      amplitudeThreshold: 0.005,     // React to very quiet sounds
     };
     
     this.init();
@@ -322,8 +322,8 @@ class ParticleVisualizer {
         }
         const rms = Math.sqrt(sum / count) / 255;
         
-        // If we got real data, use it - LOWER THRESHOLD for more sensitivity
-        if (rms > 0.01) {
+        // React to even tiny audio levels - VERY sensitive
+        if (rms > 0.001) {
           return Math.min(1, rms * this.settings.amplitudeMultiplier);
         }
       } catch (e) {
@@ -361,13 +361,13 @@ class ParticleVisualizer {
       rawAmplitude = 0;
     }
     
-    // Very smooth amplitude changes - prevents twitchy start/stop
+    // FAST amplitude response - reacts quickly to volume changes
     const smoothing = this.settings.amplitudeSmoothing;
     this.targetAmplitude = rawAmplitude;
     this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * smoothing;
     
-    // Floor very small values to zero for cleaner idle state
-    if (this.currentAmplitude < 0.02) {
+    // Very low floor - keep reacting to small sounds
+    if (this.currentAmplitude < 0.005) {
       this.currentAmplitude = 0;
     }
     
@@ -397,12 +397,12 @@ class ParticleVisualizer {
    */
   drawCentralOrb() {
     const baseRadius = this.settings.sphereRadius * 0.5;
-    // AUDIO DRIVES VISUAL: orb SHRINKS and GROWS dramatically with amplitude
-    // At 0 amplitude: shrinks to 85%, at max amplitude: grows to 140%
-    const shrinkGrowRange = 0.55; // Total range of size change
-    const baseScale = 0.85; // Minimum size when quiet
+    // AUDIO DRIVES VISUAL: orb pulses with volume - SUBTLE but FREQUENT
+    // Shrinks to 92%, grows to 115% - subtle range but reacts often
+    const shrinkGrowRange = 0.23; // Smaller range = more noticeable frequent changes
+    const baseScale = 0.92; // Minimum size when quiet
     const radius = baseRadius * (baseScale + this.currentAmplitude * shrinkGrowRange);
-    const hue = this.settings.baseHue + this.currentAmplitude * 30;
+    const hue = this.settings.baseHue + this.currentAmplitude * 25;
     
     // === OUTER GLOW (soft ambient light) ===
     for (let i = 4; i >= 0; i--) {
@@ -544,9 +544,9 @@ class ParticleVisualizer {
    * Uses circular fill to avoid square edges
    */
   drawGlow() {
-    // Glow also shrinks/grows with amplitude
-    const glowIntensity = this.settings.glowIntensity * (0.7 + this.currentAmplitude * 0.6);
-    const glowRadius = this.settings.glowRadius * (0.85 + this.currentAmplitude * 0.5);
+    // Glow pulses with amplitude - subtle but noticeable
+    const glowIntensity = this.settings.glowIntensity * (0.85 + this.currentAmplitude * 0.3);
+    const glowRadius = this.settings.glowRadius * (0.92 + this.currentAmplitude * 0.2);
     
     // Create radial gradient for glow - fades to fully transparent
     const gradient = this.ctx.createRadialGradient(
@@ -577,12 +577,12 @@ class ParticleVisualizer {
    */
   updateParticles() {
     const speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
-    const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 3);
+    const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
     
-    // AUDIO DRIVES VISUAL: Sphere SHRINKS and GROWS dramatically with speech
-    // At 0 amplitude: shrinks to 85%, at max: grows to 145%
-    const baseScale = 0.85;
-    const growRange = 0.6;
+    // AUDIO DRIVES VISUAL: Sphere pulses with volume - SUBTLE but FREQUENT
+    // Matches central orb: 92% to 115%
+    const baseScale = 0.92;
+    const growRange = 0.23;
     const radiusMultiplier = baseScale + this.currentAmplitude * growRange;
     
     for (const p of this.particles) {
