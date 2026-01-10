@@ -36,6 +36,7 @@ class ParticleVisualizer {
     
     // State
     this.isSpeaking = false;
+    this.isSearching = false;  // For "finding tours" animation - faster spin
     this.currentAmplitude = 0;
     this.targetAmplitude = 0;
     this.animationId = null;
@@ -293,6 +294,26 @@ class ParticleVisualizer {
     console.log('✨ Particle visualizer: STOP SPEAKING');
     this.isSpeaking = false;
     this.targetAmplitude = 0;
+  }
+  
+  /**
+   * Start searching animation - fast spinning for "finding tours"
+   */
+  startSearching() {
+    console.log('✨ Particle visualizer: START SEARCHING');
+    this.isSearching = true;
+    this.targetAmplitude = 0.6; // Nice glow during search
+  }
+  
+  /**
+   * Stop searching animation
+   */
+  stopSearching() {
+    console.log('✨ Particle visualizer: STOP SEARCHING');
+    this.isSearching = false;
+    if (!this.isSpeaking) {
+      this.targetAmplitude = 0;
+    }
   }
   
   /**
@@ -587,7 +608,13 @@ class ParticleVisualizer {
    * AUDIO DRIVES VISUAL: amplitude affects radius, turbulence, speed
    */
   updateParticles() {
-    const speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
+    // Searching = FAST spin (2x normal), Speaking = normal, Idle = normal
+    let speed;
+    if (this.isSearching) {
+      speed = this.settings.idleSpeed * 2.5; // 2.5x faster during search
+    } else {
+      speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
+    }
     const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
     
     // AUDIO DRIVES VISUAL: Sphere pulses with volume - SUBTLE but FREQUENT
