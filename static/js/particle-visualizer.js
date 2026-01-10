@@ -397,9 +397,12 @@ class ParticleVisualizer {
    */
   drawCentralOrb() {
     const baseRadius = this.settings.sphereRadius * 0.5;
-    // AUDIO DRIVES VISUAL: orb pulses with amplitude
-    const radius = baseRadius * (1 + this.currentAmplitude * 0.2);
-    const hue = this.settings.baseHue + this.currentAmplitude * 20;
+    // AUDIO DRIVES VISUAL: orb SHRINKS and GROWS dramatically with amplitude
+    // At 0 amplitude: shrinks to 85%, at max amplitude: grows to 140%
+    const shrinkGrowRange = 0.55; // Total range of size change
+    const baseScale = 0.85; // Minimum size when quiet
+    const radius = baseRadius * (baseScale + this.currentAmplitude * shrinkGrowRange);
+    const hue = this.settings.baseHue + this.currentAmplitude * 30;
     
     // === OUTER GLOW (soft ambient light) ===
     for (let i = 4; i >= 0; i--) {
@@ -541,8 +544,9 @@ class ParticleVisualizer {
    * Uses circular fill to avoid square edges
    */
   drawGlow() {
-    const glowIntensity = this.settings.glowIntensity + this.currentAmplitude * 0.4;
-    const glowRadius = this.settings.glowRadius * (1 + this.currentAmplitude * 0.3);
+    // Glow also shrinks/grows with amplitude
+    const glowIntensity = this.settings.glowIntensity * (0.7 + this.currentAmplitude * 0.6);
+    const glowRadius = this.settings.glowRadius * (0.85 + this.currentAmplitude * 0.5);
     
     // Create radial gradient for glow - fades to fully transparent
     const gradient = this.ctx.createRadialGradient(
@@ -573,10 +577,13 @@ class ParticleVisualizer {
    */
   updateParticles() {
     const speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
-    const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
+    const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 3);
     
-    // AUDIO DRIVES VISUAL: Sphere expands/contracts with speech
-    const radiusMultiplier = 1 + this.currentAmplitude * 0.22;
+    // AUDIO DRIVES VISUAL: Sphere SHRINKS and GROWS dramatically with speech
+    // At 0 amplitude: shrinks to 85%, at max: grows to 145%
+    const baseScale = 0.85;
+    const growRange = 0.6;
+    const radiusMultiplier = baseScale + this.currentAmplitude * growRange;
     
     for (const p of this.particles) {
       // Base rotation around Y axis (orbit)

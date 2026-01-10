@@ -11019,15 +11019,15 @@
         height: 105px !important;
       }
       
-      /* Visualizer container - mobile - CENTERED when no cards - 40% BIGGER */
+      /* Visualizer container - mobile - CENTERED when no cards - 2X BIGGER */
       .ai-visualizer-container {
         position: fixed !important;
         top: 35% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         bottom: auto !important;
-        width: 420px !important;  /* 300 * 1.4 */
-        height: 420px !important;
+        width: 600px !important;  /* 2x bigger container for glow */
+        height: 600px !important;
         max-width: none !important;
         max-height: none !important;
         padding: 0 !important;
@@ -11060,14 +11060,14 @@
         }
       }
       
-      /* When cards are showing - LARGE container for glow, CENTERED above input - 40% BIGGER */
+      /* When cards are showing - LARGE container for glow, CENTERED above input - 2X BIGGER */
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 40px !important;
+        bottom: 20px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 420px !important;  /* Large container for glow - 40% bigger */
-        height: 420px !important;
+        width: 500px !important;  /* Large container for glow */
+        height: 500px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11079,10 +11079,10 @@
         pointer-events: none !important;
       }
       
-      /* Canvas stays small - centered in large container - 40% BIGGER */
+      /* Canvas 2X BIGGER - centered in large container */
       .ai-visualizer-container.with-cards canvas {
-        width: 140px !important;  /* 100 * 1.4 */
-        height: 140px !important;
+        width: 200px !important;  /* 2x bigger */
+        height: 200px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11253,7 +11253,7 @@
         padding: 0 !important;
       }
       
-      /* Weather widget - mobile - SAME ROW as mic button, UNIFORM SIZE 42px */
+      /* Weather widget - mobile - ABOVE buttons, not overlapping */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher,
       .weather-widget-launcher {
@@ -11261,8 +11261,8 @@
         visibility: visible !important;
         opacity: 1 !important;
         position: fixed !important;
-        bottom: 15px !important;  /* Same as input area */
-        right: calc(10px + 42px + 8px) !important;  /* After mic button */
+        bottom: 75px !important;  /* ABOVE the input bar */
+        right: 15px !important;
         left: auto !important;
         width: 42px !important;
         height: 42px !important;
@@ -11273,6 +11273,22 @@
         font-size: 1.1em !important;
         z-index: 10003 !important;
         transform: none !important;
+      }
+      
+      /* TRANSPARENT background for chat messages */
+      .ai-assistant-page .ai-chat-container,
+      .ai-assistant-page .ai-messages {
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      
+      .ai-assistant-page .ai-message.assistant {
+        background: rgba(255, 255, 255, 0.85) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+      }
+      
+      .ai-assistant-page .ai-message.user {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
       }
     }
     
@@ -11325,11 +11341,11 @@
         font-size: 1.3em !important;
       }
       
-      /* Weather widget - extra small - SAME ROW, UNIFORM SIZE 38px */
+      /* Weather widget - extra small - ABOVE buttons */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
-        bottom: 10px !important;
-        right: calc(8px + 38px + 6px) !important;  /* After mic button */
+        bottom: 65px !important;  /* Above the input bar */
+        right: 10px !important;
         width: 38px !important;
         height: 38px !important;
         font-size: 1em !important;
@@ -11361,21 +11377,21 @@
         font-size: 12px !important;
       }
       
-      /* Extra small: visualizer - 40% BIGGER */
+      /* Extra small: visualizer - 2X BIGGER */
       .ai-visualizer-container {
-        width: 280px !important;  /* 200 * 1.4 */
-        height: 280px !important;
+        width: 400px !important;  /* 2x bigger */
+        height: 400px !important;
         max-width: none !important;
         max-height: none !important;
       }
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 45px !important;
+        bottom: 25px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 350px !important;  /* Large for glow - 40% bigger */
-        height: 350px !important;
+        width: 400px !important;  /* Large for glow - 2x bigger */
+        height: 400px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11393,8 +11409,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 112px !important;  /* 80 * 1.4 */
-        height: 112px !important;
+        width: 160px !important;  /* 2x bigger */
+        height: 160px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11442,19 +11458,19 @@
       
       .ai-visualizer-container {
         top: 30% !important;
-        width: 280px !important;  /* 40% bigger */
-        height: 280px !important;
+        width: 360px !important;  /* 2x bigger */
+        height: 360px !important;
         max-width: none !important;
         max-height: none !important;
       }
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 40px !important;
+        bottom: 20px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 310px !important;  /* Large for glow - 40% bigger */
-        height: 310px !important;
+        width: 360px !important;  /* Large for glow - 2x bigger */
+        height: 360px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11465,8 +11481,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 98px !important;  /* 70 * 1.4 */
-        height: 98px !important;
+        width: 140px !important;  /* 2x bigger */
+        height: 140px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -15036,8 +15052,29 @@
       ttsCurrentChunkIndex++;
       
       ttsAudioElement.src = audioUrl;
+      
+      // Wait for audio to be fully loaded before playing
+      await new Promise((resolve, reject) => {
+        const onCanPlay = () => {
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('error', onError);
+          resolve();
+        };
+        const onError = () => {
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('error', onError);
+          reject(new Error('Audio load error'));
+        };
+        ttsAudioElement.addEventListener('canplaythrough', onCanPlay);
+        ttsAudioElement.addEventListener('error', onError);
+        ttsAudioElement.load(); // Explicitly load the audio
+      });
+      
       try {
+        // Start from beginning and play
+        ttsAudioElement.currentTime = 0;
         await ttsAudioElement.play();
+        console.log('🔊 Chunk playing from start, duration:', ttsAudioElement.duration);
       } catch (e) {
         console.error('Playback error:', e);
         playNextInQueue();
