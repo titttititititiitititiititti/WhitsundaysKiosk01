@@ -37,8 +37,10 @@ class ParticleVisualizer {
     // State
     this.isSpeaking = false;
     this.isSearching = false;  // For "finding tours" animation - faster spin
-    this.searchingSpeedMultiplier = 1.0;  // Gradually increases during search
+    this.searchingSpeedMultiplier = 1.0;  // Current speed (smoothly interpolated)
+    this.targetSpeedMultiplier = 1.0;     // Target speed (increases every 3 seconds)
     this.searchingTurbulenceBoost = 0;    // Extra vibration during search
+    this.targetTurbulenceBoost = 0;       // Target turbulence (smoothly interpolated)
     this.searchingInterval = null;        // Timer for speed increases
     this.currentAmplitude = 0;
     this.targetAmplitude = 0;
@@ -277,13 +279,13 @@ class ParticleVisualizer {
   }
   
   /**
-   * Start speaking animation
+   * Start speaking animation (SMOOTH transition - no jumps)
    */
   startSpeaking() {
     console.log('✨ Particle visualizer: START SPEAKING');
     this.isSpeaking = true;
     this.targetAmplitude = 0.5;
-    this.currentAmplitude = 0.3; // Immediate feedback
+    // Don't set currentAmplitude directly - let it interpolate smoothly
     
     if (this.audioContext && this.audioContext.state === 'suspended') {
       this.audioContext.resume();
@@ -291,43 +293,47 @@ class ParticleVisualizer {
   }
   
   /**
-   * Stop speaking animation
+   * Stop speaking animation (SMOOTH transition - no jumps)
    */
   stopSpeaking() {
     console.log('✨ Particle visualizer: STOP SPEAKING');
     this.isSpeaking = false;
     this.targetAmplitude = 0;
+    // Don't set currentAmplitude directly - let it interpolate smoothly
   }
   
   /**
-   * Start searching animation - gradually accelerating spin
+   * Start searching animation - gradually accelerating spin (SMOOTH)
    */
   startSearching() {
     console.log('✨ Particle visualizer: START SEARCHING');
     this.isSearching = true;
-    this.searchingSpeedMultiplier = 1.5;  // Start at 1.5x speed
-    this.searchingTurbulenceBoost = 0;
-    this.targetAmplitude = 0.5; // Nice glow during search
+    // Start at current speed, TARGET 1.5x - will smoothly interpolate
+    this.targetSpeedMultiplier = 1.5;
+    this.targetTurbulenceBoost = 0;
+    this.targetAmplitude = 0.5;
     
-    // Gradually increase speed every 3 seconds
+    // Gradually increase TARGET speed every 3 seconds (actual speed interpolates smoothly)
     let speedLevel = 0;
     this.searchingInterval = setInterval(() => {
       speedLevel++;
-      this.searchingSpeedMultiplier += 0.15; // +15% speed each time (10% felt too slow)
-      this.searchingTurbulenceBoost += 0.1;   // More vibration each time
-      this.targetAmplitude = Math.min(0.8, 0.5 + speedLevel * 0.1); // Brighter glow
-      console.log(`✨ Search speed level ${speedLevel}: ${(this.searchingSpeedMultiplier * 100).toFixed(0)}% speed, turbulence +${this.searchingTurbulenceBoost.toFixed(1)}`);
+      // +20% of base speed each time, cap at 4x
+      this.targetSpeedMultiplier = Math.min(4.0, 1.5 + speedLevel * 0.3);
+      this.targetTurbulenceBoost = Math.min(1.0, speedLevel * 0.15);
+      this.targetAmplitude = Math.min(0.8, 0.5 + speedLevel * 0.1);
+      console.log(`✨ Search speed level ${speedLevel}: target ${(this.targetSpeedMultiplier * 100).toFixed(0)}% speed`);
     }, 3000);
   }
   
   /**
-   * Stop searching animation
+   * Stop searching animation (SMOOTH transition back)
    */
   stopSearching() {
     console.log('✨ Particle visualizer: STOP SEARCHING');
     this.isSearching = false;
-    this.searchingSpeedMultiplier = 1.0;
-    this.searchingTurbulenceBoost = 0;
+    // Smoothly transition back to normal speed
+    this.targetSpeedMultiplier = 1.0;
+    this.targetTurbulenceBoost = 0;
     
     // Clear the speed increase interval
     if (this.searchingInterval) {
@@ -417,13 +423,24 @@ class ParticleVisualizer {
       rawAmplitude = 0;
     }
     
-    // FAST amplitude response - reacts quickly to volume changes
+    // Determine target amplitude:
+    // - When speaking/searching, use at least the minimum target (set by startSpeaking/startSearching)
+    // - Add raw audio amplitude for reactivity
+    let effectiveTarget;
+    if (this.isSpeaking || this.isSearching) {
+      // Use the higher of manual target or raw audio
+      effectiveTarget = Math.max(this.targetAmplitude, rawAmplitude);
+    } else {
+      // When idle, just use raw audio (or 0)
+      effectiveTarget = rawAmplitude;
+    }
+    
+    // SMOOTH amplitude response - prevents jump cuts
     const smoothing = this.settings.amplitudeSmoothing;
-    this.targetAmplitude = rawAmplitude;
-    this.currentAmplitude += (this.targetAmplitude - this.currentAmplitude) * smoothing;
+    this.currentAmplitude += (effectiveTarget - this.currentAmplitude) * smoothing;
     
     // Very low floor - keep reacting to small sounds
-    if (this.currentAmplitude < 0.005) {
+    if (this.currentAmplitude < 0.005 && !this.isSpeaking && !this.isSearching) {
       this.currentAmplitude = 0;
     }
     
@@ -630,20 +647,20 @@ class ParticleVisualizer {
   /**
    * Update particle positions
    * AUDIO DRIVES VISUAL: amplitude affects radius, turbulence, speed
+   * Uses SMOOTH interpolation for all transitions to avoid jump cuts
    */
   updateParticles() {
-    // Searching = accelerating spin, Speaking = normal, Idle = normal
-    let speed;
-    let turbulence;
-    if (this.isSearching) {
-      // Gradually accelerating speed during search
-      speed = this.settings.idleSpeed * this.searchingSpeedMultiplier;
-      // Extra vibration/turbulence that increases with speed
-      turbulence = this.settings.turbulence * (1.5 + this.searchingTurbulenceBoost + this.currentAmplitude * 2);
-    } else {
-      speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
-      turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
-    }
+    // SMOOTH interpolation of speed multiplier (prevents jump cuts)
+    const speedSmoothing = 0.02; // Very smooth transition
+    this.searchingSpeedMultiplier += (this.targetSpeedMultiplier - this.searchingSpeedMultiplier) * speedSmoothing;
+    this.searchingTurbulenceBoost += (this.targetTurbulenceBoost - this.searchingTurbulenceBoost) * speedSmoothing;
+    
+    // Calculate speed based on state
+    let baseSpeed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
+    let speed = baseSpeed * this.searchingSpeedMultiplier;
+    
+    // Turbulence with smooth boost
+    let turbulence = this.settings.turbulence * (1 + this.searchingTurbulenceBoost + this.currentAmplitude * 2);
     
     // AUDIO DRIVES VISUAL: Sphere pulses with volume - SUBTLE but FREQUENT
     // Matches central orb: 92% to 115%
