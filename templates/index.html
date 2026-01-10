@@ -10983,42 +10983,100 @@
         background: transparent !important;
       }
       
-      /* When cards are showing, position visualizer to LEFT side near bottom card */
+      /* When cards are showing, position visualizer to LEFT side - SMALL and NO CLIPPING */
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 180px !important;
-        left: 60px !important;
-        transform: translate(-50%, 0) !important;
-        width: 200px !important;
-        height: 200px !important;
+        bottom: 120px !important;
+        left: 20px !important;
+        transform: none !important;
+        width: 120px !important;
+        height: 120px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
         opacity: 1 !important;
         overflow: visible !important;
         background: transparent !important;
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
       }
       
-      /* Chat tray when tour cards are showing - collapsed above input */
+      .ai-visualizer-container.with-cards canvas {
+        width: 120px !important;
+        height: 120px !important;
+        overflow: visible !important;
+      }
+      
+      /* Message tray when tour cards are showing - collapsible */
       body.ai-showing-cards .ai-assistant-page .ai-chat-container {
         bottom: 85px !important;
-        max-height: 120px !important;
+        max-height: 0px !important;
         overflow: hidden !important;
-        background: rgba(255, 255, 255, 0.9) !important;
+        background: transparent !important;
         border-radius: 16px 16px 0 0 !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: none !important;
+        transition: max-height 0.3s ease !important;
+      }
+      
+      /* When tray is expanded */
+      body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-chat-container {
+        max-height: 200px !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2) !important;
       }
       
       body.ai-showing-cards .ai-assistant-page .ai-messages {
-        max-height: 100px !important;
+        max-height: 0px !important;
+        padding: 0 !important;
+        transition: max-height 0.3s ease, padding 0.3s ease !important;
+      }
+      
+      body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-messages {
+        max-height: 180px !important;
         padding: 10px !important;
       }
       
-      /* Visualizer canvas - mobile */
+      /* Tray toggle button */
+      .ai-tray-toggle {
+        display: none;
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 12px 12px 0 0;
+        cursor: pointer;
+        z-index: 10005;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        color: #666;
+        transition: background 0.2s;
+      }
+      
+      .ai-tray-toggle:hover {
+        background: rgba(255, 255, 255, 1);
+      }
+      
+      body.ai-showing-cards .ai-tray-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .ai-tray-toggle .arrow-down { display: block; }
+      .ai-tray-toggle .arrow-up { display: none; }
+      body.ai-tray-open .ai-tray-toggle .arrow-down { display: none; }
+      body.ai-tray-open .ai-tray-toggle .arrow-up { display: block; }
+      
+      /* Visualizer canvas - mobile - NO CLIPPING */
       #ai-visualizer-container canvas,
       .ai-visualizer-container canvas {
-        max-width: 250px !important;
-        max-height: 250px !important;
+        max-width: none !important;
+        max-height: none !important;
+        overflow: visible !important;
       }
       
       .ai-visualizer-container.with-cards canvas {
@@ -11101,15 +11159,15 @@
         margin: 0 !important;
       }
       
-      /* Weather widget - mobile - ALIGNED with mic button horizontally */
+      /* Weather widget - mobile - ABOVE the input bar */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         position: fixed !important;
-        bottom: 15px !important;
-        right: calc(10px + 44px + 8px + 44px + 8px + 12px) !important; /* After input container */
+        bottom: 80px !important;
+        right: 15px !important;
         left: auto !important;
         width: 44px !important;
         height: 44px !important;
@@ -11168,11 +11226,11 @@
         font-size: 1.3em !important;
       }
       
-      /* Weather widget smaller on extra small - aligned with mic */
+      /* Weather widget smaller on extra small - ABOVE input bar */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher {
-        bottom: 12px !important;
-        right: calc(8px + 40px + 6px + 40px + 6px + 10px) !important;
+        bottom: 70px !important;
+        right: 10px !important;
         width: 40px !important;
         height: 40px !important;
         font-size: 1.2em !important;
@@ -11196,6 +11254,14 @@
         font-size: 1em !important;
       }
       
+      /* Tray toggle smaller */
+      .ai-tray-toggle {
+        bottom: 68px !important;
+        width: 44px !important;
+        height: 20px !important;
+        font-size: 12px !important;
+      }
+      
       /* Extra small: slightly smaller visualizer */
       .ai-visualizer-container {
         width: 200px !important;
@@ -11206,20 +11272,28 @@
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 160px !important;
-        left: 50px !important;
-        width: 160px !important;
-        height: 160px !important;
+        bottom: 110px !important;
+        left: 15px !important;
+        width: 100px !important;
+        height: 100px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
         overflow: visible !important;
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
       }
       
       .ai-visualizer-container canvas,
       .ai-visualizer-container.with-cards canvas {
         max-width: none !important;
         max-height: none !important;
+        overflow: visible !important;
+      }
+      
+      .ai-visualizer-container.with-cards canvas {
+        width: 100px !important;
+        height: 100px !important;
       }
       
       /* Extra small: smaller cards that still maintain 2-column grid */
@@ -11271,13 +11345,21 @@
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 150px !important;
-        left: 40px !important;
-        width: 140px !important;
-        height: 140px !important;
+        bottom: 105px !important;
+        left: 10px !important;
+        width: 90px !important;
+        height: 90px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
+        overflow: visible !important;
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
+      }
+      
+      .ai-visualizer-container.with-cards canvas {
+        width: 90px !important;
+        height: 90px !important;
         overflow: visible !important;
       }
       
@@ -12284,6 +12366,12 @@
     
     <!-- Pre-recorded welcome audio -->
     <audio id="welcome-audio" src="{{ url_for('static', filename='audio/welcome_message.mp3') }}" preload="auto"></audio>
+    
+    <!-- Message tray toggle button (shown when cards are visible) -->
+    <button class="ai-tray-toggle" id="ai-tray-toggle" onclick="toggleMessageTray()">
+      <span class="arrow-up">▲</span>
+      <span class="arrow-down">▼</span>
+    </button>
     
     <!-- Input area at bottom -->
     <div class="ai-input-area">
@@ -15119,6 +15207,12 @@
         messagesContainer.appendChild(errorMsg);
       }
     }
+    
+    // Toggle message tray when cards are showing
+    window.toggleMessageTray = function() {
+      document.body.classList.toggle('ai-tray-open');
+      console.log('📨 Message tray toggled:', document.body.classList.contains('ai-tray-open') ? 'open' : 'closed');
+    };
     
     window.toggleAIMicrophone = function() {
       const micBtn = document.getElementById('ai-mic-btn');
