@@ -37,6 +37,9 @@ class ParticleVisualizer {
     // State
     this.isSpeaking = false;
     this.isSearching = false;  // For "finding tours" animation - faster spin
+    this.searchingSpeedMultiplier = 1.0;  // Gradually increases during search
+    this.searchingTurbulenceBoost = 0;    // Extra vibration during search
+    this.searchingInterval = null;        // Timer for speed increases
     this.currentAmplitude = 0;
     this.targetAmplitude = 0;
     this.animationId = null;
@@ -297,12 +300,24 @@ class ParticleVisualizer {
   }
   
   /**
-   * Start searching animation - fast spinning for "finding tours"
+   * Start searching animation - gradually accelerating spin
    */
   startSearching() {
     console.log('✨ Particle visualizer: START SEARCHING');
     this.isSearching = true;
-    this.targetAmplitude = 0.6; // Nice glow during search
+    this.searchingSpeedMultiplier = 1.5;  // Start at 1.5x speed
+    this.searchingTurbulenceBoost = 0;
+    this.targetAmplitude = 0.5; // Nice glow during search
+    
+    // Gradually increase speed every 3 seconds
+    let speedLevel = 0;
+    this.searchingInterval = setInterval(() => {
+      speedLevel++;
+      this.searchingSpeedMultiplier += 0.15; // +15% speed each time (10% felt too slow)
+      this.searchingTurbulenceBoost += 0.1;   // More vibration each time
+      this.targetAmplitude = Math.min(0.8, 0.5 + speedLevel * 0.1); // Brighter glow
+      console.log(`✨ Search speed level ${speedLevel}: ${(this.searchingSpeedMultiplier * 100).toFixed(0)}% speed, turbulence +${this.searchingTurbulenceBoost.toFixed(1)}`);
+    }, 3000);
   }
   
   /**
@@ -311,6 +326,15 @@ class ParticleVisualizer {
   stopSearching() {
     console.log('✨ Particle visualizer: STOP SEARCHING');
     this.isSearching = false;
+    this.searchingSpeedMultiplier = 1.0;
+    this.searchingTurbulenceBoost = 0;
+    
+    // Clear the speed increase interval
+    if (this.searchingInterval) {
+      clearInterval(this.searchingInterval);
+      this.searchingInterval = null;
+    }
+    
     if (!this.isSpeaking) {
       this.targetAmplitude = 0;
     }
@@ -608,14 +632,18 @@ class ParticleVisualizer {
    * AUDIO DRIVES VISUAL: amplitude affects radius, turbulence, speed
    */
   updateParticles() {
-    // Searching = FAST spin (2x normal), Speaking = normal, Idle = normal
+    // Searching = accelerating spin, Speaking = normal, Idle = normal
     let speed;
+    let turbulence;
     if (this.isSearching) {
-      speed = this.settings.idleSpeed * 2.5; // 2.5x faster during search
+      // Gradually accelerating speed during search
+      speed = this.settings.idleSpeed * this.searchingSpeedMultiplier;
+      // Extra vibration/turbulence that increases with speed
+      turbulence = this.settings.turbulence * (1.5 + this.searchingTurbulenceBoost + this.currentAmplitude * 2);
     } else {
       speed = this.isSpeaking ? this.settings.speakingSpeed : this.settings.idleSpeed;
+      turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
     }
-    const turbulence = this.settings.turbulence * (1 + this.currentAmplitude * 2);
     
     // AUDIO DRIVES VISUAL: Sphere pulses with volume - SUBTLE but FREQUENT
     // Matches central orb: 92% to 115%

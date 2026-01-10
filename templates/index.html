@@ -11208,8 +11208,8 @@
       
       /* Canvas MUCH BIGGER when cards showing */
       .ai-visualizer-container.with-cards canvas {
-        width: 280px !important;  /* Much bigger */
-        height: 280px !important;
+        width: 360px !important;  /* Even bigger with cards */
+        height: 360px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11315,8 +11315,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        max-width: 150px !important;
-        max-height: 150px !important;
+        max-width: 200px !important;
+        max-height: 200px !important;
       }
       
       /* Input area at bottom - mobile - HORIZONTAL BAR */
@@ -11601,8 +11601,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 220px !important;  /* Much bigger */
-        height: 220px !important;
+        width: 280px !important;  /* Bigger with cards */
+        height: 280px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11673,8 +11673,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 180px !important;  /* Bigger */
-        height: 180px !important;
+        width: 230px !important;  /* Bigger with cards */
+        height: 230px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -23972,8 +23972,8 @@
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: WELCOME_MESSAGE }];
       
-      // Play the pre-recorded welcome audio (DISABLED FOR TESTING)
-      const DISABLE_WELCOME_AUDIO = true; // Set to false to re-enable
+      // Play the pre-recorded welcome audio
+      const DISABLE_WELCOME_AUDIO = false; // Re-enabled for production
       const welcomeAudio = document.getElementById('welcome-audio');
       if (welcomeAudio && !DISABLE_WELCOME_AUDIO) {
         try {
