@@ -11071,10 +11071,10 @@
         pointer-events: none !important;
       }
       
-      /* Canvas 2X BIGGER - centered in large container */
+      /* Canvas MUCH BIGGER when cards showing */
       .ai-visualizer-container.with-cards canvas {
-        width: 200px !important;  /* 2x bigger */
-        height: 200px !important;
+        width: 280px !important;  /* Much bigger */
+        height: 280px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11082,10 +11082,10 @@
         overflow: visible !important;
       }
       
-      /* Message tray when tour cards are showing - collapsible */
+      /* Message tray when tour cards are showing - collapsed but clickable */
       body.ai-showing-cards .ai-assistant-page .ai-chat-container {
         bottom: 85px !important;
-        max-height: 0px !important;
+        max-height: 60px !important;  /* Keep some height for last message preview */
         overflow: hidden !important;
         background: none !important;
         background-color: transparent !important;
@@ -11096,22 +11096,22 @@
       
       /* When tray is expanded - STILL TRANSPARENT */
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-chat-container {
-        max-height: 200px !important;
+        max-height: 250px !important;
         background: none !important;
         background-color: transparent !important;
         box-shadow: none !important;
       }
       
       body.ai-showing-cards .ai-assistant-page .ai-messages {
-        max-height: 0px !important;
-        padding: 0 !important;
+        max-height: 50px !important;  /* Show preview of messages */
+        padding: 5px !important;
         transition: max-height 0.3s ease, padding 0.3s ease !important;
         background: none !important;
         background-color: transparent !important;
       }
       
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-messages {
-        max-height: 180px !important;
+        max-height: 230px !important;
         padding: 10px !important;
         background: none !important;
         background-color: transparent !important;
@@ -11447,8 +11447,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 160px !important;  /* 2x bigger */
-        height: 160px !important;
+        width: 220px !important;  /* Much bigger */
+        height: 220px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11519,8 +11519,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 140px !important;  /* 2x bigger */
-        height: 140px !important;
+        width: 180px !important;  /* Bigger */
+        height: 180px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -15089,30 +15089,47 @@
       }
       ttsCurrentChunkIndex++;
       
+      // Reset and set source
+      ttsAudioElement.pause();
+      ttsAudioElement.currentTime = 0;
       ttsAudioElement.src = audioUrl;
       
       // Wait for audio to be fully loaded before playing
       await new Promise((resolve, reject) => {
         const onCanPlay = () => {
           ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
+          ttsAudioElement.removeEventListener('error', onError);
+          resolve();
+        };
+        const onLoaded = () => {
+          // Also resolve on loadeddata as backup
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
           ttsAudioElement.removeEventListener('error', onError);
           resolve();
         };
         const onError = () => {
           ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
           ttsAudioElement.removeEventListener('error', onError);
           reject(new Error('Audio load error'));
         };
         ttsAudioElement.addEventListener('canplaythrough', onCanPlay);
+        ttsAudioElement.addEventListener('loadeddata', onLoaded);
         ttsAudioElement.addEventListener('error', onError);
-        ttsAudioElement.load(); // Explicitly load the audio
+        ttsAudioElement.load();
       });
       
+      // Small delay to ensure browser is ready
+      await new Promise(r => setTimeout(r, 50));
+      
       try {
-        // Start from beginning and play
+        // ENSURE we start from the very beginning
         ttsAudioElement.currentTime = 0;
+        console.log('🔊 Starting chunk from position:', ttsAudioElement.currentTime, 'duration:', ttsAudioElement.duration);
         await ttsAudioElement.play();
-        console.log('🔊 Chunk playing from start, duration:', ttsAudioElement.duration);
+        console.log('🔊 Chunk now playing');
       } catch (e) {
         console.error('Playback error:', e);
         playNextInQueue();
@@ -15333,8 +15350,8 @@
         
         const data = await response.json();
         
-        // Remove typing indicator (loading animation continues until TTS ready)
-        typingMsg.remove();
+        // DON'T remove typing indicator yet - keep it until message is shown
+        // typingMsg will be removed when TTS is ready and message appears
         
         let responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
         
@@ -15387,6 +15404,15 @@
         
         // Function to show message and cards (called when TTS is ready)
         const showMessageAndCards = () => {
+          // NOW remove typing indicator
+          if (typingMsg && typingMsg.parentNode) {
+            typingMsg.remove();
+          }
+          
+          // Remove orb loading animation
+          const orbContainer = document.querySelector('.ai-visualizer-container');
+          if (orbContainer) orbContainer.classList.remove('loading');
+          
           // Show message
           messagesContainer.appendChild(assistantMsg);
           
@@ -15413,8 +15439,10 @@
         speakResponseWithTTS(responseText, lang, showMessageAndCards);
       } catch (error) {
         console.error('Chat error:', error);
-        // Remove typing indicator
-        typingMsg.remove();
+        // Remove typing indicator and loading animation
+        if (typingMsg && typingMsg.parentNode) typingMsg.remove();
+        const orbContainer = document.querySelector('.ai-visualizer-container');
+        if (orbContainer) orbContainer.classList.remove('loading');
         
         // Show error message
         const errorMsg = document.createElement('div');
