@@ -11019,15 +11019,15 @@
         height: 105px !important;
       }
       
-      /* Visualizer container - mobile - CENTERED when no cards */
+      /* Visualizer container - mobile - CENTERED when no cards - 40% BIGGER */
       .ai-visualizer-container {
         position: fixed !important;
         top: 35% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         bottom: auto !important;
-        width: 300px !important;
-        height: 300px !important;
+        width: 420px !important;  /* 300 * 1.4 */
+        height: 420px !important;
         max-width: none !important;
         max-height: none !important;
         padding: 0 !important;
@@ -11036,14 +11036,38 @@
         background: transparent !important;
       }
       
-      /* When cards are showing - LARGE container for glow, CENTERED above input */
+      /* Loading animation for orb while waiting for TTS */
+      .ai-visualizer-container.loading canvas {
+        animation: orbLoading 1.5s ease-in-out infinite !important;
+      }
+      
+      @keyframes orbLoading {
+        0%, 100% { 
+          transform: translate(-50%, -50%) scale(1);
+          filter: brightness(1) hue-rotate(0deg);
+        }
+        25% { 
+          transform: translate(-50%, -50%) scale(1.08);
+          filter: brightness(1.2) hue-rotate(15deg);
+        }
+        50% { 
+          transform: translate(-50%, -50%) scale(1);
+          filter: brightness(1.3) hue-rotate(30deg);
+        }
+        75% { 
+          transform: translate(-50%, -50%) scale(1.08);
+          filter: brightness(1.2) hue-rotate(15deg);
+        }
+      }
+      
+      /* When cards are showing - LARGE container for glow, CENTERED above input - 40% BIGGER */
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 60px !important;
+        bottom: 40px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 300px !important;  /* Large container for glow */
-        height: 300px !important;
+        width: 420px !important;  /* Large container for glow - 40% bigger */
+        height: 420px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11055,10 +11079,10 @@
         pointer-events: none !important;
       }
       
-      /* Canvas stays small - centered in large container */
+      /* Canvas stays small - centered in large container - 40% BIGGER */
       .ai-visualizer-container.with-cards canvas {
-        width: 100px !important;
-        height: 100px !important;
+        width: 140px !important;  /* 100 * 1.4 */
+        height: 140px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11190,14 +11214,19 @@
         min-width: 0 !important;
       }
       
-      /* Send button - mobile - UNIFORM SIZE 42px */
+      /* Send button - mobile - UNIFORM SIZE 42px - HIGH SPECIFICITY */
+      .ai-assistant-page .ai-input-area .ai-text-input-wrapper .ai-send-btn,
+      .ai-assistant-page .ai-input-area button.ai-send-btn,
       .ai-input-container button[type="submit"],
-      .ai-input-container .send-btn {
+      .ai-input-container .send-btn,
+      button.ai-send-btn {
         flex-shrink: 0 !important;
         width: 42px !important;
         height: 42px !important;
         min-width: 42px !important;
         min-height: 42px !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
         padding: 0 !important;
         font-size: 1.1em !important;
         border-radius: 50% !important;
@@ -11206,21 +11235,28 @@
         justify-content: center !important;
       }
       
-      /* Microphone button - mobile - UNIFORM SIZE 42px */
+      /* Microphone button - mobile - UNIFORM SIZE 42px - HIGH SPECIFICITY */
+      .ai-assistant-page .ai-input-area .ai-mic-btn,
+      .ai-assistant-page button.ai-mic-btn,
+      button.ai-mic-btn,
       .ai-mic-btn {
         flex-shrink: 0 !important;
         width: 42px !important;
         height: 42px !important;
         min-width: 42px !important;
         min-height: 42px !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
         font-size: 1.1em !important;
         border-width: 2px !important;
         margin: 0 !important;
+        padding: 0 !important;
       }
       
       /* Weather widget - mobile - SAME ROW as mic button, UNIFORM SIZE 42px */
       .ai-assistant-page .weather-widget-launcher,
-      body.ai-assistant-open .weather-widget-launcher {
+      body.ai-assistant-open .weather-widget-launcher,
+      .weather-widget-launcher {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
@@ -11230,6 +11266,10 @@
         left: auto !important;
         width: 42px !important;
         height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        max-width: 42px !important;
+        max-height: 42px !important;
         font-size: 1.1em !important;
         z-index: 10003 !important;
         transform: none !important;
@@ -11321,21 +11361,21 @@
         font-size: 12px !important;
       }
       
-      /* Extra small: slightly smaller visualizer */
+      /* Extra small: visualizer - 40% BIGGER */
       .ai-visualizer-container {
-        width: 200px !important;
-        height: 200px !important;
-        max-width: 200px !important;
-        max-height: 200px !important;
+        width: 280px !important;  /* 200 * 1.4 */
+        height: 280px !important;
+        max-width: none !important;
+        max-height: none !important;
       }
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 55px !important;
+        bottom: 45px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 250px !important;  /* Large for glow */
-        height: 250px !important;
+        width: 350px !important;  /* Large for glow - 40% bigger */
+        height: 350px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11353,8 +11393,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 80px !important;
-        height: 80px !important;
+        width: 112px !important;  /* 80 * 1.4 */
+        height: 112px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -11402,19 +11442,19 @@
       
       .ai-visualizer-container {
         top: 30% !important;
-        width: 200px !important;
-        height: 200px !important;
-        max-width: 200px !important;
-        max-height: 200px !important;
+        width: 280px !important;  /* 40% bigger */
+        height: 280px !important;
+        max-width: none !important;
+        max-height: none !important;
       }
       
       .ai-visualizer-container.with-cards {
         top: auto !important;
-        bottom: 50px !important;
+        bottom: 40px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 220px !important;  /* Large for glow */
-        height: 220px !important;
+        width: 310px !important;  /* Large for glow - 40% bigger */
+        height: 310px !important;
         max-width: none !important;
         max-height: none !important;
         z-index: 500 !important;
@@ -11425,8 +11465,8 @@
       }
       
       .ai-visualizer-container.with-cards canvas {
-        width: 70px !important;
-        height: 70px !important;
+        width: 98px !important;  /* 70 * 1.4 */
+        height: 98px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -15004,13 +15044,30 @@
       }
     }
     
-    async function speakResponseWithTTS(text, language = 'en') {
+    // Callback to show message when TTS is ready
+    let ttsReadyCallback = null;
+    
+    async function speakResponseWithTTS(text, language = 'en', onReadyCallback = null) {
       if (!text || text.trim().length < 5) return;
       
       console.log('🎤 Speaking response with TTS...');
       
+      // Store callback
+      ttsReadyCallback = onReadyCallback;
+      
+      // Add loading animation to orb
+      const orbContainer = document.querySelector('.ai-visualizer-container');
+      if (orbContainer) {
+        orbContainer.classList.add('loading');
+        console.log('⏳ Orb loading animation started');
+      }
+      
       const cleanText = cleanTextForTTS(text);
-      if (cleanText.length < 5) return;
+      if (cleanText.length < 5) {
+        if (orbContainer) orbContainer.classList.remove('loading');
+        if (ttsReadyCallback) ttsReadyCallback();
+        return;
+      }
       
       // Initialize audio element
       if (!ttsAudioElement) {
@@ -15020,16 +15077,21 @@
         
         ttsAudioElement.onplay = () => {
           console.log('🔊 TTS playing');
+          // Remove loading animation when actually playing
+          const orb = document.querySelector('.ai-visualizer-container');
+          if (orb) orb.classList.remove('loading');
           if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
         };
         ttsAudioElement.onended = () => {
           console.log('🔊 TTS chunk ended, queue length:', ttsAudioQueue.length);
-          // Small delay to let prefetch catch up if needed
-          setTimeout(() => playNextInQueue(), 100);
+          // Faster transition - only 50ms delay
+          setTimeout(() => playNextInQueue(), 50);
         };
         ttsAudioElement.onerror = () => {
           console.error('🔊 TTS playback error');
-          setTimeout(() => playNextInQueue(), 100);
+          const orb = document.querySelector('.ai-visualizer-container');
+          if (orb) orb.classList.remove('loading');
+          setTimeout(() => playNextInQueue(), 50);
         };
         
         // Connect to visualizer
@@ -15076,20 +15138,39 @@
           // Single chunk - just fetch and play
           console.log('📡 Single chunk, fetching...');
           const blob = await fetchTTSChunk(chunks[0], language);
+          
+          // TTS ready - call callback to show message 0.5s before playing
+          if (ttsReadyCallback) {
+            console.log('📨 TTS ready - showing message');
+            ttsReadyCallback();
+            ttsReadyCallback = null;
+            await new Promise(r => setTimeout(r, 500)); // Wait 0.5s then play
+          }
+          
           ttsAudioQueue.push(blob);
           playNextInQueue();
         } else {
-          // Multiple chunks - fetch first two before playing, then prefetch rest
-          console.log('📡 Fetching first 2 chunks...');
-          const [first, second] = await Promise.all([
-            fetchTTSChunk(chunks[0], language),
-            fetchTTSChunk(chunks[1], language)
-          ]);
+          // Multiple chunks - fetch FIRST chunk only before playing (faster start)
+          console.log('📡 Fetching first chunk for fast start...');
+          const first = await fetchTTSChunk(chunks[0], language);
+          
+          // TTS ready - call callback to show message 0.5s before playing
+          if (ttsReadyCallback) {
+            console.log('📨 TTS ready - showing message');
+            ttsReadyCallback();
+            ttsReadyCallback = null;
+            await new Promise(r => setTimeout(r, 500)); // Wait 0.5s then play
+          }
           
           ttsAudioQueue.push(first);
-          ttsAudioQueue.push(second);
-          console.log('📡 First 2 chunks ready, starting playback...');
+          console.log('📡 First chunk ready, starting playback immediately...');
           playNextInQueue();
+          
+          // Fetch second chunk in parallel with playback
+          fetchTTSChunk(chunks[1], language).then(second => {
+            ttsAudioQueue.push(second);
+            console.log('📡 Second chunk fetched');
+          }).catch(e => console.error('Second chunk failed:', e));
           
           // Prefetch remaining chunks IN ORDER
           if (chunks.length > 2) {
@@ -15225,7 +15306,7 @@
           }
         }
         
-        // Add AI response with formatting
+        // Create message element but DON'T add yet - wait for TTS to be ready
         const assistantMsg = document.createElement('div');
         assistantMsg.className = 'ai-message assistant';
         
@@ -15237,35 +15318,41 @@
           .replace(/\n/g, '<br>');
         
         assistantMsg.innerHTML = formattedText;
-        messagesContainer.appendChild(assistantMsg);
         
         // Add to conversation history
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
-        // Display tour cards - prefer full tour objects from API
-        if (data.recommended_tours && data.recommended_tours.length > 0) {
-          console.log('📦 Using full tour objects from API:', data.recommended_tours.map(t => t.name));
-          displayAITourCardsFromObjects(data.recommended_tours);
-          console.log('🎯 Displayed', currentAITourCards.length, 'tour cards for highlighting');
-        } else {
-          // Fallback to parsing tour names from text (less reliable)
-          const toursToDisplay = parseTourRecommendations(responseText);
-          if (toursToDisplay.length > 0) {
-            displayAITourCards(toursToDisplay);
+        // Prepare tour cards data
+        const tourCardsData = data.recommended_tours && data.recommended_tours.length > 0 
+          ? { type: 'objects', data: data.recommended_tours }
+          : { type: 'parsed', data: parseTourRecommendations(responseText) };
+        
+        // Function to show message and cards (called when TTS is ready)
+        const showMessageAndCards = () => {
+          // Show message
+          messagesContainer.appendChild(assistantMsg);
+          
+          // Display tour cards
+          if (tourCardsData.type === 'objects' && tourCardsData.data.length > 0) {
+            console.log('📦 Using full tour objects from API:', tourCardsData.data.map(t => t.name));
+            displayAITourCardsFromObjects(tourCardsData.data);
+            console.log('🎯 Displayed', currentAITourCards.length, 'tour cards for highlighting');
+          } else if (tourCardsData.data.length > 0) {
+            displayAITourCards(tourCardsData.data);
             console.log('🎯 Displayed', currentAITourCards.length, 'tour cards (parsed from text)');
           }
-        }
+          
+          // Auto-scroll to show new response
+          if (container) {
+            setTimeout(() => {
+              container.scrollTop = container.scrollHeight;
+            }, 50);
+          }
+        };
         
-        // NOW speak the response - TTS will highlight tours as it mentions them
+        // Speak response - TTS will call showMessageAndCards when ready
         const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        speakResponseWithTTS(responseText, lang);
-        
-        // Auto-scroll to show new response
-        if (container) {
-          setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-          }, 50);
-        }
+        speakResponseWithTTS(responseText, lang, showMessageAndCards);
       } catch (error) {
         console.error('Chat error:', error);
         // Remove typing indicator

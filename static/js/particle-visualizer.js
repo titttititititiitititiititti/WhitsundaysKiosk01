@@ -66,10 +66,10 @@ class ParticleVisualizer {
       glowIntensity: 0.52,
       glowRadius: 95,
       
-      // Audio reactivity - more responsive
-      amplitudeSmoothing: 0.06,
-      amplitudeMultiplier: 1.8,
-      amplitudeThreshold: 0.05,
+      // Audio reactivity - MORE SENSITIVE
+      amplitudeSmoothing: 0.08,      // Faster response
+      amplitudeMultiplier: 3.5,      // Much more sensitive to volume
+      amplitudeThreshold: 0.02,      // React to quieter sounds
     };
     
     this.init();
@@ -322,8 +322,8 @@ class ParticleVisualizer {
         }
         const rms = Math.sqrt(sum / count) / 255;
         
-        // If we got real data, use it
-        if (rms > 0.02) {
+        // If we got real data, use it - LOWER THRESHOLD for more sensitivity
+        if (rms > 0.01) {
           return Math.min(1, rms * this.settings.amplitudeMultiplier);
         }
       } catch (e) {
