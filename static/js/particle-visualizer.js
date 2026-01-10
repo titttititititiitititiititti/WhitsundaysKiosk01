@@ -333,15 +333,25 @@ class ParticleVisualizer {
       }
     }
     
-    // SIMULATED SPEECH PATTERN - MORE VARIATION for speaking effect
-    const t = this.time;
-    const wave1 = Math.sin(t * 12) * 0.25;         // Very fast pulse (syllables)
-    const wave2 = Math.sin(t * 5) * 0.2;           // Fast rhythm (words)
-    const wave3 = Math.sin(t * 1.5) * 0.15;        // Medium variation (phrases)
-    const noise = (Math.random() - 0.5) * 0.2;     // More random variation
+    // Only use simulated pattern if audio element exists and is actually playing
+    if (this.audioSource && this.audioSource.mediaElement) {
+      const audio = this.audioSource.mediaElement;
+      // Check if audio is actually playing (not paused, has duration, current time moving)
+      if (!audio.paused && audio.duration > 0 && audio.currentTime > 0) {
+        // SIMULATED SPEECH PATTERN - MORE VARIATION for speaking effect
+        const t = this.time;
+        const wave1 = Math.sin(t * 12) * 0.25;         // Very fast pulse (syllables)
+        const wave2 = Math.sin(t * 5) * 0.2;           // Fast rhythm (words)
+        const wave3 = Math.sin(t * 1.5) * 0.15;        // Medium variation (phrases)
+        const noise = (Math.random() - 0.5) * 0.2;     // More random variation
+        
+        const simulated = 0.5 + wave1 + wave2 + wave3 + noise;
+        return Math.max(0.1, Math.min(1, simulated));
+      }
+    }
     
-    const simulated = 0.5 + wave1 + wave2 + wave3 + noise;
-    return Math.max(0.1, Math.min(1, simulated));
+    // No real audio playing - return 0 (idle state)
+    return 0;
   }
   
   /**

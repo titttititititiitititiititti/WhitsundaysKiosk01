@@ -1724,28 +1724,26 @@
       display: none !important;
     }
     
-    /* Weather launcher always visible on every screen */
+    /* HIDE weather widget on language selection and mode selection pages */
     body.video-bg-active .weather-widget-launcher,
     body.video-bg-active #weather-widget-launcher,
     body.showing-language-selection .weather-widget-launcher,
     body.showing-language-selection #weather-widget-launcher {
-      display: flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      z-index: 2147483647 !important;
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
     
-    /* Weather widget panel respects weather-open state */
-    body.video-bg-active.weather-open .weather-widget,
-    body.video-bg-active.weather-open #weather-widget,
-    body.showing-language-selection.weather-open .weather-widget,
-    body.showing-language-selection.weather-open #weather-widget {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      z-index: 2147483646 !important;
+    /* Also hide weather panel on these pages */
+    body.video-bg-active .weather-widget,
+    body.video-bg-active #weather-widget,
+    body.showing-language-selection .weather-widget,
+    body.showing-language-selection #weather-widget {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
 
     body.video-bg-active .chat-interface,
@@ -11084,41 +11082,51 @@
         overflow: visible !important;
       }
       
-      /* Message tray when tour cards are showing - FULLY HIDDEN */
+      /* Message tray when tour cards are showing - COMPLETELY HIDDEN */
       body.ai-showing-cards .ai-assistant-page .ai-chat-container {
         bottom: 85px !important;
-        max-height: 0px !important;  /* Fully hidden */
+        max-height: 0px !important;
+        height: 0px !important;
         overflow: hidden !important;
         background: none !important;
         background-color: transparent !important;
         border-radius: 0 !important;
         box-shadow: none !important;
-        transition: max-height 0.3s ease !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease, height 0.3s ease !important;
         opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
       }
       
       /* When tray is expanded - VISIBLE and TRANSPARENT */
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-chat-container {
         max-height: 250px !important;
+        height: auto !important;
         background: none !important;
         background-color: transparent !important;
         box-shadow: none !important;
         opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
       }
       
       body.ai-showing-cards .ai-assistant-page .ai-messages {
-        max-height: 0px !important;  /* Fully hidden */
+        max-height: 0px !important;
+        height: 0px !important;
         padding: 0 !important;
-        transition: max-height 0.3s ease, padding 0.3s ease !important;
+        transition: max-height 0.3s ease, padding 0.3s ease, height 0.3s ease !important;
         background: none !important;
         background-color: transparent !important;
+        visibility: hidden !important;
       }
       
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-messages {
         max-height: 230px !important;
+        height: auto !important;
         padding: 10px !important;
         background: none !important;
         background-color: transparent !important;
+        visibility: visible !important;
       }
       
       /* Tray toggle button */
@@ -15058,14 +15066,22 @@
     }
     
     async function fetchTTSChunk(text, language) {
+      console.log(`📡 TTS request for: "${text.substring(0, 50)}..."`);
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, language, gender: 'female' })
       });
       
-      if (!response.ok) throw new Error(`TTS error: ${response.status}`);
-      return await response.blob();
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ TTS API error: ${response.status} - ${errorText}`);
+        throw new Error(`TTS error: ${response.status} - ${errorText}`);
+      }
+      
+      const blob = await response.blob();
+      console.log(`✅ TTS response: ${blob.size} bytes`);
+      return blob;
     }
     
     async function playNextInQueue() {
