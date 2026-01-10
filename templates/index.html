@@ -2928,6 +2928,118 @@
       50% { opacity: 1; }
     }
     
+    /* Searching overlay - futuristic loading experience */
+    .ai-searching-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 20, 40, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: overlayFadeIn 0.3s ease;
+    }
+    
+    .ai-searching-overlay.fade-out {
+      animation: overlayFadeOut 0.3s ease forwards;
+    }
+    
+    @keyframes overlayFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes overlayFadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    .searching-content {
+      text-align: center;
+      color: white;
+    }
+    
+    .searching-text {
+      font-size: 1.5em;
+      font-weight: 500;
+      margin-bottom: 30px;
+      animation: textPulse 2s ease-in-out infinite;
+      text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    }
+    
+    @keyframes textPulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    
+    .searching-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    
+    .searching-bar {
+      height: 100%;
+      width: 30%;
+      background: linear-gradient(90deg, #8b5cf6, #06b6d4, #8b5cf6);
+      background-size: 200% 100%;
+      border-radius: 2px;
+      animation: searchingBar 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes searchingBar {
+      0% { transform: translateX(-100%); background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { transform: translateX(400%); background-position: 0% 50%; }
+    }
+    
+    /* Card reveal animation */
+    .cards-revealing .ai-tour-card {
+      animation: cardReveal 0.6s ease forwards;
+      opacity: 0;
+    }
+    
+    .cards-revealing .ai-tour-card:nth-child(1) { animation-delay: 0.1s; }
+    .cards-revealing .ai-tour-card:nth-child(2) { animation-delay: 0.2s; }
+    .cards-revealing .ai-tour-card:nth-child(3) { animation-delay: 0.3s; }
+    
+    @keyframes cardReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+    
+    /* Message reveal animation */
+    .ai-message.reveal-animation {
+      animation: messageReveal 0.4s ease;
+    }
+    
+    @keyframes messageReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .ai-input-area {
       position: fixed;
       bottom: 0;
@@ -15148,8 +15260,40 @@
         // ENSURE we start from the very beginning
         ttsAudioElement.currentTime = 0;
         console.log('🔊 Starting chunk from position:', ttsAudioElement.currentTime, 'duration:', ttsAudioElement.duration);
-        await ttsAudioElement.play();
-        console.log('🔊 Chunk now playing');
+        
+        // Try to play - handle autoplay restrictions
+        try {
+          await ttsAudioElement.play();
+          console.log('🔊 Chunk now playing');
+        } catch (autoplayError) {
+          console.warn('⚠️ Autoplay blocked, waiting for user interaction...');
+          
+          // Create a one-time click handler to resume audio
+          const resumeAudio = async () => {
+            try {
+              await ttsAudioElement.play();
+              console.log('🔊 Audio resumed after user interaction');
+            } catch (e) {
+              console.error('Still cannot play:', e);
+            }
+            document.removeEventListener('click', resumeAudio);
+            document.removeEventListener('touchstart', resumeAudio);
+          };
+          
+          // Add listeners for user interaction
+          document.addEventListener('click', resumeAudio, { once: true });
+          document.addEventListener('touchstart', resumeAudio, { once: true });
+          
+          // Also try playing directly (mobile Safari sometimes works)
+          setTimeout(async () => {
+            try {
+              if (ttsAudioElement.paused) {
+                await ttsAudioElement.play();
+                console.log('🔊 Delayed play succeeded');
+              }
+            } catch (e) {}
+          }, 100);
+        }
       } catch (e) {
         console.error('Playback error:', e);
         playNextInQueue();
@@ -15291,7 +15435,29 @@
     }
     
     
+    // Prime audio on first interaction to enable autoplay
+    let audioContextPrimed = false;
+    function primeAudioContext() {
+      if (audioContextPrimed) return;
+      audioContextPrimed = true;
+      
+      // Create and play silent audio to unlock audio context
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+      silentAudio.volume = 0.01;
+      silentAudio.play().then(() => {
+        console.log('🔊 Audio context primed');
+      }).catch(() => {});
+      
+      // Also resume AudioContext if it exists
+      if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+        window.particleVisualizer.audioContext.resume();
+      }
+    }
+    
     window.sendAIMessage = async function() {
+      // Prime audio on first message send
+      primeAudioContext();
+      
       const input = document.getElementById('ai-text-input');
       const messagesContainer = document.getElementById('ai-messages');
       const container = document.getElementById('ai-chat-container');
@@ -15320,13 +15486,48 @@
         }, 50);
       }
       
-      // Show typing indicator
-      const typingMsg = document.createElement('div');
-      typingMsg.className = 'ai-message assistant typing';
-      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
-      messagesContainer.appendChild(typingMsg);
+      // Show "searching" overlay instead of just typing dots
+      const searchingOverlay = document.createElement('div');
+      searchingOverlay.className = 'ai-searching-overlay';
+      searchingOverlay.id = 'ai-searching-overlay';
       
-      // Start orb loading animation during typing
+      // Localized searching messages
+      const searchingMessages = {
+        'en': ['Finding the perfect tours for you...', 'Searching our best experiences...', 'Almost there...'],
+        'zh': ['为您寻找完美的旅程...', '搜索我们最好的体验...', '马上就好...'],
+        'ja': ['あなたにぴったりのツアーを探しています...', '最高の体験を検索中...', 'もうすぐです...'],
+        'ko': ['완벽한 투어를 찾고 있습니다...', '최고의 경험 검색 중...', '거의 다 됐습니다...'],
+        'de': ['Die perfekten Touren für Sie finden...', 'Unsere besten Erlebnisse durchsuchen...', 'Fast fertig...'],
+        'fr': ['Recherche des tours parfaits pour vous...', 'Recherche de nos meilleures expériences...', 'Presque prêt...'],
+        'es': ['Buscando los tours perfectos para ti...', 'Buscando nuestras mejores experiencias...', 'Ya casi...'],
+        'it': ['Trovando i tour perfetti per te...', 'Cercando le nostre migliori esperienze...', 'Quasi pronto...']
+      };
+      
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+      const messages = searchingMessages[lang] || searchingMessages['en'];
+      
+      searchingOverlay.innerHTML = `
+        <div class="searching-content">
+          <div class="searching-text" id="searching-text">${messages[0]}</div>
+          <div class="searching-progress">
+            <div class="searching-bar"></div>
+          </div>
+        </div>
+      `;
+      
+      // Add to page
+      const aiPage = document.querySelector('.ai-assistant-page');
+      if (aiPage) aiPage.appendChild(searchingOverlay);
+      
+      // Cycle through messages
+      let msgIndex = 0;
+      const textCycler = setInterval(() => {
+        msgIndex = (msgIndex + 1) % messages.length;
+        const textEl = document.getElementById('searching-text');
+        if (textEl) textEl.textContent = messages[msgIndex];
+      }, 2000);
+      
+      // Start orb loading animation during search
       const orbContainer = document.querySelector('.ai-visualizer-container');
       if (orbContainer) orbContainer.classList.add('loading');
       
@@ -15404,19 +15605,28 @@
         
         // Function to show message and cards (called when TTS is ready)
         const showMessageAndCards = () => {
-          // NOW remove typing indicator
-          if (typingMsg && typingMsg.parentNode) {
-            typingMsg.remove();
+          // Stop text cycler
+          clearInterval(textCycler);
+          
+          // Remove searching overlay with fade out
+          const overlay = document.getElementById('ai-searching-overlay');
+          if (overlay) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.remove(), 300);
           }
           
           // Remove orb loading animation
           const orbContainer = document.querySelector('.ai-visualizer-container');
           if (orbContainer) orbContainer.classList.remove('loading');
           
-          // Show message
+          // Show message with fade in
+          assistantMsg.classList.add('reveal-animation');
           messagesContainer.appendChild(assistantMsg);
           
-          // Display tour cards
+          // Display tour cards with staggered reveal animation
+          const cardsContainer = document.getElementById('ai-tour-cards');
+          if (cardsContainer) cardsContainer.classList.add('cards-revealing');
+          
           if (tourCardsData.type === 'objects' && tourCardsData.data.length > 0) {
             console.log('📦 Using full tour objects from API:', tourCardsData.data.map(t => t.name));
             displayAITourCardsFromObjects(tourCardsData.data);
@@ -15425,6 +15635,11 @@
             displayAITourCards(tourCardsData.data);
             console.log('🎯 Displayed', currentAITourCards.length, 'tour cards (parsed from text)');
           }
+          
+          // Remove reveal class after animation
+          setTimeout(() => {
+            if (cardsContainer) cardsContainer.classList.remove('cards-revealing');
+          }, 1000);
           
           // Auto-scroll to show new response
           if (container) {
@@ -15439,8 +15654,16 @@
         speakResponseWithTTS(responseText, lang, showMessageAndCards);
       } catch (error) {
         console.error('Chat error:', error);
-        // Remove typing indicator and loading animation
-        if (typingMsg && typingMsg.parentNode) typingMsg.remove();
+        
+        // Stop text cycler and remove overlay
+        clearInterval(textCycler);
+        const overlay = document.getElementById('ai-searching-overlay');
+        if (overlay) {
+          overlay.classList.add('fade-out');
+          setTimeout(() => overlay.remove(), 300);
+        }
+        
+        // Remove loading animation
         const orbContainer = document.querySelector('.ai-visualizer-container');
         if (orbContainer) orbContainer.classList.remove('loading');
         
