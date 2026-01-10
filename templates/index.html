@@ -15948,7 +15948,24 @@
         
         // Speak response - TTS will call showMessageAndCards when ready, then start audio 0.2s later
         const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        speakResponseWithTTS(responseText, lang, showMessageAndCards);
+        
+        // If we have tour cards, add a spoken prompt telling user to tap
+        let textForTTS = responseText;
+        if (hasTourCards) {
+          const tapPromptSpoken = {
+            'en': ' Tap on any tour card to learn more or book!',
+            'zh': ' 点击任何旅游卡片了解更多或预订！',
+            'ja': ' ツアーカードをタップして詳細を確認または予約！',
+            'ko': ' 투어 카드를 탭하여 자세히 알아보거나 예약하세요!',
+            'de': ' Tippen Sie auf eine Tour-Karte, um mehr zu erfahren oder zu buchen!',
+            'fr': ' Appuyez sur une carte de visite pour en savoir plus ou réserver!',
+            'es': ' Toca cualquier tarjeta de tour para saber más o reservar!',
+            'it': ' Tocca una scheda tour per saperne di più o prenotare!'
+          };
+          textForTTS = responseText + (tapPromptSpoken[lang] || tapPromptSpoken['en']);
+        }
+        
+        speakResponseWithTTS(textForTTS, lang, showMessageAndCards);
       } catch (error) {
         console.error('Chat error:', error);
         
@@ -24166,25 +24183,35 @@
       }
     }
     
-    // Welcome messages for each language
+    // Welcome messages for each language (TTS-friendly - no emojis)
     const WELCOME_MESSAGES = {
-      'en': "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?",
-      'zh': "你好！👋 我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。让我们从简单开始，您想体验什么？🐠 大堡礁、🏖️ 白天堂海滩、⛵ 帆船和游轮，还是其他？",
-      'ja': "こんにちは！👋 私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。まずは簡単に、何を体験したいですか？🐠 グレートバリアリーフ、🏖️ ホワイトヘブンビーチ、⛵ セーリングとクルーズ、それとも他のもの？",
-      'ko': "안녕하세요! 👋 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 간단하게 시작해볼까요? 무엇을 경험하고 싶으세요? 🐠 그레이트 배리어 리프, 🏖️ 화이트헤이븐 비치, ⛵ 세일링과 크루즈, 아니면 다른 것?",
-      'de': "Hallo! 👋 Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Fangen wir einfach an: Was möchten Sie erleben? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ Segeln und Kreuzfahrten oder etwas anderes?",
-      'fr': "Bonjour! 👋 Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Commençons simplement : que souhaitez-vous vivre? 🐠 Grande Barrière de Corail, 🏖️ Whitehaven Beach, ⛵ voile et croisières, ou autre chose?",
-      'es': "¡Hola! 👋 Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. Empecemos de forma sencilla: ¿qué te gustaría experimentar? 🐠 Gran Barrera de Coral, 🏖️ Playa Whitehaven, ⛵ navegación y cruceros, ¿o algo más?",
-      'it': "Ciao! 👋 Sono il tuo assistente AI per i tour. Ti aiuterò a trovare il tour perfetto alle Whitsundays. Iniziamo in modo semplice: cosa vorresti vivere? 🐠 Grande Barriera Corallina, 🏖️ Whitehaven Beach, ⛵ vela e crociere, o qualcos'altro?"
+      'en': "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays adventure. What would you like to experience? The Great Barrier Reef, Whitehaven Beach, sailing and cruises, or something else?",
+      'zh': "你好！我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。您想体验什么？大堡礁、白天堂海滩、帆船和游轮，还是其他？",
+      'ja': "こんにちは！私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。何を体験したいですか？グレートバリアリーフ、ホワイトヘブンビーチ、セーリングとクルーズ、それとも他のもの？",
+      'ko': "안녕하세요! 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 무엇을 경험하고 싶으세요? 그레이트 배리어 리프, 화이트헤이븐 비치, 세일링과 크루즈, 아니면 다른 것?",
+      'de': "Hallo! Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Was möchten Sie erleben? Great Barrier Reef, Whitehaven Beach, Segeln und Kreuzfahrten oder etwas anderes?",
+      'fr': "Bonjour! Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Que souhaitez-vous vivre? Grande Barrière de Corail, Whitehaven Beach, voile et croisières, ou autre chose?",
+      'es': "Hola! Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. Qué te gustaría experimentar? Gran Barrera de Coral, Playa Whitehaven, navegación y cruceros, o algo más?",
+      'it': "Ciao! Sono il tuo assistente AI per i tour. Ti aiuterò a trovare il tour perfetto alle Whitsundays. Cosa vorresti vivere? Grande Barriera Corallina, Whitehaven Beach, vela e crociere, o qualcos'altro?"
+    };
+    
+    // Display welcome messages (with emojis for visual display)
+    const WELCOME_MESSAGES_DISPLAY = {
+      'en': "Hi! 👋 I'm your AI tour assistant. I'll help you find the perfect Whitsundays adventure. What would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?",
+      'zh': "你好！👋 我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。您想体验什么？🐠 大堡礁、🏖️ 白天堂海滩、⛵ 帆船和游轮，还是其他？",
+      'ja': "こんにちは！👋 私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。何を体験したいですか？🐠 グレートバリアリーフ、🏖️ ホワイトヘブンビーチ、⛵ セーリングとクルーズ、それとも他のもの？",
+      'ko': "안녕하세요! 👋 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 무엇을 경험하고 싶으세요? 🐠 그레이트 배리어 리프, 🏖️ 화이트헤이븐 비치, ⛵ 세일링과 크루즈, 아니면 다른 것?",
+      'de': "Hallo! 👋 Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Was möchten Sie erleben? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ Segeln und Kreuzfahrten oder etwas anderes?",
+      'fr': "Bonjour! 👋 Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Que souhaitez-vous vivre? 🐠 Grande Barrière de Corail, 🏖️ Whitehaven Beach, ⛵ voile et croisières, ou autre chose?",
+      'es': "¡Hola! 👋 Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. ¿Qué te gustaría experimentar? 🐠 Gran Barrera de Coral, 🏖️ Playa Whitehaven, ⛵ navegación y cruceros, ¿o algo más?",
+      'it': "Ciao! 👋 Sono il tuo assistente AI per i tour. Ti aiuterò a trovare il tour perfetto alle Whitsundays. Cosa vorresti vivere? 🐠 Grande Barriera Corallina, 🏖️ Whitehaven Beach, ⛵ vela e crociere, o qualcos'altro?"
     };
     
     // Flag to prevent duplicate welcome messages (global for reset on close)
     window.welcomeMessagePlayed = false;
     
     /**
-     * Play the welcome message with animation
-     * English: uses pre-loaded audio file (instant)
-     * Other languages: fetches from TTS API (shows loading animation)
+     * Play the welcome message - SIMPLE: Always use TTS API
      */
     window.playWelcomeMessage = async function() {
       // Prevent duplicate calls
@@ -24195,18 +24222,16 @@
       window.welcomeMessagePlayed = true;
       
       const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-      const welcomeText = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
-      const isEnglish = lang === 'en';
+      const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
+      const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
-      console.log(`🎤 Playing welcome message in ${lang} (${isEnglish ? 'pre-loaded' : 'TTS fetch'})`);
-      
-      // Resume AudioContext if it exists
-      if (window.particleVisualizer && window.particleVisualizer.audioContext) {
-        window.particleVisualizer.audioContext.resume();
-      }
+      console.log(`🎤 Playing welcome message in ${lang}`);
       
       const messagesContainer = document.getElementById('ai-messages');
-      if (!messagesContainer) return;
+      if (!messagesContainer) {
+        console.error('❌ Messages container not found');
+        return;
+      }
       
       // Clear any existing messages
       messagesContainer.innerHTML = '';
@@ -24221,116 +24246,67 @@
       const orbContainer = document.querySelector('.ai-visualizer-container');
       if (orbContainer) orbContainer.classList.add('loading');
       
+      // Fetch TTS audio
+      console.log('📡 Fetching welcome audio from TTS...');
       let audioElement = null;
-      let audioReady = false;
       
-      if (isEnglish) {
-        // ENGLISH: Try pre-loaded audio file first, fallback to TTS
-        audioElement = document.getElementById('welcome-audio');
-        if (audioElement && audioElement.src) {
-          try {
-            audioElement.currentTime = 0;
-            // Wait for it to be ready with timeout
-            await Promise.race([
-              new Promise(resolve => {
-                if (audioElement.readyState >= 3) {
-                  resolve();
-                } else {
-                  audioElement.oncanplaythrough = resolve;
-                  audioElement.onerror = () => resolve(); // Don't hang on error
-                  audioElement.load();
-                }
-              }),
-              new Promise(resolve => setTimeout(resolve, 3000)) // 3s timeout
-            ]);
-            
-            // Check if audio is actually ready
-            if (audioElement.readyState >= 3 && audioElement.duration > 0) {
-              audioReady = true;
-              console.log('✅ English welcome audio ready (pre-loaded)');
-            } else {
-              console.log('⚠️ Pre-loaded audio not ready, falling back to TTS');
-              audioElement = null; // Fall through to TTS
-            }
-          } catch (e) {
-            console.log('⚠️ Pre-loaded audio failed, falling back to TTS:', e);
-            audioElement = null;
-          }
-        }
+      try {
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: welcomeTextForTTS, language: lang, gender: 'female' })
+        });
         
-        // Fallback to TTS if pre-loaded failed
-        if (!audioReady) {
-          console.log('📡 Fetching English welcome audio from TTS (fallback)...');
-          try {
-            const response = await fetch('/api/tts', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: welcomeText, language: 'en', gender: 'female' })
-            });
-            
-            if (response.ok) {
-              const blob = await response.blob();
-              const audioUrl = URL.createObjectURL(blob);
-              audioElement = new Audio(audioUrl);
-              await new Promise(resolve => {
-                audioElement.oncanplaythrough = resolve;
-                audioElement.load();
-              });
-              audioReady = true;
-              console.log('✅ English welcome audio ready (TTS fallback)');
-            }
-          } catch (e) {
-            console.error('TTS fallback also failed:', e);
-          }
-        }
-      } else {
-        // OTHER LANGUAGES: Fetch from TTS API
-        console.log(`📡 Fetching ${lang} welcome audio from TTS...`);
-        try {
-          const response = await fetch('/api/tts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: welcomeText, language: lang, gender: 'female' })
-          });
+        console.log('📡 TTS response:', response.status);
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          console.log('✅ TTS blob received:', blob.size, 'bytes');
           
-          if (response.ok) {
-            const blob = await response.blob();
+          if (blob.size > 100) {
             const audioUrl = URL.createObjectURL(blob);
             audioElement = new Audio(audioUrl);
             
-            // Wait for it to be ready
-            await new Promise(resolve => {
+            // Wait for audio to be ready
+            await new Promise((resolve, reject) => {
               audioElement.oncanplaythrough = resolve;
+              audioElement.onerror = reject;
               audioElement.load();
             });
-            audioReady = true;
-            console.log(`✅ ${lang} welcome audio ready (TTS fetched)`);
+            
+            console.log('✅ Welcome audio ready');
           }
-        } catch (e) {
-          console.error('TTS fetch failed:', e);
+        } else {
+          console.error('❌ TTS request failed:', response.status);
         }
+      } catch (e) {
+        console.error('❌ TTS fetch error:', e);
       }
       
       // Remove typing indicator
-      typingMsg.remove();
+      if (typingMsg.parentNode) typingMsg.remove();
       
       // Remove orb loading animation
       if (orbContainer) orbContainer.classList.remove('loading');
       
-      // Show the welcome message
+      // Show the welcome message (with emojis for display)
       const welcomeMsg = document.createElement('div');
       welcomeMsg.className = 'ai-message assistant';
-      welcomeMsg.textContent = welcomeText;
+      welcomeMsg.textContent = welcomeTextForDisplay;
       messagesContainer.appendChild(welcomeMsg);
       
       // Add to conversation history
-      aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
+      aiConversationHistory = [{ role: 'assistant', content: welcomeTextForDisplay }];
       
-      // Play the audio (0.2s after message appears)
-      if (audioElement && audioReady) {
+      // Play the audio
+      if (audioElement) {
         // Connect to visualizer
-        if (window.particleVisualizer && !audioElement._particleSourceNode) {
-          window.particleVisualizer.connectAudio(audioElement);
+        if (window.particleVisualizer) {
+          try {
+            window.particleVisualizer.connectAudio(audioElement);
+          } catch (e) {
+            console.log('Visualizer connection note:', e.message);
+          }
         }
         
         audioElement.onplay = () => {
@@ -24345,10 +24321,13 @@
         
         // Start audio 0.2s after message
         setTimeout(() => {
-          audioElement.play().catch(e => console.log('Welcome audio play failed:', e));
+          console.log('▶️ Playing welcome audio...');
+          audioElement.play().catch(e => {
+            console.error('❌ Welcome audio play failed:', e);
+          });
         }, 200);
       } else {
-        console.log('⚠️ No welcome audio available');
+        console.log('⚠️ No welcome audio available - showing text only');
       }
     }
     
