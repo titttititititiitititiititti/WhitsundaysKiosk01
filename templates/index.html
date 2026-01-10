@@ -2978,7 +2978,7 @@
       height: 50px;
       border-radius: 50%;
       background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      border: none;
+      border: 3px solid rgba(255, 255, 255, 0.5);  /* Match mic button border */
       color: white;
       font-size: 1.3em;
       cursor: pointer;
@@ -2986,11 +2986,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
     }
     
     .ai-send-btn:hover {
       transform: scale(1.1);
-      box-shadow: 0 5px 20px rgba(139, 92, 246, 0.5);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+      border-color: rgba(255, 255, 255, 0.7);
     }
     
     .ai-mic-hint {
@@ -11082,29 +11084,31 @@
         overflow: visible !important;
       }
       
-      /* Message tray when tour cards are showing - collapsed but clickable */
+      /* Message tray when tour cards are showing - FULLY HIDDEN */
       body.ai-showing-cards .ai-assistant-page .ai-chat-container {
         bottom: 85px !important;
-        max-height: 60px !important;  /* Keep some height for last message preview */
+        max-height: 0px !important;  /* Fully hidden */
         overflow: hidden !important;
         background: none !important;
         background-color: transparent !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         transition: max-height 0.3s ease !important;
+        opacity: 0 !important;
       }
       
-      /* When tray is expanded - STILL TRANSPARENT */
+      /* When tray is expanded - VISIBLE and TRANSPARENT */
       body.ai-showing-cards.ai-tray-open .ai-assistant-page .ai-chat-container {
         max-height: 250px !important;
         background: none !important;
         background-color: transparent !important;
         box-shadow: none !important;
+        opacity: 1 !important;
       }
       
       body.ai-showing-cards .ai-assistant-page .ai-messages {
-        max-height: 50px !important;  /* Show preview of messages */
-        padding: 5px !important;
+        max-height: 0px !important;  /* Fully hidden */
+        padding: 0 !important;
         transition: max-height 0.3s ease, padding 0.3s ease !important;
         background: none !important;
         background-color: transparent !important;
@@ -11268,7 +11272,7 @@
         flex-direction: row !important;
       }
       
-      /* Weather widget - mobile - ABOVE buttons, not overlapping */
+      /* Weather widget - mobile - ABOVE mic button, SAME X position */
       .ai-assistant-page .weather-widget-launcher,
       body.ai-assistant-open .weather-widget-launcher,
       .weather-widget-launcher {
@@ -11277,7 +11281,7 @@
         opacity: 1 !important;
         position: fixed !important;
         bottom: 75px !important;  /* ABOVE the input bar */
-        right: 15px !important;
+        right: 10px !important;  /* SAME as mic button position */
         left: auto !important;
         width: 42px !important;
         height: 42px !important;
@@ -15225,68 +15229,48 @@
         }
       }
       
+      // Show message immediately - don't wait for TTS
+      if (ttsReadyCallback) {
+        console.log('📨 Showing message immediately');
+        ttsReadyCallback();
+        ttsReadyCallback = null;
+      }
+      
       try {
-        if (chunks.length === 1) {
-          // Single chunk - just fetch and play
-          console.log('📡 Single chunk, fetching...');
-          const blob = await fetchTTSChunk(chunks[0], language);
-          
-          // TTS ready - call callback to show message 0.5s before playing
-          if (ttsReadyCallback) {
-            console.log('📨 TTS ready - showing message');
-            ttsReadyCallback();
-            ttsReadyCallback = null;
-            await new Promise(r => setTimeout(r, 500)); // Wait 0.5s then play
+        // Fetch ALL chunks before playing to ensure complete audio
+        console.log(`📡 Fetching all ${chunks.length} chunks for complete audio...`);
+        
+        const allBlobs = [];
+        for (let i = 0; i < chunks.length; i++) {
+          try {
+            console.log(`📡 Fetching chunk ${i + 1}/${chunks.length}...`);
+            const blob = await fetchTTSChunk(chunks[i], language);
+            allBlobs.push(blob);
+            console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
+          } catch (e) {
+            console.error(`❌ Chunk ${i + 1} failed:`, e);
           }
-          
+        }
+        
+        // Add all fetched blobs to queue in order
+        console.log(`📡 All chunks fetched (${allBlobs.length}/${chunks.length}), starting playback...`);
+        for (const blob of allBlobs) {
           ttsAudioQueue.push(blob);
+        }
+        
+        if (allBlobs.length > 0) {
           playNextInQueue();
         } else {
-          // Multiple chunks - fetch FIRST chunk only before playing (faster start)
-          console.log('📡 Fetching first chunk for fast start...');
-          const first = await fetchTTSChunk(chunks[0], language);
-          
-          // TTS ready - call callback to show message 0.5s before playing
-          if (ttsReadyCallback) {
-            console.log('📨 TTS ready - showing message');
-            ttsReadyCallback();
-            ttsReadyCallback = null;
-            await new Promise(r => setTimeout(r, 500)); // Wait 0.5s then play
-          }
-          
-          ttsAudioQueue.push(first);
-          console.log('📡 First chunk ready, starting playback immediately...');
-          playNextInQueue();
-          
-          // Fetch ALL remaining chunks IN ORDER - wait for each to be added before next
-          // This ensures correct order: 1 (playing) -> 2 -> 3 -> 4...
-          (async () => {
-            // Fetch chunk 2 and add to queue
-            try {
-              const second = await fetchTTSChunk(chunks[1], language);
-              ttsAudioQueue.push(second);
-              console.log('📡 Chunk 2 fetched and added to queue');
-            } catch (e) {
-              console.error('Chunk 2 failed:', e);
-            }
-            
-            // Now fetch remaining chunks IN ORDER (3, 4, ...)
-            for (let i = 2; i < chunks.length; i++) {
-              try {
-                const blob = await fetchTTSChunk(chunks[i], language);
-                ttsAudioQueue.push(blob);
-                console.log(`📡 Chunk ${i + 1}/${chunks.length} fetched and added to queue`);
-              } catch (e) {
-                console.error(`Chunk ${i + 1} failed:`, e);
-              }
-            }
-          })();
-          
+          console.error('❌ No audio chunks were fetched successfully');
+          const orb = document.querySelector('.ai-visualizer-container');
+          if (orb) orb.classList.remove('loading');
         }
         
       } catch (error) {
         console.error('TTS error:', error);
         if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+        const orb = document.querySelector('.ai-visualizer-container');
+        if (orb) orb.classList.remove('loading');
       }
     }
     
