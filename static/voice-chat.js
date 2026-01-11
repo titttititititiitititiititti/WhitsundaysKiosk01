@@ -178,8 +178,7 @@ class VoiceChat {
     // No match found
     this.recognition.onnomatch = () => {
       console.log('🎤 No speech was recognized');
-      // Don't show error - just let them try again
-      // Some phones trigger this even when speech is being processed
+      this.showError("Sorry, I couldn't understand that. Could you try again?");
     };
     
     // Error handling

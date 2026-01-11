@@ -24222,11 +24222,9 @@
       window.welcomeMessagePlayed = true;
       
       const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-      const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
       console.log(`🎤 Playing welcome message in ${lang}`);
-      console.log(`📝 TTS text: "${welcomeTextForTTS.substring(0, 50)}..."`);
       
       const messagesContainer = document.getElementById('ai-messages');
       if (!messagesContainer) {
@@ -24247,28 +24245,45 @@
       const orbContainer = document.querySelector('.ai-visualizer-container');
       if (orbContainer) orbContainer.classList.add('loading');
       
-      // Fetch TTS audio
-      console.log('📡 Fetching welcome audio from /api/tts...');
-      let audioBlob = null;
+      // For ENGLISH: Use pre-recorded audio file (faster, no API call)
+      // For OTHER LANGUAGES: Fetch from TTS API
+      let audioElement = null;
       
-      try {
-        const response = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: welcomeTextForTTS, language: lang, gender: 'female' })
-        });
+      if (lang === 'en') {
+        // Use pre-recorded English welcome message
+        console.log('🔊 Using pre-recorded English welcome audio');
+        audioElement = document.getElementById('welcome-audio');
         
-        console.log('📡 TTS response status:', response.status);
+        // Wait a bit to simulate loading
+        await new Promise(r => setTimeout(r, 1500));
+      } else {
+        // Fetch TTS for other languages
+        const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
+        console.log('📡 Fetching welcome audio from /api/tts...');
         
-        if (response.ok) {
-          audioBlob = await response.blob();
-          console.log('✅ TTS blob received:', audioBlob.size, 'bytes, type:', audioBlob.type);
-        } else {
-          const errorText = await response.text();
-          console.error('❌ TTS request failed:', response.status, errorText);
+        try {
+          const response = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: welcomeTextForTTS, language: lang, gender: 'female' })
+          });
+          
+          console.log('📡 TTS response status:', response.status);
+          
+          if (response.ok) {
+            const audioBlob = await response.blob();
+            console.log('✅ TTS blob received:', audioBlob.size, 'bytes');
+            
+            if (audioBlob.size > 100) {
+              const audioUrl = URL.createObjectURL(audioBlob);
+              audioElement = new Audio(audioUrl);
+            }
+          } else {
+            console.error('❌ TTS request failed:', response.status);
+          }
+        } catch (e) {
+          console.error('❌ TTS fetch error:', e);
         }
-      } catch (e) {
-        console.error('❌ TTS fetch error:', e);
       }
       
       // Remove typing indicator
@@ -24277,7 +24292,7 @@
       // Remove orb loading animation
       if (orbContainer) orbContainer.classList.remove('loading');
       
-      // Show the welcome message (with emojis for display)
+      // Show the welcome message
       const welcomeMsg = document.createElement('div');
       welcomeMsg.className = 'ai-message assistant';
       welcomeMsg.textContent = welcomeTextForDisplay;
@@ -24286,11 +24301,8 @@
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: welcomeTextForDisplay }];
       
-      // Play the audio if we got it
-      if (audioBlob && audioBlob.size > 100) {
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audioElement = new Audio(audioUrl);
-        
+      // Play audio if available
+      if (audioElement) {
         // Connect to visualizer
         if (window.particleVisualizer) {
           try {
@@ -24310,24 +24322,18 @@
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
         };
         
-        audioElement.onerror = (e) => {
-          console.error('❌ Welcome audio ERROR:', e);
-        };
-        
-        // Try to play immediately (0.2s after message)
+        // Play audio
+        audioElement.currentTime = 0;
         setTimeout(async () => {
-          console.log('▶️ Attempting to play welcome audio...');
           try {
             await audioElement.play();
-            console.log('✅ Welcome audio play() succeeded');
+            console.log('✅ Welcome audio playing');
           } catch (e) {
-            console.error('❌ Welcome audio play() failed:', e.name, e.message);
-            // This is often due to autoplay policy - user interaction required
-            console.log('💡 Audio may require user interaction to play');
+            console.error('❌ Welcome audio play failed:', e.message);
           }
         }, 200);
       } else {
-        console.log('⚠️ No welcome audio available - showing text only');
+        console.log('⚠️ No audio available - text only');
       }
     }
     
