@@ -3230,6 +3230,49 @@
       }
     }
     
+    /* Ready-to-speak state - green glow after assistant finishes */
+    .ai-mic-btn.ready-to-speak {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-color: rgba(134, 239, 172, 0.8);
+      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.6);
+      animation: readyPulse 1.5s ease-in-out infinite;
+    }
+    
+    .ai-mic-btn.ready-to-speak::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      border: 3px solid rgba(34, 197, 94, 0.6);
+      animation: readyGlowRing 1.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes readyPulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 30px rgba(34, 197, 94, 0.6);
+      }
+      50% { 
+        transform: scale(1.08);
+        box-shadow: 0 12px 40px rgba(34, 197, 94, 0.8);
+      }
+    }
+    
+    @keyframes readyGlowRing {
+      0%, 100% { 
+        opacity: 0.4;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.8;
+        transform: scale(1.2);
+      }
+    }
+    
     
     /* ===================================================================
        SWIPE RESULTS OVERLAY - APPEARS ON TOP OF VIDEO PAGE
@@ -15419,6 +15462,13 @@
         ttsCurrentChunkIndex = 0;
         if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
         clearSpeakingHighlights();
+        
+        // Show green "ready to speak" mic after assistant finishes
+        const micBtn = document.getElementById('ai-mic-btn');
+        if (micBtn && !micBtn.classList.contains('recording')) {
+          micBtn.classList.add('ready-to-speak');
+          console.log('🎤 Mic ready - showing green glow');
+        }
         return;
       }
       
@@ -15441,6 +15491,7 @@
       // Reset and set source
       ttsAudioElement.pause();
       ttsAudioElement.currentTime = 0;
+      ttsAudioElement.volume = 1.0; // Ensure max volume for every chunk
       ttsAudioElement.src = audioUrl;
       
       // Wait for audio to be fully loaded before playing
@@ -15546,6 +15597,7 @@
       if (!ttsAudioElement) {
         ttsAudioElement = document.createElement('audio');
         ttsAudioElement.id = 'chunked-tts-audio';
+        ttsAudioElement.volume = 1.0; // Always max volume
         document.body.appendChild(ttsAudioElement);
         
         ttsAudioElement.onplay = () => {
@@ -15697,6 +15749,10 @@
     window.sendAIMessage = async function() {
       // Prime audio on first message send
       primeAudioContext();
+      
+      // Remove green "ready to speak" glow when user sends a message
+      const micBtn = document.getElementById('ai-mic-btn');
+      if (micBtn) micBtn.classList.remove('ready-to-speak');
       
       const input = document.getElementById('ai-text-input');
       const messagesContainer = document.getElementById('ai-messages');
@@ -16019,6 +16075,7 @@
           // Start listening
           console.log('🎤 Starting voice recognition via AI mic button...');
           isRecording = true;
+          micBtn.classList.remove('ready-to-speak'); // Remove green glow
           micBtn.classList.add('recording');
           micBtn.innerHTML = '⏹️';
           
@@ -24303,6 +24360,9 @@
       
       // Play audio if available
       if (audioElement) {
+        // Ensure max volume
+        audioElement.volume = 1.0;
+        
         // Connect to visualizer
         if (window.particleVisualizer) {
           try {
@@ -24320,6 +24380,10 @@
         audioElement.onended = () => {
           console.log('🔊 Welcome audio ENDED');
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          
+          // Show green mic after welcome message
+          const micBtn = document.getElementById('ai-mic-btn');
+          if (micBtn) micBtn.classList.add('ready-to-speak');
         };
         
         // Play audio
