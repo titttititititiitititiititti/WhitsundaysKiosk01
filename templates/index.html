@@ -3450,6 +3450,120 @@
       pointer-events: auto;
     }
     
+    /* Swipe Hint Overlay */
+    .swipe-hint-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      background: rgba(0, 0, 0, 0.7);
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .swipe-hint-overlay::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      background: linear-gradient(90deg, rgba(255, 80, 80, 0.6) 0%, transparent 100%);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    
+    .swipe-hint-overlay::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      background: linear-gradient(-90deg, rgba(80, 255, 120, 0.6) 0%, transparent 100%);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    
+    .swipe-hint-content {
+      text-align: center;
+      color: white;
+      z-index: 1;
+      padding: 30px;
+      max-width: 90%;
+    }
+    
+    .swipe-hint-content h3 {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin: 0 0 15px 0;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    
+    .swipe-hint-arrows {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+      font-size: 2.5em;
+    }
+    
+    .swipe-hint-arrows .left-arrow {
+      color: #ff6b6b;
+      animation: swipeLeft 1.5s ease-in-out infinite;
+    }
+    
+    .swipe-hint-arrows .right-arrow {
+      color: #51cf66;
+      animation: swipeRight 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes swipeLeft {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(-20px); opacity: 0.5; }
+    }
+    
+    @keyframes swipeRight {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(20px); opacity: 0.5; }
+    }
+    
+    .swipe-hint-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+    
+    .swipe-hint-text span {
+      padding: 8px 15px;
+      border-radius: 20px;
+    }
+    
+    .swipe-hint-text .left-text {
+      background: rgba(255, 80, 80, 0.3);
+      color: #ff9999;
+    }
+    
+    .swipe-hint-text .right-text {
+      background: rgba(80, 255, 120, 0.3);
+      color: #99ffaa;
+    }
+    
+    .swipe-hint-dismiss {
+      margin-top: 25px;
+      font-size: 0.9em;
+      opacity: 0.7;
+    }
+    
     .skip-to-list-btn {
       position: absolute;
       top: 15px;
@@ -13462,6 +13576,7 @@
     let currentX = 0;
     let isInVideoFlow = false; // Track if we're in the video question flow
     window.cameFromAIAssistant = false; // Track if tour detail was opened from AI assistant
+    window.cameFromQuickDecision = false; // Track if tour detail was opened from Quick Decision
     
     async function showSwipeResults() {
       console.log('[TRANSITION] Starting swipe results transition');
@@ -13545,6 +13660,12 @@
           
           if (firstCard) firstCard.classList.add('entering');
           if (actions) actions.classList.add('entering');
+          
+          // Show swipe hint overlay on first view
+          if (!sessionStorage.getItem('swipeHintShown')) {
+            showSwipeHintOverlay();
+            sessionStorage.setItem('swipeHintShown', 'true');
+          }
         }, 50);
         
       } catch (error) {
@@ -13552,6 +13673,110 @@
         window.goToHomePage();
       }
     }
+    
+    // Swipe hint overlay localized text
+    const SWIPE_HINT_TEXT = {
+      'en': { title: 'Swipe to Decide!', left: '← Next Tour', right: 'Book Now →', tap: 'Tap anywhere to continue' },
+      'zh': { title: '滑动来决定！', left: '← 下一个', right: '立即预订 →', tap: '点击任意位置继续' },
+      'ja': { title: 'スワイプして決めよう！', left: '← 次のツアー', right: '今すぐ予約 →', tap: 'タップして続ける' },
+      'ko': { title: '스와이프로 결정하세요!', left: '← 다음 투어', right: '지금 예약 →', tap: '탭하여 계속' },
+      'de': { title: 'Wischen zum Entscheiden!', left: '← Nächste Tour', right: 'Jetzt buchen →', tap: 'Tippen zum Fortfahren' },
+      'fr': { title: 'Balayez pour décider!', left: '← Tour suivant', right: 'Réserver →', tap: 'Appuyez pour continuer' },
+      'es': { title: '¡Desliza para decidir!', left: '← Siguiente tour', right: 'Reservar →', tap: 'Toca para continuar' },
+      'it': { title: 'Scorri per decidere!', left: '← Prossimo tour', right: 'Prenota →', tap: 'Tocca per continuare' }
+    };
+    
+    function showSwipeHintOverlay() {
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+      const text = SWIPE_HINT_TEXT[lang] || SWIPE_HINT_TEXT['en'];
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'swipe-hint-overlay';
+      overlay.id = 'swipe-hint-overlay';
+      overlay.innerHTML = `
+        <div class="swipe-hint-content">
+          <h3>${text.title}</h3>
+          <div class="swipe-hint-arrows">
+            <span class="left-arrow">👈</span>
+            <span class="right-arrow">👉</span>
+          </div>
+          <div class="swipe-hint-text">
+            <span class="left-text">${text.left}</span>
+            <span class="right-text">${text.right}</span>
+          </div>
+          <p class="swipe-hint-dismiss">${text.tap}</p>
+        </div>
+      `;
+      
+      // Dismiss on tap/click
+      overlay.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+      });
+      
+      document.body.appendChild(overlay);
+      
+      // Auto dismiss after 4 seconds
+      setTimeout(() => {
+        if (overlay.parentNode) {
+          overlay.style.opacity = '0';
+          setTimeout(() => overlay.remove(), 300);
+        }
+      }, 4000);
+    }
+    
+    // Setup swipe gestures for Quick Decision results
+    function setupSwipeGestures() {
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      if (!swipeOverlay) return;
+      
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isSwiping = false;
+      
+      swipeOverlay.addEventListener('touchstart', (e) => {
+        // Don't intercept gallery touches
+        if (e.target.closest('.swipe-gallery-wrapper') || e.target.closest('.gallery-nav-arrow')) return;
+        
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = true;
+      }, { passive: true });
+      
+      swipeOverlay.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        // Prevent vertical scroll while swiping horizontally
+        const diffX = Math.abs(e.touches[0].clientX - touchStartX);
+        const diffY = Math.abs(e.touches[0].clientY - touchStartY);
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      swipeOverlay.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchEndX - touchStartX;
+        const threshold = 80; // Minimum swipe distance
+        
+        if (Math.abs(diff) > threshold) {
+          if (diff > 0) {
+            // Swipe right = Book
+            console.log('👉 Swipe right - Book');
+            document.getElementById('accept-btn')?.click();
+          } else {
+            // Swipe left = Next
+            console.log('👈 Swipe left - Next');
+            document.getElementById('reject-btn')?.click();
+          }
+        }
+      }, { passive: true });
+    }
+    
+    // Initialize swipe gestures when DOM is ready
+    document.addEventListener('DOMContentLoaded', setupSwipeGestures);
     
     async function renderSwipeCards() {
       if (swipeCards.length === 0) return;
@@ -13940,12 +14165,15 @@
     }
     
     function acceptCard() {
-      console.log('[ACTION] Booking tour - redirecting to tour page');
+      console.log('[ACTION] Booking tour - opening tour detail page');
       
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
-        // Redirect to tour booking page
-        window.location.href = `/tour/${tour.key}?lang=${currentLanguage}`;
+        // Set flag so tour detail page knows we came from Quick Decision
+        window.cameFromQuickDecision = true;
+        window.cameFromAIAssistant = false;
+        // Open tour detail page instead of redirecting
+        openTourDetail(tour.key);
       }
     }
     
@@ -20071,26 +20299,25 @@
               console.log('✅ Active class added');
               
               // Update header buttons based on where we came from
+              // Rule: Always show exactly 2 buttons - hide the button for the mode we came from
               const quickDecisionBtn = document.getElementById('detail-quick-decision-btn');
               const aiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
               const browseAllBtn = document.getElementById('detail-browse-all-btn');
               
+              console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
+              
               if (window.cameFromAIAssistant) {
-                console.log('🤖 Came from AI Assistant - updating header buttons');
-                // Show Quick Decision (green) and Browse All Tours (orange)
-                // Hide AI Assistant button (we're already in AI mode)
+                console.log('🤖 Came from AI Assistant - show Quick Decision + Browse All, hide AI');
                 if (quickDecisionBtn) {
                   quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
-                  // Ensure Quick Decision goes to Quick Decision mode, not back
                   quickDecisionBtn.onclick = function(e) {
                     e.stopPropagation();
-                    console.log('🚀 Quick Decision clicked from AI tour detail');
-                    // Close tour detail and go to Quick Decision
                     const tourDetailPage = document.querySelector('.page.tour-detail-page');
                     if (tourDetailPage) {
                       tourDetailPage.classList.remove('active');
                       tourDetailPage.style.display = 'none';
                     }
+                    window.cameFromAIAssistant = false;
                     startQuickDecision();
                   };
                 }
@@ -20102,29 +20329,58 @@
                   browseAllBtn.classList.add('show-btn');
                   browseAllBtn.onclick = function(e) {
                     e.stopPropagation();
-                    console.log('📁 Browse All Tours clicked from AI tour detail');
                     window.cameFromAIAssistant = false;
-                    // Close AI assistant properly
                     closeAIAssistant();
-                    // Close tour detail
                     const tourDetailPage = document.querySelector('.page.tour-detail-page');
                     if (tourDetailPage) {
                       tourDetailPage.classList.remove('active');
                       tourDetailPage.style.display = 'none';
                     }
-                    // Go to home page
+                    goToHomePage();
+                  };
+                }
+              } else if (window.cameFromQuickDecision) {
+                console.log('⚡ Came from Quick Decision - show AI + Browse All, hide Quick Decision');
+                if (quickDecisionBtn) {
+                  quickDecisionBtn.style.cssText = 'display: none !important;';
+                }
+                if (aiAssistantBtn) {
+                  aiAssistantBtn.style.cssText = 'display: inline-flex !important;';
+                  aiAssistantBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
+                    if (tourDetailPage) {
+                      tourDetailPage.classList.remove('active');
+                      tourDetailPage.style.display = 'none';
+                    }
+                    window.cameFromQuickDecision = false;
+                    openAIAssistant();
+                  };
+                }
+                if (browseAllBtn) {
+                  browseAllBtn.style.cssText = 'display: inline-flex !important;';
+                  browseAllBtn.classList.add('show-btn');
+                  browseAllBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    window.cameFromQuickDecision = false;
+                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
+                    if (tourDetailPage) {
+                      tourDetailPage.classList.remove('active');
+                      tourDetailPage.style.display = 'none';
+                    }
                     goToHomePage();
                   };
                 }
               } else {
-                // Default: show Quick Decision and AI Assistant buttons, hide Browse All
+                // Default: from Browse All Tours - show Quick Decision + AI, hide Browse All
+                console.log('📁 Came from Browse All Tours - show Quick Decision + AI, hide Browse All');
                 if (quickDecisionBtn) {
                   quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
-                  // Reset onclick to default
                   quickDecisionBtn.onclick = function() { startQuickDecision(); };
                 }
                 if (aiAssistantBtn) {
                   aiAssistantBtn.style.cssText = 'display: inline-flex !important;';
+                  aiAssistantBtn.onclick = function() { openAIAssistant(); };
                 }
                 if (browseAllBtn) {
                   browseAllBtn.style.cssText = 'display: none !important;';
