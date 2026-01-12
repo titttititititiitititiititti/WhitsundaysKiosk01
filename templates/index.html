@@ -2131,30 +2131,39 @@
     
     /* Hide Browse All Tours button on home page - we're already here! */
     .page.home-page .browse-all-btn-header,
-    .page.home-page #home-browse-all-btn {
+    .page.home-page #home-browse-all-btn,
+    .page.home-page .kiosk-header .browse-all-btn-header,
+    .page.home-page .header-left .browse-all-btn-header,
+    .page.home-page button.browse-all-btn-header,
+    .home-page .browse-all-btn-header {
       display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
     }
     
     /* Hide AI Assistant button when in AI Assistant mode */
     body.ai-assistant-open .ai-assistant-btn-header,
     body.ai-assistant-open .kiosk-header .ai-assistant-btn-header,
     body.ai-assistant-open .header-left .ai-assistant-btn-header,
+    body.ai-assistant-open button.ai-assistant-btn-header,
     .ai-assistant-page .ai-assistant-btn-header,
-    .ai-assistant-page .kiosk-header .ai-assistant-btn-header {
+    .ai-assistant-page .kiosk-header .ai-assistant-btn-header,
+    .ai-assistant-page button.ai-assistant-btn-header {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
       width: 0 !important;
+      height: 0 !important;
       padding: 0 !important;
       margin: 0 !important;
       overflow: hidden !important;
-    }
-    
-    /* Hide Browse All Tours button on home/browse page */
-    .page.home-page .kiosk-header .browse-all-btn-header,
-    .page.home-page .header-left .browse-all-btn-header {
-      display: none !important;
-      visibility: hidden !important;
+      pointer-events: none !important;
     }
     
     .page.home-page .logo-image {
@@ -3658,31 +3667,33 @@
       gap: 20px;
       margin-top: 15px;
       overflow-x: scroll !important; /* Always show scrollbar */
-      scrollbar-width: thin; /* Firefox */
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-bottom: 10px;
+      overflow-y: hidden !important;
+      scrollbar-width: auto; /* Firefox - make scrollbar visible */
+      scrollbar-color: #222 #e0e0e0; /* Firefox: thumb track */
+      padding-bottom: 15px;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar {
-      height: 12px;
+      height: 14px !important;
       display: block !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-track {
-      background: rgba(0, 119, 182, 0.15);
-      border-radius: 6px;
+      background: #d0d0d0 !important;
+      border-radius: 7px !important;
+      border: 2px solid rgba(255, 255, 255, 0.5) !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb {
-      background: #333 !important;
-      border-radius: 6px;
+      background: #222 !important;
+      border-radius: 7px !important;
+      border: 2px solid #444 !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb:hover {
-      background: #111 !important;
+      background: #000 !important;
     }
     
     .swipe-review-card {
@@ -5183,7 +5194,7 @@
       padding: 50px 60px;
       border-radius: 25px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      margin: 32px auto;
+      margin: 12px auto;
       width: 100%;
       max-width: 1200px;
     }
@@ -19030,11 +19041,83 @@
       if (shareTourBtn) {
         shareTourBtn.onclick = () => {
           console.log('🔗 Share Tour button clicked!');
-          const tourUrl = `https://www.filtour.com/tour/${key}?lang=${currentLanguage}`;
+          const tourUrl = `${window.location.origin}/tour/${key}?lang=${currentLanguage}`;
           shareTour(tourUrl, data.name);
         };
         console.log('   ✓ Share Tour button click handler attached');
       }
+    }
+    
+    // Share tour function - uses native share on mobile, clipboard on desktop
+    async function shareTour(url, tourName) {
+      console.log('🔗 Sharing tour:', tourName, url);
+      
+      // Check if Web Share API is available (mobile)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: tourName || 'Check out this tour!',
+            text: `Check out this amazing Whitsundays tour: ${tourName}`,
+            url: url
+          });
+          console.log('✅ Shared successfully via native share');
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share failed:', err);
+            // Fallback to clipboard
+            copyToClipboard(url);
+          }
+        }
+      } else {
+        // Desktop - copy to clipboard
+        copyToClipboard(url);
+      }
+    }
+    
+    // Copy to clipboard helper
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('✅ Link copied to clipboard');
+        // Show a toast notification
+        showToast('Link copied to clipboard! 📋');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Link copied to clipboard! 📋');
+      });
+    }
+    
+    // Simple toast notification
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 30px;
+        font-size: 1.1em;
+        font-weight: 600;
+        z-index: 999999;
+        animation: fadeInUp 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
     }
     
     // Show QR Payment Modal
