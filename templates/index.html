@@ -1138,27 +1138,27 @@
         margin: 0 10px !important;
       }
       
-      /* HIDE ALL QR Code sections on mobile - AGGRESSIVE */
+      /* HIDE QR Code sections on mobile - but allow modal to show when active */
       .tour-detail-page .qr-section,
-      .tour-detail-page [class*="qr-code"],
       .tour-detail-page [class*="scan-to-book"],
       .qr-code-section,
       .scan-to-book,
-      #qr-section,
-      #qr-modal,
-      #qr-payment-modal,
-      [id*="qr-code"],
-      [id*="scan-book"],
-      [class*="qr-modal"],
-      [class*="qr-overlay"],
-      .qr-code-container,
-      .qr-modal-content {
+      #qr-section {
         display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        height: 0 !important;
-        overflow: hidden !important;
+      }
+      
+      /* QR Payment Modal - only show when .modal-active class is added */
+      #qr-payment-modal:not(.modal-active) {
+        display: none !important;
+      }
+      
+      #qr-payment-modal.modal-active {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        height: auto !important;
+        overflow: visible !important;
       }
       
       /* Footer buttons */
@@ -2469,22 +2469,24 @@
     }
     
     .vq-answer-btn {
-      background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
+      background: #0077b6;
       color: white;
-      border: 3px solid transparent;
-      border-radius: 20px;
-      padding: 14px 20px;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 24px;
       font-size: 2.2em;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
-      overflow: hidden; /* Fix masking issue */
-      max-width: 85%;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: none;
+      max-width: 80%;
       margin: 0 auto;
       text-align: center;
       width: 100%;
       line-height: 0.95;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
     
     .vq-answer-btn span {
@@ -2497,13 +2499,13 @@
     }
     
     .vq-answer-btn:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0, 119, 182, 0.6);
-      background: linear-gradient(135deg, #0088cc 0%, #0066aa 100%);
+      transform: translateY(-3px);
+      background: #0088cc;
     }
     
     .vq-answer-btn:active {
-      transform: translateY(-2px);
+      transform: translateY(-1px);
+      background: #006699;
     }
     
     .vq-answer-btn.selected {
@@ -3645,11 +3647,12 @@
       max-width: 1200px;
       display: grid;
       grid-template-columns: repeat(2, 1fr); /* Always 2 columns for symmetry */
-      gap: 24px;
-      padding: 20px 0;
+      gap: 20px;
+      padding: 0;
       opacity: 1;
       animation: fadeInUp 0.4s ease-out;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      margin-top: 0;
       margin-left: auto;
       margin-right: auto;
       justify-content: center;
@@ -3669,31 +3672,32 @@
       overflow-x: scroll !important; /* Always show scrollbar */
       overflow-y: hidden !important;
       scrollbar-width: auto; /* Firefox - make scrollbar visible */
-      scrollbar-color: #222 #e0e0e0; /* Firefox: thumb track */
-      padding-bottom: 15px;
+      scrollbar-color: #000 #ccc; /* Firefox: thumb track */
+      padding-bottom: 18px;
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar {
-      height: 14px !important;
+      height: 16px !important;
       display: block !important;
+      background: #bbb !important;
+      border-radius: 8px !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-track {
-      background: #d0d0d0 !important;
-      border-radius: 7px !important;
-      border: 2px solid rgba(255, 255, 255, 0.5) !important;
+      background: #aaa !important;
+      border-radius: 8px !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb {
-      background: #222 !important;
-      border-radius: 7px !important;
-      border: 2px solid #444 !important;
+      background: #000 !important;
+      border-radius: 8px !important;
+      border: 3px solid #666 !important;
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb:hover {
-      background: #000 !important;
+      background: #333 !important;
     }
     
     .swipe-review-card {
@@ -5267,14 +5271,14 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0;
-      margin: 32px 0;
+      margin: 8px 0;
       justify-content: flex-start;
     }
     
     /* Info Grid - Container for Highlights/What's Included (JS handles the grid) */
     .info-grid {
       display: block; /* Let JS-generated content handle layout */
-      margin: 32px auto;
+      margin: 8px auto;
       width: 100%;
       max-width: 1200px;
       background: transparent !important;
@@ -17134,6 +17138,30 @@
       setupInfiniteScroll();
       
       console.log('Home page initialized - Question 1 ready, tours loading');
+      
+      // ======= FORCEFULLY HIDE REDUNDANT HEADER BUTTONS =======
+      function hideRedundantHeaderButtons() {
+        const homePage = document.querySelector('.home-page.active');
+        const aiAssistantOpen = document.body.classList.contains('ai-assistant-open');
+        
+        // Hide Browse All Tours button when on home/browse page
+        if (homePage) {
+          document.querySelectorAll('.browse-all-btn-header, #home-browse-all-btn').forEach(btn => {
+            btn.style.cssText = 'display: none !important; visibility: hidden !important;';
+          });
+        }
+        
+        // Hide AI Assistant button when AI assistant is open
+        if (aiAssistantOpen) {
+          document.querySelectorAll('.ai-assistant-btn-header').forEach(btn => {
+            btn.style.cssText = 'display: none !important; visibility: hidden !important;';
+          });
+        }
+      }
+      
+      // Run immediately and on interval
+      hideRedundantHeaderButtons();
+      setInterval(hideRedundantHeaderButtons, 500);
     });
     
     // Setup infinite scroll detection
@@ -19224,6 +19252,7 @@
       console.log('🚫 Closing QR modal');
       const modal = document.getElementById('qr-payment-modal');
       if (modal) {
+        modal.classList.remove('modal-active');
         modal.style.display = 'none';
         modal.style.visibility = 'hidden';
         modal.style.opacity = '0';
@@ -19311,10 +19340,12 @@
         qrContainer.innerHTML = `<img src="${qrCodeUrl}" alt="Tour QR Code" style="width:100%;max-width:300px;height:auto;" />`;
         
         // Show modal with forced visibility
+        modal.classList.add('modal-active');
         modal.style.display = 'flex';
         modal.style.visibility = 'visible';
         modal.style.opacity = '1';
         modal.style.pointerEvents = 'auto';
+        modal.style.zIndex = '999999';
         document.body.style.overflow = 'hidden';
         console.log('   ✅ Modal shown!');
         console.log('   Modal display:', modal.style.display);
@@ -23579,6 +23610,7 @@
       // Close booking QR modal
       const paymentModal = document.getElementById('qr-payment-modal');
       if (paymentModal) {
+        paymentModal.classList.remove('modal-active');
         paymentModal.style.display = 'none';
         paymentModal.style.visibility = 'hidden';
         paymentModal.style.opacity = '0';
