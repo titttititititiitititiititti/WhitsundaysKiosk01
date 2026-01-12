@@ -1663,6 +1663,38 @@ def generate_qr_code(session_id):
         print(f"❌ Error generating QR code: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/generate-qr')
+def generate_qr_from_url():
+    """Generate QR code for any URL"""
+    try:
+        url = request.args.get('url')
+        if not url:
+            return jsonify({'error': 'URL parameter required'}), 400
+        
+        # Create QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+        
+        # Create image
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save to bytes
+        img_io = BytesIO()
+        img.save(img_io, 'PNG')
+        img_io.seek(0)
+        
+        return send_file(img_io, mimetype='image/png')
+        
+    except Exception as e:
+        print(f"❌ Error generating QR code: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/recommendations/<session_id>')
 def view_recommendations(session_id):
     """Mobile-optimized page displaying tour recommendations"""

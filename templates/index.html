@@ -3940,49 +3940,37 @@
       font-size: 0.95em;
     }
     
-    /* Pricing section styling for Quick Decision */
+    /* Pricing section styling for Quick Decision - matches Browse All Tours */
     .swipe-pricing-section {
-      background: linear-gradient(135deg, rgba(0, 119, 182, 0.1) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
-      border: 2px solid rgba(0, 119, 182, 0.2);
+      background: rgba(255, 255, 255, 0.95) !important;
     }
     
     .swipe-price-tiers {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
     
-    .swipe-price-tier {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .swipe-price-tier-btn {
       padding: 12px 16px;
-      background: rgba(0, 119, 182, 0.08);
-      border-radius: 12px;
-      border: 1px solid rgba(0, 119, 182, 0.15);
+      border-radius: 10px;
+      font-size: 0.95em;
+      font-weight: 500;
+      border: 2px solid #e0e7ee;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      text-align: left;
     }
     
-    .swipe-price-tier .tier-name {
-      font-weight: 600;
-      color: #2c3e50;
-      font-size: 1em;
+    .swipe-price-tier-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 119, 182, 0.2);
     }
     
-    .swipe-price-tier .tier-price {
-      font-weight: 700;
-      color: #0077b6;
-      font-size: 1.1em;
-    }
-    
-    .swipe-price-single {
-      font-size: 1.3em;
-      color: #2c3e50;
-      padding: 12px 0;
-    }
-    
-    .swipe-price-single strong {
-      color: #0077b6;
-      font-size: 1.2em;
+    .swipe-price-tier-btn.swipe-pricing-selected {
+      border-color: #0077b6;
+      box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
     }
     
     /* Cruise Whitsundays disclaimer - subtle styling */
@@ -14441,17 +14429,25 @@
     }
 
     function acceptCard() {
-      console.log('[ACTION] Booking tour - opening tour detail page');
+      console.log('[ACTION] Booking tour');
       
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         
-        // Set flag so tour detail page knows we came from Quick Decision
-        window.cameFromQuickDecision = true;
-        window.cameFromAIAssistant = false;
+        // Check if we have a booking link for this tour
+        const bookingLink = getBookingLink(tour.key);
         
-        // Open tour detail page
-        openTourDetail(tour.key);
+        if (bookingLink) {
+          // Open booking modal with QR code
+          console.log('   ✅ Found booking link, opening booking modal');
+          openBookingModal(tour.key, tour.name);
+        } else {
+          // No booking link - open tour detail page
+          console.log('   ℹ️ No booking link, opening tour detail page');
+          window.cameFromQuickDecision = true;
+          window.cameFromAIAssistant = false;
+          openTourDetail(tour.key);
+        }
       }
     }
     
@@ -14481,29 +14477,28 @@
       
       let detailsHtml = '<div class="swipe-expanded-details slide-up-fade">';
       
-      // PRICING SECTION - Most important, show first
+      // PRICING SECTION - Most important, show first (matching Browse All Tours style)
       if (fullTourData.price_tiers && fullTourData.price_tiers.trim()) {
         detailsHtml += `
           <div class="swipe-detail-section description-section swipe-pricing-section">
             <h3>💰 ${t('pricing')}</h3>
+            <p style="font-size:0.85em;color:#666;margin:0 0 12px 0;">Tap to select your pricing option</p>
             <div class="swipe-price-tiers">
         `;
         
-        // Parse price tiers
-        const tiers = fullTourData.price_tiers.split('\n').filter(t => t.trim());
-        tiers.forEach(tier => {
-          const parts = tier.split(':');
-          if (parts.length >= 2) {
-            const tierName = parts[0].trim();
-            const tierPrice = parts.slice(1).join(':').trim();
+        // Parse price tiers - use PIPE (|) as separator like Browse All Tours
+        const tiers = fullTourData.price_tiers.split('|').filter(t => t.trim());
+        tiers.forEach((tier, index) => {
+          if (tier.trim()) {
+            const isFirst = index === 0;
+            const bgColor = isFirst ? '#0077b6' : (index % 2 === 0 ? '#f0f4f8' : '#f5f8fa');
+            const textColor = isFirst ? '#ffffff' : '#2c3e50';
+            const selectedClass = isFirst ? ' swipe-pricing-selected' : '';
             detailsHtml += `
-              <div class="swipe-price-tier">
-                <span class="tier-name">${tierName}</span>
-                <span class="tier-price">${tierPrice}</span>
+              <div class="swipe-price-tier-btn${selectedClass}" style="background:${bgColor};color:${textColor};" data-tier="${tier.trim()}">
+                ${tier.trim()}
               </div>
             `;
-          } else {
-            detailsHtml += `<div class="swipe-price-tier"><span>${tier}</span></div>`;
           }
         });
         
@@ -14516,7 +14511,9 @@
         detailsHtml += `
           <div class="swipe-detail-section description-section swipe-pricing-section">
             <h3>💰 ${t('pricing')}</h3>
-            <div class="swipe-price-single">From <strong>${fullTourData.price}</strong></div>
+            <div class="swipe-price-tier-btn swipe-pricing-selected" style="background:#0077b6;color:#ffffff;">
+              From ${fullTourData.price}
+            </div>
           </div>
         `;
       }
@@ -19541,6 +19538,15 @@
       
       if (bookNowBtn) {
         bookNowBtn.onclick = () => {
+          // First check if we have a direct booking link in BOOKING_LINKS
+          const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(key) : null;
+          
+          if (directBookingLink) {
+            console.log('🎫 Direct booking link found, opening booking modal');
+            openBookingModal(key, data.name);
+            return;
+          }
+          
           // Try to map to a Rezdy product by name/company
           const rezdyUrl = getRezdyUrlForTour(data.name, data.company);
           
@@ -19917,6 +19923,88 @@
           console.log('   ✓ Cancel button configured');
         }
       }
+    }
+    
+    // Open booking modal with QR code (desktop) or direct link (mobile)
+    function openBookingModal(tourKey, tourName) {
+      console.log('🎫 openBookingModal called for:', tourKey, tourName);
+      
+      const bookingLink = getBookingLink(tourKey);
+      const isMobile = window.innerWidth <= 768;
+      
+      console.log('   Booking link found:', !!bookingLink);
+      console.log('   Is mobile:', isMobile);
+      
+      if (!bookingLink) {
+        // No booking link available - show a message or fallback
+        alert('Online booking is not yet available for this tour. Please contact us directly to book.');
+        return;
+      }
+      
+      const modal = document.getElementById('qr-payment-modal');
+      const qrContainer = document.getElementById('qr-code-container');
+      
+      if (!modal || !qrContainer) {
+        console.error('❌ Booking modal elements not found');
+        return;
+      }
+      
+      // Update modal content
+      const modalTitle = modal.querySelector('h2');
+      if (modalTitle) {
+        modalTitle.textContent = 'Book Your Tour';
+      }
+      
+      const modalSubtitle = modal.querySelector('.qr-subtitle');
+      if (modalSubtitle) {
+        modalSubtitle.innerHTML = `<strong>${tourName || 'Tour'}</strong><br><span style="font-size:0.9em;color:#666;">Secure online booking</span>`;
+      }
+      
+      const modalHelpText = modal.querySelector('.qr-help-text');
+      if (modalHelpText) {
+        modalHelpText.textContent = isMobile 
+          ? 'Tap the button below to complete your booking' 
+          : 'Scan this code to book on your phone, or continue on this device';
+      }
+      
+      // Generate QR code using the booking link
+      const qrCodeUrl = `/api/generate-qr?url=${encodeURIComponent(bookingLink)}`;
+      qrContainer.innerHTML = `<img src="${qrCodeUrl}" alt="Booking QR Code" style="width:100%;max-width:280px;height:auto;border-radius:12px;" />`;
+      
+      // Update buttons
+      const continueBtn = document.getElementById('qr-continue-btn');
+      if (continueBtn) {
+        if (isMobile) {
+          continueBtn.textContent = '📱 Continue on this device';
+          continueBtn.style.background = '#0077b6';
+          continueBtn.style.color = '#fff';
+        } else {
+          continueBtn.textContent = '💻 Open on this screen';
+          continueBtn.style.background = '#0077b6';
+          continueBtn.style.color = '#fff';
+        }
+        continueBtn.onclick = () => {
+          window.open(bookingLink, '_blank');
+        };
+      }
+      
+      const cancelBtn = document.getElementById('qr-cancel-btn');
+      if (cancelBtn) {
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = (e) => {
+          e.preventDefault();
+          closeQRModal();
+        };
+      }
+      
+      // Show modal
+      modal.classList.add('modal-active');
+      modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      modal.style.zIndex = '999999';
+      document.body.style.overflow = 'hidden';
     }
     
     // Tour detail logic
@@ -25055,6 +25143,33 @@
       if (window.particleVisualizer) {
         window.particleVisualizer.stopSpeaking();
       }
+    }
+    
+    // Booking links for tours with online booking
+    const BOOKING_LINKS = {
+      // RedCat Adventures tours
+      'redcat__thundercat-whitsundays-all-inclusive-day-tour': 'https://fareharbor.com/embeds/book/redcatadventures/items/416279/?full-items=yes&flow=838791',
+      'redcat__tongarra-day-sail': 'https://fareharbor.com/embeds/book/redcatadventures/items/416300/?full-items=yes&flow=838791',
+      'redcat__falls-to-paradise-waterfall-tour': 'https://fareharbor.com/embeds/book/redcatadventures/items/416285/?full-items=yes&flow=838791',
+      'redcat__outer-reef-snorkeling-adventure': 'https://fareharbor.com/embeds/book/redcatadventures/items/454116/?full-items=yes&flow=838791',
+      // Purely Whitehaven
+      'purely_whitehaven__purely-whitehaven-day-tour': 'https://fareharbor.com/embeds/book/purelywhitehaven/items/679507/?full-items=yes&flow=1506098'
+    };
+    
+    // Function to get booking link for a tour
+    function getBookingLink(tourKey) {
+      // Try exact match first
+      if (BOOKING_LINKS[tourKey]) {
+        return BOOKING_LINKS[tourKey];
+      }
+      // Try partial match (tour name might be slightly different)
+      const lowerKey = tourKey.toLowerCase();
+      for (const [key, link] of Object.entries(BOOKING_LINKS)) {
+        if (lowerKey.includes(key.split('__')[1]) || key.includes(lowerKey.split('__')[1])) {
+          return link;
+        }
+      }
+      return null;
     }
     
     // Welcome messages for each language (TTS-friendly - no emojis)
