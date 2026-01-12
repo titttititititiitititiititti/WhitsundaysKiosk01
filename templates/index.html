@@ -15571,15 +15571,38 @@
       // Reset and set source
       ttsAudioElement.pause();
       ttsAudioElement.currentTime = 0;
-      ttsAudioElement.volume = 1.0;
+      ttsAudioElement.volume = 1.0; // Ensure max volume for every chunk
       ttsAudioElement.src = audioUrl;
       
-      // Wait for audio to start loading before playing (prevents cut-off start)
-      await new Promise(resolve => {
-        ttsAudioElement.onloadeddata = resolve;
-        ttsAudioElement.onerror = resolve;
-        setTimeout(resolve, 500); // Max wait 0.5s
+      // Wait for audio to be fully loaded before playing
+      await new Promise((resolve, reject) => {
+        const onCanPlay = () => {
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
+          ttsAudioElement.removeEventListener('error', onError);
+          resolve();
+        };
+        const onLoaded = () => {
+          // Also resolve on loadeddata as backup
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
+          ttsAudioElement.removeEventListener('error', onError);
+          resolve();
+        };
+        const onError = () => {
+          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
+          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
+          ttsAudioElement.removeEventListener('error', onError);
+          reject(new Error('Audio load error'));
+        };
+        ttsAudioElement.addEventListener('canplaythrough', onCanPlay);
+        ttsAudioElement.addEventListener('loadeddata', onLoaded);
+        ttsAudioElement.addEventListener('error', onError);
+        ttsAudioElement.load();
       });
+      
+      // Small delay to ensure browser is ready
+      await new Promise(r => setTimeout(r, 50));
       
       try {
         // ENSURE we start from the very beginning
@@ -15716,15 +15739,16 @@
       }
       
       try {
-        // Fetch ALL chunks in parallel, then play
-        console.log(`📡 Fetching ${chunks.length} TTS chunks...`);
+        // Fetch ALL chunks IN PARALLEL - MUCH faster than sequential
+        console.log(`📡 Fetching all ${chunks.length} TTS chunks IN PARALLEL...`);
         const fetchStart = Date.now();
         
-        // Fetch all chunks in parallel
+        // Create all fetch promises at once
         const fetchPromises = chunks.map((chunk, i) => {
+          console.log(`📡 Starting fetch for chunk ${i + 1}/${chunks.length}...`);
           return fetchTTSChunk(chunk, language)
             .then(blob => {
-              console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
+              console.log(`✅ Chunk ${i + 1} ready (${blob.size} bytes)`);
               return { index: i, blob, success: true };
             })
             .catch(e => {
@@ -15733,35 +15757,45 @@
             });
         });
         
-        // Wait for ALL chunks
+        // Wait for ALL chunks to complete in parallel
         const results = await Promise.all(fetchPromises);
-        console.log(`⚡ All chunks fetched in ${Date.now() - fetchStart}ms`);
+        const fetchTime = Date.now() - fetchStart;
+        console.log(`⚡ All chunks fetched in ${fetchTime}ms (parallel)`);
         
-        // Sort by index and add to queue
-        const sortedResults = results.filter(r => r.success).sort((a, b) => a.index - b.index);
-        for (const result of sortedResults) {
+        // Sort by index and filter successful ones
+        const successfulResults = results
+          .filter(r => r.success)
+          .sort((a, b) => a.index - b.index);
+        
+        // Add blobs to queue in correct order
+        for (const result of successfulResults) {
           ttsAudioQueue.push(result.blob);
         }
-        console.log(`📦 ${ttsAudioQueue.length} chunks in queue`);
         
-        // Reveal content
+        // NOW everything is ready - reveal message/cards and start audio TOGETHER
+        console.log(`🎬 ${successfulResults.length}/${chunks.length} chunks ready - REVEALING NOW!`);
+        
+        // Show message and cards NOW
         if (ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
         }
         
-        // Start playing
-        if (ttsAudioQueue.length > 0) {
-          console.log('🔊 Starting audio playback...');
-          playNextInQueue();
+        // Start audio 0.2s after message appears
+        if (successfulResults.length > 0) {
+          setTimeout(() => {
+            console.log('🔊 Starting audio playback...');
+            playNextInQueue();
+          }, 200); // 0.2s delay - message appears, then audio
         } else {
-          console.error('❌ No chunks to play');
+          console.error('❌ No audio chunks fetched');
           const orb = document.querySelector('.ai-visualizer-container');
           if (orb) orb.classList.remove('loading');
         }
         
       } catch (error) {
         console.error('TTS error:', error);
+        // Still show the message even if TTS fails
         if (ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
