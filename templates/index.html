@@ -15585,41 +15585,11 @@
       }
       ttsCurrentChunkIndex++;
       
-      // Reset and set source
+      // Reset and set source - blob is already in memory so no need to wait
       ttsAudioElement.pause();
       ttsAudioElement.currentTime = 0;
-      ttsAudioElement.volume = 1.0; // Ensure max volume for every chunk
+      ttsAudioElement.volume = 1.0;
       ttsAudioElement.src = audioUrl;
-      
-      // Wait for audio to be fully loaded before playing
-      await new Promise((resolve, reject) => {
-        const onCanPlay = () => {
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          resolve();
-        };
-        const onLoaded = () => {
-          // Also resolve on loadeddata as backup
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          resolve();
-        };
-        const onError = () => {
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          reject(new Error('Audio load error'));
-        };
-        ttsAudioElement.addEventListener('canplaythrough', onCanPlay);
-        ttsAudioElement.addEventListener('loadeddata', onLoaded);
-        ttsAudioElement.addEventListener('error', onError);
-        ttsAudioElement.load();
-      });
-      
-      // Small delay to ensure browser is ready
-      await new Promise(r => setTimeout(r, 50));
       
       try {
         // ENSURE we start from the very beginning
@@ -24382,20 +24352,6 @@
       
       console.log('🎤 playWelcomeMessage() called');
       
-      // Prime audio context first (critical for mobile)
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) {
-          const ctx = new AudioContext();
-          if (ctx.state === 'suspended') {
-            await ctx.resume();
-            console.log('🔊 Audio context resumed');
-          }
-        }
-      } catch (e) {
-        console.log('Audio context prime note:', e.message);
-      }
-      
       const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
@@ -24420,48 +24376,21 @@
       const orbContainer = document.querySelector('.ai-visualizer-container');
       if (orbContainer) orbContainer.classList.add('loading');
       
-      // For ENGLISH: Use pre-recorded audio file (faster, no API call)
-      // For OTHER LANGUAGES: Fetch from TTS API
+      // For ENGLISH: Use pre-recorded audio file
+      // For OTHER LANGUAGES: Use TTS API
       let audioElement = null;
       
       if (lang === 'en') {
         // Use pre-recorded English welcome message
-        console.log('🔊 Looking for pre-recorded English welcome audio...');
         audioElement = document.getElementById('welcome-audio');
+        console.log('🔊 Using pre-recorded audio, element:', audioElement ? 'found' : 'NOT FOUND');
         
-        if (audioElement) {
-          console.log('✅ Found welcome-audio element');
-          console.log('   src:', audioElement.src);
-          console.log('   readyState:', audioElement.readyState);
-          console.log('   paused:', audioElement.paused);
-          
-          // Wait for audio to be ready
-          if (audioElement.readyState < 2) {
-            console.log('⏳ Waiting for audio to load...');
-            await new Promise((resolve) => {
-              audioElement.oncanplay = () => {
-                console.log('✅ Audio can play now');
-                resolve();
-              };
-              audioElement.onerror = (e) => {
-                console.error('❌ Audio load error:', e);
-                resolve();
-              };
-              audioElement.load();
-              // Timeout after 3 seconds
-              setTimeout(resolve, 3000);
-            });
-          }
-        } else {
-          console.error('❌ welcome-audio element not found in DOM!');
-        }
-        
-        // Small delay for typing animation
-        await new Promise(r => setTimeout(r, 1000));
+        // Wait 1.5 seconds to show typing animation
+        await new Promise(r => setTimeout(r, 1500));
       } else {
         // Fetch TTS for other languages
         const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
-        console.log('📡 Fetching welcome audio from /api/tts...');
+        console.log('📡 Fetching TTS for', lang);
         
         try {
           const response = await fetch('/api/tts', {
@@ -24470,21 +24399,14 @@
             body: JSON.stringify({ text: welcomeTextForTTS, language: lang, gender: 'female' })
           });
           
-          console.log('📡 TTS response status:', response.status);
-          
           if (response.ok) {
             const audioBlob = await response.blob();
-            console.log('✅ TTS blob received:', audioBlob.size, 'bytes');
-            
             if (audioBlob.size > 100) {
-              const audioUrl = URL.createObjectURL(audioBlob);
-              audioElement = new Audio(audioUrl);
+              audioElement = new Audio(URL.createObjectURL(audioBlob));
             }
-          } else {
-            console.error('❌ TTS request failed:', response.status);
           }
         } catch (e) {
-          console.error('❌ TTS fetch error:', e);
+          console.error('TTS error:', e);
         }
       }
       
@@ -24503,18 +24425,15 @@
       // Add to conversation history
       aiConversationHistory = [{ role: 'assistant', content: welcomeTextForDisplay }];
       
-      // Play audio if available
+      // Play audio
       if (audioElement) {
-        // Ensure max volume
         audioElement.volume = 1.0;
         
         // Connect to visualizer
         if (window.particleVisualizer) {
           try {
             window.particleVisualizer.connectAudio(audioElement);
-          } catch (e) {
-            console.log('Visualizer connection note:', e.message);
-          }
+          } catch (e) {}
         }
         
         audioElement.onplay = () => {
@@ -24525,28 +24444,28 @@
         audioElement.onended = () => {
           console.log('🔊 Welcome audio ENDED');
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-          
-          // Show green mic after welcome message
           const micBtn = document.getElementById('ai-mic-btn');
-          if (micBtn) micBtn.classList.add('ready-to-speak');
+          if (micBtn) {
+            micBtn.classList.add('ready-to-speak');
+            if (!window.micTooltipShown) {
+              window.micTooltipShown = true;
+              showMicTooltip(micBtn);
+            }
+          }
         };
         
-        // Play audio
+        // Play immediately
         audioElement.currentTime = 0;
-        setTimeout(async () => {
-          try {
-            await audioElement.play();
-            console.log('✅ Welcome audio playing');
-          } catch (e) {
-            console.error('❌ Welcome audio play failed:', e.message);
-            // Still show green mic even if audio fails
-            const micBtn = document.getElementById('ai-mic-btn');
-            if (micBtn) micBtn.classList.add('ready-to-speak');
-          }
-        }, 200);
+        try {
+          await audioElement.play();
+          console.log('✅ Welcome audio started');
+        } catch (e) {
+          console.error('❌ Play failed:', e.message);
+          const micBtn = document.getElementById('ai-mic-btn');
+          if (micBtn) micBtn.classList.add('ready-to-speak');
+        }
       } else {
-        console.log('⚠️ No audio available - text only');
-        // Show green mic since we're ready for input
+        console.log('⚠️ No audio - text only');
         const micBtn = document.getElementById('ai-mic-btn');
         if (micBtn) micBtn.classList.add('ready-to-speak');
       }
