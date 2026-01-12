@@ -3273,6 +3273,40 @@
       }
     }
     
+    /* "Tap me" tooltip on first ready state */
+    .ai-mic-tooltip {
+      position: absolute;
+      bottom: calc(100% + 15px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(34, 197, 94, 0.95);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+      animation: tooltipBounce 1.5s ease-in-out infinite;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .ai-mic-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-top-color: rgba(34, 197, 94, 0.95);
+    }
+    
+    @keyframes tooltipBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-5px); }
+    }
+    
     
     /* ===================================================================
        SWIPE RESULTS OVERLAY - APPEARS ON TOP OF VIDEO PAGE
@@ -14748,21 +14782,29 @@
     }
     
     /**
-     * Open tour detail page
+     * Open tour detail page from AI booking intent
      */
-    function openTourDetail(tour) {
-      if (!tour || !tour.key) return;
-      
-      console.log(`🚀 Opening tour detail: ${tour.name} (${tour.key})`);
-      
-      // Find the tour card element and click it
-      const card = document.querySelector(`.ai-tour-card[data-tour-key="${tour.key}"]`);
-      if (card) {
-        card.click();
-      } else {
-        // Fallback: navigate directly
-        window.location.href = `/tour/${tour.key}?from=ai&lang=${currentLanguage || 'en'}`;
+    function openTourFromAI(tour) {
+      if (!tour || !tour.key) {
+        console.error('❌ Cannot open tour - missing tour or key');
+        return;
       }
+      
+      console.log(`🚀 Opening tour from AI: ${tour.name} (${tour.key})`);
+      
+      // Set flag so the tour page knows we came from AI assistant
+      window.cameFromAIAssistant = true;
+      
+      // Hide AI assistant first
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.style.display = 'none';
+        aiPage.classList.remove('active');
+      }
+      
+      // Navigate to tour detail page
+      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+      window.location.href = `/tour/${tour.key}?from=ai&lang=${lang}`;
     }
     
     // Display tour cards from full tour objects (from API)
@@ -15410,6 +15452,30 @@
       stopFlashingCycle(); // Stop any flashing cycle
     }
     
+    // Show "tap me when ready" tooltip on mic button (once per session)
+    function showMicTooltip(micBtn) {
+      // Create tooltip element
+      const tooltip = document.createElement('div');
+      tooltip.className = 'ai-mic-tooltip';
+      tooltip.textContent = '👆 Tap me when you\'re ready to speak!';
+      micBtn.appendChild(tooltip);
+      
+      // Remove tooltip after 5 seconds or when mic is clicked
+      const removeTooltip = () => {
+        if (tooltip.parentNode) {
+          tooltip.style.opacity = '0';
+          tooltip.style.transition = 'opacity 0.3s';
+          setTimeout(() => tooltip.remove(), 300);
+        }
+      };
+      
+      // Auto-remove after 5 seconds
+      setTimeout(removeTooltip, 5000);
+      
+      // Remove on click
+      micBtn.addEventListener('click', removeTooltip, { once: true });
+    }
+    
     // Highlight a card by its index (0, 1, 2)
     function highlightCardByIndex(index) {
       const cards = document.querySelectorAll('.ai-tour-card');
@@ -15468,6 +15534,12 @@
         if (micBtn && !micBtn.classList.contains('recording')) {
           micBtn.classList.add('ready-to-speak');
           console.log('🎤 Mic ready - showing green glow');
+          
+          // Show "tap me" tooltip once per session
+          if (!window.micTooltipShown) {
+            window.micTooltipShown = true;
+            showMicTooltip(micBtn);
+          }
         }
         return;
       }
@@ -15796,8 +15868,8 @@
           
           // Brief delay then open the tour
           setTimeout(() => {
-            openTourDetail(intendedTour);
-          }, 1000);
+            openTourFromAI(intendedTour);
+          }, 1500);
           
           return; // Don't continue to API call
         }
@@ -15895,13 +15967,13 @@
         
         console.log(`📋 Response type: ${hasTourCards ? 'TOUR CARDS' : 'REGULAR QUESTION'}`);
         
-        // Remove typing indicator
-        if (typingMsg && typingMsg.parentNode) {
-          typingMsg.remove();
-        }
-        
-        // If we have tour cards, show the searching overlay with accelerating orb
+        // For TOUR CARDS: Remove typing and show searching overlay
+        // For REGULAR QUESTIONS: Keep typing animation until TTS is ready
         if (hasTourCards) {
+          // Remove typing indicator - searching overlay will replace it
+          if (typingMsg && typingMsg.parentNode) {
+            typingMsg.remove();
+          }
           // Localized searching messages
           const searchingMessages = {
             'en': ['Finding the perfect tours for you...', 'Searching our best experiences...', 'Almost there...'],
@@ -15950,6 +16022,11 @@
         const showMessageAndCards = () => {
           // Stop text cycler if running
           if (textCycler) clearInterval(textCycler);
+          
+          // Remove typing indicator (for regular questions - it was kept until TTS ready)
+          if (typingMsg && typingMsg.parentNode) {
+            typingMsg.remove();
+          }
           
           // Remove searching overlay with fade out (if it exists)
           const overlay = document.getElementById('ai-searching-overlay');
@@ -24308,8 +24385,16 @@
       
       if (lang === 'en') {
         // Use pre-recorded English welcome message
-        console.log('🔊 Using pre-recorded English welcome audio');
+        console.log('🔊 Looking for pre-recorded English welcome audio...');
         audioElement = document.getElementById('welcome-audio');
+        
+        if (audioElement) {
+          console.log('✅ Found welcome-audio element, src:', audioElement.src);
+          // Make sure it's loaded
+          audioElement.load();
+        } else {
+          console.error('❌ welcome-audio element not found in DOM!');
+        }
         
         // Wait a bit to simulate loading
         await new Promise(r => setTimeout(r, 1500));
@@ -24394,10 +24479,16 @@
             console.log('✅ Welcome audio playing');
           } catch (e) {
             console.error('❌ Welcome audio play failed:', e.message);
+            // Still show green mic even if audio fails
+            const micBtn = document.getElementById('ai-mic-btn');
+            if (micBtn) micBtn.classList.add('ready-to-speak');
           }
         }, 200);
       } else {
         console.log('⚠️ No audio available - text only');
+        // Show green mic since we're ready for input
+        const micBtn = document.getElementById('ai-mic-btn');
+        if (micBtn) micBtn.classList.add('ready-to-speak');
       }
     }
     
