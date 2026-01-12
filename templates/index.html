@@ -2137,8 +2137,24 @@
     
     /* Hide AI Assistant button when in AI Assistant mode */
     body.ai-assistant-open .ai-assistant-btn-header,
-    .ai-assistant-page .ai-assistant-btn-header {
+    body.ai-assistant-open .kiosk-header .ai-assistant-btn-header,
+    body.ai-assistant-open .header-left .ai-assistant-btn-header,
+    .ai-assistant-page .ai-assistant-btn-header,
+    .ai-assistant-page .kiosk-header .ai-assistant-btn-header {
       display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    /* Hide Browse All Tours button on home/browse page */
+    .page.home-page .kiosk-header .browse-all-btn-header,
+    .page.home-page .header-left .browse-all-btn-header {
+      display: none !important;
+      visibility: hidden !important;
     }
     
     .page.home-page .logo-image {
@@ -2447,14 +2463,16 @@
       background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%);
       color: white;
       border: 3px solid transparent;
-      border-radius: 25px;
-      padding: 18px 28px;
-      font-size: 2.4em;
+      border-radius: 20px;
+      padding: 14px 20px;
+      font-size: 2.2em;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(0, 119, 182, 0.4);
+      box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
       overflow: hidden; /* Fix masking issue */
+      max-width: 85%;
+      margin: 0 auto;
       text-align: center;
       width: 100%;
       line-height: 0.95;
@@ -3659,13 +3677,12 @@
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb {
-      background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+      background: #333 !important;
       border-radius: 6px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
     }
     
     .swipe-reviews-grid::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(135deg, #005a8b 0%, #0077b6 100%);
+      background: #111 !important;
     }
     
     .swipe-review-card {
@@ -15755,55 +15772,72 @@
       }
       
       try {
-        // Fetch ALL chunks IN PARALLEL - MUCH faster than sequential
-        console.log(`📡 Fetching all ${chunks.length} TTS chunks IN PARALLEL...`);
+        // FAST: Start playing as soon as first chunk is ready, fetch rest in background
+        console.log(`📡 Fetching ${chunks.length} TTS chunks (streaming first)...`);
         const fetchStart = Date.now();
         
-        // Create all fetch promises at once
+        let firstChunkPlayed = false;
+        let contentRevealed = false;
+        const pendingChunks = new Map(); // Store chunks as they arrive
+        let nextExpectedIndex = 0;
+        
+        // Function to add ready chunks to queue in order
+        const processReadyChunks = () => {
+          while (pendingChunks.has(nextExpectedIndex)) {
+            const blob = pendingChunks.get(nextExpectedIndex);
+            ttsAudioQueue.push(blob);
+            pendingChunks.delete(nextExpectedIndex);
+            console.log(`📦 Added chunk ${nextExpectedIndex + 1} to queue`);
+            nextExpectedIndex++;
+            
+            // Start playing immediately when first chunk is ready
+            if (!firstChunkPlayed && ttsAudioQueue.length > 0) {
+              firstChunkPlayed = true;
+              
+              // Reveal content immediately
+              if (!contentRevealed && ttsReadyCallback) {
+                contentRevealed = true;
+                ttsReadyCallback();
+                ttsReadyCallback = null;
+                console.log(`🎬 Content revealed after ${Date.now() - fetchStart}ms`);
+              }
+              
+              // Start audio immediately
+              console.log('🔊 Starting audio playback (first chunk ready)...');
+              playNextInQueue();
+            }
+          }
+        };
+        
+        // Fetch all chunks in parallel
         const fetchPromises = chunks.map((chunk, i) => {
-          console.log(`📡 Starting fetch for chunk ${i + 1}/${chunks.length}...`);
           return fetchTTSChunk(chunk, language)
             .then(blob => {
-              console.log(`✅ Chunk ${i + 1} ready (${blob.size} bytes)`);
-              return { index: i, blob, success: true };
+              console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
+              pendingChunks.set(i, blob);
+              processReadyChunks();
+              return { success: true };
             })
             .catch(e => {
               console.error(`❌ Chunk ${i + 1} failed:`, e);
-              return { index: i, blob: null, success: false };
+              // Skip this chunk
+              nextExpectedIndex = Math.max(nextExpectedIndex, i + 1);
+              processReadyChunks();
+              return { success: false };
             });
         });
         
-        // Wait for ALL chunks to complete in parallel
-        const results = await Promise.all(fetchPromises);
-        const fetchTime = Date.now() - fetchStart;
-        console.log(`⚡ All chunks fetched in ${fetchTime}ms (parallel)`);
+        // Wait for all to complete (but we started playing earlier)
+        await Promise.all(fetchPromises);
+        console.log(`⚡ All chunks processed in ${Date.now() - fetchStart}ms`);
         
-        // Sort by index and filter successful ones
-        const successfulResults = results
-          .filter(r => r.success)
-          .sort((a, b) => a.index - b.index);
-        
-        // Add blobs to queue in correct order
-        for (const result of successfulResults) {
-          ttsAudioQueue.push(result.blob);
-        }
-        
-        // NOW everything is ready - reveal message/cards and start audio TOGETHER
-        console.log(`🎬 ${successfulResults.length}/${chunks.length} chunks ready - REVEALING NOW!`);
-        
-        // Show message and cards NOW
-        if (ttsReadyCallback) {
+        // If nothing played yet (all failed), still show content
+        if (!contentRevealed && ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
         }
         
-        // Start audio 0.2s after message appears
-        if (successfulResults.length > 0) {
-          setTimeout(() => {
-            console.log('🔊 Starting audio playback...');
-            playNextInQueue();
-          }, 200); // 0.2s delay - message appears, then audio
-        } else {
+        if (!firstChunkPlayed) {
           console.error('❌ No audio chunks fetched');
           const orb = document.querySelector('.ai-visualizer-container');
           if (orb) orb.classList.remove('loading');
@@ -15811,7 +15845,6 @@
         
       } catch (error) {
         console.error('TTS error:', error);
-        // Still show the message even if TTS fails
         if (ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
@@ -24387,7 +24420,17 @@
       
       console.log('🎤 playWelcomeMessage() called');
       
-      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+      // Get language - check multiple sources
+      let lang = 'en';
+      if (typeof currentLanguage !== 'undefined' && currentLanguage) {
+        lang = currentLanguage;
+      } else if (typeof window.currentLanguage !== 'undefined' && window.currentLanguage) {
+        lang = window.currentLanguage;
+      } else if (localStorage.getItem('selectedLanguage')) {
+        lang = localStorage.getItem('selectedLanguage');
+      }
+      
+      console.log('🌐 Detected language:', lang);
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
       console.log(`🎤 Playing welcome message in ${lang}`);
