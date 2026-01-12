@@ -544,20 +544,23 @@ def synthesize_speech(text, language='en', gender='default'):
     
     print(f"🔊 TTS text conversion: '{text[:100]}...' -> '{tts_text[:100]}...'")
     
+    # Use turbo model for English (faster), multilingual for other languages
+    model = "eleven_turbo_v2_5" if language == 'en' else "eleven_multilingual_v2"
+    
     data = {
         "text": tts_text,
-        "model_id": "eleven_multilingual_v2",  # Supports all languages
+        "model_id": model,
         "voice_settings": {
-            "stability": 0.5,        # Balance between consistency and expressiveness
-            "similarity_boost": 0.75, # How much it sounds like the original voice
-            "style": 0.0,            # Exaggeration level (0 = natural)
+            "stability": 0.5,
+            "similarity_boost": 0.75,
+            "style": 0.0,
             "use_speaker_boost": True
         }
     }
     
     try:
-        print(f"🎤 ElevenLabs: Synthesizing {len(tts_text)} chars in {language}...")
-        response = requests.post(url, json=data, headers=headers, timeout=30)
+        print(f"🎤 ElevenLabs: Synthesizing {len(tts_text)} chars in {language} (model: {model})...")
+        response = requests.post(url, json=data, headers=headers, timeout=15)
         
         if response.status_code == 200:
             print(f"✅ ElevenLabs: Success! Generated {len(response.content)} bytes")

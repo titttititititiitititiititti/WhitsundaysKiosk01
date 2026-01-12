@@ -15797,7 +15797,7 @@
             console.log(`📦 Added chunk ${nextExpectedIndex + 1} to queue`);
             nextExpectedIndex++;
             
-            // Start playing immediately when first chunk is ready
+            // When first chunk is ready: reveal content, then play after 0.4s delay
             if (!firstChunkPlayed && ttsAudioQueue.length > 0) {
               firstChunkPlayed = true;
               
@@ -15809,9 +15809,11 @@
                 console.log(`🎬 Content revealed after ${Date.now() - fetchStart}ms`);
               }
               
-              // Start audio immediately
-              console.log('🔊 Starting audio playback (first chunk ready)...');
-              playNextInQueue();
+              // Start audio 0.4s AFTER content appears
+              setTimeout(() => {
+                console.log('🔊 Starting audio playback (0.4s after content)...');
+                playNextInQueue();
+              }, 400);
             }
           }
         };
@@ -16162,11 +16164,8 @@
           textForTTS = responseText + (tapPromptSpoken[lang] || tapPromptSpoken['en']);
         }
         
-        // SHOW CONTENT IMMEDIATELY - don't wait for TTS
-        showMessageAndCards();
-        
-        // Start TTS in background (no callback since we already showed content)
-        speakResponseWithTTS(textForTTS, lang, null);
+        // TTS will show content when FIRST chunk is ready, then play 0.4s later
+        speakResponseWithTTS(textForTTS, lang, showMessageAndCards);
       } catch (error) {
         console.error('Chat error:', error);
         
