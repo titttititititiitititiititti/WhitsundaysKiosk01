@@ -13771,31 +13771,121 @@
       }, 4000);
     }
     
-    // Setup swipe gestures for Quick Decision results
+    // Setup interactive swipe gestures for Quick Decision results
     function setupSwipeGestures() {
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (!swipeOverlay) return;
       
       let touchStartX = 0;
       let touchStartY = 0;
+      let currentTranslateX = 0;
       let isSwiping = false;
+      let isHorizontalSwipe = false;
+      
+      const getSwipeElements = () => {
+        return {
+          fixedTop: document.getElementById('swipe-fixed-top'),
+          scrollableContent: document.getElementById('swipe-scrollable-content'),
+          actions: document.getElementById('swipe-actions')
+        };
+      };
+      
+      const setTransform = (elements, x) => {
+        const transform = `translateX(${x}px)`;
+        if (elements.fixedTop) elements.fixedTop.style.transform = transform;
+        if (elements.scrollableContent) elements.scrollableContent.style.transform = transform;
+        if (elements.actions) elements.actions.style.transform = transform;
+      };
+      
+      const setTransition = (elements, transition) => {
+        if (elements.fixedTop) elements.fixedTop.style.transition = transition;
+        if (elements.scrollableContent) elements.scrollableContent.style.transition = transition;
+        if (elements.actions) elements.actions.style.transition = transition;
+      };
+      
+      // Update edge glow based on swipe position
+      const updateEdgeGlow = (x) => {
+        let leftGlow = document.getElementById('swipe-left-glow');
+        let rightGlow = document.getElementById('swipe-right-glow');
+        
+        // Create glow elements if they don't exist
+        if (!leftGlow) {
+          leftGlow = document.createElement('div');
+          leftGlow.id = 'swipe-left-glow';
+          leftGlow.style.cssText = 'position:fixed;left:0;top:0;bottom:0;width:100px;background:linear-gradient(90deg,rgba(255,80,80,0.6),transparent);pointer-events:none;z-index:999999;opacity:0;transition:opacity 0.1s;';
+          document.body.appendChild(leftGlow);
+        }
+        if (!rightGlow) {
+          rightGlow = document.createElement('div');
+          rightGlow.id = 'swipe-right-glow';
+          rightGlow.style.cssText = 'position:fixed;right:0;top:0;bottom:0;width:100px;background:linear-gradient(-90deg,rgba(80,255,120,0.6),transparent);pointer-events:none;z-index:999999;opacity:0;transition:opacity 0.1s;';
+          document.body.appendChild(rightGlow);
+        }
+        
+        const threshold = window.innerWidth * 0.25;
+        if (x < -20) {
+          // Swiping left - show red glow
+          const intensity = Math.min(1, Math.abs(x) / threshold);
+          leftGlow.style.opacity = intensity;
+          rightGlow.style.opacity = 0;
+        } else if (x > 20) {
+          // Swiping right - show green glow
+          const intensity = Math.min(1, Math.abs(x) / threshold);
+          rightGlow.style.opacity = intensity;
+          leftGlow.style.opacity = 0;
+        } else {
+          leftGlow.style.opacity = 0;
+          rightGlow.style.opacity = 0;
+        }
+      };
+      
+      const hideGlows = () => {
+        const leftGlow = document.getElementById('swipe-left-glow');
+        const rightGlow = document.getElementById('swipe-right-glow');
+        if (leftGlow) leftGlow.style.opacity = 0;
+        if (rightGlow) rightGlow.style.opacity = 0;
+      };
       
       swipeOverlay.addEventListener('touchstart', (e) => {
-        // Don't intercept gallery touches
-        if (e.target.closest('.swipe-gallery-wrapper') || e.target.closest('.gallery-nav-arrow')) return;
+        // Don't intercept gallery touches or button touches
+        if (e.target.closest('.swipe-gallery-wrapper') || 
+            e.target.closest('.gallery-nav-arrow') ||
+            e.target.closest('.swipe-btn')) return;
         
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        currentTranslateX = 0;
         isSwiping = true;
+        isHorizontalSwipe = false;
+        
+        // Remove transitions for smooth dragging
+        const elements = getSwipeElements();
+        setTransition(elements, 'none');
       }, { passive: true });
       
       swipeOverlay.addEventListener('touchmove', (e) => {
         if (!isSwiping) return;
-        // Prevent vertical scroll while swiping horizontally
-        const diffX = Math.abs(e.touches[0].clientX - touchStartX);
-        const diffY = Math.abs(e.touches[0].clientY - touchStartY);
-        if (diffX > diffY && diffX > 10) {
+        
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = currentX - touchStartX;
+        const diffY = currentY - touchStartY;
+        
+        // Determine if this is a horizontal swipe (only on first significant movement)
+        if (!isHorizontalSwipe && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+          isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+        }
+        
+        if (isHorizontalSwipe) {
           e.preventDefault();
+          currentTranslateX = diffX;
+          
+          // Move elements with finger
+          const elements = getSwipeElements();
+          setTransform(elements, diffX);
+          
+          // Update edge glow
+          updateEdgeGlow(diffX);
         }
       }, { passive: false });
       
@@ -13803,21 +13893,54 @@
         if (!isSwiping) return;
         isSwiping = false;
         
-        const touchEndX = e.changedTouches[0].clientX;
-        const diff = touchEndX - touchStartX;
-        const threshold = 80; // Minimum swipe distance
+        const elements = getSwipeElements();
+        const screenWidth = window.innerWidth;
+        const threshold = screenWidth * 0.25; // 25% of screen width
         
-        if (Math.abs(diff) > threshold) {
-          if (diff > 0) {
-            // Swipe right = Book
+        // Add transition for smooth snap/fling
+        setTransition(elements, 'transform 0.3s ease-out');
+        
+        if (Math.abs(currentTranslateX) > threshold) {
+          if (currentTranslateX > 0) {
+            // Swipe right past threshold = Book
             console.log('👉 Swipe right - Book');
-            document.getElementById('accept-btn')?.click();
+            setTransform(elements, screenWidth); // Fling off screen
+            hideGlows();
+            setTimeout(() => {
+              setTransform(elements, 0);
+              setTransition(elements, 'none');
+              acceptCard();
+            }, 300);
           } else {
-            // Swipe left = Next
+            // Swipe left past threshold = Next
             console.log('👈 Swipe left - Next');
-            document.getElementById('reject-btn')?.click();
+            setTransform(elements, -screenWidth); // Fling off screen
+            hideGlows();
+            setTimeout(() => {
+              setTransform(elements, 0);
+              setTransition(elements, 'none');
+              rejectCard();
+            }, 300);
           }
+        } else {
+          // Snap back to center
+          setTransform(elements, 0);
+          hideGlows();
         }
+        
+        currentTranslateX = 0;
+        isHorizontalSwipe = false;
+      }, { passive: true });
+      
+      // Handle touch cancel (e.g., if user gets a phone call)
+      swipeOverlay.addEventListener('touchcancel', () => {
+        isSwiping = false;
+        isHorizontalSwipe = false;
+        const elements = getSwipeElements();
+        setTransition(elements, 'transform 0.3s ease-out');
+        setTransform(elements, 0);
+        hideGlows();
+        currentTranslateX = 0;
       }, { passive: true });
     }
     
@@ -14189,51 +14312,91 @@
       }
     }
     
-    function rejectCard() {
-      console.log('[ACTION] Rejecting tour');
+    // Animation wrapper for button clicks
+    function rejectCardWithAnimation() {
+      console.log('[ACTION] Reject button clicked - animating left');
       
-      // Animate the entire content container out to the left
       const fixedTop = document.getElementById('swipe-fixed-top');
       const scrollableContent = document.getElementById('swipe-scrollable-content');
-      const swipeActions = document.getElementById('swipe-actions');
+      const actions = document.getElementById('swipe-actions');
+      const screenWidth = window.innerWidth;
       
-      // Apply swipe-out animation to the main containers
-      if (fixedTop) fixedTop.classList.add('swipe-out-left');
-      if (scrollableContent) scrollableContent.classList.add('swipe-out-left');
+      // Animate out to the left
+      [fixedTop, scrollableContent, actions].forEach(el => {
+        if (el) {
+          el.style.transition = 'transform 0.3s ease-out';
+          el.style.transform = `translateX(${-screenWidth}px)`;
+        }
+      });
       
       setTimeout(() => {
-        // Remove animation classes before rendering next card
-        if (fixedTop) fixedTop.classList.remove('swipe-out-left');
-        if (scrollableContent) scrollableContent.classList.remove('swipe-out-left');
-        
-        currentCardIndex++;
-        displayCurrentCard();
-      }, 400);
+        // Reset transform and call rejectCard
+        [fixedTop, scrollableContent, actions].forEach(el => {
+          if (el) {
+            el.style.transition = 'none';
+            el.style.transform = 'translateX(0)';
+          }
+        });
+        rejectCard();
+      }, 300);
     }
     
+    function acceptCardWithAnimation() {
+      console.log('[ACTION] Accept button clicked - animating right');
+      
+      const fixedTop = document.getElementById('swipe-fixed-top');
+      const scrollableContent = document.getElementById('swipe-scrollable-content');
+      const actions = document.getElementById('swipe-actions');
+      const screenWidth = window.innerWidth;
+      
+      // Animate out to the right
+      [fixedTop, scrollableContent, actions].forEach(el => {
+        if (el) {
+          el.style.transition = 'transform 0.3s ease-out';
+          el.style.transform = `translateX(${screenWidth}px)`;
+        }
+      });
+      
+      setTimeout(() => {
+        // Reset transform and call acceptCard
+        [fixedTop, scrollableContent, actions].forEach(el => {
+          if (el) {
+            el.style.transition = 'none';
+            el.style.transform = 'translateX(0)';
+          }
+        });
+        acceptCard();
+      }, 300);
+    }
+    
+    function rejectCard() {
+      console.log('[ACTION] Rejecting tour - Next');
+      
+      currentCardIndex++;
+      
+      // Check if there are more cards
+      if (currentCardIndex >= swipeCards.length) {
+        console.log('[SWIPE] No more tours to show');
+        window.goToHomePage();
+        return;
+      }
+      
+      // Display next card
+      displayCurrentCard();
+    }
+
     function acceptCard() {
       console.log('[ACTION] Booking tour - opening tour detail page');
       
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         
-        // Animate the entire content container out to the right (book animation)
-        const fixedTop = document.getElementById('swipe-fixed-top');
-        const scrollableContent = document.getElementById('swipe-scrollable-content');
-        const swipeActions = document.getElementById('swipe-actions');
-        
-        if (fixedTop) fixedTop.classList.add('swipe-out-right');
-        if (scrollableContent) scrollableContent.classList.add('swipe-out-right');
-        if (swipeActions) swipeActions.classList.add('swipe-out-right');
-        
         // Set flag so tour detail page knows we came from Quick Decision
         window.cameFromQuickDecision = true;
         window.cameFromAIAssistant = false;
         
-        // Wait for animation then open tour detail page
-        setTimeout(() => {
-          openTourDetail(tour.key);
-        }, 350);
+        // Open tour detail page
+        openTourDetail(tour.key);
       }
     }
     
@@ -14251,14 +14414,14 @@
         acceptBtn.querySelector('.swipe-btn-text').textContent = t('book_now');
         acceptBtn.querySelector('.swipe-btn-icon').textContent = '✓';
         acceptBtn.classList.add('booking-mode');
-        acceptBtn.onclick = () => acceptCard();
+        acceptBtn.onclick = () => acceptCardWithAnimation();
       }
       
       const rejectBtn = document.getElementById('reject-btn');
       if (rejectBtn) {
         rejectBtn.querySelector('.swipe-btn-text').textContent = t('next_tour') || 'Next Tour';
         rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
-        rejectBtn.onclick = () => rejectCard();
+        rejectBtn.onclick = () => rejectCardWithAnimation();
       }
       
       let detailsHtml = '<div class="swipe-expanded-details slide-up-fade">';
