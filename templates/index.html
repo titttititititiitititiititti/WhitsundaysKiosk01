@@ -15733,75 +15733,71 @@
       }
       
       try {
-        // Start fetching all chunks in parallel
-        console.log(`📡 Fetching ${chunks.length} TTS chunks...`);
+        // Fetch all chunks in parallel, but reveal and play as soon as first is ready
+        console.log(`📡 Fetching ${chunks.length} TTS chunks in parallel...`);
         const fetchStart = Date.now();
         
-        // Track which chunks are ready
+        // Storage for chunks (indexed)
         const chunkBlobs = new Array(chunks.length).fill(null);
-        let firstChunkReady = false;
-        let revealedContent = false;
+        let contentRevealed = false;
+        let audioStarted = false;
+        let nextChunkToQueue = 0; // Track which chunk to queue next (in order)
         
-        // Start all fetches in parallel
+        // Function to queue chunks in order as they become ready
+        const tryQueueChunks = () => {
+          while (nextChunkToQueue < chunkBlobs.length && chunkBlobs[nextChunkToQueue]) {
+            console.log(`📦 Queuing chunk ${nextChunkToQueue + 1}`);
+            ttsAudioQueue.push(chunkBlobs[nextChunkToQueue]);
+            nextChunkToQueue++;
+          }
+        };
+        
+        // Start all fetches
         const fetchPromises = chunks.map((chunk, i) => {
           return fetchTTSChunk(chunk, language)
             .then(blob => {
               console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
               chunkBlobs[i] = blob;
               
-              // When FIRST chunk is ready, reveal content and start playing
-              if (i === 0 && !firstChunkReady) {
-                firstChunkReady = true;
-                console.log(`🎬 First chunk ready in ${Date.now() - fetchStart}ms - REVEALING NOW!`);
+              // Queue any chunks that are now ready (in order)
+              tryQueueChunks();
+              
+              // When first chunk is queued, reveal content and start playing
+              if (!contentRevealed && ttsAudioQueue.length > 0) {
+                contentRevealed = true;
+                console.log(`🎬 First chunk ready in ${Date.now() - fetchStart}ms - REVEALING!`);
                 
-                // Show message and cards immediately
-                if (ttsReadyCallback && !revealedContent) {
-                  revealedContent = true;
+                if (ttsReadyCallback) {
                   ttsReadyCallback();
                   ttsReadyCallback = null;
                 }
-                
-                // Add first chunk to queue and start playing
-                ttsAudioQueue.push(blob);
-                setTimeout(() => {
-                  console.log('🔊 Starting audio (first chunk)...');
-                  playNextInQueue();
-                }, 100);
-              } else if (i > 0 && chunkBlobs[i]) {
-                // Add subsequent chunks to queue as they arrive (in order)
-                // Check if all previous chunks are ready
-                let allPreviousReady = true;
-                for (let j = 0; j < i; j++) {
-                  if (!chunkBlobs[j]) allPreviousReady = false;
-                }
-                if (allPreviousReady) {
-                  ttsAudioQueue.push(blob);
-                }
               }
               
-              return { index: i, blob, success: true };
+              // Start audio if not started and we have chunks
+              if (!audioStarted && ttsAudioQueue.length > 0) {
+                audioStarted = true;
+                setTimeout(() => {
+                  console.log('🔊 Starting audio playback...');
+                  playNextInQueue();
+                }, 150);
+              }
+              
+              return { index: i, success: true };
             })
             .catch(e => {
               console.error(`❌ Chunk ${i + 1} failed:`, e);
-              return { index: i, blob: null, success: false };
+              return { index: i, success: false };
             });
         });
         
-        // Wait for all to complete (for logging)
+        // Wait for all to complete
         await Promise.all(fetchPromises);
-        const fetchTime = Date.now() - fetchStart;
-        console.log(`⚡ All chunks fetched in ${fetchTime}ms`);
+        console.log(`⚡ All chunks fetched in ${Date.now() - fetchStart}ms`);
         
-        // Make sure content is revealed even if first chunk failed
-        if (!revealedContent && ttsReadyCallback) {
+        // Ensure content is revealed even if all chunks failed
+        if (!contentRevealed && ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
-        }
-        
-        // Make sure all successful chunks are in queue (in order)
-        ttsAudioQueue = [];
-        for (let i = 0; i < chunkBlobs.length; i++) {
-          if (chunkBlobs[i]) ttsAudioQueue.push(chunkBlobs[i]);
         }
         
       } catch (error) {
@@ -24404,12 +24400,30 @@
       let audioElement = null;
       
       if (lang === 'en') {
-        // Use pre-recorded English welcome message
-        audioElement = document.getElementById('welcome-audio');
-        console.log('🔊 Using pre-recorded audio, element:', audioElement ? 'found' : 'NOT FOUND');
+        // Create a fresh Audio object for the welcome message
+        console.log('🔊 Loading English welcome audio...');
+        audioElement = new Audio('/static/audio/welcome_message.mp3');
+        audioElement.preload = 'auto';
         
-        // Wait 1.5 seconds to show typing animation
-        await new Promise(r => setTimeout(r, 1500));
+        // Wait for it to load
+        await new Promise((resolve) => {
+          audioElement.oncanplaythrough = () => {
+            console.log('✅ Welcome audio loaded, duration:', audioElement.duration);
+            resolve();
+          };
+          audioElement.onerror = (e) => {
+            console.error('❌ Welcome audio load error:', e);
+            audioElement = null;
+            resolve();
+          };
+          // Timeout after 3 seconds
+          setTimeout(() => {
+            if (audioElement && audioElement.readyState < 3) {
+              console.log('⚠️ Audio load timeout, proceeding anyway');
+            }
+            resolve();
+          }, 3000);
+        });
       } else {
         // Fetch TTS for other languages
         const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
