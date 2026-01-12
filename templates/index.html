@@ -15585,11 +15585,18 @@
       }
       ttsCurrentChunkIndex++;
       
-      // Reset and set source - blob is already in memory so no need to wait
+      // Reset and set source
       ttsAudioElement.pause();
       ttsAudioElement.currentTime = 0;
       ttsAudioElement.volume = 1.0;
       ttsAudioElement.src = audioUrl;
+      
+      // Wait for audio to start loading before playing (prevents cut-off start)
+      await new Promise(resolve => {
+        ttsAudioElement.onloadeddata = resolve;
+        ttsAudioElement.onerror = resolve;
+        setTimeout(resolve, 500); // Max wait 0.5s
+      });
       
       try {
         // ENSURE we start from the very beginning
@@ -24427,7 +24434,9 @@
       
       // Play audio
       if (audioElement) {
+        console.log('🔊 Attempting to play welcome audio...');
         audioElement.volume = 1.0;
+        audioElement.currentTime = 0;
         
         // Connect to visualizer
         if (window.particleVisualizer) {
@@ -24454,20 +24463,42 @@
           }
         };
         
-        // Play immediately
-        audioElement.currentTime = 0;
+        audioElement.onerror = (e) => {
+          console.error('❌ Welcome audio error:', e);
+        };
+        
+        // Try to play - if blocked, we'll show the green mic anyway
         try {
+          // Load the audio first
+          audioElement.load();
+          
+          // Wait a moment for load
+          await new Promise(r => setTimeout(r, 100));
+          
           await audioElement.play();
-          console.log('✅ Welcome audio started');
+          console.log('✅ Welcome audio started successfully');
         } catch (e) {
-          console.error('❌ Play failed:', e.message);
+          console.error('❌ Welcome audio play failed:', e.name, e.message);
+          // Show green mic since audio failed
           const micBtn = document.getElementById('ai-mic-btn');
-          if (micBtn) micBtn.classList.add('ready-to-speak');
+          if (micBtn) {
+            micBtn.classList.add('ready-to-speak');
+            if (!window.micTooltipShown) {
+              window.micTooltipShown = true;
+              showMicTooltip(micBtn);
+            }
+          }
         }
       } else {
-        console.log('⚠️ No audio - text only');
+        console.log('⚠️ No audio element - text only');
         const micBtn = document.getElementById('ai-mic-btn');
-        if (micBtn) micBtn.classList.add('ready-to-speak');
+        if (micBtn) {
+          micBtn.classList.add('ready-to-speak');
+          if (!window.micTooltipShown) {
+            window.micTooltipShown = true;
+            showMicTooltip(micBtn);
+          }
+        }
       }
     }
     

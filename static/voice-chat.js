@@ -142,16 +142,8 @@ class VoiceChat {
       this.isListening = false;
       this.updateUI('idle');
       
-      // IMPORTANT: Stop the microphone stream to prevent audio issues
-      if (this.audioMonitorStream) {
-        console.log('🎤 Stopping microphone stream');
-        this.audioMonitorStream.getTracks().forEach(track => track.stop());
-        this.audioMonitorStream = null;
-      }
-      if (this.audioMonitorContext) {
-        this.audioMonitorContext.close().catch(() => {});
-        this.audioMonitorContext = null;
-      }
+      // AGGRESSIVELY stop ALL microphone streams
+      this.stopAllMicStreams();
     };
     
     // When we get speech results
@@ -405,6 +397,40 @@ class VoiceChat {
     return mics;
   }
   
+  // Aggressively stop ALL microphone streams
+  stopAllMicStreams() {
+    console.log('🎤 Stopping ALL microphone streams...');
+    
+    // Stop our tracked stream
+    if (this.audioMonitorStream) {
+      try {
+        this.audioMonitorStream.getTracks().forEach(track => {
+          console.log('🎤 Stopping track:', track.label, track.readyState);
+          track.stop();
+        });
+      } catch (e) {}
+      this.audioMonitorStream = null;
+    }
+    
+    // Close audio context
+    if (this.audioMonitorContext) {
+      try {
+        this.audioMonitorContext.close();
+      } catch (e) {}
+      this.audioMonitorContext = null;
+    }
+    
+    // Also try to stop any orphaned streams by getting all media and stopping them
+    try {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        // Immediately stop this stream too
+        stream.getTracks().forEach(track => track.stop());
+      }).catch(() => {});
+    } catch (e) {}
+    
+    console.log('🎤 All microphone streams stopped');
+  }
+  
   stopListening() {
     if (this.recognition && this.isListening) {
       this.recognition.stop();
@@ -413,15 +439,8 @@ class VoiceChat {
     // Clear silence timer
     this.clearSilenceTimer();
     
-    // Stop audio monitoring
-    if (this.audioMonitorStream) {
-      this.audioMonitorStream.getTracks().forEach(track => track.stop());
-      this.audioMonitorStream = null;
-    }
-    if (this.audioMonitorContext) {
-      this.audioMonitorContext.close().catch(() => {});
-      this.audioMonitorContext = null;
-    }
+    // Stop all mic streams
+    this.stopAllMicStreams();
   }
   
   startSilenceTimer() {
