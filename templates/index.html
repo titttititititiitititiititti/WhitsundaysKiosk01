@@ -3940,6 +3940,63 @@
       font-size: 0.95em;
     }
     
+    /* Pricing section styling for Quick Decision */
+    .swipe-pricing-section {
+      background: linear-gradient(135deg, rgba(0, 119, 182, 0.1) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+      border: 2px solid rgba(0, 119, 182, 0.2);
+    }
+    
+    .swipe-price-tiers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .swipe-price-tier {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(0, 119, 182, 0.08);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 119, 182, 0.15);
+    }
+    
+    .swipe-price-tier .tier-name {
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 1em;
+    }
+    
+    .swipe-price-tier .tier-price {
+      font-weight: 700;
+      color: #0077b6;
+      font-size: 1.1em;
+    }
+    
+    .swipe-price-single {
+      font-size: 1.3em;
+      color: #2c3e50;
+      padding: 12px 0;
+    }
+    
+    .swipe-price-single strong {
+      color: #0077b6;
+      font-size: 1.2em;
+    }
+    
+    /* Cruise Whitsundays disclaimer - subtle styling */
+    .cruise-disclaimer-section {
+      background: rgba(248, 249, 250, 0.95) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    .cruise-disclaimer-section h3 {
+      color: #666 !important;
+      font-size: 0.95em !important;
+    }
+    
     .swipe-detail-section ul {
       margin: 0;
       padding: 0;
@@ -14424,6 +14481,46 @@
       
       let detailsHtml = '<div class="swipe-expanded-details slide-up-fade">';
       
+      // PRICING SECTION - Most important, show first
+      if (fullTourData.price_tiers && fullTourData.price_tiers.trim()) {
+        detailsHtml += `
+          <div class="swipe-detail-section description-section swipe-pricing-section">
+            <h3>💰 ${t('pricing')}</h3>
+            <div class="swipe-price-tiers">
+        `;
+        
+        // Parse price tiers
+        const tiers = fullTourData.price_tiers.split('\n').filter(t => t.trim());
+        tiers.forEach(tier => {
+          const parts = tier.split(':');
+          if (parts.length >= 2) {
+            const tierName = parts[0].trim();
+            const tierPrice = parts.slice(1).join(':').trim();
+            detailsHtml += `
+              <div class="swipe-price-tier">
+                <span class="tier-name">${tierName}</span>
+                <span class="tier-price">${tierPrice}</span>
+              </div>
+            `;
+          } else {
+            detailsHtml += `<div class="swipe-price-tier"><span>${tier}</span></div>`;
+          }
+        });
+        
+        detailsHtml += `
+            </div>
+          </div>
+        `;
+      } else if (fullTourData.price) {
+        // Fallback to single price if no tiers
+        detailsHtml += `
+          <div class="swipe-detail-section description-section swipe-pricing-section">
+            <h3>💰 ${t('pricing')}</h3>
+            <div class="swipe-price-single">From <strong>${fullTourData.price}</strong></div>
+          </div>
+        `;
+      }
+      
       // Times, Ages, and Ideal For sections
       const hasTimeInfo = fullTourData.departure_times && fullTourData.departure_times.trim();
       const hasAgeInfo = fullTourData.age_requirements && fullTourData.age_requirements.trim() && !/\band\s+under\b/i.test(fullTourData.age_requirements);
@@ -20149,16 +20246,6 @@
             </div>`;
           }
           
-          // Add Cruise Whitsundays disclaimer (only for their tours)
-          if (data.company && data.company.toLowerCase().includes('cruise whitsundays')) {
-            info += '<div style="background:#f9f9f9;padding:20px;border-radius:8px;margin-top:30px;margin-bottom:15px;border-left:3px solid #0077b6;">';
-            info += '<p style="font-size:0.85em;line-height:1.6;color:#555;margin:0;"><em>';
-            info += '*Infants 0-3 years travel free of charge on all tours, however no infant meals are included. Rates applicable for bookings made from 15/1/2024.<br><br>';
-            info += 'STANDARD/HIGH SEASON: High season dates are applicable for Great Barrier Reef Adventure & Whitehaven Beach products. High Season Dates (inclusive) 14/12-31/12/2024, 01/01-06/02/2025, 05/04-27/04/2025, 28/06-20/07/2025, 20/09-12/10/2025 & 13/12-31/12/2025.<br><br>';
-            info += 'Great Barrier Reef Environmental Management Charge (EMC): Included in your cruise fare is a per head fee which goes to the Government. The money collected is used by the Great Barrier Reef Marine Park Authority (GBRMPA) for the management and protection of the Great Barrier Reef Marine Park.';
-            info += '</em></p></div>';
-          }
-          
           // DEPARTURE LOCATION SECTION
           if (data.departure_location && data.departure_location.trim()) {
             const mapHeight = isMobile ? '250px' : '350px';
@@ -20209,6 +20296,18 @@
             }
             
             info += '</div></div>';
+          }
+          
+          // Add Cruise Whitsundays disclaimer at the END (only for their tours)
+          if (data.company && data.company.toLowerCase().includes('cruise whitsundays')) {
+            info += `<div class="swipe-detail-section description-section cruise-disclaimer-section">
+              <h3>ℹ️ Important Booking Information</h3>
+              <div style="font-size:0.9em;line-height:1.7;color:#555;">
+                <p style="margin:0 0 12px 0;">*Infants 0-3 years travel free of charge on all tours, however no infant meals are included. Rates applicable for bookings made from 15/1/2024.</p>
+                <p style="margin:0 0 12px 0;"><strong>STANDARD/HIGH SEASON:</strong> High season dates are applicable for Great Barrier Reef Adventure & Whitehaven Beach products. High Season Dates (inclusive) 14/12-31/12/2024, 01/01-06/02/2025, 05/04-27/04/2025, 28/06-20/07/2025, 20/09-12/10/2025 & 13/12-31/12/2025.</p>
+                <p style="margin:0;"><strong>Great Barrier Reef Environmental Management Charge (EMC):</strong> Included in your cruise fare is a per head fee which goes to the Government. The money collected is used by the Great Barrier Reef Marine Park Authority (GBRMPA) for the management and protection of the Great Barrier Reef Marine Park.</p>
+              </div>
+            </div>`;
           }
           
           // Close the swipe-expanded-details container
