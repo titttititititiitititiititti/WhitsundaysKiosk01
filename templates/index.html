@@ -15733,16 +15733,52 @@
       }
       
       try {
-        // Fetch ALL chunks IN PARALLEL - MUCH faster than sequential
-        console.log(`📡 Fetching all ${chunks.length} TTS chunks IN PARALLEL...`);
+        // Start fetching all chunks in parallel
+        console.log(`📡 Fetching ${chunks.length} TTS chunks...`);
         const fetchStart = Date.now();
         
-        // Create all fetch promises at once
+        // Track which chunks are ready
+        const chunkBlobs = new Array(chunks.length).fill(null);
+        let firstChunkReady = false;
+        let revealedContent = false;
+        
+        // Start all fetches in parallel
         const fetchPromises = chunks.map((chunk, i) => {
-          console.log(`📡 Starting fetch for chunk ${i + 1}/${chunks.length}...`);
           return fetchTTSChunk(chunk, language)
             .then(blob => {
-              console.log(`✅ Chunk ${i + 1} ready (${blob.size} bytes)`);
+              console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
+              chunkBlobs[i] = blob;
+              
+              // When FIRST chunk is ready, reveal content and start playing
+              if (i === 0 && !firstChunkReady) {
+                firstChunkReady = true;
+                console.log(`🎬 First chunk ready in ${Date.now() - fetchStart}ms - REVEALING NOW!`);
+                
+                // Show message and cards immediately
+                if (ttsReadyCallback && !revealedContent) {
+                  revealedContent = true;
+                  ttsReadyCallback();
+                  ttsReadyCallback = null;
+                }
+                
+                // Add first chunk to queue and start playing
+                ttsAudioQueue.push(blob);
+                setTimeout(() => {
+                  console.log('🔊 Starting audio (first chunk)...');
+                  playNextInQueue();
+                }, 100);
+              } else if (i > 0 && chunkBlobs[i]) {
+                // Add subsequent chunks to queue as they arrive (in order)
+                // Check if all previous chunks are ready
+                let allPreviousReady = true;
+                for (let j = 0; j < i; j++) {
+                  if (!chunkBlobs[j]) allPreviousReady = false;
+                }
+                if (allPreviousReady) {
+                  ttsAudioQueue.push(blob);
+                }
+              }
+              
               return { index: i, blob, success: true };
             })
             .catch(e => {
@@ -15751,45 +15787,25 @@
             });
         });
         
-        // Wait for ALL chunks to complete in parallel
-        const results = await Promise.all(fetchPromises);
+        // Wait for all to complete (for logging)
+        await Promise.all(fetchPromises);
         const fetchTime = Date.now() - fetchStart;
-        console.log(`⚡ All chunks fetched in ${fetchTime}ms (parallel)`);
+        console.log(`⚡ All chunks fetched in ${fetchTime}ms`);
         
-        // Sort by index and filter successful ones
-        const successfulResults = results
-          .filter(r => r.success)
-          .sort((a, b) => a.index - b.index);
-        
-        // Add blobs to queue in correct order
-        for (const result of successfulResults) {
-          ttsAudioQueue.push(result.blob);
-        }
-        
-        // NOW everything is ready - reveal message/cards and start audio TOGETHER
-        console.log(`🎬 ${successfulResults.length}/${chunks.length} chunks ready - REVEALING NOW!`);
-        
-        // Show message and cards NOW
-        if (ttsReadyCallback) {
+        // Make sure content is revealed even if first chunk failed
+        if (!revealedContent && ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
         }
         
-        // Start audio 0.2s after message appears
-        if (successfulResults.length > 0) {
-          setTimeout(() => {
-            console.log('🔊 Starting audio playback...');
-            playNextInQueue();
-          }, 200); // 0.2s delay - message appears, then audio
-        } else {
-          console.error('❌ No audio chunks fetched');
-          const orb = document.querySelector('.ai-visualizer-container');
-          if (orb) orb.classList.remove('loading');
+        // Make sure all successful chunks are in queue (in order)
+        ttsAudioQueue = [];
+        for (let i = 0; i < chunkBlobs.length; i++) {
+          if (chunkBlobs[i]) ttsAudioQueue.push(chunkBlobs[i]);
         }
         
       } catch (error) {
         console.error('TTS error:', error);
-        // Still show the message even if TTS fails
         if (ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
@@ -24435,7 +24451,11 @@
       // Play audio
       if (audioElement) {
         console.log('🔊 Attempting to play welcome audio...');
+        console.log('   duration:', audioElement.duration);
+        console.log('   readyState:', audioElement.readyState);
+        
         audioElement.volume = 1.0;
+        audioElement.muted = false;
         audioElement.currentTime = 0;
         
         // Connect to visualizer
@@ -24446,7 +24466,7 @@
         }
         
         audioElement.onplay = () => {
-          console.log('🔊 Welcome audio PLAYING');
+          console.log('🔊 Welcome audio PLAYING, duration:', audioElement.duration);
           if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
         };
         
@@ -24467,16 +24487,11 @@
           console.error('❌ Welcome audio error:', e);
         };
         
-        // Try to play - if blocked, we'll show the green mic anyway
+        // For pre-recorded audio (already in DOM), just play directly
+        // DON'T call load() - it interrupts playback!
         try {
-          // Load the audio first
-          audioElement.load();
-          
-          // Wait a moment for load
-          await new Promise(r => setTimeout(r, 100));
-          
           await audioElement.play();
-          console.log('✅ Welcome audio started successfully');
+          console.log('✅ Welcome audio playing, duration:', audioElement.duration);
         } catch (e) {
           console.error('❌ Welcome audio play failed:', e.name, e.message);
           // Show green mic since audio failed

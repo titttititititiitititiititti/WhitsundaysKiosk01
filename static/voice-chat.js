@@ -258,8 +258,8 @@ class VoiceChat {
     console.log(`   Continuous: ${this.recognition.continuous}`);
     console.log(`   Interim results: ${this.recognition.interimResults}`);
     
-    // Start audio level monitoring to verify mic is working
-    this.startAudioMonitoring();
+    // NOTE: Audio monitoring disabled - it keeps mic open and causes audio quality issues
+    // this.startAudioMonitoring();
     
     try {
       this.recognition.start();
