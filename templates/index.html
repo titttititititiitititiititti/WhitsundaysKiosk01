@@ -902,7 +902,7 @@
         display: none !important;
       }
       
-      /* In Quick Decision mode: show Browse btn, hide Quick Decision btn */
+      /* In Quick Decision mode: show Browse + AI btn, hide Quick Decision btn */
       .video-question-page .mobile-browse-btn {
         display: flex !important;
       }
@@ -910,12 +910,43 @@
         display: none !important;
       }
       
-      /* In Browse All Tours mode: show Quick Decision btn, hide Browse btn */
+      /* In Browse All Tours mode: show Quick Decision + AI btn, hide Browse btn */
       .home-page .mobile-quick-btn {
         display: flex !important;
       }
       .home-page .mobile-browse-btn {
         display: none !important;
+      }
+      
+      /* Tour detail pages - hide buttons based on mode we came from */
+      /* From AI Assistant: hide AI btn, show Quick Decision + Browse */
+      body.came-from-ai .mobile-ai-btn,
+      body.came-from-ai .tour-detail-page .mobile-ai-btn {
+        display: none !important;
+      }
+      body.came-from-ai .mobile-quick-btn,
+      body.came-from-ai .mobile-browse-btn {
+        display: flex !important;
+      }
+      
+      /* From Quick Decision: hide Quick Decision btn, show AI + Browse */
+      body.came-from-quick-decision .mobile-quick-btn,
+      body.came-from-quick-decision .tour-detail-page .mobile-quick-btn {
+        display: none !important;
+      }
+      body.came-from-quick-decision .mobile-ai-btn,
+      body.came-from-quick-decision .mobile-browse-btn {
+        display: flex !important;
+      }
+      
+      /* From Browse All Tours: hide Browse btn, show Quick Decision + AI */
+      body.came-from-browse-all .mobile-browse-btn,
+      body.came-from-browse-all .tour-detail-page .mobile-browse-btn {
+        display: none !important;
+      }
+      body.came-from-browse-all .mobile-quick-btn,
+      body.came-from-browse-all .mobile-ai-btn {
+        display: flex !important;
       }
       
       /* Mobile Browse All Tours emoji button (orange circle) */
@@ -14161,19 +14192,20 @@
     function rejectCard() {
       console.log('[ACTION] Rejecting tour');
       
-      // Animate ALL elements out to the left
-      const header = document.querySelector('.swipe-card-header');
-      const galleryWrapper = document.querySelector('.swipe-gallery-wrapper');
-      const infoSections = document.getElementById('swipe-info-sections');
-      const expandedDetails = document.querySelector('.swipe-expanded-details');
+      // Animate the entire content container out to the left
+      const fixedTop = document.getElementById('swipe-fixed-top');
+      const scrollableContent = document.getElementById('swipe-scrollable-content');
+      const swipeActions = document.getElementById('swipe-actions');
       
-      // Apply swipe-out animation to all visible elements
-      if (header) header.classList.add('swipe-out-left');
-      if (galleryWrapper) galleryWrapper.classList.add('swipe-out-left');
-      if (infoSections) infoSections.classList.add('swipe-out-left');
-      if (expandedDetails) expandedDetails.classList.add('swipe-out-left');
+      // Apply swipe-out animation to the main containers
+      if (fixedTop) fixedTop.classList.add('swipe-out-left');
+      if (scrollableContent) scrollableContent.classList.add('swipe-out-left');
       
       setTimeout(() => {
+        // Remove animation classes before rendering next card
+        if (fixedTop) fixedTop.classList.remove('swipe-out-left');
+        if (scrollableContent) scrollableContent.classList.remove('swipe-out-left');
+        
         currentCardIndex++;
         displayCurrentCard();
       }, 400);
@@ -14185,17 +14217,13 @@
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         
-        // Animate ALL elements out to the right (book animation)
-        const header = document.querySelector('.swipe-card-header');
-        const galleryWrapper = document.querySelector('.swipe-gallery-wrapper');
-        const infoSections = document.getElementById('swipe-info-sections');
-        const expandedDetails = document.querySelector('.swipe-expanded-details');
+        // Animate the entire content container out to the right (book animation)
+        const fixedTop = document.getElementById('swipe-fixed-top');
+        const scrollableContent = document.getElementById('swipe-scrollable-content');
         const swipeActions = document.getElementById('swipe-actions');
         
-        if (header) header.classList.add('swipe-out-right');
-        if (galleryWrapper) galleryWrapper.classList.add('swipe-out-right');
-        if (infoSections) infoSections.classList.add('swipe-out-right');
-        if (expandedDetails) expandedDetails.classList.add('swipe-out-right');
+        if (fixedTop) fixedTop.classList.add('swipe-out-right');
+        if (scrollableContent) scrollableContent.classList.add('swipe-out-right');
         if (swipeActions) swipeActions.classList.add('swipe-out-right');
         
         // Set flag so tour detail page knows we came from Quick Decision
@@ -20338,8 +20366,12 @@
               
               console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
               
+              // Clear all mode classes first
+              document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
+              
               if (window.cameFromAIAssistant) {
                 console.log('🤖 Came from AI Assistant - show Quick Decision + Browse All, hide AI');
+                document.body.classList.add('came-from-ai');
                 if (quickDecisionBtn) {
                   quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
                   quickDecisionBtn.onclick = function(e) {
@@ -20373,6 +20405,7 @@
                 }
               } else if (window.cameFromQuickDecision) {
                 console.log('⚡ Came from Quick Decision - show AI + Browse All, hide Quick Decision');
+                document.body.classList.add('came-from-quick-decision');
                 if (quickDecisionBtn) {
                   quickDecisionBtn.style.cssText = 'display: none !important;';
                 }
@@ -20406,6 +20439,7 @@
               } else {
                 // Default: from Browse All Tours - show Quick Decision + AI, hide Browse All
                 console.log('📁 Came from Browse All Tours - show Quick Decision + AI, hide Browse All');
+                document.body.classList.add('came-from-browse-all');
                 if (quickDecisionBtn) {
                   quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
                   quickDecisionBtn.onclick = function() { startQuickDecision(); };
@@ -20678,6 +20712,8 @@
       }
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
+      // Clear mode classes for mobile button visibility
+      document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
       
       // If we came from AI assistant, return to it with state preserved
       if (window.cameFromAIAssistant) {
