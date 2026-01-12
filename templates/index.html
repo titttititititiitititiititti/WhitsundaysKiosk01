@@ -17151,40 +17151,32 @@
       function hideRedundantHeaderButtons() {
         const homePage = document.querySelector('.home-page.active');
         const aiAssistantOpen = document.body.classList.contains('ai-assistant-open');
-        const aiAssistantPage = document.querySelector('.ai-assistant-page');
         
-        // Hide Browse All Tours button when on home/browse page
+        // Hide Browse All Tours button ONLY in the home page HEADER (not start screen buttons)
         if (homePage) {
-          document.querySelectorAll('.browse-all-btn-header, #home-browse-all-btn, [id*="browse-all-btn"]').forEach(btn => {
-            if (btn && btn.closest('.home-page')) {
+          // Only hide header buttons, not the start screen mode selection buttons
+          const homeHeader = homePage.querySelector('.kiosk-header');
+          if (homeHeader) {
+            homeHeader.querySelectorAll('.browse-all-btn-header').forEach(btn => {
               btn.style.setProperty('display', 'none', 'important');
               btn.style.setProperty('visibility', 'hidden', 'important');
-              btn.style.setProperty('width', '0', 'important');
-              btn.style.setProperty('height', '0', 'important');
-              btn.style.setProperty('padding', '0', 'important');
-              btn.style.setProperty('margin', '0', 'important');
-              btn.style.setProperty('opacity', '0', 'important');
-            }
-          });
+            });
+          }
         }
         
-        // Hide AI Assistant button when AI assistant is open
-        if (aiAssistantOpen || aiAssistantPage) {
-          document.querySelectorAll('.ai-assistant-btn-header, [id*="ai-assistant-btn"]').forEach(btn => {
+        // Hide AI Assistant button in header when AI assistant is open
+        // BUT only header buttons - not the mode selection button
+        if (aiAssistantOpen) {
+          document.querySelectorAll('.kiosk-header .ai-assistant-btn-header').forEach(btn => {
             btn.style.setProperty('display', 'none', 'important');
             btn.style.setProperty('visibility', 'hidden', 'important');
-            btn.style.setProperty('width', '0', 'important');
-            btn.style.setProperty('height', '0', 'important');
-            btn.style.setProperty('padding', '0', 'important');
-            btn.style.setProperty('margin', '0', 'important');
-            btn.style.setProperty('opacity', '0', 'important');
           });
         }
       }
       
       // Run immediately and on interval
       hideRedundantHeaderButtons();
-      setInterval(hideRedundantHeaderButtons, 300);
+      setInterval(hideRedundantHeaderButtons, 500);
     });
     
     // Setup infinite scroll detection
