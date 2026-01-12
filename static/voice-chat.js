@@ -141,6 +141,17 @@ class VoiceChat {
       
       this.isListening = false;
       this.updateUI('idle');
+      
+      // IMPORTANT: Stop the microphone stream to prevent audio issues
+      if (this.audioMonitorStream) {
+        console.log('🎤 Stopping microphone stream');
+        this.audioMonitorStream.getTracks().forEach(track => track.stop());
+        this.audioMonitorStream = null;
+      }
+      if (this.audioMonitorContext) {
+        this.audioMonitorContext.close().catch(() => {});
+        this.audioMonitorContext = null;
+      }
     };
     
     // When we get speech results

@@ -3275,21 +3275,23 @@
     
     /* "Tap me" tooltip on first ready state */
     .ai-mic-tooltip {
-      position: absolute;
-      bottom: calc(100% + 15px);
+      position: fixed;
+      bottom: 130px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(34, 197, 94, 0.95);
       color: white;
       padding: 10px 18px;
       border-radius: 20px;
-      font-size: 0.9em;
+      font-size: 0.85em;
       font-weight: 600;
       white-space: nowrap;
       box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
       animation: tooltipBounce 1.5s ease-in-out infinite;
-      z-index: 1000;
+      z-index: 10000;
       pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
     }
     
     .ai-mic-tooltip::after {
@@ -3305,6 +3307,14 @@
     @keyframes tooltipBounce {
       0%, 100% { transform: translateX(-50%) translateY(0); }
       50% { transform: translateX(-50%) translateY(-5px); }
+    }
+    
+    @media (max-width: 768px) {
+      .ai-mic-tooltip {
+        bottom: 110px;
+        font-size: 0.8em;
+        padding: 8px 14px;
+      }
     }
     
     
@@ -14795,16 +14805,29 @@
       // Set flag so the tour page knows we came from AI assistant
       window.cameFromAIAssistant = true;
       
-      // Hide AI assistant first
-      const aiPage = document.getElementById('ai-assistant-page');
-      if (aiPage) {
-        aiPage.style.display = 'none';
-        aiPage.classList.remove('active');
+      // Find and click the tour card - this triggers the proper tour detail view
+      const card = document.querySelector(`.ai-tour-card[data-tour-key="${tour.key}"]`);
+      if (card) {
+        console.log('✅ Found tour card, clicking it...');
+        card.click();
+      } else {
+        console.log('⚠️ Tour card not found, trying alternative selectors...');
+        // Try finding by tour name
+        const allCards = document.querySelectorAll('.ai-tour-card');
+        for (const c of allCards) {
+          if (c.dataset.tourName && c.dataset.tourName.toLowerCase().includes(tour.name.toLowerCase().substring(0, 10))) {
+            console.log('✅ Found card by name match, clicking...');
+            c.click();
+            return;
+          }
+        }
+        
+        // Last resort: use the existing openTourDetail function with just the key
+        console.log('⚠️ No card found, using openTourDetail fallback...');
+        if (typeof openTourDetail === 'function') {
+          openTourDetail(tour.key);
+        }
       }
-      
-      // Navigate to tour detail page
-      const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-      window.location.href = `/tour/${tour.key}?from=ai&lang=${lang}`;
     }
     
     // Display tour cards from full tour objects (from API)
@@ -15454,18 +15477,20 @@
     
     // Show "tap me when ready" tooltip on mic button (once per session)
     function showMicTooltip(micBtn) {
-      // Create tooltip element
+      // Create tooltip element - append to body for fixed positioning
       const tooltip = document.createElement('div');
       tooltip.className = 'ai-mic-tooltip';
-      tooltip.textContent = '👆 Tap me when you\'re ready to speak!';
-      micBtn.appendChild(tooltip);
+      tooltip.id = 'ai-mic-tooltip';
+      tooltip.textContent = '👆 Tap the green mic to speak!';
+      document.body.appendChild(tooltip);
       
       // Remove tooltip after 5 seconds or when mic is clicked
       const removeTooltip = () => {
-        if (tooltip.parentNode) {
-          tooltip.style.opacity = '0';
-          tooltip.style.transition = 'opacity 0.3s';
-          setTimeout(() => tooltip.remove(), 300);
+        const el = document.getElementById('ai-mic-tooltip');
+        if (el) {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.3s';
+          setTimeout(() => el.remove(), 300);
         }
       };
       
@@ -24355,6 +24380,22 @@
       }
       window.welcomeMessagePlayed = true;
       
+      console.log('🎤 playWelcomeMessage() called');
+      
+      // Prime audio context first (critical for mobile)
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          if (ctx.state === 'suspended') {
+            await ctx.resume();
+            console.log('🔊 Audio context resumed');
+          }
+        }
+      } catch (e) {
+        console.log('Audio context prime note:', e.message);
+      }
+      
       const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
@@ -24389,15 +24430,34 @@
         audioElement = document.getElementById('welcome-audio');
         
         if (audioElement) {
-          console.log('✅ Found welcome-audio element, src:', audioElement.src);
-          // Make sure it's loaded
-          audioElement.load();
+          console.log('✅ Found welcome-audio element');
+          console.log('   src:', audioElement.src);
+          console.log('   readyState:', audioElement.readyState);
+          console.log('   paused:', audioElement.paused);
+          
+          // Wait for audio to be ready
+          if (audioElement.readyState < 2) {
+            console.log('⏳ Waiting for audio to load...');
+            await new Promise((resolve) => {
+              audioElement.oncanplay = () => {
+                console.log('✅ Audio can play now');
+                resolve();
+              };
+              audioElement.onerror = (e) => {
+                console.error('❌ Audio load error:', e);
+                resolve();
+              };
+              audioElement.load();
+              // Timeout after 3 seconds
+              setTimeout(resolve, 3000);
+            });
+          }
         } else {
           console.error('❌ welcome-audio element not found in DOM!');
         }
         
-        // Wait a bit to simulate loading
-        await new Promise(r => setTimeout(r, 1500));
+        // Small delay for typing animation
+        await new Promise(r => setTimeout(r, 1000));
       } else {
         // Fetch TTS for other languages
         const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
