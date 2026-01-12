@@ -2424,6 +2424,21 @@
       animation: swipeOutLeft 0.4s ease-out forwards;
     }
     
+    .swipe-out-right {
+      animation: swipeOutRight 0.4s ease-out forwards;
+    }
+    
+    @keyframes swipeOutRight {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+    
     .swipe-in-right {
       animation: swipeInRight 0.5s ease-out forwards;
     }
@@ -14169,11 +14184,28 @@
       
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
+        
+        // Animate ALL elements out to the right (book animation)
+        const header = document.querySelector('.swipe-card-header');
+        const galleryWrapper = document.querySelector('.swipe-gallery-wrapper');
+        const infoSections = document.getElementById('swipe-info-sections');
+        const expandedDetails = document.querySelector('.swipe-expanded-details');
+        const swipeActions = document.getElementById('swipe-actions');
+        
+        if (header) header.classList.add('swipe-out-right');
+        if (galleryWrapper) galleryWrapper.classList.add('swipe-out-right');
+        if (infoSections) infoSections.classList.add('swipe-out-right');
+        if (expandedDetails) expandedDetails.classList.add('swipe-out-right');
+        if (swipeActions) swipeActions.classList.add('swipe-out-right');
+        
         // Set flag so tour detail page knows we came from Quick Decision
         window.cameFromQuickDecision = true;
         window.cameFromAIAssistant = false;
-        // Open tour detail page instead of redirecting
-        openTourDetail(tour.key);
+        
+        // Wait for animation then open tour detail page
+        setTimeout(() => {
+          openTourDetail(tour.key);
+        }, 350);
       }
     }
     
