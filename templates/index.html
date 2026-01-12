@@ -13785,8 +13785,8 @@
       const getSwipeElements = () => {
         return {
           fixedTop: document.getElementById('swipe-fixed-top'),
-          scrollableContent: document.getElementById('swipe-scrollable-content'),
-          actions: document.getElementById('swipe-actions')
+          scrollableContent: document.getElementById('swipe-scrollable-content')
+          // Note: actions (buttons) stay fixed - don't include them
         };
       };
       
@@ -13794,13 +13794,13 @@
         const transform = `translateX(${x}px)`;
         if (elements.fixedTop) elements.fixedTop.style.transform = transform;
         if (elements.scrollableContent) elements.scrollableContent.style.transform = transform;
-        if (elements.actions) elements.actions.style.transform = transform;
+        // Buttons stay centered - don't transform them
       };
       
       const setTransition = (elements, transition) => {
         if (elements.fixedTop) elements.fixedTop.style.transition = transition;
         if (elements.scrollableContent) elements.scrollableContent.style.transition = transition;
-        if (elements.actions) elements.actions.style.transition = transition;
+        // Buttons stay centered - don't transition them
       };
       
       // Update edge glow based on swipe position
@@ -14318,11 +14318,10 @@
       
       const fixedTop = document.getElementById('swipe-fixed-top');
       const scrollableContent = document.getElementById('swipe-scrollable-content');
-      const actions = document.getElementById('swipe-actions');
       const screenWidth = window.innerWidth;
       
-      // Animate out to the left
-      [fixedTop, scrollableContent, actions].forEach(el => {
+      // Animate content out to the left (buttons stay centered)
+      [fixedTop, scrollableContent].forEach(el => {
         if (el) {
           el.style.transition = 'transform 0.3s ease-out';
           el.style.transform = `translateX(${-screenWidth}px)`;
@@ -14331,7 +14330,7 @@
       
       setTimeout(() => {
         // Reset transform and call rejectCard
-        [fixedTop, scrollableContent, actions].forEach(el => {
+        [fixedTop, scrollableContent].forEach(el => {
           if (el) {
             el.style.transition = 'none';
             el.style.transform = 'translateX(0)';
@@ -14346,11 +14345,10 @@
       
       const fixedTop = document.getElementById('swipe-fixed-top');
       const scrollableContent = document.getElementById('swipe-scrollable-content');
-      const actions = document.getElementById('swipe-actions');
       const screenWidth = window.innerWidth;
       
-      // Animate out to the right
-      [fixedTop, scrollableContent, actions].forEach(el => {
+      // Animate content out to the right (buttons stay centered)
+      [fixedTop, scrollableContent].forEach(el => {
         if (el) {
           el.style.transition = 'transform 0.3s ease-out';
           el.style.transform = `translateX(${screenWidth}px)`;
@@ -14359,7 +14357,7 @@
       
       setTimeout(() => {
         // Reset transform and call acceptCard
-        [fixedTop, scrollableContent, actions].forEach(el => {
+        [fixedTop, scrollableContent].forEach(el => {
           if (el) {
             el.style.transition = 'none';
             el.style.transform = 'translateX(0)';
