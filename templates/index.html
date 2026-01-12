@@ -2234,6 +2234,17 @@
     
     .page.video-question-page.showing-questions .browse-all-btn-header {
       display: inline-flex !important;
+    }
+    
+    /* Hide Browse All Tours button on home/browse page - we're already here! */
+    .page.home-page .kiosk-header .browse-all-btn-header {
+      display: none !important;
+    }
+    
+    /* Hide AI Assistant button when in AI Assistant mode */
+    body.ai-assistant-open .kiosk-header .ai-assistant-btn-header,
+    .ai-assistant-page .kiosk-header .ai-assistant-btn-header {
+      display: none !important;
       padding: 8px 16px !important;
       font-size: 0.85em !important;
     }
@@ -15630,35 +15641,8 @@
       ttsAudioElement.volume = 1.0; // Ensure max volume for every chunk
       ttsAudioElement.src = audioUrl;
       
-      // Wait for audio to be fully loaded before playing
-      await new Promise((resolve, reject) => {
-        const onCanPlay = () => {
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          resolve();
-        };
-        const onLoaded = () => {
-          // Also resolve on loadeddata as backup
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          resolve();
-        };
-        const onError = () => {
-          ttsAudioElement.removeEventListener('canplaythrough', onCanPlay);
-          ttsAudioElement.removeEventListener('loadeddata', onLoaded);
-          ttsAudioElement.removeEventListener('error', onError);
-          reject(new Error('Audio load error'));
-        };
-        ttsAudioElement.addEventListener('canplaythrough', onCanPlay);
-        ttsAudioElement.addEventListener('loadeddata', onLoaded);
-        ttsAudioElement.addEventListener('error', onError);
-        ttsAudioElement.load();
-      });
-      
-      // Small delay to ensure browser is ready
-      await new Promise(r => setTimeout(r, 50));
+      // Quick load - don't wait for full buffer
+      ttsAudioElement.load();
       
       try {
         // ENSURE we start from the very beginning
@@ -16159,7 +16143,7 @@
           }
         };
         
-        // Speak response - TTS will call showMessageAndCards when ready, then start audio 0.2s later
+        // Get language for TTS
         const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
         
         // If we have tour cards, add a spoken prompt telling user to tap
@@ -16178,7 +16162,11 @@
           textForTTS = responseText + (tapPromptSpoken[lang] || tapPromptSpoken['en']);
         }
         
-        speakResponseWithTTS(textForTTS, lang, showMessageAndCards);
+        // SHOW CONTENT IMMEDIATELY - don't wait for TTS
+        showMessageAndCards();
+        
+        // Start TTS in background (no callback since we already showed content)
+        speakResponseWithTTS(textForTTS, lang, null);
       } catch (error) {
         console.error('Chat error:', error);
         
@@ -17147,36 +17135,6 @@
       
       console.log('Home page initialized - Question 1 ready, tours loading');
       
-      // ======= FORCEFULLY HIDE REDUNDANT HEADER BUTTONS =======
-      function hideRedundantHeaderButtons() {
-        const homePage = document.querySelector('.home-page.active');
-        const aiAssistantOpen = document.body.classList.contains('ai-assistant-open');
-        
-        // Hide Browse All Tours button ONLY in the home page HEADER (not start screen buttons)
-        if (homePage) {
-          // Only hide header buttons, not the start screen mode selection buttons
-          const homeHeader = homePage.querySelector('.kiosk-header');
-          if (homeHeader) {
-            homeHeader.querySelectorAll('.browse-all-btn-header').forEach(btn => {
-              btn.style.setProperty('display', 'none', 'important');
-              btn.style.setProperty('visibility', 'hidden', 'important');
-            });
-          }
-        }
-        
-        // Hide AI Assistant button in header when AI assistant is open
-        // BUT only header buttons - not the mode selection button
-        if (aiAssistantOpen) {
-          document.querySelectorAll('.kiosk-header .ai-assistant-btn-header').forEach(btn => {
-            btn.style.setProperty('display', 'none', 'important');
-            btn.style.setProperty('visibility', 'hidden', 'important');
-          });
-        }
-      }
-      
-      // Run immediately and on interval
-      hideRedundantHeaderButtons();
-      setInterval(hideRedundantHeaderButtons, 500);
     });
     
     // Setup infinite scroll detection
