@@ -15716,71 +15716,48 @@
       }
       
       try {
-        // Fetch all chunks in parallel, but reveal and play as soon as first is ready
-        console.log(`📡 Fetching ${chunks.length} TTS chunks in parallel...`);
+        // Fetch ALL chunks in parallel, then play
+        console.log(`📡 Fetching ${chunks.length} TTS chunks...`);
         const fetchStart = Date.now();
         
-        // Storage for chunks (indexed)
-        const chunkBlobs = new Array(chunks.length).fill(null);
-        let contentRevealed = false;
-        let audioStarted = false;
-        let nextChunkToQueue = 0; // Track which chunk to queue next (in order)
-        
-        // Function to queue chunks in order as they become ready
-        const tryQueueChunks = () => {
-          while (nextChunkToQueue < chunkBlobs.length && chunkBlobs[nextChunkToQueue]) {
-            console.log(`📦 Queuing chunk ${nextChunkToQueue + 1}`);
-            ttsAudioQueue.push(chunkBlobs[nextChunkToQueue]);
-            nextChunkToQueue++;
-          }
-        };
-        
-        // Start all fetches
+        // Fetch all chunks in parallel
         const fetchPromises = chunks.map((chunk, i) => {
           return fetchTTSChunk(chunk, language)
             .then(blob => {
               console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
-              chunkBlobs[i] = blob;
-              
-              // Queue any chunks that are now ready (in order)
-              tryQueueChunks();
-              
-              // When first chunk is queued, reveal content and start playing
-              if (!contentRevealed && ttsAudioQueue.length > 0) {
-                contentRevealed = true;
-                console.log(`🎬 First chunk ready in ${Date.now() - fetchStart}ms - REVEALING!`);
-                
-                if (ttsReadyCallback) {
-                  ttsReadyCallback();
-                  ttsReadyCallback = null;
-                }
-              }
-              
-              // Start audio if not started and we have chunks
-              if (!audioStarted && ttsAudioQueue.length > 0) {
-                audioStarted = true;
-                setTimeout(() => {
-                  console.log('🔊 Starting audio playback...');
-                  playNextInQueue();
-                }, 150);
-              }
-              
-              return { index: i, success: true };
+              return { index: i, blob, success: true };
             })
             .catch(e => {
               console.error(`❌ Chunk ${i + 1} failed:`, e);
-              return { index: i, success: false };
+              return { index: i, blob: null, success: false };
             });
         });
         
-        // Wait for all to complete
-        await Promise.all(fetchPromises);
+        // Wait for ALL chunks
+        const results = await Promise.all(fetchPromises);
         console.log(`⚡ All chunks fetched in ${Date.now() - fetchStart}ms`);
         
-        // Ensure content is revealed even if all chunks failed
-        if (!contentRevealed && ttsReadyCallback) {
+        // Sort by index and add to queue
+        const sortedResults = results.filter(r => r.success).sort((a, b) => a.index - b.index);
+        for (const result of sortedResults) {
+          ttsAudioQueue.push(result.blob);
+        }
+        console.log(`📦 ${ttsAudioQueue.length} chunks in queue`);
+        
+        // Reveal content
+        if (ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
+        }
+        
+        // Start playing
+        if (ttsAudioQueue.length > 0) {
+          console.log('🔊 Starting audio playback...');
+          playNextInQueue();
+        } else {
+          console.error('❌ No chunks to play');
+          const orb = document.querySelector('.ai-visualizer-container');
+          if (orb) orb.classList.remove('loading');
         }
         
       } catch (error) {
