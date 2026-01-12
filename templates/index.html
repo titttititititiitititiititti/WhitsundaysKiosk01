@@ -2135,7 +2135,8 @@
     .page.home-page .kiosk-header .browse-all-btn-header,
     .page.home-page .header-left .browse-all-btn-header,
     .page.home-page button.browse-all-btn-header,
-    .home-page .browse-all-btn-header {
+    .home-page .browse-all-btn-header,
+    .home-page #home-browse-all-btn {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
@@ -2147,11 +2148,14 @@
       pointer-events: none !important;
     }
     
-    /* Hide AI Assistant button when in AI Assistant mode */
+    /* Hide AI Assistant button when in AI Assistant mode - ALL pages including tour detail */
     body.ai-assistant-open .ai-assistant-btn-header,
     body.ai-assistant-open .kiosk-header .ai-assistant-btn-header,
     body.ai-assistant-open .header-left .ai-assistant-btn-header,
     body.ai-assistant-open button.ai-assistant-btn-header,
+    body.ai-assistant-open #detail-ai-assistant-btn,
+    body.ai-assistant-open #home-ai-assistant-btn,
+    body.ai-assistant-open #vq-ai-assistant-btn,
     .ai-assistant-page .ai-assistant-btn-header,
     .ai-assistant-page .kiosk-header .ai-assistant-btn-header,
     .ai-assistant-page button.ai-assistant-btn-header {
@@ -16945,17 +16949,25 @@
       {% if tour_to_open %}
       console.log('🎯 Auto-opening tour from shared link:', '{{ tour_to_open }}');
       
-      // Check if video page is active - if so, don't auto-open (user is in video flow)
-      const videoPage = document.querySelector('.video-question-page');
-      const isVideoActive = videoPage && videoPage.classList.contains('active');
-      
-      if (!isVideoActive) {
-        setTimeout(() => {
-          openTourDetail('{{ tour_to_open }}');
-        }, 500); // Small delay to ensure page is fully loaded
-      } else {
-        console.log('🚫 Skipping auto-open because video page is active');
-      }
+      // Switch to home page first, then open the tour
+      setTimeout(() => {
+        // Hide video page, show home page
+        const videoPage = document.querySelector('.video-question-page');
+        const homePage = document.querySelector('.home-page');
+        
+        if (videoPage) {
+          videoPage.classList.remove('active');
+          videoPage.style.display = 'none';
+        }
+        if (homePage) {
+          homePage.classList.add('active');
+          homePage.style.display = 'flex';
+        }
+        
+        // Now open the tour
+        console.log('🎯 Opening tour:', '{{ tour_to_open }}');
+        openTourDetail('{{ tour_to_open }}');
+      }, 300);
       {% endif %}
     });
     
