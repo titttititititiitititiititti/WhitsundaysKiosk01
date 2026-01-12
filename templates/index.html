@@ -3273,49 +3273,7 @@
       }
     }
     
-    /* "Tap me" tooltip on first ready state */
-    .ai-mic-tooltip {
-      position: fixed;
-      bottom: 130px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(34, 197, 94, 0.95);
-      color: white;
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 0.85em;
-      font-weight: 600;
-      white-space: nowrap;
-      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-      animation: tooltipBounce 1.5s ease-in-out infinite;
-      z-index: 10000;
-      pointer-events: none;
-      max-width: 90vw;
-      text-align: center;
-    }
-    
-    .ai-mic-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 8px solid transparent;
-      border-top-color: rgba(34, 197, 94, 0.95);
-    }
-    
-    @keyframes tooltipBounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-5px); }
-    }
-    
-    @media (max-width: 768px) {
-      .ai-mic-tooltip {
-        bottom: 110px;
-        font-size: 0.8em;
-        padding: 8px 14px;
-      }
-    }
+    /* Tooltip removed - green glow is sufficient */
     
     
     /* ===================================================================
@@ -15475,31 +15433,6 @@
       stopFlashingCycle(); // Stop any flashing cycle
     }
     
-    // Show "tap me when ready" tooltip on mic button (once per session)
-    function showMicTooltip(micBtn) {
-      // Create tooltip element - append to body for fixed positioning
-      const tooltip = document.createElement('div');
-      tooltip.className = 'ai-mic-tooltip';
-      tooltip.id = 'ai-mic-tooltip';
-      tooltip.textContent = '👆 Tap the green mic to speak!';
-      document.body.appendChild(tooltip);
-      
-      // Remove tooltip after 5 seconds or when mic is clicked
-      const removeTooltip = () => {
-        const el = document.getElementById('ai-mic-tooltip');
-        if (el) {
-          el.style.opacity = '0';
-          el.style.transition = 'opacity 0.3s';
-          setTimeout(() => el.remove(), 300);
-        }
-      };
-      
-      // Auto-remove after 5 seconds
-      setTimeout(removeTooltip, 5000);
-      
-      // Remove on click
-      micBtn.addEventListener('click', removeTooltip, { once: true });
-    }
     
     // Highlight a card by its index (0, 1, 2)
     function highlightCardByIndex(index) {
@@ -15560,11 +15493,6 @@
           micBtn.classList.add('ready-to-speak');
           console.log('🎤 Mic ready - showing green glow');
           
-          // Show "tap me" tooltip once per session
-          if (!window.micTooltipShown) {
-            window.micTooltipShown = true;
-            showMicTooltip(micBtn);
-          }
         }
         return;
       }
@@ -24490,10 +24418,6 @@
           const micBtn = document.getElementById('ai-mic-btn');
           if (micBtn) {
             micBtn.classList.add('ready-to-speak');
-            if (!window.micTooltipShown) {
-              window.micTooltipShown = true;
-              showMicTooltip(micBtn);
-            }
           }
         };
         
@@ -24512,10 +24436,6 @@
           const micBtn = document.getElementById('ai-mic-btn');
           if (micBtn) {
             micBtn.classList.add('ready-to-speak');
-            if (!window.micTooltipShown) {
-              window.micTooltipShown = true;
-              showMicTooltip(micBtn);
-            }
           }
         }
       } else {
@@ -24523,10 +24443,6 @@
         const micBtn = document.getElementById('ai-mic-btn');
         if (micBtn) {
           micBtn.classList.add('ready-to-speak');
-          if (!window.micTooltipShown) {
-            window.micTooltipShown = true;
-            showMicTooltip(micBtn);
-          }
         }
       }
     }
