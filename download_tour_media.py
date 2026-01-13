@@ -156,16 +156,20 @@ def main(csv_path):
     # Add video_urls column if not present
     if 'video_urls' not in df.columns:
         df['video_urls'] = ''
-    # Setup Selenium
+    # Setup Selenium with auto-detected ChromeDriver
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
-    # Use ChromeDriver 140 explicitly to match Chrome version
-    chromedriver_path = r"C:\Users\baile\AppData\Local\Programs\Python\Python310\Lib\site-packages\chromedriver_autoinstaller\140\chromedriver.exe"
-    from selenium.webdriver.chrome.service import Service
-    service = Service(chromedriver_path)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    # Auto-install matching ChromeDriver version
+    try:
+        import chromedriver_autoinstaller
+        chromedriver_autoinstaller.install()
+    except Exception as e:
+        print(f"Warning: Could not auto-install ChromeDriver: {e}")
+    
+    driver = webdriver.Chrome(options=chrome_options)
     for idx, row in df.iterrows():
         tour_id = row.get('id', str(idx))
         tour_name = row.get('name', f'Tour_{idx}')

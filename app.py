@@ -1855,5 +1855,402 @@ def email_recommendations():
             'error': 'Failed to send email. Please try again.'
         }), 500
 
+# ============================================================================
+# TOUR EDITOR / DEVELOPER MODE
+# ============================================================================
+
+def find_company_csv(company):
+    """Find the best CSV file for a company (checks multiple locations)"""
+    # Priority order: data/company/en/_with_media > root _with_media > root _cleaned
+    candidates = [
+        f'data/{company}/en/tours_{company}_cleaned_with_media.csv',
+        f'data/{company}/en/{company}_cleaned_with_media.csv',
+        f'tours_{company}_cleaned_with_media.csv',
+        f'tours_{company}_cleaned.csv',
+    ]
+    
+    # Also check for any CSV in the data/company/en/ folder
+    data_folder = f'data/{company}/en/'
+    if os.path.isdir(data_folder):
+        for f in os.listdir(data_folder):
+            if f.endswith('_with_media.csv'):
+                candidates.insert(0, os.path.join(data_folder, f))
+    
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return None
+
+def get_all_tour_csvs():
+    """Get all CSV files containing tours from all locations"""
+    csv_files = []
+    seen_companies = set()
+    
+    # 1. Check data/<company>/en/ folders (priority)
+    for company_dir in glob.glob('data/*/'):
+        company_name = os.path.basename(company_dir.rstrip('/\\'))
+        en_folder = os.path.join(company_dir, 'en')
+        if os.path.isdir(en_folder):
+            # Look for _with_media.csv first, then any CSV
+            media_csvs = glob.glob(os.path.join(en_folder, '*_with_media.csv'))
+            if media_csvs:
+                csv_files.extend(media_csvs)
+                seen_companies.add(company_name)
+    
+    # 2. Check root directory for _with_media.csv
+    for csvfile in glob.glob('tours_*_cleaned_with_media.csv'):
+        company = csvfile.replace('tours_', '').replace('_cleaned_with_media.csv', '')
+        if company not in seen_companies:
+            csv_files.append(csvfile)
+            seen_companies.add(company)
+    
+    # 3. Check root directory for _cleaned.csv (fallback)
+    for csvfile in glob.glob('tours_*_cleaned.csv'):
+        if '_with_media' in csvfile:
+            continue
+        company = csvfile.replace('tours_', '').replace('_cleaned.csv', '')
+        if company not in seen_companies:
+            csv_files.append(csvfile)
+            seen_companies.add(company)
+    
+    return csv_files
+
+@app.route('/admin/editor')
+def tour_editor():
+    """Tour Editor - Developer Mode for editing tour listings"""
+    # Load all tours grouped by company
+    companies = {}
+    
+    # Find all CSV files from all locations
+    csv_files = get_all_tour_csvs()
+    print(f"[Editor] Found {len(csv_files)} CSV files")
+    
+    for csvfile in csv_files:
+        try:
+            if os.path.exists(csvfile):
+                with open(csvfile, newline='', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        company = row.get('company_name', 'unknown')
+                        if company not in companies:
+                            companies[company] = []
+                        companies[company].append({
+                            'id': row.get('id', ''),
+                            'name': row.get('name', 'Unnamed Tour'),
+                            'company': company,
+                            'csv_file': csvfile  # Track which file it came from
+                        })
+        except Exception as e:
+            print(f"Error loading {csvfile}: {e}")
+    
+    print(f"[Editor] Loaded {len(companies)} companies with tours")
+    
+    return render_template('tour_editor.html', 
+                          companies=companies,
+                          company_names=COMPANY_DISPLAY_NAMES)
+
+@app.route('/admin/api/tour/<key>')
+def get_tour_for_editor(key):
+    """API endpoint to get full tour data for editing"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    # Find the tour in any matching CSV
+    csv_file = find_company_csv(company)
+    
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    try:
+        with open(csv_file, newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row.get('id') == tid:
+                    # Add the CSV file path so we know where to save
+                    result = dict(row)
+                    result['_csv_file'] = csv_file
+                    return jsonify(result)
+        
+        return jsonify({'error': 'Tour not found'}), 404
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/api/tour/<key>', methods=['POST'])
+def save_tour_from_editor(key):
+    """API endpoint to save tour changes back to CSV"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    csv_file = find_company_csv(company)
+    
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    try:
+        # Get the new data
+        new_data = request.get_json()
+        
+        # Read all tours
+        rows = []
+        fieldnames = None
+        
+        with open(csv_file, newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            fieldnames = reader.fieldnames
+            rows = list(reader)
+        
+        # Check for new fields that need to be added
+        new_fields = []
+        for field in new_data.keys():
+            if field not in fieldnames:
+                new_fields.append(field)
+        
+        if new_fields:
+            fieldnames = list(fieldnames) + new_fields
+        
+        # Find and update the tour
+        tour_found = False
+        for i, row in enumerate(rows):
+            if row.get('id') == tid:
+                # Update the row with new data
+                for field, value in new_data.items():
+                    row[field] = value
+                rows[i] = row
+                tour_found = True
+                break
+        
+        if not tour_found:
+            return jsonify({'error': 'Tour not found'}), 404
+        
+        # Write back to CSV
+        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        
+        return jsonify({'success': True, 'message': 'Tour saved successfully'})
+        
+    except Exception as e:
+        print(f"Error saving tour: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/api/tours/export')
+def export_tours():
+    """Export all tours as JSON for backup"""
+    all_tours = []
+    csv_files = glob.glob('tours_*_cleaned_with_media.csv')
+    
+    for csvfile in csv_files:
+        try:
+            with open(csvfile, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    all_tours.append(dict(row))
+        except Exception as e:
+            print(f"Error reading {csvfile}: {e}")
+    
+    return jsonify({'tours': all_tours, 'count': len(all_tours)})
+
+@app.route('/admin/api/tour/<key>/images')
+def get_tour_images(key):
+    """API endpoint to get all images for a tour"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
+    images = []
+    thumbnail_path = None
+    found_folder = None
+    
+    # Check hash-based folder first
+    folder = f"static/tour_images/{company}/{tid}"
+    if os.path.isdir(folder):
+        found_folder = folder
+    else:
+        # Check all folders in company directory for name-based folders
+        company_folder = f"static/tour_images/{company}"
+        if os.path.isdir(company_folder):
+            for subfolder in os.listdir(company_folder):
+                subfolder_path = os.path.join(company_folder, subfolder)
+                if os.path.isdir(subfolder_path):
+                    # Check if this folder has a media_manifest or if it matches by content
+                    manifest_path = os.path.join(subfolder_path, 'media_manifest.json')
+                    if os.path.exists(manifest_path):
+                        try:
+                            with open(manifest_path, 'r') as f:
+                                manifest = json.load(f)
+                                if manifest.get('tour_id') == tid:
+                                    found_folder = subfolder_path
+                                    break
+                        except:
+                            pass
+            
+            # If still not found, check image_url from CSV to find the folder
+            if not found_folder:
+                csv_file = find_company_csv(company)
+                if csv_file:
+                    with open(csv_file, newline='', encoding='utf-8') as f:
+                        reader = csv.DictReader(f)
+                        for row in reader:
+                            if row.get('id') == tid:
+                                # Extract folder from image_url
+                                img_url = row.get('image_url', '')
+                                if img_url:
+                                    img_path = img_url.lstrip('/')
+                                    if os.path.dirname(img_path):
+                                        potential_folder = os.path.dirname(img_path)
+                                        if os.path.isdir(potential_folder):
+                                            found_folder = potential_folder
+                                break
+    
+    # Scan the found folder for images
+    if found_folder and os.path.isdir(found_folder):
+        for filename in os.listdir(found_folder):
+            ext = os.path.splitext(filename)[1].lower()
+            if ext in extensions:
+                filepath = f"/{found_folder}/{filename}".replace("\\", "/")
+                is_thumb = filename.lower().startswith('thumbnail')
+                images.append({
+                    'path': filepath,
+                    'filename': filename,
+                    'is_thumbnail': is_thumb
+                })
+                if is_thumb:
+                    thumbnail_path = filepath
+    
+    # If no explicit thumbnail, find the largest image
+    if not thumbnail_path and images:
+        try:
+            largest = max(images, key=lambda x: os.path.getsize(x['path'].lstrip('/')))
+            largest['is_thumbnail'] = True
+            thumbnail_path = largest['path']
+        except:
+            pass
+    
+    return jsonify({
+        'images': images,
+        'thumbnail': thumbnail_path,
+        'folder': found_folder or folder
+    })
+
+@app.route('/admin/api/tour/<key>/thumbnail', methods=['POST'])
+def set_tour_thumbnail(key):
+    """API endpoint to set a tour's thumbnail"""
+    import shutil
+    
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    data = request.get_json()
+    source_path = data.get('image_path', '').lstrip('/')
+    
+    if not source_path or not os.path.exists(source_path):
+        return jsonify({'error': 'Image not found'}), 404
+    
+    # Find the folder - check hash-based first, then name-based
+    folder = f"static/tour_images/{company}/{tid}"
+    if not os.path.isdir(folder):
+        # Try to find by checking image_url from CSV
+        csv_file = find_company_csv(company)
+        if csv_file:
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get('id') == tid:
+                        img_url = row.get('image_url', '')
+                        if img_url:
+                            potential_folder = os.path.dirname(img_url.lstrip('/'))
+                            if os.path.isdir(potential_folder):
+                                folder = potential_folder
+                        break
+    
+    if not os.path.isdir(folder):
+        return jsonify({'error': 'Tour folder not found'}), 404
+    
+    # Get the extension of the source file
+    ext = os.path.splitext(source_path)[1].lower()
+    
+    # Remove any existing thumbnails
+    for f in os.listdir(folder):
+        if f.lower().startswith('thumbnail'):
+            try:
+                os.remove(os.path.join(folder, f))
+            except:
+                pass
+    
+    # Copy the source file as the new thumbnail
+    thumb_path = os.path.join(folder, f"thumbnail{ext}")
+    shutil.copy2(source_path, thumb_path)
+    
+    return jsonify({
+        'success': True,
+        'thumbnail': f"/{thumb_path}".replace("\\", "/")
+    })
+
+@app.route('/admin/api/company/<company>/update-field', methods=['POST'])
+def update_company_field(company):
+    """API endpoint to update a field for ALL tours from a company"""
+    data = request.get_json()
+    field_name = data.get('field')
+    field_value = data.get('value')
+    
+    if not field_name:
+        return jsonify({'error': 'Field name required'}), 400
+    
+    # Only allow certain fields to be bulk-updated for safety
+    allowed_fields = ['departure_location', 'age_requirements', 'ideal_for', 'phone']
+    if field_name not in allowed_fields:
+        return jsonify({'error': f'Field "{field_name}" cannot be bulk-updated'}), 400
+    
+    csv_file = find_company_csv(company)
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    try:
+        # Read all tours
+        rows = []
+        fieldnames = None
+        
+        with open(csv_file, newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            fieldnames = reader.fieldnames
+            rows = list(reader)
+        
+        # Add field if it doesn't exist
+        if field_name not in fieldnames:
+            fieldnames = list(fieldnames) + [field_name]
+        
+        # Update all rows
+        updated_count = 0
+        for row in rows:
+            row[field_name] = field_value
+            updated_count += 1
+        
+        # Write back to CSV
+        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+        
+        return jsonify({
+            'success': True,
+            'updated_count': updated_count,
+            'field': field_name,
+            'value': field_value
+        })
+        
+    except Exception as e:
+        print(f"Error updating company field: {e}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True) 

@@ -24,6 +24,9 @@ import undetected_chromedriver as uc
 import hashlib
 import json
 
+# Import HTML cleaner to reduce content size before saving
+from smart_html_cleaner import clean_html_intelligently
+
 # === Paste your tour links here ===
 TOUR_LINKS = [ 
  "https://jetskitour.com.au/tour/airlie-adventure/"
@@ -274,13 +277,6 @@ def extract_tour_info(html, url):
                 continue
             seen_lines.add(text)
             lines.append(text)
-    main_content = '\n'.join(lines)
-    main_html = str(body) if body else str(soup)
-
-    # Truncate to 4000 chars for LLM
-    main_content = main_content[:4000]
-    main_html = main_html[:4000]
-
     # Try to extract a name from the first heading
     name = ''
     if soup.find(['h1', 'h2']):
@@ -288,33 +284,19 @@ def extract_tour_info(html, url):
     if not name:
         name = 'Tour'
 
+    # Initialize price variables
+    price_adult = ''
+    
+    # Use smart HTML cleaner to get clean, concise content (max 8000 chars for AI)
+    main_content = clean_html_intelligently(html, max_length=8000)
+    
     # Add start and finish markers for each tour
     start_marker = f"=== TOUR START: {name} ==="
     end_marker = f"=== TOUR END: {name} ==="
     main_content = f"{start_marker}\n{main_content}\n{end_marker}"
-
-    # OLD: Try to extract a price (simple $ pattern) - DISABLED in favor of CSS selector targeting
-    # This was picking up JavaScript code like "$," instead of real prices
-    price_adult = ''
-    # price_match = re.search(r'\$\s?([0-9]+(?:\.[0-9]{2})?)', main_content)
-    # if price_match:
-    #     price_adult = price_match.group(0)
-
-    # Also collect all lines with a $ sign (for price context)
-    price_lines = []
-    for el in descendants:
-        if isinstance(el, NavigableString):
-            text = el.strip()
-            if '$' in text and text not in lines:
-                price_lines.append(text)
-    if price_lines:
-        main_content += '\n' + '\n'.join(price_lines)
-
-    # Collect all price texts from the entire HTML
-    all_price_texts = extract_all_price_texts(soup)
-    if all_price_texts:
-        # Save all found price lines in a new field for review, or append to raw_text
-        main_content += '\n[ALL PRICE LINES FOUND IN HTML:]\n' + '\n'.join(all_price_texts)
+    
+    # Disabled raw_html to prevent CSV field size errors
+    main_html = ''
 
     # [UPGRADE 2] Extract JSON-LD structured data
     json_ld_data = extract_json_ld_data(soup)
@@ -699,7 +681,23 @@ def main():
         try:
             print(f"Scraping: {url}")
             # Try BeautifulSoup first
-            html = fetch_html(url)
+            html = None
+            try:
+                html = fetch_html(url)
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 403:
+                    print(f"  [403 Blocked] Site is blocking requests, trying Selenium...")
+                    try:
+                        html = fetch_html_selenium(url)
+                    except Exception as se:
+                        print(f"  [Selenium Failed] {se}")
+                        raise e  # Re-raise original error if Selenium also fails
+                else:
+                    raise e  # Re-raise non-403 errors
+            
+            if html is None:
+                print(f"  [Error] Could not fetch HTML for {url}")
+                continue
             
             # [UPGRADE 1] Auto-detect if we need Selenium (no price in static HTML)
             if '$' not in html and 'price' not in html.lower():
