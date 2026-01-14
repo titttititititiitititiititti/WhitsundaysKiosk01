@@ -289,12 +289,12 @@ def extract_tour_info(html, url):
     
     # Use smart HTML cleaner to get clean, concise content (max 8000 chars for AI)
     main_content = clean_html_intelligently(html, max_length=8000)
-    
+
     # Add start and finish markers for each tour
     start_marker = f"=== TOUR START: {name} ==="
     end_marker = f"=== TOUR END: {name} ==="
     main_content = f"{start_marker}\n{main_content}\n{end_marker}"
-    
+
     # Disabled raw_html to prevent CSV field size errors
     main_html = ''
 
@@ -683,7 +683,7 @@ def main():
             # Try BeautifulSoup first
             html = None
             try:
-                html = fetch_html(url)
+            html = fetch_html(url)
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 403:
                     print(f"  [403 Blocked] Site is blocking requests, trying Selenium...")

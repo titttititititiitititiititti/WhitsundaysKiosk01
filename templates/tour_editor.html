@@ -680,6 +680,207 @@
             opacity: 0.5;
         }
         
+        /* Reviews Section */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .review-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            position: relative;
+            transition: all 0.15s;
+        }
+        
+        .review-item:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+        
+        .review-meta {
+            flex: 1;
+        }
+        
+        .review-author-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            width: 180px;
+        }
+        
+        .review-rating-select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: #ffa500;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .review-date-input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 8px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            width: 140px;
+            margin-top: 6px;
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .review-action-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.85rem;
+        }
+        
+        .review-action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .review-action-btn.delete:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #fff;
+        }
+        
+        .review-title-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .review-title-input::placeholder {
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+        
+        .review-text-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .add-review-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s;
+            font-size: 0.9rem;
+        }
+        
+        .add-review-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.05);
+        }
+        
+        .reviews-summary {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .reviews-overall {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .reviews-overall .rating-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        
+        .reviews-overall .rating-stars {
+            color: #ffa500;
+            font-size: 1.2rem;
+        }
+        
+        .reviews-count {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .reviews-source {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .reviews-source img {
+            height: 16px;
+        }
+        
+        .no-reviews {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        
+        .no-reviews .icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
         /* Preview Panel Styles */
         .editor-container.with-preview {
             grid-template-columns: 280px 1fr 500px;
@@ -1560,8 +1761,11 @@
                 
                 currentTour = await response.json();
                 
-                // Also load images
-                await loadTourImages(key);
+                // Also load images and reviews
+                await Promise.all([
+                    loadTourImages(key),
+                    loadReviews()
+                ]);
                 
                 renderTourForm();
                 
@@ -1650,6 +1854,19 @@
                     </div>
                     <div class="section-content">
                         ${renderImagesSection()}
+                    </div>
+                </div>
+            `;
+            
+            // Add Reviews section
+            html += `
+                <div class="form-section" id="section-reviews">
+                    <div class="section-header" onclick="toggleSection('reviews')">
+                        <h3>⭐ Reviews</h3>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content" id="reviews-section-content">
+                        ${renderReviewsSection()}
                     </div>
                 </div>
             `;
@@ -2104,6 +2321,7 @@
             });
             
             try {
+                // Save tour data
                 const response = await fetch(`/admin/api/tour/${currentTour.company_name}__${currentTour.id}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2111,6 +2329,9 @@
                 });
                 
                 if (!response.ok) throw new Error('Save failed');
+                
+                // Also save reviews
+                await saveReviews();
                 
                 const result = await response.json();
                 currentTour = { ...formData };
@@ -2227,6 +2448,204 @@
                 showToast('Thumbnail updated!', 'success');
             } catch (err) {
                 showToast('Failed to set thumbnail: ' + err.message, 'error');
+            }
+        }
+        
+        // Reviews Section Functions
+        let currentReviews = { reviews: [], overall_rating: null, review_count: 0, source: 'Google Reviews' };
+        
+        async function loadReviews() {
+            if (!currentTour) return;
+            
+            const key = `${currentTour.company_name}__${currentTour.id}`;
+            
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/reviews`);
+                if (response.ok) {
+                    currentReviews = await response.json();
+                } else {
+                    currentReviews = { reviews: [], overall_rating: null, review_count: 0, source: 'Google Reviews' };
+                }
+            } catch (err) {
+                console.error('Failed to load reviews:', err);
+                currentReviews = { reviews: [], overall_rating: null, review_count: 0, source: 'Google Reviews' };
+            }
+        }
+        
+        function renderReviewsSection() {
+            const reviews = currentReviews.reviews || [];
+            const overallRating = currentReviews.overall_rating;
+            const reviewCount = currentReviews.review_count || reviews.length;
+            
+            let html = '';
+            
+            // Reviews summary bar
+            html += `
+                <div class="reviews-summary">
+                    <div class="reviews-overall">
+                        <span class="rating-value">${overallRating ? overallRating.toFixed(1) : '—'}</span>
+                        <span class="rating-stars">${overallRating ? '★'.repeat(Math.round(overallRating)) : ''}</span>
+                    </div>
+                    <span class="reviews-count">${reviewCount} review${reviewCount !== 1 ? 's' : ''}</span>
+                    <span class="reviews-source">
+                        <span>📍</span> ${currentReviews.source || 'Google Reviews'}
+                    </span>
+                </div>
+            `;
+            
+            if (reviews.length === 0) {
+                html += `
+                    <div class="no-reviews">
+                        <div class="icon">⭐</div>
+                        <p>No reviews yet</p>
+                        <p style="font-size: 0.8rem; margin-top: 8px;">
+                            Add reviews manually or run the reviews scraper
+                        </p>
+                    </div>
+                `;
+            } else {
+                html += '<div class="reviews-list">';
+                reviews.forEach((review, index) => {
+                    html += renderReviewItem(review, index);
+                });
+                html += '</div>';
+            }
+            
+            // Add review button
+            html += `
+                <button type="button" class="add-review-btn" onclick="addNewReview()">
+                    <span>+</span> Add New Review
+                </button>
+            `;
+            
+            return html;
+        }
+        
+        function renderReviewItem(review, index) {
+            const rating = review.rating || 5;
+            const ratingOptions = [1, 2, 3, 4, 5].map(r => 
+                `<option value="${r}" ${r === rating ? 'selected' : ''}>${'★'.repeat(r)}</option>`
+            ).join('');
+            
+            return `
+                <div class="review-item" data-review-index="${index}">
+                    <div class="review-header">
+                        <div class="review-meta">
+                            <input type="text" class="review-author-input" 
+                                   value="${escapeHtml(review.author || 'Customer')}"
+                                   onchange="updateReviewField(${index}, 'author', this.value)"
+                                   placeholder="Author name">
+                            <input type="text" class="review-date-input" 
+                                   value="${escapeHtml(review.date || '')}"
+                                   onchange="updateReviewField(${index}, 'date', this.value)"
+                                   placeholder="e.g., 2 weeks ago">
+                        </div>
+                        <select class="review-rating-select" onchange="updateReviewField(${index}, 'rating', parseFloat(this.value))">
+                            ${ratingOptions}
+                        </select>
+                        <div class="review-actions">
+                            <button type="button" class="review-action-btn delete" onclick="deleteReview(${index})" title="Delete review">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <input type="text" class="review-title-input" 
+                           value="${escapeHtml(review.title || '')}"
+                           onchange="updateReviewField(${index}, 'title', this.value)"
+                           placeholder="Review title (optional)">
+                    <textarea class="review-text-input" 
+                              onchange="updateReviewField(${index}, 'text', this.value)"
+                              placeholder="Review text...">${escapeHtml(review.text || '')}</textarea>
+                </div>
+            `;
+        }
+        
+        function updateReviewField(index, field, value) {
+            if (!currentReviews.reviews[index]) return;
+            currentReviews.reviews[index][field] = value;
+            hasUnsavedChanges = true;
+            updateSaveStatus('unsaved');
+        }
+        
+        function addNewReview() {
+            const newReview = {
+                author: 'Customer',
+                rating: 5,
+                title: '',
+                text: '',
+                date: ''
+            };
+            
+            currentReviews.reviews.push(newReview);
+            currentReviews.review_count = currentReviews.reviews.length;
+            
+            // Re-render reviews section
+            const reviewsContent = document.getElementById('reviews-section-content');
+            if (reviewsContent) {
+                reviewsContent.innerHTML = renderReviewsSection();
+            }
+            
+            hasUnsavedChanges = true;
+            updateSaveStatus('unsaved');
+            
+            // Scroll to new review
+            setTimeout(() => {
+                const newItem = document.querySelector(`.review-item[data-review-index="${currentReviews.reviews.length - 1}"]`);
+                if (newItem) {
+                    newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    newItem.querySelector('.review-text-input')?.focus();
+                }
+            }, 100);
+        }
+        
+        function deleteReview(index) {
+            if (!confirm('Delete this review?')) return;
+            
+            currentReviews.reviews.splice(index, 1);
+            currentReviews.review_count = currentReviews.reviews.length;
+            
+            // Recalculate overall rating
+            if (currentReviews.reviews.length > 0) {
+                const totalRating = currentReviews.reviews.reduce((sum, r) => sum + (r.rating || 5), 0);
+                currentReviews.overall_rating = totalRating / currentReviews.reviews.length;
+            } else {
+                currentReviews.overall_rating = null;
+            }
+            
+            // Re-render reviews section
+            const reviewsContent = document.getElementById('reviews-section-content');
+            if (reviewsContent) {
+                reviewsContent.innerHTML = renderReviewsSection();
+            }
+            
+            hasUnsavedChanges = true;
+            updateSaveStatus('unsaved');
+        }
+        
+        async function saveReviews() {
+            if (!currentTour) return false;
+            
+            const key = `${currentTour.company_name}__${currentTour.id}`;
+            
+            // Recalculate overall rating before saving
+            if (currentReviews.reviews.length > 0) {
+                const totalRating = currentReviews.reviews.reduce((sum, r) => sum + (r.rating || 5), 0);
+                currentReviews.overall_rating = parseFloat((totalRating / currentReviews.reviews.length).toFixed(1));
+                currentReviews.review_count = currentReviews.reviews.length;
+            }
+            
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentReviews)
+                });
+                
+                if (!response.ok) throw new Error('Failed to save reviews');
+                return true;
+            } catch (err) {
+                console.error('Failed to save reviews:', err);
+                throw err;
             }
         }
         
