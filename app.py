@@ -27,6 +27,9 @@ load_dotenv()
 app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tour-kiosk-secret-key-2024')
 
+# App version - update this when releasing new versions
+APP_VERSION = "1.0.0"
+
 # ============================================================================
 # AUTHENTICATION & USER MANAGEMENT
 # ============================================================================
@@ -112,6 +115,175 @@ def is_tour_enabled(tour_key):
     """Check if a tour is enabled (not disabled by agent)"""
     settings = load_agent_settings()
     return tour_key not in settings.get('disabled_tours', [])
+
+# ============================================================================
+# ANALYTICS SYSTEM - Local logging for kiosk usage tracking (per-account)
+# ============================================================================
+
+# Default account for analytics (can be overridden per kiosk)
+DEFAULT_ANALYTICS_ACCOUNT = 'bailey'
+
+def get_analytics_file(account=None):
+    """Get the analytics file path for an account"""
+    account = account or DEFAULT_ANALYTICS_ACCOUNT
+    return f'data/analytics_{account}.json'
+
+def load_analytics(account=None):
+    """Load analytics data from account-specific file"""
+    analytics_file = get_analytics_file(account)
+    if os.path.exists(analytics_file):
+        try:
+            with open(analytics_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"Error loading analytics for {account}: {e}")
+            return {'sessions': [], 'summary': {}, 'account': account}
+    return {'sessions': [], 'summary': {}, 'account': account or DEFAULT_ANALYTICS_ACCOUNT}
+
+def save_analytics(data, account=None):
+    """Save analytics data to account-specific file"""
+    os.makedirs('data', exist_ok=True)
+    analytics_file = get_analytics_file(account)
+    data['account'] = account or DEFAULT_ANALYTICS_ACCOUNT
+    data['last_updated'] = datetime.now().isoformat()
+    with open(analytics_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+def log_analytics_event(session_id, event_type, event_data=None, account=None):
+    """Log an analytics event for a session (to account-specific file)"""
+    account = account or DEFAULT_ANALYTICS_ACCOUNT
+    analytics = load_analytics(account)
+    
+    # Find or create session
+    session = None
+    for s in analytics['sessions']:
+        if s['session_id'] == session_id:
+            session = s
+            break
+    
+    if not session:
+        session = {
+            'session_id': session_id,
+            'account': account,
+            'started_at': datetime.now().isoformat(),
+            'events': [],
+            'language': None,
+            'mode': None,
+            'tours_viewed': [],
+            'tours_booked': [],
+            'chat_messages': []
+        }
+        analytics['sessions'].append(session)
+    
+    # Create event
+    event = {
+        'type': event_type,
+        'timestamp': datetime.now().isoformat(),
+        'data': event_data or {}
+    }
+    session['events'].append(event)
+    
+    # Update session-level data based on event type
+    if event_type == 'language_selected':
+        session['language'] = event_data.get('language')
+    elif event_type == 'mode_selected':
+        session['mode'] = event_data.get('mode')
+    elif event_type == 'tour_clicked':
+        tour_name = event_data.get('tour_name')
+        if tour_name and tour_name not in session['tours_viewed']:
+            session['tours_viewed'].append(tour_name)
+    elif event_type == 'book_now_clicked':
+        tour_name = event_data.get('tour_name')
+        if tour_name and tour_name not in session['tours_booked']:
+            session['tours_booked'].append(tour_name)
+    elif event_type == 'chat_message':
+        session['chat_messages'].append({
+            'role': event_data.get('role', 'user'),
+            'message': event_data.get('message', '')[:500],  # Limit message length
+            'timestamp': datetime.now().isoformat()
+        })
+    elif event_type == 'session_end':
+        session['ended_at'] = datetime.now().isoformat()
+        # Calculate duration
+        try:
+            start = datetime.fromisoformat(session['started_at'])
+            end = datetime.fromisoformat(session['ended_at'])
+            session['duration_seconds'] = (end - start).total_seconds()
+        except:
+            pass
+    
+    # Keep only last 1000 sessions to prevent file bloat
+    if len(analytics['sessions']) > 1000:
+        analytics['sessions'] = analytics['sessions'][-1000:]
+    
+    save_analytics(analytics, account)
+    return session
+
+def get_analytics_summary(account=None):
+    """Get summary statistics from analytics data for an account"""
+    account = account or DEFAULT_ANALYTICS_ACCOUNT
+    analytics = load_analytics(account)
+    sessions = analytics.get('sessions', [])
+    
+    if not sessions:
+        return {
+            'total_sessions': 0,
+            'avg_duration_seconds': 0,
+            'language_breakdown': {},
+            'mode_breakdown': {},
+            'top_tours_viewed': [],
+            'top_tours_booked': [],
+            'total_chats': 0
+        }
+    
+    # Calculate stats
+    total_sessions = len(sessions)
+    
+    # Average duration (only for ended sessions)
+    durations = [s.get('duration_seconds', 0) for s in sessions if s.get('duration_seconds')]
+    avg_duration = sum(durations) / len(durations) if durations else 0
+    
+    # Language breakdown
+    languages = {}
+    for s in sessions:
+        lang = s.get('language', 'unknown')
+        languages[lang] = languages.get(lang, 0) + 1
+    
+    # Mode breakdown
+    modes = {}
+    for s in sessions:
+        mode = s.get('mode', 'unknown')
+        modes[mode] = modes.get(mode, 0) + 1
+    
+    # Tour views
+    tour_views = {}
+    for s in sessions:
+        for tour in s.get('tours_viewed', []):
+            tour_views[tour] = tour_views.get(tour, 0) + 1
+    top_tours_viewed = sorted(tour_views.items(), key=lambda x: x[1], reverse=True)[:10]
+    
+    # Tour bookings
+    tour_bookings = {}
+    for s in sessions:
+        for tour in s.get('tours_booked', []):
+            tour_bookings[tour] = tour_bookings.get(tour, 0) + 1
+    top_tours_booked = sorted(tour_bookings.items(), key=lambda x: x[1], reverse=True)[:10]
+    
+    # Total chat messages
+    total_chats = sum(len(s.get('chat_messages', [])) for s in sessions)
+    
+    return {
+        'total_sessions': total_sessions,
+        'avg_duration_seconds': round(avg_duration, 1),
+        'avg_duration_formatted': f"{int(avg_duration // 60)}m {int(avg_duration % 60)}s",
+        'language_breakdown': languages,
+        'mode_breakdown': modes,
+        'top_tours_viewed': top_tours_viewed,
+        'top_tours_booked': top_tours_booked,
+        'total_chats': total_chats,
+        'recent_sessions': sessions[-20:][::-1],  # Last 20, newest first
+        'account': account
+    }
 
 # Company name mapping for prettier display
 COMPANY_DISPLAY_NAMES = {
@@ -636,7 +808,8 @@ def agent_dashboard():
                           promoted_counts=promoted_counts,
                           disabled_count=disabled_count,
                           total_tours=len(all_tours),
-                          company_names=COMPANY_DISPLAY_NAMES)
+                          company_names=COMPANY_DISPLAY_NAMES,
+                          version=APP_VERSION)
 
 @app.route('/admin/agent/api/toggle-tour', methods=['POST'])
 # @agent_required  # Disabled for testing
@@ -733,6 +906,129 @@ def bulk_update_tours():
     
     save_agent_settings(settings)
     return jsonify({'success': True})
+
+# ============================================================================
+# REMOTE UPDATE SYSTEM
+# ============================================================================
+
+import subprocess
+
+@app.route('/health')
+def health_check():
+    """Simple health check endpoint for monitoring and update restart detection"""
+    return jsonify({'status': 'ok', 'version': APP_VERSION})
+
+@app.route('/admin/agent/api/check-updates')
+def check_for_updates():
+    """Check if there are updates available from GitHub"""
+    try:
+        # Fetch latest from remote
+        result = subprocess.run(
+            ['git', 'fetch', 'origin'],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+            timeout=30
+        )
+        
+        # Check if we're behind origin/main
+        result = subprocess.run(
+            ['git', 'rev-list', 'HEAD..origin/main', '--count'],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+            timeout=10
+        )
+        
+        commits_behind = int(result.stdout.strip() or '0')
+        
+        if commits_behind > 0:
+            # Get the list of changes
+            changes_result = subprocess.run(
+                ['git', 'log', 'HEAD..origin/main', '--oneline', '--no-decorate'],
+                capture_output=True,
+                text=True,
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                timeout=10
+            )
+            changes = changes_result.stdout.strip()
+            
+            return jsonify({
+                'updates_available': True,
+                'commits_behind': commits_behind,
+                'changes': changes
+            })
+        else:
+            return jsonify({
+                'updates_available': False,
+                'message': 'Already up to date'
+            })
+            
+    except subprocess.TimeoutExpired:
+        return jsonify({'error': 'Timeout checking for updates'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/agent/api/apply-update', methods=['POST'])
+def apply_update():
+    """Pull latest changes from GitHub and restart the app"""
+    try:
+        # Pull the latest changes
+        result = subprocess.run(
+            ['git', 'pull', 'origin', 'main'],
+            capture_output=True,
+            text=True,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+            timeout=60
+        )
+        
+        if result.returncode != 0:
+            return jsonify({
+                'success': False,
+                'error': result.stderr or 'Git pull failed'
+            })
+        
+        # Schedule a restart
+        # On Windows, we'll use a separate approach
+        import sys
+        import threading
+        
+        def restart_app():
+            import time
+            time.sleep(1)  # Give time for response to be sent
+            
+            # On Windows, we restart by running a batch command
+            if sys.platform == 'win32':
+                # Create a restart script
+                restart_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'restart.bat')
+                with open(restart_script, 'w') as f:
+                    f.write('@echo off\n')
+                    f.write('timeout /t 2 /nobreak > nul\n')
+                    f.write(f'cd /d "{os.path.dirname(os.path.abspath(__file__))}"\n')
+                    f.write(f'start "" "{sys.executable}" app.py\n')
+                    f.write('exit\n')
+                
+                subprocess.Popen(['cmd', '/c', restart_script], 
+                               creationflags=subprocess.CREATE_NEW_CONSOLE)
+            else:
+                # On Linux/Mac, use os.execv to restart in place
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+            
+            os._exit(0)
+        
+        # Start restart in background thread
+        threading.Thread(target=restart_app, daemon=True).start()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Update applied, restarting...',
+            'output': result.stdout
+        })
+        
+    except subprocess.TimeoutExpired:
+        return jsonify({'success': False, 'error': 'Timeout during update'}), 500
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # ============================================================================
 # OPERATOR MODE ROUTES
@@ -1210,7 +1506,7 @@ def apply_filters(tours, criteria):
         
         # OR logic: Show tours that match ANY of the selected activities
         def tour_matches_any_activity(tour):
-            # Build searchable text for text-based matching
+            # Build searchable text for text-based matching (includes translated names)
             search_text = f"{tour.get('name', '')} {tour.get('description', '')} {tour.get('highlights', '')} {tour.get('includes', '')}".lower()
             
             for selected_activity in selected_activities:
@@ -1225,38 +1521,53 @@ def apply_filters(tours, criteria):
                         return True
                 
                 # Additional text-based matching for activities not in activity_type
-                # SPECIFIC ACTIVITIES FIRST (more restrictive)
+                # MULTI-LANGUAGE KEYWORDS for each activity type
                 if selected_activity == 'diving':
-                    # ONLY true scuba diving tours - must have "dive" or "diving" in name/description
-                    # Exclude tours that just mention snorkeling with optional diving
-                    if any(word in search_text for word in ['scuba', 'certified dive', 'intro dive', 'introductory dive', 'discover dive']):
-                        return True
-                    if 'dive' in tour.get('name', '').lower() or 'diving' in tour.get('name', '').lower():
-                        return True
-                    if 'diving tour' in search_text or 'dive tour' in search_text or 'dive trip' in search_text:
+                    # ONLY true scuba diving tours - multi-language
+                    diving_words = ['scuba', 'dive', 'diving', 'certified dive', 'intro dive', 
+                                    'ダイビング', 'スキューバ',  # Japanese
+                                    '潜水', '水肺',  # Chinese
+                                    'tauchen', 'plongée', 'buceo']  # German, French, Spanish
+                    if any(word in search_text for word in diving_words):
                         return True
                 elif selected_activity == 'snorkeling':
                     # Tours focused on snorkeling (not diving)
-                    if 'snorkel' in search_text and 'dive' not in tour.get('name', '').lower():
-                        return True
+                    snorkel_words = ['snorkel', 'シュノーケル', 'シュノーケリング', '浮潜', 'schnorcheln', 'esnórquel']
+                    dive_words_check = ['dive', 'diving', 'ダイビング', '潜水']
+                    name_lower = tour.get('name', '').lower()
+                    if any(word in search_text for word in snorkel_words):
+                        if not any(word in name_lower for word in dive_words_check):
+                            return True
                 elif selected_activity == 'sailing':
-                    if any(word in search_text for word in ['sail', 'sailing', 'cruise', 'yacht', 'catamaran']):
+                    sailing_words = ['sail', 'sailing', 'cruise', 'yacht', 'catamaran',
+                                     'ヨット', 'クルーズ', 'セーリング',  # Japanese
+                                     '帆船', '游船', '游轮',  # Chinese
+                                     'segeln', 'voile', 'vela']  # German, French, Spanish
+                    if any(word in search_text for word in sailing_words):
                         return True
                 elif selected_activity == 'swimming':
-                    if any(word in search_text for word in ['swim', 'beach', 'whitehaven', 'water']):
+                    swim_words = ['swim', 'beach', 'whitehaven', 'water', 'ビーチ', '海滩', 'strand', 'plage', 'playa']
+                    if any(word in search_text for word in swim_words):
                         return True
                 elif selected_activity == 'scenic_views':
-                    if any(word in search_text for word in ['scenic', 'view', 'helicopter', 'flight', 'aerial']):
+                    scenic_words = ['scenic', 'view', 'helicopter', 'flight', 'aerial',
+                                    '遊覧', '景色', 'ヘリコプター',  # Japanese
+                                    '直升机', '风景',  # Chinese
+                                    'rundflug', 'panoramique', 'escénico']  # German, French, Spanish
+                    if any(word in search_text for word in scenic_words):
                         return True
                 elif selected_activity == 'great_barrier_reef':
                     # General reef tours (includes snorkeling and diving)
-                    if 'reef' in search_text:
+                    reef_words = ['reef', 'リーフ', 'サンゴ', 'グレートバリア', '珊瑚', '大堡礁', 'riff', 'récif', 'arrecife']
+                    if any(word in search_text for word in reef_words):
                         return True
                 elif selected_activity == 'whitehaven_beach':
-                    if 'whitehaven' in search_text:
+                    whitehaven_words = ['whitehaven', 'ホワイトヘブン', '白天堂', '白沙']
+                    if any(word in search_text for word in whitehaven_words):
                         return True
                 elif selected_activity == 'scenic_adventure':
-                    if any(word in search_text for word in ['scenic', 'adventure', 'helicopter', 'jet']):
+                    adventure_words = ['scenic', 'adventure', 'helicopter', 'jet', 'アドベンチャー', '冒险', 'aventure']
+                    if any(word in search_text for word in adventure_words):
                         return True
                         
             return False
@@ -1606,52 +1917,116 @@ def extract_tour_filters(user_message, conversation_history):
     filters = {}
     
     # Detect duration from current message OR user history
+    # Include multi-language keywords (Chinese, Japanese, German, French, Spanish, Hindi)
     full_context = current_msg + " " + user_history
-    if any(word in full_context for word in ['multi-day', 'multiday', 'overnight', 'multi day', '2 day', '3 day', 'liveaboard']):
+    
+    # Duration keywords in multiple languages
+    multi_day_keywords = ['multi-day', 'multiday', 'overnight', 'multi day', '2 day', '3 day', 'liveaboard',
+                          '多日', '过夜', '两天', '三天',  # Chinese
+                          '数日', '複数日', '二日', '三日',  # Japanese
+                          'mehrtägig', 'übernachtung',  # German
+                          'plusieurs jours', 'nuit',  # French
+                          'varios días', 'noche']  # Spanish
+    full_day_keywords = ['full day', 'full-day', 'all day', 'whole day',
+                         '一整天', '全天', '整天',  # Chinese
+                         '終日', '一日',  # Japanese
+                         'ganztägig', 'ganzer tag',  # German
+                         'journée complète', 'toute la journée',  # French
+                         'día completo', 'todo el día']  # Spanish
+    half_day_keywords = ['half day', 'half-day', 'few hours', 'morning', 'afternoon', 'short',
+                         '半天', '上午', '下午', '几个小时',  # Chinese
+                         '半日', '午前', '午後',  # Japanese
+                         'halbtags', 'vormittag', 'nachmittag',  # German
+                         'demi-journée', 'matin', 'après-midi',  # French
+                         'medio día', 'mañana', 'tarde']  # Spanish
+    
+    if any(word in full_context for word in multi_day_keywords):
         filters['duration'] = 'multi_day'
-    elif any(word in full_context for word in ['full day', 'full-day', 'all day', 'whole day']):
+    elif any(word in full_context for word in full_day_keywords):
         filters['duration'] = 'full_day'
-    elif any(word in full_context for word in ['half day', 'half-day', 'few hours', 'morning', 'afternoon', 'short']):
+    elif any(word in full_context for word in half_day_keywords):
         filters['duration'] = 'half_day'
     
+    # Activity keywords in multiple languages
+    diving_keywords = ['scuba', 'diving', 'dive tour', 'dive trip', 'certified dive',
+                       '潜水', '水肺',  # Chinese
+                       'ダイビング', 'スキューバ',  # Japanese
+                       'tauchen', 'tauchgang',  # German
+                       'plongée',  # French
+                       'buceo', 'buzo']  # Spanish
+    whitehaven_keywords = ['whitehaven', 'white haven', 'white sand', 'silica sand',
+                           '白天堂', '白沙滩',  # Chinese
+                           'ホワイトヘブン',  # Japanese
+                           'weißer strand']  # German
+    snorkeling_keywords = ['snorkel', 'snorkeling', 'snorkelling',
+                           '浮潜',  # Chinese
+                           'シュノーケリング', 'シュノーケル',  # Japanese
+                           'schnorcheln',  # German
+                           'palmes', 'tubas',  # French
+                           'esnórquel']  # Spanish
+    reef_keywords = ['reef', 'coral', 'great barrier', 'outer reef',
+                     '珊瑚', '大堡礁', '礁',  # Chinese
+                     'サンゴ', 'リーフ', 'グレートバリアリーフ',  # Japanese
+                     'riff', 'korallen',  # German
+                     'récif', 'corail',  # French
+                     'arrecife', 'coral']  # Spanish
+    sailing_keywords = ['sail', 'sailing', 'cruise', 'yacht', 'catamaran',
+                        '帆船', '游船', '游轮', '双体船',  # Chinese
+                        'ヨット', 'クルーズ', 'セーリング',  # Japanese
+                        'segeln', 'kreuzfahrt', 'segelboot',  # German
+                        'voile', 'croisière', 'yacht',  # French
+                        'vela', 'navegación', 'crucero']  # Spanish
+    scenic_keywords = ['helicopter', 'scenic flight', 'seaplane', 'aerial', 'jet boat',
+                       '直升机', '水上飞机', '快艇',  # Chinese
+                       'ヘリコプター', '遊覧飛行', '水上飛行機',  # Japanese
+                       'hubschrauber', 'rundflug',  # German
+                       'hélicoptère', 'vol panoramique',  # French
+                       'helicóptero', 'vuelo escénico']  # Spanish
+    beach_keywords = ['beach', '海滩', 'ビーチ', 'strand', 'plage', 'playa']
+    
     # Detect activity PRIMARILY from current message first
-    # This prevents history (like welcome message mentioning "reef") from overriding user's request
     activity_detected = None
     
     # Check current message first - ORDER MATTERS! More specific filters first
-    if any(word in current_msg for word in ['scuba', 'diving', 'dive tour', 'dive trip', 'certified dive']):
-        activity_detected = 'diving'  # Specific diving tours only
-    elif any(word in current_msg for word in ['whitehaven', 'white haven', 'white sand', 'silica sand']):
+    if any(word in current_msg for word in diving_keywords):
+        activity_detected = 'diving'
+    elif any(word in current_msg for word in whitehaven_keywords):
         activity_detected = 'whitehaven_beach'
-    elif any(word in current_msg for word in ['snorkel', 'snorkeling', 'snorkelling']):
-        activity_detected = 'snorkeling'  # Snorkeling specific
-    elif any(word in current_msg for word in ['reef', 'coral', 'great barrier', 'outer reef']):
-        activity_detected = 'great_barrier_reef'  # General reef tours
-    elif any(word in current_msg for word in ['sail', 'sailing', 'cruise', 'yacht', 'catamaran']):
+    elif any(word in current_msg for word in snorkeling_keywords):
+        activity_detected = 'snorkeling'
+    elif any(word in current_msg for word in reef_keywords):
+        activity_detected = 'great_barrier_reef'
+    elif any(word in current_msg for word in sailing_keywords):
         activity_detected = 'island_tours'
-    elif any(word in current_msg for word in ['helicopter', 'scenic flight', 'seaplane', 'aerial', 'jet boat']):
+    elif any(word in current_msg for word in scenic_keywords):
         activity_detected = 'scenic_adventure'
-    elif 'beach' in current_msg:  # Generic "beach" defaults to whitehaven
+    elif any(word in current_msg for word in beach_keywords):
         activity_detected = 'whitehaven_beach'
     
     # If not found in current message, check user history
     if not activity_detected:
-        if any(word in user_history for word in ['scuba', 'diving', 'dive tour']):
+        if any(word in user_history for word in diving_keywords):
             activity_detected = 'diving'
-        elif any(word in user_history for word in ['whitehaven', 'white haven', 'white sand', 'silica']):
+        elif any(word in user_history for word in whitehaven_keywords):
             activity_detected = 'whitehaven_beach'
-        elif any(word in user_history for word in ['snorkel', 'snorkeling']):
+        elif any(word in user_history for word in snorkeling_keywords):
             activity_detected = 'snorkeling'
-        elif any(word in user_history for word in ['reef', 'coral', 'great barrier']):
+        elif any(word in user_history for word in reef_keywords):
             activity_detected = 'great_barrier_reef'
-        elif any(word in user_history for word in ['sail', 'sailing', 'cruise', 'yacht']):
+        elif any(word in user_history for word in sailing_keywords):
             activity_detected = 'island_tours'
     
     if activity_detected:
         filters['activity'] = activity_detected
     
-    # Detect family filter
-    if any(word in full_context for word in ['family', 'kids', 'children', 'child']):
+    # Detect family filter (multi-language)
+    family_keywords = ['family', 'kids', 'children', 'child',
+                       '家庭', '孩子', '儿童',  # Chinese
+                       '家族', '子供',  # Japanese
+                       'familie', 'kinder',  # German
+                       'famille', 'enfants',  # French
+                       'familia', 'niños']  # Spanish
+    if any(word in full_context for word in family_keywords):
         filters['family'] = True
     
     # Only return if we have at least activity OR duration
@@ -2978,6 +3353,97 @@ def update_company_field(company):
         
     except Exception as e:
         print(f"Error updating company field: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# ============================================================================
+# ANALYTICS API ENDPOINTS
+# ============================================================================
+
+@app.route('/api/analytics/event', methods=['POST'])
+def log_analytics():
+    """Log an analytics event from the frontend"""
+    try:
+        data = request.get_json()
+        session_id = data.get('session_id')
+        event_type = data.get('event_type')
+        event_data = data.get('event_data', {})
+        
+        if not session_id or not event_type:
+            return jsonify({'error': 'session_id and event_type required'}), 400
+        
+        # Use default account for analytics (kiosk doesn't know about user accounts)
+        session = log_analytics_event(session_id, event_type, event_data, account=DEFAULT_ANALYTICS_ACCOUNT)
+        
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'event_type': event_type
+        })
+    except Exception as e:
+        print(f"Analytics error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/start-session', methods=['POST'])
+def start_analytics_session():
+    """Start a new analytics session and return session ID"""
+    try:
+        session_id = f"session_{uuid.uuid4().hex[:12]}_{int(time.time())}"
+        
+        # Create initial session (use default account - kiosk doesn't know about users)
+        log_analytics_event(session_id, 'session_start', {
+            'user_agent': request.headers.get('User-Agent', 'unknown'),
+            'referrer': request.headers.get('Referer', 'direct')
+        }, account=DEFAULT_ANALYTICS_ACCOUNT)
+        
+        return jsonify({
+            'success': True,
+            'session_id': session_id
+        })
+    except Exception as e:
+        print(f"Analytics session start error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/summary')
+@agent_required
+def analytics_summary():
+    """Get analytics summary (agent only) - shows logged-in user's analytics"""
+    try:
+        # Get analytics for logged-in user's account
+        account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+        summary = get_analytics_summary(account)
+        return jsonify(summary)
+    except Exception as e:
+        print(f"Analytics summary error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/agent/analytics')
+@agent_required
+def agent_analytics_page():
+    """Analytics dashboard for agents - shows logged-in user's analytics"""
+    # Get analytics for logged-in user's account
+    account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+    summary = get_analytics_summary(account)
+    return render_template('agent_analytics.html', summary=summary, account=account)
+
+@app.route('/api/analytics/session/<session_id>')
+@agent_required
+def get_session_details(session_id):
+    """Get detailed events for a specific session"""
+    try:
+        account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+        analytics = load_analytics(account)
+        
+        # Find the session
+        for s in analytics.get('sessions', []):
+            if s.get('session_id') == session_id:
+                return jsonify({
+                    'success': True,
+                    'session': s
+                })
+        
+        return jsonify({'error': 'Session not found'}), 404
+    except Exception as e:
+        print(f"Session details error: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

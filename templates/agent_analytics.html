@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiosk Analytics - Agent Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #0077b6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0088cc;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #00b4d8;
+        }
+        
+        .stat-sub {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section h2 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #00b4d8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .breakdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .breakdown-label {
+            font-weight: 500;
+        }
+        
+        .breakdown-value {
+            font-weight: 700;
+            color: #00b4d8;
+            font-size: 1.2em;
+        }
+        
+        .tour-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .tour-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tour-name {
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .tour-count {
+            background: #0077b6;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .sessions-table th,
+        .sessions-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sessions-table th {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        
+        .sessions-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .badge-ai { background: #9b59b6; }
+        .badge-quick { background: #27ae60; }
+        .badge-browse { background: #e67e22; }
+        .badge-unknown { background: #7f8c8d; }
+        
+        .lang-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0077b6;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
+            transition: all 0.2s ease;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 119, 182, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 2em;
+            }
+            
+            .sessions-table {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Kiosk Analytics</h1>
+        <div class="header-actions">
+            <span style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 16px; border-radius: 20px; font-weight: 600;">
+                👤 {{ account or 'bailey' }}
+            </span>
+            <a href="/agent" class="btn btn-secondary">← Back to Dashboard</a>
+            <button onclick="location.reload()" class="btn btn-primary">🔄 Refresh</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        {% if summary.total_sessions == 0 %}
+        <div class="empty-state">
+            <div class="icon">📊</div>
+            <h2>No Analytics Data Yet</h2>
+            <p>Analytics will appear here as users interact with the kiosk.</p>
+        </div>
+        {% else %}
+        
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Sessions</h3>
+                <div class="stat-value">{{ summary.total_sessions }}</div>
+                <div class="stat-sub">All time</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Duration</h3>
+                <div class="stat-value">{{ summary.avg_duration_formatted }}</div>
+                <div class="stat-sub">Per session</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total AI Chats</h3>
+                <div class="stat-value">{{ summary.total_chats }}</div>
+                <div class="stat-sub">Messages exchanged</div>
+            </div>
+            <div class="stat-card">
+                <h3>Tours Booked</h3>
+                <div class="stat-value">{{ summary.top_tours_booked | length }}</div>
+                <div class="stat-sub">Unique tours</div>
+            </div>
+        </div>
+        
+        <!-- Language & Mode Breakdown -->
+        <div class="section">
+            <h2>🌍 Language Breakdown</h2>
+            <div class="breakdown-grid">
+                {% for lang, count in summary.language_breakdown.items() %}
+                <div class="breakdown-item">
+                    <span class="breakdown-label">
+                        {% if lang == 'en' %}🇬🇧 English
+                        {% elif lang == 'zh' %}🇨🇳 中文
+                        {% elif lang == 'ja' %}🇯🇵 日本語
+                        {% elif lang == 'de' %}🇩🇪 Deutsch
+                        {% elif lang == 'fr' %}🇫🇷 Français
+                        {% elif lang == 'es' %}🇪🇸 Español
+                        {% elif lang == 'hi' %}🇮🇳 हिन्दी
+                        {% else %}{{ lang }}
+                        {% endif %}
+                    </span>
+                    <span class="breakdown-value">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Mode Usage</h2>
+            <div class="breakdown-grid">
+                {% for mode, count in summary.mode_breakdown.items() %}
+                <div class="breakdown-item">
+                    <span class="breakdown-label">
+                        {% if mode == 'ai-assistant' %}🤖 AI Assistant
+                        {% elif mode == 'quick-decision' %}⚡ Quick Decision
+                        {% elif mode == 'browse-all' %}🗂️ Browse All Tours
+                        {% else %}{{ mode }}
+                        {% endif %}
+                    </span>
+                    <span class="breakdown-value">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Top Tours -->
+        {% if summary.top_tours_viewed %}
+        <div class="section">
+            <h2>👀 Most Viewed Tours</h2>
+            <div class="tour-list">
+                {% for tour_name, count in summary.top_tours_viewed %}
+                <div class="tour-item">
+                    <span class="tour-name">{{ tour_name }}</span>
+                    <span class="tour-count">{{ count }} views</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if summary.top_tours_booked %}
+        <div class="section">
+            <h2>🎟️ Most Booked Tours</h2>
+            <div class="tour-list">
+                {% for tour_name, count in summary.top_tours_booked %}
+                <div class="tour-item">
+                    <span class="tour-name">{{ tour_name }}</span>
+                    <span class="tour-count">{{ count }} bookings</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Recent Sessions -->
+        {% if summary.recent_sessions %}
+        <div class="section">
+            <h2>🕐 Recent Sessions <span style="font-size: 0.7em; color: rgba(255,255,255,0.6);">(click to view details)</span></h2>
+            <div style="overflow-x: auto;">
+                <table class="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Language</th>
+                            <th>Mode</th>
+                            <th>Duration</th>
+                            <th>Tours Viewed</th>
+                            <th>Chats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in summary.recent_sessions %}
+                        <tr onclick="viewSessionDetails('{{ session.session_id }}')" style="cursor: pointer;">
+                            <td>{{ session.started_at[:16].replace('T', ' ') if session.started_at else 'N/A' }}</td>
+                            <td>
+                                <span class="lang-badge">
+                                    {% if session.language == 'en' %}🇬🇧
+                                    {% elif session.language == 'zh' %}🇨🇳
+                                    {% elif session.language == 'ja' %}🇯🇵
+                                    {% elif session.language == 'de' %}🇩🇪
+                                    {% elif session.language == 'fr' %}🇫🇷
+                                    {% elif session.language == 'es' %}🇪🇸
+                                    {% elif session.language == 'hi' %}🇮🇳
+                                    {% else %}{{ session.language or '?' }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if session.mode == 'ai-assistant' %}
+                                <span class="badge badge-ai">🤖 AI</span>
+                                {% elif session.mode == 'quick-decision' %}
+                                <span class="badge badge-quick">⚡ Quick</span>
+                                {% elif session.mode == 'browse-all' %}
+                                <span class="badge badge-browse">🗂️ Browse</span>
+                                {% else %}
+                                <span class="badge badge-unknown">{{ session.mode or '?' }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if session.duration_seconds %}
+                                {{ (session.duration_seconds // 60) | int }}m {{ (session.duration_seconds % 60) | int }}s
+                                {% else %}
+                                Active
+                                {% endif %}
+                            </td>
+                            <td>{{ session.tours_viewed | length }}</td>
+                            <td>{{ session.chat_messages | length }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% endif %}
+    </div>
+    
+    <!-- Session Details Modal -->
+    <div id="session-modal" class="session-modal" onclick="if(event.target===this) closeSessionModal()">
+        <div class="session-modal-content">
+            <div class="session-modal-header">
+                <h2>📋 Session Timeline</h2>
+                <button onclick="closeSessionModal()" class="modal-close">✕</button>
+            </div>
+            <div class="session-modal-body" id="session-modal-body">
+                <!-- Session details loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="location.reload()">🔄 Refresh Data</button>
+    
+    <style>
+        .session-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .session-modal.active { display: flex; }
+        .session-modal-content {
+            background: #1a1a2e;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .session-modal-header {
+            padding: 20px 25px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .session-modal-header h2 { margin: 0; font-size: 1.3em; }
+        .modal-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.2); }
+        .session-modal-body {
+            padding: 20px 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .event-timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .event-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 4px solid #0077b6;
+        }
+        .event-item.language { border-color: #9b59b6; }
+        .event-item.mode { border-color: #27ae60; }
+        .event-item.filter { border-color: #e67e22; }
+        .event-item.tour { border-color: #3498db; }
+        .event-item.book { border-color: #e74c3c; }
+        .event-item.chat { border-color: #1abc9c; }
+        .event-item.action { border-color: #f39c12; }
+        .event-time {
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 5px;
+        }
+        .event-type {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .event-data {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+        }
+        .chat-exchange {
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        .chat-user { color: #3498db; }
+        .chat-assistant { color: #27ae60; }
+    </style>
+    
+    <script>
+        async function viewSessionDetails(sessionId) {
+            try {
+                const response = await fetch('/api/analytics/session/' + sessionId);
+                const data = await response.json();
+                
+                if (data.success && data.session) {
+                    renderSessionDetails(data.session);
+                    document.getElementById('session-modal').classList.add('active');
+                } else {
+                    alert('Session not found');
+                }
+            } catch (error) {
+                console.error('Error loading session:', error);
+                alert('Error loading session details');
+            }
+        }
+        
+        function closeSessionModal() {
+            document.getElementById('session-modal').classList.remove('active');
+        }
+        
+        function renderSessionDetails(session) {
+            const body = document.getElementById('session-modal-body');
+            const events = session.events || [];
+            
+            // Build timeline HTML
+            let html = '<ul class="event-timeline">';
+            
+            for (const event of events) {
+                const time = event.timestamp ? new Date(event.timestamp).toLocaleTimeString() : '';
+                const eventClass = getEventClass(event.type);
+                const icon = getEventIcon(event.type);
+                const description = getEventDescription(event);
+                
+                html += `
+                    <li class="event-item ${eventClass}">
+                        <div class="event-time">${time}</div>
+                        <div class="event-type">${icon} ${formatEventType(event.type)}</div>
+                        <div class="event-data">${description}</div>
+                    </li>
+                `;
+            }
+            
+            html += '</ul>';
+            
+            // Add summary at top
+            const summaryHtml = `
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(0,119,182,0.2); border-radius: 10px;">
+                    <strong>Session started:</strong> ${session.started_at ? new Date(session.started_at).toLocaleString() : 'Unknown'}<br>
+                    <strong>Duration:</strong> ${session.duration_seconds ? Math.round(session.duration_seconds/60) + 'm ' + Math.round(session.duration_seconds%60) + 's' : 'Active'}<br>
+                    <strong>Language:</strong> ${session.language || 'Not set'}<br>
+                    <strong>Mode:</strong> ${session.mode || 'Not set'}<br>
+                    <strong>Tours viewed:</strong> ${(session.tours_viewed || []).length}<br>
+                    <strong>Total events:</strong> ${events.length}
+                </div>
+            `;
+            
+            body.innerHTML = summaryHtml + html;
+        }
+        
+        function getEventClass(type) {
+            if (type.includes('language')) return 'language';
+            if (type.includes('mode')) return 'mode';
+            if (type.includes('filter')) return 'filter';
+            if (type.includes('tour')) return 'tour';
+            if (type.includes('book') || type.includes('share') || type.includes('phone')) return 'book';
+            if (type.includes('chat')) return 'chat';
+            return 'action';
+        }
+        
+        function getEventIcon(type) {
+            const icons = {
+                'session_start': '🚀',
+                'session_end': '🏁',
+                'language_selected': '🌍',
+                'mode_selected': '🎯',
+                'filter_selected': '🔍',
+                'tour_clicked': '👀',
+                'book_now_clicked': '🎟️',
+                'share_clicked': '📤',
+                'send_to_phone_clicked': '📱',
+                'chat_message': '💬'
+            };
+            return icons[type] || '📌';
+        }
+        
+        function formatEventType(type) {
+            return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+        
+        function getEventDescription(event) {
+            const data = event.data || {};
+            
+            switch (event.type) {
+                case 'session_start':
+                    return `User agent: ${(data.user_agent || 'Unknown').substring(0, 50)}...`;
+                case 'language_selected':
+                    return `Selected: <strong>${data.language || 'Unknown'}</strong>`;
+                case 'mode_selected':
+                    return `Mode: <strong>${data.mode || 'Unknown'}</strong>`;
+                case 'filter_selected':
+                    return `Filter: <strong>${data.filter_type}</strong> = <strong>${data.filter_value || 'No preference'}</strong>`;
+                case 'tour_clicked':
+                    return `Viewed: <strong>${data.tour_name || 'Unknown'}</strong> (from ${data.source || 'unknown'})`;
+                case 'book_now_clicked':
+                    return `Booked: <strong>${data.tour_name || 'Unknown'}</strong>`;
+                case 'share_clicked':
+                    return `Shared: <strong>${data.tour_name || 'Unknown'}</strong>`;
+                case 'send_to_phone_clicked':
+                    return `Sent to phone: <strong>${data.tour_name || 'Unknown'}</strong>`;
+                case 'chat_message':
+                    const role = data.role === 'user' ? 'User' : 'Assistant';
+                    const cls = data.role === 'user' ? 'chat-user' : 'chat-assistant';
+                    const msg = (data.message || '').substring(0, 200);
+                    return `<div class="chat-exchange"><span class="${cls}"><strong>${role}:</strong></span> ${msg}${msg.length >= 200 ? '...' : ''}</div>`;
+                case 'session_end':
+                    return 'Session ended (inactivity timeout)';
+                default:
+                    return JSON.stringify(data);
+            }
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSessionModal();
+        });
+    </script>
+</body>
+</html>
+

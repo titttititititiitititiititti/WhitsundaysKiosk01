@@ -13558,11 +13558,116 @@
     let currentCurrency = 'AUD';
     
     // =====================================================================
+    // ANALYTICS TRACKING SYSTEM
+    // =====================================================================
+    const Analytics = {
+      sessionId: null,
+      initialized: false,
+      
+      // Initialize analytics session
+      async init() {
+        if (this.initialized) return;
+        
+        // Check for existing session in sessionStorage
+        const existingSession = sessionStorage.getItem('analytics_session_id');
+        if (existingSession) {
+          this.sessionId = existingSession;
+          this.initialized = true;
+          console.log('📊 Analytics: Resumed session', this.sessionId);
+          return;
+        }
+        
+        // Start new session
+        try {
+          const response = await fetch('/api/analytics/start-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await response.json();
+          if (data.success) {
+            this.sessionId = data.session_id;
+            sessionStorage.setItem('analytics_session_id', this.sessionId);
+            this.initialized = true;
+            console.log('📊 Analytics: Started session', this.sessionId);
+          }
+        } catch (error) {
+          console.error('📊 Analytics: Failed to start session', error);
+        }
+      },
+      
+      // Log an event
+      async logEvent(eventType, eventData = {}) {
+        if (!this.sessionId) {
+          await this.init();
+        }
+        
+        if (!this.sessionId) {
+          console.warn('📊 Analytics: No session, skipping event', eventType);
+          return;
+        }
+        
+        try {
+          fetch('/api/analytics/event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: this.sessionId,
+              event_type: eventType,
+              event_data: eventData
+            })
+          }).catch(err => console.warn('📊 Analytics event failed:', err));
+          
+          console.log('📊 Analytics:', eventType, eventData);
+        } catch (error) {
+          console.warn('📊 Analytics: Error logging event', error);
+        }
+      },
+      
+      // Convenience methods
+      languageSelected(language) {
+        this.logEvent('language_selected', { language });
+      },
+      
+      modeSelected(mode) {
+        this.logEvent('mode_selected', { mode });
+      },
+      
+      tourClicked(tourName, tourCompany, source) {
+        this.logEvent('tour_clicked', { tour_name: tourName, company: tourCompany, source });
+      },
+      
+      bookNowClicked(tourName, tourCompany, source) {
+        this.logEvent('book_now_clicked', { tour_name: tourName, company: tourCompany, source });
+      },
+      
+      chatMessage(role, message) {
+        this.logEvent('chat_message', { role, message: message.substring(0, 500) });
+      },
+      
+      filterSelected(filterType, filterValue) {
+        this.logEvent('filter_selected', { filter_type: filterType, filter_value: filterValue });
+      },
+      
+      endSession() {
+        this.logEvent('session_end', {});
+        sessionStorage.removeItem('analytics_session_id');
+        this.sessionId = null;
+        this.initialized = false;
+      }
+    };
+    
+    // Initialize analytics on page load
+    Analytics.init();
+    
+    // =====================================================================
     // LANGUAGE SELECTION - Define early so onclick handlers work
     // =====================================================================
     
     window.selectInitialLanguage = function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
+      
+      // Track language selection
+      Analytics.languageSelected(langCode);
       
       // Save language preference
       localStorage.setItem('preferred_language', langCode);
@@ -13579,8 +13684,33 @@
     window.goToLanguageSelection = function() {
       console.log('🏠 Going back to language selection...');
       
+      // End current analytics session
+      if (typeof Analytics !== 'undefined') {
+        Analytics.endSession();
+      }
+      
+      // Clear AI conversation history
+      if (typeof aiConversationHistory !== 'undefined') {
+        aiConversationHistory = [];
+      }
+      if (typeof chatHistory !== 'undefined') {
+        chatHistory = [];
+      }
+      
+      // Reset welcome message flag so it plays again
+      window.welcomeMessagePlayed = false;
+      window.currentWelcomeAudio = null;
+      
+      // Stop any playing audio
+      if (typeof window.stopTTS === 'function') {
+        window.stopTTS();
+      }
+      
       // Clear the skip flag so language selection shows
       localStorage.removeItem('skip_language_screen');
+      
+      // Clear splash shown flag so splash appears again
+      sessionStorage.removeItem('splash_shown');
       
       // Redirect to root without any hash
       window.location.href = '/';
@@ -13929,6 +14059,9 @@
     
     async function handleVideoAnswer(answer, isMultiple, filterType, btnElement) {
       resetInactivityTimer();
+      
+      // Track filter selection with analytics
+      Analytics.filterSelected(filterType, answer.value || 'no_preference');
       
       if (isMultiple) {
         if (answer.isSkip) {
@@ -15219,6 +15352,9 @@
     function startModeWithAnimation(mode) {
       console.log('🚀 Starting mode with animation:', mode);
       
+      // Track mode selection
+      Analytics.modeSelected(mode);
+      
       // Start animation, then execute mode switch
       animateModeButtonsToHeader(mode, function() {
         if (mode === 'ai-assistant') {
@@ -16334,10 +16470,15 @@
         if (ttsAudioElement) {
           ttsAudioElement.pause();
         }
-        // Also pause welcome audio if playing
+        // Also pause welcome audio if playing (both types)
         const welcomeAudio = document.getElementById('welcome-audio');
         if (welcomeAudio) {
           welcomeAudio.pause();
+        }
+        // Also pause the dynamically created welcome audio
+        if (window.currentWelcomeAudio) {
+          window.currentWelcomeAudio.pause();
+          console.log('🔇 Stopped dynamic welcome audio');
         }
         
         // Visual feedback - bounce and gray out
@@ -16923,6 +17064,9 @@
       const message = input.value.trim();
       if (!message) return;
       
+      // Track user message with analytics
+      Analytics.chatMessage('user', message);
+      
       // Add user message to UI
       const userMsg = document.createElement('div');
       userMsg.className = 'ai-message user';
@@ -17099,6 +17243,9 @@
           .replace(/\n/g, '<br>');
         
         assistantMsg.innerHTML = formattedText;
+        
+        // Track assistant response with analytics
+        Analytics.chatMessage('assistant', responseText);
         
         // Add to conversation history
         aiConversationHistory.push({ role: 'assistant', content: responseText });
@@ -17470,6 +17617,14 @@
     function goBackInHistory() {
       console.log('⬅️ Going back in history');
       console.log('📚 Current history stack:', navigationHistory);
+      console.log('🤖 cameFromAIAssistant:', window.cameFromAIAssistant);
+      
+      // PRIORITY: If we came from AI assistant, return to it first
+      if (window.cameFromAIAssistant) {
+        console.log('🤖 Returning to AI Assistant');
+        returnToAIAssistant();
+        return;
+      }
       
       // Check if we're on video start page - go back to language selection
       const videoStartScreen = document.getElementById('video-start-screen');
@@ -17513,6 +17668,67 @@
         // Default to home
         goToHomePage();
       }
+    }
+    
+    // Return to AI Assistant from tour detail page
+    function returnToAIAssistant() {
+      console.log('🤖 Restoring AI Assistant state');
+      
+      // Clear the flag
+      window.cameFromAIAssistant = false;
+      
+      // Hide tour detail page
+      const detailPage = document.querySelector('.tour-detail-page');
+      if (detailPage) {
+        detailPage.classList.remove('active');
+        detailPage.style.display = 'none';
+      }
+      
+      // Hide tour detail footer
+      const footer = document.querySelector('.tour-detail-footer');
+      if (footer) footer.style.display = 'none';
+      
+      // Hide any other pages that might be showing
+      document.querySelectorAll('.page:not(.ai-assistant-page)').forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+      });
+      
+      // Show AI assistant page
+      const aiPage = document.getElementById('ai-assistant-page');
+      if (aiPage) {
+        aiPage.style.display = 'flex';
+        aiPage.classList.add('active');
+        document.body.classList.add('ai-assistant-open');
+      }
+      
+      // Restore tour cards container visibility - FORCE display flex/grid
+      const cardsContainer = document.getElementById('ai-tour-cards');
+      if (cardsContainer) {
+        const cardCount = cardsContainer.children.length;
+        console.log('   📦 Tour cards container has', cardCount, 'cards');
+        
+        if (cardCount > 0) {
+          // Force the display to flex (desktop) or it will use CSS grid for mobile
+          cardsContainer.style.display = 'flex';
+          cardsContainer.style.removeProperty('display'); // Let CSS take over
+          document.body.classList.add('ai-showing-cards');
+          
+          // Also show the visualizer with cards mode
+          const visualizerContainer = document.getElementById('ai-visualizer-container');
+          if (visualizerContainer) {
+            visualizerContainer.classList.remove('hidden');
+            visualizerContainer.classList.add('with-cards');
+          }
+          
+          console.log('   ✓ Restored', cardCount, 'tour cards');
+        }
+      }
+      
+      // Update URL hash
+      window.location.hash = 'ai-assistant';
+      
+      console.log('   ✅ AI Assistant restored');
     }
     
     // Go back to language selection screen
@@ -20115,6 +20331,9 @@
       
       if (bookNowBtn) {
         bookNowBtn.onclick = () => {
+          // Track Book Now click with analytics
+          Analytics.bookNowClicked(data.name, data.company, 'tour-detail');
+          
           // First check if we have a direct booking link in BOOKING_LINKS
           const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(key) : null;
           
@@ -20171,6 +20390,8 @@
       if (continuePhoneBtn) {
         continuePhoneBtn.onclick = () => {
           console.log('📱 Continue on Phone button clicked!');
+          // Track send to phone click with analytics
+          Analytics.logEvent('send_to_phone_clicked', { tour_name: data.name, company: data.company });
           // Generate QR code or show share modal
           generateQRCodeForTour(key, data);
         };
@@ -20182,6 +20403,8 @@
       if (shareTourBtn) {
         shareTourBtn.onclick = () => {
           console.log('🔗 Share Tour button clicked!');
+          // Track share click with analytics
+          Analytics.logEvent('share_clicked', { tour_name: data.name, company: data.company });
           const tourUrl = `${window.location.origin}/tour/${key}?lang=${currentLanguage}`;
           shareTour(tourUrl, data.name);
         };
@@ -20601,6 +20824,17 @@
       }
       console.log('   cameFromAIAssistant:', window.cameFromAIAssistant);
       
+      // Determine the source of the click for analytics
+      let clickSource = 'browse-all';
+      if (window.cameFromAIAssistant || aiIsVisible) {
+        clickSource = 'ai-assistant';
+      } else if (isInVideoFlow) {
+        clickSource = 'quick-decision';
+      }
+      
+      // Store for later analytics call (we'll get tour name from API response)
+      window._pendingTourClick = { key, source: clickSource };
+      
       // Add to navigation history
       addToNavigationHistory('tour-' + key);
       
@@ -20624,6 +20858,12 @@
       fetch(`/tour-detail/${key}?lang=${currentLanguage}`)
         .then(res => res.json())
         .then(data => {
+          // Track tour click with analytics
+          if (window._pendingTourClick) {
+            Analytics.tourClicked(data.name, data.company, window._pendingTourClick.source);
+            delete window._pendingTourClick;
+          }
+          
           document.getElementById('detail-title').textContent = data.name;
           
           // Make company name clickable to filter by company
@@ -21662,6 +21902,23 @@
           document.body.classList.add('ai-assistant-open');
           console.log('   ✓ AI assistant restored with preserved state');
         }
+        
+        // Restore tour cards container visibility
+        const cardsContainer = document.getElementById('ai-tour-cards');
+        if (cardsContainer && cardsContainer.children.length > 0) {
+          cardsContainer.style.removeProperty('display'); // Let CSS handle it
+          document.body.classList.add('ai-showing-cards');
+          
+          // Restore visualizer with cards mode
+          const visualizerContainer = document.getElementById('ai-visualizer-container');
+          if (visualizerContainer) {
+            visualizerContainer.classList.remove('hidden');
+            visualizerContainer.classList.add('with-cards');
+          }
+          
+          console.log('   ✓ Restored', cardsContainer.children.length, 'tour cards');
+        }
+        
         return; // Exit early
       }
       
@@ -23387,6 +23644,9 @@
       inactivityTimer = setTimeout(() => {
         console.log('⏰ Inactivity detected - resetting kiosk...');
         
+        // End analytics session before reset
+        Analytics.endSession();
+        
         // Clear all saved state to prevent interference between users
         localStorage.removeItem('page_state_before_language_change');
         localStorage.removeItem('preferred_language');
@@ -23996,6 +24256,9 @@
       
       if (!message || isChatting) return;
       
+      // Track user message with analytics
+      Analytics.chatMessage('user', message);
+      
       // Enlarge chat interface
       const chatInterface = document.getElementById('chat-interface');
       chatInterface.classList.add('enlarged');
@@ -24048,6 +24311,9 @@
         console.log('====================================================');
         
         if (data.success) {
+          // Track assistant response with analytics
+          Analytics.chatMessage('assistant', data.message);
+          
           // Remove loading animation
           messagesContainer.removeChild(loadingDiv);
           
@@ -25964,6 +26230,15 @@
       
       // Play audio (we're now in user gesture context from the tap)
       if (audioElement) {
+        // Store reference so toggleTTSMute can pause it
+        window.currentWelcomeAudio = audioElement;
+        
+        // Check if already muted
+        if (typeof ttsMuted !== 'undefined' && ttsMuted) {
+          console.log('🔇 Welcome audio skipped - muted by user');
+          return;
+        }
+        
         console.log('🔊 Playing welcome audio...');
         audioElement.volume = 1.0;
         audioElement.currentTime = 0;
@@ -25982,6 +26257,7 @@
         
         audioElement.onended = () => {
           console.log('🔊 Welcome audio ENDED');
+          window.currentWelcomeAudio = null;
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
           const micBtn = document.getElementById('ai-mic-btn');
           if (micBtn) micBtn.classList.add('ready-to-speak');
