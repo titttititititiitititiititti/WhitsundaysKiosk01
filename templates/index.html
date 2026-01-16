@@ -14203,6 +14203,10 @@
         
         swipeOverlay.style.display = ''; // Clear any inline display:none
         swipeOverlay.classList.add('active');
+        
+        // Re-initialize swipe gestures now that overlay is active
+        setupSwipeGestures();
+        
         renderSwipeCards();
         
         setTimeout(() => {
@@ -14280,6 +14284,10 @@
     function setupSwipeGestures() {
       const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (!swipeOverlay) return;
+      
+      // Prevent duplicate event listeners
+      if (swipeOverlay.hasAttribute('data-swipe-initialized')) return;
+      swipeOverlay.setAttribute('data-swipe-initialized', 'true');
       
       let touchStartX = 0;
       let touchStartY = 0;
@@ -14704,6 +14712,13 @@
     function renderInfoSections(tour) {
       const container = document.getElementById('swipe-info-sections');
       container.innerHTML = '';
+      
+      // Reset animation state to ensure proper centering
+      container.style.animation = 'none';
+      container.offsetHeight; // Trigger reflow
+      container.style.animation = '';
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
       
       let sectionsAdded = 0;
       
