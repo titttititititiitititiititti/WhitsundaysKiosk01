@@ -3954,9 +3954,9 @@
       max-width: 600px;
       margin: 0 auto;
       z-index: 15;
-      opacity: 0;
-      animation: fadeInUp 0.6s ease-out 0.8s forwards;
-      transition: all 0.3s ease;
+      opacity: 1;
+      justify-content: center;
+      align-items: start;
     }
     
     .swipe-expanded-details {
@@ -14713,17 +14713,12 @@
       const container = document.getElementById('swipe-info-sections');
       container.innerHTML = '';
       
-      // Reset animation state to ensure proper centering
-      container.style.animation = 'none';
-      container.offsetHeight; // Trigger reflow
-      container.style.animation = '';
-      container.style.opacity = '1';
-      container.style.transform = 'translateY(0)';
-      
       let sectionsAdded = 0;
+      let includesBox = null;
+      let highlightsBox = null;
       
       if (tour.includes && tour.includes.trim() && tour.includes !== 'N/A') {
-        const includesBox = document.createElement('div');
+        includesBox = document.createElement('div');
         includesBox.className = 'swipe-info-box slide-up-fade';
         
         let items = tour.includes.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
@@ -14742,13 +14737,14 @@
             <h3>✓ ${t('whats_included')}</h3>
             <ul>${itemsList}</ul>
           `;
-          container.appendChild(includesBox);
           sectionsAdded++;
+        } else {
+          includesBox = null;
         }
       }
       
       if (tour.highlights && tour.highlights.trim() && tour.highlights !== 'N/A') {
-        const highlightsBox = document.createElement('div');
+        highlightsBox = document.createElement('div');
         highlightsBox.className = 'swipe-info-box slide-up-fade';
         
         let highlights = tour.highlights.split(/[\n•]/).filter(item => item.trim() && item.trim() !== '-');
@@ -14767,9 +14763,32 @@
             <h3>⭐ ${t('highlights')}</h3>
             <ul>${highlightsList}</ul>
           `;
-          container.appendChild(highlightsBox);
           sectionsAdded++;
+        } else {
+          highlightsBox = null;
         }
+      }
+      
+      // Set grid style based on number of sections
+      if (sectionsAdded === 1) {
+        // Single section - center it with flexbox
+        container.style.cssText = 'display: flex; justify-content: center; width: 100%; max-width: 600px; margin: 0 auto; opacity: 1;';
+        if (includesBox) {
+          includesBox.style.maxWidth = '300px';
+          container.appendChild(includesBox);
+        }
+        if (highlightsBox) {
+          highlightsBox.style.maxWidth = '300px';
+          container.appendChild(highlightsBox);
+        }
+      } else if (sectionsAdded === 2) {
+        // Two sections - use grid
+        container.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 600px; margin: 0 auto; opacity: 1;';
+        if (includesBox) container.appendChild(includesBox);
+        if (highlightsBox) container.appendChild(highlightsBox);
+      } else {
+        // No sections - hide container
+        container.style.display = 'none';
       }
       
       if (sectionsAdded === 1) {
