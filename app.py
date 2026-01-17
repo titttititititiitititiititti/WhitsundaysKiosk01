@@ -116,6 +116,39 @@ def is_tour_enabled(tour_key):
     settings = load_agent_settings()
     return tour_key not in settings.get('disabled_tours', [])
 
+def are_company_images_enabled(company_name):
+    """Check if images are enabled for a company (for legal purposes)"""
+    settings = load_agent_settings()
+    return company_name not in settings.get('disabled_images_companies', [])
+
+def get_placeholder_images():
+    """Get list of placeholder images from the placeholder_images folder"""
+    placeholder_dir = 'static/placeholder_images'
+    if not os.path.exists(placeholder_dir):
+        return ['/static/placeholder.jpg']
+    
+    images = []
+    for ext in ['jpg', 'jpeg', 'png', 'webp']:
+        images.extend(glob.glob(f'{placeholder_dir}/*.{ext}'))
+    
+    if not images:
+        return ['/static/placeholder.jpg']
+    
+    # Convert to web paths
+    return ['/' + img.replace('\\', '/') for img in images]
+
+def get_random_placeholder_image():
+    """Get a random placeholder image"""
+    images = get_placeholder_images()
+    return random.choice(images)
+
+def get_random_placeholder_gallery(count=3):
+    """Get a gallery of random placeholder images (tries to avoid duplicates)"""
+    images = get_placeholder_images()
+    if len(images) <= count:
+        return images * ((count // len(images)) + 1)[:count]
+    return random.sample(images, count)
+
 # ============================================================================
 # ANALYTICS SYSTEM - Local logging for kiosk usage tracking (per-account)
 # ============================================================================
@@ -545,12 +578,14 @@ def load_all_tours(language='en'):
     tours = []
     csv_files = []
     loaded_companies = set()
+    loaded_tour_keys = set()  # Track loaded tours to prevent duplicates
     
     # First, load from organized data/{company}/{language}/ structure
     company_dirs = glob.glob('data/*/')
     
     for company_dir in company_dirs:
-        company_name = os.path.basename(company_dir.rstrip('/'))
+        # Normalize path separators for Windows compatibility
+        company_name = os.path.basename(company_dir.rstrip('/\\'))
         loaded_companies.add(company_name)
         
         # Try language-specific CSV first
@@ -574,6 +609,7 @@ def load_all_tours(language='en'):
             # Only add if not already loaded from data/ structure
             if company_name not in loaded_companies:
                 csv_files.append(root_csv)
+                loaded_companies.add(company_name)  # Prevent loading same company twice
     
     for csvfile in csv_files:
         try:
@@ -586,17 +622,31 @@ def load_all_tours(language='en'):
                         name = row['name']
                         company = row['company_name']
                         key = f"{company}__{tid}"
-                        thumb_path = find_thumbnail(company, tid, name)
                         
-                        # Build gallery from image_urls (max 5 images for slideshow)
-                        gallery = [thumb_path] if thumb_path else []
-                        if row.get('image_urls'):
-                            for img in row['image_urls'].split(',')[:4]:  # Max 4 more images (5 total with thumb)
-                                img_path = img.strip()
-                                if img_path and os.path.exists(img_path):
-                                    img_url = '/' + img_path
-                                    if img_url not in gallery:
-                                        gallery.append(img_url)
+                        # Skip if already loaded (prevent duplicates)
+                        if key in loaded_tour_keys:
+                            continue
+                        loaded_tour_keys.add(key)
+                        
+                        # Check if images are enabled for this company (legal toggle)
+                        images_enabled = are_company_images_enabled(company)
+                        
+                        if images_enabled:
+                            thumb_path = find_thumbnail(company, tid, name)
+                            
+                            # Build gallery from image_urls (max 5 images for slideshow)
+                            gallery = [thumb_path] if thumb_path else []
+                            if row.get('image_urls'):
+                                for img in row['image_urls'].split(',')[:4]:  # Max 4 more images (5 total with thumb)
+                                    img_path = img.strip()
+                                    if img_path and os.path.exists(img_path):
+                                        img_url = '/' + img_path
+                                        if img_url not in gallery:
+                                            gallery.append(img_url)
+                        else:
+                            # Images disabled for this company - use random AI-generated placeholders
+                            thumb_path = get_random_placeholder_image()
+                            gallery = get_random_placeholder_gallery(3)
                         
                         # Load review data
                         review_data = load_reviews(company, tid)
@@ -628,6 +678,7 @@ def load_all_tours(language='en'):
                             'age_requirements': row.get('age_requirements', ''),
                             'departure_location': row.get('departure_location', ''),
                             'gallery': gallery,  # Gallery images for slideshow
+                            'uses_placeholder_images': not images_enabled,  # Flag for placeholder image indicator
                             # Parsed filter fields
                             'duration_category': parse_duration(row.get('duration', '')),
                             'price_category': parse_price(row.get('price_adult', '')),
@@ -759,6 +810,7 @@ def agent_dashboard():
     
     # Load all tours grouped by company
     all_tours = []
+    loaded_keys = set()  # Prevent duplicates
     csv_files = get_all_tour_csvs()
     
     for csvfile in csv_files:
@@ -769,6 +821,11 @@ def agent_dashboard():
                     for row in reader:
                         company = row.get('company_name', 'unknown')
                         tour_key = f"{company}__{row.get('id', '')}"
+                        
+                        # Skip duplicates
+                        if tour_key in loaded_keys:
+                            continue
+                        loaded_keys.add(tour_key)
                         
                         all_tours.append({
                             'key': tour_key,
@@ -785,11 +842,13 @@ def agent_dashboard():
     
     # Group by company
     companies = {}
+    disabled_images_companies = settings.get('disabled_images_companies', [])
     for tour in all_tours:
         if tour['company'] not in companies:
             companies[tour['company']] = {
                 'name': tour['company_display'],
-                'tours': []
+                'tours': [],
+                'images_enabled': tour['company'] not in disabled_images_companies
             }
         companies[tour['company']]['tours'].append(tour)
     
@@ -906,6 +965,33 @@ def bulk_update_tours():
     
     save_agent_settings(settings)
     return jsonify({'success': True})
+
+@app.route('/admin/agent/api/toggle-company-images', methods=['POST'])
+# @agent_required  # Disabled for testing
+def toggle_company_images():
+    """Toggle images on/off for a company (legal compliance)"""
+    data = request.get_json()
+    company = data.get('company')
+    enabled = data.get('enabled', True)
+    
+    if not company:
+        return jsonify({'success': False, 'error': 'Company required'}), 400
+    
+    settings = load_agent_settings()
+    disabled_images = settings.get('disabled_images_companies', [])
+    
+    if enabled:
+        # Remove from disabled list
+        disabled_images = [c for c in disabled_images if c != company]
+    else:
+        # Add to disabled list
+        if company not in disabled_images:
+            disabled_images.append(company)
+    
+    settings['disabled_images_companies'] = disabled_images
+    save_agent_settings(settings)
+    
+    return jsonify({'success': True, 'images_enabled': enabled})
 
 # ============================================================================
 # REMOTE UPDATE SYSTEM
@@ -1231,6 +1317,7 @@ def api_tours():
             'is_promoted': tour.get('is_promoted', False),
             'review_rating': tour.get('review_rating', 0),
             'review_count': tour.get('review_count', 0),
+            'uses_placeholder_images': tour.get('uses_placeholder_images', False),
             'departure_location': tour.get('departure_location', '')
         }
         result_tours.append(tour_data)
@@ -1698,21 +1785,28 @@ def tour_detail(key):
                     reader = csv.DictReader(f)
                     for row in reader:
                         if row['company_name'] == company and row['id'] == tid:
-                            # Build gallery from image_urls, put thumbnail first if present
-                            # Filter out broken image paths
-                            image_urls = []
-                            thumb = find_thumbnail(company, tid, row.get('name', ''))
-                            if row.get('image_urls'):
-                                for img in row['image_urls'].split(','):
-                                    img_path = img.strip()
-                                    if not img_path:
-                                        continue
-                                    # Check if file actually exists before adding to gallery
-                                    if os.path.exists(img_path):
-                                        img_url = '/' + img_path
-                                        if img_url != thumb:
-                                            image_urls.append(img_url)
-                            gallery = [thumb] + image_urls if thumb else image_urls
+                            # Check if images are enabled for this company
+                            images_enabled = are_company_images_enabled(company)
+                            
+                            if images_enabled:
+                                # Build gallery from image_urls, put thumbnail first if present
+                                # Filter out broken image paths
+                                image_urls = []
+                                thumb = find_thumbnail(company, tid, row.get('name', ''))
+                                if row.get('image_urls'):
+                                    for img in row['image_urls'].split(','):
+                                        img_path = img.strip()
+                                        if not img_path:
+                                            continue
+                                        # Check if file actually exists before adding to gallery
+                                        if os.path.exists(img_path):
+                                            img_url = '/' + img_path
+                                            if img_url != thumb:
+                                                image_urls.append(img_url)
+                                gallery = [thumb] + image_urls if thumb else image_urls
+                            else:
+                                # Images disabled - use random placeholders
+                                gallery = get_random_placeholder_gallery(5)
                             
                             # Load full review data for detail page
                             review_data = load_reviews(company, tid)
@@ -1741,6 +1835,7 @@ def tour_detail(key):
                                 'link_more_info': row.get('link_more_info', ''),
                                 'booking_connected': row.get('booking_connected', '0'),
                                 'gallery': gallery,
+                                'uses_placeholder_images': not images_enabled,
                                 'important_information': row.get('important_information', ''),
                                 'what_to_bring': row.get('what_to_bring', ''),
                                 'whats_extra': row.get('whats_extra', ''),

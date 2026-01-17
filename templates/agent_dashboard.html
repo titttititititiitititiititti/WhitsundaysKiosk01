@@ -349,9 +349,56 @@
         .company-stat.enabled { color: var(--accent-green); }
         .company-stat.promoted { color: var(--accent-orange); }
         
+        .company-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .images-toggle-btn {
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--text-secondary);
+        }
+        
+        .images-toggle-btn:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .images-toggle-btn.active {
+            background: rgba(63, 185, 80, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        
+        .images-toggle-btn.disabled {
+            background: rgba(248, 81, 73, 0.15);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+        
+        .images-warning {
+            font-size: 0.65rem;
+            color: var(--accent-orange);
+            margin-left: 8px;
+            opacity: 0.8;
+        }
+        
         .company-toggle {
             font-size: 1.2rem;
             transition: transform 0.2s;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        
+        .company-toggle:hover {
+            color: var(--accent-blue);
         }
         
         .company-group.collapsed .company-toggle {
@@ -645,16 +692,24 @@
             </div>
             
             {% for company_id, company_data in companies.items() %}
-            <div class="company-group" data-company="{{ company_id }}">
-                <div class="company-header" onclick="toggleCompany(this)">
-                    <div class="company-name">
+            <div class="company-group" data-company="{{ company_id }}" data-images-enabled="{{ 'true' if company_data.images_enabled else 'false' }}">
+                <div class="company-header">
+                    <div class="company-name" onclick="toggleCompany(this.parentElement)">
                         🏢 {{ company_data.name }}
                         <span class="company-stats">
                             <span class="company-stat enabled">{{ company_data.tours | selectattr('enabled') | list | length }} active</span>
                             <span class="company-stat promoted">{{ company_data.tours | selectattr('promotion') | list | length }} promoted</span>
                         </span>
                     </div>
-                    <span class="company-toggle">▼</span>
+                    <div class="company-controls">
+                        <button class="images-toggle-btn {{ 'active' if company_data.images_enabled else 'disabled' }}" 
+                                onclick="event.stopPropagation(); toggleCompanyImages('{{ company_id }}', {{ 'false' if company_data.images_enabled else 'true' }})"
+                                title="{{ 'Click to hide images (legal compliance)' if company_data.images_enabled else 'Click to show images' }}">
+                            🖼️ Images {{ 'ON' if company_data.images_enabled else 'OFF' }}
+                        </button>
+                        <span class="images-warning">⚠️ Only enable images you are authorised to use</span>
+                        <span class="company-toggle" onclick="toggleCompany(this.parentElement.parentElement)">▼</span>
+                    </div>
                 </div>
                 <div class="tour-list">
                     {% for tour in company_data.tours %}
@@ -709,6 +764,33 @@
         
         function toggleCompany(header) {
             header.closest('.company-group').classList.toggle('collapsed');
+        }
+        
+        async function toggleCompanyImages(company, enabled) {
+            try {
+                const response = await fetch('/admin/agent/api/toggle-company-images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ company, enabled })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                // Update UI
+                const group = document.querySelector(`.company-group[data-company="${company}"]`);
+                const btn = group.querySelector('.images-toggle-btn');
+                
+                group.dataset.imagesEnabled = enabled ? 'true' : 'false';
+                btn.classList.toggle('active', enabled);
+                btn.classList.toggle('disabled', !enabled);
+                btn.textContent = `🖼️ Images ${enabled ? 'ON' : 'OFF'}`;
+                btn.title = enabled ? 'Click to hide images (legal compliance)' : 'Click to show images';
+                btn.onclick = (e) => { e.stopPropagation(); toggleCompanyImages(company, !enabled); };
+                
+                showToast(enabled ? 'Images enabled for ' + company : 'Images hidden for ' + company, 'success');
+            } catch (err) {
+                showToast('Failed to update images setting', 'error');
+            }
         }
         
         function filterTours() {

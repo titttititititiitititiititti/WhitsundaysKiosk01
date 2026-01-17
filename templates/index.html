@@ -681,6 +681,13 @@
       /* HOME PAGE (Browse All Tours) - EXACT desktop layout scaled to fit mobile */
       .home-page {
         overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      
+      /* Prevent scrolling past content on mobile */
+      .home-page .featured-grid {
+        padding-bottom: 100px !important; /* Extra space at bottom */
       }
       
       /* Scale ALL content except header on HOME PAGE ONLY */
@@ -1729,6 +1736,11 @@
     }
     #bg-video::-webkit-media-controls-play-button {
       display: none !important;
+    }
+    
+    /* Prevent clicking video to pause/play */
+    #bg-video {
+      pointer-events: none !important;
     }
     
     /* Prevent scrolling when video page is active */
@@ -2965,6 +2977,30 @@
       background-size: cover;
       background-position: center;
       transition: height 0.4s ease, background-image 0.5s ease;
+      position: relative;
+    }
+    
+    /* Placeholder images badge */
+    .placeholder-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #ffd700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7em;
+      font-weight: 600;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .placeholder-badge::before {
+      content: '📷';
+      font-size: 0.9em;
     }
     
     .ai-tour-card-info {
@@ -4817,6 +4853,16 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 25px;
+      padding-bottom: 60px; /* Space after last row */
+    }
+    
+    /* End of tours indicator */
+    .end-of-tours {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1.1em;
     }
     
     /* Adjust featured grid on home page for better layout */
@@ -12633,7 +12679,7 @@
       </header>
       
       <!-- Language Selection Screen - First thing users see -->
-      <div class="language-selection-screen" id="language-selection-screen">
+      <div class="language-selection-screen" id="language-selection-screen" style="display: none !important;">
         <div class="language-selection-title">Select Your Language to Begin</div>
         <div class="language-selection-buttons">
           <button class="language-select-btn" onclick="selectInitialLanguage('en')">
@@ -12668,7 +12714,7 @@
       </div>
       
       <!-- Click to Start Screen -->
-      <div class="video-start-screen" id="video-start-screen">
+      <div class="video-start-screen" id="video-start-screen" style="display: none !important;">
         <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
         <button class="ai-assistant-btn" id="ai-assistant-btn" onclick="event.stopPropagation(); startModeWithAnimation('ai-assistant')">
           <span id="ai-assistant-text">🤖 Talk To Our AI Assistant</span>
@@ -13365,6 +13411,12 @@
       const hasLangParam = window.location.search.includes('lang=');
       const hasHash = window.location.hash && window.location.hash !== '#';
       
+      // ALWAYS hide language and video start screens initially - they show after splash
+      const langScreen = document.getElementById('language-selection-screen');
+      const videoStartScreen = document.getElementById('video-start-screen');
+      if (langScreen) langScreen.style.cssText = 'display: none !important;';
+      if (videoStartScreen) videoStartScreen.style.cssText = 'display: none !important;';
+      
       // Skip splash if: already shown this session, OR coming from language selection, OR has a hash
       if (splashShown || hasLangParam || hasHash) {
         console.log('⏭️ Skipping splash (already shown or navigating)');
@@ -13407,6 +13459,27 @@
             splashVideo.pause();
             splashVideo.removeAttribute('src');
             splashVideo.load();
+          }
+          
+          // Now show the appropriate screen (language selection if no lang param)
+          const urlLangParam = new URLSearchParams(window.location.search).get('lang');
+          const langScreen = document.getElementById('language-selection-screen');
+          const videoStartScreen = document.getElementById('video-start-screen');
+          const videoPage = document.querySelector('.video-question-page');
+          
+          if (!urlLangParam) {
+            // Show language selection screen
+            console.log('🌐 Showing language selection screen after splash');
+            document.body.classList.add('showing-language-selection');
+            if (videoStartScreen) videoStartScreen.style.cssText = 'display: none !important;';
+            if (langScreen) langScreen.style.cssText = 'display: flex !important;';
+            if (videoPage) videoPage.classList.add('active');
+          } else {
+            // Show video start screen
+            console.log('▶️ Showing video start screen after splash');
+            if (langScreen) langScreen.style.cssText = 'display: none !important;';
+            if (videoStartScreen) videoStartScreen.style.cssText = 'display: flex !important;';
+            if (videoPage) videoPage.classList.add('active');
           }
         }, 600);
       }
@@ -14545,7 +14618,14 @@
       
       const header = document.createElement('div');
       header.className = 'swipe-card-header slide-down-top';
+      
+      // Add placeholder badge if using placeholder images
+      const placeholderBadge = tour.uses_placeholder_images 
+        ? '<div class="placeholder-badge" style="position:relative;top:auto;left:auto;margin-bottom:8px;">Placeholder Images</div>' 
+        : '';
+      
       header.innerHTML = `
+        ${placeholderBadge}
         <h2>${tour.name}</h2>
         <div class="company-chip">${tour.company_name || tour.company || ''}</div>
       `;
@@ -15237,7 +15317,9 @@
       // Show start screen, hide questions
       const startScreen = document.getElementById('video-start-screen');
       const questionContainer = document.getElementById('video-question-container');
-      if (startScreen) startScreen.style.display = 'flex';
+      const langScreen = document.getElementById('language-selection-screen');
+      if (langScreen) langScreen.style.cssText = 'display: none !important;';
+      if (startScreen) startScreen.style.cssText = 'display: flex !important;';
       if (questionContainer) questionContainer.style.display = 'none';
       
       // Ensure the video-overlay class is disabled so other UI stays visible
@@ -16185,8 +16267,13 @@
       card.dataset.gallery = JSON.stringify(gallery);
       card.dataset.currentImageIndex = '0';
       
+      // Check if using placeholder images
+      const placeholderBadge = tour.uses_placeholder_images 
+        ? '<div class="placeholder-badge">Placeholder Images</div>' 
+        : '';
+      
       card.innerHTML = `
-        <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')"></div>
+        <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')">${placeholderBadge}</div>
         <div class="ai-tour-card-info">
           <p class="ai-tour-card-name">${tour.name}</p>
           <p class="ai-tour-card-company">${tour.company || ''}</p>
@@ -17786,17 +17873,17 @@
         videoPage.style.display = 'block';
       }
       
+      // Hide video start screen FIRST
+      const videoStartScreen = document.getElementById('video-start-screen');
+      if (videoStartScreen) {
+        videoStartScreen.style.cssText = 'display: none !important;';
+      }
+      
       // Show language selection screen
       const langScreen = document.getElementById('language-selection-screen');
       if (langScreen) {
         langScreen.classList.remove('hidden');
-        langScreen.style.display = 'flex';
-      }
-      
-      // Hide video start screen
-      const videoStartScreen = document.getElementById('video-start-screen');
-      if (videoStartScreen) {
-        videoStartScreen.style.display = 'none';
+        langScreen.style.cssText = 'display: flex !important;';
       }
       
       // Add body class to hide header
@@ -18495,8 +18582,8 @@
         const scrollPosition = window.scrollY + window.innerHeight;
         const scrollHeight = document.documentElement.scrollHeight;
         
-        // Load more when user is 500px from bottom
-        if (scrollPosition >= scrollHeight - 500) {
+        // Load more when user is 1200px from bottom (load earlier on mobile)
+        if (scrollPosition >= scrollHeight - 1200) {
           loadMoreHomePageTours();
         }
       };
@@ -18508,7 +18595,7 @@
         const scrollPosition = homePage.scrollTop + homePage.clientHeight;
         const scrollHeight = homePage.scrollHeight;
         
-        if (scrollPosition >= scrollHeight - 500) {
+        if (scrollPosition >= scrollHeight - 1200) {
           loadMoreHomePageTours();
         }
       });
@@ -19428,6 +19515,16 @@
           if (tours.length < 12 || (hasFilters && homePageOffset >= homePageTotalCount)) {
             homePageHasMore = false;
             console.log('No more tours to load');
+            
+            // Add end-of-tours indicator
+            const grid = document.getElementById('featured-grid');
+            if (grid && !document.getElementById('end-of-tours-indicator')) {
+              const endIndicator = document.createElement('div');
+              endIndicator.id = 'end-of-tours-indicator';
+              endIndicator.className = 'end-of-tours';
+              endIndicator.innerHTML = '✨ You\'ve seen all available tours ✨';
+              grid.appendChild(endIndicator);
+            }
           }
           
           // Hide loading indicator
@@ -19607,8 +19704,9 @@
         
         const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
         const promotionBadge = getPromotionBadgeHtml(tour);
+        const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
-          <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');"></div>
+          <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
           ${starHtml}
           ${promotionBadge}
           <div class="tour-card-overlay">
@@ -19659,8 +19757,9 @@
             
             const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
             const promotionBadge = getPromotionBadgeHtml(tour);
+            const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
             card.innerHTML = `
-              <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');"></div>
+              <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
               ${starHtml}
               ${promotionBadge}
               <div class="tour-card-overlay">
@@ -19850,8 +19949,9 @@
         
         const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
         const promotionBadge = getPromotionBadgeHtml(tour);
+        const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
-          <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');"></div>
+          <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
           ${starHtml}
           ${promotionBadge}
           <div class="tour-card-overlay">
@@ -21390,6 +21490,15 @@
             // BUILD WITH JAVASCRIPT like Quick Decision (which works)
             const galleryContainer = document.getElementById('detail-gallery');
             galleryContainer.innerHTML = '';
+            
+            // Add placeholder badge if using placeholder images
+            if (data.uses_placeholder_images) {
+              const badge = document.createElement('div');
+              badge.className = 'placeholder-badge';
+              badge.style.cssText = 'position:relative;top:auto;left:auto;margin-bottom:12px;display:inline-flex;';
+              badge.textContent = 'Placeholder Images';
+              galleryContainer.appendChild(badge);
+            }
             
             const wrapper = document.createElement('div');
             wrapper.className = 'swipe-gallery-wrapper';
@@ -25290,6 +25399,16 @@
       console.log('🔍 URL lang param:', urlLangParam);
       console.log('🔍 Hash:', hash);
       
+      // Check if splash screen is active - if so, don't show anything yet
+      const splash = document.getElementById('main-splash-screen');
+      const splashIsActive = splash && splash.classList.contains('active');
+      
+      if (splashIsActive) {
+        console.log('🎬 Splash screen is active - waiting for user to tap');
+        // Everything stays hidden - splash dismissal will trigger the proper screen to show
+        return;
+      }
+      
       // SIMPLE LOGIC: If there's a lang parameter in URL, show video start page. Otherwise, show language selection.
       if (urlLangParam) {
         // Language is in URL - hide language screen, show video start
@@ -25299,7 +25418,7 @@
         const langScreen = document.getElementById('language-selection-screen');
         console.log('   Lang screen element:', langScreen);
         if (langScreen) {
-          langScreen.style.display = 'none';
+          langScreen.style.cssText = 'display: none !important;';
           console.log('   ✓ Hid language screen');
         }
         
@@ -25321,7 +25440,7 @@
           console.log('   ✓ Activated video page');
         }
         if (startScreen) {
-          startScreen.style.display = 'flex';
+          startScreen.style.cssText = 'display: flex !important;';
           console.log('   ✓ Set start screen to flex, computed style:', window.getComputedStyle(startScreen).display);
         } else {
           console.error('   ❌ Start screen element NOT FOUND!');
@@ -25348,17 +25467,17 @@
         console.log('   Start screen element:', startScreen);
         console.log('   Video element:', video);
         
+        // IMPORTANT: Hide video start screen FIRST before showing language screen
+        if (startScreen) {
+          startScreen.style.cssText = 'display: none !important;';
+          console.log('   ✓ Hid start screen');
+        }
         // Show language screen
         if (langScreen) {
-          langScreen.style.display = 'flex';
+          langScreen.style.cssText = 'display: flex !important;';
           console.log('   ✓ Set language screen to flex, computed style:', window.getComputedStyle(langScreen).display);
         } else {
           console.error('   ❌ Language screen element NOT FOUND!');
-        }
-        // Hide video start screen
-        if (startScreen) {
-          startScreen.style.display = 'none';
-          console.log('   ✓ Hid start screen');
         }
         // Play background video
         if (video) {
@@ -25432,10 +25551,13 @@
         disableVideoBg();
         const videoPage = document.querySelector('.video-question-page');
         const startScreen = document.getElementById('video-start-screen');
+        const langScreen = document.getElementById('language-selection-screen');
         const video = document.getElementById('bg-video');
         if (videoPage && startScreen) {
+          // Ensure language screen is hidden
+          if (langScreen) langScreen.style.cssText = 'display: none !important;';
           videoPage.classList.add('active');
-          startScreen.style.display = 'flex';
+          startScreen.style.cssText = 'display: flex !important;';
           if (video) video.play();
         }
         console.log('✅ Video page initialized with background');
