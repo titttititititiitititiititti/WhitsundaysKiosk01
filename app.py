@@ -2704,14 +2704,17 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     elif is_luxury_request:
         budget_context = "\nUSER WANTS LUXURY/PRIVATE - Prioritize premium, charter, and exclusive tours."
     
-    # Build EXPLICIT promoted tours list for the prompt
+    # Build EXPLICIT promoted tours list for the prompt  
     promoted_tour_keys = [t['key'] for t in tour_catalog if t.get('promoted')]
     promoted_section = ""
     if promoted_tour_keys:
         promoted_section = f"""
-⚠️ MANDATORY - THESE TOURS ARE MARKED AS POPULAR AND MUST BE INCLUDED FIRST IF THEY MATCH:
+⚠️ PROMOTED TOURS (marked "promoted: true" in the catalog) - Include FIRST if they match:
+These {len(promoted_tour_keys)} tours are marked as popular/featured and MUST be prioritized:
 {json.dumps(promoted_tour_keys, indent=1)}
-You MUST include these promoted tours BEFORE any non-promoted tours if they match the request!
+
+RULE: If ANY of these promoted tours match the user's request (destination + duration), 
+they MUST appear in your results BEFORE non-promoted tours from the same category!
 """
     
     # Create the LLM prompt
@@ -2729,11 +2732,11 @@ AVAILABLE TOURS (JSON format):
 {json.dumps(tour_catalog, indent=1)}
 
 INSTRUCTIONS:
-1. Understand what the user wants (activity type, duration, any preferences)
-2. Find ALL tours that match their request - be generous, include anything relevant
-3. If exact match doesn't exist, find close alternatives
-4. Prioritize promoted tours (is_promoted=true) when they match
-5. Return UP TO 15 relevant tour keys - we need variety! We will show 3 but need extras for "other options" requests
+1. Understand what the user wants (activity type, duration, destination)
+2. Find tours that ACTUALLY MATCH the request (not just mention keywords)
+3. PROMOTED TOURS FIRST: Any tour with "promoted: true" that matches MUST be returned first
+4. ONE TOUR PER COMPANY: Pick from different companies - don't return 3 tours from same operator!
+5. Return UP TO 15 relevant tour keys from DIVERSE companies for variety
 
 IMPORTANT MATCHING RULES:
 - DESTINATION MATCHING IS STRICT - tour must ACTUALLY GO to the destination:
@@ -2752,20 +2755,24 @@ IMPORTANT MATCHING RULES:
 - If no tours match, return empty and set needs_alternative=true
 - Return 10-15 tours if available (we need variety for "show other" requests)
 
-CRITICAL DISTINCTIONS - FOLLOW STRICTLY:
-- "Whitehaven Beach tour" = Ocean Rafting tours (Northern Exposure, Southern Lights), Cruise Whitsundays BEACH tours
-- "Great Barrier Reef tour" = Cruise Whitsundays Reefworld, outer reef pontoon tours  
-- "Scenic flight" = sees things from air, does NOT count as visiting the destination!
-- Reefworld/Pontoon tours are REEF tours, NOT beach tours (even if they mention Whitehaven)
+CRITICAL RULES:
+1. DESTINATION MATCHING - Tour must ACTUALLY GO to the destination, not just mention it:
+   - "Whitehaven Beach" = tours that spend TIME on Whitehaven Beach (not fly over it)
+   - "Great Barrier Reef" = tours that visit the OUTER reef (pontoons, Reefworld) 
+   - Scenic flights don't count as "visiting" - they see from the air only
+   
+2. ONE TOUR PER COMPANY - Select diverse results from DIFFERENT companies!
+   - Do NOT return 3 tours from the same company
+   - Spread recommendations across multiple operators
+   - Only use same company twice if no other options exist
 
-⛔ DO NOT RECOMMEND FOR WHITEHAVEN BEACH REQUESTS:
-- "Great Barrier Reef Full Day Adventure" - this is a REEF PONTOON tour!
-- "Reefworld" tours - these go to the reef, NOT the beach!
-- Any tour where the PRIMARY destination is the reef, not the beach
-
-✅ MUST RECOMMEND FOR WHITEHAVEN BEACH REQUESTS (if they match duration):
-- Ocean Rafting tours (Northern Exposure, Southern Lights) - THESE ARE THE #1 WHITEHAVEN TOURS!
-- Cruise Whitsundays beach-specific tours (Whitehaven Beach & Hill Inlet, etc.)
+3. PROMOTED TOURS FIRST - Tours marked "promoted: true" MUST appear before non-promoted ones
+   - Check the "promoted" field in each tour
+   - If a promoted tour matches the request, it goes FIRST
+   
+4. MATCH THE REQUEST - Don't recommend reef tours for beach requests or vice versa
+   - "pontoon", "reefworld", "outer reef" = REEF tours (not beach)
+   - "whitehaven", "hill inlet", "beach" = BEACH tours (not reef)
 
 CRITICAL: Use the EXACT "key" values from the catalog above. Keys contain hashes like "company__abc123def456".
 Do NOT construct keys from tour names - copy the exact key string from the catalog.
