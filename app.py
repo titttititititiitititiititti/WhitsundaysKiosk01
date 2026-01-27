@@ -3397,7 +3397,8 @@ Reply ONLY: SEARCH or ASK"""
             should_search_tours = 'SEARCH' in intent
             print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
         
-            all_tours = load_all_tours(language)
+        # Load all tours - MUST be outside the if/else so it's always available
+        all_tours = load_all_tours(language)
         
         # Detect if user wants DIFFERENT tours early (need this for LLM call)
         wants_different_early = any(phrase in user_message.lower() for phrase in [
