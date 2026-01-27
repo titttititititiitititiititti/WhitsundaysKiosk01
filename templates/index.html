@@ -17595,6 +17595,26 @@
     }
     
     window.sendAIMessage = async function() {
+      // STOP any currently playing TTS immediately when new message is sent
+      console.log('📤 sendAIMessage() - stopping current audio first');
+      if (typeof ttsAudioElement !== 'undefined' && ttsAudioElement) {
+        ttsAudioElement.pause();
+        ttsAudioElement.currentTime = 0;
+      }
+      if (typeof ttsAudioQueue !== 'undefined') {
+        ttsAudioQueue = [];
+      }
+      ttsCurrentChunkIndex = 0;
+      ttsIsPlaying = false;
+      if (window.particleVisualizer) {
+        window.particleVisualizer.stopSpeaking();
+      }
+      // Also stop welcome audio if playing
+      if (window.currentWelcomeAudio) {
+        window.currentWelcomeAudio.pause();
+        window.currentWelcomeAudio.currentTime = 0;
+      }
+      
       // Prime audio on first message send
       primeAudioContext();
       
