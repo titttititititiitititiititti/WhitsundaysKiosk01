@@ -2490,10 +2490,35 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     if exclude_helicopter:
         print(f"[LLM] User wants beach/boat tour - excluding helicopter tours")
     
+    # DIRECT NAME MATCHING: Check if user is asking for a specific tour by name
+    # Extract potential tour name words from user message (3+ char words, excluding common words)
+    common_words = {'the', 'and', 'for', 'can', 'you', 'have', 'any', 'tour', 'tours', 'about', 'tell', 'more', 
+                    'what', 'like', 'want', 'show', 'looking', 'find', 'search', 'please', 'thanks', 'day', 'full', 'half'}
+    user_words = [w for w in msg_lower.replace('?', '').replace('!', '').replace('.', '').split() 
+                  if len(w) >= 3 and w not in common_words]
+    
+    # Check for direct tour name matches first
+    direct_name_matches = []
+    for t in all_tours:
+        name_lower = t['name'].lower()
+        # Check if any significant user word appears in tour name
+        for word in user_words:
+            if len(word) >= 4 and word in name_lower:
+                direct_name_matches.append(t)
+                break
+    
+    if direct_name_matches:
+        print(f"[LLM] DIRECT NAME MATCH: Found {len(direct_name_matches)} tours matching user's specific request")
+    
     # Filter tours to only those matching user's keywords (or all if no specific keywords)
     relevant_tours = []
     for t in all_tours:
         name_lower = t['name'].lower()
+        
+        # Include direct name matches first
+        if t in direct_name_matches:
+            relevant_tours.append(t)
+            continue
         
         # Exclude helicopter/scenic flight tours if user wants beach tours
         if exclude_helicopter:
@@ -3134,11 +3159,41 @@ def chat():
             if msg.get('role') == 'user':
                 context += f"User: {msg.get('content', '')[:100]}\n"
         
-        intent_response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{
-                "role": "user",
-                "content": f"""User: "{user_message}"
+        # PRE-CHECK: Detect specific tour names or activities that should bypass 2-preference rule
+        msg_lower = user_message.lower()
+        
+        # Specific activities that should ALWAYS trigger search
+        specific_activities = ['jetski', 'jet ski', 'helicopter', 'scenic flight', 'seaplane', 
+                              'skydive', 'skydiving', 'parasail', 'fishing charter', 'kayak tour',
+                              'whale watch', 'sunset cruise', 'sunset sail']
+        
+        # Known tour names that should trigger immediate search
+        known_tour_names = [
+            'atlantic clipper', 'camira', 'thundercat', 'ocean rafting', 'northern exposure',
+            'southern lights', 'whitsunday bullet', 'reefworld', 'cruise whitsundays',
+            'wings', 'mantaray', 'apollo', 'solway lass', 'prosail', 'prima', 'brampton',
+            'summertime', 'whitsunday blue', 'illusions', 'blizzard', 'brittania', 'ice',
+            'on ice', 'hayman', 'hamilton', 'daydream', 'airlie adventure', 'island trek',
+            'two island safari', 'heart reef', 'whitehaven express', 'whitehaven beach',
+            'fury', 'zoe', 'matador', 'condor', 'clipper', 'adventurer', 'getaway'
+        ]
+        
+        # Check if user is asking for something specific
+        is_specific_request = (
+            any(activity in msg_lower for activity in specific_activities) or
+            any(tour_name in msg_lower for tour_name in known_tour_names)
+        )
+        
+        if is_specific_request:
+            print(f"[CHAT] SPECIFIC REQUEST detected: '{user_message[:50]}' - bypassing 2-preference rule")
+            should_search_tours = True
+        else:
+            # Use LLM to determine intent
+            intent_response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{
+                    "role": "user",
+                    "content": f"""User: "{user_message}"
 Context: {context if context else 'None'}
 
 Does user have AT LEAST 2 PREFERENCES to search? Count across BOTH message AND context!
@@ -3181,14 +3236,14 @@ SEARCH examples (2+ details OR specific exception):
 The minimum is: 1 activity/destination + 1 duration OR 1 audience!
 
 Reply ONLY: SEARCH or ASK"""
-            }],
-            max_tokens=5,
-            temperature=0
-        )
-        
-        intent = intent_response.choices[0].message.content.strip().upper()
-        should_search_tours = 'SEARCH' in intent
-        print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
+                }],
+                max_tokens=5,
+                temperature=0
+            )
+            
+            intent = intent_response.choices[0].message.content.strip().upper()
+            should_search_tours = 'SEARCH' in intent
+            print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
         
         all_tours = load_all_tours(language)
         
