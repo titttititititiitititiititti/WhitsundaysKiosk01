@@ -2612,9 +2612,50 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         relevant_tours = [t for t in relevant_tours if t.get('key') not in exclude_keys]
         print(f"[LLM] Excluded {before_exclude - len(relevant_tours)} previously shown tours")
     
+    # PRE-SORT relevant tours by our scoring (promotion + rating) BEFORE sending to LLM
+    # This way the LLM sees promoted/highly-rated tours FIRST in the catalog
+    def pre_sort_score(tour):
+        score = 0
+        # Promoted tours get massive boost
+        if tour.get('is_promoted') or tour.get('promotion'):
+            score += 1000
+        if tour.get('promotion') == 'popular':
+            score += 500
+        elif tour.get('promotion') == 'featured':
+            score += 300
+        elif tour.get('promotion') == 'best_value':
+            score += 200
+        # Rating score
+        rating = tour.get('review_rating', 0) or 0
+        score += rating * 100  # 5.0 = 500 points
+        return score
+    
+    relevant_tours.sort(key=pre_sort_score, reverse=True)
+    
+    # Apply company diversity BEFORE sending to LLM - don't give LLM 10 tours from same company
+    companies_seen = set()
+    diverse_relevant = []
+    remaining = []
+    for tour in relevant_tours:
+        company = tour.get('company', tour.get('company_name', ''))
+        if company not in companies_seen:
+            diverse_relevant.append(tour)
+            companies_seen.add(company)
+        else:
+            remaining.append(tour)
+    # Add remaining tours (duplicates) after diverse ones
+    diverse_relevant.extend(remaining)
+    relevant_tours = diverse_relevant
+    
     # Limit to 50 most relevant tours to keep prompt manageable
     relevant_tours = relevant_tours[:50]
     print(f"[LLM] Pre-filtered to {len(relevant_tours)} relevant tours (from {len(all_tours)} total)")
+    print(f"[LLM] Top 5 tours being sent to LLM (in this order):")
+    for i, t in enumerate(relevant_tours[:5]):
+        promo = "⭐PROMOTED" if (t.get('is_promoted') or t.get('promotion')) else ""
+        rating = t.get('review_rating', 0) or 0
+        company = t.get('company', t.get('company_name', ''))
+        print(f"   {i+1}. {t['name']} ({company}) - Rating: {rating} {promo}")
     
     # Build tour catalog (compact format for LLM)
     tour_catalog = []
@@ -2734,14 +2775,14 @@ AVAILABLE TOURS (JSON format):
 {json.dumps(tour_catalog, indent=1)}
 
 INSTRUCTIONS:
-1. Understand what the user wants (activity type, duration, destination)
-2. Find tours that ACTUALLY MATCH the request (not just mention keywords)
-3. ORDER YOUR RESULTS:
-   - FIRST: Promoted tours (promoted: true) that match the request
-   - THEN: Remaining matching tours sorted by rating (highest rating first)
-   - Each tour has a "rating" field (0-5 scale) - use this for ordering!
-4. ONE TOUR PER COMPANY: Pick from different companies - don't return 3 tours from same operator!
-5. Return UP TO 15 relevant tour keys from DIVERSE companies for variety
+1. The tours are ALREADY SORTED by quality (promoted first, then by rating)
+2. The tours are ALREADY DIVERSE (one per company first)
+3. YOUR JOB: Just pick tours from the catalog that MATCH the user's destination request
+4. PREFER TOURS NEAR THE TOP of the catalog - they are the best matches!
+5. DO NOT skip over promoted tours (marked promoted: true) that match the destination!
+6. If user wants "Whitehaven Beach" - pick tours where "whitehaven" is in the tags
+7. If user wants "Great Barrier Reef" - pick tours where "reef" is in the tags
+8. Return the FIRST 3-5 tours that match the destination from the catalog
 
 IMPORTANT MATCHING RULES:
 - DESTINATION MATCHING IS STRICT - tour must ACTUALLY GO to the destination:
