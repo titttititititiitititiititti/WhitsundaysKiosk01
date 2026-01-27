@@ -3495,7 +3495,7 @@ Be honest and helpful - explain we don't have exactly what they asked for, but o
 similar experiences or ask what else interests them.
 """
             else:
-            specific_tours_section = """
+                specific_tours_section = """
 
 NOTE: No specific tours have been identified yet. Continue gathering user preferences!
 When you have enough info, the system will provide specific tours to describe.
@@ -3837,7 +3837,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 print(f"      - '{t['name']}' -> {'IN PROMPT' if in_prompt else 'MISSING!'}")
         for i, msg in enumerate(messages[1:], 1):  # Skip system message
             try:
-            print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
+                print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
             except UnicodeEncodeError:
                 print(f"   Message {i}: [{msg['role']}] (contains special characters)")
         
@@ -3877,7 +3877,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
         
         # Safe print that handles emojis on Windows
         try:
-        print(f"AI Response: {ai_message[:200]}...")
+            print(f"AI Response: {ai_message[:200]}...")
         except UnicodeEncodeError:
             print(f"AI Response: {ai_message[:200].encode('ascii', 'replace').decode('ascii')}...")
         
@@ -3998,10 +3998,10 @@ Be conversational, ask questions, and help them discover their perfect adventure
                         'total_matching_tours': 0
                     }
                 else:
-                print(f"   Returning {len(filtered_tours)} tours:")
-                for t in filtered_tours:
+                    print(f"   Returning {len(filtered_tours)} tours:")
+                    for t in filtered_tours:
                         promo = f" [PROMO] {t.get('promotion')}" if t.get('promotion') else ""
-                    print(f"      - {t['name']}{promo}")
+                        print(f"      - {t['name']}{promo}")
                 
                 # Convert prices for display
                 tour_details = []
