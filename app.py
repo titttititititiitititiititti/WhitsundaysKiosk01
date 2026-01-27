@@ -2462,8 +2462,10 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     wants_coral_reef_only = 'coral reef' in msg_lower or 'fringing reef' in msg_lower
     has_reef_request = 'reef' in active_keywords or 'great barrier' in msg_lower or 'gbr' in msg_lower
     
-    # Check if user is NOW asking for something different (not reef-related)
-    is_non_reef_request = any(kw in msg_lower for kw in ['whitehaven', 'beach tour', 'sailing', 'sunset', 'jetski', 'jet ski', 'helicopter'])
+    # Check if user is asking for something different (not reef-related)
+    # IMPORTANT: Check COMBINED_TEXT (includes context) not just current message!
+    # Because user might say "whitehaven beach tours" then "full day" - the second message needs context
+    is_non_reef_request = any(kw in combined_text for kw in ['whitehaven', 'beach tour', 'sailing tour', 'sunset', 'jetski', 'jet ski', 'helicopter'])
     
     if has_reef_request and not wants_coral_reef_only and not is_non_reef_request:
         # Treat ALL reef requests as Great Barrier Reef requests
@@ -3246,7 +3248,7 @@ def chat():
         
         print(f"\n[CHAT] CHAT REQUEST:")
         try:
-            print(f"   User message: '{user_message}'")
+        print(f"   User message: '{user_message}'")
         except UnicodeEncodeError:
             print(f"   User message: (contains special characters)")
         print(f"   Language: {language}")
@@ -3254,7 +3256,7 @@ def chat():
         print(f"   Previously shown tours: {len(previously_shown_tour_keys)} tours")
         for i, msg in enumerate(conversation_history[-3:], 1):  # Show last 3
             try:
-                print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
+            print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
             except UnicodeEncodeError:
                 print(f"   History[{i}]: [{msg.get('role')}] (contains special characters)")
         
@@ -3359,7 +3361,7 @@ Reply ONLY: SEARCH or ASK"""
             should_search_tours = 'SEARCH' in intent
             print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
         
-        all_tours = load_all_tours(language)
+            all_tours = load_all_tours(language)
         
         # Detect if user wants DIFFERENT tours early (need this for LLM call)
         wants_different_early = any(phrase in user_message.lower() for phrase in [
@@ -3452,7 +3454,7 @@ Reply ONLY: SEARCH or ASK"""
         pre_fetched_tours = promoted_tours + non_promoted_tours
             
         # Limit to top 3
-        pre_fetched_tours = pre_fetched_tours[:3]
+            pre_fetched_tours = pre_fetched_tours[:3]
         
         print(f"[CHAT] Showing 3 of {total_matching_tours} matching tours")
         
@@ -3493,7 +3495,7 @@ Be honest and helpful - explain we don't have exactly what they asked for, but o
 similar experiences or ask what else interests them.
 """
             else:
-                specific_tours_section = """
+            specific_tours_section = """
 
 NOTE: No specific tours have been identified yet. Continue gathering user preferences!
 When you have enough info, the system will provide specific tours to describe.
@@ -3835,7 +3837,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 print(f"      - '{t['name']}' -> {'IN PROMPT' if in_prompt else 'MISSING!'}")
         for i, msg in enumerate(messages[1:], 1):  # Skip system message
             try:
-                print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
+            print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
             except UnicodeEncodeError:
                 print(f"   Message {i}: [{msg['role']}] (contains special characters)")
         
@@ -3875,7 +3877,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
         
         # Safe print that handles emojis on Windows
         try:
-            print(f"AI Response: {ai_message[:200]}...")
+        print(f"AI Response: {ai_message[:200]}...")
         except UnicodeEncodeError:
             print(f"AI Response: {ai_message[:200].encode('ascii', 'replace').decode('ascii')}...")
         
@@ -3996,38 +3998,38 @@ Be conversational, ask questions, and help them discover their perfect adventure
                         'total_matching_tours': 0
                     }
                 else:
-                    print(f"   Returning {len(filtered_tours)} tours:")
-                    for t in filtered_tours:
+                print(f"   Returning {len(filtered_tours)} tours:")
+                for t in filtered_tours:
                         promo = f" [PROMO] {t.get('promotion')}" if t.get('promotion') else ""
-                        print(f"      - {t['name']}{promo}")
-                    
-                    # Convert prices for display
-                    tour_details = []
-                    for tour in filtered_tours:
-                        tour_copy = tour.copy()
-                        if tour_copy.get('price_adult'):
-                            tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
-                        if tour_copy.get('price_child'):
-                            tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
-                        tour_details.append(tour_copy)
-                    
-                    display_message = re.sub(filter_pattern, '', ai_message).strip() if filter_match else ai_message
-                    display_message = convert_price_for_display(display_message, language)
-                    
-                    if '?' not in display_message[-50:]:
-                        display_message = display_message.rstrip() + "\n\nWould you like more details on any of these?"
-                    
-                    response_data = {
-                        'success': True,
-                        'message': display_message,
-                        'recommended_tours': tour_details,
-                        'tour_keys': [t['key'] for t in tour_details],
-                        'used_filters': True,
-                        'filter_count': len(filtered_tours),
+                    print(f"      - {t['name']}{promo}")
+                
+                # Convert prices for display
+                tour_details = []
+                for tour in filtered_tours:
+                    tour_copy = tour.copy()
+                    if tour_copy.get('price_adult'):
+                        tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
+                    if tour_copy.get('price_child'):
+                        tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
+                    tour_details.append(tour_copy)
+                
+                display_message = re.sub(filter_pattern, '', ai_message).strip() if filter_match else ai_message
+                display_message = convert_price_for_display(display_message, language)
+                
+                if '?' not in display_message[-50:]:
+                    display_message = display_message.rstrip() + "\n\nWould you like more details on any of these?"
+                
+                response_data = {
+                    'success': True,
+                    'message': display_message,
+                    'recommended_tours': tour_details,
+                    'tour_keys': [t['key'] for t in tour_details],
+                    'used_filters': True,
+                    'filter_count': len(filtered_tours),
                         'quick_reply_options': quick_reply_options,
                         'total_matching_tours': total_matching_tours
-                    }
-                    
+                }
+                
             except Exception as e:
                 print(f"[ERR] Error parsing filter criteria: {e}")
                 filter_match = None
