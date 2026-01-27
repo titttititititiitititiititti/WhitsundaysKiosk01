@@ -3248,7 +3248,7 @@ def chat():
         
         print(f"\n[CHAT] CHAT REQUEST:")
         try:
-        print(f"   User message: '{user_message}'")
+            print(f"   User message: '{user_message}'")
         except UnicodeEncodeError:
             print(f"   User message: (contains special characters)")
         print(f"   Language: {language}")
@@ -3256,7 +3256,7 @@ def chat():
         print(f"   Previously shown tours: {len(previously_shown_tour_keys)} tours")
         for i, msg in enumerate(conversation_history[-3:], 1):  # Show last 3
             try:
-            print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
+                print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
             except UnicodeEncodeError:
                 print(f"   History[{i}]: [{msg.get('role')}] (contains special characters)")
         
