@@ -2428,20 +2428,26 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         exclude_keys = set()
     client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     
-    # Build conversation context
+    # Build conversation context - separate USER messages from ASSISTANT messages
+    # We need USER-ONLY context for intent detection (so assistant's welcome message doesn't pollute)
     context_messages = []
+    user_messages_only = []
     for msg in conversation_history[-6:]:
         if msg.get('role') == 'user':
-            context_messages.append(f"User: {msg.get('content', '')}")
+            user_content = msg.get('content', '')
+            context_messages.append(f"User: {user_content}")
+            user_messages_only.append(user_content.lower())
         elif msg.get('role') == 'assistant':
             context_messages.append(f"Assistant: {msg.get('content', '')[:200]}...")
     context = "\n".join(context_messages) if context_messages else "No previous context"
     
     # PRE-FILTER: Only send relevant tours to LLM (based on keywords in message AND context)
-    # This drastically reduces prompt size and speeds up matching
     msg_lower = user_message.lower()
     
-    # Also check conversation context for keywords (user might say "I'm happy with anything" after discussing sailing)
+    # USER-ONLY text for intent detection (prevents assistant's welcome message from polluting)
+    user_text = msg_lower + " " + " ".join(user_messages_only)
+    
+    # Combined text for general keyword matching (includes assistant context for continuity)
     context_lower = context.lower() if context else ""
     combined_text = msg_lower + " " + context_lower
     
@@ -2452,23 +2458,23 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
                 'bird', 'crocodile', 'koala', 'dolphin', 'sunrise', 'rainforest', 'multi-day',
                 'multi day', '2 day', '3 day', 'overnight', 'liveaboard', 'backpack']
     
-    active_keywords = [kw for kw in keywords if kw in combined_text]
+    # Use USER-ONLY text for keyword detection (so assistant messages don't add false keywords)
+    active_keywords = [kw for kw in keywords if kw in user_text]
     
-    # SPECIAL HANDLING: "reef" requests should default to Great Barrier Reef tours
-    # Most tourists asking for "reef tour" want the actual GBR, not just coral reef snorkeling near islands
-    # Only show coral reef tours if user specifically asks for "coral reef" or "fringing reef"
-    # IMPORTANT: Only check CURRENT message for reef intent, not conversation history!
-    # Otherwise switching from GBR to Whitehaven would still apply GBR filters
-    wants_coral_reef_only = 'coral reef' in msg_lower or 'fringing reef' in msg_lower
-    has_reef_request = 'reef' in active_keywords or 'great barrier' in msg_lower or 'gbr' in msg_lower
+    # DESTINATION INTENT DETECTION - What does the USER actually want?
+    # Check USER messages only (not assistant's suggestions)
+    user_wants_whitehaven = 'whitehaven' in user_text
+    user_wants_reef = ('reef' in user_text and 'whitehaven' not in user_text) or 'great barrier' in user_text or 'gbr' in user_text
+    user_wants_sailing = any(kw in user_text for kw in ['sail', 'sailing', 'yacht'])
+    user_wants_jetski = 'jetski' in user_text or 'jet ski' in user_text
     
-    # Check if user is asking for something different (not reef-related)
-    # IMPORTANT: Check COMBINED_TEXT (includes context) not just current message!
-    # Because user might say "whitehaven beach tours" then "full day" - the second message needs context
-    is_non_reef_request = any(kw in combined_text for kw in ['whitehaven', 'beach tour', 'sailing tour', 'sunset', 'jetski', 'jet ski', 'helicopter'])
+    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}")
     
-    if has_reef_request and not wants_coral_reef_only and not is_non_reef_request:
-        # Treat ALL reef requests as Great Barrier Reef requests
+    # SPECIAL HANDLING: Only add GBR if user EXPLICITLY wants reef (not Whitehaven/sailing/etc)
+    wants_coral_reef_only = 'coral reef' in user_text or 'fringing reef' in user_text
+    
+    if user_wants_reef and not wants_coral_reef_only and not user_wants_whitehaven:
+        # User explicitly wants reef tours - add GBR filter
         active_keywords.append('great_barrier_reef')
         if 'reef' in active_keywords:
             active_keywords.remove('reef')
@@ -2531,6 +2537,21 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         if exclude_helicopter:
             if any(kw in name_lower for kw in ['helicopter', 'heli ', 'scenic flight', 'aerial']):
                 continue  # Skip helicopter tours
+        
+        # WHITEHAVEN BEACH REQUEST: Exclude reef-focused tours
+        # These tours go to the GBR, not Whitehaven Beach!
+        if user_wants_whitehaven and not user_wants_reef:
+            tour_text_full = (name_lower + ' ' + (t.get('description', '') or '')).lower()
+            is_reef_focused = (
+                'reefworld' in name_lower or
+                'great barrier reef' in name_lower or
+                'reef adventure' in name_lower or
+                'reef pontoon' in tour_text_full or
+                'outer reef' in tour_text_full or
+                ('reef' in name_lower and 'whitehaven' not in name_lower)
+            )
+            if is_reef_focused:
+                continue  # Skip reef tours for Whitehaven requests
         
         # Budget filtering - skip expensive tours for backpackers
         if is_budget_request and not is_luxury_request:
@@ -2821,9 +2842,24 @@ CRITICAL RULES:
    - 5.0 rated tours before 4.5, before 4.0, etc.
    - If two tours have same rating, promoted one wins
    
-4. MATCH THE REQUEST - Don't recommend reef tours for beach requests or vice versa
-   - "pontoon", "reefworld", "outer reef" = REEF tours (not beach)
-   - "whitehaven", "hill inlet", "beach" = BEACH tours (not reef)
+4. MATCH THE REQUEST - Don't recommend reef tours for beach requests or vice versa!
+   
+   FOR WHITEHAVEN BEACH REQUESTS - DO NOT RECOMMEND:
+   ❌ "Reefworld" tours (these go to the REEF, not Whitehaven Beach!)
+   ❌ "Great Barrier Reef Adventure" (reef tour, not beach!)
+   ❌ Any tour with "reef" in the name (unless it also has "whitehaven")
+   ❌ Pontoon tours (these are reef pontoons, not beaches!)
+   
+   FOR WHITEHAVEN BEACH REQUESTS - PRIORITIZE:
+   ✅ Ocean Rafting (Northern Exposure, Southern Lights) = #1 Whitehaven tours!
+   ✅ Tours with "whitehaven" in the name
+   ✅ Tours with "hill inlet" in the name
+   ✅ Cruise Whitsundays Whitehaven tours (NOT their reef tours!)
+   
+   FOR GREAT BARRIER REEF REQUESTS - PRIORITIZE:
+   ✅ Reefworld, Hardy Reef, outer reef pontoon tours
+   ✅ Cruise Whitsundays reef tours
+   ❌ NOT Ocean Rafting (they don't go to the actual GBR!)
 
 CRITICAL: Use the EXACT "key" values from the catalog above. Keys contain hashes like "company__abc123def456".
 Do NOT construct keys from tour names - copy the exact key string from the catalog.
