@@ -2444,8 +2444,35 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     # PRE-FILTER: Only send relevant tours to LLM (based on keywords in message AND context)
     msg_lower = user_message.lower()
     
-    # USER-ONLY text for intent detection (prevents assistant's welcome message from polluting)
-    user_text = msg_lower + " " + " ".join(user_messages_only)
+    # TOPIC CHANGE DETECTION: If current message has a SPECIFIC activity, ignore historical context
+    # This prevents "jet ski tours" from inheriting "whitehaven" from previous conversation
+    specific_activities_in_msg = []
+    activity_keywords = {
+        'jetski': ['jetski', 'jet ski'],
+        'helicopter': ['helicopter', 'heli tour', 'scenic flight', 'seaplane'],
+        'sailing': ['sailing tour', 'sail tour', 'yacht tour'],
+        'diving': ['dive tour', 'diving tour', 'scuba'],
+        'fishing': ['fishing tour', 'fishing charter'],
+        'wildlife': ['wildlife tour', 'animal tour'],
+        'reef': ['reef tour', 'great barrier', 'gbr tour'],
+        'whitehaven': ['whitehaven tour', 'whitehaven beach'],
+    }
+    
+    for activity, phrases in activity_keywords.items():
+        if any(phrase in msg_lower for phrase in phrases):
+            specific_activities_in_msg.append(activity)
+    
+    # If user is asking for a SPECIFIC activity in current message, DON'T inherit context
+    # Example: User asked for "whitehaven" before, now asks for "jet ski" -> only search jet ski
+    is_new_topic = len(specific_activities_in_msg) > 0
+    
+    if is_new_topic:
+        # NEW TOPIC: Only use current message for intent
+        user_text = msg_lower
+        print(f"[LLM] TOPIC CHANGE detected: {specific_activities_in_msg} - ignoring historical context")
+    else:
+        # CONTINUATION: Use current + previous user messages
+        user_text = msg_lower + " " + " ".join(user_messages_only)
     
     # Combined text for general keyword matching (includes assistant context for continuity)
     context_lower = context.lower() if context else ""
@@ -2458,11 +2485,11 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
                 'bird', 'crocodile', 'koala', 'dolphin', 'sunrise', 'rainforest', 'multi-day',
                 'multi day', '2 day', '3 day', 'overnight', 'liveaboard', 'backpack']
     
-    # Use USER-ONLY text for keyword detection (so assistant messages don't add false keywords)
+    # Use appropriate text for keyword detection based on topic change
     active_keywords = [kw for kw in keywords if kw in user_text]
     
     # DESTINATION INTENT DETECTION - What does the USER actually want?
-    # Check USER messages only (not assistant's suggestions)
+    # Check based on topic (current only if new topic, context if continuation)
     user_wants_whitehaven = 'whitehaven' in user_text
     user_wants_reef = ('reef' in user_text and 'whitehaven' not in user_text) or 'great barrier' in user_text or 'gbr' in user_text
     user_wants_sailing = any(kw in user_text for kw in ['sail', 'sailing', 'yacht'])
@@ -2538,9 +2565,22 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
             if any(kw in name_lower for kw in ['helicopter', 'heli ', 'scenic flight', 'aerial']):
                 continue  # Skip helicopter tours
         
+        # JET SKI REQUEST: ONLY return jet ski tours!
+        # Don't mix beach/reef tours with jet ski results
+        if user_wants_jetski:
+            company_lower = (t.get('company', '') or t.get('company_name', '')).lower()
+            tour_text_full = (name_lower + ' ' + (t.get('description', '') or '')).lower()
+            is_jetski_tour = (
+                'jetski' in name_lower or 'jet ski' in name_lower or
+                'jetski' in tour_text_full or 'jet ski' in tour_text_full or
+                'jetskitour' in company_lower
+            )
+            if not is_jetski_tour:
+                continue  # Skip non-jet-ski tours for jet ski requests
+        
         # WHITEHAVEN BEACH REQUEST: Exclude reef-focused tours
         # These tours go to the GBR, not Whitehaven Beach!
-        if user_wants_whitehaven and not user_wants_reef:
+        if user_wants_whitehaven and not user_wants_reef and not user_wants_jetski:
             tour_text_full = (name_lower + ' ' + (t.get('description', '') or '')).lower()
             is_reef_focused = (
                 'reefworld' in name_lower or

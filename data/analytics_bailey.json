@@ -7233,6 +7233,11 @@
             "role": "assistant",
             "message": "I'm having trouble right now. Please try the filter questions or browse all tours."
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T14:17:23.853070",
+          "data": {}
         }
       ],
       "language": "en",
@@ -7260,10 +7265,152 @@
           "message": "I'm having trouble right now. Please try the filter questions or browse all tours.",
           "timestamp": "2026-01-27T14:14:00.405583"
         }
-      ]
+      ],
+      "ended_at": "2026-01-27T14:17:23.853070",
+      "duration_seconds": 318.796184
+    },
+    {
+      "session_id": "session_d255ce32a11e_1769487444",
+      "account": "bailey",
+      "started_at": "2026-01-27T14:17:24.873556",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T14:17:24.873556",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T14:17:53.553556",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T14:17:55.327736",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:01.151811",
+          "data": {
+            "role": "user",
+            "message": "do you have any full-day Whitehaven Beach tours"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:15.886539",
+          "data": {
+            "role": "assistant",
+            "message": "Absolutely, full-day Whitehaven Beach tours are a fantastic choice! \ud83c\udfdd\ufe0f Here are some amazing options for you:\n\n1. **Northern Exposure Eco Adventure** - This tour is a top pick for a reason! It offers an exhilarating ride to the iconic Whitehaven Beach and Hill Inlet, combined with incredible snorkeling at two distinct locations around Hook Island, including Mantaray Bay and Maureens Cove. You'll enjoy a guided walk to the Hill Inlet lookout and benefit from a small group experience for a more i"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:23.559086",
+          "data": {
+            "role": "user",
+            "message": "perfect do you have any jet ski tours"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:31.874072",
+          "data": {
+            "role": "assistant",
+            "message": "Jet ski tours sound like an exhilarating way to explore the Whitsundays! While I don't have specific jet ski tours listed right now, I can help you find similar adventures. How about a thrilling full-day tour exploring the islands and beaches? Let me know what you're interested in, and I'll find the best options for you! \ud83c\udfdd\ufe0f\ud83c\udf0a\n\nWould you like more details on any of these?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:46.707638",
+          "data": {
+            "role": "user",
+            "message": "yes you do have fucking jet ski tours can you show me them please"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:18:57.881381",
+          "data": {
+            "role": "assistant",
+            "message": "I apologize for that oversight! Let's dive into some thrilling jet ski tours that are sure to get your adrenaline pumping! \ud83c\udf0a\n\n1. **Northern Exposure Eco Adventure** - Although not a jet ski tour, this is a top pick for thrill-seekers with its exhilarating ride to Whitehaven Beach and Hill Inlet. It's perfect for snorkel enthusiasts, offering pristine snorkelling experiences at two distinct locations. You'll also enjoy guided National Park walks and small group adventures, making it a popular ch"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T14:23:26.786214",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "do you have any full-day Whitehaven Beach tours",
+          "timestamp": "2026-01-27T14:18:01.151811"
+        },
+        {
+          "role": "assistant",
+          "message": "Absolutely, full-day Whitehaven Beach tours are a fantastic choice! \ud83c\udfdd\ufe0f Here are some amazing options for you:\n\n1. **Northern Exposure Eco Adventure** - This tour is a top pick for a reason! It offers an exhilarating ride to the iconic Whitehaven Beach and Hill Inlet, combined with incredible snorkeling at two distinct locations around Hook Island, including Mantaray Bay and Maureens Cove. You'll enjoy a guided walk to the Hill Inlet lookout and benefit from a small group experience for a more i",
+          "timestamp": "2026-01-27T14:18:15.886539"
+        },
+        {
+          "role": "user",
+          "message": "perfect do you have any jet ski tours",
+          "timestamp": "2026-01-27T14:18:23.559086"
+        },
+        {
+          "role": "assistant",
+          "message": "Jet ski tours sound like an exhilarating way to explore the Whitsundays! While I don't have specific jet ski tours listed right now, I can help you find similar adventures. How about a thrilling full-day tour exploring the islands and beaches? Let me know what you're interested in, and I'll find the best options for you! \ud83c\udfdd\ufe0f\ud83c\udf0a\n\nWould you like more details on any of these?",
+          "timestamp": "2026-01-27T14:18:31.874072"
+        },
+        {
+          "role": "user",
+          "message": "yes you do have fucking jet ski tours can you show me them please",
+          "timestamp": "2026-01-27T14:18:46.707638"
+        },
+        {
+          "role": "assistant",
+          "message": "I apologize for that oversight! Let's dive into some thrilling jet ski tours that are sure to get your adrenaline pumping! \ud83c\udf0a\n\n1. **Northern Exposure Eco Adventure** - Although not a jet ski tour, this is a top pick for thrill-seekers with its exhilarating ride to Whitehaven Beach and Hill Inlet. It's perfect for snorkel enthusiasts, offering pristine snorkelling experiences at two distinct locations. You'll also enjoy guided National Park walks and small group adventures, making it a popular ch",
+          "timestamp": "2026-01-27T14:18:57.881381"
+        }
+      ],
+      "ended_at": "2026-01-27T14:23:26.787226",
+      "duration_seconds": 361.91367
+    },
+    {
+      "session_id": "session_3bc1fa9d0625_1769487808",
+      "account": "bailey",
+      "started_at": "2026-01-27T14:23:28.690556",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T14:23:28.690556",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-01-27T14:14:00.405583"
+  "last_updated": "2026-01-27T14:23:28.691600"
 }
