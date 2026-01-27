@@ -2690,9 +2690,11 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         tour_info = {
             'key': t['key'],
             'name': t['name'],
+            'company': t.get('company', t.get('company_name', '')),
             'duration': t.get('duration_category', t.get('duration', '')),
             'price': price_str,
             'tags': tags,
+            'rating': t.get('review_rating', 0) or 0,  # For ordering by quality
             'promoted': bool(t.get('is_promoted') or t.get('promotion'))
         }
         tour_catalog.append(tour_info)
@@ -2734,7 +2736,10 @@ AVAILABLE TOURS (JSON format):
 INSTRUCTIONS:
 1. Understand what the user wants (activity type, duration, destination)
 2. Find tours that ACTUALLY MATCH the request (not just mention keywords)
-3. PROMOTED TOURS FIRST: Any tour with "promoted: true" that matches MUST be returned first
+3. ORDER YOUR RESULTS:
+   - FIRST: Promoted tours (promoted: true) that match the request
+   - THEN: Remaining matching tours sorted by rating (highest rating first)
+   - Each tour has a "rating" field (0-5 scale) - use this for ordering!
 4. ONE TOUR PER COMPANY: Pick from different companies - don't return 3 tours from same operator!
 5. Return UP TO 15 relevant tour keys from DIVERSE companies for variety
 
@@ -2766,9 +2771,12 @@ CRITICAL RULES:
    - Spread recommendations across multiple operators
    - Only use same company twice if no other options exist
 
-3. PROMOTED TOURS FIRST - Tours marked "promoted: true" MUST appear before non-promoted ones
-   - Check the "promoted" field in each tour
-   - If a promoted tour matches the request, it goes FIRST
+3. ORDERING (STRICT PRIORITY):
+   a) PROMOTED TOURS FIRST - Tours with "promoted: true" that match the request go FIRST
+   b) THEN BY RATING - Among matching tours, order by review rating (highest to lowest)
+   - Look at the rating field in each tour
+   - 5.0 rated tours before 4.5, before 4.0, etc.
+   - If two tours have same rating, promoted one wins
    
 4. MATCH THE REQUEST - Don't recommend reef tours for beach requests or vice versa
    - "pontoon", "reefworld", "outer reef" = REEF tours (not beach)
