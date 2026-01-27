@@ -2545,10 +2545,28 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
             
             # Special handling for Great Barrier Reef - must actually go to the OUTER GBR
             if 'great_barrier_reef' in active_keywords:
-                # Tour must explicitly go to the outer Great Barrier Reef
-                # NOT just "coral reef snorkeling" or "fringing reef" near islands
-                is_actual_gbr_tour = (
-                    'great barrier reef' in tour_text or 
+                company_lower = (t.get('company', '') or t.get('company_name', '')).lower()
+                
+                # BLACKLIST: These companies do NOT go to the actual Great Barrier Reef
+                # They do "coral reef snorkeling" at fringing reefs near islands - NOT the outer GBR
+                is_blacklisted_company = any(c in company_lower for c in [
+                    'oceanrafting', 'ocean rafting',  # Whitehaven Beach focused
+                    'redcat', 'red cat',              # Island tours, not outer GBR  
+                    'wings',                          # Langford Island, NOT outer GBR
+                    'thundercat',                     # Island tours with fringing reef
+                ])
+                
+                if is_blacklisted_company:
+                    continue  # Skip this tour entirely for GBR searches
+                
+                # WHITELIST: Known actual GBR tour operators
+                is_actual_gbr_operator = any(c in company_lower for c in [
+                    'cruise whitsundays', 'cruisewhitsundays',  # Reefworld, Hardy Reef
+                    'reefworld',
+                ])
+                
+                # Tour must have ACTUAL outer GBR indicators (not just marketing text)
+                has_real_gbr_indicators = (
                     'outer reef' in tour_text or 
                     'outer barrier' in tour_text or
                     'reefworld' in tour_text or 
@@ -2556,17 +2574,20 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
                     'knuckle reef' in tour_text or
                     'bait reef' in tour_text or
                     'hook reef' in tour_text or
-                    'pontoon' in tour_text or  # GBR pontoons
-                    'reef sleep' in tour_text or  # Sleeping on the reef
-                    'cruise whitsundays' in name_lower  # Cruise Whitsundays = GBR operator
+                    'pontoon' in tour_text or  # GBR pontoons are on the outer reef
+                    'reef sleep' in tour_text   # Sleeping on the reef = outer reef
                 )
-                # EXCLUDE tours that only have fringing/coral reef (not outer GBR)
+                
+                # EXCLUDE if tour says "fringing reef" or "inner reef" - these are NOT the GBR
                 is_fringing_only = (
                     'fringing reef' in tour_text or 
-                    'coral reef' in tour_text and 'great barrier' not in tour_text or
-                    'oceanrafting' in name_lower or 'ocean rafting' in name_lower  # Ocean Rafting = Whitehaven focused
+                    'inner reef' in tour_text or
+                    'inner fringing' in tour_text or
+                    ('coral reef' in tour_text and 'outer' not in tour_text and 'great barrier' not in tour_text)
                 )
-                if is_actual_gbr_tour and not is_fringing_only:
+                
+                # Include if: actual GBR operator OR has real GBR indicators AND not fringing only
+                if is_actual_gbr_operator or (has_real_gbr_indicators and not is_fringing_only):
                     relevant_tours.append(t)
             else:
                 # Special handling for jetski - match both "jet ski" and "jetski" variants
