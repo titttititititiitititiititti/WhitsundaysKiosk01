@@ -17597,6 +17597,33 @@
     window.sendAIMessage = async function() {
       console.log('📤 sendAIMessage() called');
       
+      // IMMEDIATELY stop any currently playing audio to prevent overlap
+      // This ensures clean transition to new response
+      if (typeof ttsAudioElement !== 'undefined' && ttsAudioElement) {
+        ttsAudioElement.pause();
+        ttsAudioElement.currentTime = 0;
+        console.log('⏹️ Stopped current TTS audio');
+      }
+      if (typeof ttsAudioQueue !== 'undefined') {
+        ttsAudioQueue = [];
+      }
+      if (typeof ttsCurrentChunkIndex !== 'undefined') {
+        ttsCurrentChunkIndex = 0;
+      }
+      if (typeof ttsIsPlaying !== 'undefined') {
+        ttsIsPlaying = false;
+      }
+      // Stop visualizer
+      if (window.particleVisualizer) {
+        window.particleVisualizer.stopSpeaking();
+      }
+      // Stop welcome audio if playing
+      if (window.currentWelcomeAudio) {
+        window.currentWelcomeAudio.pause();
+        window.currentWelcomeAudio.currentTime = 0;
+        console.log('⏹️ Stopped welcome audio');
+      }
+      
       // Prime audio on first message send
       primeAudioContext();
       
