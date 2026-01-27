@@ -2726,18 +2726,27 @@ INSTRUCTIONS:
 5. Return UP TO 15 relevant tour keys - we need variety! We will show 3 but need extras for "other options" requests
 
 IMPORTANT MATCHING RULES:
-- Activity type is PRIMARY (e.g., if they want reef tours, include ALL reef-related tours)
+- DESTINATION MATCHING IS STRICT - tour must ACTUALLY GO to the destination:
+  * "Whitehaven Beach" = tours that spend significant TIME at Whitehaven Beach
+  * NOT tours that just FLY OVER or MENTION Whitehaven in passing!
+  * Ocean Rafting (Northern Exposure, Southern Lights) = THE Whitehaven Beach tours!
+  * Scenic flights ONLY for reef/Heart Reef requests, NOT beach requests
 - DURATION IS STRICT - MUST MATCH EXACTLY:
   * "full day" = ONLY full_day tours (NOT multi-day or overnight!)
   * "half day" = ONLY half_day tours
   * "multi-day" or "overnight" = ONLY multi_day tours
   * DO NOT return 2-day tours for "full day" requests!
-- Be generous with ACTIVITY matches, but STRICT with duration
 - USE THE TAGS FIELD to find related tours (e.g., "reef" tag means it's a reef tour)
 - For family requests: ALWAYS include tours with "family-friendly" tag
 - PRIORITIZE PROMOTED TOURS when they match!
 - If no tours match, return empty and set needs_alternative=true
 - Return 10-15 tours if available (we need variety for "show other" requests)
+
+CRITICAL DISTINCTIONS:
+- "Whitehaven Beach tour" = Ocean Rafting, Cruise Whitsundays beach tours (actually land on beach)
+- "Great Barrier Reef tour" = Cruise Whitsundays Reefworld, outer reef tours (actually visit outer reef)  
+- "Scenic flight" = sees things from air, does NOT count as visiting the destination!
+- Reefworld Fly/Cruise is a REEF tour, NOT a beach tour (even if it flies over Whitehaven)
 
 CRITICAL: Use the EXACT "key" values from the catalog above. Keys contain hashes like "company__abc123def456".
 Do NOT construct keys from tour names - copy the exact key string from the catalog.
