@@ -3194,15 +3194,19 @@ def chat():
                               'whale watch', 'sunset cruise', 'sunset sail']
         
         # Known tour names that should trigger immediate search
+        # NOTE: Do NOT include destinations like "whitehaven beach" - those need 2 preferences!
+        # Only include SPECIFIC tour/boat names
         known_tour_names = [
             'atlantic clipper', 'camira', 'thundercat', 'ocean rafting', 'northern exposure',
             'southern lights', 'whitsunday bullet', 'reefworld', 'cruise whitsundays',
             'wings', 'mantaray', 'apollo', 'solway lass', 'prosail', 'prima', 'brampton',
             'summertime', 'whitsunday blue', 'illusions', 'blizzard', 'brittania', 'ice',
-            'on ice', 'hayman', 'hamilton', 'daydream', 'airlie adventure', 'island trek',
-            'two island safari', 'heart reef', 'whitehaven express', 'whitehaven beach',
+            'on ice', 'airlie adventure', 'island trek',
+            'two island safari', 'heart reef', 'whitehaven express',
             'fury', 'zoe', 'matador', 'condor', 'clipper', 'adventurer', 'getaway'
         ]
+        # REMOVED: 'whitehaven beach' (destination, not tour name - needs duration)
+        # REMOVED: 'hayman', 'hamilton', 'daydream' (islands, not tour names - too generic)
         
         # Check if user is asking for something specific
         is_specific_request = (
