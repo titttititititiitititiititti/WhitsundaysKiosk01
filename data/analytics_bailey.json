@@ -7401,16 +7401,103 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T14:24:21.637208",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T14:24:23.382743",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:24:28.914624",
+          "data": {
+            "role": "user",
+            "message": "do you have any full day scuba diving tours"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:24:40.164502",
+          "data": {
+            "role": "assistant",
+            "message": "Absolutely! Full day scuba diving tours offer an incredible way to explore the underwater wonders of the Whitsundays. \ud83d\udc20\n\n1. **Bowen Reef Diving Tour** - Dive into the vibrant coral gardens of Bowen\u2019s famous Horseshoe Bay Reef with this guided diving tour. Perfect for certified divers of all levels, you'll encounter a variety of marine life including turtles and moray eels, all set against the beautiful backdrop of shallow depths with great visibility. All dive equipment and a professional guide"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:24:49.228434",
+          "data": {
+            "role": "user",
+            "message": "do you have any jet ski tours"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:24:58.361095",
+          "data": {
+            "role": "assistant",
+            "message": "Absolutely, jet ski tours in the Whitsundays are an exhilarating way to explore the stunning surroundings! \ud83c\udf0a Let me introduce you to two thrilling options:\n\n1. **Airlie Adventure Tour** - Experience the excitement of driving your own jet ski around the breathtaking Whitsunday Islands. This 1.5-hour tour is perfect for thrill-seekers and nature enthusiasts alike, offering the chance to spot sea turtles and other marine life as you navigate the beautiful bays. Suitable for all skill levels, this "
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-01-27T14:25:02.499743",
+          "data": {
+            "tour_name": "Ultimate Island Trek",
+            "company": "Jetskitour",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-01-27T14:25:09.495966",
+          "data": {
+            "tour_name": "Ultimate Island Trek",
+            "company": "Jetskitour",
+            "source": "ai-assistant"
+          }
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Ultimate Island Trek"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "do you have any full day scuba diving tours",
+          "timestamp": "2026-01-27T14:24:28.914624"
+        },
+        {
+          "role": "assistant",
+          "message": "Absolutely! Full day scuba diving tours offer an incredible way to explore the underwater wonders of the Whitsundays. \ud83d\udc20\n\n1. **Bowen Reef Diving Tour** - Dive into the vibrant coral gardens of Bowen\u2019s famous Horseshoe Bay Reef with this guided diving tour. Perfect for certified divers of all levels, you'll encounter a variety of marine life including turtles and moray eels, all set against the beautiful backdrop of shallow depths with great visibility. All dive equipment and a professional guide",
+          "timestamp": "2026-01-27T14:24:40.164502"
+        },
+        {
+          "role": "user",
+          "message": "do you have any jet ski tours",
+          "timestamp": "2026-01-27T14:24:49.228434"
+        },
+        {
+          "role": "assistant",
+          "message": "Absolutely, jet ski tours in the Whitsundays are an exhilarating way to explore the stunning surroundings! \ud83c\udf0a Let me introduce you to two thrilling options:\n\n1. **Airlie Adventure Tour** - Experience the excitement of driving your own jet ski around the breathtaking Whitsunday Islands. This 1.5-hour tour is perfect for thrill-seekers and nature enthusiasts alike, offering the chance to spot sea turtles and other marine life as you navigate the beautiful bays. Suitable for all skill levels, this ",
+          "timestamp": "2026-01-27T14:24:58.361095"
+        }
+      ]
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-01-27T14:23:28.691600"
+  "last_updated": "2026-01-27T14:25:09.497195"
 }

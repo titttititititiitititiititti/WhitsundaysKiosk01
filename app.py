@@ -2567,13 +2567,14 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         
         # JET SKI REQUEST: ONLY return jet ski tours!
         # Don't mix beach/reef tours with jet ski results
+        # STRICT: Tour must be PRIMARILY about jet skiing, not just mention it as an add-on
         if user_wants_jetski:
             company_lower = (t.get('company', '') or t.get('company_name', '')).lower()
-            tour_text_full = (name_lower + ' ' + (t.get('description', '') or '')).lower()
+            # Strict check: jet ski must be in NAME or it's a jet ski company
             is_jetski_tour = (
-                'jetski' in name_lower or 'jet ski' in name_lower or
-                'jetski' in tour_text_full or 'jet ski' in tour_text_full or
-                'jetskitour' in company_lower
+                'jetski' in name_lower or 'jet ski' in name_lower or  # Name contains jet ski
+                'jetskitour' in company_lower or                       # jetskitour company
+                'oceandynamics' in company_lower                       # oceandynamics (jet ski operator)
             )
             if not is_jetski_tour:
                 continue  # Skip non-jet-ski tours for jet ski requests
