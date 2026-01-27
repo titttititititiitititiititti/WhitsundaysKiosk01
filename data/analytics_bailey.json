@@ -5719,6 +5719,11 @@
             "role": "assistant",
             "message": "A full-day reef tour sounds perfect for you! \ud83c\udf0a You'll get to experience the stunning underwater world of the Great Barrier Reef. Let me show you some amazing options for full-day reef tours! \n\n1. **Reefworld Tour** - Dive into a day of adventure at the outer Great Barrier Reef! This tour takes you to the breathtaking Hardy Reef, where you can snorkel or dive amidst vibrant coral gardens and tropical fish. With expert guidance and all gear provided, you'll have an unforgettable experience in cry"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:46:41.877325",
+          "data": {}
         }
       ],
       "language": "en",
@@ -5746,10 +5751,232 @@
           "message": "A full-day reef tour sounds perfect for you! \ud83c\udf0a You'll get to experience the stunning underwater world of the Great Barrier Reef. Let me show you some amazing options for full-day reef tours! \n\n1. **Reefworld Tour** - Dive into a day of adventure at the outer Great Barrier Reef! This tour takes you to the breathtaking Hardy Reef, where you can snorkel or dive amidst vibrant coral gardens and tropical fish. With expert guidance and all gear provided, you'll have an unforgettable experience in cry",
           "timestamp": "2026-01-27T12:42:45.485753"
         }
+      ],
+      "ended_at": "2026-01-27T12:46:41.877325",
+      "duration_seconds": 288.477631
+    },
+    {
+      "session_id": "session_17e99c163a6e_1769482002",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:46:42.753324",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:46:42.753324",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:46:44.956335",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:46:46.650147",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:46:53.467075",
+          "data": {
+            "role": "user",
+            "message": "hi id like a reef tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:46:59.914045",
+          "data": {
+            "role": "assistant",
+            "message": "That sounds fantastic! The Great Barrier Reef is one of the most incredible natural wonders! \ud83c\udf0a Do you have a preference for the duration of the tour? Are you looking for a half-day, full-day, or even a multi-day adventure? \ud83d\udc20"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:50:30.835516",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "hi id like a reef tour",
+          "timestamp": "2026-01-27T12:46:53.467075"
+        },
+        {
+          "role": "assistant",
+          "message": "That sounds fantastic! The Great Barrier Reef is one of the most incredible natural wonders! \ud83c\udf0a Do you have a preference for the duration of the tour? Are you looking for a half-day, full-day, or even a multi-day adventure? \ud83d\udc20",
+          "timestamp": "2026-01-27T12:46:59.914045"
+        }
+      ],
+      "ended_at": "2026-01-27T12:50:30.835516",
+      "duration_seconds": 228.082192
+    },
+    {
+      "session_id": "session_a8af3093e934_1769482231",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:50:31.991346",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:50:31.991346",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:51:25.162944",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:51:27.153390",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:51:29.170189",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-01-27T12:51:29.170189",
+      "duration_seconds": 57.178843
+    },
+    {
+      "session_id": "session_cf7f8532667a_1769482289",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:51:30.009927",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:51:30.009927",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:51:31.721493",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:51:33.302192",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:51:38.003509",
+          "data": {
+            "role": "user",
+            "message": "i want a reef tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:51:44.282299",
+          "data": {
+            "role": "assistant",
+            "message": "Awesome choice! The Great Barrier Reef is one of the 7 natural wonders of the world, and it's an incredible experience! \ud83c\udf0a Could you tell me how long you can spend on the tour? Are you looking for a half-day, full-day, or multi-day adventure?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:52:21.023252",
+          "data": {
+            "role": "user",
+            "message": "full day"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:52:36.983198",
+          "data": {
+            "role": "assistant",
+            "message": "Fantastic! Full-day reef tours offer an immersive experience, allowing you to truly explore the stunning underwater world and beautiful islands. \ud83c\udf0a Here are some exciting options for you:\n\n1. **Southern Lights** - This popular tour is perfect for thrill-seekers and nature enthusiasts! With Ocean Rafting's Southern Lights tour, you'll enjoy high-speed boating and educational exploration of the Whitsundays. Highlights include a guided bushwalk to Hill Inlet Lookout, snorkeling at secret spots like"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:53:25.220072",
+          "data": {
+            "role": "user",
+            "message": "okay do you have any great barrier reef tours?"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-01-27T12:53:26.801357",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "i want a reef tour",
+          "timestamp": "2026-01-27T12:51:38.003509"
+        },
+        {
+          "role": "assistant",
+          "message": "Awesome choice! The Great Barrier Reef is one of the 7 natural wonders of the world, and it's an incredible experience! \ud83c\udf0a Could you tell me how long you can spend on the tour? Are you looking for a half-day, full-day, or multi-day adventure?",
+          "timestamp": "2026-01-27T12:51:44.282299"
+        },
+        {
+          "role": "user",
+          "message": "full day",
+          "timestamp": "2026-01-27T12:52:21.023252"
+        },
+        {
+          "role": "assistant",
+          "message": "Fantastic! Full-day reef tours offer an immersive experience, allowing you to truly explore the stunning underwater world and beautiful islands. \ud83c\udf0a Here are some exciting options for you:\n\n1. **Southern Lights** - This popular tour is perfect for thrill-seekers and nature enthusiasts! With Ocean Rafting's Southern Lights tour, you'll enjoy high-speed boating and educational exploration of the Whitsundays. Highlights include a guided bushwalk to Hill Inlet Lookout, snorkeling at secret spots like",
+          "timestamp": "2026-01-27T12:52:36.983198"
+        },
+        {
+          "role": "user",
+          "message": "okay do you have any great barrier reef tours?",
+          "timestamp": "2026-01-27T12:53:25.220072"
+        }
       ]
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-01-27T12:42:45.488395"
+  "last_updated": "2026-01-27T12:53:26.802377"
 }

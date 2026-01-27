@@ -2518,13 +2518,30 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
             tour_text = (name_lower + ' ' + (t.get('description', '') or '') + ' ' + (t.get('highlights', '') or '')).lower()
             tags = (t.get('tags', '') or '').lower()
             
-            # Special handling for Great Barrier Reef - must actually go to GBR
+            # Special handling for Great Barrier Reef - must actually go to the OUTER GBR
             if 'great_barrier_reef' in active_keywords:
-                # Tour must explicitly mention "great barrier reef" or "outer reef" (not just "coral reef")
-                is_gbr_tour = ('great barrier' in tour_text or 'outer reef' in tour_text or 
-                              'gbr' in tour_text or 'reefworld' in tour_text or 
-                              'hardy reef' in tour_text or 'knuckle reef' in tour_text)
-                if is_gbr_tour:
+                # Tour must explicitly go to the outer Great Barrier Reef
+                # NOT just "coral reef snorkeling" or "fringing reef" near islands
+                is_actual_gbr_tour = (
+                    'great barrier reef' in tour_text or 
+                    'outer reef' in tour_text or 
+                    'outer barrier' in tour_text or
+                    'reefworld' in tour_text or 
+                    'hardy reef' in tour_text or 
+                    'knuckle reef' in tour_text or
+                    'bait reef' in tour_text or
+                    'hook reef' in tour_text or
+                    'pontoon' in tour_text or  # GBR pontoons
+                    'reef sleep' in tour_text or  # Sleeping on the reef
+                    'cruise whitsundays' in name_lower  # Cruise Whitsundays = GBR operator
+                )
+                # EXCLUDE tours that only have fringing/coral reef (not outer GBR)
+                is_fringing_only = (
+                    'fringing reef' in tour_text or 
+                    'coral reef' in tour_text and 'great barrier' not in tour_text or
+                    'oceanrafting' in name_lower or 'ocean rafting' in name_lower  # Ocean Rafting = Whitehaven focused
+                )
+                if is_actual_gbr_tour and not is_fringing_only:
                     relevant_tours.append(t)
             elif any(kw in tour_text or kw in tags for kw in active_keywords):
                 relevant_tours.append(t)
