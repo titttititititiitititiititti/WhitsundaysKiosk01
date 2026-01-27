@@ -3452,9 +3452,9 @@ Reply ONLY: SEARCH or ASK"""
         
         # Combine: promoted first, then non-promoted
         pre_fetched_tours = promoted_tours + non_promoted_tours
-            
+        
         # Limit to top 3
-            pre_fetched_tours = pre_fetched_tours[:3]
+        pre_fetched_tours = pre_fetched_tours[:3]
         
         print(f"[CHAT] Showing 3 of {total_matching_tours} matching tours")
         
