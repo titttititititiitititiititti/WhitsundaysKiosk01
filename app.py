@@ -2449,6 +2449,7 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     specific_activities_in_msg = []
     activity_keywords = {
         'jetski': ['jetski', 'jet ski'],
+        'oceanrafting': ['ocean rafting', 'oceanrafting'],  # Specific company/tour type
         'helicopter': ['helicopter', 'heli tour', 'scenic flight', 'seaplane'],
         'sailing': ['sailing tour', 'sail tour', 'yacht tour'],
         'diving': ['dive tour', 'diving tour', 'scuba'],
@@ -2494,8 +2495,9 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     user_wants_reef = ('reef' in user_text and 'whitehaven' not in user_text) or 'great barrier' in user_text or 'gbr' in user_text
     user_wants_sailing = any(kw in user_text for kw in ['sail', 'sailing', 'yacht'])
     user_wants_jetski = 'jetski' in user_text or 'jet ski' in user_text
+    user_wants_oceanrafting = 'ocean rafting' in user_text or 'oceanrafting' in user_text
     
-    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}")
+    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}, oceanrafting={user_wants_oceanrafting}")
     
     # SPECIAL HANDLING: Only add GBR if user EXPLICITLY wants reef (not Whitehaven/sailing/etc)
     wants_coral_reef_only = 'coral reef' in user_text or 'fringing reef' in user_text
@@ -2578,6 +2580,13 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
             )
             if not is_jetski_tour:
                 continue  # Skip non-jet-ski tours for jet ski requests
+        
+        # OCEAN RAFTING REQUEST: ONLY return Ocean Rafting company tours!
+        if user_wants_oceanrafting:
+            company_lower = (t.get('company', '') or t.get('company_name', '')).lower()
+            is_oceanrafting_tour = 'oceanrafting' in company_lower or 'ocean rafting' in company_lower
+            if not is_oceanrafting_tour:
+                continue  # Skip non-Ocean-Rafting tours
         
         # WHITEHAVEN BEACH REQUEST: Exclude reef-focused tours
         # These tours go to the GBR, not Whitehaven Beach!

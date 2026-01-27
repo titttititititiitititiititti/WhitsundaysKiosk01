@@ -7465,6 +7465,11 @@
             "company": "Jetskitour",
             "source": "ai-assistant"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T14:29:33.626898",
+          "data": {}
         }
       ],
       "language": "en",
@@ -7494,10 +7499,119 @@
           "message": "Absolutely, jet ski tours in the Whitsundays are an exhilarating way to explore the stunning surroundings! \ud83c\udf0a Let me introduce you to two thrilling options:\n\n1. **Airlie Adventure Tour** - Experience the excitement of driving your own jet ski around the breathtaking Whitsunday Islands. This 1.5-hour tour is perfect for thrill-seekers and nature enthusiasts alike, offering the chance to spot sea turtles and other marine life as you navigate the beautiful bays. Suitable for all skill levels, this ",
           "timestamp": "2026-01-27T14:24:58.361095"
         }
+      ],
+      "ended_at": "2026-01-27T14:29:33.626898",
+      "duration_seconds": 364.936342
+    },
+    {
+      "session_id": "session_05f99462e807_1769488174",
+      "account": "bailey",
+      "started_at": "2026-01-27T14:29:34.486623",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T14:29:34.486623",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T14:29:36.891273",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T14:29:39.185994",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:29:45.336273",
+          "data": {
+            "role": "user",
+            "message": "do you have any jet ski tours"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:29:57.505346",
+          "data": {
+            "role": "assistant",
+            "message": "Absolutely! Jet ski tours are an exhilarating way to explore the stunning Whitsunday Islands! \ud83c\udf0a\n\n1. **Two Island Safari Tour** - Get ready for an adrenaline-packed adventure with the Two Island Safari Tour. You'll jet ski for about two hours, navigating the scenic waterways around Daydream and South Molle Islands. Keep your eyes peeled for sea turtles and dugongs as you enjoy the thrill of the ride. Plus, you can relive the excitement with free tour photos on Facebook! \ud83d\udcf8\n\n2. **Ultimate Island "
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:30:06.515160",
+          "data": {
+            "role": "user",
+            "message": "do you have any ocean rafting pause"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T14:30:18.038818",
+          "data": {
+            "role": "assistant",
+            "message": "Yes, we have some fantastic ocean rafting tours that will take you on an exhilarating journey around the Whitsunday Islands! \ud83c\udf0a \n\n1. **Fly Raft \u2013 Northern Exposure** - This action-packed adventure is perfect for thrill-seekers! You'll zoom across the waves to visit the stunning Whitehaven Beach, where you can relax on the pristine sands. Enjoy a stop for snorkeling at the fringing reefs, teeming with vibrant marine life. It's an unforgettable way to experience the beauty of the Whitsundays! \ud83d\udc20\n\n"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "do you have any jet ski tours",
+          "timestamp": "2026-01-27T14:29:45.336273"
+        },
+        {
+          "role": "assistant",
+          "message": "Absolutely! Jet ski tours are an exhilarating way to explore the stunning Whitsunday Islands! \ud83c\udf0a\n\n1. **Two Island Safari Tour** - Get ready for an adrenaline-packed adventure with the Two Island Safari Tour. You'll jet ski for about two hours, navigating the scenic waterways around Daydream and South Molle Islands. Keep your eyes peeled for sea turtles and dugongs as you enjoy the thrill of the ride. Plus, you can relive the excitement with free tour photos on Facebook! \ud83d\udcf8\n\n2. **Ultimate Island ",
+          "timestamp": "2026-01-27T14:29:57.505346"
+        },
+        {
+          "role": "user",
+          "message": "do you have any ocean rafting pause",
+          "timestamp": "2026-01-27T14:30:06.515160"
+        },
+        {
+          "role": "assistant",
+          "message": "Yes, we have some fantastic ocean rafting tours that will take you on an exhilarating journey around the Whitsunday Islands! \ud83c\udf0a \n\n1. **Fly Raft \u2013 Northern Exposure** - This action-packed adventure is perfect for thrill-seekers! You'll zoom across the waves to visit the stunning Whitehaven Beach, where you can relax on the pristine sands. Enjoy a stop for snorkeling at the fringing reefs, teeming with vibrant marine life. It's an unforgettable way to experience the beauty of the Whitsundays! \ud83d\udc20\n\n",
+          "timestamp": "2026-01-27T14:30:18.038818"
+        }
       ]
+    },
+    {
+      "session_id": "session_09be4952a143_1769488466",
+      "account": "bailey",
+      "started_at": "2026-01-27T14:34:26.303679",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T14:34:26.303679",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-01-27T14:25:09.497195"
+  "last_updated": "2026-01-27T14:34:26.303679"
 }
