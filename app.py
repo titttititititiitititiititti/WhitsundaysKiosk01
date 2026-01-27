@@ -2652,7 +2652,7 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     print(f"[LLM] Pre-filtered to {len(relevant_tours)} relevant tours (from {len(all_tours)} total)")
     print(f"[LLM] Top 5 tours being sent to LLM (in this order):")
     for i, t in enumerate(relevant_tours[:5]):
-        promo = "⭐PROMOTED" if (t.get('is_promoted') or t.get('promotion')) else ""
+        promo = "[PROMOTED]" if (t.get('is_promoted') or t.get('promotion')) else ""
         rating = t.get('review_rating', 0) or 0
         company = t.get('company', t.get('company_name', ''))
         print(f"   {i+1}. {t['name']} ({company}) - Rating: {rating} {promo}")
