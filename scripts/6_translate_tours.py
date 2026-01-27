@@ -39,13 +39,18 @@ except ImportError:
 
 try:
     from googletrans import Translator as GoogleTranslator
-except ImportError:
-    print("[!] googletrans not installed. Run: pip install googletrans==4.0.0rc1")
+except (ImportError, AttributeError) as e:
+    print(f"[!] googletrans not available: {e}")
+    print("   Hindi translations will be skipped")
     GoogleTranslator = None
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Load .env from parent directory (project root)
+    import pathlib
+    env_path = pathlib.Path(__file__).parent.parent / '.env'
+    load_dotenv(env_path)
+    print(f"[OK] Loaded .env from {env_path}")
 except ImportError:
     print("[!] python-dotenv not installed. Run: pip install python-dotenv")
 

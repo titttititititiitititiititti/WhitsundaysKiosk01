@@ -395,6 +395,42 @@
             background: rgba(88, 166, 255, 0.05);
         }
         
+        /* Danger Zone */
+        .danger-zone {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+        }
+        
+        .danger-zone h3 {
+            margin: 0 0 8px 0;
+            color: #ef4444;
+            font-size: 1rem;
+        }
+        
+        .danger-zone p {
+            margin: 0 0 16px 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .delete-tour-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        
+        .delete-tour-btn:hover {
+            background: #b91c1c;
+        }
+        
         /* Save indicator */
         .save-status {
             display: flex;
@@ -668,6 +704,65 @@
             display: none;
         }
         
+        .image-card .delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            background: rgba(220, 53, 69, 0.9);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.15s, transform 0.15s;
+            z-index: 10;
+        }
+        
+        .image-card:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .image-card .delete-btn:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+        
+        .images-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .images-header p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .upload-btn {
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .upload-btn:hover {
+            background: #58a6ff;
+        }
+        
         .no-images {
             text-align: center;
             padding: 40px;
@@ -678,6 +773,48 @@
             font-size: 2.5rem;
             margin-bottom: 12px;
             opacity: 0.5;
+        }
+        
+        /* Drag and Drop Zone */
+        .images-drop-zone {
+            min-height: 200px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .images-drop-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.1);
+        }
+        
+        .images-drop-zone.drag-over::after {
+            content: '📥 Drop images here';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--bg-primary);
+            padding: 16px 32px;
+            border-radius: 8px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .images-drop-zone.drag-over > * {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .drop-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-align: center;
         }
         
         /* Reviews Section */
@@ -824,6 +961,34 @@
             background: rgba(88, 166, 255, 0.05);
         }
         
+        .review-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .review-buttons .add-review-btn {
+            flex: 1;
+        }
+        
+        .apply-reviews-btn {
+            padding: 14px 20px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        
+        .apply-reviews-btn:hover {
+            background: #2ea44f;
+            transform: translateY(-1px);
+        }
+        
         .reviews-summary {
             display: flex;
             align-items: center;
@@ -958,6 +1123,34 @@
         
         .preview-tab-content.active {
             display: block;
+        }
+        
+        /* Full Image Preview */
+        .image-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 200px);
+            padding: 20px;
+        }
+        
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .image-preview-container .preview-label {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        #preview-image {
+            background: var(--bg-tertiary);
         }
         
         /* Browse Card Preview */
@@ -1544,6 +1737,13 @@
             <div class="preview-tab-content" id="preview-layout">
                 <!-- Wireframe layout preview -->
             </div>
+            <div class="preview-tab-content" id="preview-image" style="display: none;">
+                <!-- Full image preview -->
+                <div class="image-preview-container">
+                    <img id="previewImageFull" src="" alt="Image preview">
+                    <p class="preview-label">Click any image in the gallery to preview</p>
+                </div>
+            </div>
         </aside>
     </div>
     
@@ -1884,6 +2084,17 @@
                 <button class="add-section-btn" onclick="openAddSectionModal()">
                     <span>+</span> Add New Section
                 </button>
+            `;
+            
+            // Add delete tour button at the bottom
+            html += `
+                <div class="danger-zone">
+                    <h3>⚠️ Danger Zone</h3>
+                    <p>Permanently delete this tour and all its images. This action cannot be undone.</p>
+                    <button class="delete-tour-btn" onclick="confirmDeleteTour()">
+                        🗑️ Delete This Tour
+                    </button>
+                </div>
             `;
             
             form.innerHTML = html;
@@ -2344,6 +2555,76 @@
             }
         }
         
+        async function confirmDeleteTour() {
+            if (!currentTour) return;
+            
+            const tourName = currentTour.name || 'this tour';
+            const confirmed = confirm(
+                `⚠️ DELETE TOUR\n\n` +
+                `Are you sure you want to permanently delete "${tourName}"?\n\n` +
+                `This will:\n` +
+                `• Remove the tour from the database\n` +
+                `• Delete all associated images\n` +
+                `• Cannot be undone!\n\n` +
+                `Type 'yes' to confirm deletion.`
+            );
+            
+            if (!confirmed) return;
+            
+            // Double-confirm with text input
+            const doubleConfirm = prompt(
+                `To confirm deletion of "${tourName}", type DELETE:`
+            );
+            
+            if (doubleConfirm !== 'DELETE') {
+                showToast('Deletion cancelled', 'info');
+                return;
+            }
+            
+            try {
+                const key = `${currentTour.company_name}__${currentTour.id}`;
+                const response = await fetch(`/admin/api/tour/${key}/delete`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Delete failed');
+                }
+                
+                const result = await response.json();
+                
+                showToast(`Tour "${tourName}" deleted successfully!`, 'success');
+                
+                // If company was also deleted, reload the page
+                if (result.company_deleted) {
+                    showToast('Company had no more tours and was removed', 'info');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    // Remove from sidebar and clear form
+                    const tourItem = document.querySelector(`[data-key="${key}"]`);
+                    if (tourItem) tourItem.remove();
+                    
+                    // Update tour count in company header
+                    const companyGroup = document.querySelector(`[data-company="${currentTour.company_name}"]`);
+                    if (companyGroup) {
+                        const countEl = companyGroup.querySelector('.tour-count');
+                        if (countEl) {
+                            const currentCount = parseInt(countEl.textContent) || 1;
+                            countEl.textContent = currentCount - 1;
+                        }
+                    }
+                    
+                    // Clear form
+                    currentTour = null;
+                    document.getElementById('tourForm').style.display = 'none';
+                    document.getElementById('noTourMessage').style.display = 'block';
+                }
+            } catch (err) {
+                showToast('Failed to delete: ' + err.message, 'error');
+            }
+        }
+        
         function updateSaveStatus(status) {
             const el = document.getElementById('saveStatus');
             el.className = 'save-status ' + status;
@@ -2382,39 +2663,287 @@
         
         // Images section rendering
         function renderImagesSection() {
+            let innerContent = '';
+            
             if (!currentImages || currentImages.length === 0) {
-                return `
+                innerContent = `
                     <div class="no-images">
                         <div class="icon">🖼️</div>
                         <p>No images found for this tour</p>
                         <p style="font-size: 0.8rem; margin-top: 8px;">
-                            Run the media downloader script to add images
+                            Drag & drop images here or click to upload
                         </p>
+                        <button class="upload-btn" onclick="triggerImageUpload()" style="margin-top: 16px;">
+                            📤 Upload Images
+                        </button>
                     </div>
                 `;
-            }
-            
-            let html = `
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
-                    Click an image to set it as the thumbnail. The thumbnail is shown in tour cards and search results.
-                </p>
+            } else {
+                innerContent = `
+                    <div class="images-header">
+                        <p>Click to preview • Double-click for thumbnail • Hover to delete</p>
+                        <button class="upload-btn" onclick="triggerImageUpload()">
+                            📤 Upload
+                        </button>
+                    </div>
                 <div class="images-grid">
             `;
             
             for (const img of currentImages) {
-                html += `
+                    innerContent += `
                     <div class="image-card ${img.is_thumbnail ? 'is-thumbnail' : ''}" 
-                         onclick="setThumbnail('${img.path}')"
-                         title="${img.is_thumbnail ? 'Current thumbnail' : 'Click to set as thumbnail'}">
+                             onclick="previewImage('${img.path}')"
+                             ondblclick="setThumbnail('${img.path}')"
+                             title="Click to preview • Double-click to set as thumbnail">
                         <img src="${img.path}" alt="${img.filename}" loading="lazy">
                         ${img.is_thumbnail ? '<span class="thumb-badge">Thumbnail</span>' : ''}
-                        <div class="set-thumb-btn">Set as Thumbnail</div>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteImage('${img.path}')" title="Delete image">🗑️</button>
+                            <div class="set-thumb-btn">Double-click for Thumbnail</div>
                     </div>
                 `;
             }
             
-            html += '</div>';
-            return html;
+                innerContent += '</div>';
+                innerContent += '<p class="drop-hint">💡 Tip: Drag & drop images anywhere in this box to upload</p>';
+            }
+            
+            // Wrap in drop zone
+            return `
+                <div class="images-drop-zone" id="imagesDropZone">
+                    ${innerContent}
+                    <input type="file" id="image-upload-input" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                </div>
+            `;
+        }
+        
+        function triggerImageUpload() {
+            document.getElementById('image-upload-input').click();
+        }
+        
+        // Drag and Drop handlers for images
+        let dragCounter = 0; // Track nested drag enter/leave
+        
+        function initImagesDragAndDrop() {
+            const dropZone = document.getElementById('imagesDropZone');
+            if (!dropZone) return;
+            
+            // Reset counter
+            dragCounter = 0;
+            
+            // Prevent default behavior for drag events on document to allow drops
+            document.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            }, false);
+            
+            document.addEventListener('drop', (e) => {
+                e.preventDefault();
+            }, false);
+            
+            // Handle dragenter - increment counter
+            dropZone.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragCounter++;
+                dropZone.classList.add('drag-over');
+            }, false);
+            
+            // Handle dragover - needed to allow drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.dataTransfer.dropEffect = 'copy';
+            }, false);
+            
+            // Handle dragleave - decrement counter
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragCounter--;
+                if (dragCounter <= 0) {
+                    dragCounter = 0;
+                    dropZone.classList.remove('drag-over');
+                }
+            }, false);
+            
+            // Handle drop
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragCounter = 0;
+                dropZone.classList.remove('drag-over');
+                
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    handleDroppedFiles(files);
+                }
+            }, false);
+        }
+        
+        async function handleDroppedFiles(files) {
+            console.log('handleDroppedFiles called with', files.length, 'files');
+            
+            if (!currentTour) {
+                showToast('Please select a tour first', 'error');
+                return;
+            }
+            
+            // Build the key the same way as handleImageUpload
+            const key = `${currentTour.company_name || currentTour.company}__${currentTour.id}`;
+            console.log('Current tour key:', key);
+            
+            // Filter for image files only
+            const imageFiles = Array.from(files).filter(f => {
+                const isImage = f.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name);
+                console.log('File:', f.name, 'type:', f.type, 'isImage:', isImage);
+                return isImage;
+            });
+            
+            if (imageFiles.length === 0) {
+                showToast('No valid image files found', 'error');
+                return;
+            }
+            
+            showToast(`Uploading ${imageFiles.length} image(s)...`, 'info');
+            
+            const formData = new FormData();
+            imageFiles.forEach(file => {
+                formData.append('images', file);
+            });
+            
+            try {
+                console.log('Uploading to:', `/admin/api/tour/${key}/images/upload`);
+                const response = await fetch(`/admin/api/tour/${key}/images/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Upload result:', result);
+                    showToast(`Uploaded ${result.uploaded} image(s)!`, 'success');
+                    
+                    // Reload images
+                    await loadTourImages(key);
+                    const imagesContent = document.querySelector('#section-images .section-content');
+                    if (imagesContent) {
+                        imagesContent.innerHTML = renderImagesSection();
+                        initImagesDragAndDrop(); // Re-init after re-render
+                    }
+                    
+                    updatePreview();
+                } else {
+                    const err = await response.json();
+                    console.error('Upload error:', err);
+                    showToast('Upload failed: ' + (err.error || 'Unknown error'), 'error');
+                }
+            } catch (err) {
+                console.error('Upload exception:', err);
+                showToast('Upload failed: ' + err.message, 'error');
+            }
+        }
+        
+        function previewImage(imagePath) {
+            // Show the preview panel if not visible
+            if (!previewVisible) {
+                togglePreview();
+            }
+            
+            // Switch to image preview tab
+            document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.preview-tab-content').forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none';
+            });
+            
+            const imagePreview = document.getElementById('preview-image');
+            imagePreview.classList.add('active');
+            imagePreview.style.display = 'block';
+            
+            // Set the image source
+            const previewImg = document.getElementById('previewImageFull');
+            previewImg.src = imagePath;
+            
+            // Update the label
+            const label = imagePreview.querySelector('.preview-label');
+            if (label) {
+                const filename = imagePath.split('/').pop();
+                label.textContent = filename;
+            }
+        }
+        
+        async function handleImageUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0 || !currentTour) return;
+            
+            const key = `${currentTour.company_name}__${currentTour.id}`;
+            const formData = new FormData();
+            
+            for (const file of files) {
+                formData.append('images', file);
+            }
+            
+            try {
+                showToast('Uploading images...', 'info');
+                
+                const response = await fetch(`/admin/api/tour/${key}/images/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Upload failed');
+                
+                const result = await response.json();
+                showToast(`Uploaded ${result.uploaded} image(s)!`, 'success');
+                
+                // Reload images
+                await loadTourImages(key);
+                const imagesContent = document.querySelector('#section-images .section-content');
+                if (imagesContent) {
+                    imagesContent.innerHTML = renderImagesSection();
+                    initImagesDragAndDrop();
+                }
+            } catch (err) {
+                showToast('Failed to upload: ' + err.message, 'error');
+            }
+            
+            // Clear the input
+            event.target.value = '';
+        }
+        
+        async function deleteImage(imagePath) {
+            if (!currentTour) return;
+            
+            if (!confirm('Delete this image? This cannot be undone.')) return;
+            
+            const key = `${currentTour.company_name}__${currentTour.id}`;
+            
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/images/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_path: imagePath })
+                });
+                
+                if (!response.ok) throw new Error('Delete failed');
+                
+                showToast('Image deleted!', 'success');
+                
+                // Remove from local state
+                currentImages = currentImages.filter(img => img.path !== imagePath);
+                
+                // Re-render images section
+                const imagesContent = document.querySelector('#section-images .section-content');
+                if (imagesContent) {
+                    imagesContent.innerHTML = renderImagesSection();
+                    initImagesDragAndDrop();
+                }
+                
+                updatePreview();
+            } catch (err) {
+                showToast('Failed to delete: ' + err.message, 'error');
+            }
         }
         
         async function setThumbnail(imagePath) {
@@ -2433,15 +2962,27 @@
                 
                 const result = await response.json();
                 
-                // Update local state
+                // Update local state - first clear all thumbnails, then set the new one
                 currentImages.forEach(img => {
-                    img.is_thumbnail = (img.path === imagePath || img.path === result.thumbnail);
+                    img.is_thumbnail = false;
+                });
+                // Now set the new thumbnail
+                currentImages.forEach(img => {
+                    // Normalize paths for comparison (remove leading slashes)
+                    const imgPath = img.path.replace(/^\/+/, '');
+                    const targetPath = imagePath.replace(/^\/+/, '');
+                    const resultPath = (result.thumbnail || '').replace(/^\/+/, '');
+                    
+                    if (imgPath === targetPath || imgPath === resultPath) {
+                        img.is_thumbnail = true;
+                    }
                 });
                 
                 // Re-render images section
                 const imagesContent = document.querySelector('#section-images .section-content');
                 if (imagesContent) {
                     imagesContent.innerHTML = renderImagesSection();
+                    initImagesDragAndDrop();
                 }
                 
                 updatePreview();
@@ -2511,11 +3052,16 @@
                 html += '</div>';
             }
             
-            // Add review button
+            // Add review button and apply to all button
             html += `
+                <div class="review-buttons">
                 <button type="button" class="add-review-btn" onclick="addNewReview()">
                     <span>+</span> Add New Review
                 </button>
+                    <button type="button" class="apply-reviews-btn" onclick="applyReviewsToAllTours()" title="Apply these reviews to all tours from this company">
+                        📋 Apply to All Tours
+                    </button>
+                </div>
             `;
             
             return html;
@@ -2649,6 +3195,44 @@
             }
         }
         
+        async function applyReviewsToAllTours() {
+            if (!currentTour) return;
+            
+            const company = currentTour.company_name;
+            const companyDisplay = companyNames[company] || company;
+            
+            // Confirm with user
+            const reviewCount = currentReviews.reviews.length;
+            if (!confirm(`Apply ${reviewCount} review(s) to ALL tours from ${companyDisplay}?\n\nThis will replace existing reviews on all tours.`)) {
+                return;
+            }
+            
+            // Recalculate overall rating before applying
+            if (currentReviews.reviews.length > 0) {
+                const totalRating = currentReviews.reviews.reduce((sum, r) => sum + (r.rating || 5), 0);
+                currentReviews.overall_rating = parseFloat((totalRating / currentReviews.reviews.length).toFixed(1));
+                currentReviews.review_count = currentReviews.reviews.length;
+            }
+            
+            try {
+                showToast('Applying reviews to all tours...', 'info');
+                
+                const response = await fetch(`/admin/api/company/${company}/apply-reviews`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentReviews)
+                });
+                
+                if (!response.ok) throw new Error('Failed to apply reviews');
+                
+                const result = await response.json();
+                showToast(`Reviews applied to ${result.count} tours!`, 'success');
+            } catch (err) {
+                console.error('Failed to apply reviews:', err);
+                showToast('Failed to apply reviews: ' + err.message, 'error');
+            }
+        }
+        
         // Preview Panel Functions
         function togglePreview() {
             previewVisible = !previewVisible;
@@ -2667,10 +3251,15 @@
         
         function switchPreviewTab(tab) {
             document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.preview-tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.preview-tab-content').forEach(c => {
+                c.classList.remove('active');
+                c.style.display = 'none';
+            });
             
             document.querySelector(`.preview-tab:nth-child(${tab === 'card' ? 1 : 2})`).classList.add('active');
-            document.getElementById(`preview-${tab}`).classList.add('active');
+            const tabContent = document.getElementById(`preview-${tab}`);
+            tabContent.classList.add('active');
+            tabContent.style.display = 'block';
         }
         
         function updatePreview() {
@@ -2994,6 +3583,7 @@
         function reinitializeDragAndDrop() {
             setTimeout(() => {
                 initDragAndDrop();
+                initImagesDragAndDrop(); // Also init image drag and drop
             }, 100);
         }
     </script>

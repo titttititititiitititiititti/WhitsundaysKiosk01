@@ -2796,13 +2796,12 @@
       opacity: 0 !important;
     }
     
-    /* Show weather widget launcher in AI assistant mode on mobile */
-    @media (max-width: 768px) {
-      body.ai-assistant-open .weather-widget-launcher {
+    /* Show weather widget launcher in AI assistant mode - ALL screen sizes */
+    body.ai-assistant-open .weather-widget-launcher,
+    body.ai-assistant-open #weather-widget-launcher {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
-      }
     }
     
     /* Keep video background and AI page header visible */
@@ -2827,6 +2826,25 @@
       padding: 20px;
       z-index: 100;
       flex-wrap: wrap;
+    }
+    
+    /* Count indicator showing "X of Y tours" */
+    .ai-tour-count-indicator {
+      width: 100%;
+      text-align: center;
+      padding: 8px 16px;
+      margin-bottom: 10px;
+      background: rgba(139, 92, 246, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .ai-tour-count-indicator span {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.85em;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     
     .ai-tour-card {
@@ -2936,20 +2954,56 @@
       font-size: 0.9em;
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipsis;
       transition: opacity 0.15s ease-out;
+      border-top: 1px solid rgba(139, 92, 246, 0.3);
+      color: #555;
+      line-height: 1.4;
     }
     
     .ai-tour-card .ai-tour-card-flash {
       display: none;
     }
     
-    /* Info section styling (no animation) */
+    /* Scrolling text for long flash content - text scrolls inside a clipped container */
+    .ai-tour-card.speaking .flash-text-container {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      min-width: 0; /* Allow flex item to shrink */
+    }
+    
+    .ai-tour-card.speaking .flash-text {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    
+    .ai-tour-card.speaking .flash-text.scrolling {
+      animation: scrollText 8s linear infinite;
+    }
+    
+    @keyframes scrollText {
+      0% {
+        transform: translateX(0);
+      }
+      20% {
+        transform: translateX(0);
+      }
+      80% {
+        transform: translateX(var(--scroll-distance, -50%));
+      }
+      100% {
+        transform: translateX(var(--scroll-distance, -50%));
+      }
+    }
+    
+    /* Fix: Ensure icon and label stay fixed, don't scroll */
     .ai-tour-card.speaking .ai-tour-card-flash {
-      border-top: 1px solid rgba(139, 92, 246, 0.3);
-      font-size: 0.9em;
-      color: #555;
-      line-height: 1.4;
+      overflow: hidden;
+    }
+    
+    .ai-tour-card.speaking .flash-icon,
+    .ai-tour-card.speaking .flash-label {
+      flex-shrink: 0;
     }
     
     .ai-tour-card.speaking .ai-tour-card-details .detail-item {
@@ -3219,6 +3273,41 @@
     @keyframes typingPulse {
       0%, 100% { opacity: 0.3; }
       50% { opacity: 1; }
+    }
+    
+    /* Individual bouncing typing dots - DARK color for white message background */
+    .typing-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin: 0 4px;
+      background: #7c3aed;
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.16s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.32s; }
+    
+    @keyframes typingBounce {
+      0%, 80%, 100% { 
+        transform: scale(0.5);
+        opacity: 0.3;
+      }
+      40% { 
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Make typing message centered and visible */
+    .ai-message.typing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 12px 20px;
     }
     
     /* Searching overlay - futuristic loading experience */
@@ -4424,22 +4513,24 @@
     .global-back-button {
       width: 50px;
       height: 50px;
-      background: rgba(255, 255, 255, 0.95);
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
       backdrop-filter: blur(10px);
-      border: none;
+      border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 50%;
-      font-size: 2em;
+      font-size: 1.6em;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      color: #0077b6;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4), 0 0 20px rgba(255, 255, 255, 0.3);
       display: flex !important;
       align-items: center;
       justify-content: center;
       padding: 0;
       flex-shrink: 0;
       z-index: 10001;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      line-height: 1;
     }
     
     body.showing-language-selection .global-back-button {
@@ -4447,9 +4538,9 @@
     }
     
     .global-back-button:hover {
-      background: #0077b6;
-      color: white;
-      transform: scale(1.1);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5), 0 0 30px rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
     }
     
     .global-back-button:active {
@@ -5492,30 +5583,32 @@
       backdrop-filter: blur(10px) !important;
     }
     
-    /* Back Button */
+    /* Back Button - Modern styled like Quick Decision/Browse All buttons */
     .back-button {
       padding: 0;
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.95);
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
       backdrop-filter: blur(10px);
-      border: none;
+      border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 50%;
-      font-size: 2.5em;
+      font-size: 1.6em;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      color: #0077b6;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4), 0 0 20px rgba(255, 255, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      line-height: 1;
     }
     
     .back-button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      background: white;
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5), 0 0 30px rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
     }
     
     .back-button:active {
@@ -12432,6 +12525,21 @@
     
   </style>
   <script>
+    // ========================================
+    // DEBUG FLAG - Set to false for production
+    // ========================================
+    window.DEBUG = false; // Set to true for verbose logging
+    
+    // Debug-aware logging - only logs when DEBUG is true
+    window.debugLog = function(...args) {
+      if (window.DEBUG) console.log(...args);
+    };
+    window.debugWarn = function(...args) {
+      if (window.DEBUG) console.warn(...args);
+    };
+    // Errors always log (important for debugging issues)
+    window.debugError = console.error.bind(console);
+    
     // Close all dropdowns when clicking outside
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.language-selector')) {
@@ -12624,6 +12732,7 @@
           if (!document.hidden && video.paused && video.src) {
             video.play().catch(() => {});
           }
+
         });
         
         // Periodic check
@@ -13187,7 +13296,7 @@
                   {% if tour.review_rating and tour.review_rating > 0 and tour.review_count > 0 %}
                   <span class="rating">★ {{ "%.1f"|format(tour.review_rating) }} ({{ tour.review_count }})</span>
             {% endif %}
-                  <span class="price-badge">From {{ tour.price_adult }}</span>
+                  <span class="price-badge" data-raw-price="{{ tour.price_adult }}">{{ tour.price_adult }}</span>
         </div>
       </div>
             </article>
@@ -13350,16 +13459,41 @@
   </div>
   
   <script>
-    // Video source config - ALWAYS use Streamable
+    // Video source config - orientation-aware
     const VIDEO_CONFIG = {
-      streamable_id: 'sy3v4r',  // New optimized video
+      landscape_id: 'qvf8eh',   // Landscape video
+      portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/background.mp4') }}",
       use_local: false // Keep false - always stream from Streamable
     };
     
-    // Smart video loader - handles both streaming and local
-    async function loadVideoSmart(videoElement, startPlaying = true) {
+    // Check if we're in landscape mode
+    function isLandscapeMode() {
+      return window.innerWidth > window.innerHeight;
+    }
+    
+    // Get the appropriate streamable ID based on orientation
+    function getStreamableId() {
+      return isLandscapeMode() ? VIDEO_CONFIG.landscape_id : VIDEO_CONFIG.portrait_id;
+    }
+    
+    // Track current video orientation to avoid unnecessary reloads
+    let currentVideoOrientation = null;
+    
+    // Smart video loader - handles both streaming and local, with orientation awareness
+    async function loadVideoSmart(videoElement, startPlaying = true, forceReload = false) {
       if (!videoElement) return;
+      
+      const newOrientation = isLandscapeMode() ? 'landscape' : 'portrait';
+      
+      // Skip if same orientation unless forced
+      if (!forceReload && currentVideoOrientation === newOrientation) {
+        console.log(`📺 Video already in ${newOrientation} mode, skipping reload`);
+        return;
+      }
+      
+      console.log(`📺 Loading ${newOrientation} video (was: ${currentVideoOrientation || 'none'})`);
+      currentVideoOrientation = newOrientation;
       
       // For kiosk mode, use local file directly
       if (VIDEO_CONFIG.use_local) {
@@ -13369,9 +13503,10 @@
         return;
       }
       
-      // Try Streamable first (better for web demos)
+      // Try Streamable with orientation-appropriate video
+      const streamableId = getStreamableId();
       try {
-        const response = await fetch(`https://api.streamable.com/videos/${VIDEO_CONFIG.streamable_id}`);
+        const response = await fetch(`https://api.streamable.com/videos/${streamableId}`);
         const data = await response.json();
         
         // Prefer smaller mobile version if available, else use mp4
@@ -13403,6 +13538,18 @@
       videoElement.load();
       if (startPlaying) videoElement.play().catch(() => {});
     }
+    
+    // Listen for orientation changes and reload video if needed
+    let resizeDebounce = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(() => {
+        const bgVideo = document.getElementById('bg-video');
+        if (bgVideo) {
+          loadVideoSmart(bgVideo, true);
+        }
+      }, 500); // Debounce to avoid rapid reloads
+    });
     
     // Check if splash should show (only on first visit, not after language selection)
     (function initSplash() {
@@ -13438,6 +13585,44 @@
           loadVideoSmart(document.getElementById('splash-video'), true);
         }
       }
+    })();
+    
+    // ===== SECRET CODE LISTENER FOR AGENT LOGIN =====
+    // Type "2703" on splash screen to access agent mode
+    (function initSecretCode() {
+      let typedCode = '';
+      const secretCode = '2703';
+      let codeTimeout;
+      
+      document.addEventListener('keydown', (e) => {
+        const splash = document.getElementById('main-splash-screen');
+        // Only listen when splash is active
+        if (!splash || !splash.classList.contains('active')) return;
+        
+        // Only track number keys
+        if (e.key >= '0' && e.key <= '9') {
+          typedCode += e.key;
+          console.log('🔐 Code input:', typedCode);
+          
+          // Reset after 3 seconds of no input
+          clearTimeout(codeTimeout);
+          codeTimeout = setTimeout(() => {
+            typedCode = '';
+          }, 3000);
+          
+          // Check if code matches
+          if (typedCode === secretCode) {
+            console.log('🔓 Secret code entered - redirecting to agent login');
+            typedCode = '';
+            window.location.href = '/admin/login';
+          }
+          
+          // Reset if code is longer than expected
+          if (typedCode.length > secretCode.length) {
+            typedCode = e.key;
+          }
+        }
+      });
     })();
     
     // Dismiss splash and show main app
@@ -13499,8 +13684,8 @@
       <div class="header-left">
         <button class="mobile-quick-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡</button>
         <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
-        <button class="quick-decision-btn-header" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
-        <button class="browse-all-btn-header" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
+        <button class="quick-decision-btn-header" id="ai-quick-decision-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
+        <button class="browse-all-btn-header" id="ai-browse-all-btn" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
       </div>
       <img src="{{ url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
       <div class="header-right">
@@ -13599,6 +13784,34 @@
         <button class="btn-primary" id="qr-continue-btn">Continue on this screen</button>
         <button class="btn-ghost" id="qr-cancel-btn">Cancel</button>
       </div>
+    </div>
+  </div>
+  
+  <!-- Counter Booking Modal - Shows when no online booking available -->
+  <div class="qr-overlay" id="counter-booking-modal" style="display: none;">
+    <div class="qr-backdrop" onclick="closeCounterBookingModal()"></div>
+    
+    <div class="qr-card" style="text-align: center; max-width: 500px;">
+      <button class="qr-modal-close" onclick="closeCounterBookingModal()">×</button>
+      
+      <div style="font-size: 80px; margin-bottom: 20px; animation: pulse 2s infinite;">🔔</div>
+      
+      <h2 style="color: #0077b6; margin-bottom: 15px;" data-translate="counter_booking_title">Please Book at the Counter</h2>
+      
+      <p style="font-size: 1.2em; color: #666; margin-bottom: 10px;" id="counter-booking-tour-name"></p>
+      
+      <p style="font-size: 1.1em; color: #333; line-height: 1.6; margin-bottom: 30px;" data-translate="counter_booking_message">
+        A team member will be with you shortly to help complete your booking.
+      </p>
+      
+      <div style="background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px;">
+        <div style="font-size: 1.1em; color: #00838f;">
+          <span style="font-size: 1.3em; margin-right: 8px;">💡</span>
+          <span data-translate="counter_booking_tip">You can continue browsing while you wait!</span>
+        </div>
+      </div>
+      
+      <button class="btn-primary" onclick="closeCounterBookingModal()" style="width: 100%; padding: 16px; font-size: 1.1em;" data-translate="got_it">Got It</button>
     </div>
   </div>
   
@@ -15700,6 +15913,11 @@
         // Re-initialize orb mute toggle
         setTimeout(() => initOrbMuteToggle(), 100);
         
+        // Reapply translations for AI assistant header
+        if (typeof applyLanguage === 'function' && typeof currentLanguage !== 'undefined') {
+          setTimeout(() => applyLanguage(currentLanguage), 150);
+        }
+        
         // Focus input
         setTimeout(() => {
           const input = document.getElementById('ai-text-input');
@@ -15802,7 +16020,7 @@
         toggleAIMicrophone();
       }
       
-      // Stop TTS if playing
+      // Stop ALL AI audio when hiding
       if (typeof window.stopTTS === 'function') {
         window.stopTTS();
       }
@@ -15811,6 +16029,24 @@
       const welcomeAudio = document.getElementById('welcome-audio');
       if (welcomeAudio) {
         welcomeAudio.pause();
+        welcomeAudio.currentTime = 0;
+      }
+      
+      // Stop dynamic welcome audio
+      if (window.currentWelcomeAudio) {
+        window.currentWelcomeAudio.pause();
+        window.currentWelcomeAudio.currentTime = 0;
+      }
+      
+      // Stop any TTS audio element
+      if (typeof ttsAudioElement !== 'undefined' && ttsAudioElement) {
+        ttsAudioElement.pause();
+        ttsAudioElement.currentTime = 0;
+      }
+      
+      // Clear audio queue
+      if (typeof ttsAudioQueue !== 'undefined') {
+        ttsAudioQueue = [];
       }
       
       // Pause visualizer but don't hide
@@ -15853,6 +16089,7 @@
       
       // Clear conversation history
       aiConversationHistory = [];
+      previouslyShownTourKeys.clear(); // Also clear shown tours for fresh conversation
       
       // Stop recording if active
       if (isRecording) {
@@ -15923,6 +16160,7 @@
     let aiConversationHistory = [];
     let currentAITourCards = []; // Currently displayed tour cards
     let lastHighlightedTour = null; // Track the last tour that was highlighted/spoken about
+    let previouslyShownTourKeys = new Set(); // Track all tour keys shown this session
     
     /**
      * Detect if user wants to book or learn more about a tour
@@ -16032,8 +16270,34 @@
       }
     }
     
+    // Clear AI tour cards and reset orb to centered position
+    function clearAITourCards() {
+      const container = document.getElementById('ai-tour-cards');
+      const visualizerContainer = document.getElementById('ai-visualizer-container');
+      
+      // Stop any active image cycling on all cards before clearing
+      if (container) {
+        const cards = container.querySelectorAll('.ai-tour-card');
+        cards.forEach(card => {
+          card.classList.remove('speaking', 'highlighted');
+          stopImageCycle(card);
+        });
+        container.innerHTML = '';
+      }
+      currentAITourCards = [];
+      
+      // Remove with-cards class to center the orb again
+      if (visualizerContainer) {
+        visualizerContainer.classList.remove('with-cards');
+      }
+      document.body.classList.remove('ai-showing-cards');
+      
+      console.log('🧹 Cleared tour cards, orb centered');
+    }
+    
     // Display tour cards from full tour objects (from API)
-    function displayAITourCardsFromObjects(tours) {
+    // totalCount is optional - if provided, shows "Showing X of Y tours"
+    function displayAITourCardsFromObjects(tours, totalCount = null) {
       const container = document.getElementById('ai-tour-cards');
       const visualizerContainer = document.getElementById('ai-visualizer-container');
       
@@ -16045,6 +16309,15 @@
       // Clear existing cards
       container.innerHTML = '';
       currentAITourCards = [];
+      
+      // Add count indicator if we have more tours than shown
+      if (totalCount && totalCount > tours.length) {
+        const countIndicator = document.createElement('div');
+        countIndicator.className = 'ai-tour-count-indicator';
+        countIndicator.innerHTML = `<span>Showing ${tours.length} of ${totalCount} matching tours</span>`;
+        container.appendChild(countIndicator);
+        console.log(`📊 Showing ${tours.length} of ${totalCount} matching tours`);
+      }
       
       // Limit to 3 cards
       const limitedTours = tours.slice(0, 3);
@@ -16064,6 +16337,11 @@
           ...tour
         });
         
+        // Track this tour as shown (for "other options" filtering)
+        if (tour.key) {
+          previouslyShownTourKeys.add(tour.key);
+        }
+        
         const card = document.createElement('div');
         card.className = 'ai-tour-card';
         card.dataset.tourKey = tour.key;
@@ -16073,8 +16351,16 @@
         const price = tour.price_adult || tour.price || '';
         const duration = tour.duration || '';
         
-        // Store gallery images for cycling
-        const gallery = tour.gallery || [thumbnail];
+        // Store gallery images for cycling - use tour.images array
+        let gallery = [];
+        if (tour.images && Array.isArray(tour.images)) {
+          gallery = tour.images.filter(url => url && url.trim());
+        }
+        // Fallback to thumbnail if no images
+        if (gallery.length === 0 && thumbnail) {
+          gallery = [thumbnail];
+        }
+        console.log(`🖼️ Tour ${tour.name} has ${gallery.length} gallery images`);
         card.dataset.gallery = JSON.stringify(gallery);
         card.dataset.currentImageIndex = '0';
         
@@ -16102,20 +16388,25 @@
         }
         card.dataset.flashingSections = JSON.stringify(flashingSections);
         
+        // Format price with currency conversion
+        const formattedPrice = typeof formatPriceDisplay === 'function' ? formatPriceDisplay(price) : price;
+        
         card.innerHTML = `
           <div class="ai-tour-card-image" style="background-image: url('${thumbnail}')"></div>
           <div class="ai-tour-card-info">
             <p class="ai-tour-card-name">${tour.name}</p>
             <p class="ai-tour-card-company">${tour.company || ''}</p>
-            <p class="ai-tour-card-price">${price}</p>
+            <p class="ai-tour-card-price" data-original-price="${price}">${formattedPrice}</p>
             ${duration ? `<p class="ai-tour-card-duration">⏱️ ${duration}</p>` : ''}
             <div class="ai-tour-card-details">
               ${detailsHtml}
             </div>
             <div class="ai-tour-card-flash" style="display: none; background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.22) 100%); border-radius: 10px; padding: 8px 12px; margin-top: 8px;">
-              <span class="flash-icon" style="font-size: 1.1em; margin-right: 6px;"></span>
-              <span class="flash-label" style="font-weight: 600; color: #7c3aed; margin-right: 4px;"></span>
+              <span class="flash-icon" style="font-size: 1.1em; margin-right: 6px; flex-shrink: 0;"></span>
+              <span class="flash-label" style="font-weight: 600; color: #7c3aed; margin-right: 4px; flex-shrink: 0;"></span>
+              <span class="flash-text-container" style="flex: 1; overflow: hidden; min-width: 0;">
               <span class="flash-text" style="color: #333;"></span>
+              </span>
             </div>
           </div>
         `;
@@ -16252,7 +16543,7 @@
       card.dataset.tourName = tour.name;
       
       const thumbnail = tour.thumbnail || '/static/placeholder.jpg';
-      const price = tour.price ? `From $${tour.price}` : (tour.price_adult || '');
+      const price = formatPriceDisplay(tour.price_adult || tour.price || '', true);
       const duration = tour.duration || '';
       
       // Get highlights for details
@@ -16328,7 +16619,7 @@
       
       try {
         const gallery = JSON.parse(card.dataset.gallery || '[]');
-        console.log(`🖼️ Starting slideshow with ${gallery.length} images`);
+        console.log(`🖼️ Starting slideshow with ${gallery.length} images:`, gallery);
         
         if (gallery.length <= 1) {
           console.log(`🖼️ Only 1 image, no slideshow needed`);
@@ -16343,23 +16634,43 @@
         
         currentSlideshowCard = card;
         
-        // Create slideshow container if not exists
-        let slideshowContainer = imageDiv.querySelector('.slideshow-container');
-        if (!slideshowContainer) {
+        // Store original background and hide it so slideshow shows through
+        const originalBg = imageDiv.style.backgroundImage;
+        card.dataset.originalBackground = originalBg;
+        imageDiv.style.backgroundImage = 'none';
+        
+        // Remove any existing slideshow container first
+        let existingContainer = imageDiv.querySelector('.slideshow-container');
+        if (existingContainer) {
+          existingContainer.remove();
+        }
+        
+        // Create fresh slideshow container
           console.log(`🖼️ Creating slideshow container`);
-          slideshowContainer = document.createElement('div');
+        const slideshowContainer = document.createElement('div');
           slideshowContainer.className = 'slideshow-container';
+        slideshowContainer.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;';
           
           // Create slides for each image
           gallery.forEach((imgUrl, index) => {
             const slide = document.createElement('div');
             slide.className = 'slideshow-slide' + (index === 0 ? ' active' : '');
-            slide.style.backgroundImage = `url('${imgUrl}')`;
+          slide.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('${imgUrl}');
+            background-size: cover;
+            background-position: center;
+            opacity: ${index === 0 ? 1 : 0};
+            transition: opacity 0.8s ease-in-out;
+          `;
             slideshowContainer.appendChild(slide);
           });
           
           imageDiv.appendChild(slideshowContainer);
-        }
         
         let currentIndex = 0;
         const slides = slideshowContainer.querySelectorAll('.slideshow-slide');
@@ -16367,12 +16678,14 @@
         
         imageCycleInterval = setInterval(() => {
           // Fade out current slide
+          slides[currentIndex].style.opacity = '0';
           slides[currentIndex].classList.remove('active');
           
           // Move to next slide
           currentIndex = (currentIndex + 1) % slides.length;
           
           // Fade in new slide
+          slides[currentIndex].style.opacity = '1';
           slides[currentIndex].classList.add('active');
           
           console.log(`🖼️ Slideshow: showing image ${currentIndex + 1}/${slides.length}`);
@@ -16389,17 +16702,21 @@
         imageCycleInterval = null;
       }
       
-      // Clean up slideshow container
+      // Clean up slideshow container and restore background
       const targetCard = card || currentSlideshowCard;
       if (targetCard) {
         const imageDiv = targetCard.querySelector('.ai-tour-card-image');
+        
+        // Restore original background image
+        if (targetCard.dataset.originalBackground) {
+          imageDiv.style.backgroundImage = targetCard.dataset.originalBackground;
+          delete targetCard.dataset.originalBackground;
+        }
+        
+        // Remove slideshow container entirely
         const slideshowContainer = imageDiv?.querySelector('.slideshow-container');
         if (slideshowContainer) {
-          // Reset to first slide
-          const slides = slideshowContainer.querySelectorAll('.slideshow-slide');
-          slides.forEach((slide, i) => {
-            slide.classList.toggle('active', i === 0);
-          });
+          slideshowContainer.remove();
         }
       }
       currentSlideshowCard = null;
@@ -16436,7 +16753,26 @@
           const section = sections[currentIndex];
           if (iconEl) iconEl.textContent = section.icon;
           if (labelEl) labelEl.textContent = section.label + ':';
-          if (textEl) textEl.textContent = section.text;
+          if (textEl) {
+            textEl.textContent = section.text;
+            textEl.classList.remove('scrolling');
+            textEl.style.removeProperty('--scroll-distance');
+            
+            // Check if text overflows and needs scrolling
+            // Wait for text to render, then check
+            setTimeout(() => {
+              const textContainer = flashDiv.querySelector('.flash-text-container');
+              const containerWidth = textContainer ? textContainer.offsetWidth : (flashDiv.offsetWidth - 100);
+              const textWidth = textEl.scrollWidth;
+              if (textWidth > containerWidth) {
+                // Calculate how far to scroll (text width - container width, as negative)
+                const scrollDistance = -(textWidth - containerWidth + 20); // +20px buffer
+                textEl.style.setProperty('--scroll-distance', `${scrollDistance}px`);
+                textEl.classList.add('scrolling');
+                console.log(`📋 Text scrolling: ${textWidth}px in ${containerWidth}px container, distance: ${scrollDistance}px`);
+              }
+            }, 100);
+          }
           
           // Add a subtle fade animation
           flashDiv.style.opacity = '0';
@@ -16447,12 +16783,12 @@
         
         updateSection();
         
-        // Cycle every 2 seconds
+        // Cycle every 4 seconds (slower for readability)
         flashingInterval = setInterval(() => {
           currentIndex = (currentIndex + 1) % sections.length;
           updateSection();
           console.log(`📋 Flashing: ${sections[currentIndex].label} - ${sections[currentIndex].text}`);
-        }, 2000);
+        }, 4000);
         
       } catch (e) {
         console.error('📋 Flashing cycle error:', e);
@@ -16465,11 +16801,15 @@
         flashingInterval = null;
       }
       
-      // Hide flash div on current card
+      // Hide flash div on current card and remove scrolling
       if (currentFlashCard) {
         const flashDiv = currentFlashCard.querySelector('.ai-tour-card-flash');
         if (flashDiv) {
           flashDiv.style.display = 'none';
+          const textEl = flashDiv.querySelector('.flash-text');
+          if (textEl) {
+            textEl.classList.remove('scrolling');
+          }
         }
       }
       currentFlashCard = null;
@@ -16541,25 +16881,46 @@
       if (orbContainer.dataset.muteInitialized) return;
       orbContainer.dataset.muteInitialized = 'true';
       
-      orbContainer.style.cursor = 'pointer';
-      orbContainer.style.zIndex = '10001'; // Ensure clickable
+      // DON'T set pointer-events on container - let clicks pass through to cards
+      orbContainer.style.pointerEvents = 'none';  // Container doesn't catch clicks
       
-      // Handle click on container
+      // Handle click ONLY on the actual orb (canvas)
       const handleMuteClick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🔊 Orb clicked - toggling mute');
-        toggleTTSMute();
+        // Only handle clicks within the actual orb circle
+        const canvas = orbContainer.querySelector('canvas');
+        if (!canvas) return;
+        
+        const canvasRect = canvas.getBoundingClientRect();
+        const centerX = canvasRect.left + canvasRect.width / 2;
+        const centerY = canvasRect.top + canvasRect.height / 2;
+        
+        // ACTUAL orb radius (from particle-visualizer.js) - NOT the canvas size!
+        // Canvas is much bigger (400-600px) but actual orb is only ~100-110px
+        const hasCards = orbContainer.classList.contains('with-cards');
+        const actualOrbRadius = hasCards ? 110 : 100;  // Match particle-visualizer.js sphereRadius
+        
+        // Calculate distance from click to orb center
+        const clickX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : centerX);
+        const clickY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : centerY);
+        const distance = Math.sqrt(Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2));
+        
+        // Only toggle mute if click is within ACTUAL orb radius (with small padding)
+        if (distance <= actualOrbRadius + 15) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔊 Orb clicked - toggling mute (distance:', Math.round(distance), 'radius:', actualOrbRadius, ')');
+          toggleTTSMute();
+        } else {
+          // Click is OUTSIDE orb - let it pass through to cards/elements below
+          console.log('👆 Click outside orb (distance:', Math.round(distance), 'radius:', actualOrbRadius, ') - passing through');
+        }
       };
       
-      orbContainer.addEventListener('click', handleMuteClick, true);
-      orbContainer.addEventListener('touchend', handleMuteClick, { passive: false });
-      
-      // Also attach to canvas when it exists
+      // Only attach to canvas - not the whole container
       const canvas = orbContainer.querySelector('canvas');
       if (canvas) {
         canvas.style.cursor = 'pointer';
-        canvas.style.pointerEvents = 'auto';
+        canvas.style.pointerEvents = 'auto';  // Canvas catches clicks
         canvas.addEventListener('click', handleMuteClick, true);
         canvas.addEventListener('touchend', handleMuteClick, { passive: false });
       }
@@ -16579,7 +16940,7 @@
       });
       observer.observe(orbContainer, { childList: true });
       
-      console.log('✅ Orb mute toggle initialized');
+      console.log('✅ Orb mute toggle initialized (restricted to orb area)');
     }
     
     function toggleTTSMute() {
@@ -16686,24 +17047,40 @@
       // SMART SPLITTING: Split by numbered tour items (1. 2. 3.)
       // This ensures: intro = chunk 1, then each tour = its own chunk
       
-      // Check if text has numbered list format
+      // Check if text has numbered list format (1. or 2. etc followed by text)
       const hasNumberedList = /\d+\.\s*\*?\*?[A-Z]/.test(text);
       
       if (hasNumberedList) {
         const chunks = [];
         
         // Split at numbered items (1. 2. 3. etc)
-        // But keep the number with its content
+        // The regex looks for: number, period, optional whitespace, optional **, then capital letter
         const parts = text.split(/(?=\d+\.\s*\*?\*?[A-Z])/);
         
         for (const part of parts) {
           const trimmed = part.trim();
           if (trimmed) {
+            // Check if this is the intro (doesn't start with a number)
+            const isIntro = !/^\d+\./.test(trimmed);
+            
+            // If intro is too short (less than 10 chars), it might have been merged with "1."
+            // But only if there's content before "1."
+            if (isIntro && trimmed.length < 10) {
+              console.log(`📝 Very short intro detected: "${trimmed}" - keeping it separate`);
+            }
+            
             chunks.push(trimmed);
           }
         }
         
+        // If we got chunks but first one starts with "1.", create empty intro
+        if (chunks.length > 0 && /^\d+\./.test(chunks[0])) {
+          console.log(`📝 No intro found, inserting empty intro chunk`);
+          chunks.unshift(''); // Empty intro so chunk indices still match
+        }
+        
         console.log(`📝 Smart split: ${chunks.length} chunks (intro + ${chunks.length - 1} tours)`);
+        console.log(`📝 Intro: "${chunks[0]?.substring(0, 50)}..."`);
         return chunks;
       }
       
@@ -16877,6 +17254,13 @@
     }
     
     async function playNextInQueue() {
+      // Skip any null entries (failed/skipped chunks)
+      while (ttsAudioQueue.length > 0 && ttsAudioQueue[0] === null) {
+        ttsAudioQueue.shift();
+        ttsCurrentChunkIndex++;
+        console.log(`⏭️ Skipping null chunk at index ${ttsCurrentChunkIndex}`);
+      }
+      
       if (ttsAudioQueue.length === 0) {
         ttsIsPlaying = false;
         ttsCurrentChunkIndex = 0;
@@ -16896,6 +17280,12 @@
       ttsIsPlaying = true;
       const audioBlob = ttsAudioQueue.shift();
       const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Store URL for cleanup later
+      if (ttsAudioElement._currentUrl) {
+        URL.revokeObjectURL(ttsAudioElement._currentUrl);
+      }
+      ttsAudioElement._currentUrl = audioUrl;
       
       // Highlight tour card based on chunk index (chunk 1=intro, chunk 2=card 0, etc.)
       const cardIndex = ttsCurrentChunkIndex - 1; // Chunk 1 is intro, so card index = chunk - 1
@@ -16923,18 +17313,8 @@
         ttsAudioElement.currentTime = 0;
         console.log('🔊 Starting chunk from position:', ttsAudioElement.currentTime, 'duration:', ttsAudioElement.duration);
         
-        // Try to play - handle autoplay restrictions and mute state
-        if (ttsMuted) {
-          console.log('🔇 TTS muted - skipping playback');
-          // Still trigger the end handler after a short delay to move to next chunk
-          setTimeout(() => {
-            if (ttsAudioElement.onended) {
-              ttsAudioElement.onended();
-            }
-          }, 500);
-          return;
-        }
-        
+        // ALWAYS try to play - new messages should always play out loud
+        // User can tap orb to pause/mute DURING playback if they want
         try {
           await ttsAudioElement.play();
           console.log('🔊 Chunk now playing');
@@ -16981,8 +17361,29 @@
       
       console.log('🎤 Speaking response with TTS...');
       
+      // NEW MESSAGE: Auto-unmute so new messages always play
+      // User can mute again during playback if they want
+      if (ttsMuted) {
+        console.log('🔊 Auto-unmuting for new message');
+        ttsMuted = false;
+        const orbContainer = document.getElementById('ai-visualizer-container');
+        if (orbContainer) {
+          orbContainer.classList.remove('muted');
+        }
+        showMuteIndicator(false);
+      }
+      
       // Store callback
       ttsReadyCallback = onReadyCallback;
+      
+      // Stop any previous audio and clear queue for fresh start
+      if (ttsAudioElement) {
+        ttsAudioElement.pause();
+        ttsAudioElement.currentTime = 0;
+      }
+      ttsAudioQueue = [];
+      ttsCurrentChunkIndex = 0;
+      ttsIsPlaying = false;
       
       // Add loading animation to orb
       const orbContainer = document.querySelector('.ai-visualizer-container');
@@ -17064,29 +17465,23 @@
       }
       
       try {
-        // FAST: Start playing as soon as first chunk is ready, fetch rest in background
-        console.log(`📡 Fetching ${chunks.length} TTS chunks (streaming first)...`);
+        // SEQUENTIAL: Load intro first, start playing, then load rest while playing
+        console.log(`📡 Fetching ${chunks.length} TTS chunks (intro first, then sequential)...`);
         const fetchStart = Date.now();
         
-        let firstChunkPlayed = false;
         let contentRevealed = false;
-        const pendingChunks = new Map(); // Store chunks as they arrive
-        let nextExpectedIndex = 0;
         
-        // Function to add ready chunks to queue in order
-        const processReadyChunks = () => {
-          while (pendingChunks.has(nextExpectedIndex)) {
-            const blob = pendingChunks.get(nextExpectedIndex);
-            ttsAudioQueue.push(blob);
-            pendingChunks.delete(nextExpectedIndex);
-            console.log(`📦 Added chunk ${nextExpectedIndex + 1} to queue`);
-            nextExpectedIndex++;
-            
-            // When first chunk is ready: reveal content, then play after 0.4s delay
-            if (!firstChunkPlayed && ttsAudioQueue.length > 0) {
-              firstChunkPlayed = true;
+        // Step 1: Fetch ONLY the intro (chunk 0) first
+        const introText = chunks[0]?.trim();
+        console.log(`📡 Fetching intro chunk... (${introText?.length || 0} chars)`);
+        
+        if (introText && introText.length > 5) {
+          try {
+            const introBlob = await fetchTTSChunk(introText, language);
+            console.log(`✅ Intro chunk ready (${introBlob.size} bytes) in ${Date.now() - fetchStart}ms`);
+            ttsAudioQueue.push(introBlob);
               
-              // Reveal content immediately
+            // Reveal content immediately when intro is ready
               if (!contentRevealed && ttsReadyCallback) {
                 contentRevealed = true;
                 ttsReadyCallback();
@@ -17094,45 +17489,75 @@
                 console.log(`🎬 Content revealed after ${Date.now() - fetchStart}ms`);
               }
               
-              // Start audio 0.4s AFTER content appears
+            // Start playing intro after 0.4s delay
               setTimeout(() => {
-                console.log('🔊 Starting audio playback (0.4s after content)...');
+              console.log('🔊 Starting intro playback (0.4s after content)...');
+                playNextInQueue();
+              }, 400);
+            
+          } catch (e) {
+            console.error('❌ Intro chunk failed:', e);
+            // Still show content even if intro fails
+            if (!contentRevealed && ttsReadyCallback) {
+              contentRevealed = true;
+              ttsReadyCallback();
+              ttsReadyCallback = null;
+            }
+          }
+        } else {
+          console.log(`📡 Intro is empty/short, skipping and moving to first tour`);
+          ttsAudioQueue.push(null); // Placeholder to keep indices aligned
+          // Show content immediately since no intro to wait for
+          if (!contentRevealed && ttsReadyCallback) {
+            contentRevealed = true;
+            ttsReadyCallback();
+            ttsReadyCallback = null;
+            console.log(`🎬 Content revealed immediately (no intro)`);
+          }
+        }
+        
+        // Step 2: Fetch remaining chunks SEQUENTIALLY while intro plays
+        // This ensures they arrive in order and don't overload the TTS API
+        let firstRealChunkFetched = introText && introText.length > 5;
+        
+        for (let i = 1; i < chunks.length; i++) {
+          const chunkText = chunks[i]?.trim();
+          if (!chunkText || chunkText.length < 5) {
+            console.log(`📡 Chunk ${i + 1} is empty, skipping`);
+            ttsAudioQueue.push(null); // Placeholder to keep indices aligned
+            continue;
+          }
+          
+          try {
+            console.log(`📡 Fetching chunk ${i + 1}/${chunks.length}...`);
+            const blob = await fetchTTSChunk(chunkText, language);
+              console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
+            ttsAudioQueue.push(blob);
+            
+            // If we skipped intro and this is the first real chunk, start playing
+            if (!firstRealChunkFetched) {
+              firstRealChunkFetched = true;
+              setTimeout(() => {
+                console.log('🔊 Starting playback (first tour chunk)...');
                 playNextInQueue();
               }, 400);
             }
-          }
-        };
-        
-        // Fetch all chunks in parallel
-        const fetchPromises = chunks.map((chunk, i) => {
-          return fetchTTSChunk(chunk, language)
-            .then(blob => {
-              console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
-              pendingChunks.set(i, blob);
-              processReadyChunks();
-              return { success: true };
-            })
-            .catch(e => {
+          } catch (e) {
               console.error(`❌ Chunk ${i + 1} failed:`, e);
-              // Skip this chunk
-              nextExpectedIndex = Math.max(nextExpectedIndex, i + 1);
-              processReadyChunks();
-              return { success: false };
-            });
-        });
+            ttsAudioQueue.push(null); // Placeholder
+            // Continue with remaining chunks
+          }
+        }
         
-        // Wait for all to complete (but we started playing earlier)
-        await Promise.all(fetchPromises);
-        console.log(`⚡ All chunks processed in ${Date.now() - fetchStart}ms`);
+        console.log(`⚡ All ${ttsAudioQueue.length} chunks loaded in ${Date.now() - fetchStart}ms`);
         
-        // If nothing played yet (all failed), still show content
+        // If nothing was added to queue, show content anyway
+        if (ttsAudioQueue.length === 0) {
+          console.error('❌ No audio chunks fetched');
         if (!contentRevealed && ttsReadyCallback) {
           ttsReadyCallback();
           ttsReadyCallback = null;
         }
-        
-        if (!firstChunkPlayed) {
-          console.error('❌ No audio chunks fetched');
           const orb = document.querySelector('.ai-visualizer-container');
           if (orb) orb.classList.remove('loading');
         }
@@ -17283,6 +17708,10 @@
           const aiPage = document.querySelector('.ai-assistant-page');
           if (aiPage) aiPage.appendChild(searchingOverlay);
           
+          // Clear existing tour cards and center orb BEFORE starting search animation
+          // This makes the orb animate from center, not from the side
+          clearAITourCards();
+          
           // Start accelerating orb animation
           if (window.particleVisualizer) {
             window.particleVisualizer.startSearching();
@@ -17316,7 +17745,8 @@
           body: JSON.stringify({
             message: message,
             language: typeof currentLanguage !== 'undefined' ? currentLanguage : 'en',
-            history: aiConversationHistory.slice(-10) // Last 10 messages for context
+            history: aiConversationHistory.slice(-10), // Last 10 messages for context
+            previously_shown_tour_keys: Array.from(previouslyShownTourKeys) // Exclude on "other options"
           })
         });
         
@@ -17328,13 +17758,25 @@
         let responseText = data.response || data.message || "Sorry, I couldn't process that. Please try again!";
         
         // Check if response has tour recommendations
+        // IMPORTANT: data.recommended_tours from backend is the SOURCE OF TRUTH for tour cards
+        const hasBackendTours = data.recommended_tours && data.recommended_tours.length > 0;
         const recommendedTours = parseTourRecommendations(responseText);
         const hasQuestion = responseText.includes('?');
-        const hasRecommendations = recommendedTours.length > 0 || (data.recommended_tours && data.recommended_tours.length > 0);
+        const hasRecommendations = recommendedTours.length > 0 || hasBackendTours;
+        
+        console.log('🔴 RAW BACKEND RESPONSE - recommended_tours:', JSON.stringify(data.recommended_tours?.map(t => ({name: t.name, key: t.key})) || [], null, 2));
+        console.log('📊 Response analysis:', {
+          hasBackendTours,
+          backendTourCount: data.recommended_tours?.length || 0,
+          backendTourNames: data.recommended_tours?.map(t => t.name) || [],
+          hasQuestion,
+          parsedTourCount: recommendedTours.length
+        });
         
         // If AI gives a statement (no question) without recommendations, that's a problem
         // Auto-trigger a follow-up to get recommendations
-        if (!hasQuestion && !hasRecommendations && aiConversationHistory.length >= 2) {
+        // BUT: Never do this if backend already sent us tours!
+        if (!hasQuestion && !hasRecommendations && aiConversationHistory.length >= 2 && !hasBackendTours) {
           console.log('⚠️ AI gave statement without recommendations - requesting tours...');
           // Don't show this response, instead ask for recommendations
           const followUpResponse = await fetch('/chat', {
@@ -17347,7 +17789,8 @@
             })
           });
           const followUpData = await followUpResponse.json();
-          if (followUpData.response && (parseTourRecommendations(followUpData.response).length > 0 || followUpData.recommended_tours?.length > 0)) {
+          // Only use follow-up tours if we STILL don't have any (don't override backend tours!)
+          if (!hasBackendTours && followUpData.response && followUpData.recommended_tours?.length > 0) {
             responseText = followUpData.response;
             data.recommended_tours = followUpData.recommended_tours;
           }
@@ -17373,8 +17816,11 @@
         aiConversationHistory.push({ role: 'assistant', content: responseText });
         
         // Prepare tour cards data
-        const tourCardsData = data.recommended_tours && data.recommended_tours.length > 0 
-          ? { type: 'objects', data: data.recommended_tours }
+        // CRITICAL: If backend sends recommended_tours (even empty []), use it directly!
+        // Only parse from AI text if the field is completely missing (undefined)
+        // This prevents the frontend from fuzzy-matching AI's made-up tour names to wrong real tours
+        const tourCardsData = data.recommended_tours !== undefined
+          ? { type: 'objects', data: data.recommended_tours || [] }
           : { type: 'parsed', data: parseTourRecommendations(responseText) };
         
         // Check if this response has tour cards
@@ -17470,7 +17916,9 @@
             
             if (tourCardsData.type === 'objects' && tourCardsData.data.length > 0) {
               console.log('📦 Using full tour objects from API:', tourCardsData.data.map(t => t.name));
-              displayAITourCardsFromObjects(tourCardsData.data);
+              // Pass total matching tours count if available
+              const totalMatchingTours = data.total_matching_tours || tourCardsData.data.length;
+              displayAITourCardsFromObjects(tourCardsData.data, totalMatchingTours);
               console.log('🎯 Displayed', currentAITourCards.length, 'tour cards for highlighting');
             } else if (tourCardsData.data.length > 0) {
               displayAITourCards(tourCardsData.data);
@@ -17481,6 +17929,10 @@
             setTimeout(() => {
               if (cardsContainer) cardsContainer.classList.remove('cards-revealing');
             }, 1000);
+          } else {
+            // No tour cards in this response - clear any existing ones
+            // This happens when user changes topic (e.g., asks about skydiving after reef tours)
+            clearAITourCards();
           }
           
           // Auto-scroll to show new response
@@ -17562,6 +18014,25 @@
         }
         
         if (!window.voiceChat.isListening) {
+          // AUTO-MUTE: Mute TTS and welcome audio when user starts speaking
+          if (!ttsMuted) {
+            console.log('🔇 Auto-muting TTS while user speaks');
+            window._wasMutedBeforeMic = false;  // Remember it was NOT muted
+            toggleTTSMute();  // Mute it (this also pauses welcome audio)
+          } else {
+            window._wasMutedBeforeMic = true;  // Was already muted
+          }
+          
+          // Also pause welcome audio specifically (in case it wasn't caught)
+          if (window.currentWelcomeAudio) {
+            window.currentWelcomeAudio.pause();
+            console.log('🔇 Paused welcome audio for mic');
+          }
+          const welcomeAudioEl = document.getElementById('welcome-audio');
+          if (welcomeAudioEl) {
+            welcomeAudioEl.pause();
+          }
+          
           // Start listening
           console.log('🎤 Starting voice recognition via AI mic button...');
           isRecording = true;
@@ -17588,6 +18059,15 @@
             // Clear audio level callback and reset button
             window.voiceChat.clearAudioLevelCallback();
             micBtn.style.transform = '';
+            micBtn.classList.remove('recording');
+            micBtn.innerHTML = '🎤';
+            
+            // AUTO-UNMUTE: Restore TTS after voice input is done
+            if (window._wasMutedBeforeMic === false && ttsMuted) {
+              console.log('🔊 Auto-unmuting TTS after voice input');
+              toggleTTSMute();  // Unmute it
+            }
+            
             // Put transcript in AI chat input (correct ID: ai-text-input)
             const aiInput = document.getElementById('ai-text-input');
             if (aiInput && transcript.trim()) {
@@ -17634,6 +18114,12 @@
           micBtn.style.transform = ''; // Reset scale
           window.voiceChat.clearAudioLevelCallback();
           window.voiceChat.stopListening();
+          
+          // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
+          if (window._wasMutedBeforeMic === false && ttsMuted) {
+            console.log('🔊 Auto-unmuting TTS after user finished speaking');
+            toggleTTSMute();  // Unmute it
+          }
         }
       } else {
         console.error('❌ VoiceChat not initialized - voice features unavailable');
@@ -17849,6 +18335,21 @@
       
       // Update URL hash
       window.location.hash = 'ai-assistant';
+      
+      // Reconnect audio to visualizer if TTS was playing
+      if (ttsAudioElement && window.particleVisualizer) {
+        try {
+          window.particleVisualizer.connectAudio(ttsAudioElement);
+          console.log('   🔊 Reconnected audio to visualizer');
+          
+          // If audio was playing, update visualizer state
+          if (!ttsAudioElement.paused) {
+            window.particleVisualizer.startSpeaking();
+          }
+        } catch (e) {
+          console.log('   ⚠️ Could not reconnect audio:', e.message);
+        }
+      }
       
       console.log('   ✅ AI Assistant restored');
     }
@@ -18161,7 +18662,7 @@
         
         // Generate booking star and promotion badge
         const hasBooking = hasWorkingBooking(tour);
-        const starHtml = hasBooking ? '<div class="tour-card-star" style="position: absolute; top: 12px; right: 12px; z-index: 10;">★</div>' : '';
+        const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
         
         // Use tour-card-large format (matches template)
@@ -18174,7 +18675,7 @@
             <h2 class="tour-name" style="font-size: 1.8em; font-weight: 700; margin: 0 0 15px 0;">${tour.name}</h2>
             <div class="tour-meta" style="display: flex; align-items: center; gap: 15px; font-size: 1.1em;">
               ${ratingHtml}
-              <span class="price-badge" style="font-weight: 700; font-size: 1.2em;">From ${tour.price_adult || 'Contact for price'}</span>
+              <span class="price-badge" style="font-weight: 700; font-size: 1.2em;">${formatPriceDisplay(tour.price_adult)}</span>
             </div>
           </div>
         `;
@@ -19702,7 +20203,7 @@
           ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
         }
         
-        const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
+        const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
         const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
@@ -19714,7 +20215,7 @@
             <h2 class="tour-name">${tour.name}</h2>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+              <span class="price-badge">${formatPriceDisplay(tour.price_adult)}</span>
             </div>
           </div>
         `;
@@ -19755,7 +20256,7 @@
               ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
             }
             
-            const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
+            const starHtml = ''; // Booking star removed - no longer needed for reseller model
             const promotionBadge = getPromotionBadgeHtml(tour);
             const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
             card.innerHTML = `
@@ -19767,7 +20268,7 @@
                 <h2 class="tour-name">${tour.name}</h2>
                 <div class="tour-meta">
                   ${ratingHtml}
-                  <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+                  <span class="price-badge">${formatPriceDisplay(tour.price_adult)}</span>
                 </div>
               </div>
             `;
@@ -19947,7 +20448,7 @@
           ratingHtml = `<span class="rating">★ ${tour.review_rating.toFixed(1)} (${tour.review_count})</span>`;
         }
         
-        const starHtml = hasBooking ? '<div class="tour-card-star">★</div>' : '';
+        const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
         const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
@@ -19959,7 +20460,7 @@
             <h3 class="tour-name">${tour.name}</h3>
             <div class="tour-meta">
               ${ratingHtml}
-              <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+              <span class="price-badge">${formatPriceDisplay(tour.price_adult)}</span>
             </div>
           </div>
         `;
@@ -20047,7 +20548,7 @@
               <h2 class="tour-name">${tour.name}</h2>
               <div class="tour-meta">
                 ${ratingHtml}
-                <span class="price-badge">From ${tour.price_adult || 'Contact for price'}</span>
+                <span class="price-badge">${formatPriceDisplay(tour.price_adult)}</span>
               </div>
             </div>
           `;
@@ -20084,7 +20585,7 @@
                 ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
                 ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
               </div>
-              <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+              <div class="tour-price">${formatPriceDisplay(tour.price_adult)}</div>
             </div>
           `;
           
@@ -20500,25 +21001,15 @@
             return;
           }
           
-          // Fallback: use provided booking link or open inquiry modal
-          if (data.link_booking) {
+          // Fallback: use provided booking link if it exists and is a valid URL
+          if (data.link_booking && (data.link_booking.startsWith('http') || data.link_booking.startsWith('//'))) {
             showQRPaymentModal(data.link_booking, data.name);
             return;
           }
           
-            const modal = document.getElementById('booking-modal');
-            if (modal) {
-              document.getElementById('booking-tour-name').textContent = data.name;
-              modal.style.display = 'flex';
-              
-              // Store current tour data for booking form
-              window.currentTourForBooking = {
-                name: data.name,
-                company: data.company,
-                key: key,
-                pricing: selectedPricingTier
-              };
-          }
+          // No online booking available - show counter booking modal
+          console.log('🔔 No online booking available for:', data.name);
+          showCounterBookingModal(data.name);
         };
       }
       
@@ -20738,6 +21229,109 @@
         // Re-enable body scroll
         document.body.style.overflow = '';
         console.log('   ✅ Modal closed and cleared');
+      }
+    
+    // =====================================================================
+    // COUNTER BOOKING MODAL (No online booking available)
+    // =====================================================================
+    
+    // Play a ding sound to alert staff
+    function playDingSound() {
+      // Create a pleasant ding sound using Web Audio API
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create oscillator for the main tone
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Bell-like tone at 880 Hz (A5)
+        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        // Envelope: quick attack, slow decay
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.6, audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1.5);
+        
+        // Second higher tone for a more pleasant chime
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode2 = audioContext.createGain();
+        
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(audioContext.destination);
+        
+        oscillator2.frequency.setValueAtTime(1318.5, audioContext.currentTime + 0.15); // E6
+        oscillator2.type = 'sine';
+        
+        gainNode2.gain.setValueAtTime(0, audioContext.currentTime + 0.15);
+        gainNode2.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.16);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.3);
+        
+        oscillator2.start(audioContext.currentTime + 0.15);
+        oscillator2.stop(audioContext.currentTime + 1.5);
+        
+        console.log('🔔 Ding sound played');
+      } catch (e) {
+        console.warn('Could not play ding sound:', e);
+      }
+    }
+    
+    // Show the counter booking modal
+    function showCounterBookingModal(tourName) {
+      console.log('🔔 Showing counter booking modal for:', tourName);
+      
+      const modal = document.getElementById('counter-booking-modal');
+      if (!modal) {
+        console.error('Counter booking modal not found!');
+        return;
+      }
+      
+      // Set tour name
+      const tourNameEl = document.getElementById('counter-booking-tour-name');
+      if (tourNameEl) {
+        tourNameEl.textContent = tourName || '';
+      }
+      
+      // Apply translations for current language
+      if (typeof applyLanguage === 'function' && typeof currentLanguage !== 'undefined') {
+        setTimeout(() => applyLanguage(currentLanguage), 50);
+      }
+      
+      // Show modal
+      modal.classList.add('modal-active');
+      modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
+      modal.style.opacity = '1';
+      modal.style.pointerEvents = 'auto';
+      document.body.style.overflow = 'hidden';
+      
+      // Play ding sound to alert staff
+      playDingSound();
+      
+      // Track this event
+      if (typeof Analytics !== 'undefined') {
+        Analytics.logEvent('counter_booking_requested', { tour_name: tourName });
+      }
+    }
+    
+    // Close counter booking modal
+    function closeCounterBookingModal() {
+      const modal = document.getElementById('counter-booking-modal');
+      if (modal) {
+        modal.classList.remove('modal-active');
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        document.body.style.overflow = '';
+        console.log('🔔 Counter booking modal closed');
       }
       
       // Also close the share QR modal if it's open
@@ -23460,15 +24054,28 @@
       const isSwipeActive = swipeOverlay && swipeOverlay.classList.contains('active');
       const homePage = document.querySelector('.home-page.active');
       const videoPage = document.querySelector('.video-question-page.active');
+      const aiAssistantPage = document.getElementById('ai-assistant-page');
+      const isAIActive = aiAssistantPage && (aiAssistantPage.style.display === 'flex' || aiAssistantPage.classList.contains('active'));
       
       console.log('📊 Page detection:', {
         tourDetailPage: !!tourDetailPage,
         isSwipeActive,
         homePage: !!homePage,
-        videoPage: !!videoPage
+        videoPage: !!videoPage,
+        isAIActive
       });
       
-      if (isSwipeActive && window.currentSwipeIndex !== undefined) {
+      // Clear AI conversation state when switching language (will restart in new language)
+      if (isAIActive) {
+        console.log('🤖 AI Assistant active - clearing conversation for new language');
+        // Clear conversation history so new welcome plays
+        window.welcomeMessagePlayed = false;
+        aiConversationHistory = [];
+        const aiMessagesContainer = document.getElementById('ai-messages');
+        if (aiMessagesContainer) aiMessagesContainer.innerHTML = '';
+        url.hash = 'ai-assistant';
+        console.log('📍 Setting hash for AI assistant (will restart with new welcome)');
+      } else if (isSwipeActive && window.currentSwipeIndex !== undefined) {
         // On swipe results - use hash #swipe/INDEX
         url.hash = `swipe/${window.currentSwipeIndex}`;
         console.log('📍 Setting hash for swipe:', url.hash);
@@ -23720,6 +24327,19 @@
       if (vqAiAssistantBtn) vqAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       if (detailAiAssistantBtn) detailAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
       
+      // Update AI Assistant page header buttons
+      const aiQuickDecisionBtn = document.getElementById('ai-quick-decision-btn');
+      const aiBrowseAllBtn = document.getElementById('ai-browse-all-btn');
+      const aiLanguageBtn = document.getElementById('ai-language-btn');
+      const aiTextInput = document.getElementById('ai-text-input');
+      const aiMicHint = document.querySelector('.ai-mic-hint');
+      
+      if (aiQuickDecisionBtn) aiQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (aiBrowseAllBtn) aiBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
+      if (aiLanguageBtn) aiLanguageBtn.textContent = lang.code.toUpperCase();
+      if (aiTextInput && lang.type_message) aiTextInput.placeholder = lang.type_message;
+      if (aiMicHint && lang.tap_before_speaking) aiMicHint.textContent = lang.tap_before_speaking;
+      
       // Update footer buttons on tour detail page
       const bookNowBtn = document.getElementById('book-now-btn');
       const shareTourBtn = document.getElementById('share-tour-btn');
@@ -23733,7 +24353,20 @@
       const aboutTourTitle = document.getElementById('about-tour-title');
       if (aboutTourTitle && lang.about_this_tour) aboutTourTitle.textContent = lang.about_this_tour;
       
+      // Update all price badges with proper formatting and currency
+      updateAllPriceDisplays();
+      
       console.log('✓ Language applied:', lang.name);
+    }
+    
+    // Update all price badges with translated "From" and converted currency
+    function updateAllPriceDisplays() {
+      document.querySelectorAll('.price-badge[data-raw-price]').forEach(el => {
+        const rawPrice = el.getAttribute('data-raw-price');
+        if (rawPrice) {
+          el.textContent = formatPriceDisplay(rawPrice, true);
+        }
+      });
     }
     
     // Helper function to update filter question and options
@@ -23888,6 +24521,27 @@
       }
     }
     
+    // Format price for display: strips existing FROM/From, converts currency, adds translated prefix
+    function formatPriceDisplay(priceStr, includeFrom = true) {
+      if (!priceStr || priceStr === 'N/A' || priceStr === 'Contact for price') {
+        return t('contact_for_price') || 'Contact for price';
+      }
+      
+      // Strip any existing FROM/From prefix (case insensitive)
+      let cleanPrice = priceStr.replace(/^(FROM|From)\s*/i, '').trim();
+      
+      // Convert the currency
+      const convertedPrice = convertPrice(cleanPrice);
+      
+      // Add translated "From" prefix if requested
+      if (includeFrom) {
+        const fromText = t('from_price') || 'From';
+        return `${fromText} ${convertedPrice}`;
+      }
+      
+      return convertedPrice;
+    }
+    
     function switchCurrency(newCurrency) {
       currentCurrency = newCurrency;
       localStorage.setItem('preferred_currency', newCurrency);
@@ -23896,17 +24550,20 @@
       // Update all visible prices
       document.querySelectorAll('[data-original-price]').forEach(el => {
         const originalPrice = el.getAttribute('data-original-price');
-        const convertedPrice = convertPrice(originalPrice);
         
         // Check if this is a pricing tier option (has data-tier attribute)
         if (el.classList.contains('pricing-tier-option')) {
+          const convertedPrice = convertPrice(originalPrice);
           const originalTier = el.getAttribute('data-tier');
           // Replace the price in the tier text
           const updatedTier = originalTier.replace(/A\$\d+/, convertedPrice);
           el.textContent = updatedTier;
+        } else if (el.classList.contains('ai-tour-card-price') || el.classList.contains('price-badge')) {
+          // AI tour cards and price badges need "From" prefix
+          el.textContent = formatPriceDisplay(originalPrice);
         } else {
-          // For simple price elements, just replace the text
-          el.textContent = convertedPrice;
+          // For simple price elements, just convert
+          el.textContent = convertPrice(originalPrice);
         }
       });
       
@@ -24980,7 +25637,7 @@
               ${tour.duration ? `<span class="tour-duration">⏱️ ${tour.duration}</span>` : ''}
               ${tour.departure_location ? `<span class="tour-location">📍 ${tour.departure_location}</span>` : ''}
             </div>
-            <div class="tour-price">${tour.price_adult || 'Contact for price'}</div>
+            <div class="tour-price">${formatPriceDisplay(tour.price_adult)}</div>
           </div>
         `;
         
@@ -25081,7 +25738,7 @@
       const toursHtml = '<div class="chat-tours">' + tours.map(tour => `
         <div class="chat-tour-card" onclick="openTourDetail('${tour.key}')">
           <h4>${tour.name}</h4>
-          <p>💰 ${tour.price_adult || 'Contact for price'} | ⏱️ ${tour.duration || 'N/A'}</p>
+          <p>💰 ${formatPriceDisplay(tour.price_adult, false)} | ⏱️ ${tour.duration || 'N/A'}</p>
         </div>
       `).join('') + '</div>';
       
@@ -26044,6 +26701,11 @@
       
       ttsAudio.addEventListener('ended', () => {
         console.log('🔊 TTS finished');
+        // Clean up object URL to prevent memory leak
+        if (ttsAudio._currentUrl) {
+          URL.revokeObjectURL(ttsAudio._currentUrl);
+          ttsAudio._currentUrl = null;
+        }
         if (window.particleVisualizer) {
           window.particleVisualizer.stopSpeaking();
         }
@@ -26145,6 +26807,12 @@
         }
         
         const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Store URL for cleanup later (prevent memory leak)
+        if (ttsAudio._currentUrl) {
+          URL.revokeObjectURL(ttsAudio._currentUrl);
+        }
+        ttsAudio._currentUrl = audioUrl;
         
         // Set audio source
         ttsAudio.src = audioUrl;
@@ -26362,7 +27030,9 @@
           if (response.ok) {
             const audioBlob = await response.blob();
             if (audioBlob.size > 100) {
-              audioElement = new Audio(URL.createObjectURL(audioBlob));
+              const welcomeAudioUrl = URL.createObjectURL(audioBlob);
+              audioElement = new Audio(welcomeAudioUrl);
+              audioElement._objectUrl = welcomeAudioUrl; // Store for cleanup
             }
           }
         } catch (e) {
@@ -26414,6 +27084,11 @@
         
         audioElement.onended = () => {
           console.log('🔊 Welcome audio ENDED');
+          // Clean up object URL to prevent memory leak
+          if (audioElement._objectUrl) {
+            URL.revokeObjectURL(audioElement._objectUrl);
+            audioElement._objectUrl = null;
+          }
           window.currentWelcomeAudio = null;
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
           const micBtn = document.getElementById('ai-mic-btn');
@@ -26450,3 +27125,4 @@
   </script>
 </body>
 </html>
+

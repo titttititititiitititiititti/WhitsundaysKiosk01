@@ -1,4 +1,4 @@
-import os
+﻿import os
 print("Current working directory:", os.getcwd())
 print("Templates folder exists:", os.path.isdir('templates'))
 print("index.html exists:", os.path.isfile('templates/index.html'))
@@ -11,13 +11,14 @@ import random
 import glob
 import re
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Email, To, Content
 import qrcode
 from io import BytesIO
 import uuid
 import time
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # [CHAT-001] Initial Flask app serving chatbot UI and connecting tours.csv to GPT-4o.
 # [CHAT-002] Load environment variables from .env using python-dotenv.
@@ -229,6 +230,15 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
         tour_name = event_data.get('tour_name')
         if tour_name and tour_name not in session['tours_booked']:
             session['tours_booked'].append(tour_name)
+        # Track QR code conversions
+        if event_data.get('from_qr_code'):
+            if 'qr_conversions' not in session:
+                session['qr_conversions'] = []
+            session['qr_conversions'].append({
+                'tracking_id': event_data.get('qr_tracking_id'),
+                'tour_name': tour_name,
+                'timestamp': datetime.now().isoformat()
+            })
     elif event_type == 'chat_message':
         session['chat_messages'].append({
             'role': event_data.get('role', 'user'),
@@ -305,6 +315,31 @@ def get_analytics_summary(account=None):
     # Total chat messages
     total_chats = sum(len(s.get('chat_messages', [])) for s in sessions)
     
+    # QR code tracking stats
+    qr_codes_generated = 0
+    qr_tour_visits = 0
+    qr_book_now_clicks = 0
+    qr_conversions = []
+    
+    for s in sessions:
+        for event in s.get('events', []):
+            if event.get('type') == 'qr_code_generated':
+                qr_codes_generated += 1
+            elif event.get('type') == 'qr_tour_visit':
+                qr_tour_visits += 1
+            elif event.get('type') == 'book_now_clicked':
+                if event.get('data', {}).get('from_qr_code'):
+                    qr_book_now_clicks += 1
+        
+        # Collect QR conversions
+        for conversion in s.get('qr_conversions', []):
+            qr_conversions.append(conversion)
+    
+    # Calculate QR conversion rate
+    qr_conversion_rate = 0
+    if qr_tour_visits > 0:
+        qr_conversion_rate = round((qr_book_now_clicks / qr_tour_visits) * 100, 1)
+    
     return {
         'total_sessions': total_sessions,
         'avg_duration_seconds': round(avg_duration, 1),
@@ -315,7 +350,15 @@ def get_analytics_summary(account=None):
         'top_tours_booked': top_tours_booked,
         'total_chats': total_chats,
         'recent_sessions': sessions[-20:][::-1],  # Last 20, newest first
-        'account': account
+        'account': account,
+        'qr_stats': {
+            'codes_generated': qr_codes_generated,
+            'tour_visits': qr_tour_visits,
+            'book_now_clicks': qr_book_now_clicks,
+            'conversion_rate': qr_conversion_rate,
+            'total_conversions': len(qr_conversions),
+            'recent_conversions': sorted(qr_conversions, key=lambda x: x.get('timestamp', ''), reverse=True)[:20]
+        }
     }
 
 # Company name mapping for prettier display
@@ -338,11 +381,29 @@ COMPANY_DISPLAY_NAMES = {
     'prosail': 'ProSail'
 }
 
+def get_english_tour_name(company, tid):
+    """Get the English tour name for a tour (for image matching purposes)"""
+    en_folder = f"data/{company}/en"
+    if not os.path.isdir(en_folder):
+        return None
+    
+    csv_files = glob.glob(f"{en_folder}/*.csv")
+    for csv_file in csv_files:
+        try:
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get('id') == tid:
+                        return row.get('name', '')
+        except Exception:
+            pass
+    return None
+
 def find_thumbnail(company, tid, tour_name=None):
-    """Find thumbnail for a tour, checking both hash-based and name-based folder structures"""
+    """Find thumbnail for a tour - always looks in static/tour_images/{company}/{tour_id}/"""
     extensions = [".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG", ".WEBP"]
     
-    # Try hash-based ID folder first
+    # Primary location: static/tour_images/{company}/{tour_id}/
     base = f"static/tour_images/{company}/{tid}/thumbnail"
     for ext in extensions:
         path = f"{base}{ext}"
@@ -366,10 +427,17 @@ def find_thumbnail(company, tid, tour_name=None):
     
     # Legacy fallback: try name-based folder (for old downloaded images)
     # Look for folder that contains the tour name keywords
+    # IMPORTANT: Always use English tour name for matching (image folders use English names)
+    english_name = tour_name
     if tour_name:
+        en_name = get_english_tour_name(company, tid)
+        if en_name:
+            english_name = en_name
+    
+    if english_name:
         import re
         # Extract key words from tour name (lowercase, alphanumeric only)
-        keywords = set(re.findall(r'[a-z0-9]+', tour_name.lower()))
+        keywords = set(re.findall(r'[a-z0-9]+', english_name.lower()))
         
         company_dir = f"static/tour_images/{company}"
         if os.path.isdir(company_dir):
@@ -512,7 +580,8 @@ def parse_activity_type(highlights, description, name):
     # 3. Scenic/Adventure (helicopter, flights, aerial, high-speed)
     if any(word in text for word in ["helicopter", "heli", "scenic flight", "flight", "aerial", "plane", "aircraft", "fly"]):
         activities.append("scenic_adventure")
-    if any(word in text for word in ["jet boat", "jet ski", "speed boat", "thundercat", "fast boat", "adrenaline", "thrill"]):
+    # Note: Include "jetski" and "jetskiing" as one word since tour data often uses that form
+    if any(word in text for word in ["jet boat", "jet ski", "jetski", "jetskiing", "speed boat", "thundercat", "fast boat", "adrenaline", "thrill"]):
         if "scenic_adventure" not in activities:  # Avoid duplicates
             activities.append("scenic_adventure")
     
@@ -710,6 +779,7 @@ def load_all_tours(language='en'):
         except Exception as e:
             print(f"Error processing {csvfile}: {e}")
             continue
+    
     return tours
 
 # Set your OpenAI API key here or via environment variable
@@ -772,31 +842,304 @@ def login():
         
         users = load_users()
         
-        if username in users and users[username]['password'] == password:
-            session['user'] = username
-            session['role'] = users[username]['role']
-            session['name'] = users[username]['name']
-            session['company'] = users[username].get('company')
-            
-            # Redirect based on role
-            next_url = request.args.get('next')
-            if next_url:
-                return redirect(next_url)
-            
-            if users[username]['role'] == 'agent':
-                return redirect(url_for('agent_dashboard'))
+        if username in users:
+            stored_password = users[username].get('password', '')
+            # Check if password is hashed (starts with pbkdf2:) or plain text (for backward compatibility)
+            password_valid = False
+            if stored_password.startswith('pbkdf2:'):
+                # Hashed password
+                password_valid = check_password_hash(stored_password, password)
             else:
-                return redirect(url_for('operator_dashboard'))
+                # Plain text password (backward compatibility)
+                password_valid = (stored_password == password)
+                # Auto-upgrade to hashed password on successful login
+                if password_valid:
+                    users[username]['password'] = generate_password_hash(password)
+                    save_users(users)
+            
+            if password_valid:
+                session['user'] = username
+                session['role'] = users[username]['role']
+                session['name'] = users[username]['name']
+                session['company'] = users[username].get('company')
+                
+                # Redirect based on role
+                next_url = request.args.get('next')
+                if next_url:
+                    return redirect(next_url)
+                
+                if users[username]['role'] == 'agent':
+                    return redirect(url_for('agent_dashboard'))
+                else:
+                    return redirect(url_for('operator_dashboard'))
+            else:
+                error = 'Invalid username or password'
         else:
             error = 'Invalid username or password'
     
     return render_template('admin_login.html', error=error)
+
+@app.route('/admin/register', methods=['GET', 'POST'])
+def register():
+    """Registration page for new users"""
+    error = None
+    success = None
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        full_name = request.form.get('full_name', '').strip()
+        
+        # Validation
+        if not email:
+            error = 'Email is required'
+        elif not email.count('@') == 1 or '.' not in email.split('@')[1]:
+            error = 'Please enter a valid email address'
+        elif not password:
+            error = 'Password is required'
+        elif len(password) < 6:
+            error = 'Password must be at least 6 characters'
+        elif password != confirm_password:
+            error = 'Passwords do not match'
+        elif not full_name:
+            error = 'Full name is required'
+        else:
+            users = load_users()
+            # Use email as username (before @), sanitize it
+            base_username = email.split('@')[0].lower()
+            # Remove any non-alphanumeric characters except underscores
+            base_username = re.sub(r'[^a-z0-9_]', '', base_username)
+            
+            # Check if email already exists in any account
+            email_exists = any(user.get('email', '').lower() == email for user in users.values())
+            if email_exists:
+                error = 'An account with this email already exists'
+            else:
+                # Generate unique username if base username is taken
+                username = base_username
+                counter = 1
+                while username in users:
+                    username = f"{base_username}{counter}"
+                    counter += 1
+                
+                # Create new user with agent role by default
+                users[username] = {
+                    'password': generate_password_hash(password),
+                    'role': 'agent',
+                    'name': full_name,
+                    'email': email,
+                    'company': None
+                }
+                save_users(users)
+                success = 'Account created successfully! You can now log in.'
+                print(f"[OK] New account created: {username} ({email})")
+    
+    return render_template('register.html', error=error, success=success)
+
+# Store password reset tokens in memory (with expiration)
+password_reset_tokens = {}  # {username: {'code': '123456', 'expires': datetime}}
+
+@app.route('/admin/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    """Send password reset code to user's email"""
+    message = None
+    error = None
+    
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip().lower()
+        users = load_users()
+        
+        if username not in users:
+            error = 'Username not found'
+        else:
+            user = users[username]
+            email = user.get('email')
+            
+            if not email:
+                error = 'No email address associated with this account. Please contact the administrator.'
+            else:
+                # Generate 6-digit code
+                import random
+                code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+                
+                # Store with 15-minute expiration
+                password_reset_tokens[username] = {
+                    'code': code,
+                    'expires': datetime.now() + timedelta(minutes=15)
+                }
+                
+                # Send email via SendGrid
+                if SENDGRID_API_KEY:
+                    try:
+                        sg = SendGridAPIClient(SENDGRID_API_KEY)
+                        from_email = Email(FROM_EMAIL)
+                        to_email = To(email)
+                        subject = "Tour Kiosk - Password Reset Code"
+                        content = Content("text/html", f"""
+                            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+                                <h2 style="color: #0077b6;">Password Reset Request</h2>
+                                <p>Hi {user.get('name', username)},</p>
+                                <p>Your password reset code is:</p>
+                                <div style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 20px 0; border-radius: 10px;">
+                                    {code}
+                                </div>
+                                <p>This code expires in 15 minutes.</p>
+                                <p>If you didn't request this, please ignore this email.</p>
+                                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                                <p style="color: #888; font-size: 12px;">Tour Kiosk Admin System</p>
+                            </div>
+                        """)
+                        mail = Mail(from_email, to_email, subject, content)
+                        sg.send(mail)
+                        print(f"[MAIL] Password reset email sent to {email} for user {username}")
+                        message = f'Reset code sent to {email[:3]}***{email[email.index("@"):]}'
+                    except Exception as e:
+                        print(f"Error sending reset email: {e}")
+                        error = 'Failed to send email. Please try again.'
+                else:
+                    # For testing without SendGrid
+                    print(f"[!] SENDGRID not configured. Reset code for {username}: {code}")
+                    message = f'Reset code sent (check server logs if testing)'
+    
+    return render_template('forgot_password.html', message=message, error=error)
+
+@app.route('/admin/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    """Reset password using the code sent via email"""
+    message = None
+    error = None
+    username = request.args.get('username', request.form.get('username', '')).strip().lower()
+    
+    if request.method == 'POST':
+        code = request.form.get('code', '').strip()
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Validate
+        if not username:
+            error = 'Username is required'
+        elif username not in password_reset_tokens:
+            error = 'No reset code found. Please request a new one.'
+        elif password_reset_tokens[username]['expires'] < datetime.now():
+            error = 'Reset code has expired. Please request a new one.'
+            del password_reset_tokens[username]
+        elif password_reset_tokens[username]['code'] != code:
+            error = 'Invalid reset code'
+        elif len(new_password) < 6:
+            error = 'Password must be at least 6 characters'
+        elif new_password != confirm_password:
+            error = 'Passwords do not match'
+        else:
+            # Update password (hash it)
+            users = load_users()
+            if username in users:
+                users[username]['password'] = generate_password_hash(new_password)
+                save_users(users)
+                del password_reset_tokens[username]
+                print(f"ðŸ”‘ Password reset successful for {username}")
+                return redirect(url_for('login') + '?reset=success')
+            else:
+                error = 'User not found'
+    
+    return render_template('reset_password.html', username=username, error=error, message=message)
 
 @app.route('/admin/logout')
 def logout():
     """Logout and clear session"""
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/admin/account-settings', methods=['GET', 'POST'])
+@login_required
+def account_settings():
+    """Account settings page - update name, email, and password"""
+    error = None
+    success = None
+    
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session['user']
+    users = load_users()
+    
+    if username not in users:
+        session.clear()
+        return redirect(url_for('login'))
+    
+    user = users[username]
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'update_profile':
+            # Update name and/or email
+            new_name = request.form.get('full_name', '').strip()
+            new_email = request.form.get('email', '').strip().lower()
+            
+            if not new_name:
+                error = 'Full name is required'
+            elif not new_email:
+                error = 'Email is required'
+            elif not (new_email.count('@') == 1 and '.' in new_email.split('@')[1]):
+                error = 'Please enter a valid email address'
+            else:
+                # Check if email is already taken by another user
+                email_taken = any(
+                    u.get('email', '').lower() == new_email and ukey != username 
+                    for ukey, u in users.items()
+                )
+                if email_taken:
+                    error = 'This email is already associated with another account'
+                else:
+                    user['name'] = new_name
+                    user['email'] = new_email
+                    save_users(users)
+                    # Update session
+                    session['name'] = new_name
+                    success = 'Profile updated successfully!'
+                    print(f"[OK] Profile updated for {username}")
+        
+        elif action == 'change_password':
+            # Change password
+            current_password = request.form.get('current_password', '')
+            new_password = request.form.get('new_password', '')
+            confirm_password = request.form.get('confirm_password', '')
+            
+            if not current_password:
+                error = 'Current password is required'
+            elif not new_password:
+                error = 'New password is required'
+            elif len(new_password) < 6:
+                error = 'New password must be at least 6 characters'
+            elif new_password != confirm_password:
+                error = 'New passwords do not match'
+            else:
+                # Verify current password
+                stored_password = user.get('password', '')
+                password_valid = False
+                
+                if stored_password.startswith('pbkdf2:'):
+                    # Hashed password
+                    password_valid = check_password_hash(stored_password, current_password)
+                else:
+                    # Plain text password (backward compatibility)
+                    password_valid = (stored_password == current_password)
+                
+                if not password_valid:
+                    error = 'Current password is incorrect'
+                else:
+                    # Update password
+                    user['password'] = generate_password_hash(new_password)
+                    save_users(users)
+                    success = 'Password changed successfully!'
+                    print(f"ðŸ”‘ Password changed for {username}")
+    
+    return render_template('account_settings.html', 
+                          user=user, 
+                          username=username,
+                          error=error, 
+                          success=success)
 
 # ============================================================================
 # AGENT MODE ROUTES
@@ -1329,15 +1672,55 @@ def tour_page(key):
     """Load home page but with tour parameter - JavaScript will auto-open tour in modal"""
     language = request.args.get('lang', 'en')
     
+    # Check for QR code tracking parameters
+    ref = request.args.get('ref')
+    tracking_id = request.args.get('tid')
+    timestamp = request.args.get('t')
+    
+    # Log QR code visit if tracking parameters are present
+    if ref == 'qr' and tracking_id:
+        try:
+            # Try to get or create a session for tracking
+            session_id = request.cookies.get('analytics_session_id') or str(uuid.uuid4())
+            
+            # Find tour name for logging
+            tours = load_all_tours(language)
+            tour_data = next((t for t in tours if t.get('key') == key), None)
+            tour_name = tour_data.get('name', key) if tour_data else key
+            
+            log_analytics_event(session_id, 'qr_tour_visit', {
+                'tour_key': key,
+                'tour_name': tour_name,
+                'tracking_id': tracking_id,
+                'timestamp': timestamp,
+                'language': language,
+                'referrer': 'qr_code'
+            })
+            print(f"ðŸ“± QR visit tracked: {tracking_id} â†’ {key} ({tour_name})")
+        except Exception as e:
+            print(f"[!] Failed to log QR visit: {e}")
+    
     # Load all tours like normal home page
     tours = load_all_tours(language)
     random.shuffle(tours)
     initial_tours = tours[:12]
     shown_keys = [t['key'] for t in initial_tours]
     
+    # Pass tracking info to frontend
+    qr_tracking = {
+        'ref': ref,
+        'tracking_id': tracking_id,
+        'timestamp': timestamp
+    } if ref == 'qr' and tracking_id else None
+    
     # Render index.html (home page) with tour_to_open parameter
     # JavaScript will detect this and automatically open the tour modal
-    return render_template('index.html', tours=initial_tours, shown_keys=shown_keys, current_language=language, tour_to_open=key)
+    return render_template('index.html', 
+                          tours=initial_tours, 
+                          shown_keys=shown_keys, 
+                          current_language=language, 
+                          tour_to_open=key,
+                          qr_tracking=qr_tracking)
     
     # Old standalone page code removed
     company, tid = key.split('__', 1)
@@ -1433,7 +1816,7 @@ def tour_page(key):
 
 @app.route('/api/generate-tour-qr/<key>')
 def generate_tour_qr(key):
-    """Generate QR code for a specific tour"""
+    """Generate QR code for a specific tour with tracking"""
     try:
         # Generate URL - use production domain if not localhost
         if 'localhost' in request.host or '127.0.0.1' in request.host:
@@ -1442,9 +1825,29 @@ def generate_tour_qr(key):
             base_url = 'https://www.filtour.com'
         
         language = request.args.get('lang', 'en')
-        tour_url = f"{base_url}/tour/{key}?lang={language}"
         
-        print(f"📱 Generating QR code for: {tour_url}")
+        # Generate unique tracking ID for this QR code scan
+        tracking_id = str(uuid.uuid4())[:8]  # Short unique ID
+        timestamp = int(time.time())
+        
+        # Add tracking parameters to URL
+        tour_url = f"{base_url}/tour/{key}?lang={language}&ref=qr&tid={tracking_id}&t={timestamp}"
+        
+        # Log QR code generation for analytics
+        try:
+            # Get session ID if available
+            session_id = request.headers.get('X-Session-ID') or request.args.get('session_id')
+            if session_id:
+                log_analytics_event(session_id, 'qr_code_generated', {
+                    'tour_key': key,
+                    'tracking_id': tracking_id,
+                    'language': language,
+                    'timestamp': timestamp
+                })
+        except Exception as e:
+            print(f"[!] Failed to log QR generation: {e}")
+        
+        print(f"ðŸ“± Generating QR code for: {tour_url} (tracking: {tracking_id})")
         
         # Create QR code
         qr = qrcode.QRCode(
@@ -1467,7 +1870,7 @@ def generate_tour_qr(key):
         return send_file(img_io, mimetype='image/png')
         
     except Exception as e:
-        print(f"❌ Error generating tour QR code: {e}")
+        print(f"[ERR] Error generating tour QR code: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/voice-test')
@@ -1536,9 +1939,21 @@ def text_to_speech():
             'error': str(e)
         }), 500
 
-def apply_filters(tours, criteria):
+def apply_filters(tours, criteria, user_message_context=None, conversation_history=None):
     """Helper function to apply filter criteria to a list of tours"""
     filtered_tours = tours
+    # Build user message context from current message + conversation history
+    user_msg_lower = (user_message_context or '').lower() if user_message_context else ''
+    
+    # Also check conversation history for context
+    if conversation_history:
+        for msg in conversation_history[-5:]:  # Check last 5 messages
+            if msg.get('role') == 'user':
+                msg_text = msg.get('content', '').lower()
+                # Preserve any specific request context from history
+                if any(word in msg_text for word in ['jet ski', 'jetski', 'helicopter', 'scenic flight', 'speed boat']):
+                    user_msg_lower = msg_text
+                    break
     
     # Apply filters based on criteria dict
     if criteria.get('company'):
@@ -1591,13 +2006,21 @@ def apply_filters(tours, criteria):
         
             print(f"   Filtering by activities: {selected_activities}")
         
+        # Get keywords if this is a direct keyword search
+        search_keywords = criteria.get('keywords', [])
+        
         # OR logic: Show tours that match ANY of the selected activities
         def tour_matches_any_activity(tour):
             # Build searchable text for text-based matching (includes translated names)
             search_text = f"{tour.get('name', '')} {tour.get('description', '')} {tour.get('highlights', '')} {tour.get('includes', '')}".lower()
             
             for selected_activity in selected_activities:
-                # First check the tour's activity_type array
+                # SIMPLE KEYWORD SEARCH: If user asked for something specific, find it directly
+                if selected_activity == 'keyword_search' and search_keywords:
+                    # Just search for the keywords in tour text - simple and direct
+                    return any(keyword in search_text for keyword in search_keywords)
+                
+                # For other activities, check activity_type array first
                 if selected_activity in tour.get('activity_type', []):
                     return True
                 
@@ -1612,50 +2035,47 @@ def apply_filters(tours, criteria):
                 if selected_activity == 'diving':
                     # ONLY true scuba diving tours - multi-language
                     diving_words = ['scuba', 'dive', 'diving', 'certified dive', 'intro dive', 
-                                    'ダイビング', 'スキューバ',  # Japanese
-                                    '潜水', '水肺',  # Chinese
-                                    'tauchen', 'plongée', 'buceo']  # German, French, Spanish
+                                    'ãƒ€ã‚¤ãƒ“ãƒ³ã‚°', 'ã‚¹ã‚­ãƒ¥ãƒ¼ãƒ',  # Japanese
+                                    'æ½œæ°´', 'æ°´è‚º',  # Chinese
+                                    'tauchen', 'plongÃ©e', 'buceo']  # German, French, Spanish
                     if any(word in search_text for word in diving_words):
                         return True
                 elif selected_activity == 'snorkeling':
                     # Tours focused on snorkeling (not diving)
-                    snorkel_words = ['snorkel', 'シュノーケル', 'シュノーケリング', '浮潜', 'schnorcheln', 'esnórquel']
-                    dive_words_check = ['dive', 'diving', 'ダイビング', '潜水']
+                    snorkel_words = ['snorkel', 'ã‚·ãƒ¥ãƒŽãƒ¼ã‚±ãƒ«', 'ã‚·ãƒ¥ãƒŽãƒ¼ã‚±ãƒªãƒ³ã‚°', 'æµ®æ½œ', 'schnorcheln', 'esnÃ³rquel']
+                    dive_words_check = ['dive', 'diving', 'ãƒ€ã‚¤ãƒ“ãƒ³ã‚°', 'æ½œæ°´']
                     name_lower = tour.get('name', '').lower()
                     if any(word in search_text for word in snorkel_words):
                         if not any(word in name_lower for word in dive_words_check):
                             return True
                 elif selected_activity == 'sailing':
                     sailing_words = ['sail', 'sailing', 'cruise', 'yacht', 'catamaran',
-                                     'ヨット', 'クルーズ', 'セーリング',  # Japanese
-                                     '帆船', '游船', '游轮',  # Chinese
+                                     'ãƒ¨ãƒƒãƒˆ', 'ã‚¯ãƒ«ãƒ¼ã‚º', 'ã‚»ãƒ¼ãƒªãƒ³ã‚°',  # Japanese
+                                     'å¸†èˆ¹', 'æ¸¸èˆ¹', 'æ¸¸è½®',  # Chinese
                                      'segeln', 'voile', 'vela']  # German, French, Spanish
                     if any(word in search_text for word in sailing_words):
                         return True
                 elif selected_activity == 'swimming':
-                    swim_words = ['swim', 'beach', 'whitehaven', 'water', 'ビーチ', '海滩', 'strand', 'plage', 'playa']
+                    swim_words = ['swim', 'beach', 'whitehaven', 'water', 'ãƒ“ãƒ¼ãƒ', 'æµ·æ»©', 'strand', 'plage', 'playa']
                     if any(word in search_text for word in swim_words):
                         return True
                 elif selected_activity == 'scenic_views':
                     scenic_words = ['scenic', 'view', 'helicopter', 'flight', 'aerial',
-                                    '遊覧', '景色', 'ヘリコプター',  # Japanese
-                                    '直升机', '风景',  # Chinese
-                                    'rundflug', 'panoramique', 'escénico']  # German, French, Spanish
+                                    'éŠè¦§', 'æ™¯è‰²', 'ãƒ˜ãƒªã‚³ãƒ—ã‚¿ãƒ¼',  # Japanese
+                                    'ç›´å‡æœº', 'é£Žæ™¯',  # Chinese
+                                    'rundflug', 'panoramique', 'escÃ©nico']  # German, French, Spanish
                     if any(word in search_text for word in scenic_words):
                         return True
                 elif selected_activity == 'great_barrier_reef':
                     # General reef tours (includes snorkeling and diving)
-                    reef_words = ['reef', 'リーフ', 'サンゴ', 'グレートバリア', '珊瑚', '大堡礁', 'riff', 'récif', 'arrecife']
+                    reef_words = ['reef', 'ãƒªãƒ¼ãƒ•', 'ã‚µãƒ³ã‚´', 'ã‚°ãƒ¬ãƒ¼ãƒˆãƒãƒªã‚¢', 'çŠç‘š', 'å¤§å ¡ç¤', 'riff', 'rÃ©cif', 'arrecife']
                     if any(word in search_text for word in reef_words):
                         return True
                 elif selected_activity == 'whitehaven_beach':
-                    whitehaven_words = ['whitehaven', 'ホワイトヘブン', '白天堂', '白沙']
+                    whitehaven_words = ['whitehaven', 'ãƒ›ãƒ¯ã‚¤ãƒˆãƒ˜ãƒ–ãƒ³', 'ç™½å¤©å ‚', 'ç™½æ²™']
                     if any(word in search_text for word in whitehaven_words):
                         return True
-                elif selected_activity == 'scenic_adventure':
-                    adventure_words = ['scenic', 'adventure', 'helicopter', 'jet', 'アドベンチャー', '冒险', 'aventure']
-                    if any(word in search_text for word in adventure_words):
-                        return True
+                # keyword_search is handled at the top of this function
                         
             return False
         
@@ -1663,8 +2083,8 @@ def apply_filters(tours, criteria):
         print(f"   After activity filter: {len(filtered_tours)} tours")
     
     # Family filter logic:
-    # - "Family with Kids" (family=True) → Only show family-friendly tours
-    # - "Adults Only" (family=False/'adults_only') → Show ALL tours (adults can go anywhere)
+    # - "Family with Kids" (family=True) â†’ Only show family-friendly tours
+    # - "Adults Only" (family=False/'adults_only') â†’ Show ALL tours (adults can go anywhere)
     if criteria.get('family') == True:
         filtered_tours = [t for t in filtered_tours if t['family_friendly']]
     # Note: When family=False or 'adults_only', we don't filter - adults can go on any tour
@@ -1684,7 +2104,7 @@ def filter_tours():
     language = request.args.get('lang', 'en')
     duration = request.args.get('duration', '')
     price = request.args.get('price', '')
-    activities = request.args.getlist('activity')  # ✅ Get ALL selected activities
+    activities = request.args.getlist('activity')  # [OK] Get ALL selected activities
     family = request.args.get('family', '')
     meals = request.args.get('meals', '')
     equipment = request.args.get('equipment', '')
@@ -1920,7 +2340,7 @@ def send_booking_email(booking_data):
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🏝️ New Tour Inquiry</h1>
+                    <h1>ðŸï¸ New Tour Inquiry</h1>
                 </div>
                 <div class="content">
                     <div class="section">
@@ -1998,137 +2418,411 @@ def submit_booking():
             'message': str(e)
         }), 500
 
-def extract_tour_filters(user_message, conversation_history):
-    """Extract filter criteria from user message and conversation history"""
-    # PRIORITIZE user's current message for activity detection
-    current_msg = user_message.lower()
+def find_matching_tours_with_llm(user_message, conversation_history, all_tours, language='en', exclude_keys=None):
+    """
+    Use LLM to intelligently match user's request to available tours.
+    Works with any language, any wording, and finds close matches.
+    exclude_keys: Set of tour keys to exclude (for "show other options" requests)
+    """
+    if exclude_keys is None:
+        exclude_keys = set()
+    client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     
-    # Only use USER messages from history (not assistant), skip welcome messages
-    user_history = ""
-    for msg in conversation_history[-4:]:
+    # Build conversation context
+    context_messages = []
+    for msg in conversation_history[-6:]:
         if msg.get('role') == 'user':
-            user_history += " " + msg.get('content', '').lower()
+            context_messages.append(f"User: {msg.get('content', '')}")
+        elif msg.get('role') == 'assistant':
+            context_messages.append(f"Assistant: {msg.get('content', '')[:200]}...")
+    context = "\n".join(context_messages) if context_messages else "No previous context"
     
-    filters = {}
+    # PRE-FILTER: Only send relevant tours to LLM (based on keywords in message AND context)
+    # This drastically reduces prompt size and speeds up matching
+    msg_lower = user_message.lower()
     
-    # Detect duration from current message OR user history
-    # Include multi-language keywords (Chinese, Japanese, German, French, Spanish, Hindi)
-    full_context = current_msg + " " + user_history
+    # Also check conversation context for keywords (user might say "I'm happy with anything" after discussing sailing)
+    context_lower = context.lower() if context else ""
+    combined_text = msg_lower + " " + context_lower
     
-    # Duration keywords in multiple languages
-    multi_day_keywords = ['multi-day', 'multiday', 'overnight', 'multi day', '2 day', '3 day', 'liveaboard',
-                          '多日', '过夜', '两天', '三天',  # Chinese
-                          '数日', '複数日', '二日', '三日',  # Japanese
-                          'mehrtägig', 'übernachtung',  # German
-                          'plusieurs jours', 'nuit',  # French
-                          'varios días', 'noche']  # Spanish
-    full_day_keywords = ['full day', 'full-day', 'all day', 'whole day',
-                         '一整天', '全天', '整天',  # Chinese
-                         '終日', '一日',  # Japanese
-                         'ganztägig', 'ganzer tag',  # German
-                         'journée complète', 'toute la journée',  # French
-                         'día completo', 'todo el día']  # Spanish
-    half_day_keywords = ['half day', 'half-day', 'few hours', 'morning', 'afternoon', 'short',
-                         '半天', '上午', '下午', '几个小时',  # Chinese
-                         '半日', '午前', '午後',  # Japanese
-                         'halbtags', 'vormittag', 'nachmittag',  # German
-                         'demi-journée', 'matin', 'après-midi',  # French
-                         'medio día', 'mañana', 'tarde']  # Spanish
+    keywords = ['snorkel', 'dive', 'reef', 'whitehaven', 'beach', 'sail', 'cruise', 'helicopter',
+                'jet ski', 'kayak', 'fishing', 'whale', 'turtle', 'scenic', 'island', 'sunset',
+                'half day', 'full day', 'overnight', 'family', 'romantic', 'adventure',
+                'kangaroo', 'wildlife', 'animal', 'platypus', 'wallaby', 'nature', 'eco',
+                'bird', 'crocodile', 'koala', 'dolphin', 'sunrise', 'rainforest', 'multi-day',
+                'multi day', '2 day', '3 day', 'overnight', 'liveaboard', 'backpack']
     
-    if any(word in full_context for word in multi_day_keywords):
-        filters['duration'] = 'multi_day'
-    elif any(word in full_context for word in full_day_keywords):
-        filters['duration'] = 'full_day'
-    elif any(word in full_context for word in half_day_keywords):
-        filters['duration'] = 'half_day'
+    active_keywords = [kw for kw in keywords if kw in combined_text]
     
-    # Activity keywords in multiple languages
-    diving_keywords = ['scuba', 'diving', 'dive tour', 'dive trip', 'certified dive',
-                       '潜水', '水肺',  # Chinese
-                       'ダイビング', 'スキューバ',  # Japanese
-                       'tauchen', 'tauchgang',  # German
-                       'plongée',  # French
-                       'buceo', 'buzo']  # Spanish
-    whitehaven_keywords = ['whitehaven', 'white haven', 'white sand', 'silica sand',
-                           '白天堂', '白沙滩',  # Chinese
-                           'ホワイトヘブン',  # Japanese
-                           'weißer strand']  # German
-    snorkeling_keywords = ['snorkel', 'snorkeling', 'snorkelling',
-                           '浮潜',  # Chinese
-                           'シュノーケリング', 'シュノーケル',  # Japanese
-                           'schnorcheln',  # German
-                           'palmes', 'tubas',  # French
-                           'esnórquel']  # Spanish
-    reef_keywords = ['reef', 'coral', 'great barrier', 'outer reef',
-                     '珊瑚', '大堡礁', '礁',  # Chinese
-                     'サンゴ', 'リーフ', 'グレートバリアリーフ',  # Japanese
-                     'riff', 'korallen',  # German
-                     'récif', 'corail',  # French
-                     'arrecife', 'coral']  # Spanish
-    sailing_keywords = ['sail', 'sailing', 'cruise', 'yacht', 'catamaran',
-                        '帆船', '游船', '游轮', '双体船',  # Chinese
-                        'ヨット', 'クルーズ', 'セーリング',  # Japanese
-                        'segeln', 'kreuzfahrt', 'segelboot',  # German
-                        'voile', 'croisière', 'yacht',  # French
-                        'vela', 'navegación', 'crucero']  # Spanish
-    scenic_keywords = ['helicopter', 'scenic flight', 'seaplane', 'aerial', 'jet boat',
-                       '直升机', '水上飞机', '快艇',  # Chinese
-                       'ヘリコプター', '遊覧飛行', '水上飛行機',  # Japanese
-                       'hubschrauber', 'rundflug',  # German
-                       'hélicoptère', 'vol panoramique',  # French
-                       'helicóptero', 'vuelo escénico']  # Spanish
-    beach_keywords = ['beach', '海滩', 'ビーチ', 'strand', 'plage', 'playa']
+    # SPECIAL HANDLING: "Great Barrier Reef" vs just "reef"
+    # "Great Barrier Reef" means actual GBR tours (not just coral reef snorkeling)
+    wants_great_barrier_reef = 'great barrier' in combined_text or 'gbr' in combined_text
+    if wants_great_barrier_reef:
+        active_keywords.append('great_barrier_reef')
+        # Remove generic 'reef' to be more specific
+        if 'reef' in active_keywords:
+            active_keywords.remove('reef')
     
-    # Detect activity PRIMARILY from current message first
-    activity_detected = None
+    print(f"[LLM] Active keywords from message+context: {active_keywords}")
+    print(f"[LLM] Wants Great Barrier Reef specifically: {wants_great_barrier_reef}")
     
-    # Check current message first - ORDER MATTERS! More specific filters first
-    if any(word in current_msg for word in diving_keywords):
-        activity_detected = 'diving'
-    elif any(word in current_msg for word in whitehaven_keywords):
-        activity_detected = 'whitehaven_beach'
-    elif any(word in current_msg for word in snorkeling_keywords):
-        activity_detected = 'snorkeling'
-    elif any(word in current_msg for word in reef_keywords):
-        activity_detected = 'great_barrier_reef'
-    elif any(word in current_msg for word in sailing_keywords):
-        activity_detected = 'island_tours'
-    elif any(word in current_msg for word in scenic_keywords):
-        activity_detected = 'scenic_adventure'
-    elif any(word in current_msg for word in beach_keywords):
-        activity_detected = 'whitehaven_beach'
+    # BUDGET DETECTION - if user mentions backpacker/budget keywords, filter out expensive tours
+    budget_keywords = ['backpack', 'budget', 'cheap', 'affordable', 'student', 'hostel', 'low cost', 'inexpensive']
+    luxury_keywords = ['luxury', 'private', 'charter', 'vip', 'exclusive', 'premium', 'honeymoon', 'couples only']
     
-    # If not found in current message, check user history
-    if not activity_detected:
-        if any(word in user_history for word in diving_keywords):
-            activity_detected = 'diving'
-        elif any(word in user_history for word in whitehaven_keywords):
-            activity_detected = 'whitehaven_beach'
-        elif any(word in user_history for word in snorkeling_keywords):
-            activity_detected = 'snorkeling'
-        elif any(word in user_history for word in reef_keywords):
-            activity_detected = 'great_barrier_reef'
-        elif any(word in user_history for word in sailing_keywords):
-            activity_detected = 'island_tours'
+    is_budget_request = any(kw in combined_text for kw in budget_keywords)
+    is_luxury_request = any(kw in combined_text for kw in luxury_keywords)
     
-    if activity_detected:
-        filters['activity'] = activity_detected
+    if is_budget_request:
+        print(f"[LLM] Budget request detected - will filter expensive tours (>$1000)")
+    if is_luxury_request:
+        print(f"[LLM] Luxury request detected - will prioritize premium tours")
     
-    # Detect family filter (multi-language)
-    family_keywords = ['family', 'kids', 'children', 'child',
-                       '家庭', '孩子', '儿童',  # Chinese
-                       '家族', '子供',  # Japanese
-                       'familie', 'kinder',  # German
-                       'famille', 'enfants',  # French
-                       'familia', 'niños']  # Spanish
-    if any(word in full_context for word in family_keywords):
-        filters['family'] = True
+    # Detect if user wants a specific mode of transport or NOT
+    # If user asks for "beach tour" without mentioning helicopter/scenic flight, exclude those
+    wants_helicopter = any(kw in combined_text for kw in ['helicopter', 'heli', 'scenic flight', 'aerial', 'fly over'])
+    wants_beach_boat = any(kw in combined_text for kw in ['beach', 'whitehaven', 'boat', 'cruise', 'sail'])
+    exclude_helicopter = wants_beach_boat and not wants_helicopter
     
-    # Only return if we have at least activity OR duration
-    if filters.get('activity') or filters.get('duration'):
-        return filters
+    if exclude_helicopter:
+        print(f"[LLM] User wants beach/boat tour - excluding helicopter tours")
     
-    return None
+    # Filter tours to only those matching user's keywords (or all if no specific keywords)
+    relevant_tours = []
+    for t in all_tours:
+        name_lower = t['name'].lower()
+        
+        # Exclude helicopter/scenic flight tours if user wants beach tours
+        if exclude_helicopter:
+            if any(kw in name_lower for kw in ['helicopter', 'heli ', 'scenic flight', 'aerial']):
+                continue  # Skip helicopter tours
+        
+        # Budget filtering - skip expensive tours for backpackers
+        if is_budget_request and not is_luxury_request:
+            price_str = str(t.get('price_adult', '$0'))
+            # Extract numeric price
+            price_num = 0
+            try:
+                price_num = int(''.join(filter(str.isdigit, price_str.split('.')[0])))
+            except:
+                pass
+            if price_num > 1000:
+                continue  # Skip tours over $1000 for budget travelers
+        
+        if not active_keywords:
+            relevant_tours.append(t)  # No keywords = include all
+        else:
+            tour_text = (name_lower + ' ' + (t.get('description', '') or '') + ' ' + (t.get('highlights', '') or '')).lower()
+            tags = (t.get('tags', '') or '').lower()
+            
+            # Special handling for Great Barrier Reef - must actually go to GBR
+            if 'great_barrier_reef' in active_keywords:
+                # Tour must explicitly mention "great barrier reef" or "outer reef" (not just "coral reef")
+                is_gbr_tour = ('great barrier' in tour_text or 'outer reef' in tour_text or 
+                              'gbr' in tour_text or 'reefworld' in tour_text or 
+                              'hardy reef' in tour_text or 'knuckle reef' in tour_text)
+                if is_gbr_tour:
+                    relevant_tours.append(t)
+            elif any(kw in tour_text or kw in tags for kw in active_keywords):
+                relevant_tours.append(t)
+    
+    # Filter out excluded keys (for "other options" requests)
+    if exclude_keys:
+        before_exclude = len(relevant_tours)
+        relevant_tours = [t for t in relevant_tours if t.get('key') not in exclude_keys]
+        print(f"[LLM] Excluded {before_exclude - len(relevant_tours)} previously shown tours")
+    
+    # Limit to 50 most relevant tours to keep prompt manageable
+    relevant_tours = relevant_tours[:50]
+    print(f"[LLM] Pre-filtered to {len(relevant_tours)} relevant tours (from {len(all_tours)} total)")
+    
+    # Build tour catalog (compact format for LLM)
+    tour_catalog = []
+    for t in relevant_tours:
+        # Build a tags string from various fields to help matching
+        tags = []
+        name_lower = t['name'].lower()
+        desc_lower = (t.get('description', '') or '').lower()
+        
+        # Auto-tag based on content
+        if 'reef' in name_lower or 'reef' in desc_lower:
+            tags.append('reef')
+        if 'snorkel' in name_lower or 'snorkel' in desc_lower:
+            tags.append('snorkeling')
+        if 'dive' in name_lower or 'diving' in desc_lower:
+            tags.append('diving')
+        if 'whitehaven' in name_lower or 'whitehaven' in desc_lower:
+            tags.append('whitehaven')
+        if 'sail' in name_lower or 'sailing' in desc_lower:
+            tags.append('sailing')
+        if 'jet ski' in name_lower or 'jetski' in name_lower:
+            tags.append('jetski')
+        if 'helicopter' in name_lower or 'heli' in name_lower:
+            tags.append('helicopter')
+        if 'scenic flight' in name_lower:
+            tags.append('scenic-flight')
+        if 'kangaroo' in name_lower or 'kangaroo' in desc_lower:
+            tags.append('wildlife')
+            tags.append('kangaroo')
+        if 'wildlife' in name_lower or 'wildlife' in desc_lower:
+            tags.append('wildlife')
+        if 'platypus' in name_lower or 'platypus' in desc_lower:
+            tags.append('wildlife')
+        if 'wallaby' in name_lower or 'wallaby' in desc_lower:
+            tags.append('wildlife')
+        if 'dolphin' in name_lower or 'dolphin' in desc_lower:
+            tags.append('wildlife')
+        if 'turtle' in name_lower or 'turtle' in desc_lower:
+            tags.append('wildlife')
+        if 'whale' in name_lower or 'whale' in desc_lower:
+            tags.append('wildlife')
+            tags.append('whale-watching')
+        if 'eco' in name_lower or 'eco' in desc_lower:
+            tags.append('eco')
+        if 'sunrise' in name_lower or 'sunrise' in desc_lower:
+            tags.append('sunrise')
+        if 'rainforest' in name_lower or 'rainforest' in desc_lower:
+            tags.append('nature')
+        
+        # Check family-friendly from CSV tags or audience field
+        csv_tags = (t.get('tags', '') or '').lower()
+        audience = (t.get('audience', '') or '').lower()
+        ideal_for = (t.get('ideal_for', '') or '').lower()
+        if 'family' in csv_tags or 'family' in audience or t.get('family_friendly'):
+            tags.append('family-friendly')
+        
+        # Backpacker/social tags - for group sailing tours that attract young travelers
+        if 'backpack' in ideal_for or 'young' in ideal_for or 'social' in ideal_for:
+            tags.append('backpacker')
+            tags.append('social')
+        if 'clipper' in name_lower or 'matador' in name_lower or 'solway' in name_lower:
+            tags.append('backpacker')  # Known backpacker boats
+            tags.append('social')
+        if 'overnight' in name_lower or 'liveaboard' in name_lower:
+            # Multi-day group sailing = good for meeting people
+            if 'private' not in name_lower and 'charter' not in name_lower:
+                tags.append('social')
+        
+        # Get price for LLM context
+        price_str = str(t.get('price_adult', ''))
+        
+        # Compact format - only essential info for matching
+        tour_info = {
+            'key': t['key'],
+            'name': t['name'],
+            'duration': t.get('duration_category', t.get('duration', '')),
+            'price': price_str,
+            'tags': tags,
+            'promoted': bool(t.get('is_promoted') or t.get('promotion'))
+        }
+        tour_catalog.append(tour_info)
+    
+    # Build budget context string for LLM
+    budget_context = ""
+    if is_budget_request:
+        budget_context = "\nUSER IS A BUDGET TRAVELER (backpacker/student) - Prioritize tours under $500, prefer 'social' and 'backpacker' tagged tours. AVOID expensive luxury/private tours!"
+    elif is_luxury_request:
+        budget_context = "\nUSER WANTS LUXURY/PRIVATE - Prioritize premium, charter, and exclusive tours."
+    
+    # Create the LLM prompt
+    prompt = f"""You are a tour matching assistant. Given a user's request and a catalog of available tours, 
+select the most relevant tours to recommend.
+
+CONVERSATION CONTEXT:
+{context}
+
+CURRENT USER REQUEST:
+{user_message}
+{budget_context}
+
+AVAILABLE TOURS (JSON format):
+{json.dumps(tour_catalog, indent=1)}
+
+INSTRUCTIONS:
+1. Understand what the user wants (activity type, duration, any preferences)
+2. Find ALL tours that match their request - be generous, include anything relevant
+3. If exact match doesn't exist, find close alternatives
+4. Prioritize promoted tours (is_promoted=true) when they match
+5. Return UP TO 15 relevant tour keys - we need variety! We will show 3 but need extras for "other options" requests
+
+IMPORTANT MATCHING RULES:
+- Activity type is PRIMARY (e.g., if they want reef tours, include ALL reef-related tours)
+- DURATION IS STRICT - MUST MATCH EXACTLY:
+  * "full day" = ONLY full_day tours (NOT multi-day or overnight!)
+  * "half day" = ONLY half_day tours
+  * "multi-day" or "overnight" = ONLY multi_day tours
+  * DO NOT return 2-day tours for "full day" requests!
+- Be generous with ACTIVITY matches, but STRICT with duration
+- USE THE TAGS FIELD to find related tours (e.g., "reef" tag means it's a reef tour)
+- For family requests: ALWAYS include tours with "family-friendly" tag
+- PRIORITIZE PROMOTED TOURS when they match!
+- If no tours match, return empty and set needs_alternative=true
+- Return 10-15 tours if available (we need variety for "show other" requests)
+
+CRITICAL: Use the EXACT "key" values from the catalog above. Keys contain hashes like "company__abc123def456".
+Do NOT construct keys from tour names - copy the exact key string from the catalog.
+
+Respond in this exact JSON format:
+{{
+  "matched_tour_keys": ["company__exacthashfromcatalog", "company__anotherhash"],
+  "user_wants": "brief description of what user is looking for",
+  "match_quality": "exact" | "close" | "alternative",
+  "explanation": "why these tours were selected",
+  "total_matching_tours": 3,
+  "needs_alternative": false,
+  "alternative_suggestion": null
+}}
+
+CRITICAL - DO NOT RETURN TOURS FOR THESE CASES:
+- Questions about tours: "how many", "do you have", "what kind of", "are there any"
+- General inquiries: "tell me about", "what tours", "which tours"
+- Greetings or chat: "hello", "how are you", "thanks"
+
+Only return tour matches when user explicitly wants RECOMMENDATIONS:
+- "show me", "I want", "recommend", "find me", "book", "I'd like"
+- Specific requests with preferences: "full day reef tour", "family snorkelling"
+
+If the user is asking a QUESTION or just chatting, respond with EMPTY tours:
+{{
+  "matched_tour_keys": [],
+  "user_wants": "asking about tours" or "chatting",
+  "match_quality": "none",
+  "explanation": "User is asking a question, not requesting recommendations",
+  "needs_alternative": false,
+  "alternative_suggestion": null
+}}"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # Fast and cheap for this task
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=500
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        
+        # Parse JSON response
+        # Handle markdown code blocks if present
+        if '```json' in result_text:
+            result_text = result_text.split('```json')[1].split('```')[0].strip()
+        elif '```' in result_text:
+            result_text = result_text.split('```')[1].split('```')[0].strip()
+        
+        result = json.loads(result_text)
+        
+        print(f"[LLM] Tour Matching:")
+        print(f"   User wants: {result.get('user_wants', 'unknown')}")
+        print(f"   Match quality: {result.get('match_quality', 'unknown')}")
+        print(f"   Matched tours: {result.get('matched_tour_keys', [])}")
+        
+        # Get full tour objects for matched keys (with fallback to name matching)
+        matched_tours = []
+        for key in result.get('matched_tour_keys', []):
+            # Try exact key match first
+            tour = next((t for t in all_tours if t['key'] == key), None)
+            
+            # If not found, try fuzzy matching by extracting tour name from the made-up key
+            if not tour and '__' in key:
+                company_prefix = key.split('__')[0]
+                key_suffix = key.split('__')[1].replace('_', ' ').lower()
+                
+                # Try to find a tour from that company with a similar name
+                for t in all_tours:
+                    if t['key'].startswith(company_prefix):
+                        tour_name_normalized = t['name'].lower().replace('-', ' ')
+                        # Check if key suffix matches significant parts of the tour name
+                        key_words = set(key_suffix.split())
+                        name_words = set(tour_name_normalized.split())
+                        overlap = len(key_words & name_words)
+                        if overlap >= 3 or key_suffix in tour_name_normalized:
+                            tour = t
+                            print(f"   [FUZZY MATCH] {key} -> {t['key']} ({t['name']})")
+                            break
+            
+            if tour and tour not in matched_tours:
+                matched_tours.append(tour)
+        
+        # Rank tours by quality score (promotion + rating + review count)
+        def calculate_tour_score(tour):
+            score = 0
+            
+            # Promoted tours get big boost
+            if tour.get('is_promoted'):
+                score += 100
+            if tour.get('promotion') == 'popular':
+                score += 50
+            elif tour.get('promotion') == 'featured':
+                score += 30
+            elif tour.get('promotion') == 'best_value':
+                score += 20
+            
+            # Rating score (0-5 scale, multiply by 10 for weight)
+            rating = tour.get('review_rating', 0) or 0
+            score += rating * 10  # Max 50 points
+            
+            # Review count bonus (more reviews = more trusted)
+            review_count = tour.get('review_count', 0) or 0
+            if review_count >= 100:
+                score += 15
+            elif review_count >= 50:
+                score += 10
+            elif review_count >= 20:
+                score += 5
+            
+            return score
+        
+        # Sort by score (highest first)
+        matched_tours.sort(key=calculate_tour_score, reverse=True)
+        total_available = len(matched_tours)
+        
+        # Apply company diversity - spread results across different companies
+        # when we have enough matching tours from different companies
+        if total_available >= 3:
+            companies_seen = set()
+            diverse_tours = []
+            remaining_tours = []
+            
+            # First pass: pick top tour from each unique company
+            for tour in matched_tours:
+                company = tour.get('company', '')
+                if company not in companies_seen and len(diverse_tours) < 3:
+                    diverse_tours.append(tour)
+                    companies_seen.add(company)
+                else:
+                    remaining_tours.append(tour)
+            
+            # If we have less than 3 diverse tours, fill from remaining (allowing duplicates)
+            while len(diverse_tours) < 3 and remaining_tours:
+                diverse_tours.append(remaining_tours.pop(0))
+            
+            matched_tours = diverse_tours
+            print(f"   [RANK] Showing {len(matched_tours)} diverse tours from {len(companies_seen)} companies (of {total_available} total)")
+        else:
+            matched_tours = matched_tours[:3]  # Max 3 tours displayed
+            if total_available > 0:
+                print(f"   [RANK] Showing {len(matched_tours)} of {total_available} matching tours")
+        
+        return {
+            'tours': matched_tours,
+            'user_wants': result.get('user_wants', ''),
+            'match_quality': result.get('match_quality', 'none'),
+            'explanation': result.get('explanation', ''),
+            'total_matching_tours': total_available,  # Keep track of total available
+            'needs_alternative': result.get('needs_alternative', False),
+            'alternative_suggestion': result.get('alternative_suggestion')
+        }
+        
+    except Exception as e:
+        print(f"[ERROR] LLM tour matching error: {e}")
+        return {
+            'tours': [],
+            'user_wants': '',
+            'match_quality': 'error',
+            'explanation': str(e),
+            'needs_alternative': False,
+            'alternative_suggestion': None
+        }
 
 def build_promoted_tours_section(tour_context):
     """Build a text section describing promoted tours for the AI"""
@@ -2138,17 +2832,17 @@ def build_promoted_tours_section(tour_context):
     # Popular tours (highest priority)
     if promoted.get('popular'):
         popular_names = [t['name'] for t in promoted['popular'][:5]]
-        sections.append(f"🔥 POPULAR (Customer favorites - recommend enthusiastically!): {', '.join(popular_names)}")
+        sections.append(f"ðŸ”¥ POPULAR (Customer favorites - recommend enthusiastically!): {', '.join(popular_names)}")
     
     # Featured tours
     if promoted.get('featured'):
         featured_names = [t['name'] for t in promoted['featured'][:5]]
-        sections.append(f"⭐ FEATURED (Highly recommended experiences): {', '.join(featured_names)}")
+        sections.append(f"â­ FEATURED (Highly recommended experiences): {', '.join(featured_names)}")
     
     # Best value
     if promoted.get('best_value'):
         value_names = [t['name'] for t in promoted['best_value'][:5]]
-        sections.append(f"💎 BEST VALUE (Great value for money): {', '.join(value_names)}")
+        sections.append(f"ðŸ’Ž BEST VALUE (Great value for money): {', '.join(value_names)}")
     
     if sections:
         return "\n".join(sections) + "\n(When these tours match user preferences, prioritize them and be extra enthusiastic!)"
@@ -2227,21 +2921,151 @@ def build_tour_context(language='en'):
 
 @app.route('/chat/preflight', methods=['POST'])
 def chat_preflight():
-    """Quick check if chat will search for tours - returns immediately for UI feedback"""
+    """Quick LLM check if user has given enough info to search for tours - works in any language"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         
-        # Check if we'll be searching for tours
-        detected_filters = extract_tour_filters(user_message, conversation_history)
+        # Build brief context from history
+        context = ""
+        for msg in conversation_history[-4:]:
+            if msg.get('role') == 'user':
+                context += f"User: {msg.get('content', '')[:100]}\n"
+        
+        # FAST LLM call to determine intent - works in ANY language
+        import openai
+        client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "user", 
+                "content": f"""Should we SEARCH for tours now? (ANY language)
+
+Current message: "{user_message}"
+Previous context from user: {context if context else 'None'}
+
+CRITICAL: Count TOTAL preferences across BOTH current message AND previous context!
+User MUST have AT LEAST 2 DETAILS total to search!
+
+EXCEPTION - These are SPECIFIC ENOUGH alone (= YES with just 1 detail):
+- "scenic flight", "helicopter tour", "seaplane" = YES
+- "jetski tour", "jet ski" = YES
+- "skydive", "skydiving" = YES
+- "fishing trip", "fishing charter" = YES
+
+DETAIL CATEGORIES (need 2+ for general activities):
+1. Activity: sailing, snorkeling, reef, diving, kayak, beach, island
+2. Duration: full day, half day, multi-day, overnight, 2 days, quick/short
+3. Audience: family, couples, backpackers, kids, solo, romantic
+4. Budget: budget, cheap, affordable, luxury, premium
+5. Destination: whitehaven, great barrier reef, gbr
+
+YES examples (2+ details OR specific exception):
+- "scenic flight" = YES (exception)
+- "full day reef tour" = YES (duration + activity)
+- "great barrier reef with family" = YES (destination + audience)
+- Context "sailing" + Message "half day" = YES (combined = 2 details)
+- "overnight sailing trip" = YES (duration + activity)
+
+NO examples (ONLY 1 GENERAL detail - MUST ASK):
+- "reef tour" = NO (activity only - ASK about duration!)
+- "sailing" = NO (activity only - ASK about duration!)
+- "snorkeling" = NO (activity only - ASK about duration!)  
+- "great barrier reef" = NO (destination only - ASK about duration!)
+- "whitehaven beach" = NO (destination only - ASK about duration!)
+- "beach tour" = NO (activity only - ASK!)
+- "diving" = NO (activity only - ASK!)
+- "hello" / "hi" = NO (greeting)
+- "what tours" = NO (no specific preference)
+
+⚠️ STRICT: Single activity/destination words ALWAYS = NO!
+User must specify BOTH what (activity/destination) AND how long (duration) OR who with (audience)!
+
+Reply: YES or NO"""
+            }],
+            max_tokens=3,
+            temperature=0
+        )
+        
+        answer = response.choices[0].message.content.strip().upper()
+        will_search = answer == 'YES'
+        
+        print(f"[PREFLIGHT-LLM] '{user_message[:40]}' -> {answer} (will_search={will_search})")
         
         return jsonify({
-            'will_search_tours': detected_filters is not None,
-            'filters': detected_filters
+            'will_search_tours': will_search,
+            'message_analyzed': user_message[:50]
         })
     except Exception as e:
+        print(f"[PREFLIGHT] Error: {e}")
         return jsonify({'will_search_tours': False, 'error': str(e)})
+
+@app.route('/chat/detect-intent', methods=['POST'])
+def detect_intent():
+    """Use GPT to detect if user wants to book/open tour or just compare/ask questions"""
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        available_tours = data.get('available_tours', [])
+        
+        import openai
+        from elevenlabs_tts import get_openai_client
+        
+        client = get_openai_client()
+        
+        tour_names = ', '.join(available_tours[:3])
+        
+        prompt = f"""Analyze this user message and determine their intent:
+
+User message: "{user_message}"
+Available tours: {tour_names}
+
+Determine if the user wants to:
+1. BOOK/OPEN a tour (they want to see details/book a specific tour)
+2. COMPARE tours (asking about differences, comparisons, "vs", "which is better")
+3. ASK A QUESTION (asking if a tour has something, does it include X, can it do Y)
+
+Respond with JSON only:
+{{
+  "intent": "booking" | "comparison" | "question",
+  "tour_name": "exact tour name if intent is booking, otherwise null"
+}}
+
+Examples:
+- "tell me more about northern exposure" â†’ {{"intent": "booking", "tour_name": "Northern Exposure Eco Adventure"}}
+- "what's the difference between northern and southern" â†’ {{"intent": "comparison", "tour_name": null}}
+- "does northern exposure have snorkeling" â†’ {{"intent": "question", "tour_name": null}}
+- "i want to book northern exposure" â†’ {{"intent": "booking", "tour_name": "Northern Exposure Eco Adventure"}}
+"""
+        
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an intent detection system. Respond with JSON only."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=100
+        )
+        
+        result_text = response.choices[0].message.content.strip()
+        # Remove markdown code blocks if present
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+            result_text = result_text.strip()
+        
+        import json
+        intent_data = json.loads(result_text)
+        
+        return jsonify(intent_data)
+        
+    except Exception as e:
+        print(f"Error detecting intent: {e}")
+        return jsonify({'intent': 'question', 'tour_name': None})
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -2254,35 +3078,193 @@ def chat():
         user_message = data.get('message', '')
         language = data.get('language', 'en')
         conversation_history = data.get('history', [])
+        previously_shown_tour_keys = set(data.get('previously_shown_tour_keys', []))
         
-        print(f"\n💬 CHAT REQUEST:")
-        print(f"   User message: '{user_message}'")
+        print(f"\n[CHAT] CHAT REQUEST:")
+        try:
+            print(f"   User message: '{user_message}'")
+        except UnicodeEncodeError:
+            print(f"   User message: (contains special characters)")
         print(f"   Language: {language}")
         print(f"   History length: {len(conversation_history)} messages")
+        print(f"   Previously shown tours: {len(previously_shown_tour_keys)} tours")
         for i, msg in enumerate(conversation_history[-3:], 1):  # Show last 3
-            print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
+            try:
+                print(f"   History[{i}]: [{msg.get('role')}] {msg.get('content', '')[:50]}...")
+            except UnicodeEncodeError:
+                print(f"   History[{i}]: [{msg.get('role')}] (contains special characters)")
         
-        # STEP 1: Try to extract filter criteria from user message + history
-        # This determines if we should fetch tours FIRST
-        detected_filters = extract_tour_filters(user_message, conversation_history)
-        pre_fetched_tours = []
+        # STEP 1: Quick intent check via LLM - works in any language
+        # Determine if user has given enough info to search for tours
+        import openai
+        client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
         
-        if detected_filters:
-            print(f"🎯 DETECTED FILTERS: {detected_filters}")
-            # Fetch matching tours FIRST so AI knows what it's describing!
-            all_tours = load_all_tours(language)
-            pre_fetched_tours = apply_filters(all_tours, detected_filters)
+        # Build brief context
+        context = ""
+        for msg in conversation_history[-4:]:
+            if msg.get('role') == 'user':
+                context += f"User: {msg.get('content', '')[:100]}\n"
+        
+        intent_response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "user",
+                "content": f"""User: "{user_message}"
+Context: {context if context else 'None'}
+
+Does user have AT LEAST 2 PREFERENCES to search? Count across BOTH message AND context!
+
+DETAIL CATEGORIES:
+1. Activity (sailing, reef, snorkeling, diving, helicopter, jetski, wildlife, kayak, island)
+2. Duration (full day, half day, multi-day, overnight, 2 days, quick/short)
+3. Audience (family, couples, backpackers, kids, solo, romantic)
+4. Budget (budget, cheap, affordable, luxury, premium)
+5. Destination (whitehaven, great barrier reef, gbr)
+
+EXCEPTION - SEARCH with just 1 detail (specific enough):
+- "scenic flight", "helicopter tour", "seaplane" = SEARCH
+- "jetski tour", "jet ski" = SEARCH
+- "skydive", "skydiving" = SEARCH
+- "fishing trip", "fishing charter" = SEARCH
+
+SEARCH = 2+ details combined OR specific exception activities
+ASK = Only 1 general detail (needs more info about duration/audience)
+
+⚠️ IMPORTANT: Count accumulated details across BOTH message AND context!
+
+ASK examples (ONLY 1 detail - MUST ASK about duration!):
+- "reef tour" = ASK (activity only - ask about duration)
+- "sailing" = ASK (activity only - ask about duration)
+- "snorkeling" = ASK (activity only)
+- "great barrier reef" = ASK (destination only - ask about duration)
+- "whitehaven beach" = ASK (destination only)
+- "diving" = ASK (activity only)
+- "hello" = ASK (greeting)
+
+SEARCH examples (2+ details OR specific exception):
+- "full day reef tour" = SEARCH (activity + duration)
+- "reef tour with family" = SEARCH (activity + audience)  
+- "scenic flight" = SEARCH (specific exception)
+- Context:"sailing" + Message:"full day" = SEARCH (combined = 2 details)
+- "overnight sailing" = SEARCH (duration + activity)
+
+⚠️ STRICT: Single activity/destination words ALONE = ASK!
+The minimum is: 1 activity/destination + 1 duration OR 1 audience!
+
+Reply ONLY: SEARCH or ASK"""
+            }],
+            max_tokens=5,
+            temperature=0
+        )
+        
+        intent = intent_response.choices[0].message.content.strip().upper()
+        should_search_tours = 'SEARCH' in intent
+        print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
+        
+        all_tours = load_all_tours(language)
+        
+        # Detect if user wants DIFFERENT tours early (need this for LLM call)
+        wants_different_early = any(phrase in user_message.lower() for phrase in [
+            'other', 'different', 'else', 'alternative', 'another', 'more option',
+            'something else', 'not these', 'not for me', 'show me more', 'any others'
+        ])
+        
+        # Only do expensive LLM tour matching if preflight says we should
+        if should_search_tours:
+            print(f"[CHAT] Preflight says search tours - doing LLM tour matching...")
+            # Pass excluded keys if user wants different tours
+            exclude_for_llm = previously_shown_tour_keys if wants_different_early else set()
+            if exclude_for_llm:
+                print(f"[CHAT] User wants OTHER tours - excluding {len(exclude_for_llm)} previously shown from LLM")
+            match_result = find_matching_tours_with_llm(user_message, conversation_history, all_tours, language, exclude_keys=exclude_for_llm)
+            pre_fetched_tours = match_result.get('tours', [])
+            match_quality = match_result.get('match_quality', 'none')
+            user_wants = match_result.get('user_wants', '')
+            match_explanation = match_result.get('explanation', '')
+        else:
+            print(f"[CHAT] Preflight says don't search - skipping LLM tour matching (will ask follow-up)")
+            pre_fetched_tours = []
+            match_quality = 'none'
+            user_wants = 'needs more info'
+            match_explanation = 'Not enough parameters to search'
+        
+        # Initialize total_matching_tours (will be set properly when tours are processed)
+        total_matching_tours = 0
+        
+        # Store total count BEFORE any filtering/limiting
+        total_matching_tours = len(pre_fetched_tours)
+        
+        # Use the early detection (already done before LLM call)
+        wants_different = wants_different_early
+        
+        if wants_different:
+            print(f"[CHAT] User wants DIFFERENT tours - already excluded from LLM results")
+        
+        # Filter out previously shown tours
+        # ALWAYS filter if user wants different, otherwise only if we have enough alternatives
+        if wants_different or len(pre_fetched_tours) > 3:
+            original_count = len(pre_fetched_tours)
+            pre_fetched_tours = [t for t in pre_fetched_tours if t.get('key') not in previously_shown_tour_keys]
+            if len(pre_fetched_tours) < original_count:
+                print(f"[CHAT] Filtered out {original_count - len(pre_fetched_tours)} previously shown tours")
+        
+        # COMPANY DIVERSITY: Don't show more than 2 tours from the same company
+        if len(pre_fetched_tours) > 3:
+            company_counts = {}
+            diverse_tours = []
+            for tour in pre_fetched_tours:
+                company = tour.get('company', 'unknown')
+                if company_counts.get(company, 0) < 2:  # Max 2 per company
+                    diverse_tours.append(tour)
+                    company_counts[company] = company_counts.get(company, 0) + 1
+            if len(diverse_tours) >= 3:
+                pre_fetched_tours = diverse_tours
+                print(f"[CHAT] Applied company diversity - {len(set(t.get('company') for t in pre_fetched_tours[:3]))} different companies")
+        
+        # Check if this is a budget request - sort by price instead of promotion
+        budget_keywords = ['budget', 'cheap', 'affordable', 'backpack', 'student', 'low cost', 'inexpensive']
+        combined_context = user_message.lower() + ' ' + ' '.join(
+            h.get('content', '').lower() for h in conversation_history if h.get('role') == 'user'
+        )
+        is_budget_request = any(kw in combined_context for kw in budget_keywords)
+        
+        # Separate promoted and non-promoted tours
+        promoted_tours = [t for t in pre_fetched_tours if t.get('promotion')]
+        non_promoted_tours = [t for t in pre_fetched_tours if not t.get('promotion')]
+        
+        if is_budget_request:
+            # BUDGET REQUEST: Sort by price (cheapest first)
+            def get_price_num(tour):
+                price_str = str(tour.get('price_adult', '$9999'))
+                try:
+                    return int(''.join(filter(str.isdigit, price_str.split('.')[0])))
+                except:
+                    return 9999
+            promoted_tours.sort(key=get_price_num)
+            non_promoted_tours.sort(key=get_price_num)
+            print(f"[CHAT] Budget request - sorted by price (cheapest first)")
+        else:
+            # NORMAL: Sort promoted by level, SHUFFLE non-promoted for variety
+            promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2}
+            promoted_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
+            random.shuffle(non_promoted_tours)  # Randomize non-promoted tours!
+            print(f"[CHAT] Normal request - promoted first, non-promoted shuffled for variety")
+        
+        # Combine: promoted first, then non-promoted
+        pre_fetched_tours = promoted_tours + non_promoted_tours
             
-            # Sort by promotion status - promoted first!
-            promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
-            pre_fetched_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
-            
-            # Limit to top 3 for AI to describe
-            pre_fetched_tours = pre_fetched_tours[:3]
-            print(f"   Found {len(pre_fetched_tours)} tours to describe:")
+        # Limit to top 3
+        pre_fetched_tours = pre_fetched_tours[:3]
+        
+        print(f"[CHAT] Showing 3 of {total_matching_tours} matching tours")
+        
+        if pre_fetched_tours:
+            print(f"[OK] LLM matched {len(pre_fetched_tours)} tours ({match_quality}):")
             for t in pre_fetched_tours:
-                promo = f" 🔥 {t.get('promotion')}" if t.get('promotion') else ""
+                promo = f" ðŸ”¥ {t.get('promotion')}" if t.get('promotion') else ""
                 print(f"      - {t['name']}{promo}")
+        else:
+            print(f"[i] No tours matched (user wants: {user_wants})")
         
         # Build tour context
         tour_context = build_tour_context(language)
@@ -2304,7 +3286,16 @@ def chat():
         specific_tours_section = ""
         if not pre_fetched_tours:
             # No specific tours yet - AI is in conversation mode, gathering preferences
-            specific_tours_section = """
+            if user_wants and user_wants != "not requesting tours":
+                # User wanted something but we couldn't find it
+                specific_tours_section = f"""
+
+NOTE: The user asked for "{user_wants}" but we don't have tours matching that exactly.
+Be honest and helpful - explain we don't have exactly what they asked for, but offer to show them
+similar experiences or ask what else interests them.
+"""
+            else:
+                specific_tours_section = """
 
 NOTE: No specific tours have been identified yet. Continue gathering user preferences!
 When you have enough info, the system will provide specific tours to describe.
@@ -2312,29 +3303,49 @@ For now, ask engaging questions to understand what kind of experience they want.
 """
         
         if pre_fetched_tours:
-            specific_tours_section = """
-
-═══════════════════════════════════════════════════════════════
-🚨 CRITICAL: YOU MUST DESCRIBE THESE EXACT TOURS IN THIS EXACT ORDER!
-DO NOT substitute different tours. DO NOT change the order.
-═══════════════════════════════════════════════════════════════
+            # Add context about match quality
+            match_intro = ""
+            
+            # Don't tell AI how many total - just describe the top options
+            if len(pre_fetched_tours) <= 3:
+                match_intro = f"""
+[OK] Here are great options for {user_wants}. Describe them all enthusiastically!
 """
+            if match_quality == 'close':
+                match_intro = f"""
+[!] NOTE: User asked for "{user_wants}" - these are CLOSE MATCHES but not exact.
+Acknowledge what they wanted and explain how these tours are similar/related.
+"""
+            elif match_quality == 'alternative':
+                match_intro = f"""
+[!] NOTE: User asked for "{user_wants}" but we don't have exact matches.
+These are ALTERNATIVE suggestions. Apologize that we don't have exactly what they wanted,
+then enthusiastically present these alternatives.
+"""
+            
+            specific_tours_section = f"""
+
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ðŸš¨ CRITICAL: YOU MUST DESCRIBE THESE EXACT TOURS IN THIS EXACT ORDER!
+DO NOT substitute different tours. DO NOT change the order. DO NOT make up tour names!
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+{match_intro}"""
             for i, tour in enumerate(pre_fetched_tours, 1):
                 promo_badge = ""
                 if tour.get('promotion') == 'popular':
-                    promo_badge = " 🔥 POPULAR - Emphasize this is a top pick!"
+                    promo_badge = " ðŸ”¥ POPULAR - Emphasize this is a top pick!"
                 elif tour.get('promotion') == 'featured':
-                    promo_badge = " ⭐ FEATURED"
+                    promo_badge = " â­ FEATURED"
                 elif tour.get('promotion') == 'best_value':
-                    promo_badge = " 💎 BEST VALUE"
+                    promo_badge = " ðŸ’Ž BEST VALUE"
                 
                 highlights = tour.get('highlights', '')[:400] if tour.get('highlights') else 'Amazing experience'
                 includes = tour.get('includes', '')[:250] if tour.get('includes') else ''
                 description = tour.get('description', '')[:300] if tour.get('description') else ''
                 
                 specific_tours_section += f"""
-━━━ TOUR #{i} (describe this as number {i}) ━━━
-NAME: "{tour['name']}" ← USE THIS EXACT NAME
+â”â”â” TOUR #{i} (describe this as number {i}) â”â”â”
+NAME: "{tour['name']}" â† USE THIS EXACT NAME
 {promo_badge}
 Company: {tour.get('company_name', tour.get('company', ''))}
 Price: {tour.get('price_adult', 'Contact for price')}
@@ -2349,33 +3360,81 @@ Includes: {includes}
             tour3_name = pre_fetched_tours[2]['name'] if len(pre_fetched_tours) > 2 else 'Tour 3'
             
             specific_tours_section += f"""
-═══════════════════════════════════════════════════════════════
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ðŸš¨ðŸš¨ðŸš¨ CRITICAL: YOU MUST DESCRIBE THESE TOURS NOW! ðŸš¨ðŸš¨ðŸš¨
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+DO NOT ask for more preferences! Tour cards are ALREADY being shown to the user!
+If you ask "how long do you have?" but show cards, it looks broken. DESCRIBE THE TOURS!
+
+FORBIDDEN (YOUR OUTPUT WILL BE REJECTED):
+- DO NOT make up tour names - only use the exact names from the tours listed above
+- DO NOT create generic names like "Whitsunday Sailing Adventure" or "3-Day Reef Tour"
+- DO NOT describe tours that aren't in the list above
+- ONLY use the exact tour names provided: "{tour1_name}", "{tour2_name}", "{tour3_name}"
+
 YOUR OUTPUT FORMAT (COPY THIS STRUCTURE EXACTLY):
-═══════════════════════════════════════════════════════════════
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-"Here are some incredible options for you! 🌊
+"[PERSONALIZED INTRO - 1 sentence acknowledging EXACTLY what they asked for, e.g. 'Meeting fellow backpackers on a sailing adventure? I've got perfect options for you!' or 'Great choice wanting to explore the reef with family!'] ðŸŒŠ
 
-1. **{tour1_name}** - [Write 2-3 exciting sentences about THIS tour using its details above. Make it sound amazing!]
+1. **{tour1_name}** - [Write 2-3 exciting sentences about THIS tour. Highlight why it matches what THEY asked for!]
 
-2. **{tour2_name}** - [Write 2-3 exciting sentences about THIS tour using its details above. Make it sound amazing!]
+2. **{tour2_name}** - [Write 2-3 exciting sentences about THIS tour. Connect it to their specific request!]
 
-3. **{tour3_name}** - [Write 2-3 exciting sentences about THIS tour using its details above. Make it sound amazing!]
+3. **{tour3_name}** - [Write 2-3 exciting sentences about THIS tour. Show why it's perfect for them!]
 
-Would you like more details on any of these? 🌟"
+Would you like more details on any of these? ðŸŒŸ"
 
-🚨 CRITICAL RULES:
+ðŸš¨ CRITICAL RULES:
+- ALWAYS describe the tours above - they are being shown as cards!
 - Use EXACTLY these tour names: "{tour1_name}", "{tour2_name}", "{tour3_name}"
+- Do NOT ask "how long" or "what duration" - just describe the tours!
 - Do NOT substitute different tours!
 - Do NOT reorder the tours!
 - The intro must be short (1 sentence max) so TTS correctly highlights tour 1 for chunk 2
 """
         
         # Prepare system message with tour knowledge
+        # Only include conversation strategy if no tours pre-fetched
+        if pre_fetched_tours:
+            conversation_strategy = """
+⚠️ TOURS ARE ALREADY SELECTED BELOW - SKIP ALL QUESTIONS AND DESCRIBE THEM!
+Do NOT ask "how long?" or "what type?" - THE TOURS ARE ALREADY CHOSEN!
+Just write enthusiastic descriptions for each tour shown below."""
+        else:
+            conversation_strategy = """
+CONVERSATION STRATEGY - RECOMMEND AFTER 2 PREFERENCES:
+1. **GATHER 2 PREFERENCES** before recommending (e.g., activity + duration, OR activity + group type)
+2. **ONCE YOU HAVE 2 PREFERENCES → USE [FILTER:...] IMMEDIATELY!**
+3. **NEVER SAY "Let me show you..." WITHOUT INCLUDING [FILTER:...] in the SAME message!**
+4. Be SUPER enthusiastic - you're a passionate local who LOVES the Whitsundays!
+5. **ALWAYS use [FILTER:{{...}}] syntax to show tours** - this is REQUIRED!
+6. Example flow:
+   - User: "sailing tours" (1 preference) → Ask about duration
+   - User: "full day" (2 preferences) → MUST include [FILTER:{{"duration":"full_day","activity":"island_tours"}}]"""
+        
+        # Language names for the system prompt
+        language_names = {
+            'en': 'English', 'zh': 'Chinese (Simplified)', 'ja': 'Japanese',
+            'ko': 'Korean', 'de': 'German', 'fr': 'French', 'es': 'Spanish', 'hi': 'Hindi'
+        }
+        response_language = language_names.get(language, 'English')
+        
         system_message = f"""You are a friendly and knowledgeable tour assistant for the Whitsunday Islands in Queensland, Australia. 
+
+**IMPORTANT: RESPOND IN {response_language.upper()}!** The user has selected {response_language} as their language.
+All your responses, questions, and tour descriptions MUST be in {response_language}.
 
 You help visitors discover the perfect tours through a guided conversation. You have access to {tour_context['total_tours']} amazing tours.
 
 YOUR ROLE: Act like a helpful local expert who guides tourists step-by-step to find their ideal tour. Keep it conversational and natural!
+
+**GREAT BARRIER REEF vs CORAL REEF - IMPORTANT DISTINCTION:**
+- "Great Barrier Reef" or "GBR" = Tours that actually GO to the outer Great Barrier Reef (Reefworld, Hardy Reef, Knuckle Reef, outer reef platforms)
+- NOT the same as tours with "coral reef snorkeling" - many tours snorkel at fringing reefs near islands but don't visit the actual GBR
+- If user asks for "Great Barrier Reef", ONLY recommend tours that explicitly visit the outer reef
+- Tours like "Southern Lights" or "Northern Exposure" have coral snorkeling but do NOT go to the actual Great Barrier Reef
 
 Our tour categories:
 - Great Barrier Reef Tours: {len(tour_context['categories']['reef'])} tours (snorkeling, diving, reef exploration)
@@ -2387,24 +3446,16 @@ Our tour categories:
 **FEATURED & POPULAR TOURS** (PRIORITIZE THESE! When these match user preferences, recommend them FIRST and be EXTRA enthusiastic!):
 {build_promoted_tours_section(tour_context)}
 
-⚠️ **CRITICAL: Give 2-3 sentence descriptions of EACH tour - never just list names!**
+[!] **CRITICAL: Give 2-3 sentence descriptions of EACH tour - never just list names!**
 
-**IF SPECIFIC TOURS ARE PROVIDED BELOW**: Describe those EXACT tours using their real names and details!
+**IF SPECIFIC TOURS ARE PROVIDED BELOW**: YOU MUST DESCRIBE THEM! Do NOT ask follow-up questions!
 **IF NO SPECIFIC TOURS PROVIDED**: Ask follow-up questions to gather preferences first.
 
-CONVERSATION STRATEGY - RECOMMEND AFTER 2 PREFERENCES:
-1. **GATHER 2 PREFERENCES** before recommending (e.g., activity + duration, OR activity + group type)
-2. **ONCE YOU HAVE 2 PREFERENCES → USE [FILTER:...] IMMEDIATELY!**
-3. **NEVER SAY "Let me show you..." WITHOUT INCLUDING [FILTER:...] in the SAME message!**
-4. Be SUPER enthusiastic - you're a passionate local who LOVES the Whitsundays!
-5. **ALWAYS use [FILTER:{{...}}] syntax to show tours** - this is REQUIRED!
-6. Example flow:
-   - User: "sailing tours" (1 preference) → Ask about duration
-   - User: "full day" (2 preferences) → MUST include [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
+{conversation_strategy}
 
 **YOU ARE REPLACING A REAL PERSON!** 
 - Be warm, personable, and genuinely excited about these tours
-- Use emojis sparingly but effectively (🌊 🐠 ✨ 🏝️ 🚤 🌅)
+- Use emojis sparingly but effectively (ðŸŒŠ ðŸ  âœ¨ ðŸï¸ ðŸš¤ ðŸŒ…)
 - Give DETAILED 3-4 sentence descriptions that SELL each tour
 - Highlight what makes each tour special and why they'll love it
 - Create excitement and urgency - these are once-in-a-lifetime experiences!
@@ -2413,31 +3464,38 @@ CONVERSATION STRATEGY - RECOMMEND AFTER 2 PREFERENCES:
 **NEVER ASK ABOUT BUDGET/PRICE** - Users don't want to say prices out loud. They'll pick what fits their budget.
 
 **ADD CONTEXT & PERSONALITY**: 
-- "Great Barrier Reef? One of the 7 natural wonders! 🌊"
-- "Whitehaven Beach has the world's purest silica sand - perfect for photos! 📸"
-- "Multi-day trips let you see it all - sunrise, sunset, and the stars! ✨"
+- "Great Barrier Reef? One of the 7 natural wonders! ðŸŒŠ"
+- "Whitehaven Beach has the world's purest silica sand - perfect for photos! ðŸ“¸"
+- "Multi-day trips let you see it all - sunrise, sunset, and the stars! âœ¨"
 
 **ENCOURAGE SPECIFICITY**: Ask open-ended follow-ups like:
 - "What would make this trip perfect for you?"
 - "Any must-do activities?"
 - "Celebrating anything special?"
 
+**HANDLING "OTHER OPTIONS" / "SOMETHING ELSE" REQUESTS**:
+When user says "other options", "something else", "different tours", "alternatives", "not these", "any others", etc.:
+- Understand they want DIFFERENT tours than already shown
+- The system will automatically exclude previously shown tours
+- Show fresh alternatives that still match their criteria
+- DON'T repeat any tours you mentioned before!
+
 Keep responses SHORT but ALWAYS include tour recommendations once you have 2 preferences!
 
 **WHEN TO RECOMMEND TOURS**: Once user has given 2 preferences!
-- 1 preference (e.g., "reef") → Ask ONE follow-up question (duration or group type)
-- 2 preferences (e.g., "reef" + "full day") → **USE [FILTER:...] IMMEDIATELY!**
-- User gives 2+ preferences in one message → **USE [FILTER:...] IMMEDIATELY!**
+- 1 preference (e.g., "reef") â†’ Ask ONE follow-up question (duration or group type)
+- 2 preferences (e.g., "reef" + "full day") â†’ **USE [FILTER:...] IMMEDIATELY!**
+- User gives 2+ preferences in one message â†’ **USE [FILTER:...] IMMEDIATELY!**
 - **CRITICAL: You MUST include [FILTER:{{...}}] to show any tours!** 
 - Without [FILTER:...], NO TOURS WILL BE DISPLAYED even if you describe them!
 
 **NEVER GIVE EMPTY RESPONSES:**
-- If you say "Let me show you..." or "Here are some options..." → YOU MUST include [FILTER:...] in the SAME message
+- If you say "Let me show you..." or "Here are some options..." â†’ YOU MUST include [FILTER:...] in the SAME message
 - If you commit to showing tours, SHOW THEM - don't make the user wait or ask again
 - If no tours match, be HONEST: "I couldn't find exact matches, but here are similar options: [FILTER:...]"
 
 **EXAMPLE - CORRECT:**
-"Speed boat tours are thrilling! 🚤 [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]"
+"Speed boat tours are thrilling! ðŸš¤ [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]"
 
 **EXAMPLE - WRONG (NO TOURS WILL SHOW!):**
 "Speed boat tours sound exciting! Let me find some for you. Hang tight!" (MISSING [FILTER:...] = NOTHING HAPPENS!)
@@ -2452,25 +3510,29 @@ Example: "How long can you be away? [OPTIONS:Half Day,Full Day,Multi-day]"
 - If user wants "cheapest", find the LOWEST PRICE tours that match ALL their other preferences
 - STRICTLY match ALL collected preferences - duration, vibe, interests
 - DO NOT recommend tours that don't match what they asked for!
+- **NEVER make up tour names!** Only describe tours that actually exist in the database!
+- **ALWAYS use [FILTER:...] tags when you have enough info (activity + duration OR just activity if duration is "any")** - this is REQUIRED to show tours!
 
 **TWO WAYS TO RESPOND**:
 
 **METHOD 1 - Use Filter System (PREFERRED - USE THIS 90% OF THE TIME):**
-When you have enough info about duration + activity/interest, USE FILTERS to show ALL matching tours!
+When you have enough info about activity/interest (with or without duration), USE FILTERS to show ALL matching tours!
+If user says "any is good" for duration, still use [FILTER:...] with just the activity - the system will show tours of all durations!
+**YOU MUST USE [FILTER:...] TAGS - DO NOT make up tour names! Only describe tours that actually exist!**
 
-⚠️ **CRITICAL: When using [FILTER:...], you MUST write a COMPLETE response with numbered descriptions!**
+[!] **CRITICAL: When using [FILTER:...], you MUST write a COMPLETE response with numbered descriptions!**
 The TTS reads your text out loud and highlights tour cards in sync. Each numbered item (1. 2. 3.) highlights the corresponding card.
 
 **PERFECT EXAMPLE with [FILTER:]:**
-"Full-day Whitehaven Beach tours are absolutely incredible! 🏝️ Let me show you some amazing options! [FILTER:{{"duration":"full_day","activity":"whitehaven_beach"}}]
+"Full-day Whitehaven Beach tours are absolutely incredible! ðŸï¸ Let me show you some amazing options! [FILTER:{{"duration":"full_day","activity":"whitehaven_beach"}}]
 
-1. **Your first option** takes you to the world-famous Whitehaven Beach with its stunning white silica sand! You'll have plenty of time to swim, relax, and take incredible photos. This is a must-do experience! ✨
+1. **Your first option** takes you to the world-famous Whitehaven Beach with its stunning white silica sand! You'll have plenty of time to swim, relax, and take incredible photos. This is a must-do experience! âœ¨
 
-2. **This next tour** combines beach time with snorkeling at pristine coral reefs! You'll explore underwater gardens teeming with colorful fish before relaxing on the beach. Perfect for adventure lovers! 🐠
+2. **This next tour** combines beach time with snorkeling at pristine coral reefs! You'll explore underwater gardens teeming with colorful fish before relaxing on the beach. Perfect for adventure lovers! ðŸ 
 
-3. **Finally, this option** offers a more intimate experience with smaller group sizes and extra time at Hill Inlet lookout! You'll capture those iconic turquoise water photos and have a magical day. 📸
+3. **Finally, this option** offers a more intimate experience with smaller group sizes and extra time at Hill Inlet lookout! You'll capture those iconic turquoise water photos and have a magical day. ðŸ“¸
 
-Would you like more details on any of these? 🌟"
+Would you like more details on any of these? ðŸŒŸ"
 
 **BAD EXAMPLE (NO TOUR CARDS WILL HIGHLIGHT!):**
 "Here are some Whitehaven Beach tours: [FILTER:{{"activity":"whitehaven_beach"}}]"
@@ -2478,38 +3540,34 @@ Would you like more details on any of these? 🌟"
 Return filter criteria in this format: [FILTER:{{"duration":"X","activity":"Y"}}]
 
 **CRITICAL: Map user interests to activities correctly:**
-- "Great Barrier Reef", "reef", "snorkeling", "diving", "coral" → activity: "great_barrier_reef"
-- "Whitehaven Beach", "beach", "white sand" → activity: "whitehaven_beach"  
-- "Sailing", "cruise", "island hopping", "multi-day sailing" → activity: "island_tours"
-- "Scenic", "helicopter", "seaplane", "flight" → activity: "scenic_adventure"
-- "Speed boat", "jet boat", "fast boat", "adrenaline", "thrill" → activity: "scenic_adventure"
+- "Great Barrier Reef", "reef", "snorkeling", "diving", "coral" â†’ activity: "great_barrier_reef"
+- "Whitehaven Beach", "beach", "white sand" â†’ activity: "whitehaven_beach"  
+- "Sailing", "cruise", "island hopping" â†’ activity: "island_tours"
+- Specific requests like "jet ski", "helicopter", "speed boat" â†’ system searches directly for those keywords
 
 **WHEN TO USE FILTERS (REQUIRED to show tours!):**
-✅ "multi-day diving and snorkeling" → [FILTER:{{"duration":"multi_day","activity":"great_barrier_reef"}}]
-✅ "full-day reef tour" → [FILTER:{{"duration":"full_day","activity":"great_barrier_reef"}}]
-✅ "half-day beach tour" → [FILTER:{{"duration":"half_day","activity":"whitehaven_beach"}}]
-✅ "full-day sailing" → [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
-✅ "day sailing and cruise tours" → [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
-✅ "speed boat tour" → [FILTER:{{"activity":"scenic_adventure"}}]
-✅ "half-day speed boat" → [FILTER:{{"duration":"half_day","activity":"scenic_adventure"}}]
-✅ "full-day speed boat" → [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]
-✅ "multi-day sailing with meals" → [FILTER:{{"duration":"multi_day","activity":"island_tours","meals":true}}]
-✅ "family-friendly full-day tour" → [FILTER:{{"duration":"full_day","family":true}}]
-✅ "reef tour with equipment provided" → [FILTER:{{"activity":"great_barrier_reef","equipment":true}}]
+[OK] "multi-day diving and snorkeling" â†’ [FILTER:{{"duration":"multi_day","activity":"great_barrier_reef"}}]
+[OK] "full-day reef tour" â†’ [FILTER:{{"duration":"full_day","activity":"great_barrier_reef"}}]
+[OK] "half-day beach tour" â†’ [FILTER:{{"duration":"half_day","activity":"whitehaven_beach"}}]
+[OK] "full-day sailing" â†’ [FILTER:{{"duration":"full_day","activity":"island_tours"}}]
+[OK] "family-friendly full-day tour" â†’ [FILTER:{{"duration":"full_day","family":true}}]
+[OK] "reef tour with equipment provided" â†’ [FILTER:{{"activity":"great_barrier_reef","equipment":true}}]
+
+NOTE: For specific tour types like "jet ski tours", "helicopter tours", "speed boat tours" - the system automatically
+searches for tours containing those keywords. Just describe the pre-fetched tours provided to you!
 
 Available filter options:
 - duration: "half_day", "full_day", "multi_day"
-- activity: "great_barrier_reef", "whitehaven_beach", "island_tours", "scenic_adventure"
+- activity: "great_barrier_reef", "whitehaven_beach", "island_tours"
 - family: true (ONLY use when user specifically has children/kids - this filters to family-friendly tours only)
-  NOTE: "Adults only" doesn't need a filter - adults can go on ANY tour! Don't use family:false
 - meals: true (meals included)
 - equipment: true (equipment provided)
 
 **HOW TO RECOMMEND TOURS - NUMBERED LIST FORMAT IS REQUIRED!**
 The TTS system reads your response out loud and highlights each tour card as it speaks. For this to work, you MUST use this EXACT numbered list format:
 
-✅ CORRECT FORMAT (REQUIRED!):
-"[Exciting 2-3 sentence intro paragraph about the activity type] ⛵
+[OK] CORRECT FORMAT (REQUIRED!):
+"[Exciting 2-3 sentence intro paragraph about the activity type] â›µ
 
 1. **First Tour Name** - [2-3 exciting sentences describing THIS tour, what makes it special, what they'll experience]
 
@@ -2517,27 +3575,27 @@ The TTS system reads your response out loud and highlights each tour card as it 
 
 3. **Third Tour Name** - [2-3 exciting sentences about this tour]
 
-Would you like more details on any of these? 🌟"
+Would you like more details on any of these? ðŸŒŸ"
 
 **CRITICAL RULES FOR TTS HIGHLIGHTING TO WORK:**
-- ⚠️ ALWAYS use numbered list format (1. 2. 3.) - this is how TTS knows when to highlight each card!
+- [!] ALWAYS use numbered list format (1. 2. 3.) - this is how TTS knows when to highlight each card!
 - Start each tour with the NUMBER followed by period: "1. " "2. " "3. "
 - Use **bold** for tour names
 - Each tour description MUST be 2-3 complete sentences (not just a few words!)
 - Write descriptions that SELL the experience - this is what users hear!
-- Include emojis throughout for personality! ⛵🏝️🌊✨🐠
+- Include emojis throughout for personality! â›µðŸï¸ðŸŒŠâœ¨ðŸ 
 - The intro paragraph plays first, THEN each numbered item highlights its corresponding tour card
 - ALWAYS end with a follow-up question
 
 **METHOD 2 - Recommend Specific Tours (RARE - only when filters don't work):**
 Use this ONLY when user asks for something that doesn't map to our filters.
 
-⚠️ **WHEN TO USE [FILTER:...]:**
-- "overnight sailing" → [FILTER:{{"duration":"multi_day","activity":"island_tours"}}]
-- "full day reef tour" → [FILTER:{{"duration":"full_day","activity":"great_barrier_reef"}}]
-- "Whitehaven beach tours" → [FILTER:{{"activity":"whitehaven_beach"}}]
+[!] **WHEN TO USE [FILTER:...]:**
+- "overnight sailing" â†’ [FILTER:{{"duration":"multi_day","activity":"island_tours"}}]
+- "full day reef tour" â†’ [FILTER:{{"duration":"full_day","activity":"great_barrier_reef"}}]
+- "Whitehaven beach tours" â†’ [FILTER:{{"activity":"whitehaven_beach"}}]
 
-⚠️ **IMPORTANT: When using [FILTER:...], you MUST STILL write a FULL numbered list with descriptions!**
+[!] **IMPORTANT: When using [FILTER:...], you MUST STILL write a FULL numbered list with descriptions!**
 The [FILTER:...] tag just tells the system WHICH tours to show - YOU still need to write the text that TTS speaks!
 
 **CRITICAL TOUR DESCRIPTION RULES - YOU ARE REPLACING A REAL PERSON:**
@@ -2564,18 +3622,32 @@ Be conversational, ask questions, and help them discover their perfect adventure
         # Add current user message
         messages.append({"role": "user", "content": user_message})
         
-        print(f"\n📨 SENDING TO OPENAI:")
+        # Use gpt-4o when we have pre-fetched tours (needs to follow exact names)
+        # Use gpt-4o-mini for simple conversations (faster)
+        model = "gpt-4o" if pre_fetched_tours else "gpt-4o-mini"
+        
+        print(f"\n[OPENAI] SENDING TO OPENAI:")
+        print(f"   Model: {model}")
         print(f"   Total messages: {len(messages)}")
         print(f"   System message: {len(system_message)} chars")
+        if pre_fetched_tours:
+            print(f"   Pre-fetched tour names in prompt:")
+            for t in pre_fetched_tours:
+                in_prompt = t['name'] in system_message
+                print(f"      - '{t['name']}' -> {'IN PROMPT' if in_prompt else 'MISSING!'}")
         for i, msg in enumerate(messages[1:], 1):  # Skip system message
-            print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
+            try:
+                print(f"   Message {i}: [{msg['role']}] {msg['content'][:60]}...")
+            except UnicodeEncodeError:
+                print(f"   Message {i}: [{msg['role']}] (contains special characters)")
         
         # Call OpenAI
         client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=messages,
-            max_tokens=1200,  # Increased to allow detailed tour descriptions
+            max_tokens=800,
             temperature=0.7
         )
         
@@ -2601,19 +3673,49 @@ Be conversational, ask questions, and help them discover their perfect adventure
             quick_reply_options = [{'text': opt, 'value': opt} for opt in options_list]
             # Remove options marker from message
             ai_message = re.sub(options_pattern, '', ai_message).strip()
-            print(f"📋 Quick reply options: {quick_reply_options}")
+            print(f"ðŸ“‹ Quick reply options: {quick_reply_options}")
         
-        print(f"AI Response: {ai_message[:200]}...")
+        # Safe print that handles emojis on Windows
+        try:
+            print(f"AI Response: {ai_message[:200]}...")
+        except UnicodeEncodeError:
+            print(f"AI Response: {ai_message[:200].encode('ascii', 'replace').decode('ascii')}...")
+        
+        # Extract previously shown tour keys from conversation history responses
+        # Look for tour_keys in previous assistant responses (if stored)
+        # For now, we'll extract from the response data structure
+        # In a future enhancement, we could store tour_keys in conversation history metadata
+        previously_shown_tour_keys = set()
         
         # PRIORITY: Use specific [TOUR:] tags if provided (they match the AI's descriptions!)
         if tour_matches:
-            print(f"🎯 AI recommending specific tours with [TOUR:] tags")
+            print(f"[->] AI recommending specific tours with [TOUR:] tags")
             print(f"   Found {len(tour_matches)} tour keys: {tour_matches}")
             
             # Get full tour details for the specified tours
             tours = load_all_tours(language)
             tour_details = []
+            skipped_tours = []
+            
+            # Check if user is asking for more information about a specific tour
+            # If so, don't skip it even if it was shown before
+            user_msg_lower = user_message.lower()
+            is_asking_about_tour = any(
+                phrase in user_msg_lower for phrase in [
+                    'more info', 'more information', 'tell me more', 'learn more', 
+                    'details about', 'about the', 'what about', 'how about',
+                    'difference between', 'compare', 'comparison', 'vs', 'versus',
+                    'does it have', 'does it include', 'can it', 'is it'
+                ]
+            )
+            
             for tour_key in tour_matches:
+                # Only skip if user is NOT explicitly asking about this tour
+                if tour_key in previously_shown_tour_keys and not is_asking_about_tour:
+                    print(f"   [skip] Skipping previously shown tour: {tour_key}")
+                    skipped_tours.append(tour_key)
+                    continue
+                    
                 tour = next((t for t in tours if t.get('key') == tour_key), None)
                 if tour:
                     tour_copy = tour.copy()
@@ -2622,9 +3724,11 @@ Be conversational, ask questions, and help them discover their perfect adventure
                     if tour_copy.get('price_child'):
                         tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
                     tour_details.append(tour_copy)
-                    print(f"   ✅ Found tour: {tour.get('name')} ({tour_key})")
+                    print(f"   [OK] Found tour: {tour.get('name')} ({tour_key})")
                 else:
-                    print(f"   ❌ Tour not found: {tour_key}")
+                    print(f"   [ERR] Tour not found: {tour_key}")
+            
+            # Note: Alternative fetching is now handled by LLM-based matching
             
             # Remove both tour markers AND filter markers from display message
             display_message = re.sub(tour_pattern, '', ai_message).strip()
@@ -2640,68 +3744,137 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 'recommended_tours': tour_details,
                 'tour_keys': [t['key'] for t in tour_details],
                 'used_filters': False,
-                'quick_reply_options': quick_reply_options
+                'quick_reply_options': quick_reply_options,
+                'total_matching_tours': total_matching_tours
             }
             
         elif filter_match or pre_fetched_tours:
             # We have tours to show! Either from [FILTER:] tag or pre-fetched
-            print(f"🎯 Returning tour recommendations")
+            print(f"[->] Returning tour recommendations")
             try:
-                # Use pre-fetched tours if available, otherwise fetch based on filter
+                # Use pre-fetched tours if available
                 if pre_fetched_tours:
-                    print(f"   Using {len(pre_fetched_tours)} pre-fetched tours (AI described these!)")
+                    print(f"   Using {len(pre_fetched_tours)} pre-fetched tours")
                     filtered_tours = pre_fetched_tours
                 elif filter_match:
                     filter_criteria = json.loads(filter_match.group(1))
                     print(f"   Filter criteria from AI: {filter_criteria}")
-                    filtered_tours = apply_filters(load_all_tours(language), filter_criteria)
+                    
+                    # Pass user message context to apply_filters for better matching
+                    import threading
+                    threading.current_thread().user_message_context = user_message.lower()
+                    
+                    filtered_tours = apply_filters(load_all_tours(language), filter_criteria, user_message_context=user_message.lower(), conversation_history=conversation_history)
                     
                     # Sort by promotion status
                     promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
                     filtered_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
+                else:
+                    filtered_tours = []
+                
+                # Filter out previously shown tours (only if we have plenty of alternatives)
+                original_count = len(filtered_tours)
+                if len(filtered_tours) > 3:
+                    filtered_tours = [t for t in filtered_tours if t.get('key') not in previously_shown_tour_keys]
+                    if len(filtered_tours) < original_count:
+                        print(f"   Filtered out {original_count - len(filtered_tours)} previously shown tours")
+                
                     filtered_tours = filtered_tours[:3]
                 
-                print(f"   Returning {len(filtered_tours)} tours:")
-                for t in filtered_tours:
-                    promo = f" 🔥 {t.get('promotion')}" if t.get('promotion') else ""
-                    print(f"      - {t['name']}{promo}")
-                
-                # Convert prices for display
-                tour_details = []
-                for tour in filtered_tours:
-                    tour_copy = tour.copy()
-                    if tour_copy.get('price_adult'):
-                        tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
-                    if tour_copy.get('price_child'):
-                        tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
-                    tour_details.append(tour_copy)
-                
-                # Remove filter marker from message if present
-                display_message = re.sub(filter_pattern, '', ai_message).strip() if filter_match else ai_message
-                display_message = convert_price_for_display(display_message, language)
-                
-                # Add follow-up if missing
-                if '?' not in display_message[-50:]:
-                    display_message = display_message.rstrip() + "\n\nWould you like more details on any of these?"
-                
-                response_data = {
-                    'success': True,
-                    'message': display_message,
-                    'recommended_tours': tour_details,
-                    'tour_keys': [t['key'] for t in tour_details],
-                    'used_filters': True,
-                    'filter_count': len(filtered_tours),
-                    'quick_reply_options': quick_reply_options
-                }
-                
+                # CRITICAL: If no tours match the filter, return empty
+                if len(filtered_tours) == 0:
+                    print(f"   [!] No tours match the filter criteria!")
+                    display_message = re.sub(filter_pattern, '', ai_message).strip() if filter_match else ai_message
+                    display_message = convert_price_for_display(display_message, language)
+                    
+                    response_data = {
+                        'success': True,
+                        'message': display_message,
+                        'recommended_tours': [],
+                        'tour_keys': [],
+                        'used_filters': True,
+                        'filter_count': 0,
+                        'quick_reply_options': quick_reply_options,
+                        'total_matching_tours': 0
+                    }
+                else:
+                    print(f"   Returning {len(filtered_tours)} tours:")
+                    for t in filtered_tours:
+                        promo = f" [PROMO] {t.get('promotion')}" if t.get('promotion') else ""
+                        print(f"      - {t['name']}{promo}")
+                    
+                    # Convert prices for display
+                    tour_details = []
+                    for tour in filtered_tours:
+                        tour_copy = tour.copy()
+                        if tour_copy.get('price_adult'):
+                            tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
+                        if tour_copy.get('price_child'):
+                            tour_copy['price_child'] = convert_price_for_display(tour_copy['price_child'], language)
+                        tour_details.append(tour_copy)
+                    
+                    display_message = re.sub(filter_pattern, '', ai_message).strip() if filter_match else ai_message
+                    display_message = convert_price_for_display(display_message, language)
+                    
+                    if '?' not in display_message[-50:]:
+                        display_message = display_message.rstrip() + "\n\nWould you like more details on any of these?"
+                    
+                    response_data = {
+                        'success': True,
+                        'message': display_message,
+                        'recommended_tours': tour_details,
+                        'tour_keys': [t['key'] for t in tour_details],
+                        'used_filters': True,
+                        'filter_count': len(filtered_tours),
+                        'quick_reply_options': quick_reply_options,
+                        'total_matching_tours': total_matching_tours
+                    }
+                    
             except Exception as e:
-                print(f"❌ Error parsing filter criteria: {e}")
-                # Fall back to no-tour response
+                print(f"[ERR] Error parsing filter criteria: {e}")
                 filter_match = None
         
-        # Only reach here if neither [TOUR:] tags nor [FILTER:] were found/worked
-        if not tour_matches and not filter_match:
-            print(f"🤖 AI response has no tour recommendations")
+        # Only reach here if neither [TOUR:] tags, [FILTER:], nor pre_fetched_tours were found/worked
+        if not tour_matches and not filter_match and not pre_fetched_tours:
+            # Check if AI response contains numbered tour recommendations (1. **Tour Name**)
+            # This happens when AI apologizes and gives new suggestions without using [FILTER:]
+            numbered_tour_pattern = r'\d+\.\s*\*\*[^*]+\*\*'
+            has_numbered_tours = re.search(numbered_tour_pattern, ai_message)
+            
+            if has_numbered_tours:
+                print(f"[!] AI response has numbered tours but no [FILTER:] - doing late tour search...")
+                # Try to search for tours based on conversation context
+                late_match = find_matching_tours_with_llm(user_message, conversation_history, all_tours, language)
+                late_tours = late_match.get('tours', [])
+                
+                if late_tours:
+                    print(f"   Found {len(late_tours)} tours via late search")
+                    # Limit and convert prices
+                    late_tours = late_tours[:3]
+                    tour_details = []
+                    for tour in late_tours:
+                        tour_copy = tour.copy()
+                        if tour_copy.get('price_adult'):
+                            tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
+                        tour_details.append(tour_copy)
+                    
+                    display_message = convert_price_for_display(ai_message, language)
+                    
+                    response_data = {
+                        'success': True,
+                        'message': display_message,
+                        'recommended_tours': tour_details,
+                        'tour_keys': [t['key'] for t in tour_details],
+                        'used_filters': False,
+                        'quick_reply_options': quick_reply_options,
+                        'total_matching_tours': len(late_match.get('tours', []))
+                    }
+                    
+                    print(f"[SEND] SENDING TO FRONTEND (late search):")
+                    print(f"   Tours: {[t.get('name') for t in tour_details]}")
+                    return jsonify(response_data)
+            
+            print(f"[BOT] AI response has no tour recommendations")
             
             # Just return the message as-is (conversational response)
             display_message = convert_price_for_display(ai_message, language)
@@ -2712,10 +3885,11 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 'recommended_tours': [],
                 'tour_keys': [],
                 'used_filters': False,
-                'quick_reply_options': quick_reply_options
+                'quick_reply_options': quick_reply_options,
+                'total_matching_tours': 0
             }
         
-        print(f"\n📤 SENDING TO FRONTEND:")
+        print(f"\n[SEND] SENDING TO FRONTEND:")
         print(f"   Success: {response_data['success']}")
         print(f"   Message length: {len(response_data['message'])} chars")
         print(f"   Tours to send: {len(response_data['recommended_tours'])}")
@@ -2726,7 +3900,9 @@ Be conversational, ask questions, and help them discover their perfect adventure
         return jsonify(response_data)
         
     except Exception as e:
+        import traceback
         print(f"Error in chat endpoint: {e}")
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'message': "I'm having trouble right now. Please try the filter questions or browse all tours."
@@ -2761,7 +3937,7 @@ def create_recommendation_session():
         base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
         
-        print(f"✅ Created session {session_id} with {len(data.get('tours', []))} tours")
+        print(f"[OK] Created session {session_id} with {len(data.get('tours', []))} tours")
         
         return jsonify({
             'success': True,
@@ -2770,7 +3946,7 @@ def create_recommendation_session():
         })
         
     except Exception as e:
-        print(f"❌ Error creating session: {e}")
+        print(f"[ERR] Error creating session: {e}")
         return jsonify({
             'success': False,
             'error': str(e)
@@ -2809,7 +3985,7 @@ def generate_qr_code(session_id):
         return send_file(img_io, mimetype='image/png')
         
     except Exception as e:
-        print(f"❌ Error generating QR code: {e}")
+        print(f"[ERR] Error generating QR code: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/generate-qr')
@@ -2841,7 +4017,7 @@ def generate_qr_from_url():
         return send_file(img_io, mimetype='image/png')
         
     except Exception as e:
-        print(f"❌ Error generating QR code: {e}")
+        print(f"[ERR] Error generating QR code: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/recommendations/<session_id>')
@@ -2861,7 +4037,7 @@ def view_recommendations(session_id):
         preferences = session_data.get('preferences', {})
         chat_summary = session_data.get('chat_summary', '')
         
-        print(f"📱 Displaying {len(tours)} tours for session {session_id}")
+        print(f"ðŸ“± Displaying {len(tours)} tours for session {session_id}")
         
         return render_template('recommendations.html',
                              tours=tours,
@@ -2870,7 +4046,7 @@ def view_recommendations(session_id):
                              session_id=session_id)
         
     except Exception as e:
-        print(f"❌ Error displaying recommendations: {e}")
+        print(f"[ERR] Error displaying recommendations: {e}")
         return render_template('error.html', 
                              message="An error occurred loading your recommendations."), 500
 
@@ -2932,7 +4108,7 @@ def email_recommendations():
                 preferences_html = f"""
                 <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                     <h3 style="margin: 0 0 10px 0; color: #0077b6;">Your Preferences:</h3>
-                    <p style="margin: 5px 0;">{"<br>".join([f"✓ {p}" for p in prefs_list])}</p>
+                    <p style="margin: 5px 0;">{"<br>".join([f"âœ“ {p}" for p in prefs_list])}</p>
                 </div>
                 """
         
@@ -2945,7 +4121,7 @@ def email_recommendations():
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #0077b6 0%, #005a8b 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-                <h1 style="margin: 0;">🏝️ Your Whitsundays Tour Recommendations</h1>
+                <h1 style="margin: 0;">ðŸï¸ Your Whitsundays Tour Recommendations</h1>
                 <p style="margin: 10px 0 0 0;">Personalized just for you!</p>
             </div>
             
@@ -2962,7 +4138,7 @@ def email_recommendations():
                     <a href="{recommendations_url}" 
                        style="display: inline-block; background: #0077b6; color: white; padding: 15px 30px; 
                               text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold;">
-                        📱 View All Recommendations Online
+                        ðŸ“± View All Recommendations Online
                     </a>
                 </div>
                 
@@ -2984,13 +4160,13 @@ def email_recommendations():
         
         from_email = Email(os.getenv('SENDGRID_FROM_EMAIL', 'noreply@whitsundaystours.com'))
         to_email = To(email)
-        subject = "🏝️ Your Whitsundays Tour Recommendations"
+        subject = "ðŸï¸ Your Whitsundays Tour Recommendations"
         content = Content("text/html", email_html)
         
         mail = Mail(from_email, to_email, subject, content)
         response = sg.send(mail)
         
-        print(f"✅ Email sent to {email} - Status: {response.status_code}")
+        print(f"[OK] Email sent to {email} - Status: {response.status_code}")
         
         return jsonify({
             'success': True,
@@ -2998,7 +4174,7 @@ def email_recommendations():
         })
         
     except Exception as e:
-        print(f"❌ Error sending email: {e}")
+        print(f"[ERR] Error sending email: {e}")
         return jsonify({
             'success': False,
             'error': 'Failed to send email. Please try again.'
@@ -3047,8 +4223,17 @@ def get_all_tour_csvs():
                 seen_companies.add(company_name)
     
     # 2. Check root directory for _with_media.csv
+    prefix = 'tours_'
+    suffix_media = '_cleaned_with_media.csv'
+    suffix_clean = '_cleaned.csv'
+    
     for csvfile in glob.glob('tours_*_cleaned_with_media.csv'):
-        company = csvfile.replace('tours_', '').replace('_cleaned_with_media.csv', '')
+        # Extract company name carefully - only strip prefix and suffix once
+        # Use len() to handle company names that contain 'tours' (e.g., airlieadventuretours)
+        if csvfile.startswith(prefix) and csvfile.endswith(suffix_media):
+            company = csvfile[len(prefix):-len(suffix_media)]
+        else:
+            continue
         if company not in seen_companies:
             csv_files.append(csvfile)
             seen_companies.add(company)
@@ -3057,7 +4242,11 @@ def get_all_tour_csvs():
     for csvfile in glob.glob('tours_*_cleaned.csv'):
         if '_with_media' in csvfile:
             continue
-        company = csvfile.replace('tours_', '').replace('_cleaned.csv', '')
+        # Extract company name carefully
+        if csvfile.startswith(prefix) and csvfile.endswith(suffix_clean):
+            company = csvfile[len(prefix):-len(suffix_clean)]
+        else:
+            continue
         if company not in seen_companies:
             csv_files.append(csvfile)
             seen_companies.add(company)
@@ -3080,7 +4269,8 @@ def tour_editor():
                 with open(csvfile, newline='', encoding='utf-8') as f:
                     reader = csv.DictReader(f)
                     for row in reader:
-                        company = row.get('company_name', 'unknown')
+                        # Support both 'company_name' and 'company' columns
+                        company = row.get('company_name') or row.get('company') or 'unknown'
                         if company not in companies:
                             companies[company] = []
                         companies[company].append({
@@ -3345,6 +4535,191 @@ def set_tour_thumbnail(key):
         'thumbnail': f"/{thumb_path}".replace("\\", "/")
     })
 
+@app.route('/admin/api/tour/<key>/images/upload', methods=['POST'])
+def upload_tour_images(key):
+    """API endpoint to upload images for a tour"""
+    from werkzeug.utils import secure_filename
+    
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    if 'images' not in request.files:
+        return jsonify({'error': 'No images provided'}), 400
+    
+    files = request.files.getlist('images')
+    if not files:
+        return jsonify({'error': 'No images provided'}), 400
+    
+    # ALWAYS use consistent folder structure: static/tour_images/{company}/{tour_id}/
+    folder = f"static/tour_images/{company}/{tid}"
+    
+    # Create folder if it doesn't exist
+    os.makedirs(folder, exist_ok=True)
+    print(f"[Upload] Saving images to: {folder}")
+    
+    uploaded = 0
+    for file in files:
+        if file and file.filename:
+            # Generate unique filename
+            ext = os.path.splitext(file.filename)[1].lower()
+            if ext not in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+                continue
+            
+            # Use original filename but make it unique
+            base_name = secure_filename(file.filename)
+            name_part = os.path.splitext(base_name)[0]
+            filename = f"{name_part}_{int(time.time() * 1000)}{ext}"
+            
+            filepath = os.path.join(folder, filename)
+            file.save(filepath)
+            uploaded += 1
+    
+    return jsonify({
+        'success': True,
+        'uploaded': uploaded,
+        'folder': folder
+    })
+
+@app.route('/admin/api/tour/<key>/images/delete', methods=['POST'])
+def delete_tour_image(key):
+    """API endpoint to delete a tour image"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    data = request.get_json()
+    image_path = data.get('image_path', '').lstrip('/')
+    
+    if not image_path:
+        return jsonify({'error': 'No image path provided'}), 400
+    
+    # Normalize path
+    image_path = image_path.replace('/', os.sep).replace('\\', os.sep)
+    
+    # Security check: ensure the path is within the tour images folder
+    expected_prefix = f"static{os.sep}tour_images{os.sep}{company}"
+    if not image_path.startswith(expected_prefix):
+        return jsonify({'error': 'Invalid image path'}), 403
+    
+    if not os.path.exists(image_path):
+        return jsonify({'error': 'Image not found'}), 404
+    
+    # Don't allow deleting the thumbnail directly (use set_thumbnail instead)
+    if os.path.basename(image_path).lower().startswith('thumbnail'):
+        return jsonify({'error': 'Cannot delete thumbnail directly. Set another image as thumbnail first.'}), 400
+    
+    try:
+        os.remove(image_path)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/api/tour/<key>/delete', methods=['DELETE'])
+def delete_tour(key):
+    """API endpoint to delete a tour and optionally the company if no tours remain"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    csv_file = find_company_csv(company)
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    # Read all tours
+    rows = []
+    fieldnames = None
+    tour_found = False
+    
+    try:
+        with open(csv_file, newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            fieldnames = reader.fieldnames
+            for row in reader:
+                if row.get('id') == tid:
+                    tour_found = True
+                    # Skip this tour (don't add to rows)
+                else:
+                    rows.append(row)
+    except Exception as e:
+        return jsonify({'error': f'Failed to read CSV: {e}'}), 500
+    
+    if not tour_found:
+        return jsonify({'error': 'Tour not found'}), 404
+    
+    company_deleted = False
+    
+    # If no tours remain, delete the company
+    if len(rows) == 0:
+        try:
+            # Delete the CSV file
+            os.remove(csv_file)
+            
+            # Try to delete the company folder if empty
+            company_folder = f'data/{company}/en'
+            if os.path.isdir(company_folder) and not os.listdir(company_folder):
+                os.rmdir(company_folder)
+            
+            parent_folder = f'data/{company}'
+            if os.path.isdir(parent_folder) and not os.listdir(parent_folder):
+                os.rmdir(parent_folder)
+            
+            # Delete image folder
+            image_folder = f'static/tour_images/{company}'
+            if os.path.isdir(image_folder):
+                import shutil
+                shutil.rmtree(image_folder)
+            
+            # Delete reviews folder
+            reviews_folder = f'tour_reviews/{company}'
+            if os.path.isdir(reviews_folder):
+                import shutil
+                shutil.rmtree(reviews_folder)
+            
+            company_deleted = True
+            print(f"[Delete] Deleted company {company} (no tours remaining)")
+            
+        except Exception as e:
+            print(f"[Delete] Warning: Could not fully clean up company {company}: {e}")
+    else:
+        # Write remaining tours back
+        try:
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+            print(f"[Delete] Deleted tour {tid} from {company}, {len(rows)} tours remaining")
+        except Exception as e:
+            return jsonify({'error': f'Failed to save CSV: {e}'}), 500
+    
+    # Delete tour images folder
+    tour_image_folder = f'static/tour_images/{company}/{tid}'
+    if os.path.isdir(tour_image_folder):
+        try:
+            import shutil
+            shutil.rmtree(tour_image_folder)
+            print(f"[Delete] Deleted image folder: {tour_image_folder}")
+        except Exception as e:
+            print(f"[Delete] Warning: Could not delete image folder: {e}")
+    
+    # Delete tour reviews file
+    review_file = f'tour_reviews/{company}/{tid}.json'
+    if os.path.exists(review_file):
+        try:
+            os.remove(review_file)
+            print(f"[Delete] Deleted review file: {review_file}")
+        except Exception as e:
+            print(f"[Delete] Warning: Could not delete review file: {e}")
+    
+    return jsonify({
+        'success': True,
+        'company_deleted': company_deleted,
+        'remaining_tours': len(rows)
+    })
+
 @app.route('/admin/api/tour/<key>/reviews', methods=['GET'])
 def get_tour_reviews(key):
     """API endpoint to get reviews for a tour"""
@@ -3392,6 +4767,48 @@ def save_tour_reviews(key):
         })
     except Exception as e:
         print(f"Error saving reviews: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/api/company/<company>/apply-reviews', methods=['POST'])
+def apply_reviews_to_company(company):
+    """Apply reviews from one tour to all tours in the same company"""
+    data = request.get_json()
+    
+    # Load all tours for this company to get their IDs
+    csv_file = find_company_csv(company)
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    try:
+        tour_ids = []
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row.get('id'):
+                    tour_ids.append(row['id'])
+        
+        if not tour_ids:
+            return jsonify({'error': 'No tours found for this company'}), 404
+        
+        # Ensure the reviews directory exists
+        reviews_dir = os.path.join('tour_reviews', company)
+        os.makedirs(reviews_dir, exist_ok=True)
+        
+        # Save reviews to all tour files
+        saved_count = 0
+        for tid in tour_ids:
+            review_file = os.path.join(reviews_dir, f"{tid}.json")
+            with open(review_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            saved_count += 1
+        
+        return jsonify({
+            'success': True,
+            'message': f'Reviews applied to {saved_count} tours',
+            'count': saved_count
+        })
+    except Exception as e:
+        print(f"Error applying reviews: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/admin/api/company/<company>/update-field', methods=['POST'])
@@ -3543,3 +4960,4 @@ def get_session_details(session_id):
 
 if __name__ == '__main__':
     app.run(debug=True) 
+

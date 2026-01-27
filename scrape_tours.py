@@ -29,10 +29,11 @@ from smart_html_cleaner import clean_html_intelligently
 
 # === Paste your tour links here ===
 TOUR_LINKS = [ 
- "https://jetskitour.com.au/tour/airlie-adventure/"
- "https://jetskitour.com.au/tour/two-island-safari/"
- "https://jetskitour.com.au/tour/ultimate-island-trek/"
- "https://skyone.com.au/airlie-beach/#bookings" ]
+    # "https://jetskitour.com.au/tour/airlie-adventure/",
+    # "https://jetskitour.com.au/tour/two-island-safari/",
+    # "https://jetskitour.com.au/tour/ultimate-island-trek/",
+    # "https://skyone.com.au/airlie-beach/#bookings",
+]
 
     
 # =================================
@@ -277,12 +278,57 @@ def extract_tour_info(html, url):
                 continue
             seen_lines.add(text)
             lines.append(text)
-    # Try to extract a name from the first heading
+    # Try to extract the ACTUAL tour name (not navigation items)
     name = ''
-    if soup.find(['h1', 'h2']):
-        name = clean(soup.find(['h1', 'h2']).get_text())
+    
+    # Skip these common non-tour headings
+    skip_headings = [
+        'contact us', 'contact', 'all tours', 'tours & destinations', 'destinations',
+        'home', 'about', 'about us', 'book now', 'booking', 'menu', 'navigation',
+        'login', 'sign in', 'register', 'cart', 'checkout', 'search', 'filter',
+        'our tours', 'view all', 'see all', 'more tours', 'related tours'
+    ]
+    
+    # First try: Look for h1 in main content areas
+    main_selectors = ['main', 'article', '.content', '.main-content', '.tour-content', 
+                      '.product-content', '.tour-details', '#content', '.entry-content']
+    for selector in main_selectors:
+        main_area = soup.select_one(selector)
+        if main_area:
+            h1 = main_area.find('h1')
+            if h1:
+                candidate = clean(h1.get_text())
+                if candidate and candidate.lower() not in skip_headings and len(candidate) > 3:
+                    name = candidate
+                    break
+    
+    # Second try: Find first h1 that's not a skip heading
+    if not name:
+        for h1 in soup.find_all('h1'):
+            candidate = clean(h1.get_text())
+            if candidate and candidate.lower() not in skip_headings and len(candidate) > 3:
+                name = candidate
+                break
+    
+    # Third try: Same for h2
+    if not name:
+        for h2 in soup.find_all('h2'):
+            candidate = clean(h2.get_text())
+            if candidate and candidate.lower() not in skip_headings and len(candidate) > 3:
+                name = candidate
+                break
+    
+    # Fourth try: Extract from URL path (last resort)
+    if not name:
+        path = urlparse(url).path.strip('/').split('/')[-1]
+        if path:
+            # Convert "whitehaven-beach-tour" to "Whitehaven Beach Tour"
+            name = path.replace('-', ' ').replace('_', ' ').title()
+    
     if not name:
         name = 'Tour'
+    
+    print(f"  [NAME] Extracted: {name}")
 
     # Initialize price variables
     price_adult = ''
@@ -336,6 +382,50 @@ def extract_tour_info(html, url):
     if json_ld_data.get('duration'):
         extracted_duration = json_ld_data['duration']
 
+    # [NEW] Extract departure location/address
+    departure_location = ''
+    
+    # Try JSON-LD location first
+    if json_ld_data.get('location'):
+        departure_location = json_ld_data['location']
+    
+    # Look for address in common selectors
+    if not departure_location:
+        address_selectors = [
+            '.address', '.location', '.departure-location', '.meeting-point',
+            '[class*="address"]', '[class*="location"]', '[class*="meeting"]',
+            '[itemprop="address"]', '.tour-location', '.pickup-location'
+        ]
+        for selector in address_selectors:
+            addr_elem = soup.select_one(selector)
+            if addr_elem:
+                addr_text = clean(addr_elem.get_text())
+                if addr_text and len(addr_text) > 5 and len(addr_text) < 200:
+                    departure_location = addr_text
+                    print(f"  [LOCATION] Found via selector: {departure_location[:50]}...")
+                    break
+    
+    # Look for common Whitsundays departure points in text
+    if not departure_location:
+        full_text = soup.get_text().lower()
+        whitsunday_locations = [
+            ('abell point marina', 'Abell Point Marina, Airlie Beach'),
+            ('port of airlie', 'Port of Airlie'),
+            ('shute harbour', 'Shute Harbour'),
+            ('coral sea marina', 'Coral Sea Marina'),
+            ('airlie beach', 'Airlie Beach'),
+            ('hamilton island', 'Hamilton Island'),
+            ('daydream island', 'Daydream Island'),
+            ('whitsunday airport', 'Whitsunday Airport'),
+        ]
+        for search_term, location_name in whitsunday_locations:
+            if search_term in full_text:
+                # Check if it's near departure/meeting context
+                if any(ctx in full_text for ctx in ['depart', 'meet', 'pick up', 'pickup', 'from']):
+                    departure_location = location_name
+                    print(f"  [LOCATION] Found in text: {departure_location}")
+                    break
+
     # Generate stable ID from URL hash (so image paths don't break on re-scrape)
     url_hash = hashlib.md5(url.encode()).hexdigest()[:16]
     
@@ -347,7 +437,7 @@ def extract_tour_info(html, url):
         'summary': '',
         'description': json_ld_data.get('description', ''),
         'duration': extracted_duration,
-        'departure_location': '',
+        'departure_location': departure_location,
         'departure_times': extracted_times,
         'price_adult': price_adult,
         'price_child': price_child,
@@ -680,32 +770,22 @@ def main():
     for homepage, url in tour_links:
         try:
             print(f"Scraping: {url}")
-            # Try BeautifulSoup first
+            # Use Selenium by default to handle dropdowns/accordions
             html = None
             try:
-            html = fetch_html(url)
-            except requests.exceptions.HTTPError as e:
-                if e.response.status_code == 403:
-                    print(f"  [403 Blocked] Site is blocking requests, trying Selenium...")
+                print(f"  [Selenium] Fetching with accordion expansion...")
+                html = fetch_html_selenium(url, wait_time=10, expand_accordions=True)
+            except Exception as e:
+                print(f"  [Selenium Failed] {e}, trying basic fetch...")
                     try:
-                        html = fetch_html_selenium(url)
-                    except Exception as se:
-                        print(f"  [Selenium Failed] {se}")
-                        raise e  # Re-raise original error if Selenium also fails
-                else:
-                    raise e  # Re-raise non-403 errors
+                    html = fetch_html(url)
+                except requests.exceptions.HTTPError as he:
+                    print(f"  [Basic fetch also failed] {he}")
+                    continue
             
             if html is None:
                 print(f"  [Error] Could not fetch HTML for {url}")
                 continue
-            
-            # [UPGRADE 1] Auto-detect if we need Selenium (no price in static HTML)
-            if '$' not in html and 'price' not in html.lower():
-                print(f"  [Auto-Selenium] No price indicators in static HTML, using Selenium...")
-                try:
-                    html = fetch_html_selenium(url)
-                except Exception as e:
-                    print(f"  [Auto-Selenium] Failed: {e}, continuing with static HTML...")
             
             tour = extract_tour_info(html, url)
             # extract_tour_info already extracts prices via CSS selectors, use those first
@@ -813,15 +893,17 @@ def main():
     # Auto-run AI postprocessor on each company CSV
     print("\n=== Running AI Postprocessor ===")
     print("NOTE: This uses OpenAI API to extract descriptions, highlights, etc.")
-    print("      Progress will be shown for each tour...\n")
+    print("      Progress will be shown for each tour...")
+    print("      Using --force-include to save all pages as tours (for dynamic pricing sites)\n")
     
     for csv_path in company_csvs.keys():
         if os.path.exists(csv_path):
             print(f"Processing {csv_path}...")
             try:
                 import subprocess
-                # Run without capture_output so you can see real-time progress
-                result = subprocess.run(['python', 'ai_postprocess_csv.py', csv_path], 
+                # Run with --force-include to save all scraped pages as tours
+                # (some sites have dynamic pricing that makes AI think they're not tours)
+                result = subprocess.run(['python', 'ai_postprocess_csv.py', csv_path, '--force-include'], 
                                       timeout=600)
                 if result.returncode == 0:
                     print(f"  [OK] {csv_path} cleaned and saved as {csv_path[:-4]}_cleaned.csv\n")
@@ -944,6 +1026,47 @@ def main():
                     print(f"     - {row['name']}")
             else:
                 print(f"  ✓ All tours have descriptions")
+    
+    # Auto-MERGE _with_media.csv files into data/{company}/en/ folders for app to use
+    print("\n=== Merging to Data Folders ===")
+    print("The app loads tours from data/{company}/en/ - merging new tours there...\n")
+    
+    for csv_path in company_csvs.keys():
+        media_csv = csv_path.replace('.csv', '_cleaned_with_media.csv')
+        if os.path.exists(media_csv):
+            # Extract company name from filename (tours_companyname_cleaned_with_media.csv)
+            company = csv_path.replace('tours_', '').replace('.csv', '')
+            target_dir = os.path.join('data', company, 'en')
+            
+            # Create directory if it doesn't exist
+            os.makedirs(target_dir, exist_ok=True)
+            
+            target_file = os.path.join(target_dir, media_csv)
+            try:
+                import pandas as pd
+                new_df = pd.read_csv(media_csv)
+                
+                if os.path.exists(target_file):
+                    # MERGE: Add new tours to existing file
+                    existing_df = pd.read_csv(target_file)
+                    existing_urls = set(existing_df['link_booking'].dropna().tolist())
+                    
+                    # Only add tours that don't already exist (by URL)
+                    new_tours = new_df[~new_df['link_booking'].isin(existing_urls)]
+                    
+                    if len(new_tours) > 0:
+                        merged_df = pd.concat([existing_df, new_tours], ignore_index=True)
+                        merged_df.to_csv(target_file, index=False)
+                        print(f"  ✓ MERGED {len(new_tours)} new tours into {target_file} (total: {len(merged_df)})")
+                    else:
+                        print(f"  ○ No new tours to add to {target_file} (all already exist)")
+                else:
+                    # No existing file, just copy
+                    import shutil
+                    shutil.copy(media_csv, target_file)
+                    print(f"  ✓ Created {target_file} with {len(new_df)} tours")
+            except Exception as e:
+                print(f"  ✗ Failed to merge {media_csv}: {e}")
     
     print("\n" + "=" * 80)
     print("Restart your Flask app to see the updated tours!")

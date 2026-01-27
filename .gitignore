@@ -60,3 +60,6 @@ leads_log.csv
 # Large media files (too big for GitHub)
 static/b_roll/
 *.mp4
+
+# User accounts (sensitive data - never commit passwords)
+config/users.json

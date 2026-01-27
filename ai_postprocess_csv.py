@@ -11,9 +11,16 @@ from typing import List, Tuple
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# Allow CLI args: python ai_postprocess_csv.py <input_csv> [output_csv]
+# Allow CLI args: python ai_postprocess_csv.py <input_csv> [output_csv] [--force-include]
+# --force-include: Skip the is_tour check and include all scraped pages as tours
 DEFAULT_INPUT = 'tours_zigzagwhitsundays.csv'
 DEFAULT_OUTPUT = 'tours_zigzagwhitsundays_cleaned.csv'
+
+# Check for --force-include flag
+FORCE_INCLUDE = '--force-include' in sys.argv
+if FORCE_INCLUDE:
+    sys.argv.remove('--force-include')
+    print("[!] FORCE INCLUDE MODE: All scraped pages will be saved as tours (ignoring is_tour check)")
 
 if len(sys.argv) >= 2:
     INPUT_CSV = sys.argv[1]
@@ -51,8 +58,9 @@ def clean_and_dedup_text(text):
     return '\n'.join(cleaned)
 
 # Extract tour chunks from raw_text
-TOUR_START_RE = re.compile(r'^=== TOUR START: (.+?) ===$', re.MULTILINE)
-TOUR_END_RE = re.compile(r'^=== TOUR END: (.+?) ===$', re.MULTILINE)
+# Use \r?$ to handle both Windows (\r\n) and Unix (\n) line endings
+TOUR_START_RE = re.compile(r'^=== TOUR START: (.+?) ===\r?$', re.MULTILINE)
+TOUR_END_RE = re.compile(r'^=== TOUR END: (.+?) ===\r?$', re.MULTILINE)
 
 def extract_tour_chunks(raw_text):
     chunks = []
@@ -238,6 +246,8 @@ for row in reader:
     for tour_name, chunk in extract_tour_chunks(raw_text):
         filtered_text = clean_and_dedup_text(chunk)
         filtered_text = filtered_text[:8000]  # Increased from 2000 to preserve more details
+        # Get URL for context
+        page_url = row.get('link_booking') or row.get('link_more_info') or ''
         # Add price info to the prompt so the AI can see it
         price_info = ""
         if row.get('price_adult'):
@@ -248,17 +258,20 @@ for row in reader:
             price_info += f"Price Tiers: {row['price_tiers']}\n"
         prompt = f"""You are organizing tour information from a webpage. Your job is to PRESERVE and STRUCTURE content, not shorten it.
 
+PAGE URL: {page_url}
+PAGE H1 TITLE (from scraper): {tour_name}
+
 Return a JSON object with these fields:
 
 CRITICAL RULES:
-1. EXTRACT THE ACTUAL TOUR NAME - Look for the tour/product name on the page. Common patterns: boat names (e.g., "Summer Jo", "Waltzing Matilda"), experience names (e.g., "Whitehaven Beach Day Trip"). DO NOT invent educational or generic names. If you see "Great Barrier Reef Education Experience Program" but the boat is called "Summer Jo", use "Summer Jo 2D/2N" or similar.
+1. USE THE H1 TITLE AS THE TOUR NAME - The "PAGE H1 TITLE" above is the main heading from this specific tour page. Use it as the tour name (you can clean it up slightly). IGNORE other tour names that appear in navigation menus, "related tours", or sidebars.
 2. PRESERVE details in SEPARATE FIELDS - itineraries go in 'itinerary', menus go in 'menu', inclusions go in 'includes'
 3. Keep DESCRIPTION focused on the experience and vibe - NOT a repeat of other fields
 4. PARSE PRICING CAREFULLY - the SCRAPED PRICE DATA field may contain multiple pricing options mashed together. Your job is to separate them!
 
 REQUIRED FIELDS:
 - is_tour: (boolean) Is this a real bookable tour?
-- name: (string) The ACTUAL tour name from the webpage. Look for boat names, tour titles, product names. Examples: "Summer Jo 3D/3N", "Waltzing Matilda Sunset Cruise", "Whitehaven Beach Full Day". Do NOT use generic educational descriptions.
+- name: (string) Use the PAGE H1 TITLE provided above as the tour name. Clean it up if needed (remove extra punctuation, etc.) but keep the core name. Do NOT use tour names from navigation menus or "related tours" sections - those are for OTHER tours, not this one.
 - description: (string) SHORT, engaging 2-4 paragraph overview focused on:
   * The experience and vibe (luxury? adventure? relaxation?)
   * What makes this tour unique
@@ -283,6 +296,7 @@ REQUIRED FIELDS:
   * Format: "Tier Name: PRICE | Tier Name: PRICE" separated by pipe (|) 
 - duration: (string) MUST be a TIME AMOUNT. Valid examples: "2 Hours", "Half Day", "Full Day", "2 Days 1 Night", "3 Days 2 Nights". NEVER use "Evening", "Morning", "Sunset" - these are times, not durations. If unclear, return null.
 - times: Departure/return times (e.g., "Departs 9am, Returns 5pm"). If unclear, return null.
+- departure_location: (string) Where the tour departs from. Look for specific locations like "Abell Point Marina", "Port of Airlie", "Shute Harbour", "Coral Sea Marina", marina names, or full addresses. Be specific - don't just say "Airlie Beach" if a specific marina is mentioned.
 - includes: Everything included (be thorough)
 - highlights: Key features (5-10 points if possible)
 - itinerary: (optional) Day-by-day breakdown if present. Use **Day 1:**, **Day 2:**, etc. as bold headings. If no clear itinerary, return null.
@@ -369,7 +383,11 @@ RAW TEXT:
             if json_match:
                 json_str = json_match.group(0)
                 ai_data = json.loads(json_str)
-                if str(ai_data.get('is_tour', '')).lower() == 'true':
+                # Check if it's a tour (or force include all if flag is set)
+                is_tour = str(ai_data.get('is_tour', '')).lower() == 'true'
+                if is_tour or FORCE_INCLUDE:
+                    if FORCE_INCLUDE and not is_tour:
+                        print(f"  [!] Force-including: {tour_name} (AI said is_tour=false)")
                     new_row = row.copy()
                     new_row['name'] = clean_field(ai_data.get('name', tour_name))
                     new_row['description'] = clean_field(ai_data.get('description', ''))
@@ -378,6 +396,7 @@ RAW TEXT:
                     new_row['price_tiers'] = clean_field(ai_data.get('price_tiers', ''))
                     new_row['duration'] = clean_field(ai_data.get('duration', ''))
                     new_row['departure_times'] = clean_field(ai_data.get('times', ''))
+                    new_row['departure_location'] = clean_field(ai_data.get('departure_location', ''))
                     new_row['includes'] = clean_field(ai_data.get('includes', ''))
                     new_row['highlights'] = clean_field(ai_data.get('highlights', ''))
                     # New detailed fields

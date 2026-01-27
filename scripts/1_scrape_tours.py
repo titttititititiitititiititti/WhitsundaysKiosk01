@@ -23,9 +23,35 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # PASTE YOUR TOUR LINKS HERE (one per line, with commas!)
 # ============================================================================
 TOUR_LINKS = [
+    # === SAILING WHITSUNDAYS - NEW TOURS TO ADD ===
+    
+    "https://driftwoodtours.com.au/tours/coastal-beaches-escape-cape-gloucester-and-dingo-beach/",
+    "https://www.airlieadventuretours.com.au/theairliesightseeingbus/",
+    "https://www.airlieadventuretours.com.au/cedarcreekexpress",
+    "https://www.airlieadventuretours.com.au/eungellawildplatypusencounter", 
+    "https://www.airlieadventuretours.com.au/ecowildlifetwodaytour", 
+    "https://www.airlieadventuretours.com.au/beautifulbowenbeaches",
+    "https://www.airlieadventuretours.com.au/kangaroosatsunrise", 
+    "https://driftwoodtours.com.au/tours/bushwalk-and-50s-diner-tour/", 
+    "https://www.islandtransfers.com/palm-bay-day-trips.html", 
+    "https://www.whitsundayfishingcharters.com.au/half-day-fishing",
+    "https://www.whitsundayfishingcharters.com.au/full-day-fishing",
+    "https://www.whitsundayfishingcharters.com.au/sunset-charters",
+    "https://www.whitsundayfishingcharters.com.au/snorkelling",
+    "https://www.whitsundaysegwaytours.com.au/segwaysunsetandboardwalktour", 
+    "https://www.whitsundaysegwaytours.com.au/segwayrainforestdiscoverytour",
 
-    "https://www.sealink.com.au/whitsundays/experiences/whitehaven-beach-big-island-day-tour/",
+
+
+
+
+
+
+
+
+
 ]
+    
 # ============================================================================
 
 if __name__ == '__main__':

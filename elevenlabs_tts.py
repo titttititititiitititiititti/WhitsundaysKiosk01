@@ -454,6 +454,57 @@ def convert_price_for_tts(text, language='en'):
     
     return re.sub(price_pattern, replace_price, text)
 
+def preprocess_text_for_tts(text, language='en'):
+    """
+    Preprocess text to improve TTS pronunciation.
+    - Converts duration abbreviations (2D/1N -> two days one night)
+    - Removes special characters that cause weird pauses
+    - Normalizes tour names for better pronunciation
+    """
+    result = text
+    
+    # Convert duration patterns: 2D/1N, 3D2N, 2D1N, etc.
+    duration_patterns = [
+        # 2D/1N format
+        (r'(\d+)D/(\d+)N', lambda m: f"{number_to_words(int(m.group(1)), language)} {'day' if int(m.group(1)) == 1 else 'days'} {number_to_words(int(m.group(2)), language)} {'night' if int(m.group(2)) == 1 else 'nights'}"),
+        # 2D1N format (no slash)
+        (r'(\d+)D(\d+)N', lambda m: f"{number_to_words(int(m.group(1)), language)} {'day' if int(m.group(1)) == 1 else 'days'} {number_to_words(int(m.group(2)), language)} {'night' if int(m.group(2)) == 1 else 'nights'}"),
+        # Just days: 2D, 3D
+        (r'(\d+)D(?![/\d])', lambda m: f"{number_to_words(int(m.group(1)), language)} {'day' if int(m.group(1)) == 1 else 'days'}"),
+    ]
+    
+    for pattern, replacement in duration_patterns:
+        result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+    
+    # Remove or replace characters that cause weird pauses
+    # Asterisks (markdown bold markers)
+    result = re.sub(r'\*\*', '', result)
+    result = re.sub(r'\*', '', result)
+    
+    # Em dashes and en dashes - replace with comma for natural pause
+    result = result.replace('—', ', ')
+    result = result.replace('–', ', ')
+    
+    # Multiple exclamation/question marks
+    result = re.sub(r'!+', '!', result)
+    result = re.sub(r'\?+', '?', result)
+    
+    # Ellipsis - single period is better for TTS
+    result = result.replace('...', '.')
+    result = result.replace('…', '.')
+    
+    # Remove emojis and special unicode (TTS handles them poorly)
+    # Keep basic punctuation
+    result = re.sub(r'[\U0001F300-\U0001F9FF]', '', result)  # Emojis
+    result = re.sub(r'[\u2600-\u26FF]', '', result)  # Misc symbols
+    result = re.sub(r'[\u2700-\u27BF]', '', result)  # Dingbats
+    
+    # Clean up extra whitespace
+    result = re.sub(r'\s+', ' ', result)
+    result = result.strip()
+    
+    return result
+
 def convert_price_for_display(text, language='en'):
     """
     Convert price notations in text to the appropriate currency for display.
@@ -526,7 +577,7 @@ def synthesize_speech(text, language='en', gender='default'):
         None: If synthesis fails
     """
     if not ELEVENLABS_API_KEY:
-        print("❌ ElevenLabs API key not found in .env file")
+        print("[ERR] ElevenLabs API key not found in .env file")
         return None
     
     voice_id = get_voice_id(language, gender)
@@ -538,11 +589,20 @@ def synthesize_speech(text, language='en', gender='default'):
         "xi-api-key": ELEVENLABS_API_KEY
     }
     
-    # Convert prices to spoken words for natural TTS pronunciation
-    # E.g., "A$1,050" -> "one thousand and fifty Australian dollars"
-    tts_text = convert_price_for_tts(text, language)
+    # STEP 1: Preprocess text for better TTS pronunciation
+    # - Convert durations (2D/1N -> two days one night)
+    # - Remove markdown formatting (* for bold)
+    # - Clean up problematic characters
+    tts_text = preprocess_text_for_tts(text, language)
     
-    print(f"🔊 TTS text conversion: '{text[:100]}...' -> '{tts_text[:100]}...'")
+    # STEP 2: Convert prices to spoken words
+    # E.g., "A$1,050" -> "one thousand and fifty Australian dollars"
+    tts_text = convert_price_for_tts(tts_text, language)
+    
+    try:
+        print(f"[TTS] Preprocessed: '{text[:80]}...' -> '{tts_text[:80]}...'")
+    except UnicodeEncodeError:
+        print(f"[TTS] Preprocessed: (text contains special characters)")
     
     # Use turbo model for English (faster), multilingual for other languages
     model = "eleven_turbo_v2_5" if language == 'en' else "eleven_multilingual_v2"
@@ -559,22 +619,25 @@ def synthesize_speech(text, language='en', gender='default'):
     }
     
     try:
-        print(f"🎤 ElevenLabs: Synthesizing {len(tts_text)} chars in {language} (model: {model})...")
+        print(f"[TTS] ElevenLabs: Synthesizing {len(tts_text)} chars in {language} (model: {model})...")
         response = requests.post(url, json=data, headers=headers, timeout=15)
         
         if response.status_code == 200:
-            print(f"✅ ElevenLabs: Success! Generated {len(response.content)} bytes")
+            print(f"[OK] ElevenLabs: Success! Generated {len(response.content)} bytes")
             return response.content
         else:
-            print(f"❌ ElevenLabs error: {response.status_code}")
-            print(f"   Response: {response.text}")
+            print(f"[ERR] ElevenLabs error: {response.status_code}")
+            try:
+                print(f"   Response: {response.text}")
+            except UnicodeEncodeError:
+                print(f"   Response: (contains special characters)")
             return None
             
     except requests.exceptions.Timeout:
-        print("❌ ElevenLabs: Request timeout")
+        print("[ERR] ElevenLabs: Request timeout")
         return None
     except Exception as e:
-        print(f"❌ ElevenLabs error: {str(e)}")
+        print(f"[ERR] ElevenLabs error: {str(e)}")
         return None
 
 def is_configured():
@@ -584,7 +647,7 @@ def is_configured():
 if __name__ == "__main__":
     # Test the integration
     if is_configured():
-        print("✅ ElevenLabs API key found")
+        print("[OK] ElevenLabs API key found")
         print("Testing synthesis...")
         
         test_text = "Hello! I'm your AI tour assistant. Welcome to the Whitsundays!"
@@ -594,11 +657,11 @@ if __name__ == "__main__":
             # Save test audio
             with open('test_elevenlabs.mp3', 'wb') as f:
                 f.write(audio)
-            print("✅ Test audio saved as test_elevenlabs.mp3")
+            print("[OK] Test audio saved as test_elevenlabs.mp3")
         else:
-            print("❌ Synthesis failed")
+            print("[ERR] Synthesis failed")
     else:
-        print("❌ ElevenLabs API key not found")
+        print("[ERR] ElevenLabs API key not found")
         print("   Add ELEVENLABS_API_KEY to your .env file")
 
 

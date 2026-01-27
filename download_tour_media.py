@@ -174,8 +174,15 @@ def main(csv_path):
         tour_id = row.get('id', str(idx))
         tour_name = row.get('name', f'Tour_{idx}')
         company = row.get('company_name', 'unknown')
-        url = row.get('link_more_info') or row.get('link_booking')
-        if not url or not isinstance(url, str) or not url.startswith('http'):
+        # Handle pandas NaN values properly
+        link_more = row.get('link_more_info')
+        link_book = row.get('link_booking')
+        url = None
+        if pd.notna(link_more) and isinstance(link_more, str) and link_more.startswith('http'):
+            url = link_more
+        elif pd.notna(link_book) and isinstance(link_book, str) and link_book.startswith('http'):
+            url = link_book
+        if not url:
             print(f"[{tour_id}] No valid URL, skipping.")
             continue
         print(f"[{tour_id}] Processing: {tour_name} ({url})")
@@ -264,7 +271,10 @@ def main(csv_path):
         except Exception as e:
             print(f"    Error processing {tour_name}: {e}")
     driver.quit()
-    # Save updated CSV
+    # Save updated CSV (avoid double _with_media suffix)
+    if '_with_media.csv' in csv_path:
+        out_csv = csv_path  # Overwrite the same file
+    else:
     out_csv = csv_path.replace('.csv', '_with_media.csv')
     df.to_csv(out_csv, index=False)
     print(f"Done. Updated CSV saved as {out_csv}")

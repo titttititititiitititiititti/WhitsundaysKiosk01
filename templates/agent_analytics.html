@@ -394,6 +394,54 @@
         </div>
         {% endif %}
         
+        <!-- QR Code Tracking -->
+        {% if summary.qr_stats and summary.qr_stats.codes_generated > 0 %}
+        <div class="section">
+            <h2>📱 QR Code "Send to Phone" Tracking</h2>
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card">
+                    <h3>QR Codes Generated</h3>
+                    <div class="stat-value">{{ summary.qr_stats.codes_generated }}</div>
+                    <div class="stat-sub">Total scans</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tour Page Visits</h3>
+                    <div class="stat-value">{{ summary.qr_stats.tour_visits }}</div>
+                    <div class="stat-sub">From QR codes</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Book Now Clicks</h3>
+                    <div class="stat-value">{{ summary.qr_stats.book_now_clicks }}</div>
+                    <div class="stat-sub">From QR referrals</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Conversion Rate</h3>
+                    <div class="stat-value">{{ summary.qr_stats.conversion_rate }}%</div>
+                    <div class="stat-sub">Visits → Book Now</div>
+                </div>
+            </div>
+            
+            {% if summary.qr_stats.recent_conversions %}
+            <h3 style="margin-top: 30px; margin-bottom: 15px; color: rgba(255, 255, 255, 0.9);">Recent QR Conversions</h3>
+            <div class="tour-list">
+                {% for conversion in summary.qr_stats.recent_conversions %}
+                <div class="tour-item">
+                    <span class="tour-name">
+                        {{ conversion.tour_name }}
+                        <span style="font-size: 0.8em; color: rgba(255, 255, 255, 0.5); margin-left: 10px;">
+                            (ID: {{ conversion.tracking_id }})
+                        </span>
+                    </span>
+                    <span class="tour-count" style="font-size: 0.85em;">
+                        {{ conversion.timestamp[:10] if conversion.timestamp else 'N/A' }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
         <!-- Recent Sessions -->
         {% if summary.recent_sessions %}
         <div class="section">

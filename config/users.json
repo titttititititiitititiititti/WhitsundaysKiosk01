@@ -1,15 +1,17 @@
 {
   "users": {
     "bailey": {
-      "password": "270304",
+      "password": "scrypt:32768:8:1$oa8PKbBp0v6wIiN8$506aeec95eb19cd0a613d803f9913546b7a37c600e2abe6c28251e91b01fd972d2071bb42b146369b97a6e378a840dc18165514c37be05c70188244e4b258e97",
       "role": "agent",
       "name": "Bailey",
+      "email": "bailey.amouyal@gmail.com",
       "company": null
     },
     "agent": {
       "password": "agent2024",
       "role": "agent",
       "name": "Kiosk Agent",
+      "email": null,
       "company": null
     },
     "redcat": {
@@ -32,5 +34,3 @@
     }
   }
 }
-
-

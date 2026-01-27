@@ -192,6 +192,20 @@
             background: var(--bg-tertiary);
             border-radius: 10px;
             margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+        
+        .promo-level:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        
+        .promo-level.active {
+            background: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
         }
         
         .promo-level-info {
@@ -262,6 +276,40 @@
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+        
+        .search-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .search-toggle-btn {
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .search-toggle-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+        
+        .search-toggle-btn:hover {
+            background: var(--bg-secondary);
         }
         
         .search-input {
@@ -593,6 +641,9 @@
             <div class="user-info">
                 <span>👤 {{ session.name or 'Test Mode' }}</span>
             </div>
+            <a href="{{ url_for('account_settings') }}" class="btn btn-secondary">
+                ⚙️ Account Settings
+            </a>
             <a href="{{ url_for('agent_analytics_page') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                 📊 Analytics
             </a>
@@ -634,21 +685,21 @@
             
             <div class="section-title">Promotion Levels</div>
             <div class="promo-levels">
-                <div class="promo-level">
+                <div class="promo-level" id="promo-popular" onclick="filterByPromotion('popular')">
                     <div class="promo-level-info">
                         <span class="promo-icon">🔥</span>
                         <span class="promo-name">Popular</span>
                     </div>
                     <span class="promo-count">{{ promoted_counts.popular }}</span>
                 </div>
-                <div class="promo-level">
+                <div class="promo-level" id="promo-featured" onclick="filterByPromotion('featured')">
                     <div class="promo-level-info">
                         <span class="promo-icon">⭐</span>
                         <span class="promo-name">Featured</span>
                     </div>
                     <span class="promo-count">{{ promoted_counts.featured }}</span>
                 </div>
-                <div class="promo-level">
+                <div class="promo-level" id="promo-best_value" onclick="filterByPromotion('best_value')">
                     <div class="promo-level-info">
                         <span class="promo-icon">💎</span>
                         <span class="promo-name">Best Value</span>
@@ -681,6 +732,11 @@
         <div class="content">
             <div class="content-header">
                 <div class="search-box">
+                    <div class="search-toggle">
+                        <span>Search:</span>
+                        <button class="search-toggle-btn active" id="searchModeTours" onclick="setSearchMode('tours')">Tours</button>
+                        <button class="search-toggle-btn" id="searchModeCompanies" onclick="setSearchMode('companies')">Companies</button>
+                    </div>
                     <input type="text" class="search-input" placeholder="Search tours..." id="searchInput" oninput="filterTours()">
                 </div>
                 <div class="filter-buttons">
@@ -716,6 +772,8 @@
                     <div class="tour-item {{ 'disabled' if not tour.enabled else '' }}" 
                          data-key="{{ tour.key }}"
                          data-name="{{ tour.name | lower }}"
+                         data-company="{{ company_id | lower }}"
+                         data-company-display="{{ company_data.name | lower }}"
                          data-enabled="{{ 'true' if tour.enabled else 'false' }}"
                          data-promoted="{{ tour.promotion or '' }}">
                         <label class="toggle-switch">
@@ -761,6 +819,16 @@
     
     <script>
         let currentFilter = 'all';
+        let searchMode = 'tours'; // 'tours' or 'companies'
+        
+        function setSearchMode(mode) {
+            searchMode = mode;
+            document.getElementById('searchModeTours').classList.toggle('active', mode === 'tours');
+            document.getElementById('searchModeCompanies').classList.toggle('active', mode === 'companies');
+            const searchInput = document.getElementById('searchInput');
+            searchInput.placeholder = mode === 'tours' ? 'Search tours...' : 'Search companies...';
+            filterTours(); // Re-filter with new mode
+        }
         
         function toggleCompany(header) {
             header.closest('.company-group').classList.toggle('collapsed');
@@ -798,23 +866,45 @@
             
             document.querySelectorAll('.tour-item').forEach(item => {
                 const name = item.dataset.name;
+                const company = item.dataset.companyDisplay || item.dataset.company;
                 const enabled = item.dataset.enabled === 'true';
                 const promoted = item.dataset.promoted;
                 
-                let matchesSearch = !search || name.includes(search);
-                let matchesFilter = true;
+                // Search based on mode
+                let matchesSearch = true;
+                if (search) {
+                    if (searchMode === 'tours') {
+                        matchesSearch = name.includes(search);
+                    } else {
+                        // Search by company name
+                        matchesSearch = company.includes(search);
+                    }
+                }
                 
+                let matchesFilter = true;
                 if (currentFilter === 'enabled') matchesFilter = enabled;
                 else if (currentFilter === 'disabled') matchesFilter = !enabled;
                 else if (currentFilter === 'promoted') matchesFilter = !!promoted;
+                else if (currentFilter === 'popular') matchesFilter = promoted === 'popular';
+                else if (currentFilter === 'featured') matchesFilter = promoted === 'featured';
+                else if (currentFilter === 'best_value') matchesFilter = promoted === 'best_value';
                 
                 item.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
             });
             
             // Update company visibility
             document.querySelectorAll('.company-group').forEach(group => {
+                const companyId = group.dataset.company.toLowerCase();
+                const companyName = group.querySelector('.company-name').textContent.toLowerCase();
                 const visibleTours = group.querySelectorAll('.tour-item:not([style*="display: none"])');
-                group.style.display = visibleTours.length > 0 ? '' : 'none';
+                
+                // If searching by companies, also check if company name matches
+                let companyMatches = true;
+                if (search && searchMode === 'companies') {
+                    companyMatches = companyName.includes(search) || companyId.includes(search);
+                }
+                
+                group.style.display = (visibleTours.length > 0 || companyMatches) ? '' : 'none';
             });
         }
         
@@ -823,6 +913,34 @@
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.filter === filter);
             });
+            // Always clear promotion level active states when using filter buttons
+            document.querySelectorAll('.promo-level').forEach(level => {
+                level.classList.remove('active');
+            });
+            filterTours();
+        }
+        
+        function filterByPromotion(promotionType) {
+            // Set the filter
+            currentFilter = promotionType;
+            
+            // Update filter buttons - remove active state
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Update promotion level buttons
+            document.querySelectorAll('.promo-level').forEach(level => {
+                level.classList.remove('active');
+            });
+            
+            // Activate the clicked promotion level
+            const promoElement = document.getElementById(`promo-${promotionType}`);
+            if (promoElement) {
+                promoElement.classList.add('active');
+            }
+            
+            // Apply the filter
             filterTours();
         }
         

@@ -40,16 +40,28 @@ def discover_companies(specified_csvs=None):
             elif os.path.exists(csv_file.replace('.csv', '_with_media.csv')):
                 csv_files.append(csv_file.replace('.csv', '_with_media.csv'))
             else:
-                print(f"⚠️  Warning: {csv_file} not found, skipping...")
+                print(f"  [!] Warning: {csv_file} not found, skipping...")
     else:
         # Auto-discover all companies
         csv_files = glob.glob('tours_*_cleaned_with_media.csv')
     
     for csv_file in csv_files:
-        # Extract company name from filename
+        # Extract company name from filename using slicing (not replace!)
         # "tours_cruisewhitsundays_cleaned_with_media.csv" -> "cruisewhitsundays"
-        # "tours_cruisewhitsundays_cleaned.csv" -> "cruisewhitsundays"
-        company = csv_file.replace('tours_', '').replace('_cleaned_with_media.csv', '').replace('_cleaned.csv', '').replace('.csv', '')
+        # Company names like "airlieadventuretours" contain "tours" so .replace() breaks them
+        prefix = 'tours_'
+        if csv_file.startswith(prefix):
+            rest = csv_file[len(prefix):]
+            if rest.endswith('_cleaned_with_media.csv'):
+                company = rest[:-len('_cleaned_with_media.csv')]
+            elif rest.endswith('_cleaned.csv'):
+                company = rest[:-len('_cleaned.csv')]
+            elif rest.endswith('.csv'):
+                company = rest[:-len('.csv')]
+            else:
+                company = rest
+        else:
+            company = csv_file
         
         # Check if it has actual tours
         try:
@@ -58,11 +70,11 @@ def discover_companies(specified_csvs=None):
                 rows = list(reader)
                 if len(rows) > 0:  # Has tours
                     companies.append(company)
-                    print(f"  ✓ {company}: {len(rows)} tours")
+                    print(f"  [OK] {company}: {len(rows)} tours")
                 else:
                     print(f"  ⊘ {company}: 0 tours (skipping)")
         except Exception as e:
-            print(f"  ⚠ {company}: Error reading ({e})")
+            print(f"  [!] {company}: Error reading ({e})")
     
     return companies
 
@@ -73,6 +85,102 @@ def init_driver():
     
     driver = uc.Chrome(options=options)
     return driver
+
+def safe_print(msg):
+    """Print with UTF-8 encoding for Windows compatibility"""
+    try:
+        print(msg)
+    except UnicodeEncodeError:
+        # Strip emojis for Windows
+        import re
+        clean_msg = re.sub(r'[^\x00-\x7F]+', '', msg)
+        print(clean_msg)
+
+def is_owner_response(text):
+    """Check if text is an owner/business response, not a customer review"""
+    text_lower = text.lower()
+    
+    # Owner response indicators at the START of text
+    owner_start_patterns = [
+        '(owner)',
+        'owner)',
+        'response from',
+        'thank you for',
+        'thanks for',
+        'thank you so much',
+        'thanks so much',
+        "we're thrilled",
+        "we're delighted",
+        "we're so glad",
+        "we're so happy",
+        "we are thrilled",
+        "we are delighted",
+        "we truly appreciate",
+        "we really appreciate",
+        "we appreciate",
+        "we hope to see you",
+        "we hope to welcome",
+        "we can't wait to",
+        "we look forward",
+        "hi there,",
+        "hello,",
+        "dear guest",
+    ]
+    
+    # Check if text starts with owner patterns
+    for pattern in owner_start_patterns:
+        if text_lower.startswith(pattern):
+            return True
+    
+    # Owner response patterns ANYWHERE in text
+    owner_anywhere_patterns = [
+        '(owner)',
+        'owner)',
+        ' (owner',
+        'tours (owner',
+        'whitsundays (owner',
+        'adventures (owner',
+        'sailing (owner',
+        'cruises (owner',
+        'we\'re stoked',
+        'we\'ll be sure to pass',
+        'the team will be',
+        'our team will be',
+        'thanks again for',
+        'thank you again for',
+        'we can\'t wait to welcome you back',
+        'hope to welcome you back',
+        'hope to see you again',
+        'we hope you\'ll',
+        'will be stoked to hear',
+        'will be delighted to hear',
+        'will be over the moon',
+    ]
+    
+    for pattern in owner_anywhere_patterns:
+        if pattern in text_lower:
+            return True
+    
+    # Check for company name followed by common owner response starters
+    # Pattern: "[Company Name] (owner)..." or response starting with we're/we are
+    if re.search(r'^[A-Z][a-zA-Z\s]+\s*\(owner\)', text):
+        return True
+    
+    # Check for timestamps typical of owner responses (e.g., "2 weeks ago" at start)
+    if re.match(r'^(\d+\s+(days?|weeks?|months?|years?)\s+ago)', text_lower):
+        return True
+    
+    # If it starts with "we" and sounds like a business response
+    if text_lower.startswith('we ') or text_lower.startswith("we'"):
+        business_response_phrases = [
+            'we appreciate', 'we are so', 'we are glad', 'we are happy',
+            'we\'re glad', 'we\'re happy', 'we\'re so', 'we\'re thrilled',
+            'we hope', 'we look forward', 'we truly', 'we really'
+        ]
+        if any(text_lower.startswith(phrase) for phrase in business_response_phrases):
+            return True
+    
+    return False
 
 def extract_reviews_from_page(driver, page_html):
     """Extract reviews from the current page using multiple methods"""
@@ -94,7 +202,25 @@ def extract_reviews_from_page(driver, page_html):
         'google policies', 'legal obligations', 'inappropriate content',
         'write a review', 'edit your review', 'local guide',
         'google review summary', 'automatically processed',
-        'press/', 'choose what', 'giving feedback'
+        'press/', 'choose what', 'giving feedback', 'sort by',
+        'most relevant', 'newest first', 'highest rating', 'lowest rating',
+        'all reviews', 'filter by', 'translate review', 'original',
+        'photo', 'photos', 'helpful', 'share', 'flag as inappropriate',
+        'google llc', 'privacy', 'terms', 'about these results',
+        'response from the owner', 'owner response'
+    ]
+    
+    # Keywords that suggest this is random website text, not a review
+    random_text_keywords = [
+        'book now', 'add to cart', 'checkout', 'subscribe',
+        'newsletter', 'contact us', 'about us', 'our team',
+        'privacy policy', 'terms of service', 'cookie',
+        'copyright', 'all rights reserved', 'powered by',
+        'navigation', 'menu', 'home', 'services',
+        'follow us', 'social media', 'facebook', 'instagram', 'twitter',
+        'phone:', 'email:', 'address:', 'abn:', 'acn:',
+        'frequently asked', 'faq', 'cancellation policy',
+        'booking conditions', 'terms and conditions'
     ]
     
     for elem in all_text_elements:
@@ -106,14 +232,24 @@ def extract_reviews_from_page(driver, page_html):
             not text.startswith('http') and  # Not a URL
             ' ' in text):  # Has spaces (real text)
             
-            # Skip if contains too many UI keywords
             text_lower = text.lower()
+            
+            # Skip if contains UI keywords
             if any(keyword in text_lower for keyword in ui_keywords):
+                continue
+            
+            # Skip if contains random website text keywords
+            if any(keyword in text_lower for keyword in random_text_keywords):
                 continue
             
             # Skip if too many capital letters (likely UI labels)
             capitals = sum(1 for c in text if c.isupper())
             if capitals > len(text) * 0.3:  # More than 30% capitals
+                continue
+            
+            # IMPORTANT: Skip owner/business responses
+            if is_owner_response(text):
+                print(f"  [SKIP] Owner response: \"{text[:50]}...\"")
                 continue
             
             # Basic quality checks
@@ -143,6 +279,24 @@ def extract_reviews_from_page(driver, page_html):
                     # Skip this truncated review
                     continue
                 
+                # Additional check: real reviews typically have first-person language
+                # or describe experiences
+                review_indicators = [
+                    ' i ', ' my ', ' we ', ' our ', ' me ',
+                    'had a', 'was a', 'such a', 'what a',
+                    'experience', 'trip', 'tour', 'day', 'time',
+                    'amazing', 'great', 'fantastic', 'awesome', 'wonderful',
+                    'recommend', 'loved', 'enjoyed', 'beautiful', 'stunning',
+                    'staff', 'crew', 'guide', 'instructor', 'captain',
+                    'boat', 'snorkel', 'dive', 'beach', 'reef', 'island'
+                ]
+                
+                has_review_indicator = any(ind in text_lower for ind in review_indicators)
+                
+                if not has_review_indicator:
+                    # Be more strict - skip if no review-like language
+                    continue
+                
                 seen_texts.add(text)
                 
                 # Try to extract rating from nearby star emojis
@@ -153,9 +307,25 @@ def extract_reviews_from_page(driver, page_html):
                 # Default to 5 if we can't find stars, or use the count
                 rating = float(min(filled_stars, 5)) if filled_stars > 0 else 5.0
                 
+                # Try to extract author name from nearby elements
+                author = 'Customer'
+                parent = elem.parent
+                if parent:
+                    # Look for name-like text nearby (short, capitalized)
+                    siblings = parent.find_all(['span', 'div'], limit=5)
+                    for sib in siblings:
+                        sib_text = sib.get_text(strip=True)
+                        # Author names are typically 2-4 words, title case
+                        if (5 <= len(sib_text) <= 40 and 
+                            sib_text.istitle() and 
+                            ' ' in sib_text and
+                            not any(kw in sib_text.lower() for kw in ['review', 'star', 'ago', 'google'])):
+                            author = sib_text
+                            break
+                
                 review = {
                     'text': text,
-                    'author': 'Customer',  # Default
+                    'author': author,
                     'rating': rating
                 }
                 
@@ -173,7 +343,7 @@ def scrape_company_reviews(driver, company_display_name):
         search_query = f"{company_display_name} Airlie Beach reviews"
         search_url = f"https://www.google.com/search?q={quote_plus(search_query)}"
         
-        print(f"\n  🔍 Searching: {search_query}")
+        print(f"\n  Searching: {search_query}")
         driver.get(search_url)
         time.sleep(4)
         
@@ -186,32 +356,84 @@ def scrape_company_reviews(driver, company_display_name):
         
         # Try multiple patterns to find rating
         patterns = [
-            r'[54321]{5}(\d\.\d)([\d,]+)\s*reviews?',  # "543214.41,923 reviews" (Google's format)
-            r'(\d\.\d)\s*[★⭐]+\s*([\d,]+)\s+(?:Google\s+)?reviews?',  # "4.4★1,923 reviews"
-            r'(\d\.\d)\s*[★⭐]+.*?([\d,]+)\s+reviews?',  # "4.4★...1,923 reviews"
-            r'(\d\.\d)\s+stars?.*?([\d,]+)\s+reviews?',  # "4.4 stars 1,923 reviews"
-            r'Rating:\s*(\d\.\d).*?([\d,]+)\s+reviews?',  # "Rating: 4.4...1,923 reviews"
+            # Google's compact format: "543214.41,923 reviews"
+            r'[54321]{5}(\d\.\d)([\d,]+)\s*reviews?',
+            # Standard: "4.4★ 1,923 reviews" or "4.4 ★ 1,923 Google reviews"
+            r'(\d\.\d)\s*[★⭐]+\s*([\d,]+)\s+(?:Google\s+)?reviews?',
+            # With dots between: "4.4★...1,923 reviews"
+            r'(\d\.\d)\s*[★⭐]+.*?([\d,]+)\s+reviews?',
+            # Text stars: "4.4 stars 1,923 reviews"
+            r'(\d\.\d)\s+stars?.*?([\d,]+)\s+reviews?',
+            # With "Rating:" prefix
+            r'Rating:\s*(\d\.\d).*?([\d,]+)\s+reviews?',
+            # Just rating and reviews nearby (looser): "4.4" ... "1,923 reviews"
+            r'(\d\.\d)\s*\(?([\d,]+)\s+reviews?\)?',
+            # Rating in parentheses: "(4.4)" with reviews
+            r'\((\d\.\d)\).*?([\d,]+)\s+reviews?',
+            # Google Maps style: "4.4 (1,923)"
+            r'(\d\.\d)\s*\(([\d,]+)\)',
         ]
         
         for pattern in patterns:
             match = re.search(pattern, text, re.I | re.DOTALL)
             if match:
-                overall_rating = float(match.group(1))
-                review_count = int(match.group(2).replace(',', ''))
-                print(f"  ✅ Rating: {overall_rating}★ ({review_count:,} reviews)")
+                try:
+                    rating_val = float(match.group(1))
+                    count_val = int(match.group(2).replace(',', ''))
+                    # Sanity check - rating should be 1-5, count should be reasonable
+                    if 1.0 <= rating_val <= 5.0 and count_val > 0:
+                        overall_rating = rating_val
+                        review_count = count_val
+                        print(f"  [OK] Rating: {overall_rating} ({review_count:,} reviews)")
+                        break
+                except (ValueError, IndexError):
+                    continue
+        
+        # Also try to find just the rating if we didn't get a count
+        if overall_rating == 0:
+            rating_only_patterns = [
+                r'(\d\.\d)\s*out of 5',  # "4.4 out of 5"
+                r'(\d\.\d)\s*[★⭐]',  # "4.4★"
+                r'[★⭐]+\s*(\d\.\d)',  # "★★★★☆ 4.4"
+            ]
+            for pattern in rating_only_patterns:
+                match = re.search(pattern, text, re.I)
+                if match:
+                    try:
+                        rating_val = float(match.group(1))
+                        if 1.0 <= rating_val <= 5.0:
+                            overall_rating = rating_val
+                            print(f"  [OK] Rating found: {overall_rating} (count unknown)")
                 break
+                    except (ValueError, IndexError):
+                        continue
         
         if overall_rating == 0:
-            print(f"  ⚠️  Could not extract rating")
-            # Save debug file to troubleshoot
-            with open(f'debug_rating_{company_display_name.replace(" ", "_")}.txt', 'w', encoding='utf-8') as f:
-                f.write(text[:5000])  # First 5000 chars
+            print(f"  [!] Could not auto-detect rating")
+            # Ask user to manually enter the rating they see on screen
+            print(f"  ")
+            print(f"  Can you see the rating on the Google page?")
+            user_rating = input(f"  Enter rating (e.g. 4.7) or press ENTER to skip: ").strip()
+            if user_rating:
+                try:
+                    overall_rating = float(user_rating)
+                    print(f"  [OK] Using manual rating: {overall_rating}")
+                except ValueError:
+                    print(f"  [!] Invalid rating, skipping")
+            
+            user_count = input(f"  Enter review count (e.g. 1234) or press ENTER to skip: ").strip()
+            if user_count:
+                try:
+                    review_count = int(user_count.replace(',', ''))
+                    print(f"  [OK] Using manual count: {review_count}")
+                except ValueError:
+                    print(f"  [!] Invalid count, skipping")
         
         # Try to click Reviews
-        print(f"\n  🖱️  Attempting to click 'Reviews'...")
-        print(f"  ⏸️  ⏸️  ⏸️  MANUAL STEP ⏸️  ⏸️  ⏸️")
+        print(f"\n  Attempting to click 'Reviews'...")
+        print(f"  === MANUAL STEP ===")
         print(f"  ")
-        print(f"  👉 In the browser window:")
+        print(f"  In the browser window:")
         print(f"     1. Click 'Reviews' if you see it")
         print(f"     2. Wait for reviews to load")
         print(f"     3. Scroll down to see more reviews")
@@ -219,7 +441,7 @@ def scrape_company_reviews(driver, company_display_name):
         print(f"  ")
         input(f"  Press ENTER when reviews are visible on screen: ")
         
-        print(f"\n  ✅ Scraping visible content...")
+        print(f"\n  Scraping visible content...")
         
         # Get whatever is on the page now
         page_html = driver.page_source
@@ -231,11 +453,11 @@ def scrape_company_reviews(driver, company_display_name):
         # Extract reviews
         reviews = extract_reviews_from_page(driver, page_html)
         
-        print(f"  📝 Extracted {len(reviews)} text blocks that look like reviews")
+        print(f"  Extracted {len(reviews)} text blocks that look like reviews")
         
         # Show first review as sample
         if reviews:
-            print(f"\n  📄 Sample review:")
+            print(f"\n  Sample review:")
             print(f"     \"{reviews[0]['text'][:100]}...\"")
         
         if overall_rating > 0 or reviews:
@@ -250,7 +472,7 @@ def scrape_company_reviews(driver, company_display_name):
             return None
             
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+        print(f"  [ERROR] {e}")
         return None
 
 def load_tour_ids_for_company(company):
@@ -318,7 +540,7 @@ def main():
     print("=" * 70)
     print("MANUAL GOOGLE REVIEWS SCRAPER")
     print("=" * 70)
-    print("\n💡 YOU control when to scrape - manual and reliable!")
+    print("\nYOU control when to scrape - manual and reliable!")
     print()
     print("How it works:")
     print("  1. Script opens browser and searches")
@@ -331,18 +553,18 @@ def main():
     specified_csvs = None
     if len(sys.argv) > 1:
         specified_csvs = sys.argv[1:]
-        print(f"📋 You specified {len(specified_csvs)} CSV file(s) to process:")
+        print(f"You specified {len(specified_csvs)} CSV file(s) to process:")
         for csv in specified_csvs:
             print(f"   - {csv}")
         print()
     
     # Discover companies with tours (filtered by specified CSVs if provided)
-    print("🔍 Discovering companies with tours...")
+    print("Discovering companies with tours...")
     companies_to_scrape = discover_companies(specified_csvs)
-    print(f"\n📊 Found {len(companies_to_scrape)} companies with tours\n")
+    print(f"\nFound {len(companies_to_scrape)} companies with tours\n")
     
     if not companies_to_scrape:
-        print("❌ No companies found with tours!")
+        print("[!] No companies found with tours!")
         return
     
     input("Press ENTER to start scraping...")
@@ -352,42 +574,53 @@ def main():
     try:
         success_count = 0
         
-        for company in companies_to_scrape:
+        for i, company in enumerate(companies_to_scrape):
+            try:
             print(f"\n{'='*70}")
-            print(f"📍 {get_company_display_name(company)}")
+                print(f">>> [{i+1}/{len(companies_to_scrape)}] {get_company_display_name(company)}")
             print(f"{'='*70}")
             
             tour_ids = load_tour_ids_for_company(company)
             if not tour_ids:
-                print(f"  ⚠️  No tours found, skipping")
+                    print(f"  [!] No tours found, skipping")
                 continue
             
-            print(f"  📊 Tours: {len(tour_ids)}")
+                print(f"  Tours: {len(tour_ids)}")
             
             review_data = scrape_company_reviews(driver, get_company_display_name(company))
             
             if review_data and (review_data['overall_rating'] > 0 or review_data['reviews']):
-                print(f"\n  💾 Saving to {len(tour_ids)} tour files...")
-                print(f"     Rating: {review_data['overall_rating']}★")
+                    print(f"\n  Saving to {len(tour_ids)} tour files...")
+                    print(f"     Rating: {review_data['overall_rating']}")
                 print(f"     Reviews: {len(review_data['reviews'])}")
                 
                 for tour_id in tour_ids:
                     save_reviews(company, tour_id, review_data)
                 
-                print(f"  ✅ Saved!")
+                    print(f"  [OK] Saved!")
                 success_count += 1
             else:
-                print(f"  ❌ No data collected")
+                    print(f"  [!] No data collected")
+                
+            except Exception as e:
+                print(f"\n  [ERROR] Failed on {company}: {e}")
+                import traceback
+                traceback.print_exc()
+                print(f"  Continuing to next company...")
             
             # Ask before continuing
-            if company != companies_to_scrape[-1]:
-                print(f"\n  ⏭️  Ready for next company?")
+            if i < len(companies_to_scrape) - 1:
+                print(f"\n  Ready for next company?")
                 input("  Press ENTER to continue...")
         
         print(f"\n{'='*70}")
-        print(f"✅ COMPLETE: {success_count}/{len(companies_to_scrape)} companies")
+        print(f"COMPLETE: {success_count}/{len(companies_to_scrape)} companies")
         print(f"{'='*70}")
         
+    except Exception as e:
+        print(f"\n[FATAL ERROR] {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         input("\nPress ENTER to close browser...")
         driver.quit()
