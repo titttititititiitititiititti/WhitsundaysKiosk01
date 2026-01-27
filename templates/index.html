@@ -17662,26 +17662,15 @@
         }, 50);
       }
       
-      // CHECK FOR BOOKING INTENT - Auto-open tour detail if user wants to book
-      if (currentAITourCards.length > 0) {
-        const intendedTour = detectBookingIntent(message);
-        if (intendedTour) {
-          console.log(`🎫 User wants to book/learn more: ${intendedTour.name}`);
-          
-          // Show a quick response before opening
-          const bookingMsg = document.createElement('div');
-          bookingMsg.className = 'ai-message assistant';
-          bookingMsg.innerHTML = `Great choice! Opening <strong>${intendedTour.name}</strong> for you... 🎉`;
-          messagesContainer.appendChild(bookingMsg);
-          
-          // Brief delay then open the tour
-          setTimeout(() => {
-            openTourFromAI(intendedTour);
-          }, 1500);
-          
-          return; // Don't continue to API call
-        }
-      }
+      // DISABLED: Voice-activated tour card opening caused more harm than good
+      // Users can tap tour cards directly instead
+      // if (currentAITourCards.length > 0) {
+      //   const intendedTour = detectBookingIntent(message);
+      //   if (intendedTour) {
+      //     console.log(`🎫 User wants to book/learn more: ${intendedTour.name}`);
+      //     // ... auto-open tour feature disabled
+      //   }
+      // }
       
       // Start orb with gentle thinking animation
       const orbContainer = document.querySelector('.ai-visualizer-container');
