@@ -2457,10 +2457,15 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     # SPECIAL HANDLING: "reef" requests should default to Great Barrier Reef tours
     # Most tourists asking for "reef tour" want the actual GBR, not just coral reef snorkeling near islands
     # Only show coral reef tours if user specifically asks for "coral reef" or "fringing reef"
-    wants_coral_reef_only = 'coral reef' in combined_text or 'fringing reef' in combined_text
-    has_reef_request = 'reef' in active_keywords or 'great barrier' in combined_text or 'gbr' in combined_text
+    # IMPORTANT: Only check CURRENT message for reef intent, not conversation history!
+    # Otherwise switching from GBR to Whitehaven would still apply GBR filters
+    wants_coral_reef_only = 'coral reef' in msg_lower or 'fringing reef' in msg_lower
+    has_reef_request = 'reef' in active_keywords or 'great barrier' in msg_lower or 'gbr' in msg_lower
     
-    if has_reef_request and not wants_coral_reef_only:
+    # Check if user is NOW asking for something different (not reef-related)
+    is_non_reef_request = any(kw in msg_lower for kw in ['whitehaven', 'beach tour', 'sailing', 'sunset', 'jetski', 'jet ski', 'helicopter'])
+    
+    if has_reef_request and not wants_coral_reef_only and not is_non_reef_request:
         # Treat ALL reef requests as Great Barrier Reef requests
         active_keywords.append('great_barrier_reef')
         if 'reef' in active_keywords:
