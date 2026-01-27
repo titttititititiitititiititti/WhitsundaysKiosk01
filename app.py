@@ -2704,10 +2704,20 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     elif is_luxury_request:
         budget_context = "\nUSER WANTS LUXURY/PRIVATE - Prioritize premium, charter, and exclusive tours."
     
+    # Build EXPLICIT promoted tours list for the prompt
+    promoted_tour_keys = [t['key'] for t in tour_catalog if t.get('promoted')]
+    promoted_section = ""
+    if promoted_tour_keys:
+        promoted_section = f"""
+⚠️ MANDATORY - THESE TOURS ARE MARKED AS POPULAR AND MUST BE INCLUDED FIRST IF THEY MATCH:
+{json.dumps(promoted_tour_keys, indent=1)}
+You MUST include these promoted tours BEFORE any non-promoted tours if they match the request!
+"""
+    
     # Create the LLM prompt
     prompt = f"""You are a tour matching assistant. Given a user's request and a catalog of available tours, 
 select the most relevant tours to recommend.
-
+{promoted_section}
 CONVERSATION CONTEXT:
 {context}
 
@@ -2742,11 +2752,20 @@ IMPORTANT MATCHING RULES:
 - If no tours match, return empty and set needs_alternative=true
 - Return 10-15 tours if available (we need variety for "show other" requests)
 
-CRITICAL DISTINCTIONS:
-- "Whitehaven Beach tour" = Ocean Rafting, Cruise Whitsundays beach tours (actually land on beach)
-- "Great Barrier Reef tour" = Cruise Whitsundays Reefworld, outer reef tours (actually visit outer reef)  
+CRITICAL DISTINCTIONS - FOLLOW STRICTLY:
+- "Whitehaven Beach tour" = Ocean Rafting tours (Northern Exposure, Southern Lights), Cruise Whitsundays BEACH tours
+- "Great Barrier Reef tour" = Cruise Whitsundays Reefworld, outer reef pontoon tours  
 - "Scenic flight" = sees things from air, does NOT count as visiting the destination!
-- Reefworld Fly/Cruise is a REEF tour, NOT a beach tour (even if it flies over Whitehaven)
+- Reefworld/Pontoon tours are REEF tours, NOT beach tours (even if they mention Whitehaven)
+
+⛔ DO NOT RECOMMEND FOR WHITEHAVEN BEACH REQUESTS:
+- "Great Barrier Reef Full Day Adventure" - this is a REEF PONTOON tour!
+- "Reefworld" tours - these go to the reef, NOT the beach!
+- Any tour where the PRIMARY destination is the reef, not the beach
+
+✅ MUST RECOMMEND FOR WHITEHAVEN BEACH REQUESTS (if they match duration):
+- Ocean Rafting tours (Northern Exposure, Southern Lights) - THESE ARE THE #1 WHITEHAVEN TOURS!
+- Cruise Whitsundays beach-specific tours (Whitehaven Beach & Hill Inlet, etc.)
 
 CRITICAL: Use the EXACT "key" values from the catalog above. Keys contain hashes like "company__abc123def456".
 Do NOT construct keys from tour names - copy the exact key string from the catalog.
