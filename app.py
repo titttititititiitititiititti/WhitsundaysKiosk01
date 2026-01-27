@@ -2446,7 +2446,7 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     combined_text = msg_lower + " " + context_lower
     
     keywords = ['snorkel', 'dive', 'reef', 'whitehaven', 'beach', 'sail', 'cruise', 'helicopter',
-                'jet ski', 'kayak', 'fishing', 'whale', 'turtle', 'scenic', 'island', 'sunset',
+                'jet ski', 'jetski', 'kayak', 'fishing', 'whale', 'turtle', 'scenic', 'island', 'sunset',
                 'half day', 'full day', 'overnight', 'family', 'romantic', 'adventure',
                 'kangaroo', 'wildlife', 'animal', 'platypus', 'wallaby', 'nature', 'eco',
                 'bird', 'crocodile', 'koala', 'dolphin', 'sunrise', 'rainforest', 'multi-day',
@@ -2543,8 +2543,17 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
                 )
                 if is_actual_gbr_tour and not is_fringing_only:
                     relevant_tours.append(t)
-            elif any(kw in tour_text or kw in tags for kw in active_keywords):
-                relevant_tours.append(t)
+            else:
+                # Special handling for jetski - match both "jet ski" and "jetski" variants
+                if any(kw in ['jet ski', 'jetski'] for kw in active_keywords):
+                    # Normalize tour text to find jetski tours
+                    if 'jetski' in tour_text or 'jet ski' in tour_text or 'jetskitour' in t.get('company', '').lower():
+                        relevant_tours.append(t)
+                        continue
+                
+                # Standard keyword matching
+                if any(kw in tour_text or kw in tags for kw in active_keywords):
+                    relevant_tours.append(t)
     
     # Filter out excluded keys (for "other options" requests)
     if exclude_keys:
