@@ -5537,16 +5537,219 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:38:31.845060",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-01-27T12:38:31.845060",
+      "duration_seconds": 153.482262
+    },
+    {
+      "session_id": "session_56bd7845a03f_1769481512",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:38:32.646327",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:38:32.646327",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:40:32.852798",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-01-27T12:40:32.852798",
+      "duration_seconds": 120.206471
+    },
+    {
+      "session_id": "session_4613a75f9523_1769481633",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:40:33.444520",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:40:33.444520",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:41:03.264687",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:41:13.945757",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:41:29.742502",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-01-27T12:41:29.742502",
+      "duration_seconds": 56.297982
+    },
+    {
+      "session_id": "session_6587de3afbcd_1769481690",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:41:30.463959",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:41:30.463959",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:41:39.238327",
+          "data": {
+            "language": "hi"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:41:41.205078",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-01-27T12:41:52.545222",
+          "data": {}
+        }
+      ],
+      "language": "hi",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-01-27T12:41:52.545222",
+      "duration_seconds": 22.081263
+    },
+    {
+      "session_id": "session_9bf8421ed6e6_1769481713",
+      "account": "bailey",
+      "started_at": "2026-01-27T12:41:53.399694",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-01-27T12:41:53.399694",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-01-27T12:41:58.670662",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-01-27T12:42:00.331258",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:42:06.474353",
+          "data": {
+            "role": "user",
+            "message": "hi i want a reef tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:42:13.393712",
+          "data": {
+            "role": "assistant",
+            "message": "That's fantastic! \ud83d\udc20 The Great Barrier Reef is one of the Seven Natural Wonders of the World! To help me find the best reef tour for you, can you let me know how long you'd like to spend on the tour?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:42:36.190579",
+          "data": {
+            "role": "user",
+            "message": "maybe like 10 or so hours I'm not too sure"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-01-27T12:42:45.485753",
+          "data": {
+            "role": "assistant",
+            "message": "A full-day reef tour sounds perfect for you! \ud83c\udf0a You'll get to experience the stunning underwater world of the Great Barrier Reef. Let me show you some amazing options for full-day reef tours! \n\n1. **Reefworld Tour** - Dive into a day of adventure at the outer Great Barrier Reef! This tour takes you to the breathtaking Hardy Reef, where you can snorkel or dive amidst vibrant coral gardens and tropical fish. With expert guidance and all gear provided, you'll have an unforgettable experience in cry"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "hi i want a reef tour",
+          "timestamp": "2026-01-27T12:42:06.474353"
+        },
+        {
+          "role": "assistant",
+          "message": "That's fantastic! \ud83d\udc20 The Great Barrier Reef is one of the Seven Natural Wonders of the World! To help me find the best reef tour for you, can you let me know how long you'd like to spend on the tour?",
+          "timestamp": "2026-01-27T12:42:13.393712"
+        },
+        {
+          "role": "user",
+          "message": "maybe like 10 or so hours I'm not too sure",
+          "timestamp": "2026-01-27T12:42:36.190579"
+        },
+        {
+          "role": "assistant",
+          "message": "A full-day reef tour sounds perfect for you! \ud83c\udf0a You'll get to experience the stunning underwater world of the Great Barrier Reef. Let me show you some amazing options for full-day reef tours! \n\n1. **Reefworld Tour** - Dive into a day of adventure at the outer Great Barrier Reef! This tour takes you to the breathtaking Hardy Reef, where you can snorkel or dive amidst vibrant coral gardens and tropical fish. With expert guidance and all gear provided, you'll have an unforgettable experience in cry",
+          "timestamp": "2026-01-27T12:42:45.485753"
+        }
+      ]
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-01-27T12:35:58.363569"
+  "last_updated": "2026-01-27T12:42:45.488395"
 }

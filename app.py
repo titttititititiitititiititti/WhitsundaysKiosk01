@@ -2454,17 +2454,20 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     
     active_keywords = [kw for kw in keywords if kw in combined_text]
     
-    # SPECIAL HANDLING: "Great Barrier Reef" vs just "reef"
-    # "Great Barrier Reef" means actual GBR tours (not just coral reef snorkeling)
-    wants_great_barrier_reef = 'great barrier' in combined_text or 'gbr' in combined_text
-    if wants_great_barrier_reef:
+    # SPECIAL HANDLING: "reef" requests should default to Great Barrier Reef tours
+    # Most tourists asking for "reef tour" want the actual GBR, not just coral reef snorkeling near islands
+    # Only show coral reef tours if user specifically asks for "coral reef" or "fringing reef"
+    wants_coral_reef_only = 'coral reef' in combined_text or 'fringing reef' in combined_text
+    has_reef_request = 'reef' in active_keywords or 'great barrier' in combined_text or 'gbr' in combined_text
+    
+    if has_reef_request and not wants_coral_reef_only:
+        # Treat ALL reef requests as Great Barrier Reef requests
         active_keywords.append('great_barrier_reef')
-        # Remove generic 'reef' to be more specific
         if 'reef' in active_keywords:
             active_keywords.remove('reef')
+        print(f"[LLM] Reef request -> treating as Great Barrier Reef request")
     
     print(f"[LLM] Active keywords from message+context: {active_keywords}")
-    print(f"[LLM] Wants Great Barrier Reef specifically: {wants_great_barrier_reef}")
     
     # BUDGET DETECTION - if user mentions backpacker/budget keywords, filter out expensive tours
     budget_keywords = ['backpack', 'budget', 'cheap', 'affordable', 'student', 'hostel', 'low cost', 'inexpensive']
