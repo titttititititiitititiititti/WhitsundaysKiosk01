@@ -135,15 +135,19 @@ def load_agent_settings():
     }
 
 def get_hero_booking_settings():
-    """Get Hero booking platform settings for frontend"""
+    """Get Hero booking platform settings for frontend (uses active kiosk account)"""
+    # Get tour overrides from the active kiosk account
+    tour_overrides = get_kiosk_tour_overrides()
+    
+    # Global Hero settings (rarely used now - per-tour overrides preferred)
     settings = load_agent_settings()
     hero = settings.get('hero_booking_platform', {})
-    tour_overrides = settings.get('tour_overrides', {})
+    
     return {
         'enabled': hero.get('default_enabled', False),
         'availability_widget_url': hero.get('availability_widget_url', ''),
         'pricing_widget_url': hero.get('pricing_widget_url', ''),
-        'tour_overrides': tour_overrides  # Per-tour settings
+        'tour_overrides': tour_overrides  # Per-tour settings from active account
     }
 
 def save_agent_settings(settings):
@@ -155,7 +159,13 @@ def save_agent_settings(settings):
         json.dump(settings, f, indent=2)
 
 def get_kiosk_custom_logo():
-    """Get the custom logo for this kiosk instance from instance config"""
+    """Get the custom logo for this kiosk instance from active account"""
+    active_account = get_active_account()
+    if active_account:
+        settings = load_account_settings(active_account)
+        return settings.get('kiosk_settings', {}).get('custom_logo', '')
+    
+    # Fallback to instance config
     instance_config_file = 'config/instance.json'
     if os.path.exists(instance_config_file):
         with open(instance_config_file, 'r', encoding='utf-8') as f:
@@ -163,7 +173,7 @@ def get_kiosk_custom_logo():
             return config.get('custom_logo', '')
     return ''
 
-def update_instance_config(kiosk_settings):
+def update_instance_config(kiosk_settings, username=None):
     """Update the instance config file with kiosk settings (makes changes live)"""
     instance_config_file = 'config/instance.json'
     os.makedirs('config', exist_ok=True)
@@ -174,6 +184,10 @@ def update_instance_config(kiosk_settings):
             config = json.load(f)
     else:
         config = {}
+    
+    # CRITICAL: Link this kiosk instance to the account
+    if username:
+        config['active_account'] = username
     
     # Update relevant fields
     config['custom_logo'] = kiosk_settings.get('custom_logo', '')
@@ -186,7 +200,40 @@ def update_instance_config(kiosk_settings):
     with open(instance_config_file, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2)
     
-    print(f"[INSTANCE] Updated instance config: {config}")
+    print(f"[INSTANCE] Updated instance config for account '{username}': logo={config.get('custom_logo', 'none')}")
+
+def get_active_account():
+    """Get the active account for this kiosk instance"""
+    instance_config_file = 'config/instance.json'
+    if os.path.exists(instance_config_file):
+        with open(instance_config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+            return config.get('active_account')
+    return None
+
+def get_kiosk_enabled_tours():
+    """Get the list of enabled tours for this kiosk instance"""
+    active_account = get_active_account()
+    if active_account:
+        settings = load_account_settings(active_account)
+        return settings.get('enabled_tours', [])
+    return []  # No account = no tours
+
+def get_kiosk_tour_overrides():
+    """Get tour overrides for this kiosk instance"""
+    active_account = get_active_account()
+    if active_account:
+        settings = load_account_settings(active_account)
+        return settings.get('tour_overrides', {})
+    return {}
+
+def get_kiosk_promotions():
+    """Get promoted tours for this kiosk instance"""
+    active_account = get_active_account()
+    if active_account:
+        settings = load_account_settings(active_account)
+        return settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
+    return {'popular': [], 'featured': [], 'best_value': []}
 
 def load_shop_config(company=None):
     """Load shop-specific configuration based on company/account"""
@@ -254,19 +301,24 @@ def operator_required(f):
     return decorated_function
 
 def get_tour_promotion_status(tour_key):
-    """Get the promotion status for a tour"""
-    settings = load_agent_settings()
-    promoted = settings.get('promoted_tours', {})
-    
-    for level, tours in promoted.items():
+    """Get the promotion status for a tour (uses active kiosk account)"""
+    # First check kiosk's active account
+    promotions = get_kiosk_promotions()
+    for level, tours in promotions.items():
         if tour_key in tours:
             return level
     return None
 
 def is_tour_enabled(tour_key):
-    """Check if a tour is enabled (not disabled by agent)"""
-    settings = load_agent_settings()
-    return tour_key not in settings.get('disabled_tours', [])
+    """Check if a tour is enabled for the active kiosk account"""
+    # Get enabled tours for the active kiosk account
+    enabled_tours = get_kiosk_enabled_tours()
+    
+    # If no account is linked or account has no tours, show nothing
+    if not enabled_tours:
+        return False
+    
+    return tour_key in enabled_tours
 
 def are_company_images_enabled(company_name):
     """Check if images are enabled for a company (for legal purposes)"""
@@ -1378,7 +1430,11 @@ def account_onboarding():
         settings['onboarding_complete'] = True
         save_account_settings(username, settings)
         
+        # Link this account to the kiosk instance
+        update_instance_config(settings.get('kiosk_settings', {}), username)
+        
         print(f"[ONBOARDING] User {username} completed onboarding with {len(selected_tours)} tours")
+        print(f"[ONBOARDING] Kiosk instance now linked to account: {username}")
         return redirect(url_for('agent_dashboard'))
     
     # Load all available tours grouped by company
@@ -1475,9 +1531,9 @@ def kiosk_settings():
         settings['kiosk_settings'] = kiosk
         save_account_settings(username, settings)
         
-        # Also update instance config if this account is the active kiosk
+        # Also update instance config - links this account to the kiosk
         # This makes the settings live on the kiosk display
-        update_instance_config(kiosk)
+        update_instance_config(kiosk, username)
         
         return redirect(url_for('kiosk_settings') + '?saved=1')
     

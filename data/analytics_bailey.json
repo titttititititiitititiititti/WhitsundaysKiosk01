@@ -1,60 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_71a9c2954a14_1769433947",
-      "account": "bailey",
-      "started_at": "2026-01-26T23:25:47.206420",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-01-26T23:25:47.206420",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-01-26T23:27:47.246295",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-01-26T23:27:47.246295",
-      "duration_seconds": 120.039875
-    },
-    {
-      "session_id": "session_21a7b104b24a_1769434067",
-      "account": "bailey",
-      "started_at": "2026-01-26T23:27:47.861838",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-01-26T23:27:47.861838",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-01-26T23:29:47.883869",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-01-26T23:29:47.883869",
-      "duration_seconds": 120.022031
-    },
-    {
       "session_id": "session_cefda451d2a4_1769434188",
       "account": "bailey",
       "started_at": "2026-01-26T23:29:48.603652",
@@ -35146,10 +35092,64 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-02T16:11:55.532829",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-02T16:11:55.532829",
+      "duration_seconds": 365.932095
+    },
+    {
+      "session_id": "session_055cfd4a9c73_1770012716",
+      "account": "bailey",
+      "started_at": "2026-02-02T16:11:56.359626",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-02T16:11:56.359626",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-02T16:13:56.426714",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-02T16:13:56.427749",
+      "duration_seconds": 120.068123
+    },
+    {
+      "session_id": "session_c8cc99cf808b_1770012841",
+      "account": "bailey",
+      "started_at": "2026-02-02T16:14:01.620307",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-02T16:14:01.620307",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -35157,5 +35157,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-02T16:08:05.848584"
+  "last_updated": "2026-02-02T16:14:01.621384"
 }

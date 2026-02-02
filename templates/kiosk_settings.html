@@ -379,9 +379,17 @@
         
         {% if saved %}
         <div class="saved-notice">
-            <span>✅</span> Settings saved successfully!
+            <span>✅</span> Settings saved and deployed to kiosk!
         </div>
         {% endif %}
+        
+        <div class="saved-notice" style="background: rgba(0, 119, 182, 0.2); border-color: rgba(0, 119, 182, 0.5); color: #58a6ff;">
+            <span>🔗</span> 
+            <div>
+                <strong>Kiosk Linked to Your Account</strong><br>
+                <small style="opacity: 0.8;">When you save settings here, they automatically apply to the live kiosk. Only tours you've enabled in your dashboard will appear on the kiosk.</small>
+            </div>
+        </div>
         
         <form method="POST" enctype="multipart/form-data">
             <!-- Branding Settings -->
