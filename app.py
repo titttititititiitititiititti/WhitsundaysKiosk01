@@ -1430,11 +1430,10 @@ def account_onboarding():
         settings['onboarding_complete'] = True
         save_account_settings(username, settings)
         
-        # Link this account to the kiosk instance
-        update_instance_config(settings.get('kiosk_settings', {}), username)
+        # Note: Don't auto-link to kiosk here - use setup_kiosk.py for that
+        # Each shop's repo should have instance.json pre-configured
         
         print(f"[ONBOARDING] User {username} completed onboarding with {len(selected_tours)} tours")
-        print(f"[ONBOARDING] Kiosk instance now linked to account: {username}")
         return redirect(url_for('agent_dashboard'))
     
     # Load all available tours grouped by company
@@ -1531,9 +1530,9 @@ def kiosk_settings():
         settings['kiosk_settings'] = kiosk
         save_account_settings(username, settings)
         
-        # Also update instance config - links this account to the kiosk
-        # This makes the settings live on the kiosk display
-        update_instance_config(kiosk, username)
+        # Note: We don't auto-update instance.json here anymore
+        # Each shop's repo has its own instance.json set up once with setup_kiosk.py
+        # This prevents conflicts when multiple accounts exist in the same codebase
         
         return redirect(url_for('kiosk_settings') + '?saved=1')
     
