@@ -6967,6 +6967,235 @@
     }
     
     /* ===================================================================
+       ON-SCREEN KEYBOARD
+       =================================================================== */
+    
+    .keyboard-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 99999999 !important;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    
+    .keyboard-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+    }
+    
+    .keyboard-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(180deg, #2a3441 0%, #1a242f 100%);
+      border-radius: 24px 24px 0 0;
+      padding: 16px 20px 24px;
+      box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.5);
+      animation: keyboardSlideUp 0.3s ease-out;
+    }
+    
+    @keyframes keyboardSlideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .keyboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .keyboard-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    .keyboard-lang-indicator {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    
+    .keyboard-close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .keyboard-close-btn:hover {
+      background: rgba(255, 80, 80, 0.8);
+    }
+    
+    .keyboard-preview {
+      margin-bottom: 16px;
+    }
+    
+    .keyboard-preview-field {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-family: inherit;
+      outline: none;
+    }
+    
+    .keyboard-preview-field:focus {
+      border-color: #00b4d8;
+    }
+    
+    .keyboard-keys {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .keyboard-key {
+      min-width: 48px;
+      height: 56px;
+      background: linear-gradient(180deg, #4a5568 0%, #3a4351 100%);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.3rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #2d3748, 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .keyboard-key:hover {
+      background: linear-gradient(180deg, #5a6578 0%, #4a5461 100%);
+    }
+    
+    .keyboard-key:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #2d3748;
+    }
+    
+    .keyboard-key.key-space {
+      flex: 1;
+      max-width: 400px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .keyboard-key.key-backspace,
+    .keyboard-key.key-shift,
+    .keyboard-key.key-enter {
+      min-width: 80px;
+      font-size: 1rem;
+      background: linear-gradient(180deg, #3a4351 0%, #2d3748 100%);
+    }
+    
+    .keyboard-key.key-shift.active {
+      background: linear-gradient(180deg, #00b4d8 0%, #0077b6 100%);
+    }
+    
+    .keyboard-key.key-lang {
+      min-width: 60px;
+      font-size: 0.85rem;
+      background: linear-gradient(180deg, #2d3748 0%, #1a242f 100%);
+    }
+    
+    .keyboard-key.key-numbers {
+      min-width: 60px;
+      font-size: 0.9rem;
+      background: linear-gradient(180deg, #2d3748 0%, #1a242f 100%);
+    }
+    
+    .keyboard-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 16px;
+      gap: 12px;
+    }
+    
+    .keyboard-action-btn {
+      padding: 14px 40px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .keyboard-done-btn {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 180, 216, 0.4);
+    }
+    
+    .keyboard-done-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Chinese/Japanese specific character keys */
+    .keyboard-key.key-char {
+      font-size: 1.5rem;
+    }
+    
+    /* Suggestion bar for predictive text (future) */
+    .keyboard-suggestions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+    
+    .keyboard-suggestion {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: #fff;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .keyboard-suggestion:hover {
+      background: rgba(0, 180, 216, 0.3);
+    }
+    
+    /* ===================================================================
        QR PAYMENT MODAL
        =================================================================== */
     
@@ -14758,6 +14987,27 @@
       <!-- Microphone button -->
       <span class="ai-mic-hint">Tap before speaking</span>
       <button class="ai-mic-btn" id="ai-mic-btn" onclick="toggleAIMicrophone()">🎤</button>
+    </div>
+  </div>
+  
+  <!-- On-Screen Keyboard Overlay -->
+  <div id="onscreen-keyboard-overlay" class="keyboard-overlay" style="display: none;">
+    <div class="keyboard-backdrop" onclick="hideOnscreenKeyboard()"></div>
+    <div class="keyboard-container">
+      <div class="keyboard-header">
+        <span class="keyboard-title">⌨️ Keyboard</span>
+        <span class="keyboard-lang-indicator" id="keyboard-lang-indicator">EN</span>
+        <button class="keyboard-close-btn" onclick="hideOnscreenKeyboard()">✕</button>
+      </div>
+      <div class="keyboard-preview">
+        <input type="text" id="keyboard-preview-input" class="keyboard-preview-field" readonly placeholder="Type here...">
+      </div>
+      <div class="keyboard-keys" id="keyboard-keys">
+        <!-- Keys will be generated by JavaScript -->
+      </div>
+      <div class="keyboard-actions">
+        <button class="keyboard-action-btn keyboard-done-btn" onclick="confirmKeyboardInput()">✓ Done</button>
+      </div>
     </div>
   </div>
   
@@ -28892,6 +29142,350 @@
       });
       
       console.log('🔄 Screen rotation initialized - double-tap any corner to rotate 180°');
+    })();
+
+    // ===================================================================
+    // ON-SCREEN KEYBOARD FOR AI ASSISTANT
+    // ===================================================================
+    (function() {
+      var currentKeyboardLang = 'en';
+      var isShiftActive = false;
+      var isNumberMode = false;
+      var targetInputElement = null;
+      var currentKeyboardPage = 1;
+      
+      // Keyboard layouts for different languages
+      var keyboardLayouts = {
+        en: {
+          name: 'EN',
+          rows: [
+            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+            ['SHIFT', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '.', 'ENTER']
+          ]
+        },
+        zh: {
+          name: '中文',
+          rows: [
+            ['我', '你', '他', '是', '的', '在', '有', '了', '不', '这'],
+            ['人', '们', '来', '到', '说', '要', '就', '出', '会', '可'],
+            ['PAGE', '好', '很', '什', '么', '吗', '呢', '吧', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '。', '？', 'ENTER']
+          ],
+          page2: [
+            ['想', '看', '去', '能', '对', '着', '过', '子', '得', '也'],
+            ['和', '那', '里', '后', '为', '以', '上', '中', '大', '小'],
+            ['PAGE', '时', '个', '年', '月', '日', '号', '点', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '，', '！', 'ENTER']
+          ]
+        },
+        ja: {
+          name: 'あいう',
+          rows: [
+            ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ'],
+            ['さ', 'し', 'す', 'せ', 'そ', 'た', 'ち', 'つ', 'て', 'と'],
+            ['PAGE', 'な', 'に', 'ぬ', 'ね', 'の', 'は', 'ひ', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '。', '？', 'ENTER']
+          ],
+          page2: [
+            ['ふ', 'へ', 'ほ', 'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ'],
+            ['よ', 'ら', 'り', 'る', 'れ', 'ろ', 'わ', 'を', 'ん', 'ー'],
+            ['PAGE', 'が', 'ぎ', 'ぐ', 'げ', 'ご', 'ざ', 'じ', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '、', '！', 'ENTER']
+          ],
+          page3: [
+            ['ず', 'ぜ', 'ぞ', 'だ', 'ぢ', 'づ', 'で', 'ど', 'ば', 'び'],
+            ['ぶ', 'べ', 'ぼ', 'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ', 'っ', 'ゃ'],
+            ['PAGE', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '。', '？', 'ENTER']
+          ]
+        },
+        de: {
+          name: 'DE',
+          rows: [
+            ['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 'ü'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ö', 'ä'],
+            ['SHIFT', 'y', 'x', 'c', 'v', 'b', 'n', 'm', 'ß', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '.', 'ENTER']
+          ]
+        },
+        fr: {
+          name: 'FR',
+          rows: [
+            ['a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            ['q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'],
+            ['SHIFT', 'w', 'x', 'c', 'v', 'b', 'n', 'BACKSPACE'],
+            ['123', 'LANG', 'é', 'è', 'à', 'ù', 'ç', 'SPACE', '.', 'ENTER']
+          ]
+        },
+        es: {
+          name: 'ES',
+          rows: [
+            ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+            ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ñ'],
+            ['SHIFT', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACKSPACE'],
+            ['123', 'LANG', 'á', 'é', 'í', 'ó', 'ú', 'SPACE', '¿', '?', 'ENTER']
+          ]
+        },
+        hi: {
+          name: 'हिंदी',
+          rows: [
+            ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ'],
+            ['क', 'ख', 'ग', 'घ', 'च', 'छ', 'ज', 'झ', 'ट', 'ठ'],
+            ['PAGE', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '।', '?', 'ENTER']
+          ],
+          page2: [
+            ['न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व'],
+            ['श', 'ष', 'स', 'ह', 'ा', 'ि', 'ी', 'ु', 'ू', 'े'],
+            ['PAGE', 'ै', 'ो', 'ौ', 'ं', 'ः', '्', 'ृ', 'BACKSPACE'],
+            ['123', 'LANG', 'SPACE', '।', '!', 'ENTER']
+          ]
+        },
+        numbers: {
+          name: '123',
+          rows: [
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+            ['@', '#', '$', '%', '&', '*', '-', '+', '(', ')'],
+            ['!', '"', "'", ':', ';', '/', '?', ',', '.', 'BACKSPACE'],
+            ['ABC', 'LANG', 'SPACE', '.', 'ENTER']
+          ]
+        }
+      };
+      
+      // Get current app language
+      function getCurrentLanguage() {
+        // Try to get from the app's language setting
+        if (typeof currentLanguage !== 'undefined') return currentLanguage;
+        return document.documentElement.lang || 'en';
+      }
+      
+      // Get the correct page of rows for multi-page keyboards
+      function getKeyboardRows(layout) {
+        if (currentKeyboardPage === 1) {
+          return layout.rows;
+        } else if (currentKeyboardPage === 2 && layout.page2) {
+          return layout.page2;
+        } else if (currentKeyboardPage === 3 && layout.page3) {
+          return layout.page3;
+        }
+        return layout.rows;
+      }
+      
+      // Check if keyboard has multiple pages
+      function hasMultiplePages(layout) {
+        return layout.page2 || layout.page3;
+      }
+      
+      // Get max pages for a layout
+      function getMaxPages(layout) {
+        if (layout.page3) return 3;
+        if (layout.page2) return 2;
+        return 1;
+      }
+      
+      // Render keyboard
+      function renderKeyboard() {
+        var layout = isNumberMode ? keyboardLayouts.numbers : (keyboardLayouts[currentKeyboardLang] || keyboardLayouts.en);
+        var keysContainer = document.getElementById('keyboard-keys');
+        var langIndicator = document.getElementById('keyboard-lang-indicator');
+        
+        if (!keysContainer) return;
+        
+        keysContainer.innerHTML = '';
+        
+        // Show language name with page indicator for multi-page keyboards
+        var maxPages = getMaxPages(layout);
+        if (maxPages > 1) {
+          langIndicator.textContent = layout.name + ' ' + currentKeyboardPage + '/' + maxPages;
+        } else {
+          langIndicator.textContent = layout.name;
+        }
+        
+        // Get the correct rows for current page
+        var rows = getKeyboardRows(layout);
+        
+        rows.forEach(function(row) {
+          var rowDiv = document.createElement('div');
+          rowDiv.className = 'keyboard-row';
+          
+          row.forEach(function(key) {
+            var keyBtn = document.createElement('button');
+            keyBtn.className = 'keyboard-key';
+            
+            // Handle special keys
+            if (key === 'SPACE') {
+              keyBtn.classList.add('key-space');
+              keyBtn.textContent = 'space';
+              keyBtn.onclick = function() { insertChar(' '); };
+            } else if (key === 'BACKSPACE') {
+              keyBtn.classList.add('key-backspace');
+              keyBtn.textContent = '⌫';
+              keyBtn.onclick = deleteChar;
+            } else if (key === 'SHIFT') {
+              keyBtn.classList.add('key-shift');
+              if (isShiftActive) keyBtn.classList.add('active');
+              keyBtn.textContent = '⇧';
+              keyBtn.onclick = toggleShift;
+            } else if (key === 'ENTER') {
+              keyBtn.classList.add('key-enter');
+              keyBtn.textContent = '↵';
+              keyBtn.onclick = confirmKeyboardInput;
+            } else if (key === 'LANG') {
+              keyBtn.classList.add('key-lang');
+              keyBtn.textContent = '🌐';
+              keyBtn.onclick = cycleLanguage;
+            } else if (key === '123') {
+              keyBtn.classList.add('key-numbers');
+              keyBtn.textContent = '123';
+              keyBtn.onclick = function() { isNumberMode = true; currentKeyboardPage = 1; renderKeyboard(); };
+            } else if (key === 'ABC') {
+              keyBtn.classList.add('key-numbers');
+              keyBtn.textContent = 'ABC';
+              keyBtn.onclick = function() { isNumberMode = false; currentKeyboardPage = 1; renderKeyboard(); };
+            } else if (key === 'PAGE') {
+              // Page switching for multi-page keyboards (Chinese, Japanese, Hindi)
+              keyBtn.classList.add('key-numbers');
+              keyBtn.textContent = '▶ ' + currentKeyboardPage + '/' + maxPages;
+              keyBtn.onclick = function() {
+                currentKeyboardPage = (currentKeyboardPage % maxPages) + 1;
+                renderKeyboard();
+              };
+            } else {
+              // Regular character key
+              keyBtn.classList.add('key-char');
+              // Don't apply shift to non-Latin characters
+              var isLatin = /^[a-zA-Z]$/.test(key);
+              var displayChar = (isShiftActive && isLatin) ? key.toUpperCase() : key;
+              keyBtn.textContent = displayChar;
+              (function(dc, il) {
+                keyBtn.onclick = function() {
+                  insertChar(dc);
+                  if (isShiftActive && il) {
+                    isShiftActive = false;
+                    renderKeyboard();
+                  }
+                };
+              })(displayChar, isLatin);
+            }
+            
+            rowDiv.appendChild(keyBtn);
+          });
+          
+          keysContainer.appendChild(rowDiv);
+        });
+      }
+      
+      // Insert character
+      function insertChar(char) {
+        var preview = document.getElementById('keyboard-preview-input');
+        if (preview) {
+          preview.value += char;
+          preview.scrollLeft = preview.scrollWidth;
+        }
+      }
+      
+      // Delete character
+      function deleteChar() {
+        var preview = document.getElementById('keyboard-preview-input');
+        if (preview && preview.value.length > 0) {
+          preview.value = preview.value.slice(0, -1);
+        }
+      }
+      
+      // Toggle shift
+      function toggleShift() {
+        isShiftActive = !isShiftActive;
+        renderKeyboard();
+      }
+      
+      // Cycle through languages
+      function cycleLanguage() {
+        var langs = ['en', 'zh', 'ja', 'de', 'fr', 'es', 'hi'];
+        var currentIdx = langs.indexOf(currentKeyboardLang);
+        currentKeyboardLang = langs[(currentIdx + 1) % langs.length];
+        isNumberMode = false;
+        currentKeyboardPage = 1;
+        renderKeyboard();
+      }
+      
+      // Show keyboard
+      window.showOnscreenKeyboard = function(inputElement) {
+        targetInputElement = inputElement;
+        var overlay = document.getElementById('onscreen-keyboard-overlay');
+        var preview = document.getElementById('keyboard-preview-input');
+        
+        if (!overlay) return;
+        
+        // Set current language from app
+        currentKeyboardLang = getCurrentLanguage();
+        isShiftActive = false;
+        isNumberMode = false;
+        currentKeyboardPage = 1;
+        
+        // Copy current input value to preview
+        if (inputElement && preview) {
+          preview.value = inputElement.value || '';
+        }
+        
+        renderKeyboard();
+        overlay.style.display = 'flex';
+        
+        // Focus prevention - we don't want the real keyboard
+        if (inputElement) {
+          inputElement.blur();
+        }
+      };
+      
+      // Hide keyboard
+      window.hideOnscreenKeyboard = function() {
+        var overlay = document.getElementById('onscreen-keyboard-overlay');
+        if (overlay) {
+          overlay.style.display = 'none';
+        }
+        targetInputElement = null;
+      };
+      
+      // Confirm and transfer text to target input
+      window.confirmKeyboardInput = function() {
+        var preview = document.getElementById('keyboard-preview-input');
+        
+        if (targetInputElement && preview) {
+          targetInputElement.value = preview.value;
+          
+          // Trigger input event so other handlers know the value changed
+          targetInputElement.dispatchEvent(new Event('input', { bubbles: true }));
+          
+          // If this is the AI input, optionally send the message
+          if (targetInputElement.id === 'ai-text-input' || targetInputElement.id === 'chat-input') {
+            // Just close keyboard, let user press send
+            hideOnscreenKeyboard();
+          } else {
+            hideOnscreenKeyboard();
+          }
+        } else {
+          hideOnscreenKeyboard();
+        }
+      };
+      
+      // Attach to AI text inputs when clicked
+      document.addEventListener('click', function(e) {
+        var input = e.target;
+        if (input.id === 'ai-text-input' || input.id === 'chat-input') {
+          e.preventDefault();
+          showOnscreenKeyboard(input);
+        }
+      });
+      
+      // Also handle touch events
+      document.addEventListener('touchend', function(e) {
+        var input = e.target;
+        if (input.id === 'ai-text-input' || input.id === 'chat-input') {
+          e.preventDefault();
+          showOnscreenKeyboard(input);
+        }
+      }, { passive: false });
     })();
 
   </script>
