@@ -1,0 +1,200 @@
+===============================================================================
+                    FILTOUR KIOSK SETUP INSTRUCTIONS
+                    ================================
+                    
+    For: Airlie Beach Tourism Kiosk
+    Repo: https://github.com/titttititititiitititiititti/tourismwhitsundaysfiltour.git
+    
+===============================================================================
+
+WHAT'S ON THIS USB:
+-------------------
+1. Python installer (python-3.11.x-amd64.exe)
+2. Git installer (Git-2.x.x-64-bit.exe)  
+3. This instruction file
+4. install_kiosk.bat (automated installer)
+
+===============================================================================
+                         STEP-BY-STEP INSTRUCTIONS
+===============================================================================
+
+STEP 1: INSTALL PYTHON
+----------------------
+1. Open the USB drive in File Explorer
+2. Double-click: python-3.11.x-amd64.exe
+3. IMPORTANT: Check the box "Add Python to PATH" at the bottom!
+4. Click "Install Now"
+5. Wait for installation to complete
+6. Click "Close"
+
+To verify: Open Command Prompt, type: python --version
+Should show: Python 3.11.x
+
+
+STEP 2: INSTALL GIT
+-------------------
+1. Double-click: Git-2.x.x-64-bit.exe
+2. Click "Next" through all screens (default options are fine)
+3. Click "Install"
+4. Wait for installation to complete
+5. Click "Finish"
+
+To verify: Open NEW Command Prompt, type: git --version
+Should show: git version 2.x.x
+
+
+STEP 3: RUN THE AUTOMATED INSTALLER
+-----------------------------------
+1. Double-click: install_kiosk.bat
+2. Follow the prompts
+3. The script will:
+   - Clone the repository to C:\filtour
+   - Install Python dependencies
+   - Set up the kiosk to start automatically
+
+If automated installer fails, follow MANUAL STEPS below.
+
+
+===============================================================================
+                         MANUAL STEPS (IF NEEDED)
+===============================================================================
+
+STEP 3 (MANUAL): CLONE THE REPOSITORY
+--------------------------------------
+1. Open Command Prompt (search "cmd" in Start menu)
+2. Type these commands exactly:
+
+   cd C:\
+   git clone https://github.com/titttititititiitititiititti/tourismwhitsundaysfiltour.git filtour
+   cd filtour
+
+3. When prompted for GitHub credentials:
+   - Username: titttititititiitititiititti
+   - Password: [Use a Personal Access Token, not your password]
+
+
+STEP 4 (MANUAL): INSTALL DEPENDENCIES
+--------------------------------------
+In the same Command Prompt window:
+
+   cd C:\filtour
+   python -m pip install -r requirements.txt
+
+Wait for all packages to install (may take 2-3 minutes)
+
+
+STEP 5 (MANUAL): TEST THE KIOSK
+--------------------------------
+In the same Command Prompt window:
+
+   python app.py
+
+You should see:
+   * Running on http://127.0.0.1:5000
+
+Open a web browser and go to: http://localhost:5000
+The kiosk should appear!
+
+Press Ctrl+C in Command Prompt to stop the server.
+
+
+STEP 6: SET UP AUTO-START
+--------------------------
+Option A: Task Scheduler (Recommended)
+1. Press Win+R, type: taskschd.msc, press Enter
+2. Click "Create Basic Task" on the right
+3. Name: "Filtour Kiosk"
+4. Trigger: "When the computer starts"
+5. Action: "Start a program"
+6. Program/script: C:\filtour\scripts\start_kiosk.bat
+7. Start in: C:\filtour
+8. Check "Open Properties dialog" and click Finish
+9. In Properties, check "Run with highest privileges"
+10. Click OK
+
+Option B: Startup Folder (Simpler)
+1. Press Win+R, type: shell:startup, press Enter
+2. Right-click in the folder, select "New > Shortcut"
+3. Location: C:\filtour\scripts\start_kiosk.bat
+4. Name: Filtour Kiosk
+5. Click Finish
+
+
+STEP 7: SET UP FULL-SCREEN BROWSER
+-----------------------------------
+1. Install Google Chrome if not already installed
+2. Create a shortcut on the desktop
+3. Right-click the shortcut, select Properties
+4. In "Target" field, add to the end: --kiosk http://localhost:5000
+   Full example: "C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk http://localhost:5000
+5. Add this shortcut to the Startup folder (see Option B above)
+
+
+===============================================================================
+                              TROUBLESHOOTING
+===============================================================================
+
+PROBLEM: "python is not recognized"
+SOLUTION: Reinstall Python and make sure to check "Add Python to PATH"
+
+PROBLEM: "git is not recognized"  
+SOLUTION: Close and reopen Command Prompt after installing Git
+
+PROBLEM: Kiosk shows no tours
+SOLUTION: Log in at http://localhost:5000/admin/login
+          Username: airliebeachtourism
+          Password: [the password you set]
+          Go to Dashboard and enable tours
+
+PROBLEM: Can't clone repository
+SOLUTION: Check internet connection. If credentials fail, create a 
+          Personal Access Token on GitHub (Settings > Developer Settings)
+
+PROBLEM: Dependencies fail to install
+SOLUTION: Run: python -m pip install --upgrade pip
+          Then try again: python -m pip install -r requirements.txt
+
+
+===============================================================================
+                              ADMIN ACCESS
+===============================================================================
+
+Admin Dashboard: http://localhost:5000/admin/login
+
+Account: airliebeachtourism
+Password: [Contact administrator for password]
+
+From the dashboard you can:
+- Enable/disable tours
+- Upload your shop's logo
+- Set which tours are "Popular" or "Featured"
+- Configure kiosk settings
+
+
+===============================================================================
+                           GETTING UPDATES
+===============================================================================
+
+Updates are pulled automatically every 5 minutes when the kiosk is running.
+
+To manually update:
+1. Open Command Prompt
+2. cd C:\filtour
+3. git pull
+
+To push your changes (after enabling tours, etc.):
+1. Open Command Prompt  
+2. cd C:\filtour
+3. git add -A
+4. git commit -m "Updated tour settings"
+5. git push
+
+
+===============================================================================
+                              SUPPORT
+===============================================================================
+
+For technical support, contact: [Your contact info]
+
+===============================================================================
+

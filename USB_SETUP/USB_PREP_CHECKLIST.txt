@@ -1,0 +1,64 @@
+===============================================================================
+                    USB PREPARATION CHECKLIST
+                    =========================
+                    
+    Before going to the shop, make sure your USB has everything!
+    
+===============================================================================
+
+DOWNLOAD THESE FILES TO YOUR USB:
+---------------------------------
+
+[ ] 1. PYTHON INSTALLER
+       Download from: https://www.python.org/downloads/
+       Get: "Windows installer (64-bit)" 
+       File will be named like: python-3.11.9-amd64.exe
+       
+[ ] 2. GIT INSTALLER  
+       Download from: https://git-scm.com/download/win
+       Get: "64-bit Git for Windows Setup"
+       File will be named like: Git-2.43.0-64-bit.exe
+
+[ ] 3. THESE SETUP FILES (already on USB if you're reading this)
+       - SETUP_INSTRUCTIONS.txt
+       - install_kiosk.bat
+       - USB_PREP_CHECKLIST.txt
+
+
+YOUR USB SHOULD LOOK LIKE THIS:
+-------------------------------
+
+USB_DRIVE/
+├── python-3.11.9-amd64.exe      (about 25 MB)
+├── Git-2.43.0-64-bit.exe        (about 55 MB)
+├── SETUP_INSTRUCTIONS.txt
+├── install_kiosk.bat
+└── USB_PREP_CHECKLIST.txt
+
+
+BEFORE YOU LEAVE:
+-----------------
+
+[ ] Verified Python installer is on USB
+[ ] Verified Git installer is on USB
+[ ] Verified setup files are on USB
+[ ] Know the GitHub credentials (username + Personal Access Token)
+[ ] Know the admin account password for the shop
+[ ] Have internet access details for the shop's computer
+
+
+AT THE SHOP - QUICK STEPS:
+--------------------------
+
+1. Install Python (check "Add to PATH"!)
+2. Install Git
+3. Run install_kiosk.bat as Administrator
+4. Set up auto-start via Task Scheduler
+5. Test by restarting computer
+6. Done!
+
+Time needed: About 15-20 minutes
+
+
+===============================================================================
+
