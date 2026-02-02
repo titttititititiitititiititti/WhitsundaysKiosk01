@@ -134,10 +134,14 @@ def load_agent_settings():
         'hero_booking_platform': {'enabled': False, 'availability_widget_url': '', 'pricing_widget_url': ''}
     }
 
-def get_hero_booking_settings():
-    """Get Hero booking platform settings for frontend (uses active kiosk account)"""
-    # Get tour overrides from the active kiosk account
-    tour_overrides = get_kiosk_tour_overrides()
+def get_hero_booking_settings(preview_account=None):
+    """Get Hero booking platform settings for frontend (uses active kiosk account or preview)"""
+    # Get tour overrides from the active kiosk account or preview account
+    if preview_account:
+        settings = load_account_settings(preview_account)
+        tour_overrides = settings.get('tour_overrides', {})
+    else:
+        tour_overrides = get_kiosk_tour_overrides()
     
     # Global Hero settings (rarely used now - per-tour overrides preferred)
     settings = load_agent_settings()
@@ -158,11 +162,12 @@ def save_agent_settings(settings):
     with open(settings_file, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2)
 
-def get_kiosk_custom_logo():
-    """Get the custom logo for this kiosk instance from active account"""
-    active_account = get_active_account()
-    if active_account:
-        settings = load_account_settings(active_account)
+def get_kiosk_custom_logo(preview_account=None):
+    """Get the custom logo for this kiosk instance or preview account"""
+    # Use preview account if specified
+    account_to_use = preview_account or get_active_account()
+    if account_to_use:
+        settings = load_account_settings(account_to_use)
         return settings.get('kiosk_settings', {}).get('custom_logo', '')
     
     # Fallback to instance config
@@ -300,19 +305,28 @@ def operator_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def get_tour_promotion_status(tour_key):
-    """Get the promotion status for a tour (uses active kiosk account)"""
-    # First check kiosk's active account
-    promotions = get_kiosk_promotions()
+def get_tour_promotion_status(tour_key, preview_account=None):
+    """Get the promotion status for a tour (uses active kiosk account or preview)"""
+    # Use preview account if specified, otherwise get kiosk's active account
+    if preview_account:
+        settings = load_account_settings(preview_account)
+        promotions = settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
+    else:
+        promotions = get_kiosk_promotions()
+    
     for level, tours in promotions.items():
         if tour_key in tours:
             return level
     return None
 
-def is_tour_enabled(tour_key):
-    """Check if a tour is enabled for the active kiosk account"""
-    # Get enabled tours for the active kiosk account
-    enabled_tours = get_kiosk_enabled_tours()
+def is_tour_enabled(tour_key, preview_account=None):
+    """Check if a tour is enabled for the active kiosk account or preview account"""
+    # Use preview account if specified, otherwise get kiosk's active account
+    if preview_account:
+        settings = load_account_settings(preview_account)
+        enabled_tours = settings.get('enabled_tours', [])
+    else:
+        enabled_tours = get_kiosk_enabled_tours()
     
     # If no account is linked or account has no tours, show nothing
     if not enabled_tours:
@@ -1095,8 +1109,13 @@ def load_reviews(company, tour_id):
     return None
 
 # Helper to load all tours from all *_with_media.csv files
-def load_all_tours(language='en'):
-    """Load tours from language-specific CSV folders with fallback to English and root directory"""
+def load_all_tours(language='en', preview_account=None):
+    """Load tours from language-specific CSV folders with fallback to English and root directory
+    
+    Args:
+        language: Language code for translations
+        preview_account: If specified, use this account's settings instead of the kiosk's active account
+    """
     tours = []
     csv_files = []
     loaded_companies = set()
@@ -1161,12 +1180,12 @@ def load_all_tours(language='en'):
                         # Load review data
                         review_data = load_reviews(company, tid)
                         
-                        # Check if tour is disabled by agent
-                        if not is_tour_enabled(key):
+                        # Check if tour is disabled by agent (use preview account if specified)
+                        if not is_tour_enabled(key, preview_account=preview_account):
                             continue  # Skip disabled tours
                         
-                        # Get promotion status
-                        promotion = get_tour_promotion_status(key)
+                        # Get promotion status (use preview account if specified)
+                        promotion = get_tour_promotion_status(key, preview_account=preview_account)
                         
                         # Add parsed filter data
                         tour_data = {
@@ -1907,6 +1926,10 @@ def agent_dashboard():
         
         disabled_tours_list.extend(disabled_tours)
     
+    # Get the active kiosk account (what's actually displayed on the kiosk)
+    kiosk_account = get_active_account()
+    is_kiosk_account = (username == kiosk_account) if username else False
+    
     return render_template('agent_dashboard.html',
                           companies=enabled_companies,
                           disabled_tours=disabled_tours_list,
@@ -1916,7 +1939,9 @@ def agent_dashboard():
                           disabled_count=len(disabled_tours_list),
                           total_tours=len(all_tours),
                           company_names=COMPANY_DISPLAY_NAMES,
-                          version=APP_VERSION)
+                          version=APP_VERSION,
+                          kiosk_account=kiosk_account,
+                          is_kiosk_account=is_kiosk_account)
 
 @app.route('/admin/agent/api/toggle-tour', methods=['POST'])
 # @agent_required  # Disabled for testing
@@ -2161,6 +2186,55 @@ def health_check():
     """Simple health check endpoint for monitoring and update restart detection"""
     return jsonify({'status': 'ok', 'version': APP_VERSION})
 
+@app.route('/admin/agent/api/set-device-account', methods=['POST'])
+def set_device_account():
+    """Set this device to use the logged-in user's account for the kiosk display
+    
+    This updates instance.json which is gitignored, so it persists through code updates.
+    """
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    # Load the user's account settings to get their kiosk settings
+    account_settings = load_account_settings(username)
+    kiosk_settings = account_settings.get('kiosk_settings', {})
+    
+    # Update instance.json with this account
+    instance_config_file = 'config/instance.json'
+    os.makedirs('config', exist_ok=True)
+    
+    # Load existing config or create new
+    if os.path.exists(instance_config_file):
+        with open(instance_config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+    else:
+        config = {}
+    
+    # Update the active account
+    old_account = config.get('active_account', 'none')
+    config['active_account'] = username
+    config['custom_logo'] = kiosk_settings.get('custom_logo', '')
+    config['weather_widget_enabled'] = kiosk_settings.get('weather_widget_enabled', True)
+    config['default_language'] = kiosk_settings.get('default_language', 'en')
+    config['available_languages'] = kiosk_settings.get('available_languages', ['en'])
+    config['currency'] = kiosk_settings.get('currency', 'AUD')
+    config['last_updated'] = datetime.now().isoformat()
+    config['switched_by'] = username
+    config['switch_note'] = f'Device switched from {old_account} to {username}'
+    
+    with open(instance_config_file, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+    
+    print(f"[DEVICE] Account switched from '{old_account}' to '{username}'")
+    
+    return jsonify({
+        'success': True, 
+        'message': f'This device now uses {username}\'s tours',
+        'previous_account': old_account,
+        'new_account': username
+    })
+
 @app.route('/admin/agent/api/check-updates')
 def check_for_updates():
     """Check if there are updates available from GitHub"""
@@ -2347,9 +2421,18 @@ def index():
     if 'user' not in session:
         return redirect(url_for('login', next=request.url))
     
+    # Check for preview mode - allows testing a specific account's kiosk view
+    preview_account = request.args.get('preview')
+    if preview_account:
+        # Store preview mode in session for this request only
+        session['preview_account'] = preview_account
+    else:
+        # Clear preview mode if not specified
+        session.pop('preview_account', None)
+    
     # Get language from query parameter or session (default: 'en')
     language = request.args.get('lang', 'en')
-    tours = load_all_tours(language)
+    tours = load_all_tours(language, preview_account=preview_account)
     random.shuffle(tours)
     initial_tours = tours[:12]
     
@@ -2366,11 +2449,14 @@ def index():
     # Load shop config - from session if logged in, otherwise default
     shop_config = session.get('shop_config') or load_shop_config(session.get('company'))
     
-    # Load Hero booking platform settings
-    hero_booking = get_hero_booking_settings()
+    # Load Hero booking platform settings (use preview account if set)
+    hero_booking = get_hero_booking_settings(preview_account=preview_account)
     
-    # Get custom logo from kiosk instance config
-    custom_logo = get_kiosk_custom_logo()
+    # Get custom logo from kiosk instance config (or preview account)
+    custom_logo = get_kiosk_custom_logo(preview_account=preview_account)
+    
+    # Pass preview mode indicator to template
+    preview_mode = preview_account is not None
     
     return render_template('index.html', 
                            tours=initial_tours, 
@@ -2378,7 +2464,9 @@ def index():
                            current_language=language,
                            shop_config=shop_config,
                            hero_booking=hero_booking,
-                           custom_logo=custom_logo)
+                           custom_logo=custom_logo,
+                           preview_mode=preview_mode,
+                           preview_account=preview_account)
 
 @app.route('/api/semantic-search')
 def api_semantic_search():

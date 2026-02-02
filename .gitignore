@@ -61,5 +61,7 @@ leads_log.csv
 static/b_roll/
 *.mp4
 
-# User accounts (sensitive data - never commit passwords)
+# User accounts and device config (sensitive data - never commit)
 config/users.json
+config/instance.json
+config/accounts/

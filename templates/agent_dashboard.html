@@ -121,6 +121,49 @@
             font-size: 0.9rem;
         }
         
+        .kiosk-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .kiosk-status.active {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+        
+        .kiosk-status.different {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--accent-orange);
+            border: 1px solid var(--accent-orange);
+        }
+        
+        .btn-switch-device {
+            background: linear-gradient(135deg, #58a6ff, #1f6feb);
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .btn-switch-device:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(88, 166, 255, 0.4);
+        }
+        
+        .btn-switch-device:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         /* Main Layout */
         .main {
             display: grid;
@@ -921,6 +964,16 @@
         <div class="header-actions">
             <div class="user-info">
                 <span>👤 {{ session.name or 'Test Mode' }}</span>
+                {% if kiosk_account %}
+                <span class="kiosk-status {{ 'active' if is_kiosk_account else 'different' }}" title="{% if is_kiosk_account %}Your changes appear on the kiosk{% else %}This kiosk displays {{ kiosk_account }} tours{% endif %}">
+                    🖥️ {% if is_kiosk_account %}Live{% else %}{{ kiosk_account }}{% endif %}
+                </span>
+                {% if not is_kiosk_account %}
+                <button class="btn-switch-device" onclick="switchDeviceAccount()" title="Make this device display your tours">
+                    🔄 Use My Account
+                </button>
+                {% endif %}
+                {% endif %}
             </div>
             <a href="{{ url_for('kiosk_settings') }}" class="btn btn-secondary">
                 🖥️ Kiosk Settings
@@ -931,14 +984,19 @@
             <a href="{{ url_for('agent_analytics_page') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                 📊 Analytics
             </a>
+            {% if session.user == 'bailey' %}
             <a href="{{ url_for('operator_dashboard') }}" class="btn btn-secondary">
                 🏢 Operator View
             </a>
             <a href="{{ url_for('tour_editor') }}" class="btn btn-secondary">
                 ✏️ Full Editor
             </a>
+            {% endif %}
+            <a href="/?preview={{ session.user }}" class="btn btn-primary" style="background: linear-gradient(135deg, #3fb950, #2ea043);" title="Preview the kiosk with your account's tours">
+                👁️ Preview My Kiosk
+            </a>
             <a href="/" class="btn btn-secondary">
-                ← Back to Kiosk
+                ← Live Kiosk
             </a>
             <a href="{{ url_for('logout') }}" class="btn btn-secondary">
                 Logout
@@ -1203,9 +1261,13 @@
                 </div>
             </div>
             <div class="modal-footer">
+                {% if session.user == 'bailey' %}
                 <a href="#" class="btn btn-dev" id="devModeLink" target="_blank">
                     🔧 Open in Developer Mode
                 </a>
+                {% else %}
+                <div></div>
+                {% endif %}
                 <button class="btn btn-primary" onclick="closeTourSettings()">
                     ✓ Done
                 </button>
@@ -1634,6 +1696,41 @@
                     showToast('Server taking longer than expected. Please refresh manually.', 'error');
                 }
             }, 1000);
+        }
+        
+        async function switchDeviceAccount() {
+            if (!confirm('Switch this device to display YOUR tours?\n\nThis will make the kiosk show your account\'s tours, promotions, and settings.\n\nThis change persists through code updates.')) {
+                return;
+            }
+            
+            const btn = document.querySelector('.btn-switch-device');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Switching...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/admin/agent/api/set-device-account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✓ ' + data.message, 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>

@@ -12310,6 +12310,18 @@
   </style>
 </head>
 <body>
+  {% if preview_mode %}
+  <!-- Preview Mode Banner -->
+  <div id="preview-mode-banner" style="position: fixed; top: 0; left: 0; right: 0; z-index: 99999; background: linear-gradient(135deg, #f97316, #ea580c); color: white; text-align: center; padding: 8px 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+    <span>👁️ PREVIEW MODE: Viewing as <strong>{{ preview_account }}</strong></span>
+    <a href="/" style="background: white; color: #ea580c; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">Exit Preview</a>
+  </div>
+  <style>
+    /* Add top padding to body when in preview mode */
+    body { padding-top: 40px !important; }
+  </style>
+  {% endif %}
+  
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->
   <video id="bg-video" autoplay muted loop playsinline preload="auto">
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
