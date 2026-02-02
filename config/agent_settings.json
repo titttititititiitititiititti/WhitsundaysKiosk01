@@ -1,7 +1,19 @@
 {
-  "settings_version": "1.0",
-  "last_updated": "2026-01-26T17:01:23.452812",
+  "settings_version": "1.2",
+  "last_updated": "2026-02-02T12:01:34.605698",
   "disabled_tours": [],
+  "tour_overrides": {
+    "oceanrafting__7e123dff452a3bef": {
+      "hero_widget_html": "<script defer=\"\" type=\"text/javascript\" src=\"https://whitsundayskiosk.rezdy.com/pluginJs\"></script>\n                <iframe seamless=\"\" width=\"300px\" height=\"1000px\" frameborder=\"0\" class=\"rezdy\" src=\"https://whitsundayskiosk.rezdy.com/calendarWidget/265139?iframe=true\"></iframe>"
+    },
+    "oceanrafting__ddf4d96cc5e282ec": {
+      "hero_widget_html": "<script defer=\"\" type=\"text/javascript\" src=\"https://whitsundayskiosk.rezdy.com/pluginJs\"></script>\n                <iframe seamless=\"\" width=\"300px\" height=\"1000px\" frameborder=\"0\" class=\"rezdy\" src=\"https://whitsundayskiosk.rezdy.com/calendarWidget/265683?iframe=true\"></iframe>"
+    }
+  },
+  "hero_booking_platform": {
+    "notes": "Per-tour Hero settings are now in tour_overrides. This section is for global defaults only.",
+    "default_enabled": false
+  },
   "promoted_tours": {
     "popular": [
       "oceanrafting__7e123dff452a3bef",

@@ -1,18 +1,18 @@
 {
   "users": {
     "bailey": {
-      "password": "scrypt:32768:8:1$oa8PKbBp0v6wIiN8$506aeec95eb19cd0a613d803f9913546b7a37c600e2abe6c28251e91b01fd972d2071bb42b146369b97a6e378a840dc18165514c37be05c70188244e4b258e97",
+      "password": "scrypt:32768:8:1$LsYrdiKBU9R2xwjT$2813b274eb5e46a798ccee617477bfbcf1fed20ed57ad1284f426d82b54a1ee1b21883d401104df9d2ca0b2454dc28b7896d550a8c95e689fba0a0d4e16c8c15",
       "role": "agent",
       "name": "Bailey",
       "email": "bailey.amouyal@gmail.com",
       "company": null
     },
-    "agent": {
-      "password": "agent2024",
+    "airliebeachtourism": {
+      "password": "scrypt:32768:8:1$4vpfHir9XEG48WQ3$b3dabf825525d85abc57be8e2ddb2395cbb261baa0c04e9e66225f4e0f788127e7105ab4d590aed7cc57f2b6e7318a06236b65c697153b1682f68849b13b0c64",
       "role": "agent",
-      "name": "Kiosk Agent",
+      "name": "Airlie Beach Tourism Kiosk",
       "email": null,
-      "company": null
+      "company": "AirlieBeachTourism"
     },
     "redcat": {
       "password": "redcat2024",
@@ -31,6 +31,20 @@
       "role": "operator",
       "name": "Ocean Rafting",
       "company": "oceanrafting"
+    },
+    "scootthewhitsundays": {
+      "password": "scrypt:32768:8:1$b5Mz40G2kkBCPGoB$9b4726eb7aced47a3657ba7e85d98a2152b312edceafcd48a0837985b2400901dd69ba970071544af6989c886dade22e359fdacb432f0adb0b202666b25309c7",
+      "role": "agent",
+      "name": "rat",
+      "email": "scootthewhitsundays@gmail.com",
+      "company": null
+    },
+    "retard": {
+      "password": "scrypt:32768:8:1$CyE6dFAa9zQE70sb$d1d37b50f85d30650e55f061fb1e1a5c2ef64f4fbec62458d5724277932b1d164cdf8022415856f3974565df38b3a50c5cc71867c3143507495b82d2022accd5",
+      "role": "agent",
+      "name": "retard",
+      "email": "retard@gmail.com",
+      "company": null
     }
   }
 }

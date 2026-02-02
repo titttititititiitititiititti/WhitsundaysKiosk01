@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiosk Settings - Filtour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2942 50%, #0d2137 100%);
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .saved-notice {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #51cf66;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 20px;
+            background: rgba(0, 119, 182, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .section-content {
+            padding: 25px;
+        }
+        
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-label {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .setting-description {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+        
+        .setting-control {
+            margin-left: 20px;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .3s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Input fields */
+        .setting-input {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            min-width: 120px;
+        }
+        
+        .setting-input:focus {
+            outline: none;
+            border-color: #00b4d8;
+        }
+        
+        select.setting-input {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+        
+        /* Fix dropdown option styling */
+        select.setting-input option {
+            background: #1a2942;
+            color: #fff;
+            padding: 10px;
+        }
+        
+        select.setting-input option:hover,
+        select.setting-input option:focus,
+        select.setting-input option:checked {
+            background: #0077b6;
+            color: #fff;
+        }
+        
+        /* Checkboxes for languages */
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .language-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .language-option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .language-option.selected {
+            background: rgba(0, 180, 216, 0.2);
+            border-color: #00b4d8;
+        }
+        
+        /* Save button */
+        .save-section {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .save-btn {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.4);
+        }
+        
+        /* Logo Upload */
+        .logo-upload-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-preview {
+            width: 120px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .logo-preview .placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .logo-upload-controls {
+            flex: 1;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .upload-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+        }
+        
+        .remove-logo-btn {
+            padding: 10px 20px;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            border-radius: 8px;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .logo-info {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>⚙️ Kiosk Settings</h1>
+            <a href="/admin/agent" class="back-btn">← Back to Dashboard</a>
+        </div>
+        
+        {% if saved %}
+        <div class="saved-notice">
+            <span>✅</span> Settings saved successfully!
+        </div>
+        {% endif %}
+        
+        <form method="POST" enctype="multipart/form-data">
+            <!-- Branding Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>🎨 Branding</h2>
+                    <p>Customize your kiosk with your shop's logo</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                        <div class="setting-info" style="margin-bottom: 15px;">
+                            <div class="setting-label">Shop Logo</div>
+                            <div class="setting-description">Upload your logo to replace the default Filtour branding</div>
+                        </div>
+                        <div class="logo-upload-area">
+                            <div class="logo-preview" id="logoPreview">
+                                {% if settings.kiosk_settings.custom_logo %}
+                                <img src="{{ settings.kiosk_settings.custom_logo }}" alt="Shop Logo">
+                                {% else %}
+                                <span class="placeholder">No logo</span>
+                                {% endif %}
+                            </div>
+                            <div class="logo-upload-controls">
+                                <div class="file-input-wrapper">
+                                    <button type="button" class="upload-btn">📁 Choose File</button>
+                                    <input type="file" name="logo" id="logoInput" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+                                </div>
+                                {% if settings.kiosk_settings.custom_logo %}
+                                <button type="button" class="remove-logo-btn" onclick="removeLogo()">🗑️ Remove</button>
+                                {% endif %}
+                                <input type="hidden" name="remove_logo" id="removeLogoInput" value="">
+                                <div class="logo-info">Recommended: PNG or SVG, max 2MB, transparent background works best</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Assistant Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>🤖 AI Assistant</h2>
+                    <p>Configure the AI assistant behavior on your kiosk</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Enable Microphone</div>
+                            <div class="setting-description">Allow customers to speak to the AI assistant</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="ai_microphone" 
+                                    {% if settings.kiosk_settings.ai_microphone_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Session Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>⏱️ Session & Timeout</h2>
+                    <p>Control how sessions work on your kiosk</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Session Timeout</div>
+                            <div class="setting-description">Return to home screen after inactivity (minutes)</div>
+                        </div>
+                        <div class="setting-control">
+                            <select name="session_timeout" class="setting-input">
+                                <option value="2" {% if settings.kiosk_settings.session_timeout_minutes == 2 %}selected{% endif %}>2 minutes</option>
+                                <option value="3" {% if settings.kiosk_settings.session_timeout_minutes == 3 %}selected{% endif %}>3 minutes</option>
+                                <option value="5" {% if settings.kiosk_settings.session_timeout_minutes == 5 %}selected{% endif %}>5 minutes</option>
+                                <option value="10" {% if settings.kiosk_settings.session_timeout_minutes == 10 %}selected{% endif %}>10 minutes</option>
+                                <option value="15" {% if settings.kiosk_settings.session_timeout_minutes == 15 %}selected{% endif %}>15 minutes</option>
+                                <option value="0" {% if settings.kiosk_settings.session_timeout_minutes == 0 %}selected{% endif %}>Never</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shop Hours -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>🏪 Shop Hours</h2>
+                    <p>Set your shop's operating hours for auto-sleep feature</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Auto Sleep Mode</div>
+                            <div class="setting-description">Automatically dim/sleep the kiosk outside shop hours</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="auto_sleep" 
+                                    {% if settings.kiosk_settings.auto_sleep_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Opening Time</div>
+                            <div class="setting-description">When does your shop open?</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="time" name="shop_open_time" class="setting-input" 
+                                value="{{ settings.kiosk_settings.shop_open_time or '09:00' }}">
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Closing Time</div>
+                            <div class="setting-description">When does your shop close?</div>
+                        </div>
+                        <div class="setting-control">
+                            <input type="time" name="shop_close_time" class="setting-input" 
+                                value="{{ settings.kiosk_settings.shop_close_time or '17:00' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Display Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>🌍 Display & Language</h2>
+                    <p>Configure how your kiosk appears to customers</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Default Language</div>
+                            <div class="setting-description">Language shown when kiosk starts</div>
+                        </div>
+                        <div class="setting-control">
+                            <select name="default_language" class="setting-input">
+                                <option value="en" {% if settings.kiosk_settings.default_language == 'en' %}selected{% endif %}>English</option>
+                                <option value="zh" {% if settings.kiosk_settings.default_language == 'zh' %}selected{% endif %}>中文</option>
+                                <option value="ja" {% if settings.kiosk_settings.default_language == 'ja' %}selected{% endif %}>日本語</option>
+                                <option value="de" {% if settings.kiosk_settings.default_language == 'de' %}selected{% endif %}>Deutsch</option>
+                                <option value="fr" {% if settings.kiosk_settings.default_language == 'fr' %}selected{% endif %}>Français</option>
+                                <option value="es" {% if settings.kiosk_settings.default_language == 'es' %}selected{% endif %}>Español</option>
+                                <option value="hi" {% if settings.kiosk_settings.default_language == 'hi' %}selected{% endif %}>हिन्दी</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                        <div class="setting-info" style="margin-bottom: 15px;">
+                            <div class="setting-label">Available Languages</div>
+                            <div class="setting-description">Which languages can customers choose from?</div>
+                        </div>
+                        <div class="language-grid">
+                            <label class="language-option {% if 'en' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="en" 
+                                    {% if 'en' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇬🇧 English
+                            </label>
+                            <label class="language-option {% if 'zh' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="zh"
+                                    {% if 'zh' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇨🇳 中文
+                            </label>
+                            <label class="language-option {% if 'ja' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="ja"
+                                    {% if 'ja' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇯🇵 日本語
+                            </label>
+                            <label class="language-option {% if 'de' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="de"
+                                    {% if 'de' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇩🇪 Deutsch
+                            </label>
+                            <label class="language-option {% if 'fr' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="fr"
+                                    {% if 'fr' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇫🇷 Français
+                            </label>
+                            <label class="language-option {% if 'es' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="es"
+                                    {% if 'es' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇪🇸 Español
+                            </label>
+                            <label class="language-option {% if 'hi' in settings.kiosk_settings.available_languages %}selected{% endif %}">
+                                <input type="checkbox" name="languages" value="hi"
+                                    {% if 'hi' in settings.kiosk_settings.available_languages %}checked{% endif %}>
+                                🇮🇳 हिन्दी
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Weather Widget</div>
+                            <div class="setting-description">Show weather information on the kiosk</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="weather_widget" 
+                                    {% if settings.kiosk_settings.weather_widget_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">Currency</div>
+                            <div class="setting-description">Display prices in this currency</div>
+                        </div>
+                        <div class="setting-control">
+                            <select name="currency" class="setting-input">
+                                <option value="AUD" {% if settings.kiosk_settings.currency == 'AUD' %}selected{% endif %}>AUD $</option>
+                                <option value="USD" {% if settings.kiosk_settings.currency == 'USD' %}selected{% endif %}>USD $</option>
+                                <option value="EUR" {% if settings.kiosk_settings.currency == 'EUR' %}selected{% endif %}>EUR €</option>
+                                <option value="GBP" {% if settings.kiosk_settings.currency == 'GBP' %}selected{% endif %}>GBP £</option>
+                                <option value="JPY" {% if settings.kiosk_settings.currency == 'JPY' %}selected{% endif %}>JPY ¥</option>
+                                <option value="CNY" {% if settings.kiosk_settings.currency == 'CNY' %}selected{% endif %}>CNY ¥</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="save-section">
+                <button type="submit" class="save-btn">💾 Save Settings</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // Update language option styling
+        document.querySelectorAll('.language-option input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.checked) {
+                    this.parentElement.classList.add('selected');
+                } else {
+                    this.parentElement.classList.remove('selected');
+                }
+            });
+        });
+        
+        // Logo preview
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Logo file is too large. Maximum size is 2MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Logo Preview">`;
+                };
+                reader.readAsDataURL(file);
+                
+                // Clear remove flag
+                document.getElementById('removeLogoInput').value = '';
+            }
+        });
+        
+        // Remove logo
+        function removeLogo() {
+            document.getElementById('removeLogoInput').value = 'true';
+            document.getElementById('logoInput').value = '';
+            document.getElementById('logoPreview').innerHTML = '<span class="placeholder">No logo</span>';
+        }
+    </script>
+</body>
+</html>

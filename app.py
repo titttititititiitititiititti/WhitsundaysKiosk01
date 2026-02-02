@@ -20,6 +20,14 @@ import uuid
 import time
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# RAG/Semantic Search imports
+try:
+    import chromadb
+    CHROMA_AVAILABLE = True
+except ImportError:
+    CHROMA_AVAILABLE = False
+    print("[RAG] ChromaDB not available - semantic search disabled")
+
 # [CHAT-001] Initial Flask app serving chatbot UI and connecting tours.csv to GPT-4o.
 # [CHAT-002] Load environment variables from .env using python-dotenv.
 
@@ -50,6 +58,68 @@ def save_users(users):
     with open(users_file, 'w', encoding='utf-8') as f:
         json.dump({'users': users}, f, indent=2)
 
+# ============================================================================
+# PER-ACCOUNT CONFIG SYSTEM
+# ============================================================================
+
+def get_account_config_dir(username):
+    """Get the config directory for a specific account"""
+    return f'config/accounts/{username}'
+
+def load_account_settings(username):
+    """Load settings for a specific account"""
+    config_dir = get_account_config_dir(username)
+    settings_file = os.path.join(config_dir, 'settings.json')
+    
+    if os.path.exists(settings_file):
+        with open(settings_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    # Return default settings for new accounts
+    return {
+        'onboarding_complete': False,
+        'enabled_tours': [],  # List of tour keys that are enabled
+        'enabled_companies': [],  # List of company names that are enabled
+        'tour_overrides': {},  # Per-tour settings (booking URLs, prices, widgets)
+        'promoted_tours': {'popular': [], 'featured': [], 'best_value': []},
+        'kiosk_settings': {
+            'ai_microphone_enabled': True,
+            'session_timeout_minutes': 5,
+            'shop_open_time': '09:00',
+            'shop_close_time': '17:00',
+            'auto_sleep_enabled': False,
+            'default_language': 'en',
+            'available_languages': ['en'],
+            'weather_widget_enabled': True,
+            'currency': 'AUD'
+        },
+        'created_at': datetime.now().isoformat()
+    }
+
+def save_account_settings(username, settings):
+    """Save settings for a specific account"""
+    config_dir = get_account_config_dir(username)
+    os.makedirs(config_dir, exist_ok=True)
+    settings_file = os.path.join(config_dir, 'settings.json')
+    settings['last_updated'] = datetime.now().isoformat()
+    with open(settings_file, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, indent=2, ensure_ascii=False)
+
+def is_tour_enabled_for_account(username, tour_key):
+    """Check if a tour is enabled for a specific account"""
+    settings = load_account_settings(username)
+    return tour_key in settings.get('enabled_tours', [])
+
+def get_enabled_tours_for_account(username):
+    """Get list of enabled tour keys for an account"""
+    settings = load_account_settings(username)
+    return settings.get('enabled_tours', [])
+
+def get_account_tour_override(username, tour_key):
+    """Get tour-specific overrides for an account"""
+    settings = load_account_settings(username)
+    return settings.get('tour_overrides', {}).get(tour_key, {})
+
 def load_agent_settings():
     """Load agent settings (promotions, disabled tours)"""
     settings_file = 'config/agent_settings.json'
@@ -60,7 +130,20 @@ def load_agent_settings():
         'disabled_tours': [],
         'promoted_tours': {'popular': [], 'featured': [], 'best_value': []},
         'promotion_levels': {},
-        'ai_promotion_hints': {}
+        'ai_promotion_hints': {},
+        'hero_booking_platform': {'enabled': False, 'availability_widget_url': '', 'pricing_widget_url': ''}
+    }
+
+def get_hero_booking_settings():
+    """Get Hero booking platform settings for frontend"""
+    settings = load_agent_settings()
+    hero = settings.get('hero_booking_platform', {})
+    tour_overrides = settings.get('tour_overrides', {})
+    return {
+        'enabled': hero.get('default_enabled', False),
+        'availability_widget_url': hero.get('availability_widget_url', ''),
+        'pricing_widget_url': hero.get('pricing_widget_url', ''),
+        'tour_overrides': tour_overrides  # Per-tour settings
     }
 
 def save_agent_settings(settings):
@@ -70,6 +153,74 @@ def save_agent_settings(settings):
     settings['last_updated'] = datetime.now().isoformat()
     with open(settings_file, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2)
+
+def get_kiosk_custom_logo():
+    """Get the custom logo for this kiosk instance from instance config"""
+    instance_config_file = 'config/instance.json'
+    if os.path.exists(instance_config_file):
+        with open(instance_config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+            return config.get('custom_logo', '')
+    return ''
+
+def update_instance_config(kiosk_settings):
+    """Update the instance config file with kiosk settings (makes changes live)"""
+    instance_config_file = 'config/instance.json'
+    os.makedirs('config', exist_ok=True)
+    
+    # Load existing config or create new
+    if os.path.exists(instance_config_file):
+        with open(instance_config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+    else:
+        config = {}
+    
+    # Update relevant fields
+    config['custom_logo'] = kiosk_settings.get('custom_logo', '')
+    config['weather_widget_enabled'] = kiosk_settings.get('weather_widget_enabled', True)
+    config['default_language'] = kiosk_settings.get('default_language', 'en')
+    config['available_languages'] = kiosk_settings.get('available_languages', ['en'])
+    config['currency'] = kiosk_settings.get('currency', 'AUD')
+    config['last_updated'] = datetime.now().isoformat()
+    
+    with open(instance_config_file, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2)
+    
+    print(f"[INSTANCE] Updated instance config: {config}")
+
+def load_shop_config(company=None):
+    """Load shop-specific configuration based on company/account"""
+    shops_dir = 'config/shops'
+    
+    # If company is specified, try to load that config
+    if company:
+        company_config = os.path.join(shops_dir, f'{company}.json')
+        if os.path.exists(company_config):
+            with open(company_config, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    
+    # Fall back to default config
+    default_config = os.path.join(shops_dir, 'default.json')
+    if os.path.exists(default_config):
+        with open(default_config, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    # If no config files exist, return a minimal default
+    return {
+        'shop_id': 'default',
+        'shop_name': 'Tour Kiosk',
+        'modes': {
+            'ai_assistant': {'enabled': True},
+            'browse_tours': {'enabled': True},
+            'quick_decision': {'enabled': True}
+        },
+        'features': {
+            'weather_widget': True,
+            'currency_selector': True,
+            'language_selector': True,
+            'available_languages': ['en', 'zh', 'ja', 'hi', 'de', 'fr', 'es']
+        }
+    }
 
 def login_required(f):
     """Decorator to require login for a route"""
@@ -149,6 +300,256 @@ def get_random_placeholder_gallery(count=3):
     if len(images) <= count:
         return images * ((count // len(images)) + 1)[:count]
     return random.sample(images, count)
+
+def load_tour_images(tour, max_images=5):
+    """
+    Load images for a specific tour on demand.
+    Returns (thumbnail, gallery, uses_placeholder) tuple.
+    Called only when we're about to display a tour card.
+    """
+    company = tour.get('company', '')
+    key = tour.get('key', '')
+    name = tour.get('name', '')
+    
+    # Extract tour ID from key (format: company__id)
+    tid = key.split('__')[1] if '__' in key else ''
+    
+    # Check if images are enabled for this company
+    images_enabled = are_company_images_enabled(company)
+    
+    if not images_enabled:
+        # Use placeholder images
+        thumb_path = get_random_placeholder_image()
+        gallery = get_random_placeholder_gallery(max_images)
+        print(f"[LAZY-IMAGES] {name}: using {len(gallery)} placeholder images")
+        return thumb_path, gallery, True  # True = uses_placeholder_images
+    
+    # Images enabled - FIRST check if tour already has image_urls from CSV
+    csv_images = tour.get('image_urls', '')
+    if csv_images and isinstance(csv_images, str):
+        # Parse comma-separated image URLs from CSV
+        image_list = [img.strip() for img in csv_images.split(',') if img.strip()]
+        if image_list:
+            # Add leading slash if needed
+            gallery = []
+            for img in image_list[:max_images]:
+                if not img.startswith('/'):
+                    img = '/' + img
+                gallery.append(img)
+            
+            # Get thumbnail from image_url field or first gallery image
+            thumb_path = tour.get('image_url', '')
+            if thumb_path and not thumb_path.startswith('/'):
+                thumb_path = '/' + thumb_path
+            if not thumb_path and gallery:
+                thumb_path = gallery[0]
+            
+            print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")
+            return thumb_path, gallery, False
+    
+    # Fallback: find images by scanning folder
+    thumb_path = find_thumbnail(company, tid, name)
+    gallery = [thumb_path] if thumb_path else []
+    
+    # Look for more images in the tour's image folder
+    image_folder = f"static/tour_images/{company}/{tid}"
+    if os.path.isdir(image_folder):
+        extensions = ['.jpg', '.jpeg', '.png', '.webp', '.JPG', '.JPEG', '.PNG', '.WEBP']
+        try:
+            for filename in sorted(os.listdir(image_folder)):  # Sort for consistent order
+                if len(gallery) >= max_images:
+                    break
+                # Skip thumbnail since we already have it
+                if 'thumbnail' in filename.lower():
+                    continue
+                # Check if it's an image file
+                if any(filename.endswith(ext) for ext in extensions):
+                    img_url = '/' + os.path.join(image_folder, filename).replace('\\', '/')
+                    if img_url not in gallery:
+                        gallery.append(img_url)
+        except Exception as e:
+            print(f"[LAZY-IMAGES] Error reading {image_folder}: {e}")
+    
+    # If we still don't have enough images, just use what we have
+    if not gallery and thumb_path:
+        gallery = [thumb_path]
+    
+    print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")
+    return thumb_path, gallery, False  # False = uses real images
+
+# ============================================================================
+# RAG SEMANTIC SEARCH - Find tours by meaning, not just keywords
+# ============================================================================
+
+# Global ChromaDB collection (lazy loaded)
+_chroma_collection = None
+_openai_client = None
+
+CHROMA_DB_PATH = "data/tour_embeddings"
+CHROMA_COLLECTION_NAME = "tours"
+EMBEDDING_MODEL = "text-embedding-3-small"
+
+def get_chroma_collection():
+    """Get or initialize the ChromaDB collection for semantic search"""
+    global _chroma_collection
+    
+    if not CHROMA_AVAILABLE:
+        return None
+    
+    if _chroma_collection is not None:
+        return _chroma_collection
+    
+    try:
+        db_path = os.path.join(os.path.dirname(__file__), CHROMA_DB_PATH)
+        if not os.path.exists(db_path):
+            print(f"[RAG] Embeddings database not found at {db_path}")
+            print("[RAG] Run 'python scripts/index_tours_rag.py' to create embeddings")
+            return None
+        
+        client = chromadb.PersistentClient(path=db_path)
+        _chroma_collection = client.get_collection(CHROMA_COLLECTION_NAME)
+        print(f"[RAG] Loaded {_chroma_collection.count()} tour embeddings")
+        return _chroma_collection
+    except Exception as e:
+        print(f"[RAG] Error loading ChromaDB: {e}")
+        return None
+
+def get_query_embedding(text):
+    """Get embedding for a query text using OpenAI"""
+    global _openai_client
+    
+    if _openai_client is None:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            return None
+        _openai_client = openai.OpenAI(api_key=api_key)
+    
+    try:
+        response = _openai_client.embeddings.create(
+            model=EMBEDDING_MODEL,
+            input=[text]
+        )
+        return response.data[0].embedding
+    except Exception as e:
+        print(f"[RAG] Error creating query embedding: {e}")
+        return None
+
+def semantic_search_tours(query, n_results=10, min_similarity=0.10):
+    """
+    Search tours using semantic similarity.
+    
+    Args:
+        query: Natural language search query
+        n_results: Max number of results to return
+        min_similarity: Minimum similarity score (0-1) to include
+    
+    Returns:
+        List of (tour_key, similarity_score, metadata) tuples, sorted by similarity
+    """
+    collection = get_chroma_collection()
+    if collection is None:
+        print("[RAG] Semantic search unavailable - collection not loaded")
+        return []
+    
+    # Get query embedding
+    query_embedding = get_query_embedding(query)
+    if query_embedding is None:
+        print("[RAG] Could not create query embedding")
+        return []
+    
+    try:
+        # Query ChromaDB
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results,
+            include=['metadatas', 'distances']
+        )
+        
+        if not results or not results['ids'] or not results['ids'][0]:
+            return []
+        
+        # Convert distances to similarities and filter
+        matches = []
+        for tour_key, distance, metadata in zip(
+            results['ids'][0],
+            results['distances'][0],
+            results['metadatas'][0]
+        ):
+            # ChromaDB L2 distance - convert to similarity score
+            # Lower distance = more similar
+            # Normalize roughly to 0-1 range
+            similarity = max(0, 1 - (distance / 2))
+            
+            if similarity >= min_similarity:
+                matches.append({
+                    'key': tour_key,
+                    'similarity': similarity,
+                    'name': metadata.get('name', ''),
+                    'company': metadata.get('company', ''),
+                    'company_name': metadata.get('company_name', ''),
+                    'duration_category': metadata.get('duration_category', ''),
+                    'price_adult': metadata.get('price_adult', ''),
+                    'promotion': metadata.get('promotion', ''),
+                })
+        
+        # Sort by similarity (highest first)
+        matches.sort(key=lambda x: x['similarity'], reverse=True)
+        
+        print(f"[RAG] Query: '{query[:50]}...' -> {len(matches)} matches")
+        for i, m in enumerate(matches[:3]):
+            print(f"  {i+1}. {m['name'][:40]} ({m['similarity']:.1%})")
+        
+        return matches
+    
+    except Exception as e:
+        print(f"[RAG] Search error: {e}")
+        return []
+
+def get_tours_by_semantic_search(query, all_tours, max_results=8, min_similarity=0.15):
+    """
+    Get full tour objects matching a semantic search query.
+    
+    Combines RAG search with full tour data for a hybrid approach.
+    
+    Args:
+        query: Natural language search query
+        all_tours: List of all tour dictionaries (from load_all_tours)
+        max_results: Maximum tours to return
+        min_similarity: Minimum similarity threshold
+    
+    Returns:
+        List of tour dictionaries with added 'similarity_score' field
+    """
+    # Get semantic matches
+    semantic_matches = semantic_search_tours(query, n_results=max_results * 2, min_similarity=min_similarity)
+    
+    if not semantic_matches:
+        print("[RAG] No semantic matches - falling back to keyword search")
+        return []
+    
+    # Build key lookup for tours
+    tour_by_key = {t.get('key'): t for t in all_tours if t.get('key')}
+    
+    # Match semantic results to full tour data
+    matched_tours = []
+    for match in semantic_matches:
+        tour_key = match['key']
+        tour = tour_by_key.get(tour_key)
+        
+        if tour:
+            # Add similarity score to tour
+            tour_with_score = tour.copy()
+            tour_with_score['similarity_score'] = match['similarity']
+            tour_with_score['match_type'] = 'semantic'
+            matched_tours.append(tour_with_score)
+        else:
+            print(f"[RAG] Warning: Tour key '{tour_key}' from embeddings not found in loaded tours")
+    
+    # Limit results
+    matched_tours = matched_tours[:max_results]
+    
+    print(f"[RAG] Returning {len(matched_tours)} tours for query: '{query[:30]}...'")
+    return matched_tours
 
 # ============================================================================
 # ANALYTICS SYSTEM - Local logging for kiosk usage tracking (per-account)
@@ -700,22 +1101,10 @@ def load_all_tours(language='en'):
                         # Check if images are enabled for this company (legal toggle)
                         images_enabled = are_company_images_enabled(company)
                         
-                        if images_enabled:
-                            thumb_path = find_thumbnail(company, tid, name)
-                            
-                            # Build gallery from image_urls (max 5 images for slideshow)
-                            gallery = [thumb_path] if thumb_path else []
-                            if row.get('image_urls'):
-                                for img in row['image_urls'].split(',')[:4]:  # Max 4 more images (5 total with thumb)
-                                    img_path = img.strip()
-                                    if img_path and os.path.exists(img_path):
-                                        img_url = '/' + img_path
-                                        if img_url not in gallery:
-                                            gallery.append(img_url)
-                        else:
-                            # Images disabled for this company - use random AI-generated placeholders
-                            thumb_path = get_random_placeholder_image()
-                            gallery = get_random_placeholder_gallery(3)
+                        # DON'T load images here - they'll be loaded lazily when tours are displayed
+                        # Just mark whether this tour uses placeholders or real images
+                        thumb_path = None  # Will be loaded later
+                        gallery = []  # Will be loaded later
                         
                         # Load review data
                         review_data = load_reviews(company, tid)
@@ -835,18 +1224,35 @@ def get_tour_context():
 def login():
     """Login page for agent and operator modes"""
     error = None
+    last_username = session.get('last_login_username', '')
     
     if request.method == 'POST':
-        username = request.form.get('username', '').strip().lower()
+        login_id = request.form.get('username', '').strip().lower()
         password = request.form.get('password', '')
+        
+        # Remember the login identifier for next attempt
+        session['last_login_username'] = login_id
         
         users = load_users()
         
-        if username in users:
+        # Check if login_id is a username OR an email
+        username = None
+        if login_id in users:
+            # Direct username match
+            username = login_id
+        else:
+            # Try to find user by email
+            for uname, udata in users.items():
+                user_email = (udata.get('email') or '').lower()
+                if user_email == login_id:
+                    username = uname
+                    break
+        
+        if username and username in users:
             stored_password = users[username].get('password', '')
-            # Check if password is hashed (starts with pbkdf2:) or plain text (for backward compatibility)
+            # Check if password is hashed (starts with pbkdf2: or scrypt:) or plain text
             password_valid = False
-            if stored_password.startswith('pbkdf2:'):
+            if stored_password.startswith('pbkdf2:') or stored_password.startswith('scrypt:'):
                 # Hashed password
                 password_valid = check_password_hash(stored_password, password)
             else:
@@ -858,10 +1264,24 @@ def login():
                     save_users(users)
             
             if password_valid:
+                # Clear the remembered username on successful login
+                session.pop('last_login_username', None)
+                
                 session['user'] = username
                 session['role'] = users[username]['role']
                 session['name'] = users[username]['name']
-                session['company'] = users[username].get('company')
+                company = users[username].get('company')
+                session['company'] = company
+                
+                # Load and store shop-specific config
+                shop_config = load_shop_config(company)
+                session['shop_config'] = shop_config
+                print(f"[LOGIN] User '{username}' logged in with shop config: {shop_config.get('shop_id', 'default')}")
+                
+                # Check if onboarding is complete
+                account_settings = load_account_settings(username)
+                if not account_settings.get('onboarding_complete', False):
+                    return redirect(url_for('account_onboarding'))
                 
                 # Redirect based on role
                 next_url = request.args.get('next')
@@ -873,11 +1293,11 @@ def login():
                 else:
                     return redirect(url_for('operator_dashboard'))
             else:
-                error = 'Invalid username or password'
+                error = 'Invalid email/username or password'
         else:
-            error = 'Invalid username or password'
+            error = 'Invalid email/username or password'
     
-    return render_template('admin_login.html', error=error)
+    return render_template('admin_login.html', error=error, last_username=last_username)
 
 @app.route('/admin/register', methods=['GET', 'POST'])
 def register():
@@ -911,8 +1331,8 @@ def register():
             # Remove any non-alphanumeric characters except underscores
             base_username = re.sub(r'[^a-z0-9_]', '', base_username)
             
-            # Check if email already exists in any account
-            email_exists = any(user.get('email', '').lower() == email for user in users.values())
+            # Check if email already exists in any account (handle None values)
+            email_exists = any((user.get('email') or '').lower() == email for user in users.values())
             if email_exists:
                 error = 'An account with this email already exists'
             else:
@@ -936,6 +1356,186 @@ def register():
                 print(f"[OK] New account created: {username} ({email})")
     
     return render_template('register.html', error=error, success=success)
+
+# ============================================================================
+# ACCOUNT ONBOARDING & SETTINGS
+# ============================================================================
+
+@app.route('/admin/onboarding', methods=['GET', 'POST'])
+@login_required
+def account_onboarding():
+    """Onboarding wizard for new accounts - select tours to sell"""
+    username = session.get('user')
+    
+    if request.method == 'POST':
+        # Save selected tours
+        selected_tours = request.form.getlist('tours')
+        selected_companies = request.form.getlist('companies')
+        
+        settings = load_account_settings(username)
+        settings['enabled_tours'] = selected_tours
+        settings['enabled_companies'] = selected_companies
+        settings['onboarding_complete'] = True
+        save_account_settings(username, settings)
+        
+        print(f"[ONBOARDING] User {username} completed onboarding with {len(selected_tours)} tours")
+        return redirect(url_for('agent_dashboard'))
+    
+    # Load all available tours grouped by company
+    companies = {}
+    csv_files = get_all_tour_csvs()
+    
+    for csvfile in csv_files:
+        try:
+            if os.path.exists(csvfile):
+                with open(csvfile, newline='', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        company = row.get('company_name', 'unknown')
+                        company_display = COMPANY_DISPLAY_NAMES.get(company, company)
+                        
+                        if company not in companies:
+                            companies[company] = {
+                                'display_name': company_display,
+                                'tours': []
+                            }
+                        
+                        tour_key = f"{company}__{row.get('id', '')}"
+                        companies[company]['tours'].append({
+                            'key': tour_key,
+                            'name': row.get('name', 'Unnamed Tour'),
+                            'price': row.get('price_adult', ''),
+                            'duration': row.get('duration', '')
+                        })
+        except Exception as e:
+            print(f"Error loading {csvfile}: {e}")
+    
+    return render_template('account_onboarding.html', 
+                          companies=companies,
+                          username=username)
+
+@app.route('/admin/kiosk-settings', methods=['GET', 'POST'])
+@login_required
+def kiosk_settings():
+    """Kiosk settings page - kiosk configuration"""
+    username = session.get('user')
+    settings = load_account_settings(username)
+    
+    if request.method == 'POST':
+        # Update kiosk settings
+        kiosk = settings.get('kiosk_settings', {})
+        
+        # Handle logo upload
+        if 'logo' in request.files:
+            logo_file = request.files['logo']
+            if logo_file and logo_file.filename:
+                # Create account's logo directory
+                logo_dir = f'static/logos/{username}'
+                os.makedirs(logo_dir, exist_ok=True)
+                
+                # Save the logo with a safe filename
+                from werkzeug.utils import secure_filename
+                filename = secure_filename(logo_file.filename)
+                # Add timestamp to prevent caching issues
+                import time
+                timestamp = int(time.time())
+                ext = os.path.splitext(filename)[1]
+                new_filename = f'logo_{timestamp}{ext}'
+                logo_path = os.path.join(logo_dir, new_filename)
+                
+                logo_file.save(logo_path)
+                kiosk['custom_logo'] = '/' + logo_path.replace('\\', '/')
+                print(f"[LOGO] Saved logo for {username}: {kiosk['custom_logo']}")
+        
+        # Handle logo removal
+        if request.form.get('remove_logo') == 'true':
+            if kiosk.get('custom_logo'):
+                # Delete old logo file
+                old_logo_path = kiosk['custom_logo'].lstrip('/')
+                if os.path.exists(old_logo_path):
+                    os.remove(old_logo_path)
+                    print(f"[LOGO] Removed logo for {username}")
+            kiosk['custom_logo'] = ''
+        
+        kiosk['ai_microphone_enabled'] = request.form.get('ai_microphone') == 'on'
+        kiosk['session_timeout_minutes'] = int(request.form.get('session_timeout', 5))
+        kiosk['shop_open_time'] = request.form.get('shop_open_time', '09:00')
+        kiosk['shop_close_time'] = request.form.get('shop_close_time', '17:00')
+        kiosk['auto_sleep_enabled'] = request.form.get('auto_sleep') == 'on'
+        kiosk['default_language'] = request.form.get('default_language', 'en')
+        kiosk['weather_widget_enabled'] = request.form.get('weather_widget') == 'on'
+        kiosk['currency'] = request.form.get('currency', 'AUD')
+        
+        # Get selected languages
+        selected_languages = request.form.getlist('languages')
+        if not selected_languages:
+            selected_languages = ['en']
+        kiosk['available_languages'] = selected_languages
+        
+        settings['kiosk_settings'] = kiosk
+        save_account_settings(username, settings)
+        
+        # Also update instance config if this account is the active kiosk
+        # This makes the settings live on the kiosk display
+        update_instance_config(kiosk)
+        
+        return redirect(url_for('kiosk_settings') + '?saved=1')
+    
+    return render_template('kiosk_settings.html', 
+                          settings=settings,
+                          saved=request.args.get('saved'))
+
+@app.route('/admin/api/account/tours', methods=['POST'])
+@login_required
+def update_account_tours():
+    """API to enable/disable tours for an account"""
+    username = session.get('user')
+    data = request.get_json()
+    
+    settings = load_account_settings(username)
+    
+    action = data.get('action')
+    tour_key = data.get('tour_key')
+    
+    enabled_tours = settings.get('enabled_tours', [])
+    
+    if action == 'enable' and tour_key not in enabled_tours:
+        enabled_tours.append(tour_key)
+    elif action == 'disable' and tour_key in enabled_tours:
+        enabled_tours.remove(tour_key)
+    
+    settings['enabled_tours'] = enabled_tours
+    save_account_settings(username, settings)
+    
+    return jsonify({'success': True, 'enabled_count': len(enabled_tours)})
+
+@app.route('/admin/api/account/tour-override', methods=['POST'])
+@login_required
+def save_account_tour_override():
+    """API to save tour-specific overrides for an account"""
+    username = session.get('user')
+    data = request.get_json()
+    
+    tour_key = data.get('tour_key')
+    if not tour_key:
+        return jsonify({'error': 'No tour key provided'}), 400
+    
+    settings = load_account_settings(username)
+    
+    if 'tour_overrides' not in settings:
+        settings['tour_overrides'] = {}
+    
+    settings['tour_overrides'][tour_key] = {
+        'booking_url': data.get('booking_url', ''),
+        'widget_html': data.get('widget_html', ''),
+        'price_override': data.get('price_override', ''),
+        'notes': data.get('notes', ''),
+        'last_updated': datetime.now().isoformat()
+    }
+    
+    save_account_settings(username, settings)
+    
+    return jsonify({'success': True})
 
 # Store password reset tokens in memory (with expiration)
 password_reset_tokens = {}  # {username: {'code': '123456', 'expires': datetime}}
@@ -1086,7 +1686,7 @@ def account_settings():
             else:
                 # Check if email is already taken by another user
                 email_taken = any(
-                    u.get('email', '').lower() == new_email and ukey != username 
+                    (u.get('email') or '').lower() == new_email and ukey != username 
                     for ukey, u in users.items()
                 )
                 if email_taken:
@@ -1149,7 +1749,20 @@ def account_settings():
 # @agent_required  # Disabled for testing
 def agent_dashboard():
     """Agent dashboard - manage tour visibility and promotions"""
-    settings = load_agent_settings()
+    # Use account-specific settings if user is logged in
+    username = session.get('user')
+    if username:
+        account_settings = load_account_settings(username)
+        enabled_tours_for_account = account_settings.get('enabled_tours', [])
+        account_tour_overrides = account_settings.get('tour_overrides', {})
+        account_promotions = account_settings.get('promoted_tours', {})
+    else:
+        enabled_tours_for_account = []
+        account_tour_overrides = {}
+        account_promotions = {}
+    
+    # Also load global settings for fallback
+    global_settings = load_agent_settings()
     
     # Load all tours grouped by company
     all_tours = []
@@ -1170,6 +1783,25 @@ def agent_dashboard():
                             continue
                         loaded_keys.add(tour_key)
                         
+                        # Check if tour has a booking link configured (use account override first)
+                        tour_overrides = account_tour_overrides.get(tour_key, {})
+                        has_booking_link = bool(
+                            tour_overrides.get('booking_button_url') or 
+                            tour_overrides.get('hero_widget_html') or
+                            row.get('booking_url')  # Check CSV for default booking URL
+                        )
+                        
+                        # Check if tour is enabled for this account
+                        # For new accounts with no enabled_tours, all tours are disabled
+                        is_enabled = tour_key in enabled_tours_for_account if enabled_tours_for_account else False
+                        
+                        # Check promotion status from account settings
+                        promotion = None
+                        for promo_type in ['popular', 'featured', 'best_value']:
+                            if tour_key in account_promotions.get(promo_type, []):
+                                promotion = promo_type
+                                break
+                        
                         all_tours.append({
                             'key': tour_key,
                             'id': row.get('id', ''),
@@ -1177,15 +1809,16 @@ def agent_dashboard():
                             'company': company,
                             'company_display': COMPANY_DISPLAY_NAMES.get(company, company),
                             'price': row.get('price_adult', ''),
-                            'enabled': tour_key not in settings.get('disabled_tours', []),
-                            'promotion': get_tour_promotion_status(tour_key)
+                            'enabled': is_enabled,
+                            'promotion': promotion,
+                            'has_booking_link': has_booking_link
                         })
         except Exception as e:
             print(f"Error loading {csvfile}: {e}")
     
     # Group by company
     companies = {}
-    disabled_images_companies = settings.get('disabled_images_companies', [])
+    disabled_images_companies = global_settings.get('disabled_images_companies', [])
     for tour in all_tours:
         if tour['company'] not in companies:
             companies[tour['company']] = {
@@ -1195,20 +1828,37 @@ def agent_dashboard():
             }
         companies[tour['company']]['tours'].append(tour)
     
-    # Get promotion stats
+    # Get promotion stats from account settings
     promoted_counts = {
-        'popular': len(settings.get('promoted_tours', {}).get('popular', [])),
-        'featured': len(settings.get('promoted_tours', {}).get('featured', [])),
-        'best_value': len(settings.get('promoted_tours', {}).get('best_value', []))
+        'popular': len(account_promotions.get('popular', [])),
+        'featured': len(account_promotions.get('featured', [])),
+        'best_value': len(account_promotions.get('best_value', []))
     }
     
-    disabled_count = len(settings.get('disabled_tours', []))
+    # Separate enabled and disabled tours
+    enabled_companies = {}
+    disabled_tours_list = []
+    
+    for company_id, company_data in companies.items():
+        enabled_tours = [t for t in company_data['tours'] if t['enabled']]
+        disabled_tours = [t for t in company_data['tours'] if not t['enabled']]
+        
+        if enabled_tours:
+            enabled_companies[company_id] = {
+                'name': company_data['name'],
+                'tours': enabled_tours,
+                'images_enabled': company_data['images_enabled']
+            }
+        
+        disabled_tours_list.extend(disabled_tours)
     
     return render_template('agent_dashboard.html',
-                          companies=companies,
-                          settings=settings,
+                          companies=enabled_companies,
+                          disabled_tours=disabled_tours_list,
+                          settings=account_settings if username else global_settings,
+                          tour_overrides=account_tour_overrides,
                           promoted_counts=promoted_counts,
-                          disabled_count=disabled_count,
+                          disabled_count=len(disabled_tours_list),
                           total_tours=len(all_tours),
                           company_names=COMPANY_DISPLAY_NAMES,
                           version=APP_VERSION)
@@ -1216,7 +1866,7 @@ def agent_dashboard():
 @app.route('/admin/agent/api/toggle-tour', methods=['POST'])
 # @agent_required  # Disabled for testing
 def toggle_tour_visibility():
-    """Toggle a tour's visibility (enabled/disabled)"""
+    """Toggle a tour's visibility (enabled/disabled) - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
     enabled = data.get('enabled', True)
@@ -1224,23 +1874,28 @@ def toggle_tour_visibility():
     if not tour_key:
         return jsonify({'error': 'Tour key required'}), 400
     
-    settings = load_agent_settings()
-    disabled = settings.get('disabled_tours', [])
+    # Use account-specific settings
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
     
-    if enabled and tour_key in disabled:
-        disabled.remove(tour_key)
-    elif not enabled and tour_key not in disabled:
-        disabled.append(tour_key)
+    account_settings = load_account_settings(username)
+    enabled_tours = account_settings.get('enabled_tours', [])
     
-    settings['disabled_tours'] = disabled
-    save_agent_settings(settings)
+    if enabled and tour_key not in enabled_tours:
+        enabled_tours.append(tour_key)
+    elif not enabled and tour_key in enabled_tours:
+        enabled_tours.remove(tour_key)
+    
+    account_settings['enabled_tours'] = enabled_tours
+    save_account_settings(username, account_settings)
     
     return jsonify({'success': True, 'enabled': enabled})
 
 @app.route('/admin/agent/api/set-promotion', methods=['POST'])
 # @agent_required  # Disabled for testing
 def set_tour_promotion():
-    """Set or remove a tour's promotion level"""
+    """Set or remove a tour's promotion level - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
     level = data.get('level')  # 'popular', 'featured', 'best_value', or None to remove
@@ -1248,8 +1903,18 @@ def set_tour_promotion():
     if not tour_key:
         return jsonify({'error': 'Tour key required'}), 400
     
-    settings = load_agent_settings()
-    promoted = settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
+    # Use account-specific settings
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    account_settings = load_account_settings(username)
+    promoted = account_settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
+    
+    # Ensure all promotion levels exist
+    for promo_type in ['popular', 'featured', 'best_value']:
+        if promo_type not in promoted:
+            promoted[promo_type] = []
     
     # Remove from all promotion levels first
     for promo_level in promoted:
@@ -1260,32 +1925,30 @@ def set_tour_promotion():
     if level and level in promoted:
         promoted[level].append(tour_key)
     
-    settings['promoted_tours'] = promoted
-    save_agent_settings(settings)
+    account_settings['promoted_tours'] = promoted
+    save_account_settings(username, account_settings)
     
     return jsonify({'success': True, 'level': level})
 
 @app.route('/admin/agent/api/bulk-update', methods=['POST'])
 # @agent_required  # Disabled for testing
 def bulk_update_tours():
-    """Bulk enable/disable or promote tours"""
+    """Bulk enable/disable or promote tours - saves to account settings"""
     data = request.get_json()
     action = data.get('action')  # 'enable_all', 'disable_all', 'clear_promotions'
     company = data.get('company')  # Optional: limit to company
     
-    settings = load_agent_settings()
+    # Use account-specific settings
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    account_settings = load_account_settings(username)
+    enabled_tours = account_settings.get('enabled_tours', [])
     
     if action == 'enable_all':
-        if company:
-            settings['disabled_tours'] = [t for t in settings.get('disabled_tours', []) 
-                                          if not t.startswith(company + '__')]
-        else:
-            settings['disabled_tours'] = []
-    
-    elif action == 'disable_all':
-        # Get all tour keys
+        # Get all tour keys for the company (or all)
         csv_files = get_all_tour_csvs()
-        all_keys = []
         for csvfile in csv_files:
             if os.path.exists(csvfile):
                 with open(csvfile, newline='', encoding='utf-8') as f:
@@ -1293,20 +1956,30 @@ def bulk_update_tours():
                     for row in reader:
                         comp = row.get('company_name', '')
                         if not company or comp == company:
-                            all_keys.append(f"{comp}__{row.get('id', '')}")
-        settings['disabled_tours'] = list(set(settings.get('disabled_tours', []) + all_keys))
+                            tour_key = f"{comp}__{row.get('id', '')}"
+                            if tour_key not in enabled_tours:
+                                enabled_tours.append(tour_key)
+    
+    elif action == 'disable_all':
+        if company:
+            enabled_tours = [t for t in enabled_tours if not t.startswith(company + '__')]
+        else:
+            enabled_tours = []
     
     elif action == 'clear_promotions':
+        promoted = account_settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
         if company:
-            for level in settings.get('promoted_tours', {}):
-                settings['promoted_tours'][level] = [
-                    t for t in settings['promoted_tours'][level] 
+            for level in promoted:
+                promoted[level] = [
+                    t for t in promoted[level] 
                     if not t.startswith(company + '__')
                 ]
         else:
-            settings['promoted_tours'] = {'popular': [], 'featured': [], 'best_value': []}
+            promoted = {'popular': [], 'featured': [], 'best_value': []}
+        account_settings['promoted_tours'] = promoted
     
-    save_agent_settings(settings)
+    account_settings['enabled_tours'] = enabled_tours
+    save_account_settings(username, account_settings)
     return jsonify({'success': True})
 
 @app.route('/admin/agent/api/toggle-company-images', methods=['POST'])
@@ -1335,6 +2008,92 @@ def toggle_company_images():
     save_agent_settings(settings)
     
     return jsonify({'success': True, 'images_enabled': enabled})
+
+@app.route('/admin/agent/api/tour-settings/<tour_key>', methods=['GET'])
+def get_tour_settings(tour_key):
+    """Get per-tour agent settings (booking URLs, price overrides, etc.) - uses account settings"""
+    # Use account-specific settings
+    username = session.get('user')
+    if username:
+        account_settings = load_account_settings(username)
+        tour_overrides = account_settings.get('tour_overrides', {})
+    else:
+        # Fallback to global settings if not logged in
+        settings = load_agent_settings()
+        tour_overrides = settings.get('tour_overrides', {})
+    tour_settings = tour_overrides.get(tour_key, {})
+    
+    # Also get basic tour info
+    tours = load_all_tours()
+    tour_data = None
+    for tour in tours:
+        if tour.get('key') == tour_key:
+            tour_data = {
+                'name': tour.get('name', ''),
+                'price': tour.get('price', ''),
+                'price_adult': tour.get('price_adult', ''),
+                'price_child': tour.get('price_child', ''),
+                'price_tiers': tour.get('price_tiers', ''),
+                'company': tour.get('company', '')
+            }
+            break
+    
+    return jsonify({
+        'success': True,
+        'tour_key': tour_key,
+        'tour_data': tour_data,
+        'settings': {
+            'booking_button_url': tour_settings.get('booking_button_url', ''),
+            'hero_widget_html': tour_settings.get('hero_widget_html', ''),
+            'price_override': tour_settings.get('price_override', ''),
+            'price_adult_override': tour_settings.get('price_adult_override', ''),
+            'price_child_override': tour_settings.get('price_child_override', ''),
+            'notes': tour_settings.get('notes', '')
+        }
+    })
+
+@app.route('/admin/agent/api/tour-settings/<tour_key>', methods=['POST'])
+def save_tour_settings(tour_key):
+    """Save per-tour agent settings - saves to account settings"""
+    data = request.get_json()
+    
+    # Use account-specific settings
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    account_settings = load_account_settings(username)
+    if 'tour_overrides' not in account_settings:
+        account_settings['tour_overrides'] = {}
+    
+    # Get existing or create new
+    tour_settings = account_settings['tour_overrides'].get(tour_key, {})
+    
+    # Update fields (only if provided)
+    if 'booking_button_url' in data:
+        tour_settings['booking_button_url'] = data['booking_button_url'].strip()
+    if 'hero_widget_html' in data:
+        tour_settings['hero_widget_html'] = data['hero_widget_html'].strip()
+    if 'price_override' in data:
+        tour_settings['price_override'] = data['price_override'].strip()
+    if 'price_adult_override' in data:
+        tour_settings['price_adult_override'] = data['price_adult_override'].strip()
+    if 'price_child_override' in data:
+        tour_settings['price_child_override'] = data['price_child_override'].strip()
+    if 'notes' in data:
+        tour_settings['notes'] = data['notes'].strip()
+    
+    # Clean up empty settings
+    tour_settings = {k: v for k, v in tour_settings.items() if v}
+    
+    if tour_settings:
+        account_settings['tour_overrides'][tour_key] = tour_settings
+    elif tour_key in account_settings['tour_overrides']:
+        del account_settings['tour_overrides'][tour_key]
+    
+    save_account_settings(username, account_settings)
+    
+    return jsonify({'success': True, 'settings': tour_settings})
 
 # ============================================================================
 # REMOTE UPDATE SYSTEM
@@ -1529,13 +2288,99 @@ def operator_edit_tour(tour_key):
 
 @app.route('/')
 def index():
+    # Require login - redirect to login page if not logged in
+    if 'user' not in session:
+        return redirect(url_for('login', next=request.url))
+    
     # Get language from query parameter or session (default: 'en')
     language = request.args.get('lang', 'en')
     tours = load_all_tours(language)
     random.shuffle(tours)
     initial_tours = tours[:12]
+    
+    # Load images lazily for initial tours only
+    print(f"[INDEX] Loading images for {len(initial_tours)} initial tours...")
+    for tour in initial_tours:
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        tour['thumbnail'] = thumb
+        tour['gallery'] = gallery
+        tour['uses_placeholder_images'] = uses_placeholder
+    
     shown_keys = [t['key'] for t in initial_tours]
-    return render_template('index.html', tours=initial_tours, shown_keys=shown_keys, current_language=language)
+    
+    # Load shop config - from session if logged in, otherwise default
+    shop_config = session.get('shop_config') or load_shop_config(session.get('company'))
+    
+    # Load Hero booking platform settings
+    hero_booking = get_hero_booking_settings()
+    
+    # Get custom logo from kiosk instance config
+    custom_logo = get_kiosk_custom_logo()
+    
+    return render_template('index.html', 
+                           tours=initial_tours, 
+                           shown_keys=shown_keys, 
+                           current_language=language,
+                           shop_config=shop_config,
+                           hero_booking=hero_booking,
+                           custom_logo=custom_logo)
+
+@app.route('/api/semantic-search')
+def api_semantic_search():
+    """API endpoint to test semantic search directly
+    
+    Usage: /api/semantic-search?q=family+snorkeling+adventure&n=5
+    """
+    query = request.args.get('q', '')
+    n_results = int(request.args.get('n', '5'))
+    min_sim = float(request.args.get('min_sim', '0.10'))
+    language = request.args.get('lang', 'en')
+    
+    if not query:
+        return jsonify({
+            'error': 'Missing query parameter ?q=',
+            'usage': '/api/semantic-search?q=family+snorkeling&n=5&min_sim=0.10'
+        })
+    
+    if not CHROMA_AVAILABLE:
+        return jsonify({
+            'error': 'ChromaDB not available',
+            'message': 'Run: pip install chromadb && python scripts/index_tours_rag.py'
+        })
+    
+    # Get semantic matches
+    matches = semantic_search_tours(query, n_results=n_results, min_similarity=min_sim)
+    
+    # Optionally get full tour data
+    all_tours = load_all_tours(language)
+    full_results = get_tours_by_semantic_search(query, all_tours, max_results=n_results, min_similarity=min_sim)
+    
+    return jsonify({
+        'query': query,
+        'n_results': len(matches),
+        'matches': [
+            {
+                'key': m['key'],
+                'name': m['name'],
+                'company': m['company_name'],
+                'similarity': f"{m['similarity']:.1%}",
+                'similarity_raw': round(m['similarity'], 4),
+                'duration': m.get('duration_category', ''),
+                'price': m.get('price_adult', ''),
+            }
+            for m in matches
+        ],
+        'full_tours': [
+            {
+                'key': t.get('key', ''),
+                'name': t.get('name', ''),
+                'company': t.get('company_name', ''),
+                'similarity': f"{t.get('similarity_score', 0):.1%}",
+                'description': t.get('description', '')[:200] + '...',
+            }
+            for t in full_results[:3]
+        ]
+    })
 
 @app.route('/api/tours')
 def api_tours():
@@ -1565,12 +2410,18 @@ def api_tours():
         # Duration filter
         if duration:
             tour_duration = tour.get('duration_category', '').lower()
+            tour_name = tour.get('name', '').lower()
+            
             if duration == 'half_day' and tour_duration not in ['half_day', 'half day']:
                 duration_filtered += 1
                 continue
-            elif duration == 'full_day' and tour_duration not in ['full_day', 'full day']:
-                duration_filtered += 1
-                continue
+            elif duration == 'full_day':
+                # Include full_day tours, OR unknown duration tours with "day tour" in name
+                is_full_day = tour_duration in ['full_day', 'full day']
+                is_likely_full_day = tour_duration in ['unknown', ''] and 'day tour' in tour_name
+                if not is_full_day and not is_likely_full_day:
+                    duration_filtered += 1
+                    continue
             elif duration == 'multi_day' and tour_duration not in ['multi_day', 'multi day', 'multiday']:
                 duration_filtered += 1
                 continue
@@ -1639,28 +2490,33 @@ def api_tours():
     filtered_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
     
     # Add gallery, includes, and company_name to each tour
+    # Load images lazily only for tours we're returning
     result_tours = []
+    print(f"[API] Loading images for {len(filtered_tours)} filtered tours...")
     for tour in filtered_tours:
+        # Load images lazily for this tour
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        
         tour_data = {
             'key': tour['key'],
             'name': tour['name'],
             'company': tour.get('company', ''),
             'company_name': tour.get('company_name', tour.get('company', '')),
             'image': tour.get('image', ''),
-            'thumbnail_url': tour.get('thumbnail_url', ''),
-            'thumbnail': tour.get('thumbnail', ''),
+            'thumbnail_url': thumb or '',
+            'thumbnail': thumb or '',
             'duration': tour.get('duration', ''),
             'price': tour.get('price', 0),
             'price_adult': tour.get('price_adult', ''),
             'rating': tour.get('rating', 0),
             'includes': tour.get('includes', ''),
             'highlights': tour.get('highlights', ''),
-            'gallery': tour.get('gallery', []),
+            'gallery': gallery,
             'promotion': tour.get('promotion'),  # Include promotion status
             'is_promoted': tour.get('is_promoted', False),
             'review_rating': tour.get('review_rating', 0),
             'review_count': tour.get('review_count', 0),
-            'uses_placeholder_images': tour.get('uses_placeholder_images', False),
+            'uses_placeholder_images': uses_placeholder,
             'departure_location': tour.get('departure_location', '')
         }
         result_tours.append(tour_data)
@@ -1704,6 +2560,14 @@ def tour_page(key):
     tours = load_all_tours(language)
     random.shuffle(tours)
     initial_tours = tours[:12]
+    
+    # Load images lazily for initial tours only
+    for tour in initial_tours:
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        tour['thumbnail'] = thumb
+        tour['gallery'] = gallery
+        tour['uses_placeholder_images'] = uses_placeholder
+    
     shown_keys = [t['key'] for t in initial_tours]
     
     # Pass tracking info to frontend
@@ -1715,12 +2579,14 @@ def tour_page(key):
     
     # Render index.html (home page) with tour_to_open parameter
     # JavaScript will detect this and automatically open the tour modal
+    custom_logo = get_kiosk_custom_logo()
     return render_template('index.html', 
                           tours=initial_tours, 
                           shown_keys=shown_keys, 
                           current_language=language, 
                           tour_to_open=key,
-                          qr_tracking=qr_tracking)
+                          qr_tracking=qr_tracking,
+                          custom_logo=custom_logo)
     
     # Old standalone page code removed
     company, tid = key.split('__', 1)
@@ -2155,6 +3021,14 @@ def filter_tours():
         # Show all filtered results - no limit (users applied filters to see ALL matches)
         limited_tours = filtered_tours
     
+    # Load images for each tour (lazy loading)
+    for tour in limited_tours:
+        if not tour.get('thumbnail'):
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1)
+            tour['thumbnail'] = thumb
+            tour['gallery'] = gallery
+            tour['uses_placeholder_images'] = uses_placeholder
+    
     return jsonify({
         'tours': limited_tours,
         'total_found': len(filtered_tours)
@@ -2183,6 +3057,15 @@ def more_tours():
     # Combine: promoted first, then non-promoted
     sorted_tours = promoted + non_promoted
     selected = sorted_tours[offset:offset + count]
+    
+    # Load images for each selected tour (lazy loading)
+    for tour in selected:
+        if not tour.get('thumbnail'):
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1)
+            tour['thumbnail'] = thumb
+            tour['gallery'] = gallery
+            tour['uses_placeholder_images'] = uses_placeholder
+    
     return jsonify(selected)
 
 @app.route('/tour-detail/<key>')
@@ -2496,8 +3379,13 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     user_wants_sailing = any(kw in user_text for kw in ['sail', 'sailing', 'yacht'])
     user_wants_jetski = 'jetski' in user_text or 'jet ski' in user_text
     user_wants_oceanrafting = 'ocean rafting' in user_text or 'oceanrafting' in user_text
+    wants_helicopter = any(kw in user_text for kw in ['helicopter', 'heli', 'scenic flight', 'aerial', 'fly over', 'seaplane'])
     
-    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}, oceanrafting={user_wants_oceanrafting}")
+    # POPULAR TOURS REQUEST - user wants to see our most popular/recommended tours
+    popular_keywords = ['popular', 'best tours', 'top tours', 'recommended', 'favorites', 'what\'s popular', 'show popular']
+    user_wants_popular = any(kw in user_text for kw in popular_keywords)
+    
+    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}, oceanrafting={user_wants_oceanrafting}, helicopter={wants_helicopter}, popular={user_wants_popular}")
     
     # SPECIAL HANDLING: Only add GBR if user EXPLICITLY wants reef (not Whitehaven/sailing/etc)
     wants_coral_reef_only = 'coral reef' in user_text or 'fringing reef' in user_text
@@ -2525,7 +3413,8 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     
     # Detect if user wants a specific mode of transport or NOT
     # If user asks for "beach tour" without mentioning helicopter/scenic flight, exclude those
-    wants_helicopter = any(kw in combined_text for kw in ['helicopter', 'heli', 'scenic flight', 'aerial', 'fly over'])
+    # NOTE: wants_helicopter is already defined above using user_text (for topic detection)
+    # For exclusion, we use combined_text (includes history) to be more conservative
     wants_beach_boat = any(kw in combined_text for kw in ['beach', 'whitehaven', 'boat', 'cruise', 'sail'])
     exclude_helicopter = wants_beach_boat and not wants_helicopter
     
@@ -2587,6 +3476,44 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
             is_oceanrafting_tour = 'oceanrafting' in company_lower or 'ocean rafting' in company_lower
             if not is_oceanrafting_tour:
                 continue  # Skip non-Ocean-Rafting tours
+        
+        # SCENIC FLIGHT / HELICOPTER REQUEST: ONLY return aerial tours!
+        # Prioritize PURE flights over combo packages
+        if wants_helicopter and not user_wants_whitehaven and not user_wants_reef:
+            tour_text = (name_lower + ' ' + (t.get('description', '') or '')).lower()
+            company_lower = (t.get('company', '') or t.get('company_name', '')).lower()
+            
+            # Check if this is a PURE flight tour (main activity is flying)
+            is_pure_flight = (
+                'helicopter' in name_lower or
+                'heli tour' in name_lower or
+                'scenic flight' in name_lower or
+                'seaplane' in name_lower or
+                'gsl aviation' in company_lower or  # GSL Aviation = helicopter company
+                'helireef' in company_lower or      # HeliReef = helicopter company
+                'air whitsunday' in company_lower   # Air Whitsunday = seaplane company
+            )
+            
+            # Check if this is a COMBO tour (flight + other activity)
+            is_combo_tour = (
+                'fly raft' in name_lower or
+                'fly/raft' in name_lower or
+                'heli' in name_lower and 'snorkel' in name_lower or
+                'heli' in name_lower and 'reef' in name_lower or
+                'flight' in name_lower and ('whitehaven' in name_lower or 'snorkel' in name_lower)
+            )
+            
+            # For scenic flight requests: include pure flights, skip combos
+            if is_combo_tour and not is_pure_flight:
+                continue  # Skip combo tours - user wants actual flights
+            
+            # Must be a flight tour
+            is_aerial_tour = is_pure_flight or (
+                'aerial' in name_lower or
+                ('flight' in name_lower and not is_combo_tour)
+            )
+            if not is_aerial_tour:
+                continue  # Skip non-aerial tours for scenic flight requests
         
         # WHITEHAVEN BEACH REQUEST: Exclude reef-focused tours
         # These tours go to the GBR, not Whitehaven Beach!
@@ -2685,6 +3612,17 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         relevant_tours = [t for t in relevant_tours if t.get('key') not in exclude_keys]
         print(f"[LLM] Excluded {before_exclude - len(relevant_tours)} previously shown tours")
     
+    # POPULAR TOURS REQUEST: Filter to ONLY promoted tours, then by rating
+    if user_wants_popular:
+        promoted_tours = [t for t in relevant_tours if t.get('is_promoted') or t.get('promotion')]
+        if promoted_tours:
+            print(f"[LLM] POPULAR REQUEST: Found {len(promoted_tours)} promoted tours - using ONLY these")
+            relevant_tours = promoted_tours
+        else:
+            print(f"[LLM] POPULAR REQUEST: No promoted tours found - falling back to highest rated")
+            # Sort by rating if no promoted tours
+            relevant_tours.sort(key=lambda t: t.get('review_rating', 0) or 0, reverse=True)
+    
     # PRE-SORT relevant tours by our scoring (promotion + rating) BEFORE sending to LLM
     # This way the LLM sees promoted/highly-rated tours FIRST in the catalog
     def pre_sort_score(tour):
@@ -2705,20 +3643,27 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     
     relevant_tours.sort(key=pre_sort_score, reverse=True)
     
-    # Apply company diversity BEFORE sending to LLM - don't give LLM 10 tours from same company
-    companies_seen = set()
-    diverse_relevant = []
-    remaining = []
-    for tour in relevant_tours:
-        company = tour.get('company', tour.get('company_name', ''))
-        if company not in companies_seen:
-            diverse_relevant.append(tour)
-            companies_seen.add(company)
-        else:
-            remaining.append(tour)
-    # Add remaining tours (duplicates) after diverse ones
-    diverse_relevant.extend(remaining)
-    relevant_tours = diverse_relevant
+    # Check if this is a specific activity request that should SKIP company diversity
+    # For jetski, helicopter, scenic flight - return ALL matching tours from same company
+    is_specific_activity = user_wants_jetski or wants_helicopter
+    
+    if not is_specific_activity:
+        # Apply company diversity BEFORE sending to LLM - don't give LLM 10 tours from same company
+        companies_seen = set()
+        diverse_relevant = []
+        remaining = []
+        for tour in relevant_tours:
+            company = tour.get('company', tour.get('company_name', ''))
+            if company not in companies_seen:
+                diverse_relevant.append(tour)
+                companies_seen.add(company)
+            else:
+                remaining.append(tour)
+        # Add remaining tours (duplicates) after diverse ones
+        diverse_relevant.extend(remaining)
+        relevant_tours = diverse_relevant
+    else:
+        print(f"[LLM] Specific activity request (jetski={user_wants_jetski}, helicopter={wants_helicopter}) - SKIPPING company diversity")
     
     # Limit to 50 most relevant tours to keep prompt manageable
     relevant_tours = relevant_tours[:50]
@@ -2880,10 +3825,12 @@ CRITICAL RULES:
    - "Great Barrier Reef" = tours that visit the OUTER reef (pontoons, Reefworld) 
    - Scenic flights don't count as "visiting" - they see from the air only
    
-2. ONE TOUR PER COMPANY - Select diverse results from DIFFERENT companies!
-   - Do NOT return 3 tours from the same company
-   - Spread recommendations across multiple operators
-   - Only use same company twice if no other options exist
+2. COMPANY DIVERSITY - USUALLY prefer diverse companies, BUT with exceptions:
+   - For GENERAL requests (beach, reef, sailing): spread across different operators
+   - For SPECIFIC ACTIVITY requests (jetski, jet ski, helicopter, scenic flight): 
+     IGNORE company diversity - return ALL matching tours even if from same company!
+   - If user asks for "jetski" or "jet ski": return ALL jetski tours (likely same company)
+   - If user asks for "helicopter" or "scenic flight": return ALL aerial tours
 
 3. ORDERING (STRICT PRIORITY):
    a) PROMOTED TOURS FIRST - Tours with "promoted: true" that match the request go FIRST
@@ -3028,9 +3975,14 @@ If the user is asking a QUESTION or just chatting, respond with EMPTY tours:
         matched_tours.sort(key=calculate_tour_score, reverse=True)
         total_available = len(matched_tours)
         
+        # Check if this is a specific activity - skip company diversity for jetski/helicopter
+        # (all jetski tours are from same company, so diversity would limit to 1)
+        is_specific_activity = user_wants_jetski or wants_helicopter
+        
         # Apply company diversity - spread results across different companies
         # when we have enough matching tours from different companies
-        if total_available >= 3:
+        # BUT skip diversity for specific activities like jetski, helicopter
+        if total_available >= 3 and not is_specific_activity:
             companies_seen = set()
             diverse_tours = []
             remaining_tours = []
@@ -3053,7 +4005,8 @@ If the user is asking a QUESTION or just chatting, respond with EMPTY tours:
         else:
             matched_tours = matched_tours[:3]  # Max 3 tours displayed
             if total_available > 0:
-                print(f"   [RANK] Showing {len(matched_tours)} of {total_available} matching tours")
+                reason = "(specific activity - no diversity filter)" if is_specific_activity else ""
+                print(f"   [RANK] Showing {len(matched_tours)} of {total_available} matching tours {reason}")
         
         return {
             'tours': matched_tours,
@@ -3173,78 +4126,66 @@ def build_tour_context(language='en'):
 
 @app.route('/chat/preflight', methods=['POST'])
 def chat_preflight():
-    """Quick LLM check if user has given enough info to search for tours - works in any language"""
+    """FAST deterministic check if tours will likely be searched - triggers animation early"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
         conversation_history = data.get('history', [])
         
-        # Build brief context from history
+        # Build context from recent user messages
         context = ""
         for msg in conversation_history[-4:]:
             if msg.get('role') == 'user':
-                context += f"User: {msg.get('content', '')[:100]}\n"
+                context += f"{msg.get('content', '')[:100]} "
         
-        # FAST LLM call to determine intent - works in ANY language
-        import openai
-        client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        # Combined text for checking
+        combined = f"{context} {user_message}".lower()
+        msg_lower = user_message.lower()
         
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{
-                "role": "user", 
-                "content": f"""Should we SEARCH for tours now? (ANY language)
-
-Current message: "{user_message}"
-Previous context from user: {context if context else 'None'}
-
-CRITICAL: Count TOTAL preferences across BOTH current message AND previous context!
-User MUST have AT LEAST 2 DETAILS total to search!
-
-EXCEPTION - These are SPECIFIC ENOUGH alone (= YES with just 1 detail):
-- "scenic flight", "helicopter tour", "seaplane" = YES
-- "jetski tour", "jet ski" = YES
-- "skydive", "skydiving" = YES
-- "fishing trip", "fishing charter" = YES
-
-DETAIL CATEGORIES (need 2+ for general activities):
-1. Activity: sailing, snorkeling, reef, diving, kayak, beach, island
-2. Duration: full day, half day, multi-day, overnight, 2 days, quick/short
-3. Audience: family, couples, backpackers, kids, solo, romantic
-4. Budget: budget, cheap, affordable, luxury, premium
-5. Destination: whitehaven, great barrier reef, gbr
-
-YES examples (2+ details OR specific exception):
-- "scenic flight" = YES (exception)
-- "full day reef tour" = YES (duration + activity)
-- "great barrier reef with family" = YES (destination + audience)
-- Context "sailing" + Message "half day" = YES (combined = 2 details)
-- "overnight sailing trip" = YES (duration + activity)
-
-NO examples (ONLY 1 GENERAL detail - MUST ASK):
-- "reef tour" = NO (activity only - ASK about duration!)
-- "sailing" = NO (activity only - ASK about duration!)
-- "snorkeling" = NO (activity only - ASK about duration!)  
-- "great barrier reef" = NO (destination only - ASK about duration!)
-- "whitehaven beach" = NO (destination only - ASK about duration!)
-- "beach tour" = NO (activity only - ASK!)
-- "diving" = NO (activity only - ASK!)
-- "hello" / "hi" = NO (greeting)
-- "what tours" = NO (no specific preference)
-
-⚠️ STRICT: Single activity/destination words ALWAYS = NO!
-User must specify BOTH what (activity/destination) AND how long (duration) OR who with (audience)!
-
-Reply: YES or NO"""
-            }],
-            max_tokens=3,
-            temperature=0
-        )
+        # ============================================================
+        # DETERMINISTIC CHECK - No LLM, just pattern matching
+        # Err on the side of showing animation (false positives OK)
+        # ============================================================
         
-        answer = response.choices[0].message.content.strip().upper()
-        will_search = answer == 'YES'
+        # INSTANT TRIGGERS - always search tours
+        instant_triggers = [
+            'jetski', 'jet ski', 'helicopter', 'scenic flight', 'seaplane',
+            'skydiv', 'ocean rafting', 'popular', 'best tours', 'top tours',
+            'recommended', 'other options', 'alternatives', 'different tours',
+            'something else', 'more options', 'show me', 'what tours',
+            'do you have', 'any tours', 'find me', 'search for', 'looking for tours'
+        ]
+        if any(trigger in msg_lower for trigger in instant_triggers):
+            print(f"[PREFLIGHT] INSTANT trigger found in message")
+            return jsonify({'will_search_tours': True, 'message_analyzed': user_message[:50]})
         
-        print(f"[PREFLIGHT-LLM] '{user_message[:40]}' -> {answer} (will_search={will_search})")
+        # ACTIVITY KEYWORDS
+        activities = [
+            'reef', 'snorkel', 'diving', 'scuba', 'whitehaven', 'beach', 'island',
+            'sailing', 'sail', 'cruise', 'boat', 'fishing', 'kayak', 'paddle',
+            'wildlife', 'whale', 'turtle', 'sunset', 'sunrise', 'adventure',
+            'family', 'romantic', 'couples', 'tour'
+        ]
+        
+        # DURATION KEYWORDS
+        durations = [
+            'full day', 'half day', 'overnight', 'multi-day', 'multiday',
+            'few hours', 'morning', 'afternoon', 'all day', 'quick', 'short',
+            'long', 'extended', '2 day', '3 day', 'weekend'
+        ]
+        
+        has_activity = any(act in combined for act in activities)
+        has_duration = any(dur in combined for dur in durations)
+        
+        # Search if we have BOTH activity and duration in combined context
+        will_search = has_activity and has_duration
+        
+        # ALSO search if message explicitly asks about tours/options
+        if 'tour' in msg_lower and any(w in msg_lower for w in ['want', 'like', 'looking', 'show', 'find', 'have', 'get']):
+            will_search = True
+        
+        safe_msg = user_message[:40].encode('ascii', 'ignore').decode('ascii')
+        print(f"[PREFLIGHT] '{safe_msg}' -> activity={has_activity}, duration={has_duration}, will_search={will_search}")
         
         return jsonify({
             'will_search_tours': will_search,
@@ -3253,6 +4194,109 @@ Reply: YES or NO"""
     except Exception as e:
         print(f"[PREFLIGHT] Error: {e}")
         return jsonify({'will_search_tours': False, 'error': str(e)})
+
+@app.route('/chat/generate-suggestions', methods=['POST'])
+def generate_suggestions():
+    """Generate 4 contextual user responses based on AI message and conversation state"""
+    try:
+        data = request.get_json()
+        ai_message = data.get('ai_message', '')
+        language = data.get('language', 'en')
+        has_tour_results = data.get('has_tour_results', False)
+        tour_names = data.get('tour_names', [])
+        user_context = data.get('user_context', '').lower()
+        conversation_length = data.get('conversation_length', 0)
+        
+        lower_msg = ai_message.lower()
+        
+        # =====================================================
+        # WHEN TOURS ARE BEING DISPLAYED - contextual follow-ups
+        # =====================================================
+        if has_tour_results and tour_names:
+            suggestions = []
+            
+            # Detect what user originally asked about to tailor suggestions
+            asked_about_family = any(w in user_context for w in ['family', 'kids', 'children', 'child'])
+            asked_about_snorkeling = any(w in user_context for w in ['snorkel', 'reef', 'underwater', 'fish'])
+            asked_about_beach = any(w in user_context for w in ['beach', 'whitehaven', 'sand'])
+            asked_about_sailing = any(w in user_context for w in ['sail', 'boat', 'cruise'])
+            asked_about_budget = any(w in user_context for w in ['budget', 'cheap', 'affordable', 'backpack'])
+            asked_about_romantic = any(w in user_context for w in ['couple', 'romantic', 'honeymoon', 'anniversary'])
+            asked_about_adventure = any(w in user_context for w in ['adventure', 'thrill', 'exciting', 'adrenaline'])
+            asked_about_duration = any(w in user_context for w in ['day', 'half', 'full', 'overnight', 'hours', 'quick'])
+            
+            # First suggestion: Ask for AI's recommendation/opinion
+            suggestions.append("🎯 Which do you recommend?")
+            
+            # Second: Context-specific follow-up questions
+            if asked_about_family:
+                suggestions.append("👶 Which is best for kids?")
+            elif asked_about_snorkeling:
+                suggestions.append("🤿 Which has the best snorkeling?")
+            elif asked_about_beach:
+                suggestions.append("🏖️ Which has the most beach time?")
+            elif asked_about_sailing:
+                suggestions.append("⛵ Best sailing experience?")
+            elif asked_about_budget:
+                suggestions.append("💎 Which is best value?")
+            elif asked_about_romantic:
+                suggestions.append("💕 Which is most romantic?")
+            elif asked_about_adventure:
+                suggestions.append("🔥 Which is most exciting?")
+            elif asked_about_duration:
+                suggestions.append("⏰ When do these depart?")
+            else:
+                suggestions.append("🍽️ What's included?")
+            
+            # Third: "Show me other options" - always useful
+            suggestions.append("🔄 Show me other options")
+            
+            # Fourth: Alternative direction based on what WASN'T mentioned
+            if not asked_about_budget:
+                suggestions.append("💰 Something cheaper?")
+            elif not asked_about_adventure:
+                suggestions.append("🎉 Something more exciting?")
+            elif not asked_about_duration:
+                suggestions.append("⏱️ Something shorter?")
+            else:
+                suggestions.append("😌 Something more relaxed?")
+            
+            return jsonify({'suggestions': suggestions[:4]})
+        
+        # =====================================================
+        # NO TOURS YET - gathering information stage
+        # =====================================================
+        
+        # Welcome/opening message asking about activities
+        if 'what would you like to experience' in lower_msg or 'what kind of' in lower_msg or ('reef' in lower_msg and 'beach' in lower_msg and '?' in ai_message):
+            return jsonify({'suggestions': ["🐠 Reef & Snorkeling", "🏖️ Whitehaven Beach", "⛵ Sailing Adventure", "🌟 Show Popular"]})
+        
+        # Asking to narrow down after "popular" - wants activity preference
+        if 'narrow it down' in lower_msg or 'prefer a specific activity' in lower_msg:
+            return jsonify({'suggestions': ["🐠 Great Barrier Reef", "🏖️ Beach & Relaxation", "⛵ Sailing & Cruises", "🎯 Just show popular"]})
+        
+        # Asking about duration specifically
+        if 'how long' in lower_msg or 'duration' in lower_msg or 'how much time' in lower_msg:
+            return jsonify({'suggestions': ["⚡ A few hours", "🌅 Half day", "☀️ Full day", "🌙 Overnight"]})
+        
+        # Asking about group/who
+        if 'who' in lower_msg and ('travel' in lower_msg or 'with' in lower_msg):
+            return jsonify({'suggestions': ["👨‍👩‍👧 Family with kids", "💑 Just us two", "👥 Group of friends", "🧳 Solo traveler"]})
+        
+        # Asking about budget
+        if 'budget' in lower_msg or 'spend' in lower_msg or 'price' in lower_msg:
+            return jsonify({'suggestions': ["💵 Budget friendly", "💰 Mid-range", "💎 Premium experience", "🤷 Flexible budget"]})
+        
+        # Follow-up after first exchange (no tours yet)
+        if conversation_length > 2:
+            return jsonify({'suggestions': ["☀️ Full day trip", "🌅 Half day", "🌟 Show me popular tours", "🎯 Surprise me!"]})
+        
+        # Default: activity choices for new conversation
+        return jsonify({'suggestions': ["🐠 Reef Tours", "🏖️ Beach Tours", "⛵ Sailing", "🌟 Popular Tours"]})
+        
+    except Exception as e:
+        print(f"[SUGGESTIONS] Error: {e}")
+        return jsonify({'suggestions': ["🐠 Reef Tours", "🏖️ Beach Tours", "⛵ Sailing", "🌟 Popular"]})
 
 @app.route('/chat/detect-intent', methods=['POST'])
 def detect_intent():
@@ -3363,7 +4407,10 @@ def chat():
         # Specific activities that should ALWAYS trigger search
         specific_activities = ['jetski', 'jet ski', 'helicopter', 'scenic flight', 'seaplane', 
                               'skydive', 'skydiving', 'parasail', 'fishing charter', 'kayak tour',
-                              'whale watch', 'sunset cruise', 'sunset sail']
+                              'whale watch', 'sunset cruise', 'sunset sail',
+                              'half day beach', 'full day beach', 'half day reef', 'full day reef',
+                              'half day sailing', 'full day sailing', 'overnight sailing',
+                              'multi-day sailing', 'half day snorkeling', 'full day snorkeling']
         
         # Known tour names that should trigger immediate search
         # NOTE: Do NOT include destinations like "whitehaven beach" - those need 2 preferences!
@@ -3380,14 +4427,20 @@ def chat():
         # REMOVED: 'whitehaven beach' (destination, not tour name - needs duration)
         # REMOVED: 'hayman', 'hamilton', 'daydream' (islands, not tour names - too generic)
         
+        # Check for popular/recommended tours request
+        popular_keywords = ['popular', 'popular tours', 'show popular', 'what\'s popular', 'best tours', 'top tours', 'recommended', 'favorites']
+        wants_popular = any(kw in msg_lower for kw in popular_keywords)
+        
         # Check if user is asking for something specific
         is_specific_request = (
+            wants_popular or
             any(activity in msg_lower for activity in specific_activities) or
             any(tour_name in msg_lower for tour_name in known_tour_names)
         )
         
         if is_specific_request:
-            print(f"[CHAT] SPECIFIC REQUEST detected: '{user_message[:50]}' - bypassing 2-preference rule")
+            safe_msg = user_message[:50].encode('ascii', 'ignore').decode('ascii')
+            print(f"[CHAT] SPECIFIC REQUEST detected: '{safe_msg}' - bypassing 2-preference rule")
             should_search_tours = True
         else:
             # Use LLM to determine intent
@@ -3445,7 +4498,9 @@ Reply ONLY: SEARCH or ASK"""
             
             intent = intent_response.choices[0].message.content.strip().upper()
             should_search_tours = 'SEARCH' in intent
-            print(f"[CHAT] Intent check: '{user_message[:40]}' -> {intent} (should_search={should_search_tours})")
+            # Strip emojis for Windows console compatibility
+            safe_msg = user_message[:40].encode('ascii', 'ignore').decode('ascii')
+            print(f"[CHAT] Intent check: '{safe_msg}' -> {intent} (should_search={should_search_tours})")
         
         # Load all tours - MUST be outside the if/else so it's always available
         all_tours = load_all_tours(language)
@@ -3455,6 +4510,11 @@ Reply ONLY: SEARCH or ASK"""
             'other', 'different', 'else', 'alternative', 'another', 'more option',
             'something else', 'not these', 'not for me', 'show me more', 'any others'
         ])
+        
+        # FORCE search if user wants different tours (overrides preflight)
+        if wants_different_early and previously_shown_tour_keys:
+            print(f"[CHAT] User wants OTHER tours - forcing search (overriding preflight)")
+            should_search_tours = True
         
         # Only do expensive LLM tour matching if preflight says we should
         if should_search_tours:
@@ -3468,6 +4528,53 @@ Reply ONLY: SEARCH or ASK"""
             match_quality = match_result.get('match_quality', 'none')
             user_wants = match_result.get('user_wants', '')
             match_explanation = match_result.get('explanation', '')
+            
+            # Check if user is asking for a SPECIFIC tour by name
+            # Don't use RAG to "fill up" results when user wants one specific tour
+            specific_tour_phrases = [
+                'do you have the', 'is there a', 'what about the', 'tell me about the',
+                'clipper', 'matador', 'solway', 'condor', 'kiana', 'apollo', 'camira',
+                'reefworld', 'heart reef', 'northern exposure', 'southern lights'
+            ]
+            is_specific_tour_request = any(phrase in user_message.lower() for phrase in specific_tour_phrases)
+            
+            # SEMANTIC SEARCH ENHANCEMENT: Use RAG to fill up results when we have < 3 tours
+            # But NOT when user is asking for a specific tour by name
+            if len(pre_fetched_tours) < 3 and CHROMA_AVAILABLE and not is_specific_tour_request:
+                needed = 3 - len(pre_fetched_tours)
+                print(f"[CHAT] Only {len(pre_fetched_tours)} tours from LLM - using RAG to find {needed} more...")
+                
+                # Get semantic matches
+                semantic_results = get_tours_by_semantic_search(
+                    user_message, 
+                    all_tours, 
+                    max_results=8,
+                    min_similarity=0.15
+                )
+                
+                if semantic_results:
+                    # Filter out tours we already have and previously shown
+                    existing_keys = {t.get('key') for t in pre_fetched_tours}
+                    if exclude_for_llm:
+                        existing_keys.update(exclude_for_llm)
+                    
+                    new_tours = [t for t in semantic_results if t.get('key') not in existing_keys]
+                    
+                    if new_tours:
+                        # Add semantic matches to fill up to 3 tours
+                        tours_to_add = new_tours[:needed]
+                        pre_fetched_tours.extend(tours_to_add)
+                        
+                        if match_quality != 'exact':
+                            match_quality = 'semantic_enhanced'
+                        match_explanation += f' (+ {len(tours_to_add)} similar tours from semantic search)'
+                        
+                        print(f"[CHAT] RAG added {len(tours_to_add)} similar tours:")
+                        for t in tours_to_add:
+                            sim = t.get('similarity_score', 0)
+                            print(f"  + {t['name'][:40]} ({sim:.1%} match)")
+            elif is_specific_tour_request:
+                print(f"[CHAT] Specific tour request detected - not using RAG to fill results")
         else:
             print(f"[CHAT] Preflight says don't search - skipping LLM tour matching (will ask follow-up)")
             pre_fetched_tours = []
@@ -3496,7 +4603,10 @@ Reply ONLY: SEARCH or ASK"""
                 print(f"[CHAT] Filtered out {original_count - len(pre_fetched_tours)} previously shown tours")
         
         # COMPANY DIVERSITY: Don't show more than 2 tours from the same company
-        if len(pre_fetched_tours) > 3:
+        # EXCEPTION: Skip diversity for specific activities (jetski, helicopter) where one company has all tours
+        is_specific_activity_request = any(kw in user_message.lower() for kw in ['jetski', 'jet ski', 'helicopter', 'scenic flight', 'heli'])
+        
+        if len(pre_fetched_tours) > 3 and not is_specific_activity_request:
             company_counts = {}
             diverse_tours = []
             for tour in pre_fetched_tours:
@@ -3507,6 +4617,8 @@ Reply ONLY: SEARCH or ASK"""
             if len(diverse_tours) >= 3:
                 pre_fetched_tours = diverse_tours
                 print(f"[CHAT] Applied company diversity - {len(set(t.get('company') for t in pre_fetched_tours[:3]))} different companies")
+        elif is_specific_activity_request:
+            print(f"[CHAT] Skipping company diversity for specific activity request")
         
         # Check if this is a budget request - sort by price instead of promotion
         budget_keywords = ['budget', 'cheap', 'affordable', 'backpack', 'student', 'low cost', 'inexpensive']
@@ -3577,9 +4689,35 @@ Reply ONLY: SEARCH or ASK"""
                 # User wanted something but we couldn't find it
                 specific_tours_section = f"""
 
-NOTE: The user asked for "{user_wants}" but we don't have tours matching that exactly.
-Be honest and helpful - explain we don't have exactly what they asked for, but offer to show them
-similar experiences or ask what else interests them.
+⚠️ NO EXACT MATCHES FOR "{user_wants}" - BUT YOU CAN SUGGEST ALTERNATIVES!
+
+YOU MUST NOT:
+- Make up tour names or describe imaginary tours
+- List numbered tours without using [TOUR:key] tags
+
+YOU SHOULD:
+1. Acknowledge we don't have tours specifically for that criteria
+2. Suggest REAL alternatives by using [FILTER:...] to show actual tours!
+3. Recommend speaking to staff at counter for specialized requirements
+
+IMPORTANT: If you suggest scenic flights, sailing, etc - USE [FILTER:...] TO SHOW THEM!
+
+Example good response for accessibility question:
+"While I don't have tours specifically tagged for accessibility, I can show you some options that might work well! 🌟
+
+For a relaxing experience with minimal walking:
+- **Scenic flights** let you see everything from the air - no physical activity needed!
+- **Sailing cruises** offer comfortable deck seating with stunning views
+
+Let me show you our scenic flights:
+[FILTER:{{"activity":"scenic_flight"}}]
+
+Or if you'd prefer a relaxing sailing experience:
+[FILTER:{{"activity":"sailing"}}]
+
+I'd also recommend chatting with our staff at the counter - they can contact operators directly about specific accessibility accommodations!"
+
+KEY: Always use [FILTER:...] when mentioning tour types so REAL tours are displayed!
 """
             else:
                 specific_tours_section = """
@@ -3587,6 +4725,8 @@ similar experiences or ask what else interests them.
 NOTE: No specific tours have been identified yet. Continue gathering user preferences!
 When you have enough info, the system will provide specific tours to describe.
 For now, ask engaging questions to understand what kind of experience they want.
+
+⚠️ IMPORTANT: Do NOT describe or name any specific tours until tours are provided to you below!
 """
         
         if pre_fetched_tours:
@@ -3742,7 +4882,7 @@ Our tour categories:
 
 **YOU ARE REPLACING A REAL PERSON!** 
 - Be warm, personable, and genuinely excited about these tours
-- Use emojis sparingly but effectively (ðŸŒŠ ðŸ  âœ¨ ðŸï¸ ðŸš¤ ðŸŒ…)
+- Use emojis sparingly but effectively (🌊 🐠 ✨ 🏝️ 🚤 🌅)
 - Give DETAILED 3-4 sentence descriptions that SELL each tour
 - Highlight what makes each tour special and why they'll love it
 - Create excitement and urgency - these are once-in-a-lifetime experiences!
@@ -3797,7 +4937,9 @@ Example: "How long can you be away? [OPTIONS:Half Day,Full Day,Multi-day]"
 - If user wants "cheapest", find the LOWEST PRICE tours that match ALL their other preferences
 - STRICTLY match ALL collected preferences - duration, vibe, interests
 - DO NOT recommend tours that don't match what they asked for!
-- **NEVER make up tour names!** Only describe tours that actually exist in the database!
+- **NEVER MAKE UP TOUR NAMES!** You can ONLY describe tours that are explicitly listed in the "TOURS TO DESCRIBE" section below!
+- If no tours are listed below, DO NOT describe any tours - just have a conversation and suggest alternatives
+- INVENTED tours like "Whitehaven Beach Scenic Flight" or "Sailing Tours" (generic) are FORBIDDEN - these will confuse customers!
 - **ALWAYS use [FILTER:...] tags when you have enough info (activity + duration OR just activity if duration is "any")** - this is REQUIRED to show tours!
 
 **TWO WAYS TO RESPOND**:
@@ -4006,6 +5148,11 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 tour = next((t for t in tours if t.get('key') == tour_key), None)
                 if tour:
                     tour_copy = tour.copy()
+                    # Load images lazily for this tour
+                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                    tour_copy['thumbnail'] = thumb
+                    tour_copy['gallery'] = gallery
+                    tour_copy['uses_placeholder_images'] = uses_placeholder
                     if tour_copy.get('price_adult'):
                         tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
                     if tour_copy.get('price_child'):
@@ -4066,7 +5213,8 @@ Be conversational, ask questions, and help them discover their perfect adventure
                     if len(filtered_tours) < original_count:
                         print(f"   Filtered out {original_count - len(filtered_tours)} previously shown tours")
                 
-                    filtered_tours = filtered_tours[:3]
+                # Always limit to 3 tours for display
+                filtered_tours = filtered_tours[:3]
                 
                 # CRITICAL: If no tours match the filter, return empty
                 if len(filtered_tours) == 0:
@@ -4084,16 +5232,23 @@ Be conversational, ask questions, and help them discover their perfect adventure
                         'quick_reply_options': quick_reply_options,
                         'total_matching_tours': 0
                     }
+                    return jsonify(response_data)
                 else:
                     print(f"   Returning {len(filtered_tours)} tours:")
                     for t in filtered_tours:
                         promo = f" [PROMO] {t.get('promotion')}" if t.get('promotion') else ""
                         print(f"      - {t['name']}{promo}")
                 
-                # Convert prices for display
+                # Convert prices and load images for display (lazy loading)
                 tour_details = []
+                print(f"[LAZY-IMAGES] Loading images for {len(filtered_tours)} tours...")
                 for tour in filtered_tours:
                     tour_copy = tour.copy()
+                    # Load images lazily for this tour
+                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                    tour_copy['thumbnail'] = thumb
+                    tour_copy['gallery'] = gallery
+                    tour_copy['uses_placeholder_images'] = uses_placeholder
                     if tour_copy.get('price_adult'):
                         tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
                     if tour_copy.get('price_child'):
@@ -4139,8 +5294,14 @@ Be conversational, ask questions, and help them discover their perfect adventure
                     # Limit and convert prices
                     late_tours = late_tours[:3]
                     tour_details = []
+                    print(f"[LAZY-IMAGES] Loading images for {len(late_tours)} late-search tours...")
                     for tour in late_tours:
                         tour_copy = tour.copy()
+                        # Load images lazily for this tour
+                        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                        tour_copy['thumbnail'] = thumb
+                        tour_copy['gallery'] = gallery
+                        tour_copy['uses_placeholder_images'] = uses_placeholder
                         if tour_copy.get('price_adult'):
                             tour_copy['price_adult'] = convert_price_for_display(tour_copy['price_adult'], language)
                         tour_details.append(tour_copy)

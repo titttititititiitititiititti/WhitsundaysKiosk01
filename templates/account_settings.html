@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Settings - Tour Kiosk</title>
+    <title>Account Settings - Filtour</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,37 +22,34 @@
             padding: 20px;
         }
         
-        .container {
-            max-width: 800px;
+        .settings-container {
+            max-width: 600px;
             margin: 0 auto;
         }
         
-        .header {
+        .settings-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
             padding: 20px;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .header h1 {
+        .settings-header h1 {
             font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a8dadc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
         .back-btn {
             padding: 10px 20px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
             text-decoration: none;
             font-size: 0.9rem;
@@ -60,50 +57,77 @@
         }
         
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
         }
         
-        .settings-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            margin-bottom: 24px;
-        }
-        
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
+        .success-message {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #51cf66;
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ff6b6b;
+        }
+        
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 20px;
+            background: rgba(0, 119, 182, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-content {
+            padding: 25px;
+        }
+        
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
         }
         
         .form-label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         .form-input {
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px 18px;
             background: rgba(255, 255, 255, 0.08);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
             font-size: 1rem;
             font-family: inherit;
@@ -114,64 +138,24 @@
             outline: none;
             border-color: #0077b6;
             background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.2);
         }
         
         .form-input::placeholder {
             color: rgba(255, 255, 255, 0.4);
         }
         
-        .form-input:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .info-text {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 8px;
-        }
-        
-        .error-message {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.5);
-            color: #ff6b6b;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .success-message {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.5);
-            color: #51cf66;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
         .submit-btn {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%);
+            padding: 14px;
+            background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 10px;
         }
         
         .submit-btn:hover {
@@ -179,106 +163,141 @@
             box-shadow: 0 10px 30px rgba(0, 119, 182, 0.4);
         }
         
-        .submit-btn:active {
-            transform: translateY(0);
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
         
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 40px 0;
+        .account-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0077b6, #00b4d8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .account-details {
+            flex: 1;
+        }
+        
+        .account-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .account-username {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚙️ Account Settings</h1>
-            {% if session.role == 'agent' %}
-            <a href="{{ url_for('agent_dashboard') }}" class="back-btn">← Back to Dashboard</a>
-            {% else %}
-            <a href="{{ url_for('operator_dashboard') }}" class="back-btn">← Back to Dashboard</a>
-            {% endif %}
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>👤 Account Settings</h1>
+            <a href="/admin/agent" class="back-btn">← Back to Dashboard</a>
         </div>
-        
-        {% if error %}
-        <div class="error-message">
-            <span>⚠️</span> {{ error }}
-        </div>
-        {% endif %}
         
         {% if success %}
-        <div class="success-message">
+        <div class="message success-message">
             <span>✅</span> {{ success }}
         </div>
         {% endif %}
         
-        <!-- Profile Information -->
-        <div class="settings-card">
-            <div class="card-title">
-                👤 Profile Information
+        {% if error %}
+        <div class="message error-message">
+            <span>⚠️</span> {{ error }}
+        </div>
+        {% endif %}
+        
+        <!-- Profile Settings -->
+        <div class="settings-section">
+            <div class="section-header">
+                <h2>📝 Profile Information</h2>
             </div>
-            <form method="POST">
-                <input type="hidden" name="action" value="update_profile">
-                
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-input" value="{{ username }}" disabled>
-                    <div class="info-text">Username cannot be changed</div>
+            <div class="section-content">
+                <div class="account-info">
+                    <div class="account-avatar">👤</div>
+                    <div class="account-details">
+                        <div class="account-name">{{ user.name or 'Unknown' }}</div>
+                        <div class="account-username">@{{ username }}</div>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="full_name" class="form-input" 
-                           value="{{ user.name or '' }}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" 
-                           value="{{ user.email or '' }}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Role</label>
-                    <input type="text" class="form-input" value="{{ user.role | title }}" disabled>
-                    <div class="info-text">Role cannot be changed from this page</div>
-                </div>
-                
-                <button type="submit" class="submit-btn">Update Profile</button>
-            </form>
+                <form method="POST">
+                    <input type="hidden" name="action" value="update_profile">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-input" 
+                               value="{{ user.name or '' }}" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-input" 
+                               value="{{ user.email or '' }}" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">💾 Update Profile</button>
+                </form>
+            </div>
         </div>
         
-        <!-- Change Password -->
-        <div class="settings-card">
-            <div class="card-title">
-                🔒 Change Password
+        <!-- Password Settings -->
+        <div class="settings-section">
+            <div class="section-header">
+                <h2>🔐 Change Password</h2>
             </div>
-            <form method="POST">
-                <input type="hidden" name="action" value="change_password">
-                
-                <div class="form-group">
-                    <label class="form-label">Current Password</label>
-                    <input type="password" name="current_password" class="form-input" 
-                           placeholder="Enter your current password" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">New Password</label>
-                    <input type="password" name="new_password" class="form-input" 
-                           placeholder="Enter new password (min 6 characters)" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Confirm New Password</label>
-                    <input type="password" name="confirm_password" class="form-input" 
-                           placeholder="Confirm your new password" required>
-                </div>
-                
-                <button type="submit" class="submit-btn">Change Password</button>
-            </form>
+            <div class="section-content">
+                <form method="POST">
+                    <input type="hidden" name="action" value="change_password">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="current_password" class="form-input" 
+                               placeholder="Enter your current password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="new_password" class="form-input" 
+                               placeholder="Enter new password (min 6 characters)" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-input" 
+                               placeholder="Confirm new password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">🔑 Change Password</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Danger Zone -->
+        <div class="settings-section" style="border-color: rgba(220, 53, 69, 0.3);">
+            <div class="section-header" style="background: rgba(220, 53, 69, 0.1);">
+                <h2 style="color: #ff6b6b;">⚠️ Account Actions</h2>
+            </div>
+            <div class="section-content">
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+                    Need to log out or having issues? Use these options.
+                </p>
+                <a href="/admin/logout" class="submit-btn" style="display: block; text-align: center; text-decoration: none; background: linear-gradient(135deg, #6c757d, #495057);">
+                    🚪 Log Out
+                </a>
+            </div>
         </div>
     </div>
 </body>
 </html>
-

@@ -120,7 +120,7 @@ class ParticleVisualizer {
     // Create canvas - no visible boundary
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'particle-canvas';
-    this.canvas.style.cssText = 'width: 100%; height: 100%; display: block; background: transparent; position: absolute; top: 0; left: 0;';
+    this.canvas.style.cssText = 'width: 100%; height: 100%; display: block; background: transparent; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; pointer-events: auto;';
     
     // Remove any existing canvas
     const existingCanvas = this.container.querySelector('canvas');
@@ -878,12 +878,10 @@ function visualizerStopSpeaking() {
   }
 }
 
-// Auto-initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initParticleVisualizer);
-} else {
-  setTimeout(initParticleVisualizer, 100);
-}
+// DON'T auto-initialize - only initialize when AI assistant mode is entered
+// This prevents the animation loop from running on the mode selection page
+// and competing with the video background
+// initParticleVisualizer() is called manually when entering AI assistant mode
 
 // Export for global access
 window.ParticleVisualizer = ParticleVisualizer;

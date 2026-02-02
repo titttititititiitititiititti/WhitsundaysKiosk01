@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=0.35, maximum-scale=2.0, user-scalable=yes">
-    <title>Agent Dashboard - Tour Kiosk</title>
+    <title>Agent Dashboard - Filtour</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -537,6 +537,26 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .no-booking-alert {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--accent-red);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            animation: pulse-alert 2s infinite;
+        }
+        
+        @keyframes pulse-alert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
         
         .tour-price {
@@ -606,6 +626,71 @@
             color: var(--text-primary);
         }
         
+        /* Unavailable Tours Section */
+        .unavailable-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .unavailable-section .section-header {
+            margin-bottom: 20px;
+        }
+        
+        .unavailable-section .section-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .unavailable-section .section-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .count-badge {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .unavailable-tours-list {
+            display: grid;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .unavailable-tour-item {
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        
+        .unavailable-tour-item:hover {
+            opacity: 1;
+            border-color: var(--accent-blue);
+        }
+        
+        .unavailable-tour-item .tour-company {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
         /* Toast */
         .toast {
             position: fixed;
@@ -627,6 +712,202 @@
         .toast.success { border-left: 4px solid var(--accent-green); }
         .toast.error { border-left: 4px solid var(--accent-red); }
         .toast.show { display: flex; }
+        
+        /* Tour Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.2s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-label .hint {
+            font-weight: 400;
+            font-size: 0.75rem;
+            text-transform: none;
+            letter-spacing: 0;
+            opacity: 0.7;
+            display: block;
+            margin-top: 4px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .current-value {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+        }
+        
+        .current-value strong {
+            color: var(--accent-blue);
+        }
+        
+        .section-divider {
+            border-top: 1px solid var(--border-color);
+            margin: 24px 0;
+            padding-top: 24px;
+        }
+        
+        .section-title-modal {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hero-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .save-status {
+            font-size: 0.8rem;
+            color: var(--accent-green);
+            margin-left: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .save-status.show {
+            opacity: 1;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .btn-dev {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+        
+        .btn-dev:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
     </style>
 </head>
 <body>
@@ -641,8 +922,11 @@
             <div class="user-info">
                 <span>👤 {{ session.name or 'Test Mode' }}</span>
             </div>
+            <a href="{{ url_for('kiosk_settings') }}" class="btn btn-secondary">
+                🖥️ Kiosk Settings
+            </a>
             <a href="{{ url_for('account_settings') }}" class="btn btn-secondary">
-                ⚙️ Account Settings
+                👤 Account
             </a>
             <a href="{{ url_for('agent_analytics_page') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                 📊 Analytics
@@ -782,7 +1066,12 @@
                             <span class="toggle-slider"></span>
                         </label>
                         <div class="tour-info">
-                            <div class="tour-name">{{ tour.name }}</div>
+                            <div class="tour-name">
+                                {{ tour.name }}
+                                {% if tour.enabled and not tour.has_booking_link %}
+                                <span class="no-booking-alert" title="This tour has no booking link configured!">⚠️ No Booking Link!</span>
+                                {% endif %}
+                            </div>
                             <div class="tour-price">{{ tour.price }}</div>
                         </div>
                         <div class="promo-selector">
@@ -803,9 +1092,9 @@
                             </button>
                         </div>
                         <div class="tour-actions">
-                            <a href="{{ url_for('tour_editor') }}?select={{ tour.key }}" class="tour-action-btn">
+                            <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', '{{ tour.name | e }}')">
                                 ✏️ Edit
-                            </a>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -813,13 +1102,242 @@
             </div>
             {% endfor %}
         </div>
+        
+        <!-- Unavailable Tours Section -->
+        {% if disabled_tours %}
+        <div class="unavailable-section">
+            <div class="section-header">
+                <h2>🚫 Unavailable Tours <span class="count-badge">{{ disabled_tours|length }}</span></h2>
+                <p class="section-desc">Tours you don't currently sell. Enable them to add to your kiosk.</p>
+            </div>
+            <div class="unavailable-tours-list">
+                {% for tour in disabled_tours %}
+                <div class="unavailable-tour-item" data-key="{{ tour.key }}">
+                    <label class="toggle-switch">
+                        <input type="checkbox" onchange="toggleTour('{{ tour.key }}', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="tour-info">
+                        <div class="tour-name">{{ tour.name }}</div>
+                        <div class="tour-company">{{ tour.company_display }}</div>
+                    </div>
+                    <div class="tour-price">{{ tour.price }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </main>
     
     <div class="toast" id="toast"></div>
     
+    <!-- Tour Settings Modal -->
+    <div class="modal-overlay" id="tourSettingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    ✏️ <span id="modalTourName">Tour Settings</span>
+                    <span class="save-status" id="saveStatus">✓ Saved</span>
+                </h2>
+                <button class="modal-close" onclick="closeTourSettings()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="currentTourKey">
+                
+                <!-- Price Overrides -->
+                <div class="section-title-modal">💰 Price Settings</div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Price Override (Display Price)
+                        <span class="hint">Leave empty to use original price from database</span>
+                    </label>
+                    <input type="text" class="form-input" id="priceOverride" placeholder="e.g., A$299" oninput="autoSave()">
+                    <div class="current-value" id="currentPrice"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Adult Price Override</label>
+                        <input type="text" class="form-input" id="priceAdultOverride" placeholder="e.g., A$299" oninput="autoSave()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Child Price Override</label>
+                        <input type="text" class="form-input" id="priceChildOverride" placeholder="e.g., A$199" oninput="autoSave()">
+                    </div>
+                </div>
+                
+                <div class="section-divider">
+                    <div class="section-title-modal">
+                        🔗 Booking Integration
+                        <span class="hero-badge">Hero Platform</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Booking Button URL
+                        <span class="hint">Direct link to booking page (opens in new tab when "Book Now" is clicked)</span>
+                    </label>
+                    <input type="text" class="form-input" id="bookingButtonUrl" placeholder="https://hero.booking/tour/..." oninput="autoSave()">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Hero Widget HTML/Embed Code
+                        <span class="hint">Paste the full HTML embed code from Hero. This replaces the pricing section with an interactive booking widget. Leave empty to use default pricing display.</span>
+                    </label>
+                    <textarea class="form-input form-textarea" id="heroWidgetHtml" placeholder='<div class="hero-widget">...</div>' oninput="autoSave()"></textarea>
+                </div>
+                
+                <div class="section-divider">
+                    <div class="section-title-modal">📝 Notes</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Internal Notes
+                        <span class="hint">For your reference only - not shown to customers</span>
+                    </label>
+                    <textarea class="form-input" id="tourNotes" placeholder="Any notes about this tour..." style="min-height: 80px;" oninput="autoSave()"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-dev" id="devModeLink" target="_blank">
+                    🔧 Open in Developer Mode
+                </a>
+                <button class="btn btn-primary" onclick="closeTourSettings()">
+                    ✓ Done
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         let currentFilter = 'all';
         let searchMode = 'tours'; // 'tours' or 'companies'
+        let currentTourKey = null;
+        let autoSaveTimer = null;
+        
+        // =====================================================================
+        // TOUR SETTINGS MODAL
+        // =====================================================================
+        
+        async function openTourSettings(tourKey, tourName) {
+            currentTourKey = tourKey;
+            document.getElementById('currentTourKey').value = tourKey;
+            document.getElementById('modalTourName').textContent = tourName;
+            document.getElementById('devModeLink').href = '{{ url_for("tour_editor") }}?select=' + tourKey;
+            
+            // Show modal
+            document.getElementById('tourSettingsModal').classList.add('show');
+            
+            // Load settings
+            try {
+                const response = await fetch(`/admin/agent/api/tour-settings/${tourKey}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Populate fields
+                    document.getElementById('priceOverride').value = data.settings.price_override || '';
+                    document.getElementById('priceAdultOverride').value = data.settings.price_adult_override || '';
+                    document.getElementById('priceChildOverride').value = data.settings.price_child_override || '';
+                    document.getElementById('bookingButtonUrl').value = data.settings.booking_button_url || '';
+                    document.getElementById('heroWidgetHtml').value = data.settings.hero_widget_html || '';
+                    document.getElementById('tourNotes').value = data.settings.notes || '';
+                    
+                    // Show current values from database
+                    if (data.tour_data) {
+                        let currentPriceHtml = '<strong>Current:</strong> ';
+                        if (data.tour_data.price) {
+                            currentPriceHtml += data.tour_data.price;
+                        } else if (data.tour_data.price_adult) {
+                            currentPriceHtml += 'Adult: ' + data.tour_data.price_adult;
+                            if (data.tour_data.price_child) {
+                                currentPriceHtml += ', Child: ' + data.tour_data.price_child;
+                            }
+                        } else {
+                            currentPriceHtml += 'Not set';
+                        }
+                        document.getElementById('currentPrice').innerHTML = currentPriceHtml;
+                    }
+                }
+            } catch (err) {
+                showToast('Failed to load tour settings', 'error');
+            }
+        }
+        
+        function closeTourSettings() {
+            document.getElementById('tourSettingsModal').classList.remove('show');
+            currentTourKey = null;
+            // Clear auto-save timer
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = null;
+            }
+        }
+        
+        function autoSave() {
+            // Debounce auto-save
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+            
+            autoSaveTimer = setTimeout(async () => {
+                if (!currentTourKey) return;
+                
+                const data = {
+                    price_override: document.getElementById('priceOverride').value,
+                    price_adult_override: document.getElementById('priceAdultOverride').value,
+                    price_child_override: document.getElementById('priceChildOverride').value,
+                    booking_button_url: document.getElementById('bookingButtonUrl').value,
+                    hero_widget_html: document.getElementById('heroWidgetHtml').value,
+                    notes: document.getElementById('tourNotes').value
+                };
+                
+                try {
+                    const response = await fetch(`/admin/agent/api/tour-settings/${currentTourKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        // Show save indicator
+                        const saveStatus = document.getElementById('saveStatus');
+                        saveStatus.classList.add('show');
+                        setTimeout(() => saveStatus.classList.remove('show'), 2000);
+                        
+                        // Update price display in tour list if price was changed
+                        if (data.price_override) {
+                            const tourItem = document.querySelector(`.tour-item[data-key="${currentTourKey}"]`);
+                            if (tourItem) {
+                                const priceEl = tourItem.querySelector('.tour-price');
+                                if (priceEl) {
+                                    priceEl.textContent = data.price_override + ' (override)';
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Auto-save failed:', err);
+                }
+            }, 500); // Save after 500ms of no typing
+        }
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('tourSettingsModal').classList.contains('show')) {
+                closeTourSettings();
+            }
+        });
+        
+        // Close modal on overlay click
+        document.getElementById('tourSettingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('tourSettingsModal')) {
+                closeTourSettings();
+            }
+        });
         
         function setSearchMode(mode) {
             searchMode = mode;

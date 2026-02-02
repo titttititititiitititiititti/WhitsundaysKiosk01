@@ -1,0 +1,53 @@
+{
+  "shop_id": "AirlieBeachTourism",
+  "shop_name": "Airlie Beach Tourism",
+  
+  "branding": {
+    "logo": "airlie_beach_tourism_logo.png",
+    "primary_color": "#2563eb",
+    "accent_color": "#3b82f6",
+    "background_video": "0124.mp4"
+  },
+  
+  "modes": {
+    "ai_assistant": {
+      "enabled": true,
+      "voice_input": true,
+      "voice_output": true,
+      "show_tour_cards": true
+    },
+    "browse_tours": {
+      "enabled": true,
+      "show_map": true,
+      "show_filters": true,
+      "default_view": "list"
+    },
+    "quick_decision": {
+      "enabled": true
+    }
+  },
+  
+  "features": {
+    "weather_widget": true,
+    "currency_selector": true,
+    "language_selector": true,
+    "available_languages": ["en", "zh", "ja"],
+    "qr_codes": true,
+    "idle_timeout_seconds": 180,
+    "show_prices": true,
+    "show_reviews": true
+  },
+  
+  "tour_data": {
+    "csv_folder": "data",
+    "promoted_tours": [],
+    "hidden_tours": [],
+    "company_filter": null
+  },
+  
+  "ai_settings": {
+    "personality": "helpful and enthusiastic about Airlie Beach experiences",
+    "max_tours_to_show": 3
+  }
+}
+
