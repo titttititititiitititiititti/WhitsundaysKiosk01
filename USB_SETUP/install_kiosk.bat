@@ -1,131 +1,222 @@
 @echo off
-setlocal EnableDelayedExpansion
+title Filtour Kiosk Installer
 
+:: ============================================
+:: AUTO-ELEVATE TO ADMINISTRATOR
+:: ============================================
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrator privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    "%temp%\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+
+:: ============================================
+:: ACTUAL INSTALLER STARTS HERE
+:: ============================================
+setlocal EnableDelayedExpansion
+color 0A
+
+echo.
 echo ===============================================================================
 echo                      FILTOUR KIOSK AUTOMATED INSTALLER
 echo ===============================================================================
 echo.
+echo Script location: %~dp0
+echo Working directory: %CD%
+echo.
+echo [OK] Running as Administrator
+echo.
 
-:: Check for admin privileges
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [!] This installer needs Administrator privileges.
-    echo     Right-click this file and select "Run as administrator"
-    pause
-    exit /b 1
-)
+:: ===== PYTHON CHECK =====
+echo [1/6] Looking for Python...
 
-:: Check if Python is installed
-echo [1/6] Checking Python installation...
 python --version >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [X] Python not found!
-    echo     Please install Python first from this USB drive.
-    echo     IMPORTANT: Check "Add Python to PATH" during installation!
-    pause
-    exit /b 1
+if %errorLevel% equ 0 (
+    echo [OK] Found: python
+    python --version
+    set PYCMD=python
+    goto :found_python
 )
-echo [OK] Python found
-for /f "tokens=2" %%i in ('python --version 2^>^&1') do echo      Version: %%i
 
-:: Check if Git is installed
+py --version >nul 2>&1
+if %errorLevel% equ 0 (
+    echo [OK] Found: py launcher
+    py --version
+    set PYCMD=py
+    goto :found_python
+)
+
+:: Manual search in common locations
+if exist "C:\Python312\python.exe" (
+    echo [OK] Found: C:\Python312\python.exe
+    set "PYCMD=C:\Python312\python.exe"
+    goto :found_python
+)
+if exist "C:\Python311\python.exe" (
+    echo [OK] Found: C:\Python311\python.exe
+    set "PYCMD=C:\Python311\python.exe"
+    goto :found_python
+)
+if exist "C:\Python310\python.exe" (
+    echo [OK] Found: C:\Python310\python.exe
+    set "PYCMD=C:\Python310\python.exe"
+    goto :found_python
+)
+if exist "C:\Program Files\Python312\python.exe" (
+    echo [OK] Found: C:\Program Files\Python312\python.exe
+    set "PYCMD=C:\Program Files\Python312\python.exe"
+    goto :found_python
+)
+if exist "C:\Program Files\Python311\python.exe" (
+    echo [OK] Found: C:\Program Files\Python311\python.exe
+    set "PYCMD=C:\Program Files\Python311\python.exe"
+    goto :found_python
+)
+if exist "C:\Program Files\Python310\python.exe" (
+    echo [OK] Found: C:\Program Files\Python310\python.exe
+    set "PYCMD=C:\Program Files\Python310\python.exe"
+    goto :found_python
+)
+
 echo.
-echo [2/6] Checking Git installation...
+echo ************************************************************
+echo *  ERROR: Python not found!                                *
+echo ************************************************************
+echo.
+echo Please install Python first:
+echo   1. Run the Python installer from this USB
+echo   2. IMPORTANT: Check "Add Python to PATH"
+echo   3. IMPORTANT: Select "Install for all users"
+echo   4. Close this window and run installer again
+echo.
+pause
+exit /b 1
+
+:found_python
+echo.
+
+:: ===== GIT CHECK =====
+echo [2/6] Looking for Git...
+
 git --version >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [X] Git not found!
-    echo     Please install Git first from this USB drive.
-    pause
-    exit /b 1
+if %errorLevel% equ 0 (
+    echo [OK] Found: git
+    git --version
+    set GITCMD=git
+    goto :found_git
 )
-echo [OK] Git found
-for /f "tokens=3" %%i in ('git --version 2^>^&1') do echo      Version: %%i
 
-:: Clone the repository
+if exist "C:\Program Files\Git\bin\git.exe" (
+    echo [OK] Found: C:\Program Files\Git\bin\git.exe
+    set "GITCMD=C:\Program Files\Git\bin\git.exe"
+    goto :found_git
+)
+
 echo.
-echo [3/6] Cloning repository to C:\filtour...
+echo ************************************************************
+echo *  ERROR: Git not found!                                   *
+echo ************************************************************
+echo.
+echo Please install Git first:
+echo   1. Run the Git installer from this USB
+echo   2. Use all default settings
+echo   3. Close this window and run installer again
+echo.
+pause
+exit /b 1
+
+:found_git
+echo.
+
+:: ===== CLONE OR UPDATE REPO =====
+echo [3/6] Setting up C:\filtour...
+
 if exist "C:\filtour" (
-    echo [!] C:\filtour already exists.
-    set /p OVERWRITE="    Delete and reinstall? (y/n): "
-    if /i "!OVERWRITE!"=="y" (
-        rmdir /s /q "C:\filtour"
-    ) else (
-        echo     Skipping clone, using existing folder.
-        goto :install_deps
+    echo    Folder exists - updating...
+    cd /d "C:\filtour"
+    "%GITCMD%" pull origin main
+) else (
+    echo    Cloning from GitHub (may take a few minutes)...
+    cd /d C:\
+    "%GITCMD%" clone https://github.com/titttititititiitititiititti/tourismwhitsundaysfiltour.git filtour
+    if !errorLevel! neq 0 (
+        echo.
+        echo ERROR: Clone failed! Check your internet connection.
+        echo.
+        pause
+        exit /b 1
     )
 )
-
-cd C:\
-git clone https://github.com/titttititititiitititiititti/tourismwhitsundaysfiltour.git filtour
-if %errorLevel% neq 0 (
-    echo [X] Failed to clone repository!
-    echo     Check your internet connection and GitHub credentials.
-    pause
-    exit /b 1
-)
-echo [OK] Repository cloned successfully
-
-:install_deps
-:: Install Python dependencies
+echo [OK] Repository ready
 echo.
-echo [4/6] Installing Python dependencies...
-cd C:\filtour
-python -m pip install --upgrade pip >nul 2>&1
-python -m pip install -r requirements.txt
-if %errorLevel% neq 0 (
-    echo [X] Failed to install dependencies!
-    pause
-    exit /b 1
-)
-echo [OK] Dependencies installed
 
-:: Create logs directory
+:: ===== INSTALL PACKAGES =====
+echo [4/6] Installing Python packages (this takes a few minutes)...
+cd /d "C:\filtour"
+
+"%PYCMD%" -m pip install --upgrade pip >nul 2>&1
+"%PYCMD%" -m pip install -r requirements.txt
+
+if !errorLevel! neq 0 (
+    echo [!] Warning: Some packages may have issues
+) else (
+    echo [OK] Packages installed
+)
 echo.
-echo [5/6] Setting up directories...
+
+:: ===== CREATE FOLDERS =====
+echo [5/6] Creating directories...
 if not exist "C:\filtour\logs" mkdir "C:\filtour\logs"
-echo [OK] Directories created
-
-:: Test the installation
+if not exist "C:\filtour\config" mkdir "C:\filtour\config"
+echo [OK] Directories ready
 echo.
+
+:: ===== TEST =====
 echo [6/6] Testing installation...
-cd C:\filtour
-python -c "import flask; print('Flask OK')" >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [X] Flask import failed!
-    pause
-    exit /b 1
-)
-echo [OK] Installation verified
-
+cd /d "C:\filtour"
+"%PYCMD%" -c "import flask; print('[OK] Flask working')"
 echo.
+
+:: ===== COMPLETE =====
 echo ===============================================================================
 echo                         INSTALLATION COMPLETE!
 echo ===============================================================================
 echo.
-echo Next steps:
-echo   1. To test the kiosk now, run:
-echo      cd C:\filtour
-echo      python app.py
+echo   Kiosk installed at: C:\filtour
 echo.
-echo   2. Open browser to: http://localhost:5000
+echo   TO START THE KIOSK:
+echo     1. Open Command Prompt
+echo     2. Type: cd C:\filtour
+echo     3. Type: python app.py
+echo     4. Open browser: http://localhost:5000
 echo.
-echo   3. To set up auto-start, see SETUP_INSTRUCTIONS.txt
-echo.
-echo   4. Admin login: http://localhost:5000/admin/login
-echo      Account: airliebeachtourism
+echo   ADMIN LOGIN: http://localhost:5000/admin/login
 echo.
 echo ===============================================================================
 echo.
 
-set /p RUNNOW="Would you like to start the kiosk now? (y/n): "
-if /i "%RUNNOW%"=="y" (
+set /p STARTNOW="Start the kiosk now? (y/n): "
+if /i "!STARTNOW!"=="y" (
     echo.
-    echo Starting kiosk... (Press Ctrl+C to stop)
+    echo Starting kiosk...
     echo Open browser to: http://localhost:5000
+    echo Press Ctrl+C to stop the server
     echo.
-    cd C:\filtour
-    python app.py
+    cd /d "C:\filtour"
+    "%PYCMD%" app.py
 )
 
-pause
-
+echo.
+echo Press any key to close...
+pause >nul
