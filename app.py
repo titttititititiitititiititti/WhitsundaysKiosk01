@@ -2213,9 +2213,6 @@ def get_tour_settings(tour_key):
         'settings': {
             'booking_button_url': tour_settings.get('booking_button_url', ''),
             'hero_widget_html': tour_settings.get('hero_widget_html', ''),
-            'price_override': tour_settings.get('price_override', ''),
-            'price_adult_override': tour_settings.get('price_adult_override', ''),
-            'price_child_override': tour_settings.get('price_child_override', ''),
             'notes': tour_settings.get('notes', '')
         }
     })
@@ -2242,12 +2239,6 @@ def save_tour_settings(tour_key):
         tour_settings['booking_button_url'] = data['booking_button_url'].strip()
     if 'hero_widget_html' in data:
         tour_settings['hero_widget_html'] = data['hero_widget_html'].strip()
-    if 'price_override' in data:
-        tour_settings['price_override'] = data['price_override'].strip()
-    if 'price_adult_override' in data:
-        tour_settings['price_adult_override'] = data['price_adult_override'].strip()
-    if 'price_child_override' in data:
-        tour_settings['price_child_override'] = data['price_child_override'].strip()
     if 'notes' in data:
         tour_settings['notes'] = data['notes'].strip()
     

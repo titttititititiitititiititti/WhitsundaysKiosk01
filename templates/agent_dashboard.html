@@ -1199,26 +1199,42 @@
             <div class="modal-body">
                 <input type="hidden" id="currentTourKey">
                 
-                <!-- Price Overrides -->
-                <div class="section-title-modal">💰 Price Settings</div>
+                <!-- Pricing Section -->
+                <div class="section-title-modal">💰 Pricing</div>
                 
-                <div class="form-group">
-                    <label class="form-label">
-                        Price Override (Display Price)
-                        <span class="hint">Leave empty to use original price from database</span>
-                    </label>
-                    <input type="text" class="form-input" id="priceOverride" placeholder="e.g., A$299" oninput="autoSave()">
-                    <div class="current-value" id="currentPrice"></div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Adult Price Override</label>
-                        <input type="text" class="form-input" id="priceAdultOverride" placeholder="e.g., A$299" oninput="autoSave()">
+                <div id="pricingSection">
+                    <!-- This is shown when NO widget is set -->
+                    <div id="priceFieldsContainer">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Adult Price</label>
+                                <input type="text" class="form-input" id="priceAdult" placeholder="e.g., $299" oninput="markPriceChanged()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Child Price</label>
+                                <input type="text" class="form-input" id="priceChild" placeholder="e.g., $199" oninput="markPriceChanged()">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Price Tiers
+                                <span class="hint">For tours with multiple options (e.g., "Solo: $299 | Tandem: $399 | Family: $599")</span>
+                            </label>
+                            <textarea class="form-input" id="priceTiers" placeholder="Solo: $299&#10;Tandem: $399&#10;Family 4: $899" style="min-height: 80px;" oninput="markPriceChanged()"></textarea>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="savePricesBtn" onclick="savePrices()" style="display: none; margin-top: 10px;">
+                            💾 Save Prices
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Child Price Override</label>
-                        <input type="text" class="form-input" id="priceChildOverride" placeholder="e.g., A$199" oninput="autoSave()">
+                    
+                    <!-- This is shown when a widget IS set -->
+                    <div id="widgetPriceNotice" style="display: none; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; border: 1px solid rgba(102, 126, 234, 0.3);">
+                        <p style="margin: 0; color: #a0a0a0;">
+                            <strong>📦 Prices handled by booking widget</strong><br>
+                            <span style="font-size: 0.9em;">Remove the Hero widget below if you want to set prices manually.</span>
+                        </p>
                     </div>
                 </div>
                 
@@ -1282,11 +1298,15 @@
         // TOUR SETTINGS MODAL
         // =====================================================================
         
+        let pricesChanged = false;
+        
         async function openTourSettings(tourKey, tourName) {
             currentTourKey = tourKey;
+            pricesChanged = false;
             document.getElementById('currentTourKey').value = tourKey;
             document.getElementById('modalTourName').textContent = tourName;
             document.getElementById('devModeLink').href = '{{ url_for("tour_editor") }}?select=' + tourKey;
+            document.getElementById('savePricesBtn').style.display = 'none';
             
             // Show modal
             document.getElementById('tourSettingsModal').classList.add('show');
@@ -1297,32 +1317,71 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Populate fields
-                    document.getElementById('priceOverride').value = data.settings.price_override || '';
-                    document.getElementById('priceAdultOverride').value = data.settings.price_adult_override || '';
-                    document.getElementById('priceChildOverride').value = data.settings.price_child_override || '';
+                    // Populate actual price fields from tour data
+                    if (data.tour_data) {
+                        document.getElementById('priceAdult').value = data.tour_data.price_adult || '';
+                        document.getElementById('priceChild').value = data.tour_data.price_child || '';
+                        document.getElementById('priceTiers').value = data.tour_data.price_tiers || '';
+                    }
+                    
+                    // Populate booking integration fields
                     document.getElementById('bookingButtonUrl').value = data.settings.booking_button_url || '';
                     document.getElementById('heroWidgetHtml').value = data.settings.hero_widget_html || '';
                     document.getElementById('tourNotes').value = data.settings.notes || '';
                     
-                    // Show current values from database
-                    if (data.tour_data) {
-                        let currentPriceHtml = '<strong>Current:</strong> ';
-                        if (data.tour_data.price) {
-                            currentPriceHtml += data.tour_data.price;
-                        } else if (data.tour_data.price_adult) {
-                            currentPriceHtml += 'Adult: ' + data.tour_data.price_adult;
-                            if (data.tour_data.price_child) {
-                                currentPriceHtml += ', Child: ' + data.tour_data.price_child;
-                            }
-                        } else {
-                            currentPriceHtml += 'Not set';
-                        }
-                        document.getElementById('currentPrice').innerHTML = currentPriceHtml;
-                    }
+                    // Show/hide price fields based on widget presence
+                    updatePricingVisibility();
                 }
             } catch (err) {
                 showToast('Failed to load tour settings', 'error');
+            }
+        }
+        
+        function updatePricingVisibility() {
+            const hasWidget = document.getElementById('heroWidgetHtml').value.trim().length > 0;
+            document.getElementById('priceFieldsContainer').style.display = hasWidget ? 'none' : 'block';
+            document.getElementById('widgetPriceNotice').style.display = hasWidget ? 'block' : 'none';
+        }
+        
+        function markPriceChanged() {
+            pricesChanged = true;
+            document.getElementById('savePricesBtn').style.display = 'inline-block';
+        }
+        
+        async function savePrices() {
+            if (!currentTourKey || !pricesChanged) return;
+            
+            const data = {
+                price_adult: document.getElementById('priceAdult').value,
+                price_child: document.getElementById('priceChild').value,
+                price_tiers: document.getElementById('priceTiers').value
+            };
+            
+            try {
+                document.getElementById('savePricesBtn').textContent = '⏳ Saving...';
+                
+                const response = await fetch(`/admin/api/tour/${currentTourKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    pricesChanged = false;
+                    document.getElementById('savePricesBtn').textContent = '✓ Saved!';
+                    setTimeout(() => {
+                        document.getElementById('savePricesBtn').style.display = 'none';
+                        document.getElementById('savePricesBtn').textContent = '💾 Save Prices';
+                    }, 2000);
+                    showToast('Prices saved!', 'success');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                document.getElementById('savePricesBtn').textContent = '💾 Save Prices';
+                showToast('Failed to save prices: ' + err.message, 'error');
             }
         }
         
@@ -1337,6 +1396,9 @@
         }
         
         function autoSave() {
+            // Update pricing visibility when widget changes
+            updatePricingVisibility();
+            
             // Debounce auto-save
             if (autoSaveTimer) {
                 clearTimeout(autoSaveTimer);
@@ -1346,9 +1408,6 @@
                 if (!currentTourKey) return;
                 
                 const data = {
-                    price_override: document.getElementById('priceOverride').value,
-                    price_adult_override: document.getElementById('priceAdultOverride').value,
-                    price_child_override: document.getElementById('priceChildOverride').value,
                     booking_button_url: document.getElementById('bookingButtonUrl').value,
                     hero_widget_html: document.getElementById('heroWidgetHtml').value,
                     notes: document.getElementById('tourNotes').value
