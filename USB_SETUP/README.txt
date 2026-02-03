@@ -1,142 +1,142 @@
 ================================================================================
-                    FILTOUR KIOSK USB SETUP GUIDE
+                    FILTOUR KIOSK - USB INSTALL GUIDE
 ================================================================================
 
-This USB contains everything needed to install the Filtour Kiosk on a new computer.
+WHAT'S ON THIS USB:
+-------------------
+The ENTIRE kiosk project is on this USB. Everything you need is here.
 
 
-USB FOLDER STRUCTURE:
----------------------
-
-  USB_SETUP/
-  |
-  |-- install_kiosk.bat        (Step 1: Install the kiosk)
-  |-- FIRST_TIME_SETUP.bat     (Step 2: Copy files & link account)  
-  |-- README.txt               (This file)
-  |
-  |-- python-3.12.x-amd64.exe  (Python installer - download from python.org)
-  |-- Git-2.x.x-64-bit.exe     (Git installer - download from git-scm.com)
-  |
-  |-- tour_images/             (Copy from your main computer's static/tour_images/)
-  |   |-- company1/
-  |   |-- company2/
-  |   |-- ...
-  |
-  |-- b_roll/                  (Copy from your main computer's static/b_roll/)
-  |   |-- 0124.mp4             (Background video)
-  |
-  |-- logos/                   (Optional - custom logos)
+USB STRUCTURE:
+--------------
+  USB Drive\
+    tour kiosk project\        <-- The complete kiosk
+      app.py
+      templates\
+      static\
+        tour_images\           <-- All tour images included
+        b_roll\                <-- Background video included
+        audio\                 <-- Welcome audio included
+      USB_SETUP\               <-- Setup scripts
+        install_kiosk.bat      <-- Step 1
+        FIRST_TIME_SETUP.bat   <-- Step 2
+        README.txt             <-- This file
+        python-3.12.x.exe      <-- Python installer (optional)
+        Git-2.x.x.exe          <-- Git installer (optional)
 
 
-STEP-BY-STEP INSTALLATION:
-==========================
+================================================================================
+                         INSTALLATION STEPS
+================================================================================
 
-STEP 1: Install Prerequisites
------------------------------
-   a. Double-click: python-3.12.x-amd64.exe
-      [X] Check "Add Python to PATH"
-      [X] Check "Install for all users"
-      Click "Install Now"
+STEP 1: Install Python (if not already installed)
+-------------------------------------------------
+   Double-click: python-3.12.x-amd64.exe
    
-   b. Double-click: Git-2.x.x-64-bit.exe
-      Use all default settings
-      Click "Install"
+   IMPORTANT - Check these boxes:
+   [X] Add Python to PATH
+   [X] Install for all users
+   
+   Click "Install Now"
 
 
 STEP 2: Install the Kiosk
 -------------------------
-   a. Double-click: install_kiosk.bat
-   b. Click "Yes" when Windows asks for admin permission
-   c. Wait for installation (5-10 minutes)
-   d. When asked "Start kiosk now?" type: n (we need to set up account first)
+   Double-click: install_kiosk.bat
+   
+   Click "Yes" when Windows asks for permission.
+   
+   This copies everything from USB to C:\filtour
+   and installs all required packages.
+   
+   When asked "Start kiosk now?" - type: y
 
 
-STEP 3: Create Account
-----------------------
-   a. Open Command Prompt
-   b. Type: cd C:\filtour
-   c. Type: python app.py
-   d. Open browser: http://localhost:5000/admin/register
-   e. Create your account (remember the username!)
-   f. Press Ctrl+C in Command Prompt to stop the server
+STEP 3: Create Your Account
+---------------------------
+   With the kiosk running, open a web browser:
+   
+   http://localhost:5000/admin/register
+   
+   Fill in:
+   - Username (e.g., "myshopname")
+   - Email
+   - Password
+   
+   Click "Create Account"
 
 
-STEP 4: First Time Setup (IMPORTANT!)
--------------------------------------
-   a. Double-click: FIRST_TIME_SETUP.bat
-   b. This will:
-      - Copy all tour images from USB to kiosk
-      - Copy background video from USB to kiosk
-      - Link this device to your account
-      - Set up automatic updates
-      - Optionally set up auto-start on boot
+STEP 4: Link Device to Account
+------------------------------
+   Close the kiosk (Ctrl+C in the black window)
+   
+   Double-click: FIRST_TIME_SETUP.bat
+   
+   Enter your username when asked.
+   
+   Choose whether to auto-start on boot.
 
 
 STEP 5: Configure Your Tours
 ----------------------------
-   a. Start kiosk (double-click C:\filtour\start_kiosk.bat)
-   b. Go to: http://localhost:5000/admin/login
-   c. Log in with your account
-   d. Enable the tours you want to sell
-   e. Add booking links to each tour
+   Start the kiosk and go to:
+   
+   http://localhost:5000/admin/login
+   
+   - Enable the tours you want to sell
+   - Add booking links to each tour
 
 
 ================================================================================
-                         AUTO-UPDATE FEATURE
+                         AUTO-UPDATES
 ================================================================================
 
-The kiosk automatically checks for updates every 5 minutes!
+If Git is installed, the kiosk will automatically check for updates!
 
-When you push changes from your main computer:
-   git add -A
-   git commit -m "Updated tours"
-   git push shop main
+When updates are pushed from the main computer, this kiosk will:
+1. Detect the update
+2. Pull the changes
+3. Restart automatically
 
-The shop's kiosk will:
-   1. Detect the new update
-   2. Pull the changes
-   3. Restart automatically
+To install Git (for auto-updates):
+   Double-click: Git-2.x.x-64-bit.exe
+   Use default settings
 
-No manual intervention needed!
+
+================================================================================
+                         DAILY USE
+================================================================================
+
+Start the kiosk:
+   Double-click: C:\filtour\start_kiosk.bat
+
+Stop the kiosk:
+   Press Ctrl+C in the black window
+
+Admin dashboard:
+   http://localhost:5000/admin/login
 
 
 ================================================================================
                          TROUBLESHOOTING
 ================================================================================
 
-PROBLEM: "Python not found"
-SOLUTION: Reinstall Python, make sure to check "Add Python to PATH"
+"Python not found"
+   - Reinstall Python with "Add to PATH" checked
 
-PROBLEM: "Git not found"  
-SOLUTION: Reinstall Git with default settings
+"Tours not showing"  
+   - Run FIRST_TIME_SETUP.bat
+   - Make sure you entered the correct username
 
-PROBLEM: Tours not showing
-SOLUTION: Run FIRST_TIME_SETUP.bat to link your account
+"No background video"
+   - The video should already be copied
+   - Check C:\filtour\static\b_roll\ has 0124.mp4
 
-PROBLEM: No background video
-SOLUTION: Make sure b_roll/0124.mp4 is on the USB before running setup
-
-PROBLEM: Images not showing
-SOLUTION: Make sure tour_images folder is on USB before running setup
-
-
-================================================================================
-                         MANUAL COMMANDS
-================================================================================
-
-Start kiosk:
-   Double-click: C:\filtour\start_kiosk.bat
-
-Stop kiosk:
-   Press Ctrl+C in the kiosk window
-
-Manual update:
-   cd C:\filtour
-   git pull origin main
-
-Check status:
-   cd C:\filtour
-   git status
+"App crashes on start"
+   - Open Command Prompt
+   - cd C:\filtour
+   - python app.py
+   - Look at the error message
 
 
 ================================================================================
