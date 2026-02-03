@@ -18,6 +18,8 @@ import qrcode
 from io import BytesIO
 import uuid
 import time
+import subprocess
+import threading
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # RAG/Semantic Search imports
@@ -38,6 +40,87 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tour-kiosk-secret-key-2024'
 
 # App version - update this when releasing new versions
 APP_VERSION = "1.0.0"
+
+# ============================================================================
+# GIT SYNC - AUTO-PUSH CHANGES TO CONNECTED DEVICES
+# ============================================================================
+
+_git_sync_lock = threading.Lock()
+_last_git_sync = 0
+GIT_SYNC_COOLDOWN = 5  # Minimum seconds between git syncs
+
+def git_sync_changes(commit_message="Update tour data"):
+    """
+    Commit and push changes to git repository.
+    This allows connected shop devices to pull updates automatically.
+    Runs in a background thread to avoid blocking the response.
+    """
+    def _do_git_sync():
+        global _last_git_sync
+        
+        with _git_sync_lock:
+            # Cooldown to prevent rapid-fire commits
+            now = time.time()
+            if now - _last_git_sync < GIT_SYNC_COOLDOWN:
+                print(f"[GIT SYNC] Skipping - cooldown active ({GIT_SYNC_COOLDOWN}s)")
+                return
+            _last_git_sync = now
+        
+        try:
+            # Check if we're in a git repo
+            result = subprocess.run(
+                ['git', 'status', '--porcelain'],
+                capture_output=True, text=True, cwd=os.getcwd()
+            )
+            
+            if result.returncode != 0:
+                print("[GIT SYNC] Not a git repository - skipping sync")
+                return
+            
+            # Check if there are changes
+            if not result.stdout.strip():
+                print("[GIT SYNC] No changes to commit")
+                return
+            
+            # Stage all changes
+            subprocess.run(['git', 'add', '-A'], cwd=os.getcwd(), check=True)
+            
+            # Commit
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            full_message = f"{commit_message} [{timestamp}]"
+            subprocess.run(
+                ['git', 'commit', '-m', full_message],
+                cwd=os.getcwd(), capture_output=True
+            )
+            
+            # Push to all remotes (origin and shop)
+            remotes_result = subprocess.run(
+                ['git', 'remote'],
+                capture_output=True, text=True, cwd=os.getcwd()
+            )
+            remotes = remotes_result.stdout.strip().split('\n')
+            
+            for remote in remotes:
+                if remote:
+                    try:
+                        subprocess.run(
+                            ['git', 'push', remote, 'main'],
+                            cwd=os.getcwd(), capture_output=True, timeout=30
+                        )
+                        print(f"[GIT SYNC] Pushed to {remote}")
+                    except subprocess.TimeoutExpired:
+                        print(f"[GIT SYNC] Push to {remote} timed out")
+                    except Exception as e:
+                        print(f"[GIT SYNC] Push to {remote} failed: {e}")
+            
+            print(f"[GIT SYNC] Changes synced: {commit_message}")
+            
+        except Exception as e:
+            print(f"[GIT SYNC] Error: {e}")
+    
+    # Run in background thread
+    thread = threading.Thread(target=_do_git_sync, daemon=True)
+    thread.start()
 
 # ============================================================================
 # AUTHENTICATION & USER MANAGEMENT
@@ -1825,15 +1908,20 @@ def agent_dashboard():
     """Agent dashboard - manage tour visibility and promotions"""
     # Use account-specific settings if user is logged in
     username = session.get('user')
+    print(f"[DASHBOARD DEBUG] Session user: {username}")
+    print(f"[DASHBOARD DEBUG] Session name: {session.get('name')}")
     if username:
         account_settings = load_account_settings(username)
         enabled_tours_for_account = account_settings.get('enabled_tours', [])
         account_tour_overrides = account_settings.get('tour_overrides', {})
         account_promotions = account_settings.get('promoted_tours', {})
+        print(f"[DASHBOARD DEBUG] Loaded {len(enabled_tours_for_account)} enabled tours for '{username}'")
+        print(f"[DASHBOARD DEBUG] Settings file: config/accounts/{username}/settings.json")
     else:
         enabled_tours_for_account = []
         account_tour_overrides = {}
         account_promotions = {}
+        print(f"[DASHBOARD DEBUG] No user in session!")
     
     # Also load global settings for fallback
     global_settings = load_agent_settings()
@@ -2172,6 +2260,9 @@ def save_tour_settings(tour_key):
         del account_settings['tour_overrides'][tour_key]
     
     save_account_settings(username, account_settings)
+    
+    # Sync to connected devices (account settings are gitignored, but this triggers update check)
+    git_sync_changes(f"Updated settings for {tour_key}")
     
     return jsonify({'success': True, 'settings': tour_settings})
 
@@ -5963,6 +6054,10 @@ def save_tour_from_editor(key):
             writer.writeheader()
             writer.writerows(rows)
         
+        # Sync changes to connected devices
+        tour_name = new_data.get('name', tid)
+        git_sync_changes(f"Updated tour: {tour_name}")
+        
         return jsonify({'success': True, 'message': 'Tour saved successfully'})
         
     except Exception as e:
@@ -6446,6 +6541,9 @@ def update_company_field(company):
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
+        
+        # Sync changes to connected devices
+        git_sync_changes(f"Updated {field_name} for {company} tours")
         
         return jsonify({
             'success': True,

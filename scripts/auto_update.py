@@ -20,7 +20,7 @@ import logging
 from datetime import datetime
 
 # Configuration
-CHECK_INTERVAL = 300  # 5 minutes between checks
+CHECK_INTERVAL = 60  # 1 minute between checks (for responsive live updates)
 FLASK_PORT = 5000
 REPO_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

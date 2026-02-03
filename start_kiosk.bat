@@ -7,7 +7,8 @@ echo ===========================================================================
 echo                    FILTOUR KIOSK - AUTO-UPDATING MODE
 echo ===============================================================================
 echo.
-echo The kiosk will automatically check for updates and restart when needed.
+echo The kiosk will automatically check for updates every 60 seconds.
+echo When changes are pushed from the main computer, this kiosk will restart.
 echo.
 echo Press Ctrl+C to stop the kiosk.
 echo.
@@ -15,12 +16,12 @@ echo ===========================================================================
 echo.
 
 :: Check if Python auto-updater exists
-if exist "scripts\auto_updater.py" (
-    echo Using Python auto-updater (checks every 5 minutes)
+if exist "scripts\auto_update.py" (
+    echo Starting auto-update daemon...
     echo.
-    python scripts\auto_updater.py
+    python scripts\auto_update.py --daemon
 ) else (
-    echo Using simple restart loop
+    echo Auto-updater not found - using simple mode
     echo.
     goto simple_loop
 )
@@ -51,4 +52,3 @@ goto simple_loop
 echo.
 echo Kiosk shutdown complete.
 pause
-
