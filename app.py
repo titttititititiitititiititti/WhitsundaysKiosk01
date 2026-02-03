@@ -42,6 +42,73 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tour-kiosk-secret-key-2024'
 APP_VERSION = "1.0.0"
 
 # ============================================================================
+# REFERRAL TRACKING - Track which kiosk/shop referred users
+# ============================================================================
+
+# Global variable to store pending referral (set in before_request, applied in after_request)
+_pending_referral = {}
+
+@app.before_request
+def track_referral():
+    """
+    Check for referral parameter and store in cookie.
+    When users scan a QR code from a kiosk, the URL includes ?ref=accountname
+    We store this in a cookie so it persists as they browse.
+    """
+    global _pending_referral
+    
+    # Check for referral parameter in URL
+    ref = request.args.get('ref')
+    if ref and ref != 'qr':  # 'qr' was old generic tracking, ignore it
+        # Validate that this is a real account
+        settings_file = f'config/accounts/{ref}/settings.json'
+        if os.path.exists(settings_file):
+            # Store for after_request to set cookie
+            _pending_referral[id(request)] = ref
+            print(f"[REFERRAL] User arrived from kiosk: {ref}")
+
+@app.after_request
+def set_referral_cookie(response):
+    """Set the referral cookie after the request is processed"""
+    global _pending_referral
+    
+    req_id = id(request)
+    if req_id in _pending_referral:
+        ref = _pending_referral.pop(req_id)
+        # Set cookie that lasts 30 days
+        response.set_cookie(
+            'filtour_ref',
+            ref,
+            max_age=30*24*60*60,  # 30 days
+            httponly=True,
+            samesite='Lax'
+        )
+        print(f"[REFERRAL] Set cookie for: {ref}")
+    
+    return response
+
+def get_referral_account():
+    """
+    Get the referral account from cookie or URL parameter.
+    Returns the account username or None if no referral.
+    """
+    # First check URL parameter (takes precedence)
+    ref = request.args.get('ref')
+    if ref and ref != 'qr':
+        settings_file = f'config/accounts/{ref}/settings.json'
+        if os.path.exists(settings_file):
+            return ref
+    
+    # Then check cookie
+    ref = request.cookies.get('filtour_ref')
+    if ref:
+        settings_file = f'config/accounts/{ref}/settings.json'
+        if os.path.exists(settings_file):
+            return ref
+    
+    return None
+
+# ============================================================================
 # GIT SYNC - AUTO-PUSH CHANGES TO CONNECTED DEVICES
 # ============================================================================
 
@@ -2499,27 +2566,39 @@ def operator_edit_tour(tour_key):
 
 @app.route('/')
 def index():
-    # Require login - redirect to login page if not logged in
-    if 'user' not in session:
+    # Check for referral from QR code scan (allows public access)
+    referral_account = get_referral_account()
+    
+    # Check for preview mode (for logged-in admins testing)
+    preview_account = request.args.get('preview')
+    
+    # Determine which account to use for filtering tours
+    # Priority: 1) preview mode, 2) referral from QR, 3) kiosk instance
+    active_account = preview_account or referral_account or get_active_account()
+    
+    # If on physical kiosk (no referral), require login
+    # But allow public access if they came from a QR code
+    if not referral_account and 'user' not in session:
         return redirect(url_for('login', next=request.url))
     
-    # Check for preview mode - allows testing a specific account's kiosk view
-    preview_account = request.args.get('preview')
     if preview_account:
-        # Store preview mode in session for this request only
         session['preview_account'] = preview_account
     else:
-        # Clear preview mode if not specified
         session.pop('preview_account', None)
+    
+    # Track where the user came from
+    is_web_visitor = referral_account is not None
+    if is_web_visitor:
+        print(f"[INDEX] Web visitor from referral: {referral_account}")
     
     # Get language from query parameter or session (default: 'en')
     language = request.args.get('lang', 'en')
-    tours = load_all_tours(language, preview_account=preview_account)
+    tours = load_all_tours(language, preview_account=active_account)
     random.shuffle(tours)
     initial_tours = tours[:12]
     
     # Load images lazily for initial tours only
-    print(f"[INDEX] Loading images for {len(initial_tours)} initial tours...")
+    print(f"[INDEX] Loading images for {len(initial_tours)} initial tours (account: {active_account})")
     for tour in initial_tours:
         thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
         tour['thumbnail'] = thumb
@@ -2531,13 +2610,13 @@ def index():
     # Load shop config - from session if logged in, otherwise default
     shop_config = session.get('shop_config') or load_shop_config(session.get('company'))
     
-    # Load Hero booking platform settings (use preview account if set)
-    hero_booking = get_hero_booking_settings(preview_account=preview_account)
+    # Load Hero booking platform settings (use active account)
+    hero_booking = get_hero_booking_settings(preview_account=active_account)
     
-    # Get custom logo from kiosk instance config (or preview account)
-    custom_logo = get_kiosk_custom_logo(preview_account=preview_account)
+    # Get custom logo from the account being viewed
+    custom_logo = get_kiosk_custom_logo(preview_account=active_account)
     
-    # Pass preview mode indicator to template
+    # Pass mode indicators to template
     preview_mode = preview_account is not None
     
     return render_template('index.html', 
@@ -2548,7 +2627,9 @@ def index():
                            hero_booking=hero_booking,
                            custom_logo=custom_logo,
                            preview_mode=preview_mode,
-                           preview_account=preview_account)
+                           preview_account=preview_account,
+                           referral_account=referral_account,
+                           is_web_visitor=is_web_visitor)
 
 @app.route('/api/semantic-search')
 def api_semantic_search():
@@ -2753,19 +2834,21 @@ def tour_page(key):
     """Load home page but with tour parameter - JavaScript will auto-open tour in modal"""
     language = request.args.get('lang', 'en')
     
-    # Check for QR code tracking parameters
+    # Check for referral from QR code (allows public access)
+    referral_account = get_referral_account()
     ref = request.args.get('ref')
     tracking_id = request.args.get('tid')
     timestamp = request.args.get('t')
     
+    # Determine which account to use for filtering tours
+    active_account = referral_account or get_active_account()
+    
     # Log QR code visit if tracking parameters are present
-    if ref == 'qr' and tracking_id:
+    if ref and ref != 'qr' and tracking_id:
         try:
-            # Try to get or create a session for tracking
             session_id = request.cookies.get('analytics_session_id') or str(uuid.uuid4())
             
-            # Find tour name for logging
-            tours = load_all_tours(language)
+            tours = load_all_tours(language, preview_account=active_account)
             tour_data = next((t for t in tours if t.get('key') == key), None)
             tour_name = tour_data.get('name', key) if tour_data else key
             
@@ -2775,14 +2858,15 @@ def tour_page(key):
                 'tracking_id': tracking_id,
                 'timestamp': timestamp,
                 'language': language,
-                'referrer': 'qr_code'
+                'referrer': ref,  # Now contains the shop/account name
+                'referral_account': referral_account
             })
-            print(f"ðŸ“± QR visit tracked: {tracking_id} â†’ {key} ({tour_name})")
+            print(f"📱 QR visit tracked: {tracking_id} → {key} (ref: {ref})")
         except Exception as e:
             print(f"[!] Failed to log QR visit: {e}")
     
-    # Load all tours like normal home page
-    tours = load_all_tours(language)
+    # Load tours filtered by the referral account
+    tours = load_all_tours(language, preview_account=active_account)
     random.shuffle(tours)
     initial_tours = tours[:12]
     
@@ -2799,19 +2883,27 @@ def tour_page(key):
     qr_tracking = {
         'ref': ref,
         'tracking_id': tracking_id,
-        'timestamp': timestamp
-    } if ref == 'qr' and tracking_id else None
+        'timestamp': timestamp,
+        'referral_account': referral_account
+    } if tracking_id else None
     
-    # Render index.html (home page) with tour_to_open parameter
-    # JavaScript will detect this and automatically open the tour modal
-    custom_logo = get_kiosk_custom_logo()
+    # Get shop branding from the referral account
+    custom_logo = get_kiosk_custom_logo(preview_account=active_account)
+    hero_booking = get_hero_booking_settings(preview_account=active_account)
+    
+    # Track if this is a web visitor from QR
+    is_web_visitor = referral_account is not None
+    
     return render_template('index.html', 
                           tours=initial_tours, 
                           shown_keys=shown_keys, 
                           current_language=language, 
                           tour_to_open=key,
                           qr_tracking=qr_tracking,
-                          custom_logo=custom_logo)
+                          custom_logo=custom_logo,
+                          hero_booking=hero_booking,
+                          referral_account=referral_account,
+                          is_web_visitor=is_web_visitor)
     
     # Old standalone page code removed
     company, tid = key.split('__', 1)
@@ -2907,7 +2999,7 @@ def tour_page(key):
 
 @app.route('/api/generate-tour-qr/<key>')
 def generate_tour_qr(key):
-    """Generate QR code for a specific tour with tracking"""
+    """Generate QR code for a specific tour with tracking and referral"""
     try:
         # Generate URL - use production domain if not localhost
         if 'localhost' in request.host or '127.0.0.1' in request.host:
@@ -2917,12 +3009,16 @@ def generate_tour_qr(key):
         
         language = request.args.get('lang', 'en')
         
+        # Get the kiosk's account for referral tracking
+        kiosk_account = get_active_account()
+        
         # Generate unique tracking ID for this QR code scan
         tracking_id = str(uuid.uuid4())[:8]  # Short unique ID
         timestamp = int(time.time())
         
-        # Add tracking parameters to URL
-        tour_url = f"{base_url}/tour/{key}?lang={language}&ref=qr&tid={tracking_id}&t={timestamp}"
+        # Add tracking parameters to URL including the shop referral
+        tour_url = f"{base_url}/tour/{key}?lang={language}&ref={kiosk_account}&tid={tracking_id}&t={timestamp}"
+        print(f"[QR] Generated tour QR with referral: {kiosk_account}")
         
         # Log QR code generation for analytics
         try:
@@ -3477,7 +3573,8 @@ def send_booking_email(booking_data):
                     </div>
                 </div>
                 <div class="footer">
-                    <p>Inquiry submitted from Whitsundays Visitor Kiosk</p>
+                    <p>Inquiry submitted via Filtour Kiosk</p>
+                    <p><strong>Referral:</strong> {booking_data.get('referral', 'Unknown')} ({booking_data.get('source', 'kiosk')})</p>
                     <p>Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
                 </div>
             </div>
@@ -3507,6 +3604,16 @@ def submit_booking():
     """Handle booking form submission"""
     try:
         booking_data = request.get_json()
+        
+        # Add referral tracking - which shop/kiosk referred this booking
+        referral_account = get_referral_account()
+        if referral_account:
+            booking_data['referral'] = referral_account
+            booking_data['source'] = 'web_qr'  # Came from QR code scan
+            print(f"[BOOKING] Lead attributed to: {referral_account}")
+        else:
+            booking_data['referral'] = get_active_account()
+            booking_data['source'] = 'kiosk'  # Direct from physical kiosk
         
         # Send email to tour operator
         email_sent = send_booking_email(booking_data)
