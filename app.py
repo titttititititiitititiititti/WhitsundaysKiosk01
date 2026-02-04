@@ -3060,11 +3060,8 @@ def tour_page(key):
 def generate_tour_qr(key):
     """Generate QR code for a specific tour with tracking and referral"""
     try:
-        # Generate URL - use production domain if not localhost
-        if 'localhost' in request.host or '127.0.0.1' in request.host:
-            base_url = request.host_url.rstrip('/')
-        else:
-            base_url = 'https://www.filtour.com'
+        # ALWAYS use production domain for QR codes - users scan with phones
+        base_url = 'https://filtour.com'
         
         language = request.args.get('lang', 'en')
         
@@ -3358,8 +3355,12 @@ def filter_tours():
     
     print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}")
     
-    # Load all tours in the specified language
-    tours = load_all_tours(language)
+    # Get referral account for filtering (if user came from QR code)
+    referral_account = get_referral_account()
+    active_account = referral_account or get_active_account()
+    
+    # Load all tours in the specified language (filtered by account)
+    tours = load_all_tours(language, preview_account=active_account)
     
     # Build criteria dict
     criteria = {}
@@ -3384,22 +3385,16 @@ def filter_tours():
     # Check if this is for the map (needs all tours, no limit)
     for_map = request.args.get('for_map', '')
     
-    # Randomize and limit results (but don't randomize if filtering by company - keep natural order)
+    # Sort results (no random shuffle - causes pagination issues!)
     if for_map == 'true':
-        # Return all tours for map view (no shuffle, no limit)
+        # Return all tours for map view (no limit)
         limited_tours = filtered_tours
     else:
-        # Normal filtering: show all matching results (no artificial limit)
-        # Only shuffle if not filtering by company (keep company results in natural order)
-        # BUT: always keep promoted tours at the top, shuffle within groups
-        if not company:
-            # Separate promoted and non-promoted tours
-            promoted = [t for t in filtered_tours if t.get('promotion')]
-            non_promoted = [t for t in filtered_tours if not t.get('promotion')]
-            random.shuffle(non_promoted)  # Only shuffle non-promoted tours
-            filtered_tours = promoted + non_promoted
-        # Show all filtered results - no limit (users applied filters to see ALL matches)
-        limited_tours = filtered_tours
+        # Sort non-promoted tours alphabetically for consistency
+        promoted = [t for t in filtered_tours if t.get('promotion')]
+        non_promoted = [t for t in filtered_tours if not t.get('promotion')]
+        non_promoted.sort(key=lambda t: t.get('name', '').lower())  # Stable alphabetical sort
+        limited_tours = promoted + non_promoted
     
     # Load images for each tour (lazy loading)
     for tour in limited_tours:
@@ -3422,19 +3417,25 @@ def more_tours():
     offset = int(request.args.get('offset', 0))
     count = int(request.args.get('count', 12))
     exclude_keys = set(request.args.get('exclude', '').split(',')) if request.args.get('exclude') else set()
-    tours = load_all_tours(language)
+    
+    # Get referral account for filtering (if user came from QR code)
+    referral_account = get_referral_account()
+    active_account = referral_account or get_active_account()
+    
+    tours = load_all_tours(language, preview_account=active_account)
     available = [t for t in tours if t['key'] not in exclude_keys]
     
-    # Sort by promotion status first, then shuffle within groups
+    # Sort by promotion status first, then STABLE sort for non-promoted (by name)
+    # DO NOT random shuffle - it causes chaos with pagination!
     promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
     promoted = [t for t in available if t.get('promotion')]
     non_promoted = [t for t in available if not t.get('promotion')]
     
-    # Sort promoted by level, shuffle non-promoted
+    # Sort promoted by level, sort non-promoted by name (stable, predictable)
     promoted.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
-    random.shuffle(non_promoted)
+    non_promoted.sort(key=lambda t: t.get('name', '').lower())
     
-    # Combine: promoted first, then non-promoted
+    # Combine: promoted first, then non-promoted (sorted alphabetically)
     sorted_tours = promoted + non_promoted
     selected = sorted_tours[offset:offset + count]
     

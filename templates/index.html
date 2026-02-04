@@ -15017,16 +15017,26 @@
     
     <div class="qr-card">
       <button class="qr-modal-close" onclick="closeQRModal()">×</button>
-      <h2>Complete Your Booking</h2>
-      <p class="qr-subtitle">
-        Scan this code to pay securely on your phone.
+      <h2 id="qr-modal-title">Complete Your Booking</h2>
+      <p class="qr-subtitle" id="qr-modal-subtitle">
+        Scan this code to continue on your phone.
       </p>
+      
+      <!-- Clear instructions for older users -->
+      <div style="background: linear-gradient(135deg, #e8f4fd 0%, #d1e9f9 100%); padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; text-align: center;">
+        <div style="font-size: 1.1em; color: #0077b6; font-weight: 600;">
+          📱 How to scan:
+        </div>
+        <div style="font-size: 0.95em; color: #333; margin-top: 6px;">
+          Open your phone's <strong>Camera app</strong> and point it at the code below
+        </div>
+      </div>
       
       <div class="qr-code-wrapper" id="qr-code-container">
         <!-- QR code will be generated here -->
       </div>
       
-      <p class="qr-help-text">
+      <p class="qr-help-text" id="qr-modal-help">
         Apple Pay, Google Pay and cards supported.
       </p>
       
