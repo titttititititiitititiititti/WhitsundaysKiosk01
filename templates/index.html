@@ -15204,50 +15204,154 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
-    // UI Translations - MUST be declared early for language selection to work
-    let uiTranslations = {};
-    let translationsLoaded = false;
-    let pendingLanguage = null; // Queue language change if translations not ready
-    
-    // Promise that resolves when translations are loaded
-    let translationsPromise = null;
-    
-    // Load translations immediately (not waiting for DOMContentLoaded)
-    translationsPromise = (async function loadTranslationsEarly() {
-      try {
-        console.log('⏳ Loading translations from /static/translations.json...');
-        const response = await fetch('/static/translations.json');
-        console.log('📥 Fetch response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error('HTTP error ' + response.status);
-        }
-        
-        const data = await response.json();
-        console.log('📋 Parsed JSON, keys:', Object.keys(data));
-        
-        uiTranslations = data;
-        translationsLoaded = true;
-        console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
-        
-        // Apply any pending language change
-        if (pendingLanguage) {
-          console.log('🔄 Applying pending language:', pendingLanguage);
-          applyLanguageNow(pendingLanguage);
-          pendingLanguage = null;
-        }
-        
-        return uiTranslations;
-      } catch (error) {
-        console.error('❌ Failed to load translations:', error);
-        console.error('❌ Error details:', error.message);
-        
-        // FALLBACK: Set translationsLoaded to true with empty object to stop infinite retry
-        translationsLoaded = true;
-        uiTranslations = {};
-        return {};
+    // UI Translations - INLINED directly to avoid fetch issues
+    let uiTranslations = {
+      "en": {
+        "code": "en", "name": "English", "flag": "🇬🇧",
+        "video_start_title": "How Would You Like to Find Your Tour?",
+        "ai_assistant_btn": "Talk To Our AI Assistant",
+        "quick_decision_btn": "Quick Decision",
+        "browse_all_tours_btn": "Browse All Tours",
+        "find_perfect_tour": "Find Your Perfect Tour",
+        "duration_question": "How long can you be away?",
+        "half_day": "Half Day", "half_day_hours": "(2-4 hours)",
+        "full_day": "Full Day", "full_day_hours": "(5-8 hours)",
+        "multi_day": "Multi-day", "multi_day_adventure": "Adventure",
+        "no_preference": "No preference",
+        "family_question": "Are you traveling with children?",
+        "family_with_kids": "Family with kids", "adults_only": "Adults only",
+        "activity_question": "What type of adventure excites you?",
+        "showing_all_tours": "Showing all available tours",
+        "tap_any_card": "Tap Any Card For Booking and More Info",
+        "book_now": "Book Now", "share_tour": "Share Tour", "send_to_phone": "Send to My Phone",
+        "select_all_that_apply": "Select all that apply"
+      },
+      "ja": {
+        "code": "ja", "name": "日本語", "flag": "🇯🇵",
+        "video_start_title": "ツアーをどのように探しますか？",
+        "ai_assistant_btn": "AIアシスタントに相談",
+        "quick_decision_btn": "クイック決定",
+        "browse_all_tours_btn": "すべてのツアーを閲覧",
+        "find_perfect_tour": "完璧なツアーを見つける",
+        "duration_question": "どのくらいの時間がありますか？",
+        "half_day": "半日", "half_day_hours": "(2-4時間)",
+        "full_day": "終日", "full_day_hours": "(5-8時間)",
+        "multi_day": "複数日", "multi_day_adventure": "アドベンチャー",
+        "no_preference": "特になし",
+        "family_question": "お子様連れですか？",
+        "family_with_kids": "子供連れ", "adults_only": "大人のみ",
+        "activity_question": "どんな冒険がお好みですか？",
+        "showing_all_tours": "すべてのツアーを表示中",
+        "tap_any_card": "カードをタップして詳細を見る",
+        "book_now": "今すぐ予約", "share_tour": "シェア", "send_to_phone": "スマホに送信",
+        "select_all_that_apply": "該当するものをすべて選択"
+      },
+      "zh": {
+        "code": "zh", "name": "中文", "flag": "🇨🇳",
+        "video_start_title": "您想如何寻找您的旅程？",
+        "ai_assistant_btn": "与AI助手交谈",
+        "quick_decision_btn": "快速决定",
+        "browse_all_tours_btn": "浏览所有旅程",
+        "find_perfect_tour": "找到完美之旅",
+        "duration_question": "您有多少时间？",
+        "half_day": "半天", "half_day_hours": "(2-4小时)",
+        "full_day": "全天", "full_day_hours": "(5-8小时)",
+        "multi_day": "多日", "multi_day_adventure": "探险",
+        "no_preference": "无偏好",
+        "family_question": "您带孩子吗？",
+        "family_with_kids": "带孩子", "adults_only": "仅成人",
+        "activity_question": "您喜欢什么类型的冒险？",
+        "showing_all_tours": "显示所有旅程",
+        "tap_any_card": "点击卡片查看详情",
+        "book_now": "立即预订", "share_tour": "分享", "send_to_phone": "发送到手机",
+        "select_all_that_apply": "选择所有适用项"
+      },
+      "ko": {
+        "code": "ko", "name": "한국어", "flag": "🇰🇷",
+        "video_start_title": "어떻게 투어를 찾고 싶으신가요?",
+        "ai_assistant_btn": "AI 어시스턴트와 대화하기",
+        "quick_decision_btn": "빠른 결정",
+        "browse_all_tours_btn": "모든 투어 둘러보기",
+        "find_perfect_tour": "완벽한 투어 찾기",
+        "duration_question": "시간이 얼마나 있으신가요?",
+        "half_day": "반나절", "half_day_hours": "(2-4시간)",
+        "full_day": "하루종일", "full_day_hours": "(5-8시간)",
+        "multi_day": "여러 날", "multi_day_adventure": "어드벤처",
+        "no_preference": "상관없음",
+        "family_question": "아이와 함께 여행하시나요?",
+        "family_with_kids": "아이 동반", "adults_only": "성인만",
+        "activity_question": "어떤 모험을 원하시나요?",
+        "showing_all_tours": "모든 투어 표시 중",
+        "tap_any_card": "카드를 탭하여 자세히 보기",
+        "book_now": "지금 예약", "share_tour": "공유", "send_to_phone": "휴대폰으로 전송",
+        "select_all_that_apply": "해당하는 항목을 모두 선택"
+      },
+      "de": {
+        "code": "de", "name": "Deutsch", "flag": "🇩🇪",
+        "video_start_title": "Wie möchten Sie Ihre Tour finden?",
+        "ai_assistant_btn": "Mit KI-Assistent sprechen",
+        "quick_decision_btn": "Schnelle Entscheidung",
+        "browse_all_tours_btn": "Alle Touren durchsuchen",
+        "find_perfect_tour": "Finden Sie Ihre perfekte Tour",
+        "duration_question": "Wie viel Zeit haben Sie?",
+        "half_day": "Halber Tag", "half_day_hours": "(2-4 Stunden)",
+        "full_day": "Ganzer Tag", "full_day_hours": "(5-8 Stunden)",
+        "multi_day": "Mehrtägig", "multi_day_adventure": "Abenteuer",
+        "no_preference": "Keine Präferenz",
+        "family_question": "Reisen Sie mit Kindern?",
+        "family_with_kids": "Mit Kindern", "adults_only": "Nur Erwachsene",
+        "activity_question": "Welche Art von Abenteuer reizt Sie?",
+        "showing_all_tours": "Alle Touren werden angezeigt",
+        "tap_any_card": "Karte antippen für Details",
+        "book_now": "Jetzt buchen", "share_tour": "Teilen", "send_to_phone": "An Handy senden",
+        "select_all_that_apply": "Alle zutreffenden auswählen"
+      },
+      "fr": {
+        "code": "fr", "name": "Français", "flag": "🇫🇷",
+        "video_start_title": "Comment souhaitez-vous trouver votre excursion?",
+        "ai_assistant_btn": "Parler à l'assistant IA",
+        "quick_decision_btn": "Décision rapide",
+        "browse_all_tours_btn": "Parcourir toutes les excursions",
+        "find_perfect_tour": "Trouvez votre excursion parfaite",
+        "duration_question": "Combien de temps avez-vous?",
+        "half_day": "Demi-journée", "half_day_hours": "(2-4 heures)",
+        "full_day": "Journée complète", "full_day_hours": "(5-8 heures)",
+        "multi_day": "Plusieurs jours", "multi_day_adventure": "Aventure",
+        "no_preference": "Pas de préférence",
+        "family_question": "Voyagez-vous avec des enfants?",
+        "family_with_kids": "Avec enfants", "adults_only": "Adultes uniquement",
+        "activity_question": "Quel type d'aventure vous intéresse?",
+        "showing_all_tours": "Affichage de toutes les excursions",
+        "tap_any_card": "Appuyez sur une carte pour plus de détails",
+        "book_now": "Réserver", "share_tour": "Partager", "send_to_phone": "Envoyer au téléphone",
+        "select_all_that_apply": "Sélectionnez tout ce qui s'applique"
+      },
+      "hi": {
+        "code": "hi", "name": "हिन्दी", "flag": "🇮🇳",
+        "video_start_title": "आप अपना टूर कैसे खोजना चाहेंगे?",
+        "ai_assistant_btn": "AI सहायक से बात करें",
+        "quick_decision_btn": "त्वरित निर्णय",
+        "browse_all_tours_btn": "सभी टूर ब्राउज़ करें",
+        "find_perfect_tour": "अपना परफेक्ट टूर खोजें",
+        "duration_question": "आपके पास कितना समय है?",
+        "half_day": "आधा दिन", "half_day_hours": "(2-4 घंटे)",
+        "full_day": "पूरा दिन", "full_day_hours": "(5-8 घंटे)",
+        "multi_day": "कई दिन", "multi_day_adventure": "साहसिक",
+        "no_preference": "कोई प्राथमिकता नहीं",
+        "family_question": "क्या आप बच्चों के साथ यात्रा कर रहे हैं?",
+        "family_with_kids": "बच्चों के साथ", "adults_only": "केवल वयस्क",
+        "activity_question": "आपको किस प्रकार का रोमांच पसंद है?",
+        "showing_all_tours": "सभी टूर दिखाए जा रहे हैं",
+        "tap_any_card": "विवरण के लिए कार्ड पर टैप करें",
+        "book_now": "अभी बुक करें", "share_tour": "शेयर करें", "send_to_phone": "फोन पर भेजें",
+        "select_all_that_apply": "सभी लागू चुनें"
       }
-    })();
+    };
+    let translationsLoaded = true; // Already loaded - it's inline!
+    let pendingLanguage = null;
+    let translationsPromise = Promise.resolve(uiTranslations);
+    
+    console.log('✅ UI Translations INLINED - no fetch needed!');
     
     // Wait for translations to be ready, then apply language
     async function waitForTranslationsAndApply(langCode) {
@@ -26202,23 +26306,15 @@
     // MULTI-LANGUAGE SYSTEM
     // =====================================================================
     
-    // uiTranslations is declared earlier in the file for early access
+    // uiTranslations is INLINED above - no fetch needed
     
     // Store the tour key we came from when filtering by company
     let previousTourKey = null;
     
-    // Load translations from JSON file (legacy function, translations already loaded early)
+    // Load translations - now just applies since they're already inlined
     async function loadTranslations() {
-      // Translations are now loaded early at page start
-      // This function is kept for compatibility but just applies language
-      if (translationsLoaded) {
-        console.log('✓ Translations already loaded, applying...');
-        applyLanguage(currentLanguage);
-      } else {
-        // Retry if not loaded yet
-        console.log('⏳ Waiting for translations...');
-        setTimeout(loadTranslations, 200);
-      }
+      console.log('✅ Translations already inlined, applying language:', currentLanguage);
+      applyLanguage(currentLanguage);
     }
     
     // Translation helper function with inline English fallbacks
@@ -26511,24 +26607,9 @@
       console.log('✅ Language changed seamlessly to:', langCode);
     }
     
-    // Apply language to UI - with max retries to prevent infinite loop
-    let applyLanguageRetryCount = 0;
-    const MAX_APPLY_RETRIES = 10;
-    
+    // Apply language to UI - translations are inlined so always available
     function applyLanguage(langCode) {
-      if (!uiTranslations || Object.keys(uiTranslations).length === 0) {
-        applyLanguageRetryCount++;
-        if (applyLanguageRetryCount > MAX_APPLY_RETRIES) {
-          console.error('❌ Giving up on translations after', MAX_APPLY_RETRIES, 'retries');
-          return;
-        }
-        console.warn('⏳ Translations not loaded yet, will retry... (attempt', applyLanguageRetryCount + ')');
-        setTimeout(() => applyLanguage(langCode), 200);
-        return;
-      }
-      
-      // Reset retry count on success
-      applyLanguageRetryCount = 0;
+      console.log('🌐 applyLanguage called with:', langCode);
       
       const lang = uiTranslations[langCode];
       if (!lang) {
