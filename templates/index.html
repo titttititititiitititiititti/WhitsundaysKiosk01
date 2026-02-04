@@ -26411,11 +26411,12 @@
       }
     }
     
-    // Change language from mode selection page (stay on same page)
+    // Change language from mode selection page - RELOAD to apply properly
     function changeModeLanguage(langCode) {
       console.log('🌍 Changing language from mode selection:', langCode);
-      switchLanguage(langCode);
-      // Stay on the mode selection page - don't navigate away
+      localStorage.setItem('preferred_language', langCode);
+      // Reload page with new language - simplest way to ensure all text updates
+      window.location.href = '/?lang=' + langCode + '#mode-selection';
     }
     
     async function switchLanguage(langCode) {
@@ -28953,6 +28954,18 @@
         }
         
         console.log('✅ Video start screen initialization complete');
+        
+        // IMPORTANT: Apply translations to the mode selection screen
+        // Wait a bit for translations to load, then apply
+        setTimeout(async () => {
+          if (translationsLoaded) {
+            applyLanguageNow(urlLangParam);
+          } else {
+            // Wait for translations
+            await translationsPromise;
+            applyLanguageNow(urlLangParam);
+          }
+        }, 100);
         
         // Continue with rest of initialization...
       } else {
