@@ -26,8 +26,14 @@ import sys
 import glob
 import argparse
 from pathlib import Path
+
+# Fix Windows console encoding
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import deepl
-from googletrans import Translator as GoogleTranslator
+try:
+    from googletrans import Translator as GoogleTranslator
+except:
+    GoogleTranslator = None
 from dotenv import load_dotenv
 import time
 
@@ -103,7 +109,7 @@ class TourTranslator:
         
         # Initialize translators
         self.deepl_translator = None
-        self.google_translator = GoogleTranslator()
+        self.google_translator = GoogleTranslator() if GoogleTranslator else None
         
         if self.deepl_key:
             try:
@@ -138,6 +144,9 @@ class TourTranslator:
                 return result.text
             else:
                 # Fall back to Google with retry logic
+                if not self.google_translator:
+                    print(f"    ⚠ Google Translate not available, keeping original text")
+                    return text
                 target = LANGUAGES[target_lang_code]['google']
                 max_retries = 3
                 for attempt in range(max_retries):

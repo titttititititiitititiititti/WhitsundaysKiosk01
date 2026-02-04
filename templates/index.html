@@ -2173,6 +2173,228 @@
       box-shadow: 0 6px 20px rgba(255, 100, 0, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
+    /* Newcomer Important Info Button (Blue) */
+    .newcomer-info-btn {
+      padding: 18px 35px;
+      font-size: 1.3em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.85) 0%, rgba(37, 99, 235, 0.95) 50%, rgba(29, 78, 216, 0.9) 100%);
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      border-radius: 60px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1000;
+      width: 85%;
+      max-width: 400px;
+      min-height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .newcomer-info-btn:hover {
+      background: linear-gradient(135deg, rgba(79, 150, 255, 0.9) 0%, rgba(57, 119, 255, 1) 50%, rgba(49, 98, 236, 0.95) 100%);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .newcomer-info-btn:active {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* ========== NEWCOMER INFO PAGE STYLES ========== */
+    .newcomer-info-page {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
+      min-height: 100vh;
+      padding-top: 80px;
+      overflow-y: auto;
+    }
+    
+    .newcomer-info-page .kiosk-header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    
+    .newcomer-back-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .newcomer-back-btn:hover {
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      transform: translateY(-2px);
+    }
+    
+    .newcomer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px 100px;
+    }
+    
+    .newcomer-main-title {
+      font-size: 2.5em;
+      color: #60a5fa;
+      text-align: center;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(96, 165, 250, 0.3);
+    }
+    
+    .newcomer-subtitle {
+      font-size: 1.3em;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .newcomer-section {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .newcomer-section h2 {
+      font-size: 1.6em;
+      color: #fbbf24;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+    }
+    
+    .newcomer-section.marine-safety h2 {
+      color: #f87171;
+      border-bottom-color: rgba(248, 113, 113, 0.3);
+    }
+    
+    .newcomer-subsection {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    
+    .newcomer-subsection h3 {
+      font-size: 1.3em;
+      color: #a5b4fc;
+      margin-bottom: 15px;
+    }
+    
+    .newcomer-section-content {
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.8;
+    }
+    
+    .newcomer-section-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 15px 0;
+    }
+    
+    .newcomer-section-content li {
+      padding: 8px 0 8px 30px;
+      position: relative;
+      font-size: 1.05em;
+    }
+    
+    .newcomer-section-content li::before {
+      content: '•';
+      position: absolute;
+      left: 10px;
+      color: #60a5fa;
+      font-size: 1.2em;
+    }
+    
+    .newcomer-checklist {
+      background: rgba(34, 197, 94, 0.1);
+      border-left: 4px solid #22c55e;
+      padding: 15px 20px;
+      border-radius: 0 10px 10px 0;
+      margin: 15px 0;
+    }
+    
+    .newcomer-checklist p {
+      margin: 8px 0;
+      font-size: 1em;
+    }
+    
+    .newcomer-image-placeholder {
+      width: 100%;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.9em;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      display: none; /* Hidden until images are added */
+    }
+    
+    .newcomer-cta {
+      text-align: center;
+      margin-top: 40px;
+      padding: 30px;
+    }
+    
+    .newcomer-cta-btn {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      border: none;
+      padding: 20px 50px;
+      font-size: 1.4em;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
+    }
+    
+    .newcomer-cta-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 12px 40px rgba(34, 197, 94, 0.6);
+    }
+    
+    /* Mobile responsive for newcomer page */
+    @media (max-width: 768px) {
+      .newcomer-main-title {
+        font-size: 1.8em;
+      }
+      .newcomer-subtitle {
+        font-size: 1.1em;
+      }
+      .newcomer-section h2 {
+        font-size: 1.3em;
+      }
+      .newcomer-subsection h3 {
+        font-size: 1.1em;
+      }
+      .newcomer-content {
+        padding: 20px 15px 80px;
+      }
+      .newcomer-info-btn {
+        font-size: 1.1em;
+        padding: 15px 25px;
+        min-height: 55px;
+      }
+    }
+    
     /* AI Assistant Button (Dark Lavender) - HIGHLIGHTED/RECOMMENDED */
     .ai-assistant-btn {
       padding: 22px 40px;
@@ -14018,6 +14240,9 @@
         <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
           <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
+        <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); openNewcomerInfo()">
+          <span id="newcomer-info-text">ℹ️ Newcomer Important Information</span>
+        </button>
         
         <!-- Language Flags on Mode Selection Page -->
         <div class="mode-selection-flags" style="display:flex;gap:12px;margin-top:30px;">
@@ -14094,6 +14319,223 @@
           <button class="swipe-btn swipe-btn-accept" id="accept-btn">
             <span class="swipe-btn-icon">✓</span>
             <span class="swipe-btn-text">Book Now</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Newcomer Important Information Page -->
+    <div class="page newcomer-info-page" id="newcomer-info-page">
+      <header class="kiosk-header newcomer-header">
+        <div class="header-left">
+          <button class="back-button newcomer-back-btn" onclick="closeNewcomerInfo()">← Back</button>
+        </div>
+        <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
+        <div class="header-right">
+          <div class="language-dropdown">
+            <button class="chip" id="newcomer-language-btn" onclick="event.stopPropagation(); var m=document.getElementById('newcomer-language-menu'); m.style.display=m.style.display==='block'?'none':'block';">EN</button>
+            <div id="newcomer-language-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:200px;z-index:99999;padding:10px;overflow:hidden;">
+              <div class="language-option" data-lang="en" onclick="switchLanguage('en'); applyNewcomerTranslations('en'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/gb.png" class="flag-icon">English</div>
+              <div class="language-option" data-lang="zh" onclick="switchLanguage('zh'); applyNewcomerTranslations('zh'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/cn.png" class="flag-icon">中文</div>
+              <div class="language-option" data-lang="ja" onclick="switchLanguage('ja'); applyNewcomerTranslations('ja'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/jp.png" class="flag-icon">日本語</div>
+              <div class="language-option" data-lang="ko" onclick="switchLanguage('ko'); applyNewcomerTranslations('ko'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/kr.png" class="flag-icon">한국어</div>
+              <div class="language-option" data-lang="de" onclick="switchLanguage('de'); applyNewcomerTranslations('de'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/de.png" class="flag-icon">Deutsch</div>
+              <div class="language-option" data-lang="fr" onclick="switchLanguage('fr'); applyNewcomerTranslations('fr'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/fr.png" class="flag-icon">Français</div>
+              <div class="language-option" data-lang="hi" onclick="switchLanguage('hi'); applyNewcomerTranslations('hi'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/in.png" class="flag-icon">हिन्दी</div>
+              <div class="language-option" data-lang="es" onclick="switchLanguage('es'); applyNewcomerTranslations('es'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/es.png" class="flag-icon">Español</div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <div class="newcomer-content">
+        <h1 class="newcomer-main-title" id="newcomer-main-title">🌴 Visiting Airlie Beach & the Whitsundays</h1>
+        <p class="newcomer-subtitle" id="newcomer-subtitle">Important things every traveller should know</p>
+        
+        <!-- Section: Why Airlie Beach Matters -->
+        <section class="newcomer-section" id="section-why-airlie">
+          <h2 id="newcomer-why-title">Why Airlie Beach matters</h2>
+          <div class="newcomer-section-content">
+            <p id="newcomer-why-text">Airlie Beach is the main gateway to the Whitsunday Islands and much of the Great Barrier Reef. Most island, reef, sailing, snorkelling and scenic flight tours start here.</p>
+            <div class="newcomer-image-placeholder" id="img-why-airlie"></div>
+          </div>
+        </section>
+        
+        <!-- Section: Marine Safety -->
+        <section class="newcomer-section marine-safety" id="section-marine-safety">
+          <h2 id="newcomer-marine-title">⚠️ Marine Safety: What to Know Before You Swim</h2>
+          
+          <!-- Stingers -->
+          <div class="newcomer-subsection" id="subsection-stingers">
+            <h3 id="newcomer-stingers-title">🪼 Stingers (Very Important)</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-stingers-list">
+                <li>Stinger season runs roughly November – May</li>
+                <li>Includes Irukandji and Box Jellyfish</li>
+                <li>Stings can be serious or life-threatening</li>
+              </ul>
+              <div class="newcomer-checklist" id="newcomer-stingers-checklist">
+                <p><strong>What to do:</strong></p>
+                <p>✔️ Wear a stinger suit when swimming or snorkelling</p>
+                <p>✔️ Swim in patrolled areas or on organised tours</p>
+                <p>✔️ Use the Airlie Beach Lagoon during stinger season (it's safe year-round)</p>
+                <p>ℹ️ Most tours provide stinger suits — ask before booking.</p>
+              </div>
+              <div class="newcomer-image-placeholder" id="img-stingers"></div>
+            </div>
+          </div>
+          
+          <!-- Sharks & Crocs -->
+          <div class="newcomer-subsection" id="subsection-sharks">
+            <h3 id="newcomer-sharks-title">🦈 Sharks & Crocodiles</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-sharks-list">
+                <li>Sharks exist but incidents are extremely rare</li>
+                <li>Saltwater crocodiles may be present in remote areas</li>
+                <li>Crocs are not common at Airlie Beach itself, but never swim in creeks, murky water, or where signs are posted</li>
+              </ul>
+              <div class="newcomer-image-placeholder" id="img-sharks"></div>
+            </div>
+          </div>
+          
+          <!-- Ocean Conditions -->
+          <div class="newcomer-subsection" id="subsection-ocean">
+            <h3 id="newcomer-ocean-title">🌊 Ocean & Beach Conditions</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-ocean-list">
+                <li>Many local beaches are unpatrolled</li>
+                <li>Strong currents and tides can occur</li>
+                <li>Always follow warning signs and local advice</li>
+              </ul>
+              <div class="newcomer-checklist" id="newcomer-ocean-checklist">
+                <p><strong>Safer options:</strong></p>
+                <p>✔️ Organised island tours</p>
+                <p>✔️ Patrolled beaches</p>
+                <p>✔️ Airlie Beach Lagoon</p>
+              </div>
+              <div class="newcomer-image-placeholder" id="img-ocean"></div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section: Island & Tour Facts -->
+        <section class="newcomer-section" id="section-island-facts">
+          <h2 id="newcomer-island-title">🏝️ Island & Tour Destination Facts</h2>
+          
+          <!-- Whitehaven Beach -->
+          <div class="newcomer-subsection" id="subsection-whitehaven">
+            <h3 id="newcomer-whitehaven-title">🌊 Whitehaven Beach</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-whitehaven-list">
+                <li>Famous for 98% pure white silica sand</li>
+                <li>Sand doesn't heat up — comfortable to walk on</li>
+                <li>No shops, shade or fresh water</li>
+                <li>Limited phone reception</li>
+              </ul>
+              <div class="newcomer-checklist" id="newcomer-whitehaven-checklist">
+                <p>✔️ Bring water, sunscreen, hat</p>
+                <p>✔️ Listen to crew safety briefings</p>
+              </div>
+              <div class="newcomer-image-placeholder" id="img-whitehaven"></div>
+            </div>
+          </div>
+          
+          <!-- Sailing Tours -->
+          <div class="newcomer-subsection" id="subsection-sailing">
+            <h3 id="newcomer-sailing-title">⛵ Sailing Tours</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-sailing-list">
+                <li>Most popular way to see the Whitsundays</li>
+                <li>Options range from day sails to overnight adventures</li>
+                <li>Often include snorkelling, meals and island stops</li>
+              </ul>
+              <div class="newcomer-checklist" id="newcomer-sailing-checklist">
+                <p>✔️ Ask if the trip suits your comfort level</p>
+                <p>✔️ Seasickness tablets recommended if unsure</p>
+              </div>
+              <div class="newcomer-image-placeholder" id="img-sailing"></div>
+            </div>
+          </div>
+          
+          <!-- Snorkelling -->
+          <div class="newcomer-subsection" id="subsection-snorkelling">
+            <h3 id="newcomer-snorkelling-title">🐠 Snorkelling & Reef Tours</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-snorkelling-list">
+                <li>Visibility changes with weather and tides</li>
+                <li>Coral is fragile — never stand on it</li>
+                <li>Reef-safe sunscreen is strongly recommended</li>
+              </ul>
+              <div class="newcomer-checklist" id="newcomer-snorkelling-checklist">
+                <p>✔️ Follow guide instructions</p>
+                <p>✔️ Wear flotation aids if not confident swimmer</p>
+              </div>
+              <div class="newcomer-image-placeholder" id="img-snorkelling"></div>
+            </div>
+          </div>
+          
+          <!-- Scenic Flights -->
+          <div class="newcomer-subsection" id="subsection-flights">
+            <h3 id="newcomer-flights-title">✈️ Scenic Flights</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-flights-list">
+                <li>Best way to see Heart Reef</li>
+                <li>Weather dependent — flights may be delayed or rescheduled</li>
+                <li>Window seats matter — ask when booking</li>
+              </ul>
+              <div class="newcomer-image-placeholder" id="img-flights"></div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section: Heat, Sun & Weather -->
+        <section class="newcomer-section" id="section-weather">
+          <h2 id="newcomer-weather-title">☀️ Heat, Sun & Weather</h2>
+          <div class="newcomer-section-content">
+            <ul id="newcomer-weather-list">
+              <li>Tropical sun is strong year-round</li>
+              <li>Dehydration and sunburn are common tourist issues</li>
+            </ul>
+            <div class="newcomer-checklist" id="newcomer-weather-checklist">
+              <p>✔️ Drink water regularly</p>
+              <p>✔️ Apply sunscreen often</p>
+              <p>✔️ Wear hats & light clothing</p>
+            </div>
+            <div class="newcomer-image-placeholder" id="img-weather"></div>
+          </div>
+          
+          <!-- Wet Season -->
+          <div class="newcomer-subsection" id="subsection-wet-season">
+            <h3 id="newcomer-wet-title">🌧️ Wet / Cyclone Season (Nov–Mar)</h3>
+            <div class="newcomer-section-content">
+              <ul id="newcomer-wet-list">
+                <li>Heavy rain possible</li>
+                <li>Tours may change for safety</li>
+                <li>This is normal and managed locally</li>
+              </ul>
+              <div class="newcomer-image-placeholder" id="img-wet-season"></div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section: Local Travel Tips -->
+        <section class="newcomer-section" id="section-tips">
+          <h2 id="newcomer-tips-title">🧭 Local Travel Tips (Worth Knowing)</h2>
+          <div class="newcomer-section-content">
+            <ul id="newcomer-tips-list">
+              <li>Book popular tours early in peak season</li>
+              <li>Some islands have no facilities</li>
+              <li>Respect marine life — touching coral or wildlife can cause damage</li>
+              <li>Follow crew and guide instructions at all times</li>
+            </ul>
+            <div class="newcomer-image-placeholder" id="img-tips"></div>
+          </div>
+        </section>
+        
+        <!-- Bottom CTA -->
+        <div class="newcomer-cta">
+          <button class="newcomer-cta-btn" onclick="closeNewcomerInfo(); startModeWithAnimation('browse-all')">
+            <span id="newcomer-cta-text">🗂️ Ready to Explore Tours</span>
           </button>
         </div>
       </div>
@@ -15387,6 +15829,315 @@
         "select_all_that_apply": "Selecciona todos los que apliquen"
       }
     };
+    
+    // Newcomer Information Page Translations
+    const newcomerTranslations = {
+      "en": {
+        "button_text": "ℹ️ Newcomer Important Information",
+        "main_title": "🌴 Visiting Airlie Beach & the Whitsundays",
+        "subtitle": "Important things every traveller should know",
+        "why_title": "Why Airlie Beach matters",
+        "why_text": "Airlie Beach is the main gateway to the Whitsunday Islands and much of the Great Barrier Reef. Most island, reef, sailing, snorkelling and scenic flight tours start here.",
+        "marine_title": "⚠️ Marine Safety: What to Know Before You Swim",
+        "stingers_title": "🪼 Stingers (Very Important)",
+        "stingers_list": ["Stinger season runs roughly November – May", "Includes Irukandji and Box Jellyfish", "Stings can be serious or life-threatening"],
+        "what_to_do": "What to do:",
+        "stingers_checklist": ["✔️ Wear a stinger suit when swimming or snorkelling", "✔️ Swim in patrolled areas or on organised tours", "✔️ Use the Airlie Beach Lagoon during stinger season (it's safe year-round)", "ℹ️ Most tours provide stinger suits — ask before booking."],
+        "sharks_title": "🦈 Sharks & Crocodiles",
+        "sharks_list": ["Sharks exist but incidents are extremely rare", "Saltwater crocodiles may be present in remote areas", "Crocs are not common at Airlie Beach itself, but never swim in creeks, murky water, or where signs are posted"],
+        "ocean_title": "🌊 Ocean & Beach Conditions",
+        "ocean_list": ["Many local beaches are unpatrolled", "Strong currents and tides can occur", "Always follow warning signs and local advice"],
+        "safer_options": "Safer options:",
+        "ocean_checklist": ["✔️ Organised island tours", "✔️ Patrolled beaches", "✔️ Airlie Beach Lagoon"],
+        "island_title": "🏝️ Island & Tour Destination Facts",
+        "whitehaven_title": "🌊 Whitehaven Beach",
+        "whitehaven_list": ["Famous for 98% pure white silica sand", "Sand doesn't heat up — comfortable to walk on", "No shops, shade or fresh water", "Limited phone reception"],
+        "whitehaven_checklist": ["✔️ Bring water, sunscreen, hat", "✔️ Listen to crew safety briefings"],
+        "sailing_title": "⛵ Sailing Tours",
+        "sailing_list": ["Most popular way to see the Whitsundays", "Options range from day sails to overnight adventures", "Often include snorkelling, meals and island stops"],
+        "sailing_checklist": ["✔️ Ask if the trip suits your comfort level", "✔️ Seasickness tablets recommended if unsure"],
+        "snorkelling_title": "🐠 Snorkelling & Reef Tours",
+        "snorkelling_list": ["Visibility changes with weather and tides", "Coral is fragile — never stand on it", "Reef-safe sunscreen is strongly recommended"],
+        "snorkelling_checklist": ["✔️ Follow guide instructions", "✔️ Wear flotation aids if not confident swimmer"],
+        "flights_title": "✈️ Scenic Flights",
+        "flights_list": ["Best way to see Heart Reef", "Weather dependent — flights may be delayed or rescheduled", "Window seats matter — ask when booking"],
+        "weather_title": "☀️ Heat, Sun & Weather",
+        "weather_list": ["Tropical sun is strong year-round", "Dehydration and sunburn are common tourist issues"],
+        "weather_checklist": ["✔️ Drink water regularly", "✔️ Apply sunscreen often", "✔️ Wear hats & light clothing"],
+        "wet_title": "🌧️ Wet / Cyclone Season (Nov–Mar)",
+        "wet_list": ["Heavy rain possible", "Tours may change for safety", "This is normal and managed locally"],
+        "tips_title": "🧭 Local Travel Tips (Worth Knowing)",
+        "tips_list": ["Book popular tours early in peak season", "Some islands have no facilities", "Respect marine life — touching coral or wildlife can cause damage", "Follow crew and guide instructions at all times"],
+        "cta_text": "🗂️ Ready to Explore Tours"
+      },
+      "zh": {
+        "button_text": "ℹ️ 新来者重要信息",
+        "main_title": "🌴 参观艾尔利海滩和圣灵群岛",
+        "subtitle": "每位旅客都应该知道的重要事项",
+        "why_title": "为什么艾尔利海滩很重要",
+        "why_text": "艾尔利海滩是圣灵群岛和大堡礁大部分地区的主要门户。大多数岛屿、礁石、帆船、浮潜和观光飞行之旅都从这里出发。",
+        "marine_title": "⚠️ 海洋安全：游泳前须知",
+        "stingers_title": "🪼 水母（非常重要）",
+        "stingers_list": ["水母季节大约在11月至5月", "包括伊鲁坎吉水母和箱形水母", "蜇伤可能很严重甚至危及生命"],
+        "what_to_do": "该怎么做：",
+        "stingers_checklist": ["✔️ 游泳或浮潜时穿防蜇衣", "✔️ 在有巡逻的区域或有组织的旅行中游泳", "✔️ 在水母季节使用艾尔利海滩泻湖（全年安全）", "ℹ️ 大多数旅行提供防蜇衣——预订前询问。"],
+        "sharks_title": "🦈 鲨鱼和鳄鱼",
+        "sharks_list": ["鲨鱼存在但事故极为罕见", "偏远地区可能有咸水鳄", "艾尔利海滩本身鳄鱼不常见，但切勿在小溪、浑水或有警示牌的地方游泳"],
+        "ocean_title": "🌊 海洋和海滩条件",
+        "ocean_list": ["许多当地海滩无人巡逻", "可能会有强烈的水流和潮汐", "始终遵循警告标志和当地建议"],
+        "safer_options": "更安全的选择：",
+        "ocean_checklist": ["✔️ 有组织的岛屿之旅", "✔️ 有巡逻的海滩", "✔️ 艾尔利海滩泻湖"],
+        "island_title": "🏝️ 岛屿和旅游目的地事实",
+        "whitehaven_title": "🌊 白天堂海滩",
+        "whitehaven_list": ["以98%纯白硅沙闻名", "沙子不会升温——走在上面很舒适", "没有商店、遮阳处或淡水", "手机信号有限"],
+        "whitehaven_checklist": ["✔️ 带水、防晒霜、帽子", "✔️ 听从船员安全讲解"],
+        "sailing_title": "⛵ 帆船之旅",
+        "sailing_list": ["游览圣灵群岛最受欢迎的方式", "从一日游到多日冒险都有", "通常包括浮潜、餐饮和岛屿停留"],
+        "sailing_checklist": ["✔️ 询问行程是否适合您的舒适度", "✔️ 如果不确定建议服用晕船药"],
+        "snorkelling_title": "🐠 浮潜和礁石之旅",
+        "snorkelling_list": ["能见度随天气和潮汐变化", "珊瑚很脆弱——切勿踩踏", "强烈建议使用对珊瑚礁安全的防晒霜"],
+        "snorkelling_checklist": ["✔️ 遵循导游指示", "✔️ 如果不自信游泳请穿漂浮辅助装置"],
+        "flights_title": "✈️ 观光飞行",
+        "flights_list": ["看心形礁的最佳方式", "取决于天气——航班可能会延误或重新安排", "窗户座位很重要——预订时询问"],
+        "weather_title": "☀️ 炎热、阳光和天气",
+        "weather_list": ["热带阳光全年都很强烈", "脱水和晒伤是常见的游客问题"],
+        "weather_checklist": ["✔️ 定期喝水", "✔️ 经常涂抹防晒霜", "✔️ 戴帽子和穿轻便衣服"],
+        "wet_title": "🌧️ 雨季/气旋季节（11月-3月）",
+        "wet_list": ["可能有大雨", "为安全起见旅行可能会改变", "这是正常的，由当地管理"],
+        "tips_title": "🧭 当地旅行提示（值得知道）",
+        "tips_list": ["旺季时提前预订热门旅行", "有些岛屿没有设施", "尊重海洋生物——触摸珊瑚或野生动物会造成损害", "始终遵循船员和导游的指示"],
+        "cta_text": "🗂️ 准备探索旅行"
+      },
+      "ja": {
+        "button_text": "ℹ️ 初めての方への重要情報",
+        "main_title": "🌴 エアリービーチとウィットサンデー諸島を訪れる",
+        "subtitle": "すべての旅行者が知っておくべき重要なこと",
+        "why_title": "エアリービーチが重要な理由",
+        "why_text": "エアリービーチはウィットサンデー諸島とグレートバリアリーフの大部分への主要な玄関口です。ほとんどの島、リーフ、セーリング、シュノーケリング、遊覧飛行ツアーはここから始まります。",
+        "marine_title": "⚠️ 海の安全：泳ぐ前に知っておくこと",
+        "stingers_title": "🪼 クラゲ（非常に重要）",
+        "stingers_list": ["クラゲの季節は11月から5月頃", "イルカンジクラゲとハコクラゲを含む", "刺されると重篤または生命を脅かす可能性があります"],
+        "what_to_do": "対処法：",
+        "stingers_checklist": ["✔️ 泳ぐときやシュノーケリングの際はスティンガースーツを着用", "✔️ パトロールされている区域や組織されたツアーで泳ぐ", "✔️ クラゲの季節はエアリービーチラグーンを利用（年間通して安全）", "ℹ️ ほとんどのツアーでスティンガースーツを提供—予約前に確認を。"],
+        "sharks_title": "🦈 サメとワニ",
+        "sharks_list": ["サメは存在しますが事故は極めて稀", "遠隔地にはイリエワニがいる可能性", "エアリービーチ自体ではワニは一般的ではありませんが、小川、濁った水、標識のある場所では絶対に泳がないで"],
+        "ocean_title": "🌊 海とビーチの状況",
+        "ocean_list": ["多くの地元のビーチはパトロールされていません", "強い流れと潮流が発生する可能性", "常に警告標識と地元のアドバイスに従ってください"],
+        "safer_options": "より安全な選択肢：",
+        "ocean_checklist": ["✔️ 組織された島ツアー", "✔️ パトロールされているビーチ", "✔️ エアリービーチラグーン"],
+        "island_title": "🏝️ 島とツアー目的地の事実",
+        "whitehaven_title": "🌊 ホワイトヘブンビーチ",
+        "whitehaven_list": ["98%純粋な白いシリカ砂で有名", "砂は熱くならない—歩いても快適", "店、日陰、真水はありません", "携帯電話の電波は限られています"],
+        "whitehaven_checklist": ["✔️ 水、日焼け止め、帽子を持参", "✔️ クルーの安全説明を聞く"],
+        "sailing_title": "⛵ セーリングツアー",
+        "sailing_list": ["ウィットサンデーを見る最も人気のある方法", "日帰りから泊りがけの冒険まで様々", "シュノーケリング、食事、島への立ち寄りが含まれることが多い"],
+        "sailing_checklist": ["✔️ 快適レベルに合っているか確認", "✔️ 不安な場合は酔い止めをお勧め"],
+        "snorkelling_title": "🐠 シュノーケリングとリーフツアー",
+        "snorkelling_list": ["視界は天候と潮汐によって変化", "サンゴは壊れやすい—絶対に踏まないで", "リーフセーフの日焼け止めを強くお勧め"],
+        "snorkelling_checklist": ["✔️ ガイドの指示に従う", "✔️ 泳ぎに自信がない場合は浮き具を着用"],
+        "flights_title": "✈️ 遊覧飛行",
+        "flights_list": ["ハートリーフを見る最良の方法", "天候次第—フライトが遅延または変更される可能性", "窓側の席が重要—予約時に確認"],
+        "weather_title": "☀️ 暑さ、太陽、天気",
+        "weather_list": ["熱帯の日差しは一年中強い", "脱水と日焼けは観光客によくある問題"],
+        "weather_checklist": ["✔️ 定期的に水を飲む", "✔️ 頻繁に日焼け止めを塗る", "✔️ 帽子と軽い服を着用"],
+        "wet_title": "🌧️ 雨季/サイクロン季節（11月-3月）",
+        "wet_list": ["大雨の可能性", "安全のためツアーが変更される場合", "これは正常で地元で管理されています"],
+        "tips_title": "🧭 地元の旅行のヒント（知っておく価値あり）",
+        "tips_list": ["ピークシーズンには人気ツアーを早めに予約", "施設のない島もある", "海洋生物を尊重—サンゴや野生生物に触れると損傷を引き起こす可能性", "常にクルーとガイドの指示に従う"],
+        "cta_text": "🗂️ ツアーを探索する準備完了"
+      },
+      "ko": {
+        "button_text": "ℹ️ 신규 방문자 중요 정보",
+        "main_title": "🌴 에어리 비치와 휘트선데이 방문",
+        "subtitle": "모든 여행자가 알아야 할 중요한 사항",
+        "why_title": "에어리 비치가 중요한 이유",
+        "why_text": "에어리 비치는 휘트선데이 제도와 그레이트 배리어 리프 대부분으로 가는 주요 관문입니다. 대부분의 섬, 리프, 세일링, 스노클링 및 경치 비행 투어가 여기서 시작됩니다.",
+        "marine_title": "⚠️ 해양 안전: 수영 전 알아야 할 사항",
+        "stingers_title": "🪼 해파리 (매우 중요)",
+        "stingers_list": ["해파리 시즌은 대략 11월 – 5월", "이루칸지와 상자해파리 포함", "쏘임은 심각하거나 생명을 위협할 수 있음"],
+        "what_to_do": "대처 방법:",
+        "stingers_checklist": ["✔️ 수영이나 스노클링 시 스팅어 슈트 착용", "✔️ 순찰 지역이나 조직된 투어에서 수영", "✔️ 해파리 시즌에는 에어리 비치 라군 이용 (연중 안전)", "ℹ️ 대부분의 투어에서 스팅어 슈트 제공 — 예약 전 문의."],
+        "sharks_title": "🦈 상어와 악어",
+        "sharks_list": ["상어가 존재하지만 사고는 극히 드물음", "외진 지역에 바닷물 악어가 있을 수 있음", "에어리 비치 자체에는 악어가 흔하지 않지만, 개울, 흐린 물, 표지판이 있는 곳에서는 절대 수영하지 마세요"],
+        "ocean_title": "🌊 바다와 해변 상태",
+        "ocean_list": ["많은 지역 해변이 순찰되지 않음", "강한 조류와 파도가 발생할 수 있음", "항상 경고 표지판과 지역 조언을 따르세요"],
+        "safer_options": "더 안전한 옵션:",
+        "ocean_checklist": ["✔️ 조직된 섬 투어", "✔️ 순찰되는 해변", "✔️ 에어리 비치 라군"],
+        "island_title": "🏝️ 섬과 투어 목적지 사실",
+        "whitehaven_title": "🌊 화이트헤이븐 비치",
+        "whitehaven_list": ["98% 순수 백색 실리카 모래로 유명", "모래가 뜨거워지지 않음 — 걷기에 편안", "상점, 그늘, 민물 없음", "휴대폰 수신 제한"],
+        "whitehaven_checklist": ["✔️ 물, 선크림, 모자 지참", "✔️ 승무원 안전 브리핑 청취"],
+        "sailing_title": "⛵ 세일링 투어",
+        "sailing_list": ["휘트선데이를 보는 가장 인기 있는 방법", "당일 항해부터 숙박 모험까지 다양", "스노클링, 식사, 섬 방문이 자주 포함"],
+        "sailing_checklist": ["✔️ 여행이 편안한 수준에 맞는지 확인", "✔️ 확실하지 않으면 멀미약 권장"],
+        "snorkelling_title": "🐠 스노클링 및 리프 투어",
+        "snorkelling_list": ["시야는 날씨와 조수에 따라 변화", "산호는 연약함 — 절대 밟지 마세요", "리프 안전 선크림 강력 권장"],
+        "snorkelling_checklist": ["✔️ 가이드 지시 따르기", "✔️ 수영에 자신 없으면 부력 보조 장치 착용"],
+        "flights_title": "✈️ 경치 비행",
+        "flights_list": ["하트 리프를 보는 최고의 방법", "날씨에 따라 — 비행이 지연되거나 일정이 변경될 수 있음", "창가 좌석이 중요 — 예약 시 문의"],
+        "weather_title": "☀️ 더위, 태양, 날씨",
+        "weather_list": ["열대 태양은 연중 강렬함", "탈수와 햇볕에 타는 것은 흔한 관광객 문제"],
+        "weather_checklist": ["✔️ 정기적으로 물 마시기", "✔️ 자주 선크림 바르기", "✔️ 모자와 가벼운 옷 착용"],
+        "wet_title": "🌧️ 우기 / 사이클론 시즌 (11월-3월)",
+        "wet_list": ["폭우 가능", "안전을 위해 투어가 변경될 수 있음", "이것은 정상이며 현지에서 관리됨"],
+        "tips_title": "🧭 현지 여행 팁 (알아두면 좋은)",
+        "tips_list": ["성수기에는 인기 투어 조기 예약", "일부 섬에는 시설이 없음", "해양 생물 존중 — 산호나 야생 동물을 만지면 손상될 수 있음", "항상 승무원과 가이드 지시를 따르기"],
+        "cta_text": "🗂️ 투어 탐색 준비 완료"
+      },
+      "de": {
+        "button_text": "ℹ️ Wichtige Infos für Neuankömmlinge",
+        "main_title": "🌴 Airlie Beach & die Whitsundays besuchen",
+        "subtitle": "Wichtige Dinge, die jeder Reisende wissen sollte",
+        "why_title": "Warum Airlie Beach wichtig ist",
+        "why_text": "Airlie Beach ist das Haupttor zu den Whitsunday Islands und einem Großteil des Great Barrier Reef. Die meisten Insel-, Riff-, Segel-, Schnorchel- und Rundflugtouren starten hier.",
+        "marine_title": "⚠️ Meeressicherheit: Was Sie vor dem Schwimmen wissen sollten",
+        "stingers_title": "🪼 Quallen (Sehr wichtig)",
+        "stingers_list": ["Quallensaison ist etwa November – Mai", "Umfasst Irukandji und Würfelquallen", "Stiche können schwerwiegend oder lebensbedrohlich sein"],
+        "what_to_do": "Was zu tun ist:",
+        "stingers_checklist": ["✔️ Beim Schwimmen oder Schnorcheln einen Stingersuit tragen", "✔️ In bewachten Bereichen oder bei organisierten Touren schwimmen", "✔️ Während der Quallensaison die Airlie Beach Lagune nutzen (ganzjährig sicher)", "ℹ️ Die meisten Touren stellen Stingersuits bereit — vor der Buchung fragen."],
+        "sharks_title": "🦈 Haie & Krokodile",
+        "sharks_list": ["Haie existieren, aber Vorfälle sind extrem selten", "Salzwasserkrokodile können in abgelegenen Gebieten vorkommen", "Krokodile sind in Airlie Beach selbst nicht häufig, aber niemals in Bächen, trübem Wasser oder wo Schilder aufgestellt sind schwimmen"],
+        "ocean_title": "🌊 Meer- & Strandbedingungen",
+        "ocean_list": ["Viele lokale Strände sind unbewacht", "Starke Strömungen und Gezeiten können auftreten", "Befolgen Sie immer Warnschilder und lokale Ratschläge"],
+        "safer_options": "Sicherere Optionen:",
+        "ocean_checklist": ["✔️ Organisierte Inseltouren", "✔️ Bewachte Strände", "✔️ Airlie Beach Lagune"],
+        "island_title": "🏝️ Insel- & Tourzielfakten",
+        "whitehaven_title": "🌊 Whitehaven Beach",
+        "whitehaven_list": ["Berühmt für 98% reinen weißen Silikatsand", "Sand wird nicht heiß — angenehm zu laufen", "Keine Geschäfte, Schatten oder Süßwasser", "Eingeschränkter Handyempfang"],
+        "whitehaven_checklist": ["✔️ Wasser, Sonnencreme, Hut mitbringen", "✔️ Sicherheitseinweisungen der Crew beachten"],
+        "sailing_title": "⛵ Segeltouren",
+        "sailing_list": ["Beliebteste Art, die Whitsundays zu sehen", "Optionen reichen von Tagesausflügen bis zu Mehrtagesabenteuern", "Oft mit Schnorcheln, Mahlzeiten und Inselstopps"],
+        "sailing_checklist": ["✔️ Fragen Sie, ob die Reise zu Ihrem Komfortniveau passt", "✔️ Seekrankheitstabletten empfohlen bei Unsicherheit"],
+        "snorkelling_title": "🐠 Schnorchel- & Rifftouren",
+        "snorkelling_list": ["Sichtbarkeit ändert sich mit Wetter und Gezeiten", "Korallen sind zerbrechlich — niemals darauf stehen", "Riffsichere Sonnencreme wird dringend empfohlen"],
+        "snorkelling_checklist": ["✔️ Anweisungen des Guides befolgen", "✔️ Auftriebshilfen tragen, wenn nicht sicherer Schwimmer"],
+        "flights_title": "✈️ Rundflüge",
+        "flights_list": ["Beste Art, Heart Reef zu sehen", "Wetterabhängig — Flüge können verschoben werden", "Fensterplätze sind wichtig — bei Buchung fragen"],
+        "weather_title": "☀️ Hitze, Sonne & Wetter",
+        "weather_list": ["Tropische Sonne ist ganzjährig stark", "Dehydrierung und Sonnenbrand sind häufige Touristenprobleme"],
+        "weather_checklist": ["✔️ Regelmäßig Wasser trinken", "✔️ Oft Sonnencreme auftragen", "✔️ Hüte & leichte Kleidung tragen"],
+        "wet_title": "🌧️ Regen-/Zyklonsaison (Nov–März)",
+        "wet_list": ["Starker Regen möglich", "Touren können aus Sicherheitsgründen geändert werden", "Das ist normal und wird lokal gehandhabt"],
+        "tips_title": "🧭 Lokale Reisetipps (Wissenswert)",
+        "tips_list": ["Beliebte Touren in der Hochsaison früh buchen", "Einige Inseln haben keine Einrichtungen", "Meereslebewesen respektieren — das Berühren von Korallen oder Wildtieren kann Schäden verursachen", "Immer den Anweisungen der Crew und Guides folgen"],
+        "cta_text": "🗂️ Bereit, Touren zu erkunden"
+      },
+      "fr": {
+        "button_text": "ℹ️ Infos importantes pour les nouveaux visiteurs",
+        "main_title": "🌴 Visiter Airlie Beach et les Whitsundays",
+        "subtitle": "Choses importantes que chaque voyageur devrait savoir",
+        "why_title": "Pourquoi Airlie Beach est important",
+        "why_text": "Airlie Beach est la principale porte d'entrée vers les îles Whitsunday et une grande partie de la Grande Barrière de Corail. La plupart des excursions vers les îles, les récifs, la voile, la plongée avec tuba et les vols panoramiques partent d'ici.",
+        "marine_title": "⚠️ Sécurité marine : Ce qu'il faut savoir avant de nager",
+        "stingers_title": "🪼 Méduses (Très important)",
+        "stingers_list": ["La saison des méduses va environ de novembre à mai", "Inclut les Irukandji et les méduses-boîtes", "Les piqûres peuvent être graves ou mortelles"],
+        "what_to_do": "Que faire :",
+        "stingers_checklist": ["✔️ Porter une combinaison anti-méduses lors de la baignade ou de la plongée", "✔️ Nager dans les zones surveillées ou lors d'excursions organisées", "✔️ Utiliser le lagon d'Airlie Beach pendant la saison des méduses (sûr toute l'année)", "ℹ️ La plupart des excursions fournissent des combinaisons — demandez avant de réserver."],
+        "sharks_title": "🦈 Requins et Crocodiles",
+        "sharks_list": ["Les requins existent mais les incidents sont extrêmement rares", "Des crocodiles d'eau salée peuvent être présents dans les zones éloignées", "Les crocodiles ne sont pas courants à Airlie Beach, mais ne jamais nager dans les ruisseaux, les eaux troubles ou là où des panneaux sont affichés"],
+        "ocean_title": "🌊 Conditions océaniques et de plage",
+        "ocean_list": ["De nombreuses plages locales ne sont pas surveillées", "Des courants forts et des marées peuvent se produire", "Suivez toujours les panneaux d'avertissement et les conseils locaux"],
+        "safer_options": "Options plus sûres :",
+        "ocean_checklist": ["✔️ Excursions organisées vers les îles", "✔️ Plages surveillées", "✔️ Lagon d'Airlie Beach"],
+        "island_title": "🏝️ Faits sur les îles et destinations touristiques",
+        "whitehaven_title": "🌊 Whitehaven Beach",
+        "whitehaven_list": ["Célèbre pour son sable de silice blanc pur à 98%", "Le sable ne chauffe pas — confortable pour marcher", "Pas de magasins, d'ombre ou d'eau douce", "Réception téléphonique limitée"],
+        "whitehaven_checklist": ["✔️ Apporter eau, crème solaire, chapeau", "✔️ Écouter les consignes de sécurité de l'équipage"],
+        "sailing_title": "⛵ Excursions en voilier",
+        "sailing_list": ["La façon la plus populaire de voir les Whitsundays", "Options allant des sorties d'une journée aux aventures de plusieurs jours", "Incluent souvent la plongée, les repas et les escales sur les îles"],
+        "sailing_checklist": ["✔️ Demandez si le voyage convient à votre niveau de confort", "✔️ Comprimés contre le mal de mer recommandés en cas de doute"],
+        "snorkelling_title": "🐠 Plongée avec tuba et excursions sur les récifs",
+        "snorkelling_list": ["La visibilité change avec le temps et les marées", "Le corail est fragile — ne jamais marcher dessus", "La crème solaire respectueuse des récifs est fortement recommandée"],
+        "snorkelling_checklist": ["✔️ Suivre les instructions du guide", "✔️ Porter des aides à la flottaison si pas confiant en natation"],
+        "flights_title": "✈️ Vols panoramiques",
+        "flights_list": ["Meilleure façon de voir Heart Reef", "Dépend de la météo — les vols peuvent être retardés ou reprogrammés", "Les places côté fenêtre comptent — demandez lors de la réservation"],
+        "weather_title": "☀️ Chaleur, soleil et météo",
+        "weather_list": ["Le soleil tropical est fort toute l'année", "La déshydratation et les coups de soleil sont des problèmes courants pour les touristes"],
+        "weather_checklist": ["✔️ Boire de l'eau régulièrement", "✔️ Appliquer souvent de la crème solaire", "✔️ Porter des chapeaux et des vêtements légers"],
+        "wet_title": "🌧️ Saison humide/cyclonique (Nov–Mars)",
+        "wet_list": ["Fortes pluies possibles", "Les excursions peuvent changer pour des raisons de sécurité", "C'est normal et géré localement"],
+        "tips_title": "🧭 Conseils de voyage locaux (À savoir)",
+        "tips_list": ["Réserver les excursions populaires tôt en haute saison", "Certaines îles n'ont pas d'installations", "Respecter la vie marine — toucher les coraux ou la faune peut causer des dommages", "Suivre les instructions de l'équipage et des guides en tout temps"],
+        "cta_text": "🗂️ Prêt à explorer les excursions"
+      },
+      "hi": {
+        "button_text": "ℹ️ नए आगंतुकों के लिए महत्वपूर्ण जानकारी",
+        "main_title": "🌴 एयरली बीच और व्हिट्संडेज़ का दौरा",
+        "subtitle": "हर यात्री को जानने योग्य महत्वपूर्ण बातें",
+        "why_title": "एयरली बीच क्यों महत्वपूर्ण है",
+        "why_text": "एयरली बीच व्हिट्संडे द्वीप समूह और ग्रेट बैरियर रीफ के अधिकांश भाग का मुख्य प्रवेश द्वार है। अधिकांश द्वीप, रीफ, सेलिंग, स्नोर्कलिंग और दर्शनीय उड़ान यात्राएं यहीं से शुरू होती हैं।",
+        "marine_title": "⚠️ समुद्री सुरक्षा: तैरने से पहले जानें",
+        "stingers_title": "🪼 जेलीफ़िश (बहुत महत्वपूर्ण)",
+        "stingers_list": ["जेलीफ़िश का मौसम लगभग नवंबर – मई है", "इसमें इरुकांजी और बॉक्स जेलीफ़िश शामिल हैं", "डंक गंभीर या जानलेवा हो सकता है"],
+        "what_to_do": "क्या करें:",
+        "stingers_checklist": ["✔️ तैरते या स्नोर्कलिंग करते समय स्टिंगर सूट पहनें", "✔️ गश्त वाले क्षेत्रों या संगठित यात्राओं में तैरें", "✔️ जेलीफ़िश के मौसम में एयरली बीच लैगून का उपयोग करें (साल भर सुरक्षित)", "ℹ️ अधिकांश टूर स्टिंगर सूट प्रदान करते हैं — बुकिंग से पहले पूछें।"],
+        "sharks_title": "🦈 शार्क और मगरमच्छ",
+        "sharks_list": ["शार्क मौजूद हैं लेकिन घटनाएं बेहद दुर्लभ हैं", "दूरदराज के इलाकों में खारे पानी के मगरमच्छ हो सकते हैं", "एयरली बीच में मगरमच्छ आम नहीं हैं, लेकिन नालों, गंदे पानी या जहां साइनबोर्ड लगे हों वहां कभी न तैरें"],
+        "ocean_title": "🌊 समुद्र और समुद्र तट की स्थिति",
+        "ocean_list": ["कई स्थानीय समुद्र तटों पर गश्त नहीं होती", "तेज धाराएं और ज्वार हो सकते हैं", "हमेशा चेतावनी के संकेतों और स्थानीय सलाह का पालन करें"],
+        "safer_options": "सुरक्षित विकल्प:",
+        "ocean_checklist": ["✔️ संगठित द्वीप यात्राएं", "✔️ गश्त वाले समुद्र तट", "✔️ एयरली बीच लैगून"],
+        "island_title": "🏝️ द्वीप और टूर गंतव्य तथ्य",
+        "whitehaven_title": "🌊 व्हाइटहेवन बीच",
+        "whitehaven_list": ["98% शुद्ध सफेद सिलिका रेत के लिए प्रसिद्ध", "रेत गर्म नहीं होती — चलने में आरामदायक", "कोई दुकान, छाया या ताजा पानी नहीं", "सीमित फोन रिसेप्शन"],
+        "whitehaven_checklist": ["✔️ पानी, सनस्क्रीन, टोपी लाएं", "✔️ क्रू सुरक्षा ब्रीफिंग सुनें"],
+        "sailing_title": "⛵ सेलिंग टूर",
+        "sailing_list": ["व्हिट्संडेज़ देखने का सबसे लोकप्रिय तरीका", "एक दिन की सैर से लेकर रात भर के रोमांच तक विकल्प", "अक्सर स्नोर्कलिंग, भोजन और द्वीप स्टॉप शामिल होते हैं"],
+        "sailing_checklist": ["✔️ पूछें कि यात्रा आपके आराम स्तर के अनुकूल है या नहीं", "✔️ अनिश्चित होने पर समुद्री बीमारी की गोलियां अनुशंसित"],
+        "snorkelling_title": "🐠 स्नोर्कलिंग और रीफ टूर",
+        "snorkelling_list": ["मौसम और ज्वार के साथ दृश्यता बदलती है", "मूंगा नाजुक है — कभी उस पर खड़े न हों", "रीफ-सुरक्षित सनस्क्रीन की जोरदार सिफारिश की जाती है"],
+        "snorkelling_checklist": ["✔️ गाइड के निर्देशों का पालन करें", "✔️ तैराकी में आत्मविश्वास नहीं हो तो फ्लोटेशन एड्स पहनें"],
+        "flights_title": "✈️ दर्शनीय उड़ानें",
+        "flights_list": ["हार्ट रीफ देखने का सबसे अच्छा तरीका", "मौसम पर निर्भर — उड़ानें विलंबित या पुनर्निर्धारित हो सकती हैं", "खिड़की वाली सीटें मायने रखती हैं — बुकिंग करते समय पूछें"],
+        "weather_title": "☀️ गर्मी, धूप और मौसम",
+        "weather_list": ["उष्णकटिबंधीय धूप साल भर तेज होती है", "निर्जलीकरण और सनबर्न पर्यटकों की आम समस्याएं हैं"],
+        "weather_checklist": ["✔️ नियमित रूप से पानी पिएं", "✔️ बार-बार सनस्क्रीन लगाएं", "✔️ टोपी और हल्के कपड़े पहनें"],
+        "wet_title": "🌧️ बारिश / चक्रवात का मौसम (नवंबर-मार्च)",
+        "wet_list": ["भारी बारिश संभव", "सुरक्षा के लिए टूर बदल सकते हैं", "यह सामान्य है और स्थानीय रूप से प्रबंधित किया जाता है"],
+        "tips_title": "🧭 स्थानीय यात्रा सुझाव (जानने योग्य)",
+        "tips_list": ["पीक सीजन में लोकप्रिय टूर जल्दी बुक करें", "कुछ द्वीपों में कोई सुविधा नहीं है", "समुद्री जीवन का सम्मान करें — मूंगा या वन्यजीवों को छूने से नुकसान हो सकता है", "हमेशा क्रू और गाइड के निर्देशों का पालन करें"],
+        "cta_text": "🗂️ टूर एक्सप्लोर करने के लिए तैयार"
+      },
+      "es": {
+        "button_text": "ℹ️ Información importante para nuevos visitantes",
+        "main_title": "🌴 Visitar Airlie Beach y las Whitsundays",
+        "subtitle": "Cosas importantes que todo viajero debe saber",
+        "why_title": "Por qué Airlie Beach es importante",
+        "why_text": "Airlie Beach es la principal puerta de entrada a las Islas Whitsunday y gran parte de la Gran Barrera de Coral. La mayoría de los tours a islas, arrecifes, navegación, snorkel y vuelos panorámicos parten de aquí.",
+        "marine_title": "⚠️ Seguridad marina: Lo que debes saber antes de nadar",
+        "stingers_title": "🪼 Medusas (Muy importante)",
+        "stingers_list": ["La temporada de medusas va aproximadamente de noviembre a mayo", "Incluye Irukandji y medusas de caja", "Las picaduras pueden ser graves o potencialmente mortales"],
+        "what_to_do": "Qué hacer:",
+        "stingers_checklist": ["✔️ Usa traje anti-medusas al nadar o hacer snorkel", "✔️ Nada en áreas vigiladas o en tours organizados", "✔️ Usa la laguna de Airlie Beach durante la temporada de medusas (segura todo el año)", "ℹ️ La mayoría de tours proporcionan trajes — pregunta antes de reservar."],
+        "sharks_title": "🦈 Tiburones y Cocodrilos",
+        "sharks_list": ["Los tiburones existen pero los incidentes son extremadamente raros", "Los cocodrilos de agua salada pueden estar presentes en áreas remotas", "Los cocodrilos no son comunes en Airlie Beach, pero nunca nades en arroyos, aguas turbias o donde haya señales"],
+        "ocean_title": "🌊 Condiciones del océano y la playa",
+        "ocean_list": ["Muchas playas locales no están vigiladas", "Pueden ocurrir corrientes fuertes y mareas", "Siempre sigue las señales de advertencia y los consejos locales"],
+        "safer_options": "Opciones más seguras:",
+        "ocean_checklist": ["✔️ Tours organizados a islas", "✔️ Playas vigiladas", "✔️ Laguna de Airlie Beach"],
+        "island_title": "🏝️ Datos sobre islas y destinos turísticos",
+        "whitehaven_title": "🌊 Whitehaven Beach",
+        "whitehaven_list": ["Famosa por su arena de sílice blanca 98% pura", "La arena no se calienta — cómoda para caminar", "Sin tiendas, sombra ni agua dulce", "Recepción de teléfono limitada"],
+        "whitehaven_checklist": ["✔️ Lleva agua, protector solar, sombrero", "✔️ Escucha las instrucciones de seguridad de la tripulación"],
+        "sailing_title": "⛵ Tours de navegación",
+        "sailing_list": ["La forma más popular de ver las Whitsundays", "Opciones desde navegación de un día hasta aventuras de varios días", "A menudo incluyen snorkel, comidas y paradas en islas"],
+        "sailing_checklist": ["✔️ Pregunta si el viaje se adapta a tu nivel de comodidad", "✔️ Pastillas para el mareo recomendadas si no estás seguro"],
+        "snorkelling_title": "🐠 Tours de snorkel y arrecife",
+        "snorkelling_list": ["La visibilidad cambia con el clima y las mareas", "El coral es frágil — nunca te pares sobre él", "Se recomienda encarecidamente protector solar seguro para arrecifes"],
+        "snorkelling_checklist": ["✔️ Sigue las instrucciones del guía", "✔️ Usa ayudas de flotación si no eres nadador seguro"],
+        "flights_title": "✈️ Vuelos panorámicos",
+        "flights_list": ["La mejor manera de ver Heart Reef", "Depende del clima — los vuelos pueden retrasarse o reprogramarse", "Los asientos de ventana importan — pregunta al reservar"],
+        "weather_title": "☀️ Calor, sol y clima",
+        "weather_list": ["El sol tropical es fuerte todo el año", "La deshidratación y las quemaduras solares son problemas comunes de turistas"],
+        "weather_checklist": ["✔️ Bebe agua regularmente", "✔️ Aplica protector solar con frecuencia", "✔️ Usa sombreros y ropa ligera"],
+        "wet_title": "🌧️ Temporada húmeda/ciclónica (Nov–Mar)",
+        "wet_list": ["Posibles lluvias intensas", "Los tours pueden cambiar por seguridad", "Esto es normal y se gestiona localmente"],
+        "tips_title": "🧭 Consejos de viaje locales (Vale la pena saber)",
+        "tips_list": ["Reserva tours populares temprano en temporada alta", "Algunas islas no tienen instalaciones", "Respeta la vida marina — tocar coral o vida silvestre puede causar daños", "Sigue las instrucciones de la tripulación y guías en todo momento"],
+        "cta_text": "🗂️ Listo para explorar tours"
+      }
+    };
+    
     let translationsLoaded = true; // Already loaded - it's inline!
     let pendingLanguage = null;
     let translationsPromise = Promise.resolve(uiTranslations);
@@ -15443,6 +16194,12 @@
       }
       if (browseAllToursText && lang.browse_all_tours_btn) {
         browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      }
+      
+      // Update Newcomer Info button
+      const newcomerInfoText = document.getElementById('newcomer-info-text');
+      if (newcomerInfoText && newcomerTranslations[langCode]) {
+        newcomerInfoText.textContent = newcomerTranslations[langCode].button_text;
       }
       
       // Update search placeholder
@@ -17438,6 +18195,156 @@
       FirstTimePrompts.showHomePagePrompts();
       
       console.log('✅ Home page active, video flow exited');
+    }
+    
+    // ========== NEWCOMER INFO PAGE FUNCTIONS ==========
+    window.openNewcomerInfo = function() {
+      console.log('ℹ️ Opening Newcomer Info page');
+      
+      // Hide all other pages
+      document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      });
+      
+      // Hide video start screen
+      const videoStartScreen = document.getElementById('video-start-screen');
+      if (videoStartScreen) videoStartScreen.style.display = 'none';
+      
+      // Show newcomer info page
+      const newcomerPage = document.getElementById('newcomer-info-page');
+      if (newcomerPage) {
+        newcomerPage.classList.add('active');
+        newcomerPage.style.display = 'block';
+        
+        // Apply translations to newcomer page
+        applyNewcomerTranslations(currentLanguage);
+      }
+      
+      // Update URL hash
+      window.location.hash = 'newcomer-info';
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+    
+    window.closeNewcomerInfo = function() {
+      console.log('ℹ️ Closing Newcomer Info page');
+      
+      // Hide newcomer page
+      const newcomerPage = document.getElementById('newcomer-info-page');
+      if (newcomerPage) {
+        newcomerPage.classList.remove('active');
+        newcomerPage.style.display = 'none';
+      }
+      
+      // Go back to mode selection
+      goToStartPage();
+    }
+    
+    // Apply translations to newcomer info page
+    function applyNewcomerTranslations(langCode) {
+      const translations = newcomerTranslations[langCode] || newcomerTranslations['en'];
+      
+      // Main titles
+      const mainTitle = document.getElementById('newcomer-main-title');
+      const subtitle = document.getElementById('newcomer-subtitle');
+      if (mainTitle) mainTitle.textContent = translations.main_title;
+      if (subtitle) subtitle.textContent = translations.subtitle;
+      
+      // Why Airlie
+      const whyTitle = document.getElementById('newcomer-why-title');
+      const whyText = document.getElementById('newcomer-why-text');
+      if (whyTitle) whyTitle.textContent = translations.why_title;
+      if (whyText) whyText.textContent = translations.why_text;
+      
+      // Marine Safety
+      const marineTitle = document.getElementById('newcomer-marine-title');
+      if (marineTitle) marineTitle.textContent = translations.marine_title;
+      
+      // Stingers
+      const stingersTitle = document.getElementById('newcomer-stingers-title');
+      const stingersList = document.getElementById('newcomer-stingers-list');
+      const stingersChecklist = document.getElementById('newcomer-stingers-checklist');
+      if (stingersTitle) stingersTitle.textContent = translations.stingers_title;
+      if (stingersList) stingersList.innerHTML = translations.stingers_list.map(item => `<li>${item}</li>`).join('');
+      if (stingersChecklist) stingersChecklist.innerHTML = `<p><strong>${translations.what_to_do}</strong></p>` + translations.stingers_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Sharks
+      const sharksTitle = document.getElementById('newcomer-sharks-title');
+      const sharksList = document.getElementById('newcomer-sharks-list');
+      if (sharksTitle) sharksTitle.textContent = translations.sharks_title;
+      if (sharksList) sharksList.innerHTML = translations.sharks_list.map(item => `<li>${item}</li>`).join('');
+      
+      // Ocean
+      const oceanTitle = document.getElementById('newcomer-ocean-title');
+      const oceanList = document.getElementById('newcomer-ocean-list');
+      const oceanChecklist = document.getElementById('newcomer-ocean-checklist');
+      if (oceanTitle) oceanTitle.textContent = translations.ocean_title;
+      if (oceanList) oceanList.innerHTML = translations.ocean_list.map(item => `<li>${item}</li>`).join('');
+      if (oceanChecklist) oceanChecklist.innerHTML = `<p><strong>${translations.safer_options}</strong></p>` + translations.ocean_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Island Facts
+      const islandTitle = document.getElementById('newcomer-island-title');
+      if (islandTitle) islandTitle.textContent = translations.island_title;
+      
+      // Whitehaven
+      const whitehavenTitle = document.getElementById('newcomer-whitehaven-title');
+      const whitehavenList = document.getElementById('newcomer-whitehaven-list');
+      const whitehavenChecklist = document.getElementById('newcomer-whitehaven-checklist');
+      if (whitehavenTitle) whitehavenTitle.textContent = translations.whitehaven_title;
+      if (whitehavenList) whitehavenList.innerHTML = translations.whitehaven_list.map(item => `<li>${item}</li>`).join('');
+      if (whitehavenChecklist) whitehavenChecklist.innerHTML = translations.whitehaven_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Sailing
+      const sailingTitle = document.getElementById('newcomer-sailing-title');
+      const sailingList = document.getElementById('newcomer-sailing-list');
+      const sailingChecklist = document.getElementById('newcomer-sailing-checklist');
+      if (sailingTitle) sailingTitle.textContent = translations.sailing_title;
+      if (sailingList) sailingList.innerHTML = translations.sailing_list.map(item => `<li>${item}</li>`).join('');
+      if (sailingChecklist) sailingChecklist.innerHTML = translations.sailing_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Snorkelling
+      const snorkellingTitle = document.getElementById('newcomer-snorkelling-title');
+      const snorkellingList = document.getElementById('newcomer-snorkelling-list');
+      const snorkellingChecklist = document.getElementById('newcomer-snorkelling-checklist');
+      if (snorkellingTitle) snorkellingTitle.textContent = translations.snorkelling_title;
+      if (snorkellingList) snorkellingList.innerHTML = translations.snorkelling_list.map(item => `<li>${item}</li>`).join('');
+      if (snorkellingChecklist) snorkellingChecklist.innerHTML = translations.snorkelling_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Flights
+      const flightsTitle = document.getElementById('newcomer-flights-title');
+      const flightsList = document.getElementById('newcomer-flights-list');
+      if (flightsTitle) flightsTitle.textContent = translations.flights_title;
+      if (flightsList) flightsList.innerHTML = translations.flights_list.map(item => `<li>${item}</li>`).join('');
+      
+      // Weather
+      const weatherTitle = document.getElementById('newcomer-weather-title');
+      const weatherList = document.getElementById('newcomer-weather-list');
+      const weatherChecklist = document.getElementById('newcomer-weather-checklist');
+      if (weatherTitle) weatherTitle.textContent = translations.weather_title;
+      if (weatherList) weatherList.innerHTML = translations.weather_list.map(item => `<li>${item}</li>`).join('');
+      if (weatherChecklist) weatherChecklist.innerHTML = translations.weather_checklist.map(item => `<p>${item}</p>`).join('');
+      
+      // Wet Season
+      const wetTitle = document.getElementById('newcomer-wet-title');
+      const wetList = document.getElementById('newcomer-wet-list');
+      if (wetTitle) wetTitle.textContent = translations.wet_title;
+      if (wetList) wetList.innerHTML = translations.wet_list.map(item => `<li>${item}</li>`).join('');
+      
+      // Tips
+      const tipsTitle = document.getElementById('newcomer-tips-title');
+      const tipsList = document.getElementById('newcomer-tips-list');
+      if (tipsTitle) tipsTitle.textContent = translations.tips_title;
+      if (tipsList) tipsList.innerHTML = translations.tips_list.map(item => `<li>${item}</li>`).join('');
+      
+      // CTA
+      const ctaText = document.getElementById('newcomer-cta-text');
+      if (ctaText) ctaText.textContent = translations.cta_text;
+      
+      // Button text
+      const newcomerInfoText = document.getElementById('newcomer-info-text');
+      if (newcomerInfoText) newcomerInfoText.textContent = translations.button_text;
     }
     
     // Start Quick Decision mode - go directly to questionnaire
@@ -29205,6 +30112,12 @@
             console.log('🎯 Navigating to home page');
             if (typeof window.goToHomePage === 'function') {
               window.goToHomePage();
+            }
+          } else if (hash === '#newcomer-info') {
+            // Newcomer info page
+            console.log('🎯 Navigating to newcomer info page');
+            if (typeof window.openNewcomerInfo === 'function') {
+              window.openNewcomerInfo();
             }
           }
           
