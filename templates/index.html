@@ -2347,6 +2347,43 @@
       display: none; /* Hidden until images are added */
     }
     
+    .newcomer-image-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .newcomer-image-grid.two-images {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .newcomer-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .newcomer-img:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    }
+    
+    @media (max-width: 768px) {
+      .newcomer-image-grid {
+        grid-template-columns: 1fr;
+      }
+      .newcomer-image-grid.two-images {
+        grid-template-columns: 1fr;
+      }
+      .newcomer-img {
+        height: 200px;
+      }
+    }
+    
     .newcomer-cta {
       text-align: center;
       margin-top: 40px;
@@ -2506,6 +2543,33 @@
       border-color: rgba(255, 255, 255, 0.6);
       transform: translateY(-2px) scale(1.03);
       box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+    
+    /* Newcomer Info button in header (Blue) */
+    .newcomer-info-btn-header {
+      padding: 12px 20px;
+      font-size: 1em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      white-space: nowrap;
+    }
+    
+    .newcomer-info-btn-header:hover {
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    }
+    
+    .newcomer-info-btn-header:active {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
     }
     
     .browse-all-btn-header:active {
@@ -14159,6 +14223,7 @@
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
+          <button class="newcomer-info-btn-header" id="vq-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -14240,7 +14305,7 @@
         <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
           <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
-        <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); openNewcomerInfo()">
+        <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); startModeWithAnimation('newcomer-info')">
           <span id="newcomer-info-text">ℹ️ Newcomer Important Information</span>
         </button>
         
@@ -14381,7 +14446,11 @@
                 <p>✔️ Use the Airlie Beach Lagoon during stinger season (it's safe year-round)</p>
                 <p>ℹ️ Most tours provide stinger suits — ask before booking.</p>
               </div>
-              <div class="newcomer-image-placeholder" id="img-stingers"></div>
+              <div class="newcomer-image-grid">
+                <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop" alt="Marine stinger warning sign" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop" alt="Wearing a stinger suit while snorkelling" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop" alt="Blue bottle jellyfish on beach" class="newcomer-img" onerror="this.style.display='none'">
+              </div>
             </div>
           </div>
           
@@ -14436,7 +14505,10 @@
                 <p>✔️ Bring water, sunscreen, hat</p>
                 <p>✔️ Listen to crew safety briefings</p>
               </div>
-              <div class="newcomer-image-placeholder" id="img-whitehaven"></div>
+              <div class="newcomer-image-grid two-images">
+                <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=500&h=350&fit=crop" alt="Whitehaven Beach and Hill Inlet aerial view" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=350&fit=crop" alt="Whitehaven Beach from above" class="newcomer-img" onerror="this.style.display='none'">
+              </div>
             </div>
           </div>
           
@@ -14483,7 +14555,10 @@
                 <li>Weather dependent — flights may be delayed or rescheduled</li>
                 <li>Window seats matter — ask when booking</li>
               </ul>
-              <div class="newcomer-image-placeholder" id="img-flights"></div>
+              <div class="newcomer-image-grid two-images">
+                <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?w=500&h=350&fit=crop" alt="Scenic flight over Heart Reef" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=500&h=350&fit=crop" alt="Heart Reef from above" class="newcomer-img" onerror="this.style.display='none'">
+              </div>
             </div>
           </div>
         </section>
@@ -14553,6 +14628,7 @@
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
+          <button class="newcomer-info-btn-header" id="home-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -14996,6 +15072,7 @@
         <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">⚡ Quick Decision</button>
         <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
         <button class="browse-all-btn-header" id="detail-browse-all-btn" onclick="goToHomePage()" style="display: none; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📁 Browse All Tours</button>
+        <button class="newcomer-info-btn-header" id="detail-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
       <div class="header-right">
@@ -15451,6 +15528,7 @@
         <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
         <button class="quick-decision-btn-header" id="ai-quick-decision-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Decision</button>
         <button class="browse-all-btn-header" id="ai-browse-all-btn" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
+        <button class="newcomer-info-btn-header" id="ai-newcomer-info-btn" onclick="hideAIAssistant(); openNewcomerInfo();">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
       <div class="header-right">
@@ -18429,6 +18507,8 @@
           window.startVideoQuestions && window.startVideoQuestions();
         } else if (mode === 'browse-all') {
           window.goToHomePage && window.goToHomePage();
+        } else if (mode === 'newcomer-info') {
+          window.openNewcomerInfo && window.openNewcomerInfo();
         }
       });
     }
@@ -18440,6 +18520,7 @@
       const aiBtn = document.getElementById('ai-assistant-btn');
       const quickBtn = document.getElementById('quick-decision-btn');
       const browseBtn = document.getElementById('browse-all-tours-btn');
+      const newcomerBtn = document.getElementById('newcomer-info-btn');
       
       if (!aiBtn || !quickBtn || !browseBtn) {
         console.log('   ⚠️ Start screen buttons not found, skipping animation');
@@ -18461,17 +18542,26 @@
       if (selectedMode === 'ai-assistant') {
         buttonsToAnimate = [
           { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
+          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
         ];
       } else if (selectedMode === 'quick-decision') {
         buttonsToAnimate = [
           { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
+          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
         ];
       } else if (selectedMode === 'browse-all') {
         buttonsToAnimate = [
           { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' }
+          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
+          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
+        ];
+      } else if (selectedMode === 'newcomer-info') {
+        buttonsToAnimate = [
+          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
+          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
         ];
       }
       
