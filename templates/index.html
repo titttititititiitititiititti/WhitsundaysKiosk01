@@ -7196,6 +7196,85 @@
     }
     
     /* ===================================================================
+       FIRST-TIME USER PROMPTS - Helpful hints
+       =================================================================== */
+    
+    .first-time-prompt {
+      background: linear-gradient(135deg, #0077b6 0%, #00a8e8 100%);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 119, 182, 0.4);
+      max-width: 320px;
+      animation: promptBounce 0.5s ease;
+    }
+    
+    @keyframes promptBounce {
+      0% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+      50% { transform: translateX(-50%) scale(1.05); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    }
+    
+    .prompt-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .prompt-icon {
+      font-size: 1.8em;
+    }
+    
+    .prompt-message {
+      flex: 1;
+      font-size: 1.05em;
+      line-height: 1.4;
+      min-width: 150px;
+    }
+    
+    .prompt-dismiss {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+    
+    .prompt-dismiss:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .prompt-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+    
+    .prompt-arrow.bottom {
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 12px solid #0077b6;
+    }
+    
+    .prompt-arrow.top {
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 12px solid #00a8e8;
+    }
+    
+    /* ===================================================================
        QR PAYMENT MODAL
        =================================================================== */
     
@@ -15104,6 +15183,75 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
+    // Detect if user is on web (from QR code) vs physical kiosk
+    const isWebVisitor = {{ 'true' if is_web_visitor else 'false' }};
+    const isKiosk = !isWebVisitor && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    
+    // =====================================================================
+    // FIRST-TIME USER PROMPTS - Show helpful hints once per session
+    // =====================================================================
+    const FirstTimePrompts = {
+      shown: {},
+      
+      init() {
+        // Check what prompts have been shown this session
+        const shownPrompts = sessionStorage.getItem('shown_prompts');
+        this.shown = shownPrompts ? JSON.parse(shownPrompts) : {};
+      },
+      
+      show(promptId, message, targetElement, position = 'bottom') {
+        if (this.shown[promptId]) return; // Already shown this session
+        
+        const target = typeof targetElement === 'string' ? document.querySelector(targetElement) : targetElement;
+        if (!target) return;
+        
+        // Mark as shown
+        this.shown[promptId] = true;
+        sessionStorage.setItem('shown_prompts', JSON.stringify(this.shown));
+        
+        // Create prompt element
+        const prompt = document.createElement('div');
+        prompt.className = 'first-time-prompt';
+        prompt.innerHTML = `
+          <div class="prompt-content">
+            <span class="prompt-icon">💡</span>
+            <span class="prompt-message">${message}</span>
+            <button class="prompt-dismiss" onclick="this.parentElement.parentElement.remove()">Got it!</button>
+          </div>
+          <div class="prompt-arrow ${position}"></div>
+        `;
+        
+        // Position the prompt
+        const rect = target.getBoundingClientRect();
+        prompt.style.position = 'fixed';
+        prompt.style.zIndex = '999999';
+        
+        if (position === 'bottom') {
+          prompt.style.top = (rect.bottom + 15) + 'px';
+          prompt.style.left = (rect.left + rect.width/2) + 'px';
+          prompt.style.transform = 'translateX(-50%)';
+        } else if (position === 'top') {
+          prompt.style.bottom = (window.innerHeight - rect.top + 15) + 'px';
+          prompt.style.left = (rect.left + rect.width/2) + 'px';
+          prompt.style.transform = 'translateX(-50%)';
+        } else if (position === 'left') {
+          prompt.style.top = (rect.top + rect.height/2) + 'px';
+          prompt.style.right = (window.innerWidth - rect.left + 15) + 'px';
+          prompt.style.transform = 'translateY(-50%)';
+        }
+        
+        document.body.appendChild(prompt);
+        
+        // Auto-dismiss after 8 seconds
+        setTimeout(() => {
+          if (prompt.parentElement) {
+            prompt.style.opacity = '0';
+            setTimeout(() => prompt.remove(), 300);
+          }
+        }, 8000);
+      }
+    };
+    
     // =====================================================================
     // ANALYTICS TRACKING SYSTEM
     // =====================================================================
@@ -22905,6 +23053,17 @@
       console.log('   Continue Phone button found:', !!continuePhoneBtn);
       console.log('   Share Tour button found:', !!shareTourBtn);
       
+      // Conditionally show/hide buttons based on kiosk vs web
+      if (isKiosk) {
+        // On physical kiosk: hide Share (can't share from kiosk), show Send to Phone
+        if (shareTourBtn) shareTourBtn.style.display = 'none';
+        if (continuePhoneBtn) continuePhoneBtn.style.display = 'block';
+      } else if (isWebVisitor) {
+        // On web/phone: hide Send to Phone (they're already on phone!), show Share
+        if (continuePhoneBtn) continuePhoneBtn.style.display = 'none';
+        if (shareTourBtn) shareTourBtn.style.display = 'block';
+      }
+      
       if (bookNowBtn) {
         bookNowBtn.onclick = () => {
           // Track Book Now click with analytics
@@ -22986,6 +23145,18 @@
           shareTour(tourUrl, data.name);
         };
         console.log('   ✓ Share Tour button click handler attached');
+      }
+      
+      // Show booking prompt for first-time users on kiosk
+      if (isKiosk && bookNowBtn) {
+        setTimeout(() => {
+          FirstTimePrompts.show(
+            'book_tour',
+            'Tap "Book Now" to see pricing, or "Send to My Phone" to continue browsing on your device!',
+            bookNowBtn,
+            'top'
+          );
+        }, 1500);
       }
     }
     
@@ -28856,6 +29027,53 @@
           console.warn('⚠️ VoiceChat class not found - voice features disabled');
         }
       }, 500);
+      
+      // =====================================================================
+      // FIRST-TIME USER PROMPTS - Show helpful hints for new users
+      // =====================================================================
+      FirstTimePrompts.init();
+      
+      // Only show prompts on kiosk (not needed for web visitors on their phones)
+      if (isKiosk) {
+        // Show AI assistant hint when user first reaches home page
+        setTimeout(() => {
+          const aiChatBtn = document.getElementById('aiChatButton');
+          if (aiChatBtn && document.querySelector('.home-page')?.style.display !== 'none') {
+            FirstTimePrompts.show(
+              'ai_assistant',
+              'Tap here to chat with our AI tour guide! Ask questions about tours, activities, or what to do in the Whitsundays.',
+              aiChatBtn,
+              'top'
+            );
+          }
+        }, 3000);
+        
+        // Show tour card hint after a short delay on home page
+        setTimeout(() => {
+          const firstTourCard = document.querySelector('.tour-card');
+          if (firstTourCard) {
+            FirstTimePrompts.show(
+              'tour_cards',
+              'Tap any tour to see photos, prices, and details!',
+              firstTourCard,
+              'bottom'
+            );
+          }
+        }, 6000);
+        
+        // Show weather widget hint
+        setTimeout(() => {
+          const weatherChip = document.querySelector('.weather-chip');
+          if (weatherChip) {
+            FirstTimePrompts.show(
+              'weather_widget',
+              'Tap here to see the full weather forecast and radar!',
+              weatherChip,
+              'bottom'
+            );
+          }
+        }, 12000);
+      }
     });
     
     // Quick search function
