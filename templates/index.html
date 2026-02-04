@@ -2220,6 +2220,28 @@
     .newcomer-info-page .kiosk-header {
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(10px);
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      padding: 15px 30px !important;
+    }
+    
+    .newcomer-info-page .kiosk-header .header-left {
+      position: relative !important;
+      left: auto !important;
+      flex: 0 0 auto;
+    }
+    
+    .newcomer-info-page .kiosk-header .logo-image {
+      position: relative !important;
+      left: auto !important;
+      transform: none !important;
+    }
+    
+    .newcomer-info-page .kiosk-header .header-right {
+      position: relative !important;
+      right: auto !important;
+      flex: 0 0 auto;
     }
     
     .newcomer-back-btn {
@@ -2232,6 +2254,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      display: inline-flex !important;
     }
     
     .newcomer-back-btn:hover {
@@ -2370,6 +2393,65 @@
     .newcomer-img:hover {
       transform: scale(1.03);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+    }
+    
+    /* Fullscreen image viewer for newcomer page */
+    .newcomer-fullscreen-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 100000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .newcomer-fullscreen-overlay.active {
+      display: flex;
+    }
+    
+    .newcomer-fullscreen-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    }
+    
+    .newcomer-fullscreen-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 2em;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .newcomer-fullscreen-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .newcomer-fullscreen-caption {
+      color: white;
+      font-size: 1.1em;
+      margin-top: 20px;
+      text-align: center;
+      padding: 0 20px;
     }
     
     @media (max-width: 768px) {
@@ -2381,6 +2463,13 @@
       }
       .newcomer-img {
         height: 200px;
+      }
+      .newcomer-fullscreen-close {
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
       }
     }
     
@@ -14447,9 +14536,9 @@
                 <p>ℹ️ Most tours provide stinger suits — ask before booking.</p>
               </div>
               <div class="newcomer-image-grid">
-                <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop" alt="Marine stinger warning sign" class="newcomer-img" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop" alt="Wearing a stinger suit while snorkelling" class="newcomer-img" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop" alt="Blue bottle jellyfish on beach" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop" alt="Marine stinger warning sign" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop" alt="Wearing a stinger suit while snorkelling" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop" alt="Blue bottle jellyfish on beach" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
@@ -14506,8 +14595,8 @@
                 <p>✔️ Listen to crew safety briefings</p>
               </div>
               <div class="newcomer-image-grid two-images">
-                <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=500&h=350&fit=crop" alt="Whitehaven Beach and Hill Inlet aerial view" class="newcomer-img" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=350&fit=crop" alt="Whitehaven Beach from above" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=500&h=350&fit=crop" alt="Whitehaven Beach and Hill Inlet aerial view" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=350&fit=crop" alt="Whitehaven Beach from above" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
@@ -14556,8 +14645,8 @@
                 <li>Window seats matter — ask when booking</li>
               </ul>
               <div class="newcomer-image-grid two-images">
-                <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?w=500&h=350&fit=crop" alt="Scenic flight over Heart Reef" class="newcomer-img" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=500&h=350&fit=crop" alt="Heart Reef from above" class="newcomer-img" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?w=500&h=350&fit=crop" alt="Scenic flight over Heart Reef" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=500&h=350&fit=crop" alt="Heart Reef from above" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
@@ -14613,6 +14702,13 @@
             <span id="newcomer-cta-text">🗂️ Ready to Explore Tours</span>
           </button>
         </div>
+      </div>
+      
+      <!-- Fullscreen Image Viewer -->
+      <div class="newcomer-fullscreen-overlay" id="newcomer-fullscreen-overlay" onclick="closeNewcomerFullscreen(event)">
+        <button class="newcomer-fullscreen-close" onclick="closeNewcomerFullscreen(event)">×</button>
+        <img src="" alt="" class="newcomer-fullscreen-img" id="newcomer-fullscreen-img">
+        <div class="newcomer-fullscreen-caption" id="newcomer-fullscreen-caption"></div>
       </div>
     </div>
     
@@ -18424,6 +18520,52 @@
       const newcomerInfoText = document.getElementById('newcomer-info-text');
       if (newcomerInfoText) newcomerInfoText.textContent = translations.button_text;
     }
+    
+    // Fullscreen image viewer for newcomer info page
+    window.openNewcomerFullscreen = function(imgElement) {
+      const overlay = document.getElementById('newcomer-fullscreen-overlay');
+      const fullscreenImg = document.getElementById('newcomer-fullscreen-img');
+      const caption = document.getElementById('newcomer-fullscreen-caption');
+      
+      if (overlay && fullscreenImg) {
+        // Get higher resolution version of the image
+        let imgSrc = imgElement.src;
+        // If it's an Unsplash image, get a larger version
+        if (imgSrc.includes('unsplash.com')) {
+          imgSrc = imgSrc.replace(/w=\d+/, 'w=1600').replace(/h=\d+/, 'h=1200');
+        }
+        
+        fullscreenImg.src = imgSrc;
+        fullscreenImg.alt = imgElement.alt;
+        if (caption) caption.textContent = imgElement.alt;
+        
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    window.closeNewcomerFullscreen = function(event) {
+      // Only close if clicking on overlay or close button, not on the image
+      if (event && event.target.classList.contains('newcomer-fullscreen-img')) {
+        return;
+      }
+      
+      const overlay = document.getElementById('newcomer-fullscreen-overlay');
+      if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    // Close fullscreen on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const overlay = document.getElementById('newcomer-fullscreen-overlay');
+        if (overlay && overlay.classList.contains('active')) {
+          closeNewcomerFullscreen();
+        }
+      }
+    });
     
     // Start Quick Decision mode - go directly to questionnaire
     window.startQuickDecision = function() {
