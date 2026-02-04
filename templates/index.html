@@ -15207,9 +15207,13 @@
     // UI Translations - MUST be declared early for language selection to work
     let uiTranslations = {};
     let translationsLoaded = false;
+    let pendingLanguage = null; // Queue language change if translations not ready
+    
+    // Promise that resolves when translations are loaded
+    let translationsPromise = null;
     
     // Load translations immediately (not waiting for DOMContentLoaded)
-    (async function loadTranslationsEarly() {
+    translationsPromise = (async function loadTranslationsEarly() {
       try {
         console.log('⏳ Loading translations...');
         const response = await fetch('/static/translations.json');
@@ -15217,19 +15221,39 @@
         translationsLoaded = true;
         console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
         
-        // Apply current language immediately
-        if (typeof applyLanguageNow === 'function') {
-          applyLanguageNow(currentLanguage);
+        // Apply any pending language change
+        if (pendingLanguage) {
+          console.log('🔄 Applying pending language:', pendingLanguage);
+          applyLanguageNow(pendingLanguage);
+          pendingLanguage = null;
         }
+        
+        return uiTranslations;
       } catch (error) {
         console.error('❌ Failed to load translations:', error);
+        return {};
       }
     })();
+    
+    // Wait for translations to be ready, then apply language
+    async function waitForTranslationsAndApply(langCode) {
+      if (translationsLoaded && uiTranslations[langCode]) {
+        applyLanguageNow(langCode);
+      } else {
+        console.log('⏳ Waiting for translations before applying:', langCode);
+        pendingLanguage = langCode;
+        await translationsPromise;
+        if (uiTranslations[langCode]) {
+          applyLanguageNow(langCode);
+        }
+      }
+    }
     
     // Simple translation helper that can be used before full system loads
     function applyLanguageNow(langCode) {
       if (!uiTranslations || !uiTranslations[langCode]) {
-        console.warn('⚠️ Translations not available for:', langCode);
+        console.warn('⚠️ Translations not available for:', langCode, '- queueing');
+        pendingLanguage = langCode;
         return;
       }
       
@@ -15242,10 +15266,26 @@
       const quickDecisionText = document.getElementById('quick-decision-text');
       const browseAllToursText = document.getElementById('browse-all-tours-text');
       
-      if (videoStartTitle && lang.video_start_title) videoStartTitle.textContent = lang.video_start_title;
-      if (aiAssistantText && lang.ai_assistant_btn) aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
-      if (quickDecisionText && lang.quick_decision_btn) quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (browseAllToursText && lang.browse_all_tours_btn) browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      console.log('🔍 Found elements:', {
+        videoStartTitle: !!videoStartTitle,
+        aiAssistantText: !!aiAssistantText,
+        quickDecisionText: !!quickDecisionText,
+        browseAllToursText: !!browseAllToursText
+      });
+      
+      if (videoStartTitle && lang.video_start_title) {
+        videoStartTitle.textContent = lang.video_start_title;
+        console.log('✓ Updated title to:', lang.video_start_title);
+      }
+      if (aiAssistantText && lang.ai_assistant_btn) {
+        aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
+      }
+      if (quickDecisionText && lang.quick_decision_btn) {
+        quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
+      }
+      if (browseAllToursText && lang.browse_all_tours_btn) {
+        browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      }
       
       // Also call the full applyLanguage if available
       if (typeof applyLanguage === 'function') {
@@ -15481,7 +15521,7 @@
     // LANGUAGE SELECTION - Define early so onclick handlers work
     // =====================================================================
     
-    window.selectInitialLanguage = function(langCode) {
+    window.selectInitialLanguage = async function(langCode) {
       console.log('🌐 Initial language selected:', langCode);
       
       // Track language selection
@@ -15499,14 +15539,8 @@
       url.searchParams.set('lang', langCode);
       window.history.replaceState({}, '', url.toString());
       
-      // Apply translations immediately using early loader
-      if (typeof applyLanguageNow === 'function') {
-        applyLanguageNow(langCode);
-      }
-      // Also try full apply if available
-      if (typeof applyLanguage === 'function') {
-        applyLanguage(langCode);
-      }
+      // WAIT for translations to be ready, then apply
+      await waitForTranslationsAndApply(langCode);
       
       // Smooth transition: hide language selection, show mode selection
       const langScreen = document.getElementById('language-selection-screen');
@@ -26384,7 +26418,7 @@
       // Stay on the mode selection page - don't navigate away
     }
     
-    function switchLanguage(langCode) {
+    async function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
       
       // Save preference
@@ -26398,13 +26432,8 @@
       url.searchParams.set('lang', langCode);
       window.history.replaceState({}, '', url.toString());
       
-      // Apply translations immediately (use early loader first, then full)
-      if (typeof applyLanguageNow === 'function') {
-        applyLanguageNow(langCode);
-      }
-      if (typeof applyLanguage === 'function') {
-        applyLanguage(langCode);
-      }
+      // Wait for translations and apply (use early loader first, then full)
+      await waitForTranslationsAndApply(langCode);
       
       // Update all language selector buttons/chips
       if (typeof updateHeaderChips === 'function') {
