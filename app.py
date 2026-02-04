@@ -328,6 +328,21 @@ def get_kiosk_custom_logo(preview_account=None):
             return config.get('custom_logo', '')
     return ''
 
+def get_kiosk_settings(preview_account=None):
+    """Get the kiosk settings for this instance or preview account"""
+    account_to_use = preview_account or get_active_account()
+    if account_to_use:
+        settings = load_account_settings(account_to_use)
+        return settings.get('kiosk_settings', {
+            'ai_microphone_enabled': True,
+            'session_timeout_minutes': 5
+        })
+    # Default settings
+    return {
+        'ai_microphone_enabled': True,
+        'session_timeout_minutes': 5
+    }
+
 def update_instance_config(kiosk_settings, username=None):
     """Update the instance config file with kiosk settings (makes changes live)"""
     instance_config_file = 'config/instance.json'
@@ -2675,6 +2690,9 @@ def index():
     # Get custom logo from the account being viewed
     custom_logo = get_kiosk_custom_logo(preview_account=active_account)
     
+    # Get kiosk settings (microphone enabled, etc.)
+    kiosk_settings = get_kiosk_settings(preview_account=active_account)
+    
     # Pass mode indicators to template
     preview_mode = preview_account is not None
     
@@ -2685,6 +2703,7 @@ def index():
                            shop_config=shop_config,
                            hero_booking=hero_booking,
                            custom_logo=custom_logo,
+                           kiosk_settings=kiosk_settings,
                            preview_mode=preview_mode,
                            preview_account=preview_account,
                            referral_account=referral_account,
@@ -2949,6 +2968,7 @@ def tour_page(key):
     # Get shop branding from the referral account
     custom_logo = get_kiosk_custom_logo(preview_account=active_account)
     hero_booking = get_hero_booking_settings(preview_account=active_account)
+    kiosk_settings = get_kiosk_settings(preview_account=active_account)
     
     # Track if this is a web visitor from QR
     is_web_visitor = referral_account is not None
@@ -2961,6 +2981,7 @@ def tour_page(key):
                           qr_tracking=qr_tracking,
                           custom_logo=custom_logo,
                           hero_booking=hero_booking,
+                          kiosk_settings=kiosk_settings,
                           referral_account=referral_account,
                           is_web_visitor=is_web_visitor)
     

@@ -14407,7 +14407,8 @@
         </button>
       </div>
       
-      <!-- Voice Controls -->
+      <!-- Voice Controls - Only shown if microphone is enabled in kiosk settings -->
+      {% if kiosk_settings and kiosk_settings.get('ai_microphone_enabled', true) %}
       <div class="voice-controls">
         <div class="voice-divider">OR</div>
         
@@ -14433,6 +14434,7 @@
           <span>🔊 Speak responses aloud</span>
         </label>
       </div>
+      {% endif %}
     </div>
     </div> <!-- End hidden chat section -->
     
@@ -29009,6 +29011,13 @@
           window.voiceChat.updateUI = (state) => {
             const micBtn = document.getElementById('micButton');
             const voiceStatus = document.getElementById('voiceStatus');
+            
+            // If mic button doesn't exist (microphone disabled), skip UI updates
+            if (!micBtn || !voiceStatus) {
+              console.log('🔇 Microphone UI not available (disabled in settings)');
+              return;
+            }
+            
             const statusText = voiceStatus.querySelector('.status-text');
             
             micBtn.classList.remove('listening', 'speaking');
@@ -29036,7 +29045,8 @@
               default:
                 micBtn.querySelector('.mic-text').innerHTML = '🎤 Tap to Speak';
                 voiceStatus.style.display = 'none';
-                document.getElementById('interimText').style.display = 'none';
+                const interimText = document.getElementById('interimText');
+                if (interimText) interimText.style.display = 'none';
                 break;
             }
           };
