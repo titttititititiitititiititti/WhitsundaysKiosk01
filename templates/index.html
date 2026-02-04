@@ -15204,6 +15204,55 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
+    // UI Translations - MUST be declared early for language selection to work
+    let uiTranslations = {};
+    let translationsLoaded = false;
+    
+    // Load translations immediately (not waiting for DOMContentLoaded)
+    (async function loadTranslationsEarly() {
+      try {
+        console.log('⏳ Loading translations...');
+        const response = await fetch('/static/translations.json');
+        uiTranslations = await response.json();
+        translationsLoaded = true;
+        console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
+        
+        // Apply current language immediately
+        if (typeof applyLanguageNow === 'function') {
+          applyLanguageNow(currentLanguage);
+        }
+      } catch (error) {
+        console.error('❌ Failed to load translations:', error);
+      }
+    })();
+    
+    // Simple translation helper that can be used before full system loads
+    function applyLanguageNow(langCode) {
+      if (!uiTranslations || !uiTranslations[langCode]) {
+        console.warn('⚠️ Translations not available for:', langCode);
+        return;
+      }
+      
+      const lang = uiTranslations[langCode];
+      console.log('🌐 Applying language NOW:', langCode, lang.name);
+      
+      // Update video start screen (mode selection)
+      const videoStartTitle = document.getElementById('video-start-title');
+      const aiAssistantText = document.getElementById('ai-assistant-text');
+      const quickDecisionText = document.getElementById('quick-decision-text');
+      const browseAllToursText = document.getElementById('browse-all-tours-text');
+      
+      if (videoStartTitle && lang.video_start_title) videoStartTitle.textContent = lang.video_start_title;
+      if (aiAssistantText && lang.ai_assistant_btn) aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
+      if (quickDecisionText && lang.quick_decision_btn) quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
+      if (browseAllToursText && lang.browse_all_tours_btn) browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      
+      // Also call the full applyLanguage if available
+      if (typeof applyLanguage === 'function') {
+        applyLanguage(langCode);
+      }
+    }
+    
     // Detect if user is on web (from QR code) vs physical kiosk
     const isWebVisitor = {{ 'true' if is_web_visitor else 'false' }};
     const isKiosk = !isWebVisitor && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -15450,7 +15499,11 @@
       url.searchParams.set('lang', langCode);
       window.history.replaceState({}, '', url.toString());
       
-      // Apply translations immediately
+      // Apply translations immediately using early loader
+      if (typeof applyLanguageNow === 'function') {
+        applyLanguageNow(langCode);
+      }
+      // Also try full apply if available
       if (typeof applyLanguage === 'function') {
         applyLanguage(langCode);
       }
@@ -26101,26 +26154,22 @@
     // MULTI-LANGUAGE SYSTEM
     // =====================================================================
     
-    let uiTranslations = {};
+    // uiTranslations is declared earlier in the file for early access
     
     // Store the tour key we came from when filtering by company
     let previousTourKey = null;
     
-    // Load translations from JSON file
+    // Load translations from JSON file (legacy function, translations already loaded early)
     async function loadTranslations() {
-      try {
-        const response = await fetch("{{ url_for('static', filename='translations.json') }}");
-        uiTranslations = await response.json();
-        console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
-        
-        // Apply saved language immediately
+      // Translations are now loaded early at page start
+      // This function is kept for compatibility but just applies language
+      if (translationsLoaded) {
+        console.log('✓ Translations already loaded, applying...');
         applyLanguage(currentLanguage);
-        
-        // Reapply after a short delay to catch any late-rendered elements
-        setTimeout(() => applyLanguage(currentLanguage), 500);
-        setTimeout(() => applyLanguage(currentLanguage), 1500);
-      } catch (error) {
-        console.error('Failed to load translations:', error);
+      } else {
+        // Retry if not loaded yet
+        console.log('⏳ Waiting for translations...');
+        setTimeout(loadTranslations, 200);
       }
     }
     
@@ -26349,7 +26398,10 @@
       url.searchParams.set('lang', langCode);
       window.history.replaceState({}, '', url.toString());
       
-      // Apply translations immediately
+      // Apply translations immediately (use early loader first, then full)
+      if (typeof applyLanguageNow === 'function') {
+        applyLanguageNow(langCode);
+      }
       if (typeof applyLanguage === 'function') {
         applyLanguage(langCode);
       }
