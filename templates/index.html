@@ -15199,15 +15199,39 @@
         this.shown = shownPrompts ? JSON.parse(shownPrompts) : {};
       },
       
-      show(promptId, message, targetElement, position = 'bottom') {
+      // Get translated message or fallback to key
+      getMessage(key) {
+        if (typeof t === 'function') {
+          const translated = t(key);
+          if (translated !== key) return translated;
+        }
+        // Fallback messages in English
+        const fallbacks = {
+          'prompt_ai_assistant': 'Tap here to chat with our AI tour guide! Ask questions about tours, activities, or what to do.',
+          'prompt_tour_cards': 'Tap any tour to see photos, prices, and details!',
+          'prompt_weather': 'Tap to see the full weather forecast and radar!',
+          'prompt_book_tour': 'Tap "Book Now" to see pricing, or "Send to My Phone" to continue on your device!',
+          'prompt_got_it': 'Got it!'
+        };
+        return fallbacks[key] || key;
+      },
+      
+      show(promptId, messageKey, targetElement, position = 'bottom') {
         if (this.shown[promptId]) return; // Already shown this session
         
         const target = typeof targetElement === 'string' ? document.querySelector(targetElement) : targetElement;
         if (!target) return;
         
+        // Check if target is visible
+        const rect = target.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        
         // Mark as shown
         this.shown[promptId] = true;
         sessionStorage.setItem('shown_prompts', JSON.stringify(this.shown));
+        
+        const message = this.getMessage(messageKey);
+        const gotIt = this.getMessage('prompt_got_it');
         
         // Create prompt element
         const prompt = document.createElement('div');
@@ -15216,13 +15240,12 @@
           <div class="prompt-content">
             <span class="prompt-icon">💡</span>
             <span class="prompt-message">${message}</span>
-            <button class="prompt-dismiss" onclick="this.parentElement.parentElement.remove()">Got it!</button>
+            <button class="prompt-dismiss" onclick="this.parentElement.parentElement.remove()">${gotIt}</button>
           </div>
           <div class="prompt-arrow ${position}"></div>
         `;
         
         // Position the prompt
-        const rect = target.getBoundingClientRect();
         prompt.style.position = 'fixed';
         prompt.style.zIndex = '999999';
         
@@ -15246,9 +15269,39 @@
         setTimeout(() => {
           if (prompt.parentElement) {
             prompt.style.opacity = '0';
+            prompt.style.transition = 'opacity 0.3s';
             setTimeout(() => prompt.remove(), 300);
           }
         }, 8000);
+      },
+      
+      // Show home page prompts when user navigates there
+      showHomePagePrompts() {
+        if (!isKiosk) return;
+        
+        // AI assistant hint
+        setTimeout(() => {
+          const aiChatBtn = document.getElementById('aiChatButton');
+          if (aiChatBtn) {
+            this.show('ai_assistant', 'prompt_ai_assistant', aiChatBtn, 'top');
+          }
+        }, 2000);
+        
+        // Tour cards hint
+        setTimeout(() => {
+          const firstTourCard = document.querySelector('.tour-card');
+          if (firstTourCard) {
+            this.show('tour_cards', 'prompt_tour_cards', firstTourCard, 'bottom');
+          }
+        }, 5000);
+        
+        // Weather widget hint
+        setTimeout(() => {
+          const weatherChip = document.querySelector('.weather-chip');
+          if (weatherChip) {
+            this.show('weather_widget', 'prompt_weather', weatherChip, 'bottom');
+          }
+        }, 10000);
       }
     };
     
@@ -17102,6 +17155,9 @@
       }
       
       resetVideoQuestionFlow();
+      
+      // Show first-time user prompts
+      FirstTimePrompts.showHomePagePrompts();
       
       console.log('✅ Home page active, video flow exited');
     }
@@ -23150,12 +23206,7 @@
       // Show booking prompt for first-time users on kiosk
       if (isKiosk && bookNowBtn) {
         setTimeout(() => {
-          FirstTimePrompts.show(
-            'book_tour',
-            'Tap "Book Now" to see pricing, or "Send to My Phone" to continue browsing on your device!',
-            bookNowBtn,
-            'top'
-          );
+          FirstTimePrompts.show('book_tour', 'prompt_book_tour', bookNowBtn, 'top');
         }, 1500);
       }
     }
@@ -29029,51 +29080,9 @@
       }, 500);
       
       // =====================================================================
-      // FIRST-TIME USER PROMPTS - Show helpful hints for new users
+      // FIRST-TIME USER PROMPTS - Initialize
       // =====================================================================
       FirstTimePrompts.init();
-      
-      // Only show prompts on kiosk (not needed for web visitors on their phones)
-      if (isKiosk) {
-        // Show AI assistant hint when user first reaches home page
-        setTimeout(() => {
-          const aiChatBtn = document.getElementById('aiChatButton');
-          if (aiChatBtn && document.querySelector('.home-page')?.style.display !== 'none') {
-            FirstTimePrompts.show(
-              'ai_assistant',
-              'Tap here to chat with our AI tour guide! Ask questions about tours, activities, or what to do in the Whitsundays.',
-              aiChatBtn,
-              'top'
-            );
-          }
-        }, 3000);
-        
-        // Show tour card hint after a short delay on home page
-        setTimeout(() => {
-          const firstTourCard = document.querySelector('.tour-card');
-          if (firstTourCard) {
-            FirstTimePrompts.show(
-              'tour_cards',
-              'Tap any tour to see photos, prices, and details!',
-              firstTourCard,
-              'bottom'
-            );
-          }
-        }, 6000);
-        
-        // Show weather widget hint
-        setTimeout(() => {
-          const weatherChip = document.querySelector('.weather-chip');
-          if (weatherChip) {
-            FirstTimePrompts.show(
-              'weather_widget',
-              'Tap here to see the full weather forecast and radar!',
-              weatherChip,
-              'bottom'
-            );
-          }
-        }, 12000);
-      }
     });
     
     // Quick search function
