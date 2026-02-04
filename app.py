@@ -2325,6 +2325,65 @@ def save_tour_settings(tour_key):
     return jsonify({'success': True, 'settings': tour_settings})
 
 # ============================================================================
+# DESK NOTIFICATION SYSTEM - Alert agents when customers need help booking
+# ============================================================================
+
+# Store recent desk booking requests (in-memory, clears on restart)
+_desk_notifications = []
+_desk_notification_id = 0
+
+@app.route('/api/desk-notification', methods=['POST'])
+def create_desk_notification():
+    """Called when a customer clicks 'Book' on a tour without a booking link"""
+    global _desk_notification_id
+    
+    data = request.get_json() or {}
+    tour_name = data.get('tour_name', 'Unknown Tour')
+    tour_key = data.get('tour_key', '')
+    
+    _desk_notification_id += 1
+    notification = {
+        'id': _desk_notification_id,
+        'tour_name': tour_name,
+        'tour_key': tour_key,
+        'timestamp': datetime.now().isoformat(),
+        'acknowledged': False
+    }
+    
+    _desk_notifications.append(notification)
+    
+    # Keep only last 50 notifications
+    if len(_desk_notifications) > 50:
+        _desk_notifications.pop(0)
+    
+    print(f"🔔 DESK NOTIFICATION: Customer wants to book '{tour_name}'")
+    
+    return jsonify({'success': True, 'notification_id': _desk_notification_id})
+
+@app.route('/api/desk-notifications', methods=['GET'])
+def get_desk_notifications():
+    """Get unacknowledged desk notifications for the agent dashboard"""
+    # Get last_id parameter to only return new notifications
+    last_id = request.args.get('last_id', 0, type=int)
+    
+    new_notifications = [n for n in _desk_notifications if n['id'] > last_id and not n['acknowledged']]
+    
+    return jsonify({
+        'notifications': new_notifications,
+        'count': len(new_notifications)
+    })
+
+@app.route('/api/desk-notification/<int:notification_id>/acknowledge', methods=['POST'])
+def acknowledge_desk_notification(notification_id):
+    """Mark a notification as acknowledged"""
+    for n in _desk_notifications:
+        if n['id'] == notification_id:
+            n['acknowledged'] = True
+            break
+    
+    return jsonify({'success': True})
+
+# ============================================================================
 # REMOTE UPDATE SYSTEM
 # ============================================================================
 

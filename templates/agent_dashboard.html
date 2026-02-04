@@ -756,6 +756,101 @@
         .toast.error { border-left: 4px solid var(--accent-red); }
         .toast.show { display: flex; }
         
+        /* Desk Notification Popup */
+        .desk-notification {
+            position: fixed;
+            top: 100px;
+            right: 24px;
+            width: 380px;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            border: 2px solid var(--accent-green);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(59, 185, 80, 0.3);
+            z-index: 9999;
+            animation: slideInRight 0.4s ease, pulseGlow 2s infinite;
+            display: none;
+        }
+        
+        .desk-notification.show {
+            display: block;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(59, 185, 80, 0.3); }
+            50% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(59, 185, 80, 0.5); }
+        }
+        
+        .desk-notification-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .desk-notification-icon {
+            font-size: 2.5em;
+            animation: bellRing 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes bellRing {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+        
+        .desk-notification-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .desk-notification-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .desk-notification-tour {
+            background: rgba(0,0,0,0.3);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .desk-notification-tour-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .desk-notification-tour-time {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .desk-notification-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .desk-notification-btn:hover {
+            background: #4cc764;
+            transform: scale(1.02);
+        }
+        
         /* Tour Settings Modal */
         .modal-overlay {
             position: fixed;
@@ -1186,6 +1281,24 @@
     
     <div class="toast" id="toast"></div>
     
+    <!-- Desk Booking Notification Popup -->
+    <div class="desk-notification" id="deskNotification">
+        <div class="desk-notification-header">
+            <span class="desk-notification-icon">🔔</span>
+            <div>
+                <div class="desk-notification-title">Customer Needs Assistance!</div>
+                <div class="desk-notification-subtitle">A customer wants to book a tour</div>
+            </div>
+        </div>
+        <div class="desk-notification-tour">
+            <div class="desk-notification-tour-name" id="notificationTourName">Loading...</div>
+            <div class="desk-notification-tour-time" id="notificationTime">Just now</div>
+        </div>
+        <button class="desk-notification-btn" onclick="acknowledgeNotification()">
+            ✓ Got It - Go Help Customer
+        </button>
+    </div>
+    
     <!-- Tour Settings Modal -->
     <div class="modal-overlay" id="tourSettingsModal">
         <div class="modal">
@@ -1498,21 +1611,23 @@
         }
         
         function filterTours() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
             
+            // Filter main tour items
             document.querySelectorAll('.tour-item').forEach(item => {
-                const name = item.dataset.name;
-                const company = item.dataset.companyDisplay || item.dataset.company;
+                const name = item.dataset.name || '';
+                const company = item.dataset.companyDisplay || item.dataset.company || '';
                 const enabled = item.dataset.enabled === 'true';
                 const promoted = item.dataset.promoted;
                 
-                // Search based on mode
+                // Search based on mode - search BOTH tour name AND company in tours mode
                 let matchesSearch = true;
                 if (search) {
                     if (searchMode === 'tours') {
-                        matchesSearch = name.includes(search);
+                        // Search tour names (also partial match company for convenience)
+                        matchesSearch = name.includes(search) || company.includes(search);
                     } else {
-                        // Search by company name
+                        // Search by company name only
                         matchesSearch = company.includes(search);
                     }
                 }
@@ -1528,10 +1643,24 @@
                 item.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
             });
             
-            // Update company visibility
+            // Also filter unavailable tours section
+            document.querySelectorAll('.unavailable-tour-item').forEach(item => {
+                const tourInfo = item.querySelector('.tour-info');
+                const name = (tourInfo?.querySelector('.tour-name')?.textContent || '').toLowerCase();
+                const company = (tourInfo?.querySelector('.tour-company')?.textContent || '').toLowerCase();
+                
+                let matchesSearch = true;
+                if (search) {
+                    matchesSearch = name.includes(search) || company.includes(search);
+                }
+                
+                item.style.display = matchesSearch ? '' : 'none';
+            });
+            
+            // Update company visibility - show group if ANY visible tours
             document.querySelectorAll('.company-group').forEach(group => {
-                const companyId = group.dataset.company.toLowerCase();
-                const companyName = group.querySelector('.company-name').textContent.toLowerCase();
+                const companyId = (group.dataset.company || '').toLowerCase();
+                const companyName = (group.querySelector('.company-name')?.textContent || '').toLowerCase();
                 const visibleTours = group.querySelectorAll('.tour-item:not([style*="display: none"])');
                 
                 // If searching by companies, also check if company name matches
@@ -1540,8 +1669,21 @@
                     companyMatches = companyName.includes(search) || companyId.includes(search);
                 }
                 
-                group.style.display = (visibleTours.length > 0 || companyMatches) ? '' : 'none';
+                // Show company if it has visible tours, or if company name matches in company search mode
+                group.style.display = (visibleTours.length > 0 || (search && searchMode === 'companies' && companyMatches)) ? '' : 'none';
+                
+                // Auto-expand if searching and has matches
+                if (search && visibleTours.length > 0) {
+                    group.classList.remove('collapsed');
+                }
             });
+            
+            // Show/hide unavailable section based on visible items
+            const unavailableSection = document.querySelector('.unavailable-section');
+            if (unavailableSection) {
+                const visibleUnavailable = unavailableSection.querySelectorAll('.unavailable-tour-item:not([style*="display: none"])');
+                unavailableSection.style.display = visibleUnavailable.length > 0 ? '' : 'none';
+            }
         }
         
         function setFilter(filter) {
@@ -1788,6 +1930,113 @@
                 btn.disabled = false;
             }
         }
+        
+        // =====================================================================
+        // DESK NOTIFICATION SYSTEM - Alerts when customers need booking help
+        // =====================================================================
+        
+        let lastNotificationId = 0;
+        let currentNotificationId = null;
+        let notificationAudio = null;
+        
+        // Create ding sound for notifications
+        function playDeskDing() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a pleasant multi-tone ding
+                const playTone = (freq, startTime, duration) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    
+                    osc.frequency.value = freq;
+                    osc.type = 'sine';
+                    
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime + startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+                    
+                    osc.start(audioContext.currentTime + startTime);
+                    osc.stop(audioContext.currentTime + startTime + duration);
+                };
+                
+                // Pleasant doorbell-like ding-dong
+                playTone(880, 0, 0.3);      // A5
+                playTone(660, 0.15, 0.4);   // E5
+                playTone(880, 0.5, 0.3);    // A5 again
+                playTone(1100, 0.65, 0.5);  // C#6
+                
+            } catch (e) {
+                console.log('Could not play notification sound:', e);
+            }
+        }
+        
+        function showDeskNotification(notification) {
+            const popup = document.getElementById('deskNotification');
+            const tourNameEl = document.getElementById('notificationTourName');
+            const timeEl = document.getElementById('notificationTime');
+            
+            currentNotificationId = notification.id;
+            tourNameEl.textContent = notification.tour_name;
+            
+            // Format time
+            const time = new Date(notification.timestamp);
+            const now = new Date();
+            const diffSec = Math.floor((now - time) / 1000);
+            if (diffSec < 60) {
+                timeEl.textContent = 'Just now';
+            } else if (diffSec < 3600) {
+                timeEl.textContent = Math.floor(diffSec / 60) + ' minutes ago';
+            } else {
+                timeEl.textContent = time.toLocaleTimeString();
+            }
+            
+            // Show popup
+            popup.classList.add('show');
+            
+            // Play ding sound
+            playDeskDing();
+            
+            // Also play again after 2 seconds for urgency
+            setTimeout(playDeskDing, 2000);
+        }
+        
+        function acknowledgeNotification() {
+            if (currentNotificationId) {
+                fetch(`/api/desk-notification/${currentNotificationId}/acknowledge`, {
+                    method: 'POST'
+                }).catch(console.error);
+            }
+            
+            // Hide popup
+            document.getElementById('deskNotification').classList.remove('show');
+            currentNotificationId = null;
+        }
+        
+        // Poll for new notifications every 3 seconds
+        async function pollForNotifications() {
+            try {
+                const response = await fetch(`/api/desk-notifications?last_id=${lastNotificationId}`);
+                const data = await response.json();
+                
+                if (data.notifications && data.notifications.length > 0) {
+                    // Show the most recent notification
+                    const latest = data.notifications[data.notifications.length - 1];
+                    lastNotificationId = latest.id;
+                    showDeskNotification(latest);
+                }
+            } catch (e) {
+                // Silently fail - server might be restarting
+            }
+        }
+        
+        // Start polling when page loads
+        setInterval(pollForNotifications, 3000);
+        
+        // Also check immediately on page load
+        pollForNotifications();
     </script>
 </body>
 </html>

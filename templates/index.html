@@ -23225,8 +23225,8 @@
       }
     }
     
-    // Show the counter booking modal
-    function showCounterBookingModal(tourName) {
+    // Show the counter booking modal and notify the agent desk
+    function showCounterBookingModal(tourName, tourKey) {
       console.log('🔔 Showing counter booking modal for:', tourName);
       
       const modal = document.getElementById('counter-booking-modal');
@@ -23254,8 +23254,18 @@
       modal.style.pointerEvents = 'auto';
       document.body.style.overflow = 'hidden';
       
-      // Play ding sound to alert staff
+      // Play ding sound to alert staff (on kiosk)
       playDingSound();
+      
+      // Send notification to agent dashboard (so they see what tour the customer wants)
+      fetch('/api/desk-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          tour_name: tourName,
+          tour_key: tourKey || ''
+        })
+      }).catch(err => console.log('Could not send desk notification:', err));
       
       // Track this event
       if (typeof Analytics !== 'undefined') {
