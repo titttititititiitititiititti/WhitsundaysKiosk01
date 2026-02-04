@@ -15215,9 +15215,18 @@
     // Load translations immediately (not waiting for DOMContentLoaded)
     translationsPromise = (async function loadTranslationsEarly() {
       try {
-        console.log('⏳ Loading translations...');
+        console.log('⏳ Loading translations from /static/translations.json...');
         const response = await fetch('/static/translations.json');
-        uiTranslations = await response.json();
+        console.log('📥 Fetch response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error('HTTP error ' + response.status);
+        }
+        
+        const data = await response.json();
+        console.log('📋 Parsed JSON, keys:', Object.keys(data));
+        
+        uiTranslations = data;
         translationsLoaded = true;
         console.log('✓ Translations loaded for', Object.keys(uiTranslations).length, 'languages');
         
@@ -15231,6 +15240,11 @@
         return uiTranslations;
       } catch (error) {
         console.error('❌ Failed to load translations:', error);
+        console.error('❌ Error details:', error.message);
+        
+        // FALLBACK: Set translationsLoaded to true with empty object to stop infinite retry
+        translationsLoaded = true;
+        uiTranslations = {};
         return {};
       }
     })();
@@ -26497,13 +26511,24 @@
       console.log('✅ Language changed seamlessly to:', langCode);
     }
     
-    // Apply language to UI
+    // Apply language to UI - with max retries to prevent infinite loop
+    let applyLanguageRetryCount = 0;
+    const MAX_APPLY_RETRIES = 10;
+    
     function applyLanguage(langCode) {
       if (!uiTranslations || Object.keys(uiTranslations).length === 0) {
-        console.warn('⏳ Translations not loaded yet, will retry...');
+        applyLanguageRetryCount++;
+        if (applyLanguageRetryCount > MAX_APPLY_RETRIES) {
+          console.error('❌ Giving up on translations after', MAX_APPLY_RETRIES, 'retries');
+          return;
+        }
+        console.warn('⏳ Translations not loaded yet, will retry... (attempt', applyLanguageRetryCount + ')');
         setTimeout(() => applyLanguage(langCode), 200);
         return;
       }
+      
+      // Reset retry count on success
+      applyLanguageRetryCount = 0;
       
       const lang = uiTranslations[langCode];
       if (!lang) {

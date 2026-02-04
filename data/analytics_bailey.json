@@ -2604,6 +2604,74 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-04T12:56:10.493559",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-04T12:56:10.494601",
+      "duration_seconds": 120.178252
+    },
+    {
+      "session_id": "session_300bf135440f_1770173771",
+      "account": "bailey",
+      "started_at": "2026-02-04T12:56:11.424407",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-04T12:56:11.424407",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-04T12:57:56.578643",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-04T13:00:01.188752",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-04T13:01:16.701968",
+          "data": {}
+        }
+      ],
+      "language": "ja",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-04T13:01:16.701968",
+      "duration_seconds": 305.277561
+    },
+    {
+      "session_id": "session_b52941d232d4_1770174077",
+      "account": "bailey",
+      "started_at": "2026-02-04T13:01:17.380053",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-04T13:01:17.380053",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -2615,5 +2683,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-04T12:54:10.317351"
+  "last_updated": "2026-02-04T13:01:17.383045"
 }
