@@ -15217,7 +15217,7 @@
         "quick_decision_btn": "Quick Decision",
         "browse_all_tours_btn": "Browse All Tours",
         "find_perfect_tour": "Find Your Perfect Tour",
-        "search_placeholder": "Search tours by name or company...",
+        "search_tours_placeholder": "Search tours by name or company...",
         "map_view": "Map View", "grid_view": "Grid View",
         "duration_question": "How long can you be away?",
         "half_day": "Half Day", "half_day_hours": "(2-4 hours)",
@@ -15239,7 +15239,7 @@
         "quick_decision_btn": "クイック決定",
         "browse_all_tours_btn": "すべてのツアーを閲覧",
         "find_perfect_tour": "完璧なツアーを見つける",
-        "search_placeholder": "ツアー名や会社名で検索...",
+        "search_tours_placeholder": "ツアー名や会社名で検索...",
         "map_view": "マップ表示", "grid_view": "グリッド表示",
         "duration_question": "どのくらいの時間がありますか？",
         "half_day": "半日", "half_day_hours": "(2-4時間)",
@@ -15261,7 +15261,7 @@
         "quick_decision_btn": "快速决定",
         "browse_all_tours_btn": "浏览所有旅程",
         "find_perfect_tour": "找到完美之旅",
-        "search_placeholder": "按名称或公司搜索旅程...",
+        "search_tours_placeholder": "按名称或公司搜索旅程...",
         "map_view": "地图视图", "grid_view": "网格视图",
         "duration_question": "您有多少时间？",
         "half_day": "半天", "half_day_hours": "(2-4小时)",
@@ -15283,7 +15283,7 @@
         "quick_decision_btn": "빠른 결정",
         "browse_all_tours_btn": "모든 투어 둘러보기",
         "find_perfect_tour": "완벽한 투어 찾기",
-        "search_placeholder": "투어 이름이나 회사로 검색...",
+        "search_tours_placeholder": "투어 이름이나 회사로 검색...",
         "map_view": "지도 보기", "grid_view": "그리드 보기",
         "duration_question": "시간이 얼마나 있으신가요?",
         "half_day": "반나절", "half_day_hours": "(2-4시간)",
@@ -15305,7 +15305,7 @@
         "quick_decision_btn": "Schnelle Entscheidung",
         "browse_all_tours_btn": "Alle Touren durchsuchen",
         "find_perfect_tour": "Finden Sie Ihre perfekte Tour",
-        "search_placeholder": "Touren nach Name oder Anbieter suchen...",
+        "search_tours_placeholder": "Touren nach Name oder Anbieter suchen...",
         "map_view": "Kartenansicht", "grid_view": "Rasteransicht",
         "duration_question": "Wie viel Zeit haben Sie?",
         "half_day": "Halber Tag", "half_day_hours": "(2-4 Stunden)",
@@ -15327,7 +15327,7 @@
         "quick_decision_btn": "Décision rapide",
         "browse_all_tours_btn": "Parcourir toutes les excursions",
         "find_perfect_tour": "Trouvez votre excursion parfaite",
-        "search_placeholder": "Rechercher par nom ou compagnie...",
+        "search_tours_placeholder": "Rechercher par nom ou compagnie...",
         "map_view": "Vue carte", "grid_view": "Vue grille",
         "duration_question": "Combien de temps avez-vous?",
         "half_day": "Demi-journée", "half_day_hours": "(2-4 heures)",
@@ -15349,7 +15349,7 @@
         "quick_decision_btn": "त्वरित निर्णय",
         "browse_all_tours_btn": "सभी टूर ब्राउज़ करें",
         "find_perfect_tour": "अपना परफेक्ट टूर खोजें",
-        "search_placeholder": "नाम या कंपनी द्वारा खोजें...",
+        "search_tours_placeholder": "नाम या कंपनी द्वारा खोजें...",
         "map_view": "मानचित्र दृश्य", "grid_view": "ग्रिड दृश्य",
         "duration_question": "आपके पास कितना समय है?",
         "half_day": "आधा दिन", "half_day_hours": "(2-4 घंटे)",
@@ -15371,7 +15371,7 @@
         "quick_decision_btn": "Decisión rápida",
         "browse_all_tours_btn": "Explorar todos los tours",
         "find_perfect_tour": "Encuentra tu tour perfecto",
-        "search_placeholder": "Buscar tours por nombre o empresa...",
+        "search_tours_placeholder": "Buscar tours por nombre o empresa...",
         "map_view": "Vista de mapa", "grid_view": "Vista de cuadrícula",
         "duration_question": "¿Cuánto tiempo tienes?",
         "half_day": "Medio día", "half_day_hours": "(2-4 horas)",
@@ -15444,6 +15444,18 @@
       if (browseAllToursText && lang.browse_all_tours_btn) {
         browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
       }
+      
+      // Update search placeholder
+      const searchInput = document.getElementById('home-search-input');
+      if (searchInput && lang.search_tours_placeholder) {
+        searchInput.placeholder = lang.search_tours_placeholder;
+      }
+      
+      // Update Map View buttons
+      const mapToggleBtn = document.getElementById('home-map-toggle-btn');
+      const vqMapToggleBtn = document.getElementById('vq-map-toggle-btn');
+      if (mapToggleBtn && lang.map_view) mapToggleBtn.textContent = lang.map_view;
+      if (vqMapToggleBtn && lang.map_view) vqMapToggleBtn.textContent = lang.map_view;
       
       // Also call the full applyLanguage if available
       if (typeof applyLanguage === 'function') {
@@ -26774,11 +26786,19 @@
       const startOverBtn = document.querySelector('.clear-filters-btn span:last-child');
       if (startOverBtn) startOverBtn.textContent = lang.start_over;
       
-      // Update Map View / Grid View button
+      // Update Map View / Grid View buttons (multiple buttons with different IDs)
+      const mapToggleBtn = document.getElementById('home-map-toggle-btn');
+      const vqMapToggleBtn = document.getElementById('vq-map-toggle-btn');
+      const listMapToggleBtn = document.getElementById('map-toggle-btn');
       const viewToggleText = document.getElementById('view-toggle-text');
-      if (viewToggleText) {
-        viewToggleText.textContent = isMapView ? lang.grid_view : lang.map_view;
-      }
+      
+      const mapText = lang.map_view || 'Map View';
+      const gridText = lang.grid_view || 'Grid View';
+      
+      if (mapToggleBtn) mapToggleBtn.textContent = isMapView ? gridText : mapText;
+      if (vqMapToggleBtn) vqMapToggleBtn.textContent = isMapView ? gridText : mapText;
+      if (listMapToggleBtn) listMapToggleBtn.textContent = isMapView ? gridText : mapText;
+      if (viewToggleText) viewToggleText.textContent = isMapView ? gridText : mapText;
       
       // Update navigation buttons
       const backBtn = document.getElementById('back-btn');
