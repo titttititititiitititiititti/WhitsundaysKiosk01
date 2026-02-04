@@ -457,6 +457,16 @@
         overflow: visible !important;
       }
       
+      /* Hide left side buttons during swipe results - only show lang/currency on right */
+      .video-question-page.showing-results .kiosk-header .header-left {
+        visibility: hidden !important;
+        width: 0 !important;
+        overflow: hidden !important;
+      }
+      .video-question-page.showing-results .kiosk-header .header-left * {
+        display: none !important;
+      }
+      
       /* Hide questionnaire content when results are showing */
       .video-question-page.showing-results #video-question-container,
       .video-question-page.showing-results #vq-card,
@@ -752,6 +762,15 @@
         overflow: visible !important;
         position: relative !important;
         z-index: 1000 !important;
+      }
+      
+      /* Hide left navigation during swipe results - just show lang/currency */
+      .video-question-page.showing-results .kiosk-header .header-left {
+        visibility: hidden !important;
+        width: 0 !important;
+      }
+      .video-question-page.showing-results .kiosk-header .header-left * {
+        display: none !important;
       }
       
       /* HIDE questionnaire when results showing */
@@ -26105,16 +26124,47 @@
       }
     }
     
-    // Translation helper function
+    // Translation helper function with inline English fallbacks
     function t(key) {
+      // First try current language
       if (uiTranslations && uiTranslations[currentLanguage] && uiTranslations[currentLanguage][key]) {
         return uiTranslations[currentLanguage][key];
       }
-      // Fallback to English if translation not found
+      // Fallback to English from loaded translations
       if (uiTranslations && uiTranslations['en'] && uiTranslations['en'][key]) {
         return uiTranslations['en'][key];
       }
-      return key; // Return key if no translation found
+      // Final fallback: inline English defaults (for when translations haven't loaded yet)
+      const inlineDefaults = {
+        'duration_question': 'How long can you be away?',
+        'half_day': 'Half Day',
+        'half_day_hours': '(2-4 hours)',
+        'full_day': 'Full Day',
+        'full_day_hours': '(5-8 hours)',
+        'multi_day': 'Multi-day',
+        'multi_day_adventure': 'Adventure',
+        'no_preference': 'No preference',
+        'family_question': 'Are you traveling with children?',
+        'family_with_kids': 'Family with kids',
+        'adults_only': 'Adults only',
+        'activity_question': 'What type of adventure excites you?',
+        'activity_whitehaven': 'Whitehaven Beach',
+        'activity_gbr': 'Great Barrier Reef',
+        'activity_island': 'Island Tours',
+        'activity_sailing': 'Sailing',
+        'activity_snorkeling': 'Snorkeling',
+        'activity_swimming': 'Swimming',
+        'activity_scenic_views': 'Scenic Views',
+        'activity_other': 'Surprise Me',
+        'question_of': 'Question {current} of {total}',
+        'book_now': 'Book Now',
+        'next_tour': 'Next Tour',
+        'select_all_that_apply': 'Select all that apply',
+        'continue': 'Continue',
+        'available_tours': 'Available Tours',
+        'tap_to_filter': 'Tap an option above to start filtering'
+      };
+      return inlineDefaults[key] || key;
     }
     
     // Home page language menu
