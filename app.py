@@ -1,4 +1,14 @@
 ﻿import os
+import sys
+
+# Fix Windows console encoding for non-ASCII characters (Japanese, Chinese, Hindi, etc.)
+if sys.platform == 'win32':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except:
+        pass  # Older Python versions may not support reconfigure
+
 print("Current working directory:", os.getcwd())
 print("Templates folder exists:", os.path.isdir('templates'))
 print("index.html exists:", os.path.isfile('templates/index.html'))
