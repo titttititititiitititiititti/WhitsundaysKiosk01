@@ -26398,6 +26398,20 @@
         }, 500);
       }
       
+      // IMPORTANT: Reload tours in the new language
+      // Check if home page is visible
+      const homePage = document.querySelector('.home-page');
+      if (homePage && (homePage.style.display === 'flex' || homePage.classList.contains('active'))) {
+        console.log('🔄 Reloading tours for new language:', langCode);
+        if (typeof loadInitialFeaturedTours === 'function') {
+          // Reset pagination state
+          homePageOffset = 0;
+          homePageLoadedKeys = [];
+          homePageHasMore = true;
+          loadInitialFeaturedTours();
+        }
+      }
+      
       console.log('✅ Language changed seamlessly to:', langCode);
     }
     
