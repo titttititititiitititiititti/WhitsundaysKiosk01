@@ -3471,30 +3471,39 @@ def filter_tours():
 @app.route('/more-tours')
 def more_tours():
     language = request.args.get('lang', 'en')
-    offset = int(request.args.get('offset', 0))
     count = int(request.args.get('count', 12))
-    exclude_keys = set(request.args.get('exclude', '').split(',')) if request.args.get('exclude') else set()
+    exclude_raw = request.args.get('exclude', '')
+    exclude_keys = set(exclude_raw.split(',')) if exclude_raw else set()
+    # Remove empty string from exclude set if present
+    exclude_keys.discard('')
     
     # Get referral account for filtering (if user came from QR code)
     referral_account = get_referral_account()
     active_account = referral_account or get_active_account()
     
     tours = load_all_tours(language, preview_account=active_account)
-    available = [t for t in tours if t['key'] not in exclude_keys]
+    total_count = len(tours)  # Total available tours
     
-    # Sort by promotion status first, then STABLE sort for non-promoted (by name)
-    # DO NOT random shuffle - it causes chaos with pagination!
+    # Sort ALL tours first (before exclusion) for consistent ordering
     promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
-    promoted = [t for t in available if t.get('promotion')]
-    non_promoted = [t for t in available if not t.get('promotion')]
+    promoted = [t for t in tours if t.get('promotion')]
+    non_promoted = [t for t in tours if not t.get('promotion')]
     
-    # Sort promoted by level, sort non-promoted by name (stable, predictable)
     promoted.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
     non_promoted.sort(key=lambda t: t.get('name', '').lower())
-    
-    # Combine: promoted first, then non-promoted (sorted alphabetically)
     sorted_tours = promoted + non_promoted
-    selected = sorted_tours[offset:offset + count]
+    
+    # Select tours that aren't already loaded (use exclude list, not offset)
+    # This is simpler and more reliable than offset-based pagination
+    selected = []
+    for tour in sorted_tours:
+        if tour['key'] in exclude_keys:
+            continue  # Skip already-loaded tours
+        if len(selected) >= count:
+            break
+        selected.append(tour)
+    
+    print(f"[MORE-TOURS] Total: {total_count}, Excluded: {len(exclude_keys)}, Selected: {len(selected)}")
     
     # Load images for each selected tour (lazy loading)
     for tour in selected:
