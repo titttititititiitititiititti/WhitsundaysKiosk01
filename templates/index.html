@@ -2284,11 +2284,13 @@
     }
     
     .newcomer-section {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.85);
       border-radius: 20px;
       padding: 25px;
       margin-bottom: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
     .newcomer-section h2 {
@@ -2297,6 +2299,7 @@
       margin-bottom: 20px;
       padding-bottom: 10px;
       border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
     
     .newcomer-section.marine-safety h2 {
@@ -2305,21 +2308,24 @@
     }
     
     .newcomer-subsection {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.35);
       border-radius: 15px;
       padding: 20px;
       margin: 15px 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     
     .newcomer-subsection h3 {
       font-size: 1.3em;
-      color: #a5b4fc;
+      color: #93c5fd;
       margin-bottom: 15px;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
     
     .newcomer-section-content {
-      color: rgba(255, 255, 255, 0.9);
+      color: #fff;
       line-height: 1.8;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
     
     .newcomer-section-content ul {
@@ -14536,9 +14542,8 @@
                 <p>ℹ️ Most tours provide stinger suits — ask before booking.</p>
               </div>
               <div class="newcomer-image-grid">
-                <img src="https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop" alt="Marine stinger warning sign" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop" alt="Wearing a stinger suit while snorkelling" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=400&h=300&fit=crop" alt="Blue bottle jellyfish on beach" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="{{ url_for('static', filename='newcomer_images/box jellyfish.png') }}" alt="Box Jellyfish" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="{{ url_for('static', filename='newcomer_images/iruakndji jellyfish.jpg') }}" alt="Irukandji Jellyfish" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
@@ -14595,8 +14600,8 @@
                 <p>✔️ Listen to crew safety briefings</p>
               </div>
               <div class="newcomer-image-grid two-images">
-                <img src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=500&h=350&fit=crop" alt="Whitehaven Beach and Hill Inlet aerial view" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=350&fit=crop" alt="Whitehaven Beach from above" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach drone shot.png') }}" alt="Whitehaven Beach aerial view" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+                <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach.png') }}" alt="Whitehaven Beach" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
@@ -14631,7 +14636,9 @@
                 <p>✔️ Follow guide instructions</p>
                 <p>✔️ Wear flotation aids if not confident swimmer</p>
               </div>
-              <div class="newcomer-image-placeholder" id="img-snorkelling"></div>
+              <div class="newcomer-image-grid">
+                <img src="{{ url_for('static', filename='newcomer_images/snorkelling at the great barrier reef.png') }}" alt="Snorkelling at the Great Barrier Reef" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+              </div>
             </div>
           </div>
           
@@ -14644,9 +14651,8 @@
                 <li>Weather dependent — flights may be delayed or rescheduled</li>
                 <li>Window seats matter — ask when booking</li>
               </ul>
-              <div class="newcomer-image-grid two-images">
-                <img src="https://images.unsplash.com/photo-1580541832626-2a7131ee809f?w=500&h=350&fit=crop" alt="Scenic flight over Heart Reef" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
-                <img src="https://images.unsplash.com/photo-1582967788606-a171c1080cb0?w=500&h=350&fit=crop" alt="Heart Reef from above" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
+              <div class="newcomer-image-grid">
+                <img src="{{ url_for('static', filename='newcomer_images/Heart Reef drone shot.png') }}" alt="Heart Reef aerial view" class="newcomer-img" onclick="openNewcomerFullscreen(this)" onerror="this.style.display='none'">
               </div>
             </div>
           </div>
