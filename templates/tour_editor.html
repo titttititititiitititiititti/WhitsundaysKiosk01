@@ -2901,11 +2901,11 @@
         }
         
         async function saveVideoUrls() {
-            const key = currentTour?.key || currentTour?.id;
-            if (!key) {
+            if (!currentTour) {
                 showToast('No tour selected', 'error');
                 return;
             }
+            const key = `${currentTour.company_name}__${currentTour.id}`;
             
             // Filter out empty URLs
             const validUrls = currentVideoUrls.filter(url => url && url.trim());
@@ -2996,11 +2996,11 @@
         }
         
         async function syncImages() {
-            const key = currentTour?.key || currentTour?.id;
-            if (!key) {
+            if (!currentTour) {
                 showToast('No tour selected', 'error');
                 return;
             }
+            const key = `${currentTour.company_name}__${currentTour.id}`;
             
             try {
                 const response = await fetch(`/admin/api/tour/${key}/sync-images`, {
