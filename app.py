@@ -542,11 +542,31 @@ def get_random_placeholder_gallery(count=3):
         return images * ((count // len(images)) + 1)[:count]
     return random.sample(images, count)
 
+def normalize_image_url(img_url):
+    """
+    Normalize an image URL - handles both local paths and remote URLs.
+    Local paths get a leading slash, remote URLs (http/https) are preserved as-is.
+    """
+    if not img_url:
+        return ''
+    img_url = img_url.strip()
+    # Remote URLs (Cloudflare, etc.) - keep as-is
+    if img_url.startswith('http://') or img_url.startswith('https://'):
+        return img_url
+    # Local paths - ensure leading slash
+    if not img_url.startswith('/'):
+        return '/' + img_url
+    return img_url
+
 def load_tour_images(tour, max_images=5):
     """
     Load images for a specific tour on demand.
     Returns (thumbnail, gallery, uses_placeholder) tuple.
     Called only when we're about to display a tour card.
+    
+    Supports HYBRID images:
+    - Local paths: static/tour_images/company/id/image.jpg
+    - Remote URLs: https://example.com/image.jpg (Cloudflare R2, etc.)
     """
     company = tour.get('company', '')
     key = tour.get('key', '')
@@ -571,17 +591,15 @@ def load_tour_images(tour, max_images=5):
         # Parse comma-separated image URLs from CSV
         image_list = [img.strip() for img in csv_images.split(',') if img.strip()]
         if image_list:
-            # Add leading slash if needed
+            # Normalize URLs - handles both local paths AND remote URLs (http/https)
             gallery = []
             for img in image_list[:max_images]:
-                if not img.startswith('/'):
-                    img = '/' + img
-                gallery.append(img)
+                normalized = normalize_image_url(img)
+                if normalized:
+                    gallery.append(normalized)
             
             # Get thumbnail from image_url field or first gallery image
-            thumb_path = tour.get('image_url', '')
-            if thumb_path and not thumb_path.startswith('/'):
-                thumb_path = '/' + thumb_path
+            thumb_path = normalize_image_url(tour.get('image_url', ''))
             if not thumb_path and gallery:
                 thumb_path = gallery[0]
             
