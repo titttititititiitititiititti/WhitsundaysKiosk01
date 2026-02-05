@@ -2933,6 +2933,8 @@
                 
                 if (response.ok) {
                     currentVideoUrls = validUrls;
+                    // IMPORTANT: Update currentTour so "Save Changes" doesn't overwrite with old empty value
+                    currentTour.video_urls = videoUrlsString;
                     showToast('Video URLs saved!', 'success');
                     refreshVideosSection();
                 } else {
