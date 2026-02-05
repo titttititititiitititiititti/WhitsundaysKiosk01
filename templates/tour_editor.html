@@ -643,6 +643,124 @@
             gap: 12px;
         }
         
+        /* Videos Section */
+        .videos-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .video-url-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .video-url-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .video-url-item input {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .video-url-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .video-url-item .remove-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .video-url-item .remove-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .video-preview {
+            width: 120px;
+            height: 68px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .video-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-preview.no-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+        }
+        
+        .add-video-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+        }
+        
+        .add-video-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .save-videos-btn {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .save-videos-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .videos-help {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: 12px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+        
         .image-card {
             position: relative;
             aspect-ratio: 16/10;
@@ -1961,9 +2079,10 @@
                 
                 currentTour = await response.json();
                 
-                // Also load images and reviews
+                // Also load images, videos, and reviews
                 await Promise.all([
                     loadTourImages(key),
+                    loadVideoUrls(key),
                     loadReviews()
                 ]);
                 
@@ -2054,6 +2173,19 @@
                     </div>
                     <div class="section-content">
                         ${renderImagesSection()}
+                    </div>
+                </div>
+            `;
+            
+            // Add Videos section
+            html += `
+                <div class="form-section" id="section-videos">
+                    <div class="section-header" onclick="toggleSection('videos')">
+                        <h3>🎬 Video URLs</h3>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        ${renderVideosSection()}
                     </div>
                 </div>
             `;
@@ -2661,6 +2793,144 @@
                 .replace(/"/g, '&quot;');
         }
         
+        // Global variable for video URLs
+        let currentVideoUrls = [];
+        
+        // Load video URLs when tour is loaded
+        async function loadVideoUrls(key) {
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/video-urls`);
+                if (response.ok) {
+                    const data = await response.json();
+                    currentVideoUrls = data.video_list || [];
+                } else {
+                    currentVideoUrls = [];
+                }
+            } catch (err) {
+                console.error('Failed to load video URLs:', err);
+                currentVideoUrls = [];
+            }
+        }
+        
+        // Videos section rendering
+        function renderVideosSection() {
+            let html = '<div class="videos-section">';
+            
+            html += `
+                <div class="videos-help">
+                    <strong>Supported video formats:</strong><br>
+                    • YouTube: https://youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID<br>
+                    • Vimeo: https://vimeo.com/VIDEO_ID<br>
+                    • Direct MP4: https://your-cdn.com/video.mp4
+                </div>
+            `;
+            
+            html += '<div class="video-url-list" id="video-url-list">';
+            
+            if (currentVideoUrls.length === 0) {
+                html += '<p style="color:var(--text-secondary);font-style:italic;">No videos added yet. Add a video URL below.</p>';
+            } else {
+                currentVideoUrls.forEach((url, index) => {
+                    const preview = getVideoPreview(url);
+                    html += `
+                        <div class="video-url-item" data-index="${index}">
+                            <div class="video-preview ${preview ? '' : 'no-preview'}">
+                                ${preview ? preview : '🎬'}
+                            </div>
+                            <input type="text" value="${escapeHtml(url)}" onchange="updateVideoUrl(${index}, this.value)" placeholder="Enter video URL...">
+                            <button class="remove-btn" onclick="removeVideoUrl(${index})">✕</button>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += '</div>';
+            
+            html += `
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="add-video-btn" onclick="addVideoUrl()">
+                        ➕ Add Video URL
+                    </button>
+                    <button class="save-videos-btn" onclick="saveVideoUrls()">
+                        💾 Save Videos
+                    </button>
+                </div>
+            `;
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function getVideoPreview(url) {
+            if (!url) return null;
+            
+            // YouTube
+            const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (youtubeMatch) {
+                return `<iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}?controls=0" frameborder="0"></iframe>`;
+            }
+            
+            // Vimeo
+            const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+            if (vimeoMatch) {
+                return `<iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0"></iframe>`;
+            }
+            
+            return null;
+        }
+        
+        function addVideoUrl() {
+            currentVideoUrls.push('');
+            refreshVideosSection();
+        }
+        
+        function removeVideoUrl(index) {
+            currentVideoUrls.splice(index, 1);
+            refreshVideosSection();
+        }
+        
+        function updateVideoUrl(index, value) {
+            currentVideoUrls[index] = value.trim();
+        }
+        
+        function refreshVideosSection() {
+            const container = document.querySelector('#section-videos .section-content');
+            if (container) {
+                container.innerHTML = renderVideosSection();
+            }
+        }
+        
+        async function saveVideoUrls() {
+            const key = currentTour?.key || currentTour?.id;
+            if (!key) {
+                showToast('No tour selected', 'error');
+                return;
+            }
+            
+            // Filter out empty URLs
+            const validUrls = currentVideoUrls.filter(url => url && url.trim());
+            const videoUrlsString = validUrls.join(',');
+            
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/video-urls`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_urls: videoUrlsString })
+                });
+                
+                if (response.ok) {
+                    currentVideoUrls = validUrls;
+                    showToast('Video URLs saved!', 'success');
+                    refreshVideosSection();
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || 'Failed to save videos', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to save videos: ' + err.message, 'error');
+            }
+        }
+        
         // Images section rendering
         function renderImagesSection() {
             let innerContent = '';
@@ -2682,9 +2952,14 @@
                 innerContent = `
                     <div class="images-header">
                         <p>Click to preview • Double-click for thumbnail • Hover to delete</p>
-                        <button class="upload-btn" onclick="triggerImageUpload()">
-                            📤 Upload
-                        </button>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="upload-btn" onclick="triggerImageUpload()">
+                                📤 Upload
+                            </button>
+                            <button class="upload-btn" onclick="syncImages()" style="background:var(--accent-green);">
+                                🔄 Sync to Listings
+                            </button>
+                        </div>
                     </div>
                 <div class="images-grid">
             `;
@@ -2718,6 +2993,30 @@
         
         function triggerImageUpload() {
             document.getElementById('image-upload-input').click();
+        }
+        
+        async function syncImages() {
+            const key = currentTour?.key || currentTour?.id;
+            if (!key) {
+                showToast('No tour selected', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/api/tour/${key}/sync-images`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showToast(`✅ Synced ${data.images_synced} images to listing!`, 'success');
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || 'Failed to sync images', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to sync images: ' + err.message, 'error');
+            }
         }
         
         // Drag and Drop handlers for images

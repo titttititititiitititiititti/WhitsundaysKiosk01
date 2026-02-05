@@ -6446,6 +6446,49 @@ def set_tour_thumbnail(key):
         'thumbnail': f"/{thumb_path}".replace("\\", "/")
     })
 
+def sync_tour_images_to_csv(company, tid):
+    """Sync images from folder to CSV image_urls field"""
+    folder = f"static/tour_images/{company}/{tid}"
+    if not os.path.isdir(folder):
+        return []
+    
+    extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.JPG', '.JPEG', '.PNG', '.WEBP', '.GIF']
+    image_paths = []
+    
+    # Collect all images from folder
+    for filename in sorted(os.listdir(folder)):
+        if any(filename.endswith(ext) for ext in extensions):
+            # Skip thumbnails - they're handled separately
+            if filename.lower().startswith('thumbnail'):
+                continue
+            image_paths.append(f"static/tour_images/{company}/{tid}/{filename}")
+    
+    # Update CSV with new image_urls
+    csv_file = find_company_csv(company)
+    if csv_file and os.path.exists(csv_file):
+        try:
+            rows = []
+            fieldnames = None
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                fieldnames = reader.fieldnames
+                for row in reader:
+                    if row.get('id') == tid:
+                        # Update image_urls with all folder images
+                        row['image_urls'] = ','.join(image_paths)
+                        print(f"[Sync] Updated image_urls for {tid}: {len(image_paths)} images")
+                    rows.append(row)
+            
+            # Write back
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+        except Exception as e:
+            print(f"[Sync] Error updating CSV: {e}")
+    
+    return image_paths
+
 @app.route('/admin/api/tour/<key>/images/upload', methods=['POST'])
 def upload_tour_images(key):
     """API endpoint to upload images for a tour"""
@@ -6487,10 +6530,14 @@ def upload_tour_images(key):
             file.save(filepath)
             uploaded += 1
     
+    # IMPORTANT: Sync images to CSV so they appear in listings
+    image_paths = sync_tour_images_to_csv(company, tid)
+    
     return jsonify({
         'success': True,
         'uploaded': uploaded,
-        'folder': folder
+        'folder': folder,
+        'total_images': len(image_paths)
     })
 
 @app.route('/admin/api/tour/<key>/images/delete', methods=['POST'])
@@ -6524,9 +6571,88 @@ def delete_tour_image(key):
     
     try:
         os.remove(image_path)
+        # Sync remaining images to CSV
+        sync_tour_images_to_csv(company, tid)
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/api/tour/<key>/sync-images', methods=['POST'])
+def sync_images_endpoint(key):
+    """API endpoint to sync folder images to CSV"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    image_paths = sync_tour_images_to_csv(company, tid)
+    return jsonify({
+        'success': True,
+        'images_synced': len(image_paths),
+        'images': image_paths
+    })
+
+@app.route('/admin/api/tour/<key>/video-urls', methods=['GET', 'POST'])
+def tour_video_urls(key):
+    """API endpoint to get/set video URLs for a tour"""
+    try:
+        company, tid = key.split('__', 1)
+    except ValueError:
+        return jsonify({'error': 'Invalid tour key'}), 400
+    
+    csv_file = find_company_csv(company)
+    if not csv_file:
+        return jsonify({'error': f'Company not found: {company}'}), 404
+    
+    if request.method == 'GET':
+        # Return current video URLs
+        try:
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get('id') == tid:
+                        video_urls = row.get('video_urls', '')
+                        return jsonify({
+                            'video_urls': video_urls,
+                            'video_list': [v.strip() for v in video_urls.split(',') if v.strip()]
+                        })
+            return jsonify({'error': 'Tour not found'}), 404
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    
+    else:  # POST - update video URLs
+        data = request.get_json()
+        video_urls = data.get('video_urls', '')
+        
+        try:
+            rows = []
+            fieldnames = None
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                fieldnames = reader.fieldnames
+                
+                # Add video_urls column if it doesn't exist
+                if 'video_urls' not in fieldnames:
+                    fieldnames = list(fieldnames) + ['video_urls']
+                
+                for row in reader:
+                    if row.get('id') == tid:
+                        row['video_urls'] = video_urls
+                        print(f"[Video] Updated video_urls for {tid}: {video_urls}")
+                    rows.append(row)
+            
+            # Write back
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+            
+            return jsonify({
+                'success': True,
+                'video_urls': video_urls
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
 
 @app.route('/admin/api/tour/<key>/delete', methods=['DELETE'])
 def delete_tour(key):
