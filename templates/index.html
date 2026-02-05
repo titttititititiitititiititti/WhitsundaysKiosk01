@@ -26028,15 +26028,18 @@
               
               const videoSection = document.createElement('section');
               videoSection.className = 'tour-videos-section';
-              videoSection.innerHTML = '<h3>🎬 Tour Videos</h3>';
+              videoSection.style.cssText = 'width:90%;max-width:900px;margin:30px auto;padding:35px 40px 45px;background:#ffffff;border-radius:24px;box-shadow:0 8px 40px rgba(0,0,0,0.12);';
+              videoSection.innerHTML = '<h3 style="font-size:1.8em;color:#0077b6;margin-bottom:25px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;">🎬 Tour Videos</h3>';
               
               const videoGrid = document.createElement('div');
               videoGrid.className = 'video-grid';
+              videoGrid.style.cssText = 'display:flex;flex-direction:column;gap:20px;align-items:center;width:100%;';
               
               data.video_urls.forEach((videoUrl, idx) => {
                 console.log('🎬 Processing video URL:', videoUrl);
                 const videoWrapper = document.createElement('div');
                 videoWrapper.className = 'video-wrapper' + (data.video_urls.length === 1 ? ' single-video' : '');
+                videoWrapper.style.cssText = 'position:relative;width:100%;padding-bottom:56.25%;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 6px 30px rgba(0,0,0,0.3);';
                 
                 // Detect video type and create appropriate embed
                 const embedHtml = createVideoEmbed(videoUrl, data.name, idx);
