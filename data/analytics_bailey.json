@@ -7697,9 +7697,81 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_ba128ade85f8_1770252598",
+      "account": "bailey",
+      "started_at": "2026-02-05T10:49:58.619671",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T10:49:58.619671",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-05T10:50:00.442473",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-05T10:50:01.577087",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T10:50:26.511135",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T10:52:30.740487",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T10:52:30.740487",
+      "duration_seconds": 152.120816
+    },
+    {
+      "session_id": "session_1dc593e58ab1_1770252752",
+      "account": "bailey",
+      "started_at": "2026-02-05T10:52:32.294460",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T10:52:32.294460",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-05T10:45:40.811364"
+  "last_updated": "2026-02-05T10:52:32.295454"
 }

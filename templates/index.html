@@ -8371,6 +8371,64 @@
       align-items: center;
       background: transparent;
     }
+    
+    /* Video Section Styles */
+    .tour-videos-section {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto 30px;
+      padding: 0 20px;
+    }
+    
+    .tour-videos-section h3 {
+      font-size: 1.3em;
+      color: #0077b6;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      background: #1a1a2e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .video-wrapper iframe,
+    .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 12px;
+    }
+    
+    .video-wrapper.single-video {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    @media (max-width: 768px) {
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+      .tour-videos-section {
+        padding: 0 15px;
+      }
+    }
     .carousel {
       position: relative;
       width: 100%;
@@ -24250,6 +24308,45 @@
       return false;
     }
     
+    // Create video embed HTML from URL (supports YouTube, Vimeo, direct MP4, Cloudflare)
+    function createVideoEmbed(videoUrl, tourName, index) {
+      if (!videoUrl) return '';
+      
+      // YouTube detection (various formats)
+      const youtubeMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      if (youtubeMatch) {
+        const videoId = youtubeMatch[1];
+        return `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" 
+                  title="${tourName || 'Tour video'} - Video ${index + 1}" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen loading="lazy"></iframe>`;
+      }
+      
+      // Vimeo detection
+      const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (vimeoMatch) {
+        const videoId = vimeoMatch[1];
+        return `<iframe src="https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0" 
+                  title="${tourName || 'Tour video'} - Video ${index + 1}" 
+                  allow="autoplay; fullscreen; picture-in-picture" 
+                  allowfullscreen loading="lazy"></iframe>`;
+      }
+      
+      // Direct video file (MP4, WebM, etc.) - local or Cloudflare/CDN hosted
+      if (videoUrl.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i) || videoUrl.includes('/video/') || videoUrl.includes('cloudflare')) {
+        return `<video controls preload="metadata" playsinline>
+                  <source src="${videoUrl}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>`;
+      }
+      
+      // Fallback: assume it's an embeddable iframe URL
+      return `<iframe src="${videoUrl}" 
+                title="${tourName || 'Tour video'} - Video ${index + 1}" 
+                allow="autoplay; fullscreen" 
+                allowfullscreen loading="lazy"></iframe>`;
+    }
+    
     // Filter pricing tiers based on season (for Cruise Whitsundays)
     function filterPricingBySeason(priceTiers, companyKey) {
       // Only apply seasonal filtering for Cruise Whitsundays
@@ -25873,6 +25970,29 @@
             hint.textContent = 'Tap image for full view';
             hintWrapper.appendChild(hint);
             galleryContainer.appendChild(hintWrapper);
+            
+            // Add videos section if tour has video URLs
+            if (data.video_urls && data.video_urls.length > 0) {
+              const videoSection = document.createElement('div');
+              videoSection.className = 'tour-videos-section';
+              videoSection.innerHTML = '<h3>🎬 Tour Videos</h3>';
+              
+              const videoGrid = document.createElement('div');
+              videoGrid.className = 'video-grid';
+              
+              data.video_urls.forEach((videoUrl, idx) => {
+                const videoWrapper = document.createElement('div');
+                videoWrapper.className = 'video-wrapper' + (data.video_urls.length === 1 ? ' single-video' : '');
+                
+                // Detect video type and create appropriate embed
+                const embedHtml = createVideoEmbed(videoUrl, data.name, idx);
+                videoWrapper.innerHTML = embedHtml;
+                videoGrid.appendChild(videoWrapper);
+              });
+              
+              videoSection.appendChild(videoGrid);
+              galleryContainer.appendChild(videoSection);
+            }
             
             galleryHtml = ''; // Already added to DOM
             

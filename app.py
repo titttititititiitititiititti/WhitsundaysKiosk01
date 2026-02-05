@@ -2909,6 +2909,13 @@ def api_tours():
         # Load images lazily for this tour
         thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
         
+        # Parse video URLs if present
+        video_urls = tour.get('video_urls', '')
+        if video_urls and isinstance(video_urls, str):
+            video_urls = [v.strip() for v in video_urls.split(',') if v.strip()]
+        else:
+            video_urls = []
+        
         tour_data = {
             'key': tour['key'],
             'name': tour['name'],
@@ -2924,6 +2931,7 @@ def api_tours():
             'includes': tour.get('includes', ''),
             'highlights': tour.get('highlights', ''),
             'gallery': gallery,
+            'video_urls': video_urls,  # Video URLs for embedded playback
             'promotion': tour.get('promotion'),  # Include promotion status
             'is_promoted': tour.get('is_promoted', False),
             'review_rating': tour.get('review_rating', 0),
@@ -3523,7 +3531,7 @@ def tour_detail(key):
                             
                             if images_enabled:
                                 # Build gallery from image_urls, put thumbnail first if present
-                                # Filter out broken image paths
+                                # Supports HYBRID: local paths AND remote URLs (http/https)
                                 image_urls = []
                                 thumb = find_thumbnail(company, tid, row.get('name', ''))
                                 if row.get('image_urls'):
@@ -3531,15 +3539,24 @@ def tour_detail(key):
                                         img_path = img.strip()
                                         if not img_path:
                                             continue
-                                        # Check if file actually exists before adding to gallery
-                                        if os.path.exists(img_path):
-                                            img_url = '/' + img_path
-                                            if img_url != thumb:
+                                        # Normalize URL - supports both local and remote
+                                        img_url = normalize_image_url(img_path)
+                                        # For local paths, check if file exists
+                                        if img_url.startswith('/') and not img_url.startswith('//'):
+                                            local_path = img_url.lstrip('/')
+                                            if os.path.exists(local_path) and img_url != thumb:
                                                 image_urls.append(img_url)
+                                        elif img_url.startswith('http'):
+                                            # Remote URL - include without checking
+                                            image_urls.append(img_url)
                                 gallery = [thumb] + image_urls if thumb else image_urls
                             else:
                                 # Images disabled - use random placeholders
                                 gallery = get_random_placeholder_gallery(5)
+                            
+                            # Parse video URLs
+                            video_urls_raw = row.get('video_urls', '')
+                            video_urls = [v.strip() for v in video_urls_raw.split(',') if v.strip()] if video_urls_raw else []
                             
                             # Load full review data for detail page
                             review_data = load_reviews(company, tid)
@@ -3568,6 +3585,7 @@ def tour_detail(key):
                                 'link_more_info': row.get('link_more_info', ''),
                                 'booking_connected': row.get('booking_connected', '0'),
                                 'gallery': gallery,
+                                'video_urls': video_urls,  # Video URLs for embedded playback
                                 'uses_placeholder_images': not images_enabled,
                                 'important_information': row.get('important_information', ''),
                                 'what_to_bring': row.get('what_to_bring', ''),
