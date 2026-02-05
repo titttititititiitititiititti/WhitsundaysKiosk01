@@ -5713,6 +5713,33 @@
       opacity: 0.7;
     }
     
+    /* Phone/Send to Phone button - PURPLE */
+    .swipe-btn-phone {
+      background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 50%, #7d3c98 100%);
+      color: white;
+    }
+    
+    .swipe-btn-phone:before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #bb8fce, #9b59b6);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      filter: blur(15px);
+    }
+    
+    .swipe-btn-phone:hover {
+      transform: scale(1.15);
+      box-shadow: 0 25px 60px rgba(155, 89, 182, 0.6);
+    }
+    
+    .swipe-btn-phone:hover:before {
+      opacity: 0.7;
+    }
+    
       .swipe-btn-icon {
         font-size: clamp(2em, 3vw, 2.8em);
       line-height: 1;
@@ -14425,7 +14452,9 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
-              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('KRW')"><span style="font-weight:700;color:#0077b6;">₩</span><span style="font-weight:600;color:#0a2540;">KRW</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('INR')"><span style="font-weight:700;color:#0077b6;">₹</span><span style="font-weight:600;color:#0a2540;">INR</span></div>
             </div>
             </div>
           <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
@@ -14556,6 +14585,10 @@
           <button class="swipe-btn swipe-btn-reject" id="reject-btn">
             <span class="swipe-btn-icon">✕</span>
             <span class="swipe-btn-text">Not For Me</span>
+          </button>
+          <button class="swipe-btn swipe-btn-phone" id="swipe-phone-btn">
+            <span class="swipe-btn-icon">📱</span>
+            <span class="swipe-btn-text">Send to Phone</span>
           </button>
           <button class="swipe-btn swipe-btn-accept" id="accept-btn">
             <span class="swipe-btn-icon">✓</span>
@@ -14838,7 +14871,9 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
-              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('KRW')"><span style="font-weight:700;color:#0077b6;">₩</span><span style="font-weight:600;color:#0a2540;">KRW</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectHomeCurrency('INR')"><span style="font-weight:700;color:#0077b6;">₹</span><span style="font-weight:600;color:#0a2540;">INR</span></div>
               </div>
               </div>
           <!-- Map View Button -->
@@ -15282,7 +15317,9 @@
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('GBP')"><span style="font-weight:700;color:#0077b6;">£</span><span style="font-weight:600;color:#0a2540;">GBP</span></div>
             <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('CNY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">CNY</span></div>
-            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('JPY')"><span style="font-weight:700;color:#0077b6;">¥</span><span style="font-weight:600;color:#0a2540;">JPY</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectDetailCurrency('KRW')"><span style="font-weight:700;color:#0077b6;">₩</span><span style="font-weight:600;color:#0a2540;">KRW</span></div>
+            <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectDetailCurrency('INR')"><span style="font-weight:700;color:#0077b6;">₹</span><span style="font-weight:600;color:#0a2540;">INR</span></div>
             </div>
         </div>
       </div>
@@ -17762,7 +17799,7 @@
       header.innerHTML = `
         ${placeholderBadge}
         <h2>${tour.name}</h2>
-        <div class="company-chip">${tour.company_name || tour.company || ''}</div>
+        <div class="company-chip">${(tour.company_name || tour.company || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
       `;
       stack.appendChild(header);
       
@@ -18161,6 +18198,16 @@
           window.cameFromAIAssistant = false;
           openTourDetail(tour.key);
         }
+      }
+    }
+    
+    function sendSwipeTourToPhone() {
+      console.log('[ACTION] Sending tour to phone');
+      
+      if (currentCardIndex < swipeCards.length) {
+        const tour = swipeCards[currentCardIndex];
+        console.log('   📱 Generating QR code for tour:', tour.name);
+        generateQRCodeForTour(tour.key, tour);
       }
     }
     
@@ -21912,6 +21959,7 @@
       
       const rejectBtn = document.getElementById('reject-btn');
       const acceptBtn = document.getElementById('accept-btn');
+      const phoneBtn = document.getElementById('swipe-phone-btn');
       const skipBtn = document.getElementById('skip-to-list-btn');
       
       if (rejectBtn) {
@@ -21927,6 +21975,14 @@
           e.stopPropagation();
           console.log('[CLICK] Accept button clicked');
           acceptCard();
+        });
+      }
+      if (phoneBtn) {
+        phoneBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('[CLICK] Phone button clicked - sending to phone');
+          sendSwipeTourToPhone();
         });
       }
       if (skipBtn) {
@@ -25453,10 +25509,11 @@
           const companyElement = document.getElementById('detail-company');
           const slugFromCompany = (data.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
           const derivedCompanyKey = data.company_key || data.company_slug || key.split('__')[0] || slugFromCompany;
-          companyElement.textContent = '🏢 ' + data.company + ' ›';
+          const formattedCompanyName = (data.company || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          companyElement.textContent = '🏢 ' + formattedCompanyName + ' ›';
           companyElement.style.color = '#ffffff'; // Force white text color
           companyElement.setAttribute('data-company-key', derivedCompanyKey); // Store company key for filtering
-          companyElement.title = 'Click to see all tours by ' + data.company;
+          companyElement.title = 'Click to see all tours by ' + formattedCompanyName;
           
           document.getElementById('detail-summary').textContent = data.summary;
           
