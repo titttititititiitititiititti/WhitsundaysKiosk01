@@ -642,20 +642,21 @@ def load_tour_images(tour, max_images=5):
 
 # Global ChromaDB collection (lazy loaded)
 _chroma_collection = None
+_chroma_client = None
 _openai_client = None
 
 CHROMA_DB_PATH = "data/tour_embeddings"
 CHROMA_COLLECTION_NAME = "tours"
 EMBEDDING_MODEL = "text-embedding-3-small"
 
-def get_chroma_collection():
+def get_chroma_collection(force_reload=False):
     """Get or initialize the ChromaDB collection for semantic search"""
-    global _chroma_collection
+    global _chroma_collection, _chroma_client
     
     if not CHROMA_AVAILABLE:
         return None
     
-    if _chroma_collection is not None:
+    if _chroma_collection is not None and not force_reload:
         return _chroma_collection
     
     try:
@@ -665,12 +666,14 @@ def get_chroma_collection():
             print("[RAG] Run 'python scripts/index_tours_rag.py' to create embeddings")
             return None
         
-        client = chromadb.PersistentClient(path=db_path)
-        _chroma_collection = client.get_collection(CHROMA_COLLECTION_NAME)
+        # Always create a fresh client to pick up any database changes
+        _chroma_client = chromadb.PersistentClient(path=db_path)
+        _chroma_collection = _chroma_client.get_collection(CHROMA_COLLECTION_NAME)
         print(f"[RAG] Loaded {_chroma_collection.count()} tour embeddings")
         return _chroma_collection
     except Exception as e:
         print(f"[RAG] Error loading ChromaDB: {e}")
+        _chroma_collection = None
         return None
 
 def get_query_embedding(text):
@@ -3624,20 +3627,17 @@ def get_similar_tours(key):
     
     print(f"[SIMILAR] Finding similar tours for: {key}")
     
-    collection = get_chroma_collection()
-    if collection is None:
-        print("[SIMILAR] ChromaDB not available")
-        return jsonify({'tours': [], 'error': 'Semantic search not available'})
-    
-    try:
+    # Helper function to perform the actual search
+    def do_search(collection):
         # Get the current tour's embedding from the collection
         result = collection.get(ids=[key], include=['embeddings'])
         
-        if not result or not result['embeddings'] or len(result['embeddings']) == 0:
+        embeddings = result.get('embeddings') if result else None
+        if embeddings is None or len(embeddings) == 0:
             print(f"[SIMILAR] Tour {key} not found in embeddings")
-            return jsonify({'tours': [], 'error': 'Tour not found in index'})
+            return {'tours': [], 'error': 'Tour not found in index'}
         
-        tour_embedding = result['embeddings'][0]
+        tour_embedding = embeddings[0]
         
         # Query for similar tours (get extra to filter out the current tour)
         similar = collection.query(
@@ -3647,7 +3647,7 @@ def get_similar_tours(key):
         )
         
         if not similar or not similar['ids'] or not similar['ids'][0]:
-            return jsonify({'tours': []})
+            return {'tours': []}
         
         # Filter out the current tour and convert to tour data
         similar_tours = []
@@ -3684,9 +3684,34 @@ def get_similar_tours(key):
                 break
         
         print(f"[SIMILAR] Found {len(similar_tours)} similar tours")
-        return jsonify({'tours': similar_tours})
-        
+        return {'tours': similar_tours}
+    
+    # Try with cached collection first
+    collection = get_chroma_collection()
+    if collection is None:
+        print("[SIMILAR] ChromaDB not available")
+        return jsonify({'tours': [], 'error': 'Semantic search not available'})
+    
+    try:
+        result = do_search(collection)
+        return jsonify(result)
     except Exception as e:
+        # If error mentions "does not exist", try reloading the collection
+        error_msg = str(e)
+        if "does not exist" in error_msg or "Collection" in error_msg:
+            print(f"[SIMILAR] Collection error, reloading: {e}")
+            collection = get_chroma_collection(force_reload=True)
+            if collection is None:
+                return jsonify({'tours': [], 'error': 'Could not reload ChromaDB'})
+            try:
+                result = do_search(collection)
+                return jsonify(result)
+            except Exception as e2:
+                print(f"[SIMILAR] Error after reload: {e2}")
+                import traceback
+                traceback.print_exc()
+                return jsonify({'tours': [], 'error': str(e2)})
+        
         print(f"[SIMILAR] Error: {e}")
         import traceback
         traceback.print_exc()
