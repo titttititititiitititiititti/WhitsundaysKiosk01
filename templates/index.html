@@ -28210,12 +28210,22 @@
     
     // Translation helper function with inline English fallbacks
     function t(key) {
+      // Debug: Check if translations are loaded
+      if (!uiTranslations) {
+        console.warn('⚠️ t() called but uiTranslations is undefined! Key:', key);
+        return key;
+      }
+      if (!currentLanguage) {
+        console.warn('⚠️ t() called but currentLanguage is undefined! Key:', key);
+        currentLanguage = 'en'; // Emergency fallback
+      }
+      
       // First try current language
-      if (uiTranslations && uiTranslations[currentLanguage] && uiTranslations[currentLanguage][key]) {
+      if (uiTranslations[currentLanguage] && uiTranslations[currentLanguage][key]) {
         return uiTranslations[currentLanguage][key];
       }
       // Fallback to English from loaded translations
-      if (uiTranslations && uiTranslations['en'] && uiTranslations['en'][key]) {
+      if (uiTranslations['en'] && uiTranslations['en'][key]) {
         return uiTranslations['en'][key];
       }
       // Final fallback: inline English defaults (for when translations haven't loaded yet)
@@ -28246,7 +28256,25 @@
         'select_all_that_apply': 'Select all that apply',
         'continue': 'Continue',
         'available_tours': 'Available Tours',
-        'tap_to_filter': 'Tap an option above to start filtering'
+        'tap_to_filter': 'Tap an option above to start filtering',
+        // Tour detail sections
+        'important_information': 'Important Information',
+        'what_to_bring': 'What to Bring',
+        'whats_extra': "What's Extra",
+        'whats_included': "What's Included",
+        'highlights': 'Highlights',
+        'ideal_for': 'Ideal For',
+        'itinerary': 'Itinerary',
+        'menu': 'Menu',
+        'about_this_tour': 'About This Tour',
+        'tour_videos': 'Tour Videos',
+        'duration': 'Duration',
+        'times': 'Times',
+        'ages': 'Ages',
+        'not_for_me': 'Not For Me',
+        'send_to_phone': 'Send to My Phone',
+        'tours_by': 'Tours by {company}',
+        'from_price': 'FROM'
       };
       return inlineDefaults[key] || key;
     }
