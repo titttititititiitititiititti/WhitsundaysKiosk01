@@ -2837,7 +2837,7 @@
                             <div class="video-preview ${preview ? '' : 'no-preview'}">
                                 ${preview ? preview : '🎬'}
                             </div>
-                            <input type="text" value="${escapeHtml(url)}" onchange="updateVideoUrl(${index}, this.value)" placeholder="Enter video URL...">
+                            <input type="text" value="${escapeHtml(url)}" oninput="updateVideoUrl(${index}, this.value)" class="video-url-input" data-index="${index}" placeholder="Enter video URL...">
                             <button class="remove-btn" onclick="removeVideoUrl(${index})">✕</button>
                         </div>
                     `;
@@ -2907,9 +2907,22 @@
             }
             const key = `${currentTour.company_name}__${currentTour.id}`;
             
+            // Sync from DOM inputs first (in case oninput didn't fire)
+            const inputs = document.querySelectorAll('.video-url-input');
+            inputs.forEach((input, idx) => {
+                const index = parseInt(input.dataset.index);
+                if (!isNaN(index) && index < currentVideoUrls.length) {
+                    currentVideoUrls[index] = input.value.trim();
+                }
+            });
+            
+            console.log('Saving video URLs:', currentVideoUrls);
+            
             // Filter out empty URLs
             const validUrls = currentVideoUrls.filter(url => url && url.trim());
             const videoUrlsString = validUrls.join(',');
+            
+            console.log('Key:', key, 'URLs to save:', videoUrlsString);
             
             try {
                 const response = await fetch(`/admin/api/tour/${key}/video-urls`, {

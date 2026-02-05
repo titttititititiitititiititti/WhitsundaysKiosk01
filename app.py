@@ -6633,6 +6633,9 @@ def tour_video_urls(key):
         data = request.get_json()
         video_urls = data.get('video_urls', '')
         
+        print(f"[Video Save] Key: {key}, Company: {company}, TourID: {tid}")
+        print(f"[Video Save] Received video_urls: {repr(video_urls)}")
+        
         try:
             rows = []
             fieldnames = None
