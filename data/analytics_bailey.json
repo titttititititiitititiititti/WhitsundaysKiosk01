@@ -9083,16 +9083,132 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T12:34:03.473237",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T12:34:03.473237",
+      "duration_seconds": 120.63715
+    },
+    {
+      "session_id": "session_033da67a4c37_1770258844",
+      "account": "bailey",
+      "started_at": "2026-02-05T12:34:04.205971",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T12:34:04.205971",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T12:36:04.498873",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T12:36:04.498873",
+      "duration_seconds": 120.292902
+    },
+    {
+      "session_id": "session_f2425bc2826c_1770258964",
+      "account": "bailey",
+      "started_at": "2026-02-05T12:36:04.992678",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T12:36:04.992678",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T12:38:05.472689",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T12:38:05.472689",
+      "duration_seconds": 120.480011
+    },
+    {
+      "session_id": "session_954053a72ee1_1770259085",
+      "account": "bailey",
+      "started_at": "2026-02-05T12:38:05.959331",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T12:38:05.959331",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-05T12:38:18.743083",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-05T12:38:19.883492",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T12:38:21.501136",
+          "data": {
+            "tour_name": "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T12:38:36.073281",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "zh",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
       "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-05T12:32:02.838087"
+  "last_updated": "2026-02-05T12:38:36.074792"
 }
