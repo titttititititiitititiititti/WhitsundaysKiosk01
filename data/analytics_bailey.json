@@ -12821,6 +12821,196 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T17:10:55.556820",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T17:10:55.556820",
+      "duration_seconds": 120.858316
+    },
+    {
+      "session_id": "session_26d552461133_1770275457",
+      "account": "bailey",
+      "started_at": "2026-02-05T17:10:57.153760",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T17:10:57.153760",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-05T17:12:02.890668",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-05T17:12:04.217010",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:06.154644",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:07.309015",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:08.490148",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:51.294492",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:52.862511",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-05T17:12:54.869744",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T17:16:40.887932",
+          "data": {
+            "tour_name": "Reefsuites Underwater Accommodation",
+            "company": "Cruise Whitsundays",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T17:16:41.197958",
+          "data": {
+            "tour_name": "Reefsuites Underwater Accommodation",
+            "company": "Cruise Whitsundays",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T17:19:31.477662",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Reefsuites Underwater Accommodation"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T17:19:31.477662",
+      "duration_seconds": 514.323902
+    },
+    {
+      "session_id": "session_d39500ba6b45_1770275972",
+      "account": "bailey",
+      "started_at": "2026-02-05T17:19:32.168446",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T17:19:32.168446",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T17:21:32.589017",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T17:21:32.589017",
+      "duration_seconds": 120.420571
+    },
+    {
+      "session_id": "session_045536b19fe5_1770276094",
+      "account": "bailey",
+      "started_at": "2026-02-05T17:21:34.619777",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T17:21:34.619777",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T17:23:35.497381",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T17:23:35.498927",
+      "duration_seconds": 120.87915
+    },
+    {
+      "session_id": "session_448da8310bc8_1770276216",
+      "account": "bailey",
+      "started_at": "2026-02-05T17:23:36.391584",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T17:23:36.391584",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -12832,5 +13022,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-05T17:08:54.700500"
+  "last_updated": "2026-02-05T17:23:36.391584"
 }

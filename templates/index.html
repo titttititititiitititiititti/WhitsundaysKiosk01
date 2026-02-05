@@ -15974,6 +15974,11 @@
         "from_price": "FROM",
         "back_to_previous_tour": "← Back to Previous Tour",
         "back_to_home_page": "🏠 Back to Home Page",
+        "customer_reviews": "Customer Reviews",
+        "based_on_reviews": "{count} reviews",
+        "departure_location": "Departure Location",
+        "continue": "Continue",
+        "next_tour": "Next Tour",
         "ai_reef_tours": "🐠 Reef Tours",
         "ai_beach_tours": "🏖️ Beach Tours",
         "ai_sailing": "⛵ Sailing",
@@ -16012,6 +16017,11 @@
         "from_price": "から",
         "back_to_previous_tour": "← 前のツアーに戻る",
         "back_to_home_page": "🏠 ホームに戻る",
+        "customer_reviews": "お客様のレビュー",
+        "based_on_reviews": "{count}件のレビュー",
+        "departure_location": "出発場所",
+        "continue": "続ける",
+        "next_tour": "次のツアー",
         "ai_reef_tours": "🐠 リーフツアー",
         "ai_beach_tours": "🏖️ ビーチツアー",
         "ai_sailing": "⛵ セーリング",
@@ -16050,6 +16060,11 @@
         "from_price": "起价",
         "back_to_previous_tour": "← 返回上一个旅程",
         "back_to_home_page": "🏠 返回主页",
+        "customer_reviews": "顾客评价",
+        "based_on_reviews": "{count}条评价",
+        "departure_location": "出发地点",
+        "continue": "继续",
+        "next_tour": "下一个旅程",
         "ai_reef_tours": "🐠 礁石之旅",
         "ai_beach_tours": "🏖️ 海滩之旅",
         "ai_sailing": "⛵ 帆船",
@@ -16088,6 +16103,11 @@
         "from_price": "부터",
         "back_to_previous_tour": "← 이전 투어로 돌아가기",
         "back_to_home_page": "🏠 홈으로 돌아가기",
+        "customer_reviews": "고객 리뷰",
+        "based_on_reviews": "{count}개의 리뷰",
+        "departure_location": "출발 위치",
+        "continue": "계속",
+        "next_tour": "다음 투어",
         "ai_reef_tours": "🐠 리프 투어",
         "ai_beach_tours": "🏖️ 해변 투어",
         "ai_sailing": "⛵ 세일링",
@@ -16126,6 +16146,11 @@
         "from_price": "AB",
         "back_to_previous_tour": "← Zurück zur vorherigen Tour",
         "back_to_home_page": "🏠 Zurück zur Startseite",
+        "customer_reviews": "Kundenbewertungen",
+        "based_on_reviews": "{count} Bewertungen",
+        "departure_location": "Abfahrtsort",
+        "continue": "Weiter",
+        "next_tour": "Nächste Tour",
         "ai_reef_tours": "🐠 Riff-Touren",
         "ai_beach_tours": "🏖️ Strand-Touren",
         "ai_sailing": "⛵ Segeln",
@@ -16164,6 +16189,11 @@
         "from_price": "À PARTIR DE",
         "back_to_previous_tour": "← Retour à l'excursion précédente",
         "back_to_home_page": "🏠 Retour à l'accueil",
+        "customer_reviews": "Avis clients",
+        "based_on_reviews": "{count} avis",
+        "departure_location": "Lieu de départ",
+        "continue": "Continuer",
+        "next_tour": "Excursion suivante",
         "ai_reef_tours": "🐠 Excursions récif",
         "ai_beach_tours": "🏖️ Excursions plage",
         "ai_sailing": "⛵ Voile",
@@ -16202,6 +16232,11 @@
         "from_price": "से",
         "back_to_previous_tour": "← पिछले टूर पर वापस जाएं",
         "back_to_home_page": "🏠 होम पेज पर वापस जाएं",
+        "customer_reviews": "ग्राहक समीक्षाएं",
+        "based_on_reviews": "{count} समीक्षाएं",
+        "departure_location": "प्रस्थान स्थान",
+        "continue": "जारी रखें",
+        "next_tour": "अगला टूर",
         "ai_reef_tours": "🐠 रीफ टूर",
         "ai_beach_tours": "🏖️ बीच टूर",
         "ai_sailing": "⛵ सेलिंग",
@@ -16240,6 +16275,11 @@
         "from_price": "DESDE",
         "back_to_previous_tour": "← Volver al tour anterior",
         "back_to_home_page": "🏠 Volver a la página principal",
+        "customer_reviews": "Opiniones de clientes",
+        "based_on_reviews": "{count} opiniones",
+        "departure_location": "Lugar de salida",
+        "continue": "Continuar",
+        "next_tour": "Siguiente tour",
         "ai_reef_tours": "🐠 Tours de arrecife",
         "ai_beach_tours": "🏖️ Tours de playa",
         "ai_sailing": "⛵ Navegación",
@@ -17291,6 +17331,13 @@
       // Animate in after a tiny delay to prevent layout shift
       setTimeout(() => {
         continueBtn.style.transition = 'all 0.3s ease';
+        // Scroll down a bit to make the continue button visible
+        const container = document.getElementById('vq-answers');
+        if (container) {
+          setTimeout(() => {
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        }
         continueBtn.style.opacity = '1';
         continueBtn.style.transform = 'translateY(0)';
         
@@ -18184,20 +18231,10 @@
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         
-        // Check if we have a booking link for this tour
-        const bookingLink = getBookingLink(tour.key);
-        
-        if (bookingLink) {
-          // Open booking modal with QR code
-          console.log('   ✅ Found booking link, opening booking modal');
-          openBookingModal(tour.key, tour.name);
-        } else {
-          // No booking link - open tour detail page
-          console.log('   ℹ️ No booking link, opening tour detail page');
-          window.cameFromQuickDecision = true;
-          window.cameFromAIAssistant = false;
-          openTourDetail(tour.key);
-        }
+        // Always go directly to QR code modal - let user scan to continue on phone
+        // This gives them the booking page or tour detail page depending on what's available
+        console.log('   📱 Opening QR code to send tour to phone');
+        generateQRCodeForTour(tour.key, tour);
       }
     }
     
@@ -31214,7 +31251,7 @@
       // Touch events
       document.addEventListener('touchend', function(e) {
         // Don't trigger if touching buttons or interactive elements
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container')) return;
+        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
         
         const touch = e.changedTouches[0];
         handleTap(touch.clientX, touch.clientY);
@@ -31223,7 +31260,7 @@
       // Mouse events (for testing on desktop)
       document.addEventListener('click', function(e) {
         // Don't trigger if clicking buttons or interactive elements
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container')) return;
+        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
         
         handleTap(e.clientX, e.clientY);
       });
