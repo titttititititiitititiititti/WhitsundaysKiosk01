@@ -3616,6 +3616,82 @@ def tour_detail(key):
             continue
     return jsonify({'error': 'Tour not found'}), 404
 
+@app.route('/api/similar-tours/<key>')
+def get_similar_tours(key):
+    """Get similar tours based on RAG embeddings"""
+    language = request.args.get('lang', 'en')
+    n_results = int(request.args.get('n', 3))
+    
+    print(f"[SIMILAR] Finding similar tours for: {key}")
+    
+    collection = get_chroma_collection()
+    if collection is None:
+        print("[SIMILAR] ChromaDB not available")
+        return jsonify({'tours': [], 'error': 'Semantic search not available'})
+    
+    try:
+        # Get the current tour's embedding from the collection
+        result = collection.get(ids=[key], include=['embeddings'])
+        
+        if not result or not result['embeddings'] or len(result['embeddings']) == 0:
+            print(f"[SIMILAR] Tour {key} not found in embeddings")
+            return jsonify({'tours': [], 'error': 'Tour not found in index'})
+        
+        tour_embedding = result['embeddings'][0]
+        
+        # Query for similar tours (get extra to filter out the current tour)
+        similar = collection.query(
+            query_embeddings=[tour_embedding],
+            n_results=n_results + 1,  # +1 to account for the tour itself
+            include=['metadatas', 'distances']
+        )
+        
+        if not similar or not similar['ids'] or not similar['ids'][0]:
+            return jsonify({'tours': []})
+        
+        # Filter out the current tour and convert to tour data
+        similar_tours = []
+        all_tours = load_all_tours(language)
+        tours_by_key = {t['key']: t for t in all_tours}
+        
+        for i, (tour_key, metadata, distance) in enumerate(zip(
+            similar['ids'][0],
+            similar['metadatas'][0],
+            similar['distances'][0]
+        )):
+            # Skip the current tour itself
+            if tour_key == key:
+                continue
+            
+            # Get full tour data
+            tour_data = tours_by_key.get(tour_key)
+            if tour_data:
+                # Load thumbnail
+                thumb, _, _ = load_tour_images(tour_data, max_images=1)
+                
+                similar_tours.append({
+                    'key': tour_key,
+                    'name': tour_data.get('name', metadata.get('name', '')),
+                    'company_name': tour_data.get('company_name', metadata.get('company_name', '')),
+                    'price_adult': tour_data.get('price_adult', metadata.get('price_adult', '')),
+                    'duration': tour_data.get('duration', ''),
+                    'thumbnail': thumb,
+                    'similarity': round((1 - distance) * 100)  # Convert distance to similarity %
+                })
+            
+            # Limit to requested number
+            if len(similar_tours) >= n_results:
+                break
+        
+        print(f"[SIMILAR] Found {len(similar_tours)} similar tours")
+        return jsonify({'tours': similar_tours})
+        
+    except Exception as e:
+        print(f"[SIMILAR] Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'tours': [], 'error': str(e)})
+
 def log_lead_to_csv(booking_data):
     """Log booking lead to CSV file for backup"""
     csv_file = 'leads_log.csv'

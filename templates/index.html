@@ -15357,6 +15357,9 @@
 
       <!-- Additional Info -->
       <div id="detail-info"></div>
+      
+      <!-- Similar Tours Section (populated by RAG) -->
+      <div id="similar-tours-container" style="display: none; width: 90%; max-width: 900px; margin: 0 auto 30px;"></div>
 
       <!-- Fine Print -->
       <section class="fine-print" id="fine-print">
@@ -16018,6 +16021,10 @@
         "full_day": "Full Day", "full_day_hours": "(5-8 hours)",
         "multi_day": "Multi-day", "multi_day_adventure": "Adventure",
         "no_preference": "No preference",
+        "show_me_everything": "Show me everything",
+        "similar_tours_title": "Similar Tours You Might Like",
+        "match": "match",
+        "showing_filtered_tours": "Showing filtered tours",
         "family_question": "Are you traveling with children?",
         "family_with_kids": "Family with kids", "adults_only": "Adults only",
         "activity_question": "What type of adventure excites you?",
@@ -16092,6 +16099,10 @@
         "full_day": "終日", "full_day_hours": "(5-8時間)",
         "multi_day": "複数日", "multi_day_adventure": "アドベンチャー",
         "no_preference": "特になし",
+        "show_me_everything": "すべて見る",
+        "similar_tours_title": "おすすめの類似ツアー",
+        "match": "一致",
+        "showing_filtered_tours": "フィルター結果を表示中",
         "family_question": "お子様連れですか？",
         "family_with_kids": "子供連れ", "adults_only": "大人のみ",
         "activity_question": "どんな冒険がお好みですか？",
@@ -16166,6 +16177,10 @@
         "full_day": "全天", "full_day_hours": "(5-8小时)",
         "multi_day": "多日", "multi_day_adventure": "探险",
         "no_preference": "无偏好",
+        "show_me_everything": "显示全部",
+        "similar_tours_title": "您可能喜欢的类似旅程",
+        "match": "匹配",
+        "showing_filtered_tours": "显示筛选结果",
         "family_question": "您带孩子吗？",
         "family_with_kids": "带孩子", "adults_only": "仅成人",
         "activity_question": "您喜欢什么类型的冒险？",
@@ -16240,6 +16255,10 @@
         "full_day": "하루종일", "full_day_hours": "(5-8시간)",
         "multi_day": "여러 날", "multi_day_adventure": "어드벤처",
         "no_preference": "상관없음",
+        "show_me_everything": "모두 보기",
+        "similar_tours_title": "좋아하실 만한 유사 투어",
+        "match": "일치",
+        "showing_filtered_tours": "필터 결과 표시 중",
         "family_question": "아이와 함께 여행하시나요?",
         "family_with_kids": "아이 동반", "adults_only": "성인만",
         "activity_question": "어떤 모험을 원하시나요?",
@@ -16314,6 +16333,10 @@
         "full_day": "Ganzer Tag", "full_day_hours": "(5-8 Stunden)",
         "multi_day": "Mehrtägig", "multi_day_adventure": "Abenteuer",
         "no_preference": "Keine Präferenz",
+        "show_me_everything": "Alles anzeigen",
+        "similar_tours_title": "Ähnliche Touren, die Ihnen gefallen könnten",
+        "match": "Übereinstimmung",
+        "showing_filtered_tours": "Gefilterte Touren anzeigen",
         "family_question": "Reisen Sie mit Kindern?",
         "family_with_kids": "Mit Kindern", "adults_only": "Nur Erwachsene",
         "activity_question": "Welche Art von Abenteuer reizt Sie?",
@@ -16388,6 +16411,10 @@
         "full_day": "Journée complète", "full_day_hours": "(5-8 heures)",
         "multi_day": "Plusieurs jours", "multi_day_adventure": "Aventure",
         "no_preference": "Pas de préférence",
+        "show_me_everything": "Tout afficher",
+        "similar_tours_title": "Excursions similaires qui pourraient vous plaire",
+        "match": "correspondance",
+        "showing_filtered_tours": "Affichage des excursions filtrées",
         "family_question": "Voyagez-vous avec des enfants?",
         "family_with_kids": "Avec enfants", "adults_only": "Adultes uniquement",
         "activity_question": "Quel type d'aventure vous intéresse?",
@@ -16462,6 +16489,10 @@
         "full_day": "पूरा दिन", "full_day_hours": "(5-8 घंटे)",
         "multi_day": "कई दिन", "multi_day_adventure": "साहसिक",
         "no_preference": "कोई प्राथमिकता नहीं",
+        "show_me_everything": "सब कुछ दिखाएं",
+        "similar_tours_title": "आपको पसंद आने वाले समान टूर",
+        "match": "मिलान",
+        "showing_filtered_tours": "फ़िल्टर किए गए टूर दिखा रहे हैं",
         "family_question": "क्या आप बच्चों के साथ यात्रा कर रहे हैं?",
         "family_with_kids": "बच्चों के साथ", "adults_only": "केवल वयस्क",
         "activity_question": "आपको किस प्रकार का रोमांच पसंद है?",
@@ -16536,6 +16567,10 @@
         "full_day": "Día completo", "full_day_hours": "(5-8 horas)",
         "multi_day": "Varios días", "multi_day_adventure": "Aventura",
         "no_preference": "Sin preferencia",
+        "show_me_everything": "Mostrar todo",
+        "similar_tours_title": "Tours similares que te pueden gustar",
+        "match": "coincidencia",
+        "showing_filtered_tours": "Mostrando tours filtrados",
         "family_question": "¿Viajas con niños?",
         "family_with_kids": "Con niños", "adults_only": "Solo adultos",
         "activity_question": "¿Qué tipo de aventura te emociona?",
@@ -25071,6 +25106,98 @@
       
       // Set up footer button handlers
       setupFooterButtons(key, data);
+      
+      // Load similar tours using RAG (only in Browse All Tours mode, not Quick Decision)
+      if (!window.cameFromQuickDecision) {
+        loadSimilarTours(key);
+      }
+    }
+    
+    // Load and display similar tours based on RAG embeddings
+    async function loadSimilarTours(tourKey) {
+      console.log('🔍 Loading similar tours for:', tourKey);
+      
+      const container = document.getElementById('similar-tours-container');
+      if (!container) {
+        console.log('   Similar tours container not found');
+        return;
+      }
+      
+      // Show loading state
+      container.innerHTML = `
+        <div class="similar-tours-section" style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+          <h3 style="color: #0077b6; font-size: 1.3em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            ✨ ${t('similar_tours_title') || 'Similar Tours You Might Like'}
+          </h3>
+          <div style="text-align: center; padding: 20px; color: #666;">
+            <span style="display: inline-block; animation: pulse 1.5s infinite;">Loading recommendations...</span>
+          </div>
+        </div>
+      `;
+      container.style.display = 'block';
+      
+      try {
+        const response = await fetch(`/api/similar-tours/${tourKey}?lang=${currentLanguage}&n=3`);
+        const data = await response.json();
+        
+        if (!data.tours || data.tours.length === 0) {
+          console.log('   No similar tours found');
+          container.style.display = 'none';
+          return;
+        }
+        
+        console.log('   Found', data.tours.length, 'similar tours');
+        
+        // Build similar tours HTML
+        let toursHtml = data.tours.map(tour => {
+          const formattedCompany = (tour.company_name || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          const priceDisplay = tour.price_adult ? convertPrice(tour.price_adult) : '';
+          
+          return `
+            <div class="similar-tour-card" onclick="openTourDetail('${tour.key}')" style="
+              cursor: pointer;
+              background: white;
+              border-radius: 16px;
+              overflow: hidden;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+              transition: transform 0.2s, box-shadow 0.2s;
+              flex: 1;
+              min-width: 250px;
+              max-width: 350px;
+            " onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)';">
+              <div style="position: relative; height: 150px; background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);">
+                ${tour.thumbnail ? `<img src="${tour.thumbnail}" alt="${tour.name}" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
+                <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,119,182,0.9); color: white; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9em;">
+                  ${tour.similarity}% ${t('match') || 'match'}
+                </div>
+              </div>
+              <div style="padding: 15px;">
+                <div style="color: #0077b6; font-size: 0.8em; font-weight: 600; margin-bottom: 5px;">${formattedCompany}</div>
+                <h4 style="margin: 0 0 10px 0; font-size: 1em; color: #1a1a2e; line-height: 1.3;">${tour.name}</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  ${tour.duration ? `<span style="color: #666; font-size: 0.85em;">⏱️ ${tour.duration}</span>` : '<span></span>'}
+                  ${priceDisplay ? `<span style="color: #0077b6; font-weight: 700; font-size: 1.1em;">${priceDisplay}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        container.innerHTML = `
+          <div class="similar-tours-section" style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <h3 style="color: #0077b6; font-size: 1.3em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+              ✨ ${t('similar_tours_title') || 'Similar Tours You Might Like'}
+            </h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+              ${toursHtml}
+            </div>
+          </div>
+        `;
+        
+      } catch (error) {
+        console.error('Error loading similar tours:', error);
+        container.style.display = 'none';
+      }
     }
     
     // Clean up bracket-formatted strings and convert to readable lists
@@ -28277,7 +28404,11 @@
         'not_for_me': 'Not For Me',
         'send_to_phone': 'Send to My Phone',
         'tours_by': 'Tours by {company}',
-        'from_price': 'FROM'
+        'from_price': 'FROM',
+        'show_me_everything': 'Show me everything',
+        'similar_tours_title': 'Similar Tours You Might Like',
+        'match': 'match',
+        'showing_filtered_tours': 'Showing filtered tours'
       };
       return inlineDefaults[key] || key;
     }
