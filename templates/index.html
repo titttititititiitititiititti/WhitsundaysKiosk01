@@ -7704,8 +7704,10 @@
       position: relative;
       z-index: 10000000 !important;
       background: white;
-      border-radius: 18px;
-      padding: 30px 25px;
+      border-radius: 24px;
+      padding: 40px 50px;
+      min-width: 420px;
+      max-width: 500px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
       max-width: 350px;
       width: 85%;
@@ -7730,16 +7732,18 @@
     }
     
     .qr-card h2 {
-      font-size: 1.5em;
+      font-size: 1.8em;
       font-weight: 700;
       color: #0077b6;
-      margin: 0 0 8px 0;
+      margin: 0 0 12px 0;
+      text-align: center;
     }
     
     .qr-subtitle {
-      font-size: 0.95em;
-      color: #666;
-      margin: 0 0 15px 0;
+      font-size: 1.1em;
+      color: #555;
+      margin: 0 0 20px 0;
+      text-align: center;
       line-height: 1.5;
     }
     
@@ -7748,10 +7752,12 @@
       align-items: center;
       justify-content: center;
       padding: 30px;
-      background: #f8f9fa;
-      border-radius: 18px;
-      margin: 10px 0;
-      min-height: 300px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #f0f4f8 100%);
+      border-radius: 20px;
+      margin: 15px 0;
+      min-height: 280px;
+      border: 3px solid #0077b6;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
     }
     
     .qr-code-wrapper canvas,
@@ -7764,32 +7770,35 @@
     }
     
     .qr-help-text {
-      font-size: 1.2em;
-      color: #888;
-      margin: 0;
+      font-size: 1em;
+      color: #666;
+      margin: 15px 0 5px 0;
+      text-align: center;
       font-style: italic;
     }
     
     .qr-actions {
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 20px;
     }
     
     .qr-actions .btn-primary {
       width: 100% !important;
       max-width: none !important;
-      padding: 22px 40px;
-      font-size: 1.5em;
-      min-height: 75px;
+      padding: 20px 40px;
+      font-size: 1.3em;
+      min-height: 65px;
       flex-shrink: 1;
+      border-radius: 16px;
     }
     
     .btn-ghost {
-      padding: 18px 40px;
+      padding: 16px 40px;
       background: transparent;
-      border: none;
+      border: 2px solid #ddd;
+      border-radius: 14px;
       font-size: 1.3em;
       font-weight: 600;
       color: #666;
@@ -8868,11 +8877,11 @@
     
     .qr-modal-close {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 32px;
-      height: 32px;
-      font-size: 1.3em;
+      top: 15px;
+      right: 15px;
+      width: 38px;
+      height: 38px;
+      font-size: 1.5em;
       line-height: 1;
       cursor: pointer;
       color: #666;
@@ -14560,7 +14569,7 @@
     <div class="page newcomer-info-page" id="newcomer-info-page">
       <header class="kiosk-header newcomer-header">
         <div class="header-left">
-          <button class="back-button newcomer-back-btn" onclick="closeNewcomerInfo()">← Back</button>
+          <button class="back-button newcomer-back-btn" onclick="closeNewcomerInfo()" style="width:60px;height:60px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:28px;">←</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -15821,11 +15830,11 @@
       </p>
       
       <!-- Clear instructions for older users -->
-      <div style="background: linear-gradient(135deg, #e8f4fd 0%, #d1e9f9 100%); padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; text-align: center;">
-        <div style="font-size: 1.1em; color: #0077b6; font-weight: 600;">
+      <div style="background: linear-gradient(135deg, #e8f4fd 0%, #d1e9f9 100%); padding: 16px 24px; border-radius: 14px; margin-bottom: 20px; text-align: center; border: 2px solid rgba(0,119,182,0.15);">
+        <div style="font-size: 1.2em; color: #0077b6; font-weight: 600;">
           📱 How to scan:
         </div>
-        <div style="font-size: 0.95em; color: #333; margin-top: 6px;">
+        <div style="font-size: 1em; color: #333; margin-top: 8px; line-height: 1.5;">
           Open your phone's <strong>Camera app</strong> and point it at the code below
         </div>
       </div>
