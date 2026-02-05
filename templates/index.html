@@ -18777,13 +18777,16 @@
       }
       
       // Add video section if videos exist
+      console.log('🎬 [Quick Decision] video_urls check:', fullTourData.video_urls, 'Type:', typeof fullTourData.video_urls, 'Length:', fullTourData.video_urls ? fullTourData.video_urls.length : 0);
       if (fullTourData.video_urls && fullTourData.video_urls.length > 0) {
+        console.log('🎬 [Quick Decision] Adding video section with', fullTourData.video_urls.length, 'videos');
         detailsHtml += `
-          <div class="swipe-detail-section description-section">
-            <h3>🎬 ${t('tour_videos')}</h3>
+          <div class="swipe-detail-section description-section" style="background: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h3 style="color: #0077b6; margin-bottom: 20px;">🎬 ${t('tour_videos')}</h3>
             <div class="swipe-video-grid" style="display: grid; gap: 15px;">
         `;
         fullTourData.video_urls.forEach((videoUrl, idx) => {
+          console.log('🎬 [Quick Decision] Processing video URL:', videoUrl);
           const embedHtml = createVideoEmbed(videoUrl, fullTourData.name || 'Tour', idx);
           detailsHtml += `
             <div class="swipe-video-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
@@ -18795,6 +18798,8 @@
             </div>
           </div>
         `;
+      } else {
+        console.log('🎬 [Quick Decision] No videos to display');
       }
       
       if (fullTourData.reviews && fullTourData.reviews.overall_rating > 0 && fullTourData.reviews.review_count > 0) {
