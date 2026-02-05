@@ -8318,6 +8318,113 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-05T11:34:43.581428",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-05T11:34:44.628821",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T11:34:53.047693",
+          "data": {
+            "tour_name": "New Horizon 2D2N",
+            "company": "Sailing-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T11:36:46.682219",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T11:37:13.012775",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T11:37:19.006111",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T11:40:52.505404",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "New Horizon 2D2N",
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T11:40:52.505404",
+      "duration_seconds": 453.729489
+    },
+    {
+      "session_id": "session_b87a17ad639d_1770255652",
+      "account": "bailey",
+      "started_at": "2026-02-05T11:40:53.027183",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T11:40:53.027183",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T11:42:53.468971",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T11:42:53.468971",
+      "duration_seconds": 120.441788
+    },
+    {
+      "session_id": "session_686c91d2cf65_1770255774",
+      "account": "bailey",
+      "started_at": "2026-02-05T11:42:54.795806",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T11:42:54.795806",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -8329,5 +8436,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-05T11:33:18.776423"
+  "last_updated": "2026-02-05T11:42:54.800206"
 }

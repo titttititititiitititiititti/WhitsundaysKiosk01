@@ -15912,7 +15912,9 @@
         "book_now": "Book Now", "share_tour": "Share Tour", "send_to_phone": "Send to My Phone",
         "select_all_that_apply": "Select all that apply",
         "tours_by": "Tours by {company}",
-        "from_price": "FROM"
+        "from_price": "FROM",
+        "back_to_previous_tour": "← Back to Previous Tour",
+        "back_to_home_page": "🏠 Back to Home Page"
       },
       "ja": {
         "code": "ja", "name": "日本語", "flag": "🇯🇵",
@@ -15936,7 +15938,9 @@
         "book_now": "今すぐ予約", "share_tour": "シェア", "send_to_phone": "スマホに送信",
         "select_all_that_apply": "該当するものをすべて選択",
         "tours_by": "{company}のツアー",
-        "from_price": "から"
+        "from_price": "から",
+        "back_to_previous_tour": "← 前のツアーに戻る",
+        "back_to_home_page": "🏠 ホームに戻る"
       },
       "zh": {
         "code": "zh", "name": "中文", "flag": "🇨🇳",
@@ -15960,7 +15964,9 @@
         "book_now": "立即预订", "share_tour": "分享", "send_to_phone": "发送到手机",
         "select_all_that_apply": "选择所有适用项",
         "tours_by": "{company}的旅程",
-        "from_price": "起价"
+        "from_price": "起价",
+        "back_to_previous_tour": "← 返回上一个旅程",
+        "back_to_home_page": "🏠 返回主页"
       },
       "ko": {
         "code": "ko", "name": "한국어", "flag": "🇰🇷",
@@ -15984,7 +15990,9 @@
         "book_now": "지금 예약", "share_tour": "공유", "send_to_phone": "휴대폰으로 전송",
         "select_all_that_apply": "해당하는 항목을 모두 선택",
         "tours_by": "{company} 투어",
-        "from_price": "부터"
+        "from_price": "부터",
+        "back_to_previous_tour": "← 이전 투어로 돌아가기",
+        "back_to_home_page": "🏠 홈으로 돌아가기"
       },
       "de": {
         "code": "de", "name": "Deutsch", "flag": "🇩🇪",
@@ -16008,7 +16016,9 @@
         "book_now": "Jetzt buchen", "share_tour": "Teilen", "send_to_phone": "An Handy senden",
         "select_all_that_apply": "Alle zutreffenden auswählen",
         "tours_by": "Touren von {company}",
-        "from_price": "AB"
+        "from_price": "AB",
+        "back_to_previous_tour": "← Zurück zur vorherigen Tour",
+        "back_to_home_page": "🏠 Zurück zur Startseite"
       },
       "fr": {
         "code": "fr", "name": "Français", "flag": "🇫🇷",
@@ -16032,7 +16042,9 @@
         "book_now": "Réserver", "share_tour": "Partager", "send_to_phone": "Envoyer au téléphone",
         "select_all_that_apply": "Sélectionnez tout ce qui s'applique",
         "tours_by": "Excursions de {company}",
-        "from_price": "À PARTIR DE"
+        "from_price": "À PARTIR DE",
+        "back_to_previous_tour": "← Retour à l'excursion précédente",
+        "back_to_home_page": "🏠 Retour à l'accueil"
       },
       "hi": {
         "code": "hi", "name": "हिन्दी", "flag": "🇮🇳",
@@ -16056,7 +16068,9 @@
         "book_now": "अभी बुक करें", "share_tour": "शेयर करें", "send_to_phone": "फोन पर भेजें",
         "select_all_that_apply": "सभी लागू चुनें",
         "tours_by": "{company} के टूर",
-        "from_price": "से"
+        "from_price": "से",
+        "back_to_previous_tour": "← पिछले टूर पर वापस जाएं",
+        "back_to_home_page": "🏠 होम पेज पर वापस जाएं"
       },
       "es": {
         "code": "es", "name": "Español", "flag": "🇪🇸",
@@ -16080,7 +16094,9 @@
         "book_now": "Reservar ahora", "share_tour": "Compartir", "send_to_phone": "Enviar al teléfono",
         "select_all_that_apply": "Selecciona todos los que apliquen",
         "tours_by": "Tours de {company}",
-        "from_price": "DESDE"
+        "from_price": "DESDE",
+        "back_to_previous_tour": "← Volver al tour anterior",
+        "back_to_home_page": "🏠 Volver a la página principal"
       }
     };
     
@@ -25988,6 +26004,7 @@
             galleryContainer.appendChild(hintWrapper);
             
             // Add videos section if tour has video URLs
+            console.log('🎬 Video URLs check:', data.video_urls, 'Type:', typeof data.video_urls, 'Length:', data.video_urls ? data.video_urls.length : 0);
             if (data.video_urls && data.video_urls.length > 0) {
               const videoSection = document.createElement('div');
               videoSection.className = 'tour-videos-section';
@@ -31504,10 +31521,13 @@
       }
     };
     
-    // Lightbox functionality
+    // Lightbox functionality with pinch-to-zoom
     let lightboxImages = [];
     let lightboxIndex = 0;
     let lightboxTouchStartX = 0;
+    let lightboxScale = 1;
+    let lightboxInitialPinchDistance = 0;
+    let lightboxIsPinching = false;
     
     window.openLightbox = function(images, startIndex) {
       console.log('openLightbox called with:', images, startIndex);
@@ -31522,6 +31542,10 @@
       const img = document.getElementById('lightbox-img');
       const counter = document.getElementById('lightbox-counter');
       
+      // Reset zoom on open
+      lightboxScale = 1;
+      img.style.transform = 'scale(1)';
+      
       console.log('Lightbox element:', lightbox);
       console.log('Setting image src to:', lightboxImages[lightboxIndex]);
       
@@ -31531,21 +31555,34 @@
       console.log('Lightbox classes after adding active:', lightbox.className);
       document.body.style.overflow = 'hidden';
       
-      // Add touch swipe support
-      lightbox.addEventListener('touchstart', lightboxTouchStart);
+      // Add touch event listeners
+      lightbox.addEventListener('touchstart', lightboxTouchStart, { passive: false });
+      lightbox.addEventListener('touchmove', lightboxTouchMove, { passive: false });
       lightbox.addEventListener('touchend', lightboxTouchEnd);
     };
     
     window.closeLightbox = function() {
       const lightbox = document.getElementById('image-lightbox');
+      const img = document.getElementById('lightbox-img');
       lightbox.classList.remove('active');
       lightbox.style.display = 'none';  // Force hide
       document.body.style.overflow = '';
+      
+      // Reset zoom
+      lightboxScale = 1;
+      if (img) img.style.transform = 'scale(1)';
+      
       lightbox.removeEventListener('touchstart', lightboxTouchStart);
+      lightbox.removeEventListener('touchmove', lightboxTouchMove);
       lightbox.removeEventListener('touchend', lightboxTouchEnd);
     };
     
     window.lightboxNext = function() {
+      // Reset zoom when changing images
+      lightboxScale = 1;
+      const img = document.getElementById('lightbox-img');
+      if (img) img.style.transform = 'scale(1)';
+      
       // Update local vars from global if set directly
       if (window.lightboxImages) lightboxImages = window.lightboxImages;
       if (typeof window.lightboxIndex === 'number') lightboxIndex = window.lightboxIndex;
@@ -31555,6 +31592,11 @@
     };
     
     window.lightboxPrev = function() {
+      // Reset zoom when changing images
+      lightboxScale = 1;
+      const img = document.getElementById('lightbox-img');
+      if (img) img.style.transform = 'scale(1)';
+      
       // Update local vars from global if set directly
       if (window.lightboxImages) lightboxImages = window.lightboxImages;
       if (typeof window.lightboxIndex === 'number') lightboxIndex = window.lightboxIndex;
@@ -31570,20 +31612,89 @@
       counter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
     }
     
+    function getPinchDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+    
     function lightboxTouchStart(e) {
-      lightboxTouchStartX = e.touches[0].clientX;
+      if (e.touches.length === 2) {
+        // Pinch start
+        e.preventDefault();
+        lightboxIsPinching = true;
+        lightboxInitialPinchDistance = getPinchDistance(e.touches);
+      } else if (e.touches.length === 1) {
+        lightboxTouchStartX = e.touches[0].clientX;
+        lightboxIsPinching = false;
+      }
+    }
+    
+    function lightboxTouchMove(e) {
+      if (e.touches.length === 2 && lightboxIsPinching) {
+        e.preventDefault();
+        const currentDistance = getPinchDistance(e.touches);
+        const delta = currentDistance / lightboxInitialPinchDistance;
+        
+        // Calculate new scale (between 1 and 5)
+        let newScale = lightboxScale * delta;
+        newScale = Math.max(1, Math.min(5, newScale));
+        
+        const img = document.getElementById('lightbox-img');
+        if (img) {
+          img.style.transform = `scale(${newScale})`;
+        }
+        
+        // Update for next move
+        lightboxInitialPinchDistance = currentDistance;
+        lightboxScale = newScale;
+      }
     }
     
     function lightboxTouchEnd(e) {
-      const diff = e.changedTouches[0].clientX - lightboxTouchStartX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          lightboxPrev();
-      } else {
-          lightboxNext();
+      if (lightboxIsPinching) {
+        lightboxIsPinching = false;
+        return;
+      }
+      
+      // Only handle swipe if not zoomed in
+      if (lightboxScale > 1.2) return;
+      
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const diff = e.changedTouches[0].clientX - lightboxTouchStartX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) {
+            lightboxPrev();
+          } else {
+            lightboxNext();
+          }
         }
       }
     }
+    
+    // Double-tap to zoom
+    let lastTap = 0;
+    document.addEventListener('click', function(e) {
+      const lightbox = document.getElementById('image-lightbox');
+      const img = document.getElementById('lightbox-img');
+      if (!lightbox || !lightbox.classList.contains('active')) return;
+      
+      // Check if clicking on the image itself
+      if (e.target === img) {
+        const now = Date.now();
+        if (now - lastTap < 300) {
+          // Double tap - toggle zoom
+          if (lightboxScale > 1) {
+            lightboxScale = 1;
+            img.style.transform = 'scale(1)';
+          } else {
+            lightboxScale = 2.5;
+            img.style.transform = 'scale(2.5)';
+          }
+        }
+        lastTap = now;
+      }
+    });
     
     // Close on escape key
     document.addEventListener('keydown', function(e) {
