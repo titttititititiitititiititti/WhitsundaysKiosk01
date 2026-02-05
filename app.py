@@ -2677,14 +2677,18 @@ def index():
     # Check for preview mode (for logged-in admins testing)
     preview_account = request.args.get('preview')
     
+    # Demo mode: if no referral and no login, use "awda" as default demo account
+    # This allows public access without login (for website visitors)
+    is_demo_mode = False
+    if not referral_account and 'user' not in session:
+        # Use "awda" as the default demo account - shows all tours, no booking buttons
+        referral_account = 'awda'
+        is_demo_mode = True
+        print(f"[INDEX] Demo mode - using 'awda' account for public access")
+    
     # Determine which account to use for filtering tours
     # Priority: 1) preview mode, 2) referral from QR, 3) kiosk instance
     active_account = preview_account or referral_account or get_active_account()
-    
-    # If on physical kiosk (no referral), require login
-    # But allow public access if they came from a QR code
-    if not referral_account and 'user' not in session:
-        return redirect(url_for('login', next=request.url))
     
     if preview_account:
         session['preview_account'] = preview_account
@@ -2738,7 +2742,8 @@ def index():
                            preview_mode=preview_mode,
                            preview_account=preview_account,
                            referral_account=referral_account,
-                           is_web_visitor=is_web_visitor)
+                           is_web_visitor=is_web_visitor,
+                           is_demo_mode=is_demo_mode)
 
 @app.route('/api/semantic-search')
 def api_semantic_search():

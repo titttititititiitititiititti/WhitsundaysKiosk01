@@ -13136,6 +13136,15 @@
     /* Add top padding to body when in preview mode */
     body { padding-top: 40px !important; }
   </style>
+  {% elif is_demo_mode %}
+  <!-- Demo Mode Banner -->
+  <div id="demo-mode-banner" style="position: fixed; top: 0; left: 0; right: 0; z-index: 99999; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; text-align: center; padding: 8px 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+    <span>🎭 DEMO MODE — Browse tours freely! Booking is disabled.</span>
+  </div>
+  <style>
+    /* Add top padding to body when in demo mode */
+    body { padding-top: 40px !important; }
+  </style>
   {% endif %}
   
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->
@@ -17034,6 +17043,21 @@
     // Detect if user is on web (from QR code) vs physical kiosk
     const isWebVisitor = {{ 'true' if is_web_visitor else 'false' }};
     const isKiosk = !isWebVisitor && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    
+    // Demo mode - no booking buttons, just browsing (for public website access without referral)
+    const isDemoMode = {{ 'true' if is_demo_mode else 'false' }};
+    
+    // Hide booking buttons in demo mode (runs once at page load)
+    if (isDemoMode) {
+      console.log('[DEMO MODE] Hiding booking buttons for public demo access');
+      // Hide Quick Decision booking buttons
+      document.addEventListener('DOMContentLoaded', function() {
+        const acceptBtn = document.getElementById('accept-btn');
+        const sendToPhoneBtn = document.getElementById('send-to-phone-btn');
+        if (acceptBtn) acceptBtn.style.display = 'none';
+        if (sendToPhoneBtn) sendToPhoneBtn.style.display = 'none';
+      });
+    }
     
     // =====================================================================
     // FIRST-TIME USER PROMPTS - Show helpful hints once per session
@@ -25304,8 +25328,13 @@
       console.log('   Continue Phone button found:', !!continuePhoneBtn);
       console.log('   Share Tour button found:', !!shareTourBtn);
       
-      // Conditionally show/hide buttons based on kiosk vs web
-      if (isKiosk) {
+      // Conditionally show/hide buttons based on kiosk vs web vs demo mode
+      if (isDemoMode) {
+        // Demo mode: hide booking buttons, show only share
+        if (bookNowBtn) bookNowBtn.style.display = 'none';
+        if (continuePhoneBtn) continuePhoneBtn.style.display = 'none';
+        if (shareTourBtn) shareTourBtn.style.display = 'block';
+      } else if (isKiosk) {
         // On physical kiosk: hide Share (can't share from kiosk), show Send to Phone
         if (shareTourBtn) shareTourBtn.style.display = 'none';
         if (continuePhoneBtn) continuePhoneBtn.style.display = 'block';
