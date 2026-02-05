@@ -7111,6 +7111,7 @@ def get_session_details(session_id):
         print(f"Session details error: {e}")
         return jsonify({'error': str(e)}), 500
 
+# AUTO-UPDATE TEST: 2026-02-05 - If you see this in the shop's app.py, auto-update works!
 if __name__ == '__main__':
     app.run(debug=True) 
 
