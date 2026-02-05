@@ -7111,7 +7111,152 @@ def get_session_details(session_id):
         print(f"Session details error: {e}")
         return jsonify({'error': str(e)}), 500
 
-# AUTO-UPDATE TEST: 2026-02-05 - If you see this in the shop's app.py, auto-update works!
+# ============================================================================
+# AUTO-UPDATE SYSTEM - Automatically pull from GitHub and restart
+# ============================================================================
+
+AUTO_UPDATE_ENABLED = True
+AUTO_UPDATE_INTERVAL = 60  # Check every 60 seconds
+_update_available = False
+_last_update_check = 0
+_update_thread = None
+
+def check_git_updates():
+    """Check if there are updates available on GitHub"""
+    global _update_available, _last_update_check
+    
+    try:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        
+        # Check if this is a git repo
+        if not os.path.exists(os.path.join(repo_path, '.git')):
+            return False
+        
+        # Fetch latest from remote
+        result = subprocess.run(
+            ['git', 'fetch', 'origin', 'main'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        # Check if local is behind remote
+        result = subprocess.run(
+            ['git', 'status', '-uno'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        _last_update_check = time.time()
+        
+        if 'Your branch is behind' in result.stdout:
+            print("[AUTO-UPDATE] Updates available from GitHub!")
+            _update_available = True
+            return True
+        
+        return False
+        
+    except Exception as e:
+        print(f"[AUTO-UPDATE] Error checking for updates: {e}")
+        return False
+
+def pull_and_restart():
+    """Pull updates from GitHub and restart the app"""
+    global _update_available
+    
+    try:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        
+        print("[AUTO-UPDATE] Pulling updates...")
+        
+        # Stash any local changes
+        subprocess.run(['git', 'stash'], cwd=repo_path, capture_output=True, timeout=30)
+        
+        # Pull latest changes
+        result = subprocess.run(
+            ['git', 'pull', 'origin', 'main'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        
+        print(f"[AUTO-UPDATE] Pull result: {result.stdout}")
+        
+        if result.returncode == 0:
+            # Install any new dependencies quietly
+            subprocess.run(
+                [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt', '-q'],
+                cwd=repo_path,
+                capture_output=True,
+                timeout=120
+            )
+            
+            _update_available = False
+            print("[AUTO-UPDATE] Updates applied! Restarting...")
+            
+            # Restart the app
+            time.sleep(1)
+            os.execv(sys.executable, [sys.executable] + sys.argv)
+        else:
+            print(f"[AUTO-UPDATE] Pull failed: {result.stderr}")
+            
+    except Exception as e:
+        print(f"[AUTO-UPDATE] Error pulling updates: {e}")
+
+def auto_update_loop():
+    """Background thread that checks for updates periodically"""
+    global _update_available
+    
+    print("[AUTO-UPDATE] Background updater started")
+    
+    # Wait a bit before first check
+    time.sleep(10)
+    
+    while True:
+        try:
+            if AUTO_UPDATE_ENABLED:
+                if check_git_updates():
+                    # Give browsers 5 seconds to receive the update notification
+                    time.sleep(5)
+                    pull_and_restart()
+            
+            time.sleep(AUTO_UPDATE_INTERVAL)
+            
+        except Exception as e:
+            print(f"[AUTO-UPDATE] Error in update loop: {e}")
+            time.sleep(60)
+
+@app.route('/api/check-update')
+def api_check_update():
+    """Endpoint for browser to check if updates are pending"""
+    global _update_available
+    return jsonify({
+        'update_available': _update_available,
+        'last_check': _last_update_check,
+        'version': APP_VERSION
+    })
+
+@app.route('/api/trigger-update', methods=['POST'])
+def api_trigger_update():
+    """Manually trigger an update check (admin only)"""
+    if check_git_updates():
+        # Start update in background thread
+        threading.Thread(target=pull_and_restart, daemon=True).start()
+        return jsonify({'status': 'updating', 'message': 'Update started, app will restart shortly'})
+    return jsonify({'status': 'no_update', 'message': 'Already up to date'})
+
+# ============================================================================
+
 if __name__ == '__main__':
+    # Start auto-update background thread
+    if AUTO_UPDATE_ENABLED:
+        _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
+        _update_thread.start()
+        print("[AUTO-UPDATE] Auto-update system enabled (checking every 60s)")
+    
     app.run(debug=True) 
 

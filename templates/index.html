@@ -32934,6 +32934,86 @@
     console.log('🔧 window.playWelcomeMessage is:', typeof window.playWelcomeMessage);
     console.log('🔧 window.speakWithElevenLabs is:', typeof window.speakWithElevenLabs);
   </script>
+  
+  <!-- Auto-Update System - Polls server and refreshes on updates -->
+  <script>
+    (function() {
+      const AUTO_UPDATE_CHECK_INTERVAL = 30000; // Check every 30 seconds
+      let lastVersion = null;
+      
+      async function checkForUpdates() {
+        try {
+          const response = await fetch('/api/check-update');
+          const data = await response.json();
+          
+          // Store version on first check
+          if (lastVersion === null) {
+            lastVersion = data.version;
+            console.log('[AUTO-UPDATE] Current version:', lastVersion);
+          }
+          
+          // If update is available, show notification and prepare to refresh
+          if (data.update_available) {
+            console.log('[AUTO-UPDATE] ⚡ Update detected! Refreshing in 3 seconds...');
+            
+            // Show a subtle notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+              position: fixed;
+              top: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: linear-gradient(135deg, #00b4d8, #0077b6);
+              color: white;
+              padding: 15px 30px;
+              border-radius: 30px;
+              font-size: 1.1em;
+              font-weight: 600;
+              z-index: 999999;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+              animation: slideDown 0.5s ease;
+            `;
+            notification.innerHTML = '⚡ Updating... Please wait';
+            document.body.appendChild(notification);
+            
+            // Add animation keyframes
+            const style = document.createElement('style');
+            style.textContent = `
+              @keyframes slideDown {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+              }
+            `;
+            document.head.appendChild(style);
+            
+            // Refresh after a short delay to allow server to restart
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
+        } catch (error) {
+          // Server might be restarting, try again soon
+          console.log('[AUTO-UPDATE] Server check failed, will retry...');
+        }
+      }
+      
+      // Start checking for updates
+      console.log('[AUTO-UPDATE] 🔄 Auto-update monitor started');
+      
+      // Initial check after 10 seconds
+      setTimeout(checkForUpdates, 10000);
+      
+      // Then check periodically
+      setInterval(checkForUpdates, AUTO_UPDATE_CHECK_INTERVAL);
+      
+      // Also check when tab becomes visible (user returns to tab)
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          checkForUpdates();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
 

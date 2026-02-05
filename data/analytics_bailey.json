@@ -14385,6 +14385,132 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T21:45:20.814441",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T21:45:20.814441",
+      "duration_seconds": 123.457842
+    },
+    {
+      "session_id": "session_3f1051b9cb55_1770291921",
+      "account": "bailey",
+      "started_at": "2026-02-05T21:45:21.860008",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T21:45:21.860008",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-05T21:46:38.354177",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-05T21:46:39.393730",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T21:46:41.503544",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T21:46:57.032205",
+          "data": {
+            "tour_name": "18 Holes Day Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-05T21:47:06.420015",
+          "data": {
+            "tour_name": "Airlie Beach Glass Bottom Boat Day Tours",
+            "company": "Pioneer Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T21:50:36.351398",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure",
+        "18 Holes Day Cruise",
+        "Airlie Beach Glass Bottom Boat Day Tours"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T21:50:36.351398",
+      "duration_seconds": 314.49139
+    },
+    {
+      "session_id": "session_4be413578286_1770292237",
+      "account": "bailey",
+      "started_at": "2026-02-05T21:50:37.510766",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T21:50:37.510766",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-05T21:52:40.647934",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-05T21:52:40.647934",
+      "duration_seconds": 123.137168
+    },
+    {
+      "session_id": "session_ee7508b2f7dc_1770292361",
+      "account": "bailey",
+      "started_at": "2026-02-05T21:52:42.066887",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-05T21:52:42.066887",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -14396,5 +14522,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-05T21:43:17.362585"
+  "last_updated": "2026-02-05T21:52:42.070930"
 }
