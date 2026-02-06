@@ -231,8 +231,16 @@ def load_account_settings(username):
     config_dir = get_account_config_dir(username)
     settings_file = os.path.join(config_dir, 'settings.json')
     
+    # First, check if account-specific settings exist
     if os.path.exists(settings_file):
         with open(settings_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    # Second, check for default settings (for demo accounts on Render/cloud)
+    defaults_file = f'config/defaults/{username}/settings.json'
+    if os.path.exists(defaults_file):
+        print(f"[CONFIG] Loading default settings for '{username}' from {defaults_file}")
+        with open(defaults_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
     # Return default settings for new accounts
@@ -268,7 +276,11 @@ def save_account_settings(username, settings):
 def is_tour_enabled_for_account(username, tour_key):
     """Check if a tour is enabled for a specific account"""
     settings = load_account_settings(username)
-    return tour_key in settings.get('enabled_tours', [])
+    enabled_tours = settings.get('enabled_tours', [])
+    # Special case: "__ALL__" means all tours are enabled (for demo accounts)
+    if enabled_tours == "__ALL__":
+        return True
+    return tour_key in enabled_tours
 
 def get_enabled_tours_for_account(username):
     """Get list of enabled tour keys for an account"""
@@ -502,6 +514,10 @@ def is_tour_enabled(tour_key, preview_account=None):
         enabled_tours = settings.get('enabled_tours', [])
     else:
         enabled_tours = get_kiosk_enabled_tours()
+    
+    # Special case: "__ALL__" means all tours are enabled (for demo accounts)
+    if enabled_tours == "__ALL__":
+        return True
     
     # If no account is linked or account has no tours, show nothing
     if not enabled_tours:

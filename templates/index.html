@@ -13149,15 +13149,67 @@
   
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->
   <video id="bg-video" autoplay muted loop playsinline preload="auto">
+    <!-- Primary: local file for kiosk, Fallback: remote URL for Render/cloud hosting -->
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
   <script>
-    // Simple video setup - just play and handle visibility
+    // Simple video setup - with remote fallback for cloud hosting (Render)
     (function() {
       const video = document.getElementById('bg-video');
       if (!video) return;
       
-      video.play().catch(() => {});
+      // Remote fallback URLs for when local file isn't available (Render/cloud hosting)
+      // Streamable embed URL (more reliable than direct CDN link)
+      const REMOTE_VIDEO_URLS = [
+        'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4?Expires=1896393600',
+        'https://cdn-cf-west.streamable.com/video/mp4/pwhf60.mp4',
+        // Fallback to a beautiful ocean video from Pexels (public domain)
+        'https://videos.pexels.com/video-files/1918465/1918465-uhd_2560_1440_24fps.mp4'
+      ];
+      let fallbackIndex = 0;
+      
+      // Check if we're on a cloud host (not localhost)
+      const isCloudHost = !['localhost', '127.0.0.1'].includes(window.location.hostname);
+      
+      function tryNextFallback() {
+        if (fallbackIndex < REMOTE_VIDEO_URLS.length) {
+          console.log('📺 Trying fallback video:', REMOTE_VIDEO_URLS[fallbackIndex]);
+          video.src = REMOTE_VIDEO_URLS[fallbackIndex];
+          fallbackIndex++;
+          video.load();
+          video.play().catch(() => {
+            setTimeout(tryNextFallback, 1000);
+          });
+        } else {
+          // All videos failed - show gradient background instead
+          console.log('📺 All video sources failed, using gradient background');
+          video.style.display = 'none';
+          document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
+        }
+      }
+      
+      // Try to play, if it fails (no local file), use remote fallback
+      video.play().catch(() => {
+        if (isCloudHost) {
+          console.log('📺 Local video failed, trying remote fallbacks');
+          tryNextFallback();
+        }
+      });
+      
+      // Also check if video has no duration after a short delay (means source failed to load)
+      setTimeout(() => {
+        if (isCloudHost && (video.readyState === 0 || isNaN(video.duration))) {
+          console.log('📺 Video source not loaded, trying fallbacks');
+          tryNextFallback();
+        }
+      }, 2000);
+      
+      // Handle video error event
+      video.addEventListener('error', () => {
+        if (isCloudHost) {
+          tryNextFallback();
+        }
+      });
       
       // Only restart if user returns to tab
       document.addEventListener('visibilitychange', () => {
@@ -15428,7 +15480,8 @@
       landscape_id: 'qvf8eh',   // Landscape video
       portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/0124.mp4') }}",
-      use_local: true // Use local MP4 for smooth playback
+      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4', // For cloud hosting (Render)
+      use_local: !['localhost', '127.0.0.1'].includes(window.location.hostname) ? false : true // Use remote on cloud hosts
     };
     
     // Shop-specific configuration (loaded from server based on logged-in account)
