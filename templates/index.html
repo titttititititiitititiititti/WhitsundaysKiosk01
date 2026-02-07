@@ -15907,9 +15907,11 @@
         <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()">➤</button>
       </div>
       
-      <!-- Microphone button -->
+      <!-- Microphone button - Only shown if microphone is enabled in kiosk settings -->
+      {% if kiosk_settings and kiosk_settings.get('ai_microphone_enabled', true) %}
       <span class="ai-mic-hint">Tap before speaking</span>
       <button class="ai-mic-btn" id="ai-mic-btn" onclick="toggleAIMicrophone()">🎤</button>
+      {% endif %}
     </div>
   </div>
   
