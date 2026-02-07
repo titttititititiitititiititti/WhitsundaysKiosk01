@@ -1371,7 +1371,28 @@
                         Hero Widget HTML/Embed Code
                         <span class="hint">Paste the full HTML embed code from Hero. This replaces the pricing section with an interactive booking widget. Leave empty to use default pricing display.</span>
                     </label>
-                    <textarea class="form-input form-textarea" id="heroWidgetHtml" placeholder='<div class="hero-widget">...</div>' oninput="autoSave()"></textarea>
+                    <textarea class="form-input form-textarea" id="heroWidgetHtml" placeholder='<div class="hero-widget">...</div>' oninput="autoSave(); checkWidgetForOverlay();"></textarea>
+                </div>
+                
+                <!-- Button Overlay Configuration -->
+                <div id="buttonOverlayConfig" style="display:none; margin-top: 15px; padding: 15px; background: #1a1f2e; border-radius: 8px; border: 1px solid #3b82f6;">
+                    <label class="form-label" style="color: #3b82f6; font-weight: 600;">
+                        🎯 Kiosk Button Overlay Configuration
+                        <span class="hint" style="color: #94a3b8;">Configure where the "Book Now" button should be blocked on the kiosk. This prevents users from clicking the widget's booking button directly.</span>
+                    </label>
+                    
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn btn-secondary" onclick="openOverlayConfigurator()" style="background: #3b82f6; color: white; border: none;">
+                            🎯 Configure Button Overlay
+                        </button>
+                        <span id="overlayStatus" style="margin-left: 10px; color: #94a3b8; font-size: 0.85em;">No overlay configured</span>
+                    </div>
+                    
+                    <!-- Hidden fields to store overlay coordinates (as percentages) -->
+                    <input type="hidden" id="overlayTop" value="">
+                    <input type="hidden" id="overlayLeft" value="">
+                    <input type="hidden" id="overlayWidth" value="">
+                    <input type="hidden" id="overlayHeight" value="">
                 </div>
                 
                 <div class="section-divider">
@@ -1401,11 +1422,305 @@
         </div>
     </div>
     
+    <!-- Overlay Configurator Modal -->
+    <div id="overlayConfiguratorModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.9); z-index:10000; overflow:auto;">
+        <div style="max-width: 1200px; margin: 20px auto; padding: 20px; background: #1a1f2e; border-radius: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="color: #3b82f6; margin: 0;">🎯 Configure Button Overlay</h2>
+                <button onclick="closeOverlayConfigurator()" style="background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">✕ Cancel</button>
+            </div>
+            
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="color: #94a3b8; margin: 0 0 10px 0;"><strong>Instructions:</strong></p>
+                <ol style="color: #94a3b8; margin: 0; padding-left: 20px;">
+                    <li>Click and drag on the widget preview below to draw a rectangle over the "Book Now" button</li>
+                    <li>The overlay will capture clicks and redirect users to the QR code on the kiosk</li>
+                    <li>Click "Save Overlay" when done</li>
+                </ol>
+            </div>
+            
+            <!-- Log panel -->
+            <div id="overlayLogPanel" style="background: #000; color: #22c55e; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 12px; max-height: 100px; overflow-y: auto; margin-bottom: 15px;">
+                [LOG] Overlay configurator ready...
+            </div>
+            
+            <!-- Widget preview container -->
+            <div id="widgetPreviewContainer" style="position: relative; background: white; border-radius: 8px; overflow: hidden; min-height: 400px;">
+                <div id="widgetPreviewContent"></div>
+                
+                <!-- Drawing overlay -->
+                <div id="drawingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; z-index: 100;"></div>
+                
+                <!-- Selection rectangle -->
+                <div id="selectionRect" style="position: absolute; border: 3px dashed #3b82f6; background: rgba(59, 130, 246, 0.3); display: none; z-index: 101; pointer-events: none;"></div>
+                
+                <!-- Saved overlay indicator -->
+                <div id="savedOverlayRect" style="position: absolute; border: 3px solid #22c55e; background: rgba(34, 197, 94, 0.2); display: none; z-index: 99; pointer-events: none;">
+                    <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #22c55e; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; white-space: nowrap;">📱 Kiosk Overlay</span>
+                </div>
+            </div>
+            
+            <!-- Coordinates display -->
+            <div style="margin-top: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px;">
+                    <span style="color: #94a3b8;">Top:</span> <span id="coordTop" style="color: #3b82f6; font-family: monospace;">--</span>
+                </div>
+                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px;">
+                    <span style="color: #94a3b8;">Left:</span> <span id="coordLeft" style="color: #3b82f6; font-family: monospace;">--</span>
+                </div>
+                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px;">
+                    <span style="color: #94a3b8;">Width:</span> <span id="coordWidth" style="color: #3b82f6; font-family: monospace;">--</span>
+                </div>
+                <div style="background: #0f172a; padding: 10px 15px; border-radius: 6px;">
+                    <span style="color: #94a3b8;">Height:</span> <span id="coordHeight" style="color: #3b82f6; font-family: monospace;">--</span>
+                </div>
+            </div>
+            
+            <!-- Action buttons -->
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button onclick="clearOverlaySelection()" style="background: #64748b; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer;">🗑️ Clear Selection</button>
+                <button onclick="saveOverlayConfig()" style="background: #22c55e; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;">✓ Save Overlay</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         let currentFilter = 'all';
         let searchMode = 'tours'; // 'tours' or 'companies'
         let currentTourKey = null;
         let autoSaveTimer = null;
+        
+        // =====================================================================
+        // BUTTON OVERLAY CONFIGURATOR
+        // =====================================================================
+        let isDrawing = false;
+        let startX, startY;
+        let overlayCoords = { top: 0, left: 0, width: 0, height: 0 };
+        
+        function overlayLog(msg) {
+            const panel = document.getElementById('overlayLogPanel');
+            const time = new Date().toLocaleTimeString();
+            panel.innerHTML += `\n[${time}] ${msg}`;
+            panel.scrollTop = panel.scrollHeight;
+        }
+        
+        function checkWidgetForOverlay() {
+            const widgetHtml = document.getElementById('heroWidgetHtml').value.trim();
+            const configSection = document.getElementById('buttonOverlayConfig');
+            if (widgetHtml.length > 0) {
+                configSection.style.display = 'block';
+            } else {
+                configSection.style.display = 'none';
+            }
+        }
+        
+        function openOverlayConfigurator() {
+            const widgetHtml = document.getElementById('heroWidgetHtml').value.trim();
+            if (!widgetHtml) {
+                alert('Please add a widget HTML first');
+                return;
+            }
+            
+            // Show modal
+            document.getElementById('overlayConfiguratorModal').style.display = 'block';
+            
+            // Load widget into preview
+            const preview = document.getElementById('widgetPreviewContent');
+            preview.innerHTML = widgetHtml;
+            
+            overlayLog('Widget loaded into preview');
+            overlayLog('Widget container dimensions: ' + preview.offsetWidth + 'x' + preview.offsetHeight + 'px');
+            
+            // Load existing overlay if any
+            const savedTop = document.getElementById('overlayTop').value;
+            if (savedTop) {
+                overlayLog('Loading saved overlay configuration...');
+                showSavedOverlay();
+            }
+            
+            // Setup drawing handlers
+            setupDrawingHandlers();
+        }
+        
+        function closeOverlayConfigurator() {
+            document.getElementById('overlayConfiguratorModal').style.display = 'none';
+        }
+        
+        function setupDrawingHandlers() {
+            const drawingOverlay = document.getElementById('drawingOverlay');
+            const container = document.getElementById('widgetPreviewContainer');
+            
+            drawingOverlay.onmousedown = function(e) {
+                isDrawing = true;
+                const rect = container.getBoundingClientRect();
+                startX = e.clientX - rect.left;
+                startY = e.clientY - rect.top;
+                
+                const selRect = document.getElementById('selectionRect');
+                selRect.style.left = startX + 'px';
+                selRect.style.top = startY + 'px';
+                selRect.style.width = '0px';
+                selRect.style.height = '0px';
+                selRect.style.display = 'block';
+                
+                overlayLog('Started drawing at (' + Math.round(startX) + ', ' + Math.round(startY) + ')');
+            };
+            
+            drawingOverlay.onmousemove = function(e) {
+                if (!isDrawing) return;
+                
+                const rect = container.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+                
+                const selRect = document.getElementById('selectionRect');
+                const width = currentX - startX;
+                const height = currentY - startY;
+                
+                // Handle negative dimensions (drawing from right to left or bottom to top)
+                if (width >= 0) {
+                    selRect.style.left = startX + 'px';
+                    selRect.style.width = width + 'px';
+                } else {
+                    selRect.style.left = currentX + 'px';
+                    selRect.style.width = (-width) + 'px';
+                }
+                
+                if (height >= 0) {
+                    selRect.style.top = startY + 'px';
+                    selRect.style.height = height + 'px';
+                } else {
+                    selRect.style.top = currentY + 'px';
+                    selRect.style.height = (-height) + 'px';
+                }
+                
+                updateCoordinatesDisplay();
+            };
+            
+            drawingOverlay.onmouseup = function(e) {
+                if (!isDrawing) return;
+                isDrawing = false;
+                
+                const container = document.getElementById('widgetPreviewContainer');
+                const selRect = document.getElementById('selectionRect');
+                
+                // Calculate percentages
+                const containerWidth = container.offsetWidth;
+                const containerHeight = container.offsetHeight;
+                
+                overlayCoords = {
+                    top: (parseFloat(selRect.style.top) / containerHeight * 100).toFixed(2),
+                    left: (parseFloat(selRect.style.left) / containerWidth * 100).toFixed(2),
+                    width: (parseFloat(selRect.style.width) / containerWidth * 100).toFixed(2),
+                    height: (parseFloat(selRect.style.height) / containerHeight * 100).toFixed(2)
+                };
+                
+                overlayLog('Selection complete: ' + overlayCoords.width + '% x ' + overlayCoords.height + '% at (' + overlayCoords.left + '%, ' + overlayCoords.top + '%)');
+                updateCoordinatesDisplay();
+            };
+        }
+        
+        function updateCoordinatesDisplay() {
+            const container = document.getElementById('widgetPreviewContainer');
+            const selRect = document.getElementById('selectionRect');
+            
+            const containerWidth = container.offsetWidth;
+            const containerHeight = container.offsetHeight;
+            
+            const top = (parseFloat(selRect.style.top) / containerHeight * 100).toFixed(1);
+            const left = (parseFloat(selRect.style.left) / containerWidth * 100).toFixed(1);
+            const width = (parseFloat(selRect.style.width) / containerWidth * 100).toFixed(1);
+            const height = (parseFloat(selRect.style.height) / containerHeight * 100).toFixed(1);
+            
+            document.getElementById('coordTop').textContent = top + '%';
+            document.getElementById('coordLeft').textContent = left + '%';
+            document.getElementById('coordWidth').textContent = width + '%';
+            document.getElementById('coordHeight').textContent = height + '%';
+        }
+        
+        function clearOverlaySelection() {
+            document.getElementById('selectionRect').style.display = 'none';
+            document.getElementById('savedOverlayRect').style.display = 'none';
+            document.getElementById('coordTop').textContent = '--';
+            document.getElementById('coordLeft').textContent = '--';
+            document.getElementById('coordWidth').textContent = '--';
+            document.getElementById('coordHeight').textContent = '--';
+            overlayCoords = { top: 0, left: 0, width: 0, height: 0 };
+            overlayLog('Selection cleared');
+        }
+        
+        function showSavedOverlay() {
+            const savedRect = document.getElementById('savedOverlayRect');
+            const top = document.getElementById('overlayTop').value;
+            const left = document.getElementById('overlayLeft').value;
+            const width = document.getElementById('overlayWidth').value;
+            const height = document.getElementById('overlayHeight').value;
+            
+            if (top && left && width && height) {
+                savedRect.style.top = top + '%';
+                savedRect.style.left = left + '%';
+                savedRect.style.width = width + '%';
+                savedRect.style.height = height + '%';
+                savedRect.style.display = 'block';
+                
+                overlayLog('Showing saved overlay: ' + width + '% x ' + height + '% at (' + left + '%, ' + top + '%)');
+            }
+        }
+        
+        async function saveOverlayConfig() {
+            if (overlayCoords.width <= 0 || overlayCoords.height <= 0) {
+                alert('Please draw a selection first');
+                return;
+            }
+            
+            // Store in hidden fields
+            document.getElementById('overlayTop').value = overlayCoords.top;
+            document.getElementById('overlayLeft').value = overlayCoords.left;
+            document.getElementById('overlayWidth').value = overlayCoords.width;
+            document.getElementById('overlayHeight').value = overlayCoords.height;
+            
+            overlayLog('Saving overlay configuration to server...');
+            
+            // Save to server
+            try {
+                const response = await fetch(`/admin/agent/api/tour-settings/${currentTourKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        booking_button_url: document.getElementById('bookingButtonUrl').value,
+                        hero_widget_html: document.getElementById('heroWidgetHtml').value,
+                        notes: document.getElementById('tourNotes').value,
+                        button_overlay: {
+                            top: overlayCoords.top,
+                            left: overlayCoords.left,
+                            width: overlayCoords.width,
+                            height: overlayCoords.height
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    overlayLog('✅ OVERLAY SAVED SUCCESSFULLY!');
+                    overlayLog('Coordinates: top=' + overlayCoords.top + '%, left=' + overlayCoords.left + '%, width=' + overlayCoords.width + '%, height=' + overlayCoords.height + '%');
+                    
+                    // Update status
+                    document.getElementById('overlayStatus').innerHTML = '<span style="color: #22c55e;">✓ Overlay configured (' + overlayCoords.width + '% x ' + overlayCoords.height + '%)</span>';
+                    
+                    // Show success and close
+                    showSavedOverlay();
+                    setTimeout(() => {
+                        closeOverlayConfigurator();
+                        showToast('Button overlay saved!', 'success');
+                    }, 1000);
+                } else {
+                    overlayLog('❌ ERROR: Failed to save overlay');
+                    alert('Failed to save overlay configuration');
+                }
+            } catch (err) {
+                overlayLog('❌ ERROR: ' + err.message);
+                alert('Error saving overlay: ' + err.message);
+            }
+        }
         
         // =====================================================================
         // TOUR SETTINGS MODAL
@@ -1442,8 +1757,25 @@
                     document.getElementById('heroWidgetHtml').value = data.settings.hero_widget_html || '';
                     document.getElementById('tourNotes').value = data.settings.notes || '';
                     
-                    // Show/hide price fields based on widget presence
+                    // Load button overlay config if exists
+                    const overlay = data.settings.button_overlay;
+                    if (overlay && overlay.top) {
+                        document.getElementById('overlayTop').value = overlay.top;
+                        document.getElementById('overlayLeft').value = overlay.left;
+                        document.getElementById('overlayWidth').value = overlay.width;
+                        document.getElementById('overlayHeight').value = overlay.height;
+                        document.getElementById('overlayStatus').innerHTML = '<span style="color: #22c55e;">✓ Overlay configured (' + overlay.width + '% x ' + overlay.height + '%)</span>';
+                    } else {
+                        document.getElementById('overlayTop').value = '';
+                        document.getElementById('overlayLeft').value = '';
+                        document.getElementById('overlayWidth').value = '';
+                        document.getElementById('overlayHeight').value = '';
+                        document.getElementById('overlayStatus').textContent = 'No overlay configured';
+                    }
+                    
+                    // Show/hide price fields and overlay config based on widget presence
                     updatePricingVisibility();
+                    checkWidgetForOverlay();
                 }
             } catch (err) {
                 showToast('Failed to load tour settings', 'error');

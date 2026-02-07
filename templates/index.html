@@ -17180,11 +17180,20 @@
         if (widget.classList.contains('kiosk-protected')) return;
         widget.classList.add('kiosk-protected');
         
-        console.log('🛡️ Protecting widget:', widget);
+        console.log('🛡️ Protecting widget for tour:', tourData?.key || 'unknown');
         
-        // ALWAYS add the button blocker overlay - this is the most reliable method
-        // It covers the bottom portion where buttons typically are
-        addButtonBlockerOverlay(widget);
+        // Try to get overlay config from tour overrides
+        let overlayConfig = null;
+        if (tourData && tourData.key && typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides) {
+          const tourOverrides = HERO_BOOKING.tour_overrides[tourData.key];
+          if (tourOverrides && tourOverrides.button_overlay) {
+            overlayConfig = tourOverrides.button_overlay;
+            console.log('🎯 Found saved overlay config for tour:', overlayConfig);
+          }
+        }
+        
+        // Add the button blocker overlay (precise if configured, fallback otherwise)
+        addButtonBlockerOverlay(widget, overlayConfig);
         
         // Also try to intercept buttons directly (works for non-iframe widgets)
         const observer = new MutationObserver((mutations) => {
@@ -17201,82 +17210,111 @@
       });
     }
     
-    function addButtonBlockerOverlay(widget) {
-      // NEW APPROACH: Make the widget VIEW-ONLY
-      // Users can SEE availability/prices but CANNOT interact
-      // They MUST use our "Book on Phone" button
+    function addButtonBlockerOverlay(widget, overlayConfig) {
+      // PRECISE OVERLAY APPROACH:
+      // If we have saved overlay coordinates, place invisible blocker exactly on the button
+      // Otherwise, fall back to bottom-area coverage
       
       // Remove any existing blocker
-      const existing = widget.querySelector('.kiosk-widget-overlay');
+      const existing = widget.querySelector('.kiosk-button-overlay');
       if (existing) existing.remove();
       
       // Ensure widget has position relative
       widget.style.position = 'relative';
       
-      // STEP 1: Disable ALL interactions on iframes and embedded content
-      const iframes = widget.querySelectorAll('iframe');
-      iframes.forEach(iframe => {
-        iframe.style.pointerEvents = 'none';
-        iframe.style.userSelect = 'none';
-      });
-      
-      // Also disable any direct widget content
-      const widgetContent = widget.querySelectorAll('button, a, input, select, [onclick]');
-      widgetContent.forEach(el => {
-        el.style.pointerEvents = 'none';
-      });
-      
-      // STEP 2: Add a full transparent overlay that catches all clicks
-      const overlay = document.createElement('div');
-      overlay.className = 'kiosk-widget-overlay';
-      overlay.style.cssText = `
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        background: transparent !important;
-        cursor: pointer !important;
-        z-index: 999999 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: flex-end !important;
-        padding-bottom: 30px !important;
-      `;
-      
-      // STEP 3: Add a clear call-to-action at the bottom
-      overlay.innerHTML = `
-        <div class="kiosk-book-cta" style="
-          background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
-          color: white;
-          padding: 18px 40px;
-          border-radius: 50px;
-          font-weight: 700;
-          font-size: 1.3em;
-          box-shadow: 0 8px 30px rgba(0,119,182,0.6);
-          text-align: center;
-          cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
-          animation: pulse-glow 2s infinite;
-        ">
-          📱 Tap Anywhere to Book on Your Phone
-        </div>
-        <p style="margin: 10px 0 0 0; color: #333; font-size: 1em; font-weight: 500; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">
-          View availability above • Complete booking on your device
-        </p>
-      `;
-      
-      // Clicking anywhere on the overlay shows the QR modal
-      overlay.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🛡️ Widget overlay clicked - showing QR modal');
-        showKioskBookingRedirect();
-      }, true);
-      
-      widget.appendChild(overlay);
-      console.log('🛡️ Widget set to VIEW-ONLY mode - all interactions disabled');
+      // Check if we have precise overlay coordinates from admin configuration
+      if (overlayConfig && overlayConfig.top && overlayConfig.width) {
+        console.log('🎯 Using PRECISE overlay from admin config:', overlayConfig);
+        
+        // Create precise overlay that covers exactly the configured button area
+        const preciseOverlay = document.createElement('div');
+        preciseOverlay.className = 'kiosk-button-overlay kiosk-precise-overlay';
+        preciseOverlay.style.cssText = `
+          position: absolute !important;
+          top: ${overlayConfig.top}% !important;
+          left: ${overlayConfig.left}% !important;
+          width: ${overlayConfig.width}% !important;
+          height: ${overlayConfig.height}% !important;
+          background: linear-gradient(135deg, rgba(0,119,182,0.9) 0%, rgba(2,62,138,0.9) 100%) !important;
+          cursor: pointer !important;
+          z-index: 999999 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 20px rgba(0,119,182,0.5) !important;
+          transition: transform 0.2s, box-shadow 0.2s !important;
+        `;
+        
+        preciseOverlay.innerHTML = `
+          <span style="color: white; font-weight: 700; font-size: 1.1em; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+            📱 Tap to Book on Phone
+          </span>
+        `;
+        
+        preciseOverlay.addEventListener('mouseenter', () => {
+          preciseOverlay.style.transform = 'scale(1.02)';
+          preciseOverlay.style.boxShadow = '0 6px 30px rgba(0,119,182,0.7)';
+        });
+        
+        preciseOverlay.addEventListener('mouseleave', () => {
+          preciseOverlay.style.transform = 'scale(1)';
+          preciseOverlay.style.boxShadow = '0 4px 20px rgba(0,119,182,0.5)';
+        });
+        
+        preciseOverlay.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🎯 Precise button overlay clicked - showing QR modal');
+          showKioskBookingRedirect();
+        }, true);
+        
+        widget.appendChild(preciseOverlay);
+        console.log('🎯 PRECISE overlay applied - button area blocked, rest of widget interactive!');
+        
+      } else {
+        // FALLBACK: No precise config, use bottom-area coverage
+        console.log('⚠️ No precise overlay config - using fallback bottom coverage');
+        
+        const fallbackOverlay = document.createElement('div');
+        fallbackOverlay.className = 'kiosk-button-overlay kiosk-fallback-overlay';
+        fallbackOverlay.style.cssText = `
+          position: absolute !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          height: 25% !important;
+          background: linear-gradient(to bottom, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.8) 20%, 
+            rgba(255,255,255,0.95) 40%,
+            rgba(255,255,255,1) 100%) !important;
+          cursor: pointer !important;
+          z-index: 999999 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          padding-bottom: 20px !important;
+        `;
+        
+        fallbackOverlay.innerHTML = `
+          <div style="background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%); color: white; padding: 15px 35px; border-radius: 40px; font-weight: 700; font-size: 1.2em; box-shadow: 0 6px 25px rgba(0,119,182,0.5); cursor: pointer;">
+            📱 Tap to Book on Phone
+          </div>
+          <p style="margin: 8px 0 0 0; color: #555; font-size: 0.9em;">Configure precise overlay in admin for better UX</p>
+        `;
+        
+        fallbackOverlay.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🛡️ Fallback overlay clicked - showing QR modal');
+          showKioskBookingRedirect();
+        }, true);
+        
+        widget.appendChild(fallbackOverlay);
+        console.log('🛡️ Fallback overlay applied - bottom 25% blocked');
+      }
     }
     
     function neutralizeBookingButtons(container) {

@@ -2342,7 +2342,8 @@ def get_tour_settings(tour_key):
         'settings': {
             'booking_button_url': tour_settings.get('booking_button_url', ''),
             'hero_widget_html': tour_settings.get('hero_widget_html', ''),
-            'notes': tour_settings.get('notes', '')
+            'notes': tour_settings.get('notes', ''),
+            'button_overlay': tour_settings.get('button_overlay', None)
         }
     })
 
@@ -2370,6 +2371,21 @@ def save_tour_settings(tour_key):
         tour_settings['hero_widget_html'] = data['hero_widget_html'].strip()
     if 'notes' in data:
         tour_settings['notes'] = data['notes'].strip()
+    if 'button_overlay' in data:
+        overlay = data['button_overlay']
+        # Validate overlay data
+        if overlay and overlay.get('width') and float(overlay.get('width', 0)) > 0:
+            tour_settings['button_overlay'] = {
+                'top': str(overlay.get('top', 0)),
+                'left': str(overlay.get('left', 0)),
+                'width': str(overlay.get('width', 0)),
+                'height': str(overlay.get('height', 0))
+            }
+            print(f"[OVERLAY] Saved button overlay for {tour_key}: {tour_settings['button_overlay']}")
+        else:
+            # Clear overlay if empty/invalid
+            if 'button_overlay' in tour_settings:
+                del tour_settings['button_overlay']
     
     # Clean up empty settings
     tour_settings = {k: v for k, v in tour_settings.items() if v}
