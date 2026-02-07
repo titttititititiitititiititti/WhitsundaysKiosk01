@@ -1582,6 +1582,58 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T13:24:07.768506",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T13:24:09.115713",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-07T13:24:11.458338",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T13:28:17.671533",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T13:28:17.671533",
+      "duration_seconds": 367.916482
+    },
+    {
+      "session_id": "session_7823427d2c54_1770434899",
+      "account": "bailey",
+      "started_at": "2026-02-07T13:28:19.565937",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T13:28:19.565937",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -1593,5 +1645,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-07T13:22:09.756531"
+  "last_updated": "2026-02-07T13:28:19.577380"
 }

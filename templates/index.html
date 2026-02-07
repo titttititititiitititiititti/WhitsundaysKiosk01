@@ -5465,24 +5465,17 @@
       margin: 0 auto;
     }
     
-    /* Kiosk Mode: Widget is VIEW-ONLY */
-    /* Users can see availability but must tap to book on phone */
-    .hero-booking-widget.kiosk-protected iframe {
-      pointer-events: none !important;
+    /* Kiosk Mode: Precise button overlay approach */
+    /* Widget remains FULLY INTERACTIVE - only the configured button area is blocked */
+    /* The overlay sits on top and catches clicks to redirect to QR modal */
+    
+    .kiosk-button-overlay {
+      /* Styles applied inline via JavaScript for flexibility */
     }
     
-    .kiosk-widget-overlay {
-      /* Full overlay that catches all clicks */
-    }
-    
-    .kiosk-book-cta:hover {
-      transform: scale(1.05) !important;
-      box-shadow: 0 12px 40px rgba(0,119,182,0.7) !important;
-    }
-    
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 8px 30px rgba(0,119,182,0.6); }
-      50% { box-shadow: 0 8px 40px rgba(0,119,182,0.9), 0 0 20px rgba(0,119,182,0.4); }
+    .kiosk-precise-overlay:hover {
+      transform: scale(1.03) !important;
+      box-shadow: 0 6px 30px rgba(0,119,182,0.7) !important;
     }
     
     /* Ensure Rezdy widgets are centered and visible */
@@ -17210,18 +17203,7 @@
         // Add the button blocker overlay (precise if configured, fallback otherwise)
         addButtonBlockerOverlay(widget, overlayConfig);
         
-        // Also try to intercept buttons directly (works for non-iframe widgets)
-        const observer = new MutationObserver((mutations) => {
-          neutralizeBookingButtons(widget);
-        });
-        observer.observe(widget, { childList: true, subtree: true });
-        
-        // Scan multiple times as widgets load asynchronously
-        [100, 500, 1000, 2000, 3000, 5000].forEach(delay => {
-          setTimeout(() => neutralizeBookingButtons(widget), delay);
-        });
-        
-        console.log('🛡️ Widget protection enabled');
+        console.log('🛡️ Widget protection enabled - widget remains interactive, only button area blocked');
       });
     }
     
