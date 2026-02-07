@@ -15020,16 +15020,122 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T11:13:41.801051",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T11:13:41.801051",
+      "duration_seconds": 120.152899
+    },
+    {
+      "session_id": "session_c54019552474_1770426822",
+      "account": "bailey",
+      "started_at": "2026-02-07T11:13:42.899354",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T11:13:42.899354",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T11:15:43.750239",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T11:15:43.750239",
+      "duration_seconds": 120.850885
+    },
+    {
+      "session_id": "session_b3ec5c0e756a_1770426944",
+      "account": "bailey",
+      "started_at": "2026-02-07T11:15:44.557464",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T11:15:44.557464",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T11:17:44.772328",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T11:17:44.772328",
+      "duration_seconds": 120.214864
+    },
+    {
+      "session_id": "session_f5a167a4fa38_1770427065",
+      "account": "bailey",
+      "started_at": "2026-02-07T11:17:45.388492",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T11:17:45.388492",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T11:18:06.589787",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T11:18:07.261024",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-07T11:18:09.389640",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
       "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-07T11:11:41.649673"
+  "last_updated": "2026-02-07T11:18:09.391149"
 }
