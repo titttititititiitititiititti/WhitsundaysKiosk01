@@ -17184,12 +17184,27 @@
         
         // Try to get overlay config from tour overrides
         let overlayConfig = null;
-        if (tourData && tourData.key && typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides) {
-          const tourOverrides = HERO_BOOKING.tour_overrides[tourData.key];
-          if (tourOverrides && tourOverrides.button_overlay) {
-            overlayConfig = tourOverrides.button_overlay;
-            console.log('🎯 Found saved overlay config for tour:', overlayConfig);
+        const tourKey = tourData?.key;
+        console.log('🔍 Looking for overlay config for tour key:', tourKey);
+        
+        if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides) {
+          console.log('🔍 Available tour overrides:', Object.keys(HERO_BOOKING.tour_overrides));
+          
+          if (tourKey && HERO_BOOKING.tour_overrides[tourKey]) {
+            const tourOverrides = HERO_BOOKING.tour_overrides[tourKey];
+            console.log('🔍 Tour overrides for this tour:', tourOverrides);
+            
+            if (tourOverrides.button_overlay) {
+              overlayConfig = tourOverrides.button_overlay;
+              console.log('🎯 FOUND precise overlay config:', overlayConfig);
+            } else {
+              console.log('⚠️ Tour has overrides but NO button_overlay configured');
+            }
+          } else {
+            console.log('⚠️ No overrides found for tour key:', tourKey);
           }
+        } else {
+          console.log('⚠️ HERO_BOOKING.tour_overrides not available');
         }
         
         // Add the button blocker overlay (precise if configured, fallback otherwise)
@@ -17274,7 +17289,9 @@
         
       } else {
         // FALLBACK: No precise config, use bottom-area coverage
-        console.log('⚠️ No precise overlay config - using fallback bottom coverage');
+        console.log('⚠️ No precise overlay config found for this tour');
+        console.log('   Tour data:', tourData);
+        console.log('   HERO_BOOKING:', typeof HERO_BOOKING !== 'undefined' ? HERO_BOOKING : 'undefined');
         
         const fallbackOverlay = document.createElement('div');
         fallbackOverlay.className = 'kiosk-button-overlay kiosk-fallback-overlay';
@@ -17283,11 +17300,11 @@
           bottom: 0 !important;
           left: 0 !important;
           right: 0 !important;
-          height: 25% !important;
+          height: 30% !important;
           background: linear-gradient(to bottom, 
             rgba(255,255,255,0) 0%, 
-            rgba(255,255,255,0.8) 20%, 
-            rgba(255,255,255,0.95) 40%,
+            rgba(255,255,255,0.85) 25%, 
+            rgba(255,255,255,0.98) 50%,
             rgba(255,255,255,1) 100%) !important;
           cursor: pointer !important;
           z-index: 999999 !important;
@@ -17295,14 +17312,13 @@
           flex-direction: column !important;
           align-items: center !important;
           justify-content: flex-end !important;
-          padding-bottom: 20px !important;
+          padding-bottom: 25px !important;
         `;
         
         fallbackOverlay.innerHTML = `
-          <div style="background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%); color: white; padding: 15px 35px; border-radius: 40px; font-weight: 700; font-size: 1.2em; box-shadow: 0 6px 25px rgba(0,119,182,0.5); cursor: pointer;">
+          <div style="background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%); color: white; padding: 18px 40px; border-radius: 40px; font-weight: 700; font-size: 1.3em; box-shadow: 0 6px 25px rgba(0,119,182,0.5); cursor: pointer;">
             📱 Tap to Book on Phone
           </div>
-          <p style="margin: 8px 0 0 0; color: #555; font-size: 0.9em;">Configure precise overlay in admin for better UX</p>
         `;
         
         fallbackOverlay.addEventListener('click', function(e) {
@@ -17313,7 +17329,7 @@
         }, true);
         
         widget.appendChild(fallbackOverlay);
-        console.log('🛡️ Fallback overlay applied - bottom 25% blocked');
+        console.log('🛡️ Fallback overlay applied - bottom 30% blocked');
       }
     }
     
