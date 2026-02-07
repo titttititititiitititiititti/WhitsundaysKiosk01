@@ -1444,19 +1444,23 @@
                 [LOG] Overlay configurator ready...
             </div>
             
-            <!-- Widget preview container -->
-            <div id="widgetPreviewContainer" style="position: relative; background: white; border-radius: 8px; overflow: hidden; min-height: 400px;">
-                <div id="widgetPreviewContent"></div>
-                
-                <!-- Drawing overlay -->
-                <div id="drawingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; z-index: 100;"></div>
-                
-                <!-- Selection rectangle -->
-                <div id="selectionRect" style="position: absolute; border: 3px dashed #3b82f6; background: rgba(59, 130, 246, 0.3); display: none; z-index: 101; pointer-events: none;"></div>
-                
-                <!-- Saved overlay indicator -->
-                <div id="savedOverlayRect" style="position: absolute; border: 3px solid #22c55e; background: rgba(34, 197, 94, 0.2); display: none; z-index: 99; pointer-events: none;">
-                    <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #22c55e; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; white-space: nowrap;">📱 Kiosk Overlay</span>
+            <!-- Widget preview container - MATCHES KIOSK STYLING -->
+            <div style="background: #f0f4f8; padding: 20px; border-radius: 12px;">
+                <p style="color: #64748b; font-size: 0.85em; margin: 0 0 10px 0; text-align: center;">⚠️ Preview matches kiosk display size</p>
+                <div id="widgetPreviewContainer" style="position: relative; background: white; border-radius: 12px; overflow: hidden; width: 100%; max-width: 800px; margin: 0 auto;">
+                    <!-- Widget content wrapper - same as kiosk .hero-booking-widget -->
+                    <div id="widgetPreviewContent" class="kiosk-widget-preview" style="width: 100%; min-height: 800px; background: white; border-radius: 12px; display: flex; flex-direction: column; align-items: center;"></div>
+                    
+                    <!-- Drawing overlay -->
+                    <div id="drawingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; z-index: 100;"></div>
+                    
+                    <!-- Selection rectangle -->
+                    <div id="selectionRect" style="position: absolute; border: 3px dashed #3b82f6; background: rgba(59, 130, 246, 0.3); display: none; z-index: 101; pointer-events: none;"></div>
+                    
+                    <!-- Saved overlay indicator -->
+                    <div id="savedOverlayRect" style="position: absolute; border: 3px solid #22c55e; background: rgba(34, 197, 94, 0.2); display: none; z-index: 99; pointer-events: none;">
+                        <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #22c55e; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; white-space: nowrap;">📱 Kiosk Overlay</span>
+                    </div>
                 </div>
             </div>
             
@@ -1527,6 +1531,20 @@
             // Load widget into preview
             const preview = document.getElementById('widgetPreviewContent');
             preview.innerHTML = widgetHtml;
+            
+            // CRITICAL: Apply EXACT same styling as kiosk does to iframes
+            // This ensures the widget displays identically to how it appears on kiosk
+            const iframe = preview.querySelector('iframe');
+            if (iframe) {
+                iframe.style.cssText = 'width: 100% !important; min-width: 300px; max-width: 100%; min-height: 900px !important; height: 1000px !important; border: none !important; display: block; margin: 0 auto;';
+                overlayLog('✅ Applied kiosk iframe styling (900px+ height)');
+            }
+            
+            // Also apply styling to Rezdy widgets
+            const rezdyElements = preview.querySelectorAll('[class*="rezdy"], .rezdy');
+            rezdyElements.forEach(el => {
+                el.style.cssText = 'width: 100% !important; max-width: 100% !important; min-height: 900px !important; margin: 0 auto !important;';
+            });
             
             overlayLog('Widget loaded into preview');
             overlayLog('Widget container dimensions: ' + preview.offsetWidth + 'x' + preview.offsetHeight + 'px');

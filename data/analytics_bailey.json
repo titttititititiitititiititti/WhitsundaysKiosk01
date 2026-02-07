@@ -1634,6 +1634,139 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T13:30:19.784140",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T13:30:19.785153",
+      "duration_seconds": 120.219216
+    },
+    {
+      "session_id": "session_4106265535cf_1770435022",
+      "account": "bailey",
+      "started_at": "2026-02-07T13:30:22.195871",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T13:30:22.195871",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T13:32:22.654482",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T13:32:22.654482",
+      "duration_seconds": 120.458611
+    },
+    {
+      "session_id": "session_5de10a1172a8_1770435143",
+      "account": "bailey",
+      "started_at": "2026-02-07T13:32:23.178184",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T13:32:23.178184",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T13:33:25.005056",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T13:33:27.573850",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-07T13:33:29.730767",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T13:35:49.196232",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T13:35:49.196232",
+      "duration_seconds": 206.018048
+    },
+    {
+      "session_id": "session_089f7fb6dba8_1770435349",
+      "account": "bailey",
+      "started_at": "2026-02-07T13:35:49.965462",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T13:35:49.965462",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T13:38:56.654047",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T13:38:56.654047",
+      "duration_seconds": 186.688585
+    },
+    {
+      "session_id": "session_4e63ac352131_1770435537",
+      "account": "bailey",
+      "started_at": "2026-02-07T13:38:57.730358",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T13:38:57.730358",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -1645,5 +1778,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-07T13:28:19.577380"
+  "last_updated": "2026-02-07T13:38:57.731365"
 }
