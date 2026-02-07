@@ -5451,6 +5451,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
     
     .hero-booking-widget iframe {
@@ -5462,6 +5463,45 @@
       border: none !important;
       display: block;
       margin: 0 auto;
+    }
+    
+    /* Kiosk Mode: Overlay to block widget Book Now clicks but allow viewing */
+    .hero-booking-widget.kiosk-protected::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 10;
+      cursor: pointer;
+    }
+    
+    /* Visual hint banner for kiosk mode */
+    .hero-widget-kiosk-hint {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 119, 182, 0.95) 0%, rgba(0, 119, 182, 0.85) 70%, transparent 100%);
+      color: white;
+      padding: 40px 20px 20px 20px;
+      text-align: center;
+      z-index: 15;
+      pointer-events: none;
+    }
+    
+    .hero-widget-kiosk-hint h4 {
+      margin: 0 0 8px 0;
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+    
+    .hero-widget-kiosk-hint p {
+      margin: 0;
+      font-size: 1em;
+      opacity: 0.9;
     }
     
     /* Ensure Rezdy widgets are centered and visible */
@@ -16093,6 +16133,7 @@
         "showing_all_tours": "Showing all available tours",
         "tap_any_card": "Tap Any Card For Booking and More Info",
         "book_now": "Book Now", "share_tour": "Share Tour", "send_to_phone": "Send to My Phone",
+        "tap_to_book_on_phone": "Tap Anywhere to Book on Your Phone", "complete_booking_securely": "Complete your booking securely on your device",
         "select_all_that_apply": "Select all that apply",
         "tours_by": "Tours by {company}",
         "from_price": "FROM",
@@ -16171,6 +16212,7 @@
         "showing_all_tours": "すべてのツアーを表示中",
         "tap_any_card": "カードをタップして詳細を見る",
         "book_now": "今すぐ予約", "share_tour": "シェア", "send_to_phone": "スマホに送信",
+        "tap_to_book_on_phone": "タップしてスマホで予約", "complete_booking_securely": "お使いのデバイスで安全に予約完了",
         "select_all_that_apply": "該当するものをすべて選択",
         "tours_by": "{company}のツアー",
         "from_price": "から",
@@ -16249,6 +16291,7 @@
         "showing_all_tours": "显示所有旅程",
         "tap_any_card": "点击卡片查看详情",
         "book_now": "立即预订", "share_tour": "分享", "send_to_phone": "发送到手机",
+        "tap_to_book_on_phone": "点击在手机上预订", "complete_booking_securely": "在您的设备上安全完成预订",
         "select_all_that_apply": "选择所有适用项",
         "tours_by": "{company}的旅程",
         "from_price": "起价",
@@ -16327,6 +16370,7 @@
         "showing_all_tours": "모든 투어 표시 중",
         "tap_any_card": "카드를 탭하여 자세히 보기",
         "book_now": "지금 예약", "share_tour": "공유", "send_to_phone": "휴대폰으로 전송",
+        "tap_to_book_on_phone": "탭하여 휴대폰으로 예약", "complete_booking_securely": "기기에서 안전하게 예약 완료",
         "select_all_that_apply": "해당하는 항목을 모두 선택",
         "tours_by": "{company} 투어",
         "from_price": "부터",
@@ -16405,6 +16449,7 @@
         "showing_all_tours": "Alle Touren werden angezeigt",
         "tap_any_card": "Karte antippen für Details",
         "book_now": "Jetzt buchen", "share_tour": "Teilen", "send_to_phone": "An Handy senden",
+        "tap_to_book_on_phone": "Tippen um auf dem Handy zu buchen", "complete_booking_securely": "Sicher auf Ihrem Gerät buchen",
         "select_all_that_apply": "Alle zutreffenden auswählen",
         "tours_by": "Touren von {company}",
         "from_price": "AB",
@@ -16483,6 +16528,7 @@
         "showing_all_tours": "Affichage de toutes les excursions",
         "tap_any_card": "Appuyez sur une carte pour plus de détails",
         "book_now": "Réserver", "share_tour": "Partager", "send_to_phone": "Envoyer au téléphone",
+        "tap_to_book_on_phone": "Appuyez pour réserver sur votre téléphone", "complete_booking_securely": "Complétez votre réservation en toute sécurité",
         "select_all_that_apply": "Sélectionnez tout ce qui s'applique",
         "tours_by": "Excursions de {company}",
         "from_price": "À PARTIR DE",
@@ -16561,6 +16607,7 @@
         "showing_all_tours": "सभी टूर दिखाए जा रहे हैं",
         "tap_any_card": "विवरण के लिए कार्ड पर टैप करें",
         "book_now": "अभी बुक करें", "share_tour": "शेयर करें", "send_to_phone": "फोन पर भेजें",
+        "tap_to_book_on_phone": "फोन पर बुक करने के लिए टैप करें", "complete_booking_securely": "अपने डिवाइस पर सुरक्षित रूप से बुकिंग पूरी करें",
         "select_all_that_apply": "सभी लागू चुनें",
         "tours_by": "{company} के टूर",
         "from_price": "से",
@@ -16639,6 +16686,7 @@
         "showing_all_tours": "Mostrando todos los tours",
         "tap_any_card": "Toca cualquier tarjeta para más detalles",
         "book_now": "Reservar ahora", "share_tour": "Compartir", "send_to_phone": "Enviar al teléfono",
+        "tap_to_book_on_phone": "Toca para reservar en tu teléfono", "complete_booking_securely": "Completa tu reserva de forma segura en tu dispositivo",
         "select_all_that_apply": "Selecciona todos los que apliquen",
         "tours_by": "Tours de {company}",
         "from_price": "DESDE",
@@ -17109,6 +17157,72 @@
         const sendToPhoneBtn = document.getElementById('send-to-phone-btn');
         if (acceptBtn) acceptBtn.style.display = 'none';
         if (sendToPhoneBtn) sendToPhoneBtn.style.display = 'none';
+      });
+    }
+    
+    // =====================================================================
+    // KIOSK WIDGET PROTECTION - Block embedded widget Book Now buttons
+    // Allows users to VIEW availability but forces QR booking flow
+    // =====================================================================
+    let currentProtectedTourData = null; // Store tour data for QR generation
+    
+    function protectBookingWidgets(tourData) {
+      // Only protect in kiosk mode (not web visitors, not demo mode)
+      if (!isKiosk || isDemoMode) return;
+      
+      currentProtectedTourData = tourData;
+      
+      // Find all hero-booking-widget elements and protect them
+      const widgets = document.querySelectorAll('.hero-booking-widget');
+      
+      widgets.forEach(widget => {
+        // Skip if already protected
+        if (widget.classList.contains('kiosk-protected')) return;
+        
+        // Add protection class (creates transparent overlay via CSS)
+        widget.classList.add('kiosk-protected');
+        
+        // Add visual hint banner
+        const existingHint = widget.querySelector('.hero-widget-kiosk-hint');
+        if (!existingHint) {
+          const hint = document.createElement('div');
+          hint.className = 'hero-widget-kiosk-hint';
+          hint.innerHTML = `
+            <h4>📱 ${t('tap_to_book_on_phone')}</h4>
+            <p>${t('complete_booking_securely')}</p>
+          `;
+          widget.appendChild(hint);
+        }
+        
+        // Add click handler to the overlay (which is ::after pseudo-element, so we handle click on widget)
+        widget.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('🛡️ Widget click intercepted, showing QR modal');
+          
+          if (currentProtectedTourData) {
+            // Try to get booking URL and show QR
+            const bookingUrl = currentProtectedTourData.link_booking || 
+                               currentProtectedTourData.booking_link || 
+                               currentProtectedTourData.booking_url ||
+                               getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
+            
+            if (bookingUrl) {
+              showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
+            } else {
+              // Fallback: show more info link or tour page
+              const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
+              if (moreInfoUrl) {
+                showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
+              } else {
+                alert('Scan the QR code at the bottom of this page to book on your phone!');
+              }
+            }
+          }
+        });
+        
+        console.log('🛡️ Protected booking widget for kiosk mode');
       });
     }
     
@@ -18952,6 +19066,9 @@
       
       scrollableContent.innerHTML = detailsHtml;
       scrollableContent.style.display = 'flex';
+      
+      // Protect any Hero booking widgets in kiosk mode
+      setTimeout(() => protectBookingWidgets(fullTourData), 100);
       
       // Smooth scroll to show the new sections
       setTimeout(() => {
@@ -26114,6 +26231,8 @@
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
+              // Protect widget in kiosk mode
+              setTimeout(() => protectBookingWidgets(data), 100);
             } else if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.enabled && HERO_BOOKING.pricing_widget_url) {
               // Show global Hero booking widget (iframe URL)
               const tourName = data.name || '';
@@ -26137,6 +26256,8 @@
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
+              // Protect widget in kiosk mode
+              setTimeout(() => protectBookingWidgets(data), 100);
             } else {
               // Default pricing display
               pricingSection.querySelector('h2').textContent = 'Pricing';
@@ -28490,7 +28611,9 @@
         'show_me_everything': 'Show me everything',
         'similar_tours_title': 'Similar Tours You Might Like',
         'match': 'match',
-        'showing_filtered_tours': 'Showing filtered tours'
+        'showing_filtered_tours': 'Showing filtered tours',
+        'tap_to_book_on_phone': 'Tap Anywhere to Book on Your Phone',
+        'complete_booking_securely': 'Complete your booking securely on your device'
       };
       return inlineDefaults[key] || key;
     }
