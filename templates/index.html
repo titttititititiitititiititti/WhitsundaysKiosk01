@@ -5465,53 +5465,17 @@
       margin: 0 auto;
     }
     
-    /* Kiosk Mode: Smart protection - users can interact with calendar/dropdowns */
-    /* The ::after overlay is REMOVED - we now use JavaScript to intercept buttons */
-    
-    /* Visual hint banner for kiosk mode - shown at bottom */
-    .hero-widget-kiosk-hint {
-      position: relative;
-      background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      z-index: 15;
-      border-radius: 0 0 12px 12px;
-      margin-top: -5px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    /* Kiosk Mode: Button blocker overlay - covers booking buttons */
+    /* Users can still interact with calendar and dropdowns above the overlay */
+    .kiosk-button-blocker-overlay {
+      /* Styles are set inline via JavaScript for reliability */
+      /* This class is here for debugging/inspection */
     }
     
-    .hero-widget-kiosk-hint:hover {
-      background: linear-gradient(135deg, #023e8a 0%, #012a5e 100%);
-      transform: scale(1.01);
-    }
-    
-    .hero-widget-kiosk-hint h4 {
-      margin: 0 0 8px 0;
-      font-size: 1.3em;
-      font-weight: 600;
-    }
-    
-    .hero-widget-kiosk-hint p {
-      margin: 0;
-      font-size: 1em;
-      opacity: 0.9;
-    }
-    
-    /* Style for neutralized booking buttons inside widgets */
-    [data-kiosk-neutralized="true"] {
-      position: relative !important;
-    }
-    
-    [data-kiosk-neutralized="true"]::after {
-      content: '📱 Book on Phone';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 0.9em;
-      white-space: nowrap;
+    /* Hide the actual booking buttons if we can access them */
+    .hero-booking-widget.kiosk-protected [data-kiosk-neutralized="true"] {
+      pointer-events: none !important;
+      opacity: 0.5 !important;
     }
     
     /* Ensure Rezdy widgets are centered and visible */
@@ -17209,29 +17173,81 @@
         if (widget.classList.contains('kiosk-protected')) return;
         widget.classList.add('kiosk-protected');
         
-        // METHOD 1: For script-injected widgets (DOM elements we can access)
-        // Use MutationObserver to detect and neutralize booking buttons
+        console.log('🛡️ Protecting widget:', widget);
+        
+        // ALWAYS add the button blocker overlay - this is the most reliable method
+        // It covers the bottom portion where buttons typically are
+        addButtonBlockerOverlay(widget);
+        
+        // Also try to intercept buttons directly (works for non-iframe widgets)
         const observer = new MutationObserver((mutations) => {
           neutralizeBookingButtons(widget);
         });
         observer.observe(widget, { childList: true, subtree: true });
         
-        // Initial scan for buttons
-        setTimeout(() => neutralizeBookingButtons(widget), 500);
-        setTimeout(() => neutralizeBookingButtons(widget), 1500);
-        setTimeout(() => neutralizeBookingButtons(widget), 3000);
-        
-        // METHOD 2: For iframes - add smart bottom overlay
-        const iframes = widget.querySelectorAll('iframe');
-        iframes.forEach(iframe => {
-          protectIframeWidget(iframe, widget);
+        // Scan multiple times as widgets load asynchronously
+        [100, 500, 1000, 2000, 3000, 5000].forEach(delay => {
+          setTimeout(() => neutralizeBookingButtons(widget), delay);
         });
         
-        // Add visual hint banner at bottom
-        addKioskHintBanner(widget);
-        
-        console.log('🛡️ Smart widget protection enabled - calendar/dropdowns remain interactive');
+        console.log('🛡️ Widget protection enabled');
       });
+    }
+    
+    function addButtonBlockerOverlay(widget) {
+      // Remove any existing blocker
+      const existing = widget.querySelector('.kiosk-button-blocker-overlay');
+      if (existing) existing.remove();
+      
+      // Ensure widget has position relative for absolute positioning
+      widget.style.position = 'relative';
+      widget.style.overflow = 'visible';
+      
+      // Create an overlay that covers the button area (bottom ~220px)
+      const blocker = document.createElement('div');
+      blocker.className = 'kiosk-button-blocker-overlay';
+      blocker.style.cssText = `
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 220px !important;
+        background: linear-gradient(to bottom, 
+          rgba(255,255,255,0) 0%, 
+          rgba(255,255,255,0.85) 15%, 
+          rgba(255,255,255,0.98) 30%, 
+          rgba(255,255,255,1) 100%) !important;
+        cursor: pointer !important;
+        z-index: 999999 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        pointer-events: auto !important;
+      `;
+      
+      blocker.innerHTML = `
+        <div style="background:linear-gradient(135deg, #0077b6 0%, #023e8a 100%);color:white;padding:18px 36px;border-radius:35px;font-weight:700;font-size:1.3em;box-shadow:0 6px 25px rgba(0,119,182,0.5);text-align:center;cursor:pointer;">
+          📱 Tap Here to Book on Your Phone
+        </div>
+        <p style="margin:0;color:#555;font-size:1em;font-weight:500;">Complete your booking securely on your device</p>
+      `;
+      
+      blocker.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        console.log('🛡️ Button blocker clicked - showing QR modal');
+        showKioskBookingRedirect();
+      }, true);
+      
+      // Also block any clicks that somehow get through
+      blocker.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); }, true);
+      blocker.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); }, true);
+      
+      widget.appendChild(blocker);
+      console.log('🛡️ Button blocker overlay added to widget');
     }
     
     function neutralizeBookingButtons(container) {
@@ -17280,65 +17296,6 @@
       });
     }
     
-    function protectIframeWidget(iframe, container) {
-      // For iframes, we can't modify content, but we can add a smart overlay
-      // that covers ONLY the bottom portion where buttons typically are
-      
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = 'position:relative;width:100%;height:100%;';
-      
-      // Move iframe into wrapper
-      iframe.parentNode.insertBefore(wrapper, iframe);
-      wrapper.appendChild(iframe);
-      
-      // Create bottom overlay (covers bottom 120px where buttons usually are)
-      const bottomOverlay = document.createElement('div');
-      bottomOverlay.className = 'kiosk-iframe-button-blocker';
-      bottomOverlay.style.cssText = `
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 140px;
-        background: linear-gradient(to bottom, transparent 0%, rgba(0, 119, 182, 0.1) 30%, rgba(0, 119, 182, 0.3) 100%);
-        cursor: pointer;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(2px);
-      `;
-      
-      // Add tap hint
-      bottomOverlay.innerHTML = `
-        <div style="background:rgba(0,119,182,0.95);color:white;padding:12px 24px;border-radius:25px;font-weight:600;font-size:1.1em;box-shadow:0 4px 15px rgba(0,0,0,0.2);">
-          📱 ${t('tap_to_book_on_phone')}
-        </div>
-      `;
-      
-      bottomOverlay.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        showKioskBookingRedirect();
-      });
-      
-      wrapper.appendChild(bottomOverlay);
-    }
-    
-    function addKioskHintBanner(widget) {
-      const existingHint = widget.querySelector('.hero-widget-kiosk-hint');
-      if (existingHint) return;
-      
-      const hint = document.createElement('div');
-      hint.className = 'hero-widget-kiosk-hint';
-      hint.innerHTML = `
-        <h4>📱 ${t('tap_to_book_on_phone')}</h4>
-        <p>${t('complete_booking_securely')}</p>
-      `;
-      hint.style.cursor = 'pointer';
-      hint.addEventListener('click', showKioskBookingRedirect);
-      widget.appendChild(hint);
-    }
     
     function showKioskBookingRedirect() {
       if (currentProtectedTourData) {
