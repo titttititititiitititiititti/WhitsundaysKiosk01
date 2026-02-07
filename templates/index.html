@@ -5465,17 +5465,24 @@
       margin: 0 auto;
     }
     
-    /* Kiosk Mode: Button blocker overlay - covers booking buttons */
-    /* Users can still interact with calendar and dropdowns above the overlay */
-    .kiosk-button-blocker-overlay {
-      /* Styles are set inline via JavaScript for reliability */
-      /* This class is here for debugging/inspection */
+    /* Kiosk Mode: Widget is VIEW-ONLY */
+    /* Users can see availability but must tap to book on phone */
+    .hero-booking-widget.kiosk-protected iframe {
+      pointer-events: none !important;
     }
     
-    /* Hide the actual booking buttons if we can access them */
-    .hero-booking-widget.kiosk-protected [data-kiosk-neutralized="true"] {
-      pointer-events: none !important;
-      opacity: 0.5 !important;
+    .kiosk-widget-overlay {
+      /* Full overlay that catches all clicks */
+    }
+    
+    .kiosk-book-cta:hover {
+      transform: scale(1.05) !important;
+      box-shadow: 0 12px 40px rgba(0,119,182,0.7) !important;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 8px 30px rgba(0,119,182,0.6); }
+      50% { box-shadow: 0 8px 40px rgba(0,119,182,0.9), 0 0 20px rgba(0,119,182,0.4); }
     }
     
     /* Ensure Rezdy widgets are centered and visible */
@@ -17195,71 +17202,81 @@
     }
     
     function addButtonBlockerOverlay(widget) {
+      // NEW APPROACH: Make the widget VIEW-ONLY
+      // Users can SEE availability/prices but CANNOT interact
+      // They MUST use our "Book on Phone" button
+      
       // Remove any existing blocker
-      const existing = widget.querySelector('.kiosk-button-blocker-overlay');
+      const existing = widget.querySelector('.kiosk-widget-overlay');
       if (existing) existing.remove();
       
-      // Ensure widget has position relative for absolute positioning
+      // Ensure widget has position relative
       widget.style.position = 'relative';
-      widget.style.overflow = 'hidden'; // Clip the overlay to widget bounds
       
-      // Overlay covers the button area (buttons + footer text below them)
-      // Rezdy has: buttons + "Please note" text + padding
-      // Hero has: buttons + "Powered by Hero" + padding
-      // 300px covers buttons while leaving calendar/dropdowns visible
-      const overlayHeight = 300;
+      // STEP 1: Disable ALL interactions on iframes and embedded content
+      const iframes = widget.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        iframe.style.pointerEvents = 'none';
+        iframe.style.userSelect = 'none';
+      });
       
-      // Create an overlay that covers the lower portion where buttons are
-      const blocker = document.createElement('div');
-      blocker.className = 'kiosk-button-blocker-overlay';
-      blocker.style.cssText = `
+      // Also disable any direct widget content
+      const widgetContent = widget.querySelectorAll('button, a, input, select, [onclick]');
+      widgetContent.forEach(el => {
+        el.style.pointerEvents = 'none';
+      });
+      
+      // STEP 2: Add a full transparent overlay that catches all clicks
+      const overlay = document.createElement('div');
+      overlay.className = 'kiosk-widget-overlay';
+      overlay.style.cssText = `
         position: absolute !important;
-        bottom: 0 !important;
+        top: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        height: ${overlayHeight}px !important;
-        background: linear-gradient(to bottom, 
-          rgba(255,255,255,0) 0%, 
-          rgba(255,255,255,0.5) 5%, 
-          rgba(255,255,255,0.85) 12%, 
-          rgba(255,255,255,0.95) 20%, 
-          rgba(255,255,255,1) 30%,
-          rgba(255,255,255,1) 100%) !important;
+        bottom: 0 !important;
+        background: transparent !important;
         cursor: pointer !important;
         z-index: 999999 !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: flex-end !important;
-        padding-bottom: 40px !important;
-        gap: 12px !important;
-        pointer-events: auto !important;
+        padding-bottom: 30px !important;
       `;
       
-      blocker.innerHTML = `
-        <div style="background:linear-gradient(135deg, #0077b6 0%, #023e8a 100%);color:white;padding:20px 45px;border-radius:40px;font-weight:700;font-size:1.4em;box-shadow:0 8px 30px rgba(0,119,182,0.5);text-align:center;cursor:pointer;transition:transform 0.2s;">
-          📱 Tap Here to Book on Your Phone
+      // STEP 3: Add a clear call-to-action at the bottom
+      overlay.innerHTML = `
+        <div class="kiosk-book-cta" style="
+          background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
+          color: white;
+          padding: 18px 40px;
+          border-radius: 50px;
+          font-weight: 700;
+          font-size: 1.3em;
+          box-shadow: 0 8px 30px rgba(0,119,182,0.6);
+          text-align: center;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+          animation: pulse-glow 2s infinite;
+        ">
+          📱 Tap Anywhere to Book on Your Phone
         </div>
-        <p style="margin:0;color:#444;font-size:1.1em;font-weight:500;">Complete your booking securely on your device</p>
+        <p style="margin: 10px 0 0 0; color: #333; font-size: 1em; font-weight: 500; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">
+          View availability above • Complete booking on your device
+        </p>
       `;
       
-      blocker.addEventListener('click', function(e) {
+      // Clicking anywhere on the overlay shows the QR modal
+      overlay.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        e.stopImmediatePropagation();
-        console.log('🛡️ Button blocker clicked - showing QR modal');
+        console.log('🛡️ Widget overlay clicked - showing QR modal');
         showKioskBookingRedirect();
       }, true);
       
-      // Block all interaction types
-      ['mousedown', 'mouseup', 'touchstart', 'touchend', 'pointerdown', 'pointerup'].forEach(evt => {
-        blocker.addEventListener(evt, e => { 
-          e.stopPropagation(); 
-        }, true);
-      });
-      
-      widget.appendChild(blocker);
-      console.log('🛡️ Button blocker overlay added - fixed 180px from bottom');
+      widget.appendChild(overlay);
+      console.log('🛡️ Widget set to VIEW-ONLY mode - all interactions disabled');
     }
     
     function neutralizeBookingButtons(container) {
