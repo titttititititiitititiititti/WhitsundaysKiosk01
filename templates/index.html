@@ -17203,11 +17203,10 @@
       widget.style.position = 'relative';
       widget.style.overflow = 'hidden'; // Clip the overlay to widget bounds
       
-      // Get widget height to calculate overlay size
-      // Cover bottom 65% of the widget - buttons are usually in the lower half
-      // Minimum 400px to ensure coverage on shorter widgets
-      const widgetHeight = widget.offsetHeight || 800;
-      const overlayHeight = Math.max(400, widgetHeight * 0.65);
+      // Overlay covers ONLY the bottom button area (not the calendar/dropdowns)
+      // Booking buttons are always at the very bottom of widgets
+      // 180px is enough to cover buttons + some padding, but not the calendar
+      const overlayHeight = 180;
       
       // Create an overlay that covers the lower portion where buttons are
       const blocker = document.createElement('div');
@@ -17259,14 +17258,7 @@
       });
       
       widget.appendChild(blocker);
-      
-      // Also reposition on window resize
-      window.addEventListener('resize', () => {
-        const newHeight = Math.max(350, widget.offsetHeight * 0.55);
-        blocker.style.height = newHeight + 'px';
-      });
-      
-      console.log('🛡️ Button blocker overlay added - height:', overlayHeight + 'px');
+      console.log('🛡️ Button blocker overlay added - fixed 180px from bottom');
     }
     
     function neutralizeBookingButtons(container) {
