@@ -5465,31 +5465,26 @@
       margin: 0 auto;
     }
     
-    /* Kiosk Mode: Overlay to block widget Book Now clicks but allow viewing */
-    .hero-booking-widget.kiosk-protected::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: transparent;
-      z-index: 10;
-      cursor: pointer;
-    }
+    /* Kiosk Mode: Smart protection - users can interact with calendar/dropdowns */
+    /* The ::after overlay is REMOVED - we now use JavaScript to intercept buttons */
     
-    /* Visual hint banner for kiosk mode */
+    /* Visual hint banner for kiosk mode - shown at bottom */
     .hero-widget-kiosk-hint {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0, 119, 182, 0.95) 0%, rgba(0, 119, 182, 0.85) 70%, transparent 100%);
+      position: relative;
+      background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
       color: white;
-      padding: 40px 20px 20px 20px;
+      padding: 20px;
       text-align: center;
       z-index: 15;
-      pointer-events: none;
+      border-radius: 0 0 12px 12px;
+      margin-top: -5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .hero-widget-kiosk-hint:hover {
+      background: linear-gradient(135deg, #023e8a 0%, #012a5e 100%);
+      transform: scale(1.01);
     }
     
     .hero-widget-kiosk-hint h4 {
@@ -5502,6 +5497,21 @@
       margin: 0;
       font-size: 1em;
       opacity: 0.9;
+    }
+    
+    /* Style for neutralized booking buttons inside widgets */
+    [data-kiosk-neutralized="true"] {
+      position: relative !important;
+    }
+    
+    [data-kiosk-neutralized="true"]::after {
+      content: '📱 Book on Phone';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.9em;
+      white-space: nowrap;
     }
     
     /* Ensure Rezdy widgets are centered and visible */
@@ -17161,10 +17171,29 @@
     }
     
     // =====================================================================
-    // KIOSK WIDGET PROTECTION - Block embedded widget Book Now buttons
-    // Allows users to VIEW availability but forces QR booking flow
+    // KIOSK WIDGET PROTECTION - Smart protection that allows interaction
+    // Users CAN: select dates, change quantities, view prices
+    // Users CANNOT: click Book Now, Buy Gift Card, or checkout buttons
     // =====================================================================
     let currentProtectedTourData = null; // Store tour data for QR generation
+    
+    // Common booking button text patterns (case-insensitive)
+    const BOOKING_BUTTON_PATTERNS = [
+      /book\s*now/i, /buy\s*now/i, /checkout/i, /purchase/i, /buy\s*gift\s*card/i,
+      /add\s*to\s*cart/i, /reserve/i, /confirm\s*booking/i, /complete\s*booking/i,
+      /proceed/i, /pay\s*now/i, /submit/i, /finalize/i
+    ];
+    
+    function isBookingButton(element) {
+      const text = (element.textContent || element.innerText || '').trim();
+      const value = (element.value || '').trim();
+      const ariaLabel = (element.getAttribute('aria-label') || '').trim();
+      const title = (element.getAttribute('title') || '').trim();
+      
+      const checkText = `${text} ${value} ${ariaLabel} ${title}`.toLowerCase();
+      
+      return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
+    }
     
     function protectBookingWidgets(tourData) {
       // Only protect in kiosk mode (not web visitors, not demo mode)
@@ -17172,58 +17201,161 @@
       
       currentProtectedTourData = tourData;
       
-      // Find all hero-booking-widget elements and protect them
+      // Find all hero-booking-widget elements
       const widgets = document.querySelectorAll('.hero-booking-widget');
       
       widgets.forEach(widget => {
         // Skip if already protected
         if (widget.classList.contains('kiosk-protected')) return;
-        
-        // Add protection class (creates transparent overlay via CSS)
         widget.classList.add('kiosk-protected');
         
-        // Add visual hint banner
-        const existingHint = widget.querySelector('.hero-widget-kiosk-hint');
-        if (!existingHint) {
-          const hint = document.createElement('div');
-          hint.className = 'hero-widget-kiosk-hint';
-          hint.innerHTML = `
-            <h4>📱 ${t('tap_to_book_on_phone')}</h4>
-            <p>${t('complete_booking_securely')}</p>
-          `;
-          widget.appendChild(hint);
-        }
+        // METHOD 1: For script-injected widgets (DOM elements we can access)
+        // Use MutationObserver to detect and neutralize booking buttons
+        const observer = new MutationObserver((mutations) => {
+          neutralizeBookingButtons(widget);
+        });
+        observer.observe(widget, { childList: true, subtree: true });
         
-        // Add click handler to the overlay (which is ::after pseudo-element, so we handle click on widget)
-        widget.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          console.log('🛡️ Widget click intercepted, showing QR modal');
-          
-          if (currentProtectedTourData) {
-            // Try to get booking URL and show QR
-            const bookingUrl = currentProtectedTourData.link_booking || 
-                               currentProtectedTourData.booking_link || 
-                               currentProtectedTourData.booking_url ||
-                               getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
-            
-            if (bookingUrl) {
-              showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
-            } else {
-              // Fallback: show more info link or tour page
-              const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
-              if (moreInfoUrl) {
-                showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
-              } else {
-                alert('Scan the QR code at the bottom of this page to book on your phone!');
-              }
-            }
-          }
+        // Initial scan for buttons
+        setTimeout(() => neutralizeBookingButtons(widget), 500);
+        setTimeout(() => neutralizeBookingButtons(widget), 1500);
+        setTimeout(() => neutralizeBookingButtons(widget), 3000);
+        
+        // METHOD 2: For iframes - add smart bottom overlay
+        const iframes = widget.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+          protectIframeWidget(iframe, widget);
         });
         
-        console.log('🛡️ Protected booking widget for kiosk mode');
+        // Add visual hint banner at bottom
+        addKioskHintBanner(widget);
+        
+        console.log('🛡️ Smart widget protection enabled - calendar/dropdowns remain interactive');
       });
+    }
+    
+    function neutralizeBookingButtons(container) {
+      // Find all buttons and links
+      const buttons = container.querySelectorAll('button, input[type="submit"], input[type="button"], a.btn, a[class*="button"], [role="button"]');
+      
+      buttons.forEach(btn => {
+        if (isBookingButton(btn) && !btn.dataset.kioskNeutralized) {
+          btn.dataset.kioskNeutralized = 'true';
+          
+          // Store original styles
+          const originalBg = btn.style.background;
+          const originalColor = btn.style.color;
+          
+          // Visual indication that this button leads to phone booking
+          btn.style.background = 'linear-gradient(135deg, #0077b6 0%, #023e8a 100%)';
+          btn.style.color = 'white';
+          btn.style.position = 'relative';
+          btn.style.overflow = 'hidden';
+          
+          // Replace click handler
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            console.log('🛡️ Booking button intercepted:', btn.textContent.trim());
+            showKioskBookingRedirect();
+            return false;
+          }, true); // Use capture phase to intercept before other handlers
+          
+          // Also prevent form submission if button is in a form
+          const form = btn.closest('form');
+          if (form && !form.dataset.kioskProtected) {
+            form.dataset.kioskProtected = 'true';
+            form.addEventListener('submit', function(e) {
+              e.preventDefault();
+              console.log('🛡️ Form submission intercepted');
+              showKioskBookingRedirect();
+              return false;
+            }, true);
+          }
+          
+          console.log('🛡️ Neutralized booking button:', btn.textContent.trim().substring(0, 30));
+        }
+      });
+    }
+    
+    function protectIframeWidget(iframe, container) {
+      // For iframes, we can't modify content, but we can add a smart overlay
+      // that covers ONLY the bottom portion where buttons typically are
+      
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position:relative;width:100%;height:100%;';
+      
+      // Move iframe into wrapper
+      iframe.parentNode.insertBefore(wrapper, iframe);
+      wrapper.appendChild(iframe);
+      
+      // Create bottom overlay (covers bottom 120px where buttons usually are)
+      const bottomOverlay = document.createElement('div');
+      bottomOverlay.className = 'kiosk-iframe-button-blocker';
+      bottomOverlay.style.cssText = `
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0, 119, 182, 0.1) 30%, rgba(0, 119, 182, 0.3) 100%);
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(2px);
+      `;
+      
+      // Add tap hint
+      bottomOverlay.innerHTML = `
+        <div style="background:rgba(0,119,182,0.95);color:white;padding:12px 24px;border-radius:25px;font-weight:600;font-size:1.1em;box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+          📱 ${t('tap_to_book_on_phone')}
+        </div>
+      `;
+      
+      bottomOverlay.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showKioskBookingRedirect();
+      });
+      
+      wrapper.appendChild(bottomOverlay);
+    }
+    
+    function addKioskHintBanner(widget) {
+      const existingHint = widget.querySelector('.hero-widget-kiosk-hint');
+      if (existingHint) return;
+      
+      const hint = document.createElement('div');
+      hint.className = 'hero-widget-kiosk-hint';
+      hint.innerHTML = `
+        <h4>📱 ${t('tap_to_book_on_phone')}</h4>
+        <p>${t('complete_booking_securely')}</p>
+      `;
+      hint.style.cursor = 'pointer';
+      hint.addEventListener('click', showKioskBookingRedirect);
+      widget.appendChild(hint);
+    }
+    
+    function showKioskBookingRedirect() {
+      if (currentProtectedTourData) {
+        const bookingUrl = currentProtectedTourData.link_booking || 
+                           currentProtectedTourData.booking_link || 
+                           currentProtectedTourData.booking_url ||
+                           getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
+        
+        if (bookingUrl) {
+          showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
+        } else {
+          const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
+          if (moreInfoUrl) {
+            showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
+          }
+        }
+      }
     }
     
     // =====================================================================
