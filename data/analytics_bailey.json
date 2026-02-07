@@ -1983,6 +1983,99 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T13:58:11.038125",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T13:58:12.200419",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-07T13:58:15.186212",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T14:00:17.281242",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T14:00:17.281242",
+      "duration_seconds": 291.162983
+    },
+    {
+      "session_id": "session_42e652a4f412_1770436817",
+      "account": "bailey",
+      "started_at": "2026-02-07T14:00:17.909600",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T14:00:17.909600",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T14:00:22.694848",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T14:00:25.187962",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T14:00:39.470207",
+          "data": {}
+        }
+      ],
+      "language": "zh",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T14:00:39.470207",
+      "duration_seconds": 21.560607
+    },
+    {
+      "session_id": "session_d06ae1a50791_1770436840",
+      "account": "bailey",
+      "started_at": "2026-02-07T14:00:40.113500",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T14:00:40.114498",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -1994,5 +2087,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-07T13:55:26.119305"
+  "last_updated": "2026-02-07T14:00:40.117498"
 }
