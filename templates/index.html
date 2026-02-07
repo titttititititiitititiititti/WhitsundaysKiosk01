@@ -17290,8 +17290,6 @@
       } else {
         // FALLBACK: No precise config, use bottom-area coverage
         console.log('⚠️ No precise overlay config found for this tour');
-        console.log('   Tour data:', tourData);
-        console.log('   HERO_BOOKING:', typeof HERO_BOOKING !== 'undefined' ? HERO_BOOKING : 'undefined');
         
         const fallbackOverlay = document.createElement('div');
         fallbackOverlay.className = 'kiosk-button-overlay kiosk-fallback-overlay';
@@ -26403,8 +26401,8 @@
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
-              // Protect widget in kiosk mode
-              setTimeout(() => protectBookingWidgets(data), 100);
+              // Protect widget in kiosk mode - pass key with data
+              setTimeout(() => protectBookingWidgets({...data, key: key}), 100);
             } else if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.enabled && HERO_BOOKING.pricing_widget_url) {
               // Show global Hero booking widget (iframe URL)
               const tourName = data.name || '';
@@ -26428,8 +26426,8 @@
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
-              // Protect widget in kiosk mode
-              setTimeout(() => protectBookingWidgets(data), 100);
+              // Protect widget in kiosk mode - pass key with data
+              setTimeout(() => protectBookingWidgets({...data, key: key}), 100);
             } else {
               // Default pricing display
               pricingSection.querySelector('h2').textContent = 'Pricing';
