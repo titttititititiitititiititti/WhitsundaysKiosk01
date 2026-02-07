@@ -17204,10 +17204,10 @@
       widget.style.overflow = 'hidden'; // Clip the overlay to widget bounds
       
       // Get widget height to calculate overlay size
-      // We want to cover the bottom 55% of the widget where buttons typically are
-      // But ensure at least 350px to catch buttons in various widget layouts
+      // Cover bottom 65% of the widget - buttons are usually in the lower half
+      // Minimum 400px to ensure coverage on shorter widgets
       const widgetHeight = widget.offsetHeight || 800;
-      const overlayHeight = Math.max(350, widgetHeight * 0.55);
+      const overlayHeight = Math.max(400, widgetHeight * 0.65);
       
       // Create an overlay that covers the lower portion where buttons are
       const blocker = document.createElement('div');
