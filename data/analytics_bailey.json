@@ -14887,16 +14887,68 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-07T11:03:35.942039",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-07T11:03:35.942039",
+      "duration_seconds": 120.208045
+    },
+    {
+      "session_id": "session_04b9da37487d_1770426218",
+      "account": "bailey",
+      "started_at": "2026-02-07T11:03:38.524326",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-07T11:03:38.524326",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-07T11:04:06.204416",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-07T11:04:07.158954",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-07T11:04:09.147263",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
       "chat_messages": []
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-07T11:01:35.737507"
+  "last_updated": "2026-02-07T11:04:09.148267"
 }
