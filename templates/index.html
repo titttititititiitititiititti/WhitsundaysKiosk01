@@ -17203,10 +17203,11 @@
       widget.style.position = 'relative';
       widget.style.overflow = 'hidden'; // Clip the overlay to widget bounds
       
-      // Overlay covers ONLY the bottom button area (not the calendar/dropdowns)
-      // Booking buttons are always at the very bottom of widgets
-      // 180px is enough to cover buttons + some padding, but not the calendar
-      const overlayHeight = 180;
+      // Overlay covers the button area (buttons + footer text below them)
+      // Rezdy has: buttons + "Please note" text + padding
+      // Hero has: buttons + "Powered by Hero" + padding
+      // 300px covers buttons while leaving calendar/dropdowns visible
+      const overlayHeight = 300;
       
       // Create an overlay that covers the lower portion where buttons are
       const blocker = document.createElement('div');
