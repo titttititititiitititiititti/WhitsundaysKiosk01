@@ -1433,10 +1433,21 @@
             <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                 <p style="color: #94a3b8; margin: 0 0 10px 0;"><strong>Instructions:</strong></p>
                 <ol style="color: #94a3b8; margin: 0; padding-left: 20px;">
-                    <li>Click and drag on the widget preview below to draw a rectangle over the "Book Now" button</li>
-                    <li>The overlay will capture clicks and redirect users to the QR code on the kiosk</li>
-                    <li>Click "Save Overlay" when done</li>
+                    <li><strong>Step 1:</strong> Interact with the widget below - select date, time, activity until the "Book Now" button appears</li>
+                    <li><strong>Step 2:</strong> Click the <span style="color: #f59e0b;">🎯 Start Selection</span> button below</li>
+                    <li><strong>Step 3:</strong> Draw a rectangle over the "Book Now" button</li>
+                    <li><strong>Step 4:</strong> Click "Save Overlay" when done</li>
                 </ol>
+                
+                <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                    <button id="startSelectionBtn" onclick="enableDrawingMode()" style="background: #f59e0b; color: black; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
+                        🎯 Start Selection
+                    </button>
+                    <button id="cancelSelectionBtn" onclick="disableDrawingMode()" style="display: none; background: #64748b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+                        ✋ Cancel Selection
+                    </button>
+                    <span id="selectionModeStatus" style="color: #22c55e; font-weight: bold; display: none;">✅ Selection mode active - draw on widget</span>
+                </div>
             </div>
             
             <!-- Log panel -->
@@ -1451,8 +1462,8 @@
                     <!-- Widget content wrapper - same as kiosk .hero-booking-widget -->
                     <div id="widgetPreviewContent" class="kiosk-widget-preview" style="width: 100%; min-height: 800px; background: white; border-radius: 12px; display: flex; flex-direction: column; align-items: center;"></div>
                     
-                    <!-- Drawing overlay -->
-                    <div id="drawingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; z-index: 100;"></div>
+                    <!-- Drawing overlay - initially hidden so user can interact with widget -->
+                    <div id="drawingOverlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: crosshair; z-index: 100; display: none; background: rgba(59, 130, 246, 0.1);"></div>
                     
                     <!-- Selection rectangle -->
                     <div id="selectionRect" style="position: absolute; border: 3px dashed #3b82f6; background: rgba(59, 130, 246, 0.3); display: none; z-index: 101; pointer-events: none;"></div>
@@ -1548,6 +1559,10 @@
             
             overlayLog('Widget loaded into preview');
             overlayLog('Widget container dimensions: ' + preview.offsetWidth + 'x' + preview.offsetHeight + 'px');
+            overlayLog('📌 Interact with the widget first, then click "Start Selection" when ready');
+            
+            // Reset drawing mode - user needs to explicitly enable it
+            disableDrawingMode();
             
             // Load existing overlay if any
             const savedTop = document.getElementById('overlayTop').value;
@@ -1562,6 +1577,32 @@
         
         function closeOverlayConfigurator() {
             document.getElementById('overlayConfiguratorModal').style.display = 'none';
+            disableDrawingMode(); // Reset state when closing
+        }
+        
+        function enableDrawingMode() {
+            const drawingOverlay = document.getElementById('drawingOverlay');
+            drawingOverlay.style.display = 'block';
+            
+            document.getElementById('startSelectionBtn').style.display = 'none';
+            document.getElementById('cancelSelectionBtn').style.display = 'inline-block';
+            document.getElementById('selectionModeStatus').style.display = 'inline';
+            
+            overlayLog('🎯 Selection mode ENABLED - draw rectangle over the Book Now button');
+        }
+        
+        function disableDrawingMode() {
+            const drawingOverlay = document.getElementById('drawingOverlay');
+            drawingOverlay.style.display = 'none';
+            
+            document.getElementById('startSelectionBtn').style.display = 'inline-block';
+            document.getElementById('cancelSelectionBtn').style.display = 'none';
+            document.getElementById('selectionModeStatus').style.display = 'none';
+            
+            // Hide selection rectangle if visible
+            document.getElementById('selectionRect').style.display = 'none';
+            
+            overlayLog('Selection mode disabled - you can interact with the widget');
         }
         
         function setupDrawingHandlers() {
