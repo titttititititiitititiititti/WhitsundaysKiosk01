@@ -1397,6 +1397,9 @@
                         <button type="button" class="btn btn-secondary" onclick="saveOverlayAsPreset()" style="background: #22c55e; color: white; border: none; padding: 8px 16px;">
                             💾 Save as Preset
                         </button>
+                        <button type="button" class="btn btn-secondary" onclick="bulkApplyPreset()" style="background: #f59e0b; color: white; border: none; padding: 8px 16px;">
+                            ⚡ Apply to ALL Tours
+                        </button>
                         <button type="button" class="btn btn-secondary" onclick="deleteOverlayPreset()" id="deletePresetBtn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; display: none;">
                             🗑️ Delete Preset
                         </button>
@@ -1942,6 +1945,54 @@
             }
         }
         
+        async function bulkApplyPreset() {
+            const select = document.getElementById('overlayPresetSelect');
+            const presetName = select.value;
+            
+            if (!presetName || !overlayPresets[presetName]) {
+                // If no preset selected, ask which one to apply
+                const presetNames = Object.keys(overlayPresets);
+                if (presetNames.length === 0) {
+                    alert('No presets saved yet. Create a preset first by configuring an overlay and clicking "Save as Preset".');
+                    return;
+                }
+                
+                const choice = prompt('Enter preset name to apply to ALL tours with widgets:\n\nAvailable presets: ' + presetNames.join(', '));
+                if (!choice || !overlayPresets[choice]) {
+                    alert('Invalid preset name');
+                    return;
+                }
+                select.value = choice;
+            }
+            
+            const finalPresetName = select.value;
+            const preset = overlayPresets[finalPresetName];
+            
+            if (!confirm(`Apply preset "${finalPresetName}" to ALL tours that have widgets?\n\nThis will update the button overlay for every tour with a Hero/Rezdy widget configured.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/admin/agent/api/bulk-apply-overlay-preset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        preset_name: finalPresetName,
+                        config: preset
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast(`✅ Applied to ${data.updated_count} tours!`, 'success');
+                } else {
+                    alert('Failed to bulk apply: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+        
         // Load presets on page load
         loadOverlayPresets();
         
@@ -2081,10 +2132,27 @@
             autoSaveTimer = setTimeout(async () => {
                 if (!currentTourKey) return;
                 
+                // Build overlay config if coordinates exist
+                const overlayTop = document.getElementById('overlayTop').value;
+                const overlayLeft = document.getElementById('overlayLeft').value;
+                const overlayWidth = document.getElementById('overlayWidth').value;
+                const overlayHeight = document.getElementById('overlayHeight').value;
+                
+                let buttonOverlay = null;
+                if (overlayTop && overlayWidth) {
+                    buttonOverlay = {
+                        top: overlayTop,
+                        left: overlayLeft,
+                        width: overlayWidth,
+                        height: overlayHeight
+                    };
+                }
+                
                 const data = {
                     booking_button_url: document.getElementById('bookingButtonUrl').value,
                     hero_widget_html: document.getElementById('heroWidgetHtml').value,
-                    notes: document.getElementById('tourNotes').value
+                    notes: document.getElementById('tourNotes').value,
+                    button_overlay: buttonOverlay
                 };
                 
                 try {

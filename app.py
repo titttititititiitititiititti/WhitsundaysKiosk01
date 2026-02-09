@@ -2349,6 +2349,48 @@ def manage_overlay_presets():
     
     return jsonify({'success': False, 'error': 'Invalid action'})
 
+@app.route('/admin/agent/api/bulk-apply-overlay-preset', methods=['POST'])
+def bulk_apply_overlay_preset():
+    """Apply an overlay preset to ALL tours that have widgets configured"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+    
+    data = request.get_json()
+    preset_name = data.get('preset_name')
+    config = data.get('config')
+    
+    if not config:
+        return jsonify({'success': False, 'error': 'No preset config provided'})
+    
+    account_settings = load_account_settings(username)
+    tour_overrides = account_settings.get('tour_overrides', {})
+    
+    updated_count = 0
+    
+    # Find all tours with widgets and apply the preset
+    for tour_key, tour_settings in tour_overrides.items():
+        hero_widget = tour_settings.get('hero_widget_html', '')
+        if hero_widget and hero_widget.strip():
+            # This tour has a widget - apply the preset
+            tour_settings['button_overlay'] = {
+                'top': config.get('top'),
+                'left': config.get('left'),
+                'width': config.get('width'),
+                'height': config.get('height')
+            }
+            updated_count += 1
+    
+    # Save the updated settings
+    account_settings['tour_overrides'] = tour_overrides
+    save_account_settings(username, account_settings)
+    
+    return jsonify({
+        'success': True, 
+        'message': f'Applied preset to {updated_count} tours',
+        'updated_count': updated_count
+    })
+
 @app.route('/admin/agent/api/tour-settings/<tour_key>', methods=['GET'])
 def get_tour_settings(tour_key):
     """Get per-tour agent settings (booking URLs, price overrides, etc.) - uses account settings"""
