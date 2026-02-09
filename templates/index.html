@@ -17364,10 +17364,25 @@
     
     function showKioskBookingRedirect() {
       if (currentProtectedTourData) {
-        const bookingUrl = currentProtectedTourData.link_booking || 
-                           currentProtectedTourData.booking_link || 
-                           currentProtectedTourData.booking_url ||
-                           getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
+        // PRIORITY 1: Check account-specific booking URL from HERO_BOOKING.tour_overrides
+        let bookingUrl = null;
+        const tourKey = currentProtectedTourData.key;
+        
+        if (tourKey && typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tourKey]) {
+          const tourOverrides = HERO_BOOKING.tour_overrides[tourKey];
+          if (tourOverrides.booking_button_url) {
+            bookingUrl = tourOverrides.booking_button_url;
+            console.log('🎫 Using account-configured booking URL:', bookingUrl);
+          }
+        }
+        
+        // PRIORITY 2: Fall back to tour data booking URLs
+        if (!bookingUrl) {
+          bookingUrl = currentProtectedTourData.link_booking || 
+                       currentProtectedTourData.booking_link || 
+                       currentProtectedTourData.booking_url ||
+                       getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
+        }
         
         if (bookingUrl) {
           showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
