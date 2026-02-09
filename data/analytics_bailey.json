@@ -2592,6 +2592,96 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-09T15:19:38.306124",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-09T15:19:40.312386",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-09T15:19:47.550839",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Sailing-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-09T15:20:38.544070",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-09T15:21:49.572139",
+          "data": {
+            "tour_name": "Airlie Beach Sonnenuntergangs-Kreuzfahrt auf Sundowner",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-09T15:23:40.581449",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Kreuzfahrt",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-09T15:23:42.267961",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Kreuzfahrt",
+            "company": "Wings",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-09T15:24:56.617343",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Apollo 3D2N",
+        "Airlie Beach Sonnenuntergangs-Kreuzfahrt auf Sundowner",
+        "Airlie Beach Sunset Sail in Style Kreuzfahrt"
+      ],
+      "tours_booked": [
+        "Airlie Beach Sunset Sail in Style Kreuzfahrt"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-09T15:24:56.617343",
+      "duration_seconds": 864.992226
+    },
+    {
+      "session_id": "session_cf2bc8750902_1770614697",
+      "account": "bailey",
+      "started_at": "2026-02-09T15:24:57.382046",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-09T15:24:57.382046",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -2603,5 +2693,5 @@
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-09T15:10:31.626120"
+  "last_updated": "2026-02-09T15:24:57.383326"
 }
