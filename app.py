@@ -2351,7 +2351,7 @@ def manage_overlay_presets():
 
 @app.route('/admin/agent/api/bulk-apply-overlay-preset', methods=['POST'])
 def bulk_apply_overlay_preset():
-    """Apply an overlay preset to ALL tours that have widgets configured"""
+    """Apply an overlay preset to tours from a specific company that have widgets configured"""
     username = session.get('user')
     if not username:
         return jsonify({'success': False, 'error': 'Not logged in'}), 401
@@ -2359,6 +2359,7 @@ def bulk_apply_overlay_preset():
     data = request.get_json()
     preset_name = data.get('preset_name')
     config = data.get('config')
+    company = data.get('company')  # Optional - filter by company
     
     if not config:
         return jsonify({'success': False, 'error': 'No preset config provided'})
@@ -2368,8 +2369,14 @@ def bulk_apply_overlay_preset():
     
     updated_count = 0
     
-    # Find all tours with widgets and apply the preset
+    # Find tours with widgets and apply the preset (optionally filtered by company)
     for tour_key, tour_settings in tour_overrides.items():
+        # Check company filter if provided
+        if company:
+            tour_company = tour_key.split('__')[0] if '__' in tour_key else ''
+            if tour_company != company:
+                continue
+        
         hero_widget = tour_settings.get('hero_widget_html', '')
         if hero_widget and hero_widget.strip():
             # This tour has a widget - apply the preset
@@ -2385,9 +2392,10 @@ def bulk_apply_overlay_preset():
     account_settings['tour_overrides'] = tour_overrides
     save_account_settings(username, account_settings)
     
+    company_msg = f' from {company}' if company else ''
     return jsonify({
         'success': True, 
-        'message': f'Applied preset to {updated_count} tours',
+        'message': f'Applied preset to {updated_count} tours{company_msg}',
         'updated_count': updated_count
     })
 
