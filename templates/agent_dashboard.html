@@ -1397,8 +1397,8 @@
                         <button type="button" class="btn btn-secondary" onclick="saveOverlayAsPreset()" style="background: #22c55e; color: white; border: none; padding: 8px 16px;">
                             💾 Save as Preset
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="bulkApplyPreset()" style="background: #f59e0b; color: white; border: none; padding: 8px 16px;">
-                            ⚡ Apply to ALL Tours
+                        <button type="button" class="btn btn-secondary" onclick="bulkApplyPresetToCompany()" style="background: #f59e0b; color: white; border: none; padding: 8px 16px;">
+                            ⚡ Apply to Company
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="deleteOverlayPreset()" id="deletePresetBtn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; display: none;">
                             🗑️ Delete Preset
@@ -1945,9 +1945,21 @@
             }
         }
         
-        async function bulkApplyPreset() {
+        async function bulkApplyPresetToCompany() {
             const select = document.getElementById('overlayPresetSelect');
             const presetName = select.value;
+            
+            if (!currentTourKey) {
+                alert('Please open a tour first to apply preset to its company.');
+                return;
+            }
+            
+            // Get the company from the current tour key (format: company__tourId)
+            const company = currentTourKey.split('__')[0];
+            if (!company) {
+                alert('Could not determine company from tour key.');
+                return;
+            }
             
             if (!presetName || !overlayPresets[presetName]) {
                 // If no preset selected, ask which one to apply
@@ -1957,7 +1969,7 @@
                     return;
                 }
                 
-                const choice = prompt('Enter preset name to apply to ALL tours with widgets:\n\nAvailable presets: ' + presetNames.join(', '));
+                const choice = prompt('Enter preset name to apply:\n\nAvailable presets: ' + presetNames.join(', '));
                 if (!choice || !overlayPresets[choice]) {
                     alert('Invalid preset name');
                     return;
@@ -1968,7 +1980,7 @@
             const finalPresetName = select.value;
             const preset = overlayPresets[finalPresetName];
             
-            if (!confirm(`Apply preset "${finalPresetName}" to ALL tours that have widgets?\n\nThis will update the button overlay for every tour with a Hero/Rezdy widget configured.`)) {
+            if (!confirm(`Apply preset "${finalPresetName}" to all ${company} tours with widgets?\n\nThis will update the button overlay for all tours from this company that have widgets configured.`)) {
                 return;
             }
             
@@ -1978,13 +1990,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         preset_name: finalPresetName,
-                        config: preset
+                        config: preset,
+                        company: company
                     })
                 });
                 
                 const data = await response.json();
                 if (data.success) {
-                    showToast(`✅ Applied to ${data.updated_count} tours!`, 'success');
+                    showToast(`✅ Applied to ${data.updated_count} ${company} tours!`, 'success');
                 } else {
                     alert('Failed to bulk apply: ' + (data.error || 'Unknown error'));
                 }
