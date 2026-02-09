@@ -1242,7 +1242,7 @@
                             </button>
                         </div>
                         <div class="tour-actions">
-                            <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', '{{ tour.name | e }}')">
+                            <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', {{ tour.name | tojson }})">
                                 ✏️ Edit
                             </button>
                         </div>
@@ -1273,7 +1273,7 @@
                     </div>
                     <div class="tour-price">{{ tour.price }}</div>
                     <div class="tour-actions">
-                        <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', '{{ tour.name | e }}')">
+                        <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', {{ tour.name | tojson }})">
                             ✏️ Edit
                         </button>
                     </div>
