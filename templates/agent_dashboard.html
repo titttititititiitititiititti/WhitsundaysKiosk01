@@ -1386,11 +1386,24 @@
                         <span class="hint" style="color: #94a3b8;">Configure where the "Book Now" button should be blocked on the kiosk. This prevents users from clicking the widget's booking button directly.</span>
                     </label>
                     
-                    <div style="margin-top: 10px;">
-                        <button type="button" class="btn btn-secondary" onclick="openOverlayConfigurator()" style="background: #3b82f6; color: white; border: none;">
-                            🎯 Configure Button Overlay
+                    <!-- Preset Selector -->
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <select id="overlayPresetSelect" onchange="applyOverlayPreset(this.value)" style="padding: 8px 12px; background: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 0.9em; min-width: 200px;">
+                            <option value="">-- Select Preset --</option>
+                        </select>
+                        <button type="button" class="btn btn-secondary" onclick="openOverlayConfigurator()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px;">
+                            🎯 Configure Manually
                         </button>
-                        <span id="overlayStatus" style="margin-left: 10px; color: #94a3b8; font-size: 0.85em;">No overlay configured</span>
+                        <button type="button" class="btn btn-secondary" onclick="saveOverlayAsPreset()" style="background: #22c55e; color: white; border: none; padding: 8px 16px;">
+                            💾 Save as Preset
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="deleteOverlayPreset()" id="deletePresetBtn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; display: none;">
+                            🗑️ Delete Preset
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 10px;">
+                        <span id="overlayStatus" style="color: #94a3b8; font-size: 0.85em;">No overlay configured</span>
                     </div>
                     
                     <!-- Hidden fields to store overlay coordinates (as percentages) -->
@@ -1785,6 +1798,152 @@
                 alert('Error saving overlay: ' + err.message);
             }
         }
+        
+        // =====================================================================
+        // OVERLAY PRESETS MANAGEMENT
+        // =====================================================================
+        
+        let overlayPresets = {};
+        
+        // Load presets when page loads
+        async function loadOverlayPresets() {
+            try {
+                const response = await fetch('/admin/agent/api/overlay-presets');
+                const data = await response.json();
+                if (data.success) {
+                    overlayPresets = data.presets || {};
+                    updatePresetDropdown();
+                }
+            } catch (err) {
+                console.log('Failed to load overlay presets:', err);
+            }
+        }
+        
+        function updatePresetDropdown() {
+            const select = document.getElementById('overlayPresetSelect');
+            if (!select) return;
+            
+            // Clear existing options except the first one
+            select.innerHTML = '<option value="">-- Select Preset --</option>';
+            
+            // Add presets
+            for (const [name, config] of Object.entries(overlayPresets)) {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            }
+        }
+        
+        function applyOverlayPreset(presetName) {
+            const deleteBtn = document.getElementById('deletePresetBtn');
+            
+            if (!presetName || !overlayPresets[presetName]) {
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                return;
+            }
+            
+            const preset = overlayPresets[presetName];
+            
+            // Apply preset values to the hidden fields
+            document.getElementById('overlayTop').value = preset.top || '';
+            document.getElementById('overlayLeft').value = preset.left || '';
+            document.getElementById('overlayWidth').value = preset.width || '';
+            document.getElementById('overlayHeight').value = preset.height || '';
+            
+            // Update status display
+            document.getElementById('overlayStatus').innerHTML = 
+                '<span style="color: #22c55e;">✓ Preset "' + presetName + '" applied (' + preset.width + '% x ' + preset.height + '%)</span>';
+            
+            // Show delete button
+            if (deleteBtn) deleteBtn.style.display = 'inline-block';
+            
+            // Auto-save the applied preset to the tour
+            autoSave();
+            
+            showToast('Preset "' + presetName + '" applied!', 'success');
+        }
+        
+        async function saveOverlayAsPreset() {
+            const top = document.getElementById('overlayTop').value;
+            const left = document.getElementById('overlayLeft').value;
+            const width = document.getElementById('overlayWidth').value;
+            const height = document.getElementById('overlayHeight').value;
+            
+            if (!top || !width) {
+                alert('Please configure an overlay first before saving as preset.');
+                return;
+            }
+            
+            const presetName = prompt('Enter a name for this preset (e.g., "Hero Widget", "Rezdy Standard"):');
+            if (!presetName || presetName.trim() === '') return;
+            
+            const trimmedName = presetName.trim();
+            
+            try {
+                const response = await fetch('/admin/agent/api/overlay-presets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save',
+                        name: trimmedName,
+                        config: { top, left, width, height }
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    overlayPresets[trimmedName] = { top, left, width, height };
+                    updatePresetDropdown();
+                    
+                    // Select the newly saved preset
+                    document.getElementById('overlayPresetSelect').value = trimmedName;
+                    document.getElementById('deletePresetBtn').style.display = 'inline-block';
+                    
+                    showToast('Preset "' + trimmedName + '" saved!', 'success');
+                } else {
+                    alert('Failed to save preset: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error saving preset: ' + err.message);
+            }
+        }
+        
+        async function deleteOverlayPreset() {
+            const select = document.getElementById('overlayPresetSelect');
+            const presetName = select.value;
+            
+            if (!presetName) return;
+            
+            if (!confirm('Delete preset "' + presetName + '"?')) return;
+            
+            try {
+                const response = await fetch('/admin/agent/api/overlay-presets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        name: presetName
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    delete overlayPresets[presetName];
+                    updatePresetDropdown();
+                    select.value = '';
+                    document.getElementById('deletePresetBtn').style.display = 'none';
+                    showToast('Preset deleted', 'success');
+                } else {
+                    alert('Failed to delete preset');
+                }
+            } catch (err) {
+                alert('Error deleting preset: ' + err.message);
+            }
+        }
+        
+        // Load presets on page load
+        loadOverlayPresets();
         
         // =====================================================================
         // TOUR SETTINGS MODAL

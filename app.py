@@ -2306,6 +2306,49 @@ def toggle_company_images():
     
     return jsonify({'success': True, 'images_enabled': enabled})
 
+@app.route('/admin/agent/api/overlay-presets', methods=['GET'])
+def get_overlay_presets():
+    """Get saved overlay presets for the account"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+    
+    account_settings = load_account_settings(username)
+    presets = account_settings.get('overlay_presets', {})
+    
+    return jsonify({'success': True, 'presets': presets})
+
+@app.route('/admin/agent/api/overlay-presets', methods=['POST'])
+def manage_overlay_presets():
+    """Save or delete overlay presets"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+    
+    data = request.get_json()
+    action = data.get('action')
+    name = data.get('name')
+    
+    account_settings = load_account_settings(username)
+    if 'overlay_presets' not in account_settings:
+        account_settings['overlay_presets'] = {}
+    
+    if action == 'save':
+        config = data.get('config', {})
+        account_settings['overlay_presets'][name] = config
+        save_account_settings(username, account_settings)
+        return jsonify({'success': True, 'message': f'Preset "{name}" saved'})
+    
+    elif action == 'delete':
+        if name in account_settings['overlay_presets']:
+            del account_settings['overlay_presets'][name]
+            save_account_settings(username, account_settings)
+            return jsonify({'success': True, 'message': f'Preset "{name}" deleted'})
+        else:
+            return jsonify({'success': False, 'error': 'Preset not found'})
+    
+    return jsonify({'success': False, 'error': 'Invalid action'})
+
 @app.route('/admin/agent/api/tour-settings/<tour_key>', methods=['GET'])
 def get_tour_settings(tour_key):
     """Get per-tour agent settings (booking URLs, price overrides, etc.) - uses account settings"""
