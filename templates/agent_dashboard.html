@@ -1242,7 +1242,7 @@
                             </button>
                         </div>
                         <div class="tour-actions">
-                            <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', {{ tour.name | tojson }})">
+                            <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
                                 ✏️ Edit
                             </button>
                         </div>
@@ -1273,7 +1273,7 @@
                     </div>
                     <div class="tour-price">{{ tour.price }}</div>
                     <div class="tour-actions">
-                        <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', {{ tour.name | tojson }})">
+                        <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
                             ✏️ Edit
                         </button>
                     </div>
@@ -2443,6 +2443,16 @@
         
         // Also check immediately on page load
         pollForNotifications();
+        
+        // Event delegation for Edit buttons - avoids inline onclick escaping issues
+        document.addEventListener('click', function(e) {
+            const editBtn = e.target.closest('.edit-tour-btn');
+            if (editBtn) {
+                const tourKey = editBtn.dataset.key;
+                const tourName = editBtn.dataset.name;
+                openTourSettings(tourKey, tourName);
+            }
+        });
     </script>
 </body>
 </html>
