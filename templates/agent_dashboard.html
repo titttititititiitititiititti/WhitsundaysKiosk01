@@ -713,7 +713,7 @@
         
         .unavailable-tour-item {
             display: grid;
-            grid-template-columns: 40px 1fr auto;
+            grid-template-columns: 40px 1fr auto auto;
             gap: 16px;
             align-items: center;
             padding: 12px 16px;
@@ -1226,17 +1226,17 @@
                         </div>
                         <div class="promo-selector">
                             <button class="promo-btn {{ 'active popular' if tour.promotion == 'popular' else '' }}" 
-                                    onclick="setPromotion('{{ tour.key }}', '{{ 'none' if tour.promotion == 'popular' else 'popular' }}')"
+                                    onclick="togglePromotion('{{ tour.key }}', 'popular', this)"
                                     title="Popular - High priority in search results">
                                 🔥
                             </button>
                             <button class="promo-btn {{ 'active featured' if tour.promotion == 'featured' else '' }}" 
-                                    onclick="setPromotion('{{ tour.key }}', '{{ 'none' if tour.promotion == 'featured' else 'featured' }}')"
+                                    onclick="togglePromotion('{{ tour.key }}', 'featured', this)"
                                     title="Featured - Highlighted tours">
                                 ⭐
                             </button>
                             <button class="promo-btn {{ 'active best_value' if tour.promotion == 'best_value' else '' }}" 
-                                    onclick="setPromotion('{{ tour.key }}', '{{ 'none' if tour.promotion == 'best_value' else 'best_value' }}')"
+                                    onclick="togglePromotion('{{ tour.key }}', 'best_value', this)"
                                     title="Best Value - Great value recommendation">
                                 💎
                             </button>
@@ -1272,6 +1272,11 @@
                         <div class="tour-company">{{ tour.company_display }}</div>
                     </div>
                     <div class="tour-price">{{ tour.price }}</div>
+                    <div class="tour-actions">
+                        <button class="tour-action-btn" onclick="openTourSettings('{{ tour.key }}', '{{ tour.name | e }}')">
+                            ✏️ Edit
+                        </button>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -2132,6 +2137,16 @@
             } catch (err) {
                 showToast('Failed to update tour', 'error');
             }
+        }
+        
+        // Toggle promotion - checks current state and flips it
+        async function togglePromotion(key, level, buttonElement) {
+            // Check if this button is currently active
+            const isCurrentlyActive = buttonElement.classList.contains('active');
+            // If active, we want to remove it (null), otherwise set it
+            const newLevel = isCurrentlyActive ? null : level;
+            
+            await setPromotion(key, newLevel);
         }
         
         async function setPromotion(key, level) {
