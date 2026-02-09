@@ -16103,6 +16103,8 @@
         "similar_tours_title": "Similar Tours You Might Like",
         "match": "match",
         "showing_filtered_tours": "Showing filtered tours",
+        "filtered_tours": "Filtered Tours",
+        "showing_tours": "Showing {count} tours",
         "family_question": "Are you traveling with children?",
         "family_with_kids": "Family with kids", "adults_only": "Adults only",
         "activity_question": "What type of adventure excites you?",
@@ -16182,6 +16184,8 @@
         "similar_tours_title": "おすすめの類似ツアー",
         "match": "一致",
         "showing_filtered_tours": "フィルター結果を表示中",
+        "filtered_tours": "フィルター済みツアー",
+        "showing_tours": "{count}件のツアーを表示中",
         "family_question": "お子様連れですか？",
         "family_with_kids": "子供連れ", "adults_only": "大人のみ",
         "activity_question": "どんな冒険がお好みですか？",
@@ -16261,6 +16265,8 @@
         "similar_tours_title": "您可能喜欢的类似旅程",
         "match": "匹配",
         "showing_filtered_tours": "显示筛选结果",
+        "filtered_tours": "筛选结果",
+        "showing_tours": "显示 {count} 个旅程",
         "family_question": "您带孩子吗？",
         "family_with_kids": "带孩子", "adults_only": "仅成人",
         "activity_question": "您喜欢什么类型的冒险？",
@@ -16340,6 +16346,8 @@
         "similar_tours_title": "좋아하실 만한 유사 투어",
         "match": "일치",
         "showing_filtered_tours": "필터 결과 표시 중",
+        "filtered_tours": "필터링된 투어",
+        "showing_tours": "{count}개 투어 표시",
         "family_question": "아이와 함께 여행하시나요?",
         "family_with_kids": "아이 동반", "adults_only": "성인만",
         "activity_question": "어떤 모험을 원하시나요?",
@@ -16419,6 +16427,8 @@
         "similar_tours_title": "Ähnliche Touren, die Ihnen gefallen könnten",
         "match": "Übereinstimmung",
         "showing_filtered_tours": "Gefilterte Touren anzeigen",
+        "filtered_tours": "Gefilterte Touren",
+        "showing_tours": "{count} Touren werden angezeigt",
         "family_question": "Reisen Sie mit Kindern?",
         "family_with_kids": "Mit Kindern", "adults_only": "Nur Erwachsene",
         "activity_question": "Welche Art von Abenteuer reizt Sie?",
@@ -16498,6 +16508,8 @@
         "similar_tours_title": "Excursions similaires qui pourraient vous plaire",
         "match": "correspondance",
         "showing_filtered_tours": "Affichage des excursions filtrées",
+        "filtered_tours": "Excursions filtrées",
+        "showing_tours": "Affichage de {count} excursions",
         "family_question": "Voyagez-vous avec des enfants?",
         "family_with_kids": "Avec enfants", "adults_only": "Adultes uniquement",
         "activity_question": "Quel type d'aventure vous intéresse?",
@@ -16577,6 +16589,8 @@
         "similar_tours_title": "आपको पसंद आने वाले समान टूर",
         "match": "मिलान",
         "showing_filtered_tours": "फ़िल्टर किए गए टूर दिखा रहे हैं",
+        "filtered_tours": "फ़िल्टर किए गए टूर",
+        "showing_tours": "{count} टूर दिखा रहे हैं",
         "family_question": "क्या आप बच्चों के साथ यात्रा कर रहे हैं?",
         "family_with_kids": "बच्चों के साथ", "adults_only": "केवल वयस्क",
         "activity_question": "आपको किस प्रकार का रोमांच पसंद है?",
@@ -16656,6 +16670,8 @@
         "similar_tours_title": "Tours similares que te pueden gustar",
         "match": "coincidencia",
         "showing_filtered_tours": "Mostrando tours filtrados",
+        "filtered_tours": "Tours filtrados",
+        "showing_tours": "Mostrando {count} tours",
         "family_question": "¿Viajas con niños?",
         "family_with_kids": "Con niños", "adults_only": "Solo adultos",
         "activity_question": "¿Qué tipo de aventura te emociona?",
@@ -17161,9 +17177,38 @@
       return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
     }
     
+    // Configure iframe permissions for booking widgets to work properly
+    function configureWidgetIframes() {
+      const iframes = document.querySelectorAll('.hero-booking-widget iframe');
+      iframes.forEach(iframe => {
+        // Add necessary permissions for booking flow
+        if (!iframe.hasAttribute('allow')) {
+          iframe.setAttribute('allow', 'payment; popup; forms; scripts; same-origin');
+        }
+        // Ensure iframe can open popups and new tabs for checkout
+        if (!iframe.hasAttribute('sandbox')) {
+          // Don't add sandbox - it's too restrictive for booking widgets
+        } else {
+          // If sandbox exists, make sure it allows necessary features
+          const sandbox = iframe.getAttribute('sandbox');
+          if (!sandbox.includes('allow-popups')) {
+            iframe.setAttribute('sandbox', sandbox + ' allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-forms allow-scripts allow-same-origin');
+          }
+        }
+        console.log('📦 Configured iframe permissions for booking widget');
+      });
+    }
+    
+    // Run iframe configuration when widgets are loaded
+    setTimeout(configureWidgetIframes, 500);
+    setTimeout(configureWidgetIframes, 2000); // Re-run in case widgets load slowly
+    
     function protectBookingWidgets(tourData) {
       // Only protect in kiosk mode (not web visitors, not demo mode)
       if (!isKiosk || isDemoMode) return;
+      
+      // First, ensure iframes have proper permissions
+      configureWidgetIframes();
       
       currentProtectedTourData = tourData;
       
