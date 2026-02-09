@@ -17177,31 +17177,60 @@
       return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
     }
     
+    // Enhance widget HTML with proper iframe attributes for checkout flow
+    function enhanceWidgetHtml(html) {
+      if (!html) return html;
+      
+      // Add necessary attributes to iframe tags for Hero/booking widgets
+      // This ensures the checkout process can work properly
+      let enhanced = html;
+      
+      // Match iframe tags and add attributes if missing
+      enhanced = enhanced.replace(/<iframe\s/gi, '<iframe allow="payment *; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="true" allowpaymentrequest="true" ');
+      
+      // Ensure Hero widgets have proper settings
+      if (html.includes('hero.travel') || html.includes('widget.hero')) {
+        console.log('🎫 Enhancing Hero widget HTML with payment permissions');
+      }
+      
+      return enhanced;
+    }
+    
     // Configure iframe permissions for booking widgets to work properly
     function configureWidgetIframes() {
       const iframes = document.querySelectorAll('.hero-booking-widget iframe');
       iframes.forEach(iframe => {
-        // Add necessary permissions for booking flow
-        if (!iframe.hasAttribute('allow')) {
-          iframe.setAttribute('allow', 'payment; popup; forms; scripts; same-origin');
+        // Add necessary permissions for Hero/booking widget flow
+        // These are CRITICAL for the checkout process to work
+        iframe.setAttribute('allow', 'payment *; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        
+        // Allow popups and top-level navigation for checkout
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('allowpaymentrequest', 'true');
+        
+        // Remove sandbox if it exists (too restrictive for booking)
+        if (iframe.hasAttribute('sandbox')) {
+          iframe.removeAttribute('sandbox');
         }
-        // Ensure iframe can open popups and new tabs for checkout
-        if (!iframe.hasAttribute('sandbox')) {
-          // Don't add sandbox - it's too restrictive for booking widgets
-        } else {
-          // If sandbox exists, make sure it allows necessary features
-          const sandbox = iframe.getAttribute('sandbox');
-          if (!sandbox.includes('allow-popups')) {
-            iframe.setAttribute('sandbox', sandbox + ' allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-forms allow-scripts allow-same-origin');
-          }
+        
+        // For Hero widgets specifically - they need to open checkout in parent/new window
+        // Add a load event to inject helper script
+        if (iframe.src && iframe.src.includes('hero.travel')) {
+          console.log('🎫 Hero widget detected, configuring for checkout flow');
+          
+          // Hero widgets work best when they can communicate with parent
+          // Unfortunately we can't modify cross-origin iframe content
+          // But we can ensure the iframe has all permissions needed
         }
-        console.log('📦 Configured iframe permissions for booking widget');
+        
+        console.log('📦 Configured iframe permissions:', iframe.src);
       });
     }
     
     // Run iframe configuration when widgets are loaded
     setTimeout(configureWidgetIframes, 500);
-    setTimeout(configureWidgetIframes, 2000); // Re-run in case widgets load slowly
+    setTimeout(configureWidgetIframes, 2000);
+    setTimeout(configureWidgetIframes, 5000); // Re-run in case widgets load slowly
     
     function protectBookingWidgets(tourData) {
       // Only protect in kiosk mode (not web visitors, not demo mode)
@@ -19001,7 +19030,7 @@
               <p style="font-size:0.85em;color:#666;margin:5px 0 0 0;">Select your date and options below</p>
             </div>
             <div class="hero-booking-widget" style="width:100%;min-height:900px;border-radius:0 0 12px 12px;background:white;">
-              ${swipeTourOverrides.hero_widget_html}
+              ${enhanceWidgetHtml(swipeTourOverrides.hero_widget_html)}
             </div>
           </div>
         `;
@@ -26441,7 +26470,7 @@
               
               pricingHTML = `
                 <div class="hero-booking-widget" style="width:100%;min-height:900px;border-radius:12px;background:white;">
-                  ${tourOverrides.hero_widget_html}
+                  ${enhanceWidgetHtml(tourOverrides.hero_widget_html)}
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
