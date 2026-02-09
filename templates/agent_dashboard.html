@@ -1797,7 +1797,13 @@
             pricesChanged = false;
             document.getElementById('currentTourKey').value = tourKey;
             document.getElementById('modalTourName').textContent = tourName;
-            document.getElementById('devModeLink').href = '{{ url_for("tour_editor") }}?select=' + tourKey;
+            
+            // Only set devModeLink if it exists (only for developer accounts)
+            const devModeLink = document.getElementById('devModeLink');
+            if (devModeLink) {
+                devModeLink.href = '{{ url_for("tour_editor") }}?select=' + tourKey;
+            }
+            
             document.getElementById('savePricesBtn').style.display = 'none';
             
             // Show modal
