@@ -3093,7 +3093,12 @@ def tour_page(key):
     timestamp = request.args.get('t')
     
     # Determine which account to use for filtering tours
-    active_account = referral_account or get_active_account()
+    # Fall back to 'awda' demo account if nothing else works
+    active_account = referral_account or get_active_account() or 'awda'
+    
+    # If ref was provided but account doesn't exist, still use it for tracking but load awda tours
+    if ref and not referral_account:
+        print(f"[TOUR] Referral '{ref}' not found, using 'awda' as fallback")
     
     # Log QR code visit if tracking parameters are present
     if ref and ref != 'qr' and tracking_id:
@@ -7182,8 +7187,9 @@ def log_analytics():
         if not session_id or not event_type:
             return jsonify({'error': 'session_id and event_type required'}), 400
         
-        # Use default account for analytics (kiosk doesn't know about user accounts)
-        session = log_analytics_event(session_id, event_type, event_data, account=DEFAULT_ANALYTICS_ACCOUNT)
+        # Use account from referral cookie, session, or default
+        analytics_account = request.cookies.get('filtour_ref') or get_active_account() or DEFAULT_ANALYTICS_ACCOUNT
+        session = log_analytics_event(session_id, event_type, event_data, account=analytics_account)
         
         return jsonify({
             'success': True,
@@ -7201,10 +7207,12 @@ def start_analytics_session():
         session_id = f"session_{uuid.uuid4().hex[:12]}_{int(time.time())}"
         
         # Create initial session (use default account - kiosk doesn't know about users)
+        # Use account from referral cookie, session, or default
+        analytics_account = request.cookies.get('filtour_ref') or get_active_account() or DEFAULT_ANALYTICS_ACCOUNT
         log_analytics_event(session_id, 'session_start', {
             'user_agent': request.headers.get('User-Agent', 'unknown'),
             'referrer': request.headers.get('Referer', 'direct')
-        }, account=DEFAULT_ANALYTICS_ACCOUNT)
+        }, account=analytics_account)
         
         return jsonify({
             'success': True,
