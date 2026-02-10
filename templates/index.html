@@ -26014,10 +26014,14 @@
       // Show loading state
       qrContainer.innerHTML = '<div style="font-size: 1.2em; color: #0077b6;">Generating QR code...</div>';
       
-      // Generate QR code using multiple fallback methods
+      // Log the URL being encoded
+      console.log('QR Payment Modal opened for:', checkoutUrl);
+      
+      // Generate QR code - try multiple methods
       try {
-        // Try method 1: QRCode.toDataURL (most reliable)
-        if (typeof QRCode !== 'undefined' && QRCode.toDataURL) {
+        // Method 1: QRCode library with toDataURL
+        if (typeof QRCode !== 'undefined' && typeof QRCode.toDataURL === 'function') {
+          console.log('Using QRCode.toDataURL method');
           QRCode.toDataURL(checkoutUrl, {
             width: 280,
             margin: 2,
@@ -26027,28 +26031,50 @@
             },
             errorCorrectionLevel: 'M'
           })
-          .then(url => {
+          .then(dataUrl => {
             const img = document.createElement('img');
-            img.src = url;
+            img.src = dataUrl;
             img.alt = 'QR Code';
             img.style.maxWidth = '280px';
             img.style.display = 'block';
-              qrContainer.innerHTML = '';
+            qrContainer.innerHTML = '';
             qrContainer.appendChild(img);
-            console.log('✅ QR Code generated successfully');
+            console.log('✅ QR Code generated with toDataURL');
           })
           .catch(err => {
-            console.error('QR Code generation error:', err);
-            // Fallback to external API
+            console.error('QR toDataURL error:', err);
             useFallbackQR(checkoutUrl, qrContainer);
           });
-        } else {
-          // Fallback to external API
+        } 
+        // Method 2: QRCode library with toCanvas
+        else if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
+          console.log('Using QRCode.toCanvas method');
+          const canvas = document.createElement('canvas');
+          QRCode.toCanvas(canvas, checkoutUrl, {
+            width: 280,
+            margin: 2,
+            color: {
+              dark: '#0077b6',
+              light: '#ffffff'
+            }
+          }, function(error) {
+            if (error) {
+              console.error('QR toCanvas error:', error);
+              useFallbackQR(checkoutUrl, qrContainer);
+            } else {
+              qrContainer.innerHTML = '';
+              qrContainer.appendChild(canvas);
+              console.log('✅ QR Code generated with toCanvas');
+            }
+          });
+        }
+        // Method 3: External API fallback
+        else {
+          console.log('QRCode library not available, using fallback');
           useFallbackQR(checkoutUrl, qrContainer);
         }
       } catch (error) {
         console.error('QR Code error:', error);
-        // Fallback to external API
         useFallbackQR(checkoutUrl, qrContainer);
       }
       
@@ -26084,7 +26110,9 @@
       console.log('🎯 QR encoding URL:', url);
       const encodedUrl = encodeURIComponent(url);
       console.log('🎯 Encoded URL for QR:', encodedUrl);
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodedUrl}&color=0077b6&bgcolor=ffffff`;
+      // Add timestamp to bust cache
+      const cacheBuster = Date.now();
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodedUrl}&color=0077b6&bgcolor=ffffff&cachebust=${cacheBuster}`;
       console.log('🎯 Full QR API URL:', qrApiUrl);
       const img = document.createElement('img');
       img.src = qrApiUrl;
