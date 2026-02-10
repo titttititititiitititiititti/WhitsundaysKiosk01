@@ -26081,8 +26081,11 @@
     // Fallback QR code generator using external API
     function useFallbackQR(url, container) {
       console.log('Using fallback QR API');
+      console.log('🎯 QR encoding URL:', url);
       const encodedUrl = encodeURIComponent(url);
+      console.log('🎯 Encoded URL for QR:', encodedUrl);
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodedUrl}&color=0077b6&bgcolor=ffffff`;
+      console.log('🎯 Full QR API URL:', qrApiUrl);
       const img = document.createElement('img');
       img.src = qrApiUrl;
       img.alt = 'QR Code';
