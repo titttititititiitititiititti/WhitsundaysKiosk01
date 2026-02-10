@@ -2867,6 +2867,7 @@ def index():
                            preview_mode=preview_mode,
                            preview_account=preview_account,
                            referral_account=referral_account,
+                           active_account=active_account,
                            is_web_visitor=is_web_visitor,
                            is_demo_mode=is_demo_mode)
 
@@ -3080,6 +3081,7 @@ def api_tours():
 def tour_page(key):
     """Load home page but with tour parameter - JavaScript will auto-open tour in modal"""
     language = request.args.get('lang', 'en')
+    mode = request.args.get('mode', 'browse')  # Default to browse all tours mode
     
     # Check for referral from QR code (allows public access)
     referral_account = get_referral_account()
@@ -3142,17 +3144,25 @@ def tour_page(key):
     # Track if this is a web visitor from QR
     is_web_visitor = referral_account is not None
     
-    return render_template('index.html', 
+    response = make_response(render_template('index.html', 
                           tours=initial_tours, 
                           shown_keys=shown_keys, 
                           current_language=language, 
                           tour_to_open=key,
+                          tour_open_mode=mode,  # Pass mode to frontend
                           qr_tracking=qr_tracking,
                           custom_logo=custom_logo,
                           hero_booking=hero_booking,
                           kiosk_settings=kiosk_settings,
                           referral_account=referral_account,
-                          is_web_visitor=is_web_visitor)
+                          active_account=active_account,
+                          is_web_visitor=is_web_visitor))
+    
+    # Set referral cookie so subsequent page loads use the same account
+    if ref and ref != 'qr':
+        response.set_cookie('filtour_ref', ref, max_age=7*24*60*60, httponly=False, samesite='Lax')  # 7 days
+    
+    return response
     
     # Old standalone page code removed
     company, tid = key.split('__', 1)
@@ -3263,7 +3273,8 @@ def generate_tour_qr(key):
         timestamp = int(time.time())
         
         # Add tracking parameters to URL including the shop referral
-        tour_url = f"{base_url}/tour/{key}?lang={language}&ref={kiosk_account}&tid={tracking_id}&t={timestamp}"
+        # mode=browse ensures the tour opens in Browse All Tours mode
+        tour_url = f"{base_url}/tour/{key}?lang={language}&ref={kiosk_account}&mode=browse&tid={tracking_id}&t={timestamp}"
         print(f"[QR] Generated tour QR with referral: {kiosk_account}")
         
         # Log QR code generation for analytics

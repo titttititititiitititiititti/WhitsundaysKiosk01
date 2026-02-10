@@ -16028,6 +16028,9 @@
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
     
+    // Active account for QR code referral links
+    const ACTIVE_ACCOUNT = '{{ active_account | default("awda") }}';
+    
     // =====================================================================
     // LANGUAGE SELECTION - MUST BE DEFINED EARLY for onclick handlers
     // =====================================================================
@@ -23502,13 +23505,17 @@
     document.addEventListener('DOMContentLoaded', () => {
       updateHeaderChips();
       
-      // Auto-open tour if tour_to_open parameter is passed from Flask
+      // Auto-open tour if tour_to_open parameter is passed from Flask (from QR code scan)
       {% if tour_to_open %}
       console.log('🎯 Auto-opening tour from shared link:', '{{ tour_to_open }}');
+      console.log('📍 Mode:', '{{ tour_open_mode | default("browse") }}');
+      {% if referral_account %}
+      console.log('🏪 Referral account:', '{{ referral_account }}');
+      {% endif %}
       
-      // Switch to home page first, then open the tour
+      // Switch to Browse All Tours mode (home page), then open the tour
       setTimeout(() => {
-        // Hide video page, show home page
+        // Hide video page, show home page (Browse All Tours)
         const videoPage = document.querySelector('.video-question-page');
         const homePage = document.querySelector('.home-page');
         
@@ -23520,6 +23527,13 @@
           homePage.classList.add('active');
           homePage.style.display = 'flex';
         }
+        
+        // Set mode flags for proper button visibility
+        // QR scans always come from "Browse All Tours" mode
+        window.cameFromQuickDecision = false;
+        window.cameFromAIAssistant = false;
+        document.body.classList.remove('came-from-ai', 'came-from-quick-decision');
+        document.body.classList.add('came-from-browse-all');
         
         // Now open the tour
         console.log('🎯 Opening tour:', '{{ tour_to_open }}');
@@ -26242,11 +26256,11 @@
         if (continueBtn) {
           continueBtn.textContent = 'Copy Link';
           continueBtn.onclick = () => {
-            // Use filtour.com domain for shareable links
+            // Use filtour.com domain for shareable links, include account referral
             const baseUrl = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') 
               ? window.location.origin 
               : 'https://www.filtour.com';
-            const tourUrl = `${baseUrl}/tour/${key}?lang=${currentLanguage}`;
+            const tourUrl = `${baseUrl}/tour/${key}?lang=${currentLanguage}&ref=${ACTIVE_ACCOUNT}&mode=browse`;
             console.log('   Copying tour URL:', tourUrl);
             navigator.clipboard.writeText(tourUrl).then(() => {
               continueBtn.textContent = '✓ Copied!';
