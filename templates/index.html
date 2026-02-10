@@ -25782,6 +25782,10 @@
     function setupFooterButtons(key, data) {
       console.log('🔘 Setting up footer buttons for tour:', key);
       
+      // RESET globals first to ensure fresh state
+      currentOpenTourKey = null;
+      currentBookingUrl = null;
+      
       // Store the current tour key globally for widget overlay access
       currentOpenTourKey = key;
       console.log('🔑 Set currentOpenTourKey:', currentOpenTourKey);

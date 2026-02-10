@@ -1361,9 +1361,99 @@
       "chat_messages": [],
       "ended_at": "2026-02-10T22:59:25.725732",
       "duration_seconds": 309.657029
+    },
+    {
+      "session_id": "session_24e06fe230f2_1770728587",
+      "account": "nathan",
+      "started_at": "2026-02-10T23:03:07.636723",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-10T23:03:07.636723",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-10T23:03:09.753021",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-10T23:03:10.624130",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-10T23:03:15.305035",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-10T23:03:47.597835",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-10T23:08:00.712961",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Northern Exposure"
+      ],
+      "tours_booked": [
+        "Fly Raft \u2013 Northern Exposure"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-10T23:08:00.712961",
+      "duration_seconds": 293.076238
+    },
+    {
+      "session_id": "session_d1e4f34b8f54_1770728881",
+      "account": "nathan",
+      "started_at": "2026-02-10T23:08:01.691463",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-10T23:08:01.691463",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-10T23:10:01.719796",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-10T23:10:01.719796",
+      "duration_seconds": 120.028333
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-10T22:59:25.727080"
+  "last_updated": "2026-02-10T23:10:01.719796"
 }
