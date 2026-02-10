@@ -17,19 +17,21 @@ def get_product_id_from_widget(widget_url):
     """
     Fetch a widget URL and extract the productId.
     widget.hero.travel URLs contain a JS redirect with the productId.
+    ProductIDs can be numeric (25604) or alphanumeric (a9d0675ae2cd2e03).
     """
     try:
         # Fetch the widget page
         response = requests.get(widget_url, allow_redirects=True, timeout=10)
         html = response.text
         
-        # Look for productId in WidgetLandingPage URL (format: WidgetLandingPage/12345)
-        match = re.search(r'WidgetLandingPage[/\\](\d+)', html)
+        # Look for productId in WidgetLandingPage URL (format: WidgetLandingPage/XXXX)
+        # Can be numeric OR alphanumeric
+        match = re.search(r'WidgetLandingPage[/\\]([a-zA-Z0-9]+)', html)
         if match:
             return match.group(1)
         
-        # Also try productId query parameter
-        match = re.search(r'productId[=:](\d+)', html)
+        # Also try productId query parameter (numeric or alphanumeric)
+        match = re.search(r'productId[=:]([a-zA-Z0-9]+)', html)
         if match:
             return match.group(1)
         
