@@ -102,18 +102,21 @@ def get_referral_account():
     Get the referral account from cookie or URL parameter.
     Returns the account username or None if no referral.
     """
+    def account_exists(username):
+        """Check if account exists in accounts or defaults folder"""
+        return (os.path.exists(f'config/accounts/{username}/settings.json') or 
+                os.path.exists(f'config/defaults/{username}/settings.json'))
+    
     # First check URL parameter (takes precedence)
     ref = request.args.get('ref')
     if ref and ref != 'qr':
-        settings_file = f'config/accounts/{ref}/settings.json'
-        if os.path.exists(settings_file):
+        if account_exists(ref):
             return ref
     
     # Then check cookie
     ref = request.cookies.get('filtour_ref')
     if ref:
-        settings_file = f'config/accounts/{ref}/settings.json'
-        if os.path.exists(settings_file):
+        if account_exists(ref):
             return ref
     
     return None
