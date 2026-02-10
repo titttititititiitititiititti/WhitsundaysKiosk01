@@ -26037,78 +26037,50 @@
       // Log the URL being encoded
       console.log('✅ QR Payment Modal opened for CLEAN URL:', cleanUrl);
       
-      // Show debug URL with copy button
+      // Hide debug URL (clean production display)
       const debugUrl = document.getElementById('qr-debug-url');
       if (debugUrl) {
-        debugUrl.innerHTML = `
-          <div style="margin-bottom: 5px;"><strong>Encoded URL:</strong></div>
-          <div id="qr-url-text" style="word-break: break-all; font-family: monospace; font-size: 9px;">${cleanUrl}</div>
-          <button onclick="navigator.clipboard.writeText('${cleanUrl.replace(/'/g, "\\'")}').then(() => alert('URL copied!'))" 
-                  style="margin-top: 5px; padding: 3px 8px; font-size: 10px; cursor: pointer;">
-            📋 Copy URL
-          </button>
-        `;
-        debugUrl.style.display = 'block';
+        debugUrl.style.display = 'none';
       }
       
       // Store the CLEAN URL
       checkoutUrl = cleanUrl;
       
-      // Generate QR code - use Google Charts API for reliability (no caching issues)
-      console.log('🎯 Generating QR code for CLEAN URL:', checkoutUrl);
-      console.log('🎯 URL length:', checkoutUrl.length);
+      // Generate QR code - use local QRCode library (most reliable)
+      console.log('🎯 Generating QR code for URL:', checkoutUrl);
       
       // Clear container
       qrContainer.innerHTML = '';
       
-      // Use Google Charts API - most reliable, no client-side caching
-      const encodedUrl = encodeURIComponent(checkoutUrl);
-      const timestamp = Date.now(); // Cache buster
-      const qrApiUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodedUrl}&choe=UTF-8&t=${timestamp}`;
+      // Try local QRCode library first (from CDN)
+      if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
+        const canvas = document.createElement('canvas');
+        canvas.style.maxWidth = '280px';
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+        
+        QRCode.toCanvas(canvas, checkoutUrl, {
+          width: 280,
+          margin: 2,
+          color: { dark: '#0077b6', light: '#ffffff' },
+          errorCorrectionLevel: 'M'
+        }, function(error) {
+          if (error) {
+            console.error('QRCode.toCanvas failed:', error);
+            // Fallback to qrserver API
+            useQRServerAPI(checkoutUrl, qrContainer);
+          } else {
+            qrContainer.appendChild(canvas);
+            console.log('✅ QR generated with local QRCode library');
+          }
+        });
+      } else {
+        console.log('QRCode library not available, using API fallback');
+        useQRServerAPI(checkoutUrl, qrContainer);
+      }
       
-      console.log('🎯 Google Charts API URL:', qrApiUrl);
-      
-      const img = document.createElement('img');
-      img.alt = 'QR Code - Scan to book';
-      img.style.maxWidth = '280px';
-      img.style.display = 'block';
-      img.style.margin = '0 auto';
-      img.style.border = '2px solid #0077b6';
-      img.style.borderRadius = '8px';
-      
-      img.onload = () => {
-        console.log('✅ QR code loaded successfully from Google Charts');
-      };
-      
-      img.onerror = () => {
-        console.error('❌ Google Charts QR failed, trying QRCode library');
-        // Fallback to local library
-        if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
-          const canvas = document.createElement('canvas');
-          canvas.style.maxWidth = '280px';
-          canvas.style.display = 'block';
-          canvas.style.margin = '0 auto';
-          QRCode.toCanvas(canvas, checkoutUrl, {
-            width: 280,
-            margin: 2,
-            errorCorrectionLevel: 'M'
-          }, function(error) {
-            if (error) {
-              console.error('QRCode library also failed:', error);
-              qrContainer.innerHTML = `<p style="color: red;">QR generation failed. Copy the URL below.</p>`;
-            } else {
-              qrContainer.innerHTML = '';
-              qrContainer.appendChild(canvas);
-              console.log('✅ QR generated with local library');
-            }
-          });
-        } else {
-          qrContainer.innerHTML = `<p style="color: red;">QR generation failed. Copy the URL below.</p>`;
-        }
-      };
-      
-      img.src = qrApiUrl;
-      qrContainer.appendChild(img);
+      // Store URL for reference
+      window.currentCheckoutUrl = checkoutUrl;
       
       // Set up "Continue on this screen" button
       if (continueBtn) {
@@ -26137,37 +26109,29 @@
     }
     
     // Fallback QR code generator using external API
-    function useInlineQR(url, container) {
-      // Use Google Charts API as alternative (no caching issues)
-      console.log('Using Google Charts QR API');
-      console.log('🎯 QR encoding URL:', url);
+    function useQRServerAPI(url, container) {
+      // Fallback to qrserver.com API
+      console.log('Using QRServer API fallback');
       const encodedUrl = encodeURIComponent(url);
-      // Google Charts API - more reliable, less caching
-      const qrApiUrl = `https://chart.googleapis.com/chart?cht=qr&chs=280x280&chl=${encodedUrl}&chco=0077B6`;
-      console.log('🎯 Google Charts QR URL:', qrApiUrl);
+      const timestamp = Date.now();
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodedUrl}&color=0-119-182&bgcolor=255-255-255&format=png&t=${timestamp}`;
       
       const img = document.createElement('img');
-      img.alt = 'QR Code';
+      img.alt = 'QR Code - Scan to book';
       img.style.maxWidth = '280px';
       img.style.display = 'block';
       img.style.margin = '0 auto';
       
       img.onload = () => {
-        console.log('✅ QR loaded from Google Charts');
+        console.log('✅ QR loaded from QRServer API');
       };
       
       img.onerror = () => {
-        console.error('Google Charts QR failed, trying qrserver');
-        // Final fallback to qrserver with cache bust
-        const fallbackUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodedUrl}&color=0077b6&t=${Date.now()}`;
-        img.src = fallbackUrl;
-        img.onerror = () => {
-          container.innerHTML = `
-            <p style="color: #d32f2f; font-size: 1.1em;">Unable to generate QR code.</p>
-            <p style="font-size: 0.9em; margin-top: 10px;">Copy this link instead:</p>
-            <input type="text" value="${url}" readonly style="width: 100%; padding: 8px; margin-top: 5px; font-size: 11px;" onclick="this.select()">
-          `;
-        };
+        console.error('QRServer API failed');
+        container.innerHTML = `
+          <p style="color: #d32f2f; font-size: 1.1em;">Unable to generate QR code.</p>
+          <p style="font-size: 0.9em; margin-top: 10px;">Please use the Book Now button below.</p>
+        `;
       };
       
       container.innerHTML = '';

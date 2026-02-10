@@ -2077,6 +2077,175 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:13:09.773509",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:13:09.773509",
+      "duration_seconds": 198.588516
+    },
+    {
+      "session_id": "session_a1dc71645e35_1770757990",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:13:10.645181",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:13:10.645181",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:15:10.659300",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:15:10.659300",
+      "duration_seconds": 120.014119
+    },
+    {
+      "session_id": "session_e69c9d693a81_1770758111",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:15:11.322118",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:15:11.322118",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T07:15:48.120816",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T07:15:48.969484",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T07:15:51.729303",
+          "data": {
+            "tour_name": "Airlie Beach Glass Bottom Boat Day Tours",
+            "company": "Pioneer Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-11T07:18:24.877628",
+          "data": {
+            "role": "user",
+            "message": "I want a full day sailing tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-11T07:18:36.876124",
+          "data": {
+            "role": "assistant",
+            "message": "Full day sailing in the Whitsundays is an unforgettable experience! \u26f5 Let me show you some amazing options!\n\n1. **Tongarra Day Sailing Tour** - Experience a day of adventure aboard the Tongarra, where relaxation meets excitement in the stunning Whitsundays. This tour is perfect for thrill-seekers, offering activities like snorkeling, a thrilling banana boat ride, and scenic beach walks. Enjoy sailing on the spacious deck with bean bags, and don't miss the sunset sail back to Airlie Beach. \ud83c\udf05\n\n2."
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T07:18:48.716406",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-11T07:19:29.921686",
+          "data": {
+            "role": "user",
+            "message": "\ud83d\udcb0 Something cheaper?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-11T07:19:43.923153",
+          "data": {
+            "role": "assistant",
+            "message": "Looking for a budget-friendly full-day sailing adventure? I've got just the thing for you! \ud83c\udf0a\n\n1. **Tongarra Day Sailing Tour** - This is an exciting and budget-friendly option for a full day of sailing in the Whitsundays. Join the fun and thrill aboard the Tongarra, where you can enjoy snorkeling, a thrilling banana boat ride, and explore Langford Island. Relax on the spacious deck with bean bags and soak in the beautiful sunset as you sail back to Airlie Beach. It's a fantastic mix of leisure "
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:22:05.716969",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Airlie Beach Glass Bottom Boat Day Tours",
+        "Tongarra Day Sailing Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day sailing tour",
+          "timestamp": "2026-02-11T07:18:24.877628"
+        },
+        {
+          "role": "assistant",
+          "message": "Full day sailing in the Whitsundays is an unforgettable experience! \u26f5 Let me show you some amazing options!\n\n1. **Tongarra Day Sailing Tour** - Experience a day of adventure aboard the Tongarra, where relaxation meets excitement in the stunning Whitsundays. This tour is perfect for thrill-seekers, offering activities like snorkeling, a thrilling banana boat ride, and scenic beach walks. Enjoy sailing on the spacious deck with bean bags, and don't miss the sunset sail back to Airlie Beach. \ud83c\udf05\n\n2.",
+          "timestamp": "2026-02-11T07:18:36.876124"
+        },
+        {
+          "role": "user",
+          "message": "\ud83d\udcb0 Something cheaper?",
+          "timestamp": "2026-02-11T07:19:29.921686"
+        },
+        {
+          "role": "assistant",
+          "message": "Looking for a budget-friendly full-day sailing adventure? I've got just the thing for you! \ud83c\udf0a\n\n1. **Tongarra Day Sailing Tour** - This is an exciting and budget-friendly option for a full day of sailing in the Whitsundays. Join the fun and thrill aboard the Tongarra, where you can enjoy snorkeling, a thrilling banana boat ride, and explore Langford Island. Relax on the spacious deck with bean bags and soak in the beautiful sunset as you sail back to Airlie Beach. It's a fantastic mix of leisure ",
+          "timestamp": "2026-02-11T07:19:43.923153"
+        }
+      ],
+      "ended_at": "2026-02-11T07:22:05.716969",
+      "duration_seconds": 414.394851
+    },
+    {
+      "session_id": "session_e7650180e626_1770758526",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:22:06.929443",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:22:06.929443",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -2088,5 +2257,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T07:09:51.185991"
+  "last_updated": "2026-02-11T07:22:06.931511"
 }
