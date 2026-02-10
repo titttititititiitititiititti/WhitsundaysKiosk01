@@ -2246,16 +2246,222 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:24:06.985425",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:24:06.985425",
+      "duration_seconds": 120.055982
+    },
+    {
+      "session_id": "session_d1468080e25c_1770758647",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:24:07.803581",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:24:07.803581",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:26:07.843742",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:26:07.843742",
+      "duration_seconds": 120.040161
+    },
+    {
+      "session_id": "session_252c593560bf_1770758768",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:26:08.349830",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:26:08.349830",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T07:28:24.997775",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T07:28:27.602943",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T07:28:42.717274",
+          "data": {
+            "tour_name": "Just Tuk\u2019n Around \u2013 Guided Tours",
+            "company": "Justtuknaround",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:28:49.205050",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Just Tuk\u2019n Around \u2013 Guided Tours"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:28:49.205050",
+      "duration_seconds": 160.85522
+    },
+    {
+      "session_id": "session_26da7a9ad595_1770758929",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:28:49.695501",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:28:49.695501",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T07:30:07.007790",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T07:30:08.011455",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:32:53.957437",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:32:53.957437",
+      "duration_seconds": 244.261936
+    },
+    {
+      "session_id": "session_8b6dd2aaf528_1770759174",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:32:54.831170",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:32:54.831170",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:34:54.919513",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:34:54.919513",
+      "duration_seconds": 120.088343
+    },
+    {
+      "session_id": "session_9a5463b328c0_1770759295",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:34:55.457840",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:34:55.457840",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T07:36:38.050259",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T07:36:39.884216",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T07:36:51.633862",
+          "data": {
+            "tour_name": "British Defender 3D2N",
+            "company": "Sailing-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:39:55.542270",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "British Defender 3D2N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:39:55.542270",
+      "duration_seconds": 300.08443
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T07:22:06.931511"
+  "last_updated": "2026-02-11T07:39:55.543267"
 }

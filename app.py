@@ -6724,7 +6724,7 @@ def set_tour_thumbnail(key):
     })
 
 def sync_tour_images_to_csv(company, tid):
-    """Sync images from folder to CSV image_urls field"""
+    """Sync images from folder to CSV images field"""
     folder = f"static/tour_images/{company}/{tid}"
     if not os.path.isdir(folder):
         return []
@@ -6740,7 +6740,7 @@ def sync_tour_images_to_csv(company, tid):
                 continue
             image_paths.append(f"static/tour_images/{company}/{tid}/{filename}")
     
-    # Update CSV with new image_urls
+    # Update CSV with new images
     csv_file = find_company_csv(company)
     if csv_file and os.path.exists(csv_file):
         try:
@@ -6748,12 +6748,19 @@ def sync_tour_images_to_csv(company, tid):
             fieldnames = None
             with open(csv_file, newline='', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                fieldnames = reader.fieldnames
+                fieldnames = list(reader.fieldnames) if reader.fieldnames else []
                 for row in reader:
                     if row.get('id') == tid:
-                        # Update image_urls with all folder images
-                        row['image_urls'] = ','.join(image_paths)
-                        print(f"[Sync] Updated image_urls for {tid}: {len(image_paths)} images")
+                        # Update images field (try both 'images' and 'image_urls' for compatibility)
+                        if 'images' in fieldnames:
+                            row['images'] = ','.join(image_paths)
+                        elif 'image_urls' in fieldnames:
+                            row['image_urls'] = ','.join(image_paths)
+                        else:
+                            # Add 'images' field if neither exists
+                            fieldnames.append('images')
+                            row['images'] = ','.join(image_paths)
+                        print(f"[Sync] Updated images for {tid}: {len(image_paths)} images")
                     rows.append(row)
             
             # Write back
@@ -6761,8 +6768,11 @@ def sync_tour_images_to_csv(company, tid):
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
                 writer.writeheader()
                 writer.writerows(rows)
+            print(f"[Sync] Successfully wrote CSV: {csv_file}")
         except Exception as e:
             print(f"[Sync] Error updating CSV: {e}")
+            import traceback
+            traceback.print_exc()
     
     return image_paths
 
