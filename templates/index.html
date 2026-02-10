@@ -17162,6 +17162,7 @@
     // =====================================================================
     let currentProtectedTourData = null; // Store tour data for QR generation
     let currentOpenTourKey = null; // Store the current tour key globally for reliable access
+    let currentBookingUrl = null; // Store the correct booking URL globally for widget overlay
     
     // Common booking button text patterns (case-insensitive)
     const BOOKING_BUTTON_PATTERNS = [
@@ -17442,63 +17443,52 @@
     
     function showKioskBookingRedirect() {
       console.log('🔍 showKioskBookingRedirect called');
+      console.log('🔍 currentBookingUrl:', currentBookingUrl);
       console.log('🔍 currentOpenTourKey:', currentOpenTourKey);
-      console.log('🔍 currentProtectedTourData:', currentProtectedTourData);
       
-      // Use currentOpenTourKey (set by setupFooterButtons) as the reliable source
-      // Fall back to currentProtectedTourData.key if needed
-      const tourKey = currentOpenTourKey || (currentProtectedTourData ? currentProtectedTourData.key : null);
-      
-      console.log('🔑 Using tour key:', tourKey);
-      
-      if (tourKey) {
-        // PRIORITY 1: Check account-specific booking URL from HERO_BOOKING.tour_overrides
-        let bookingUrl = null;
-        
-        console.log('🔍 HERO_BOOKING exists:', typeof HERO_BOOKING !== 'undefined');
-        console.log('🔍 HERO_BOOKING.tour_overrides:', HERO_BOOKING?.tour_overrides ? Object.keys(HERO_BOOKING.tour_overrides).length + ' tours' : 'none');
-        
-        if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tourKey]) {
-          const tourOverrides = HERO_BOOKING.tour_overrides[tourKey];
-          console.log('🔍 Found tour overrides:', tourOverrides);
-          if (tourOverrides.booking_button_url) {
-            bookingUrl = tourOverrides.booking_button_url;
-            console.log('✅ Using account-configured booking URL:', bookingUrl);
-          }
-        } else {
-          console.log('⚠️ Tour override NOT FOUND for key:', tourKey);
-          console.log('⚠️ Available override keys:', HERO_BOOKING?.tour_overrides ? Object.keys(HERO_BOOKING.tour_overrides).slice(0, 10) : 'none');
-        }
-        
-        // PRIORITY 2: Fall back to tour data booking URLs
-        if (!bookingUrl && currentProtectedTourData) {
-          console.log('⚠️ FALLING BACK to tour data URLs');
-          console.log('⚠️ link_booking:', currentProtectedTourData.link_booking);
-          bookingUrl = currentProtectedTourData.link_booking || 
-                       currentProtectedTourData.booking_link || 
-                       currentProtectedTourData.booking_url ||
-                       getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
-          console.log('⚠️ Using fallback URL:', bookingUrl);
-        }
-        
-        if (bookingUrl) {
-          console.log('🎫 FINAL QR URL:', bookingUrl);
-          const tourName = currentProtectedTourData?.name || 'Book This Tour';
-          showQRPaymentModal(bookingUrl, tourName);
-        } else {
-          console.log('❌ No booking URL found for tour:', tourKey);
-          // Try more info URL as last resort
-          if (currentProtectedTourData) {
-            const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
-            if (moreInfoUrl) {
-              console.log('🔗 Using more info URL:', moreInfoUrl);
-              showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
-            }
-          }
-        }
-      } else {
-        console.error('❌ No tour key available! currentOpenTourKey and currentProtectedTourData.key are both null/undefined');
+      // PRIORITY 1: Use currentBookingUrl (set by setupFooterButtons - same as footer button uses)
+      if (currentBookingUrl) {
+        console.log('✅ Using stored booking URL (same as footer button):', currentBookingUrl);
+        const tourName = currentProtectedTourData?.name || 'Book This Tour';
+        showQRPaymentModal(currentBookingUrl, tourName);
+        return;
       }
+      
+      // PRIORITY 2: Look up from HERO_BOOKING using currentOpenTourKey
+      const tourKey = currentOpenTourKey || (currentProtectedTourData ? currentProtectedTourData.key : null);
+      console.log('🔑 Fallback - using tour key:', tourKey);
+      
+      if (tourKey && typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tourKey]) {
+        const tourOverrides = HERO_BOOKING.tour_overrides[tourKey];
+        if (tourOverrides.booking_button_url) {
+          console.log('✅ Using tour_overrides booking URL:', tourOverrides.booking_button_url);
+          const tourName = currentProtectedTourData?.name || 'Book This Tour';
+          showQRPaymentModal(tourOverrides.booking_button_url, tourName);
+          return;
+        }
+      }
+      
+      // PRIORITY 3: Fall back to tour data booking URLs
+      if (currentProtectedTourData) {
+        const bookingUrl = currentProtectedTourData.link_booking || 
+                     currentProtectedTourData.booking_link || 
+                     currentProtectedTourData.booking_url;
+        if (bookingUrl) {
+          console.log('⚠️ Using fallback tour data URL:', bookingUrl);
+          showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
+          return;
+        }
+        
+        // Last resort: more info URL
+        const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
+        if (moreInfoUrl) {
+          console.log('🔗 Using more info URL as last resort:', moreInfoUrl);
+          showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
+          return;
+        }
+      }
+      
+      console.error('❌ No booking URL available!');
     }
     
     // =====================================================================
@@ -19024,9 +19014,21 @@
     async function expandTourDetails(tour) {
       const fullTourData = await fetchTourDetails(tour.key);
       
-      // Store the tour key globally for widget overlay access
+      // Store the tour key and booking URL globally for widget overlay access
       currentOpenTourKey = tour.key;
       console.log('🔑 Quick Decision - Set currentOpenTourKey:', currentOpenTourKey);
+      
+      // Find and store the booking URL
+      const tourOverrides = (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides) 
+        ? HERO_BOOKING.tour_overrides[tour.key] 
+        : null;
+      if (tourOverrides && tourOverrides.booking_button_url) {
+        currentBookingUrl = tourOverrides.booking_button_url;
+        console.log('🔗 Quick Decision - Set currentBookingUrl:', currentBookingUrl);
+      } else {
+        currentBookingUrl = null;
+        console.log('⚠️ Quick Decision - No booking URL found for key:', tour.key);
+      }
       
       const scrollableContent = document.getElementById('swipe-scrollable-content');
       if (!scrollableContent) {
@@ -25784,6 +25786,19 @@
       currentOpenTourKey = key;
       console.log('🔑 Set currentOpenTourKey:', currentOpenTourKey);
       
+      // Find and store the booking URL - this is the SAME lookup the footer button uses
+      const tourOverrides = (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides) 
+        ? HERO_BOOKING.tour_overrides[key] 
+        : null;
+      
+      if (tourOverrides && tourOverrides.booking_button_url) {
+        currentBookingUrl = tourOverrides.booking_button_url;
+        console.log('🔗 Set currentBookingUrl:', currentBookingUrl);
+      } else {
+        currentBookingUrl = null;
+        console.log('⚠️ No booking URL found in tour_overrides for key:', key);
+      }
+      
       const bookNowBtn = document.getElementById('book-now-btn');
       const continuePhoneBtn = document.getElementById('continue-phone-btn');
       const shareTourBtn = document.getElementById('share-tour-btn');
@@ -25820,7 +25835,13 @@
           
           if (tourOverrides && tourOverrides.booking_button_url) {
             console.log('🎫 Agent-configured booking URL found:', tourOverrides.booking_button_url);
-            window.open(tourOverrides.booking_button_url, '_blank');
+            // In kiosk mode, show QR code instead of opening directly
+            if (isKiosk) {
+              showQRPaymentModal(tourOverrides.booking_button_url, data.name || 'Book This Tour');
+            } else {
+              // On web/mobile, open directly
+              window.open(tourOverrides.booking_button_url, '_blank');
+            }
             return;
           }
           
