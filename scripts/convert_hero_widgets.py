@@ -13,41 +13,45 @@ from urllib.parse import urlparse, parse_qs
 HERO_TOKEN = "8f0d64c87092161e01563"
 HERO_BASE = "https://hero.airliebeachtourism.com.au"
 
-def get_product_id_from_widget(widget_url):
+def get_booking_url_from_widget(widget_url):
     """
-    Fetch a widget URL and extract the productId.
-    widget.hero.travel URLs contain a JS redirect with the productId.
-    ProductIDs can be numeric (25604) or alphanumeric (a9d0675ae2cd2e03).
+    Fetch a widget URL and extract the FULL redirect URL.
+    widget.hero.travel URLs contain a JS redirect to the actual booking page.
+    We extract the full URL to preserve mode, token, and all parameters.
     """
     try:
         # Fetch the widget page
         response = requests.get(widget_url, allow_redirects=True, timeout=10)
         html = response.text
         
-        # Look for productId in WidgetLandingPage URL (format: WidgetLandingPage/XXXX)
-        # Can be numeric OR alphanumeric
-        match = re.search(r'WidgetLandingPage[/\\]([a-zA-Z0-9]+)', html)
+        # Look for the full document.location.replace URL
+        match = re.search(r"document\.location\.replace\(['\"]([^'\"]+)['\"]\)", html)
         if match:
-            return match.group(1)
+            full_url = match.group(1)
+            # Convert WidgetLandingPage to LandingPage for direct booking
+            # WidgetLandingPage shows the widget, LandingPage goes to booking
+            booking_url = full_url.replace('/Book/WidgetLandingPage/', '/Book/LandingPage/?mode=2&id=')
+            return booking_url
         
-        # Also try productId query parameter (numeric or alphanumeric)
-        match = re.search(r'productId[=:]([a-zA-Z0-9]+)', html)
-        if match:
-            return match.group(1)
-        
-        # Check URL query params if it's a full URL
-        parsed = urlparse(widget_url)
-        params = parse_qs(parsed.query)
-        if 'productId' in params:
-            return params['productId'][0]
-                
         return None
     except Exception as e:
         print(f"  [ERROR] Error fetching {widget_url}: {e}")
         return None
 
+def get_product_id_from_widget(widget_url):
+    """Legacy function - extract just the product ID"""
+    try:
+        response = requests.get(widget_url, allow_redirects=True, timeout=10)
+        html = response.text
+        match = re.search(r'WidgetLandingPage[/\\]([a-zA-Z0-9]+)', html)
+        if match:
+            return match.group(1)
+        return None
+    except:
+        return None
+
 def create_landing_page_url(product_id):
-    """Create the direct booking LandingPage URL"""
+    """Create the direct booking LandingPage URL - only for numeric IDs"""
     return f"{HERO_BASE}/Book/LandingPage/?mode=2&id={product_id}&token={HERO_TOKEN}&src={HERO_BASE}"
 
 def convert_nathan_widgets():
