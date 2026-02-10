@@ -19313,8 +19313,8 @@
       scrollableContent.innerHTML = detailsHtml;
       scrollableContent.style.display = 'flex';
       
-      // Protect any Hero booking widgets in kiosk mode
-      setTimeout(() => protectBookingWidgets(fullTourData), 100);
+      // Protect any Hero booking widgets in kiosk mode - ensure key is passed
+      setTimeout(() => protectBookingWidgets({...fullTourData, key: tour.key}), 100);
       
       // Smooth scroll to show the new sections
       setTimeout(() => {

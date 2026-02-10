@@ -3726,6 +3726,7 @@ def tour_detail(key):
                             
                             # Return all info needed for the detail page
                             return jsonify({
+                                'key': key,  # Include the tour key for widget protection
                                 'name': row.get('name', ''),
                                 'company': COMPANY_DISPLAY_NAMES.get(row.get('company_name', ''), row.get('company_name', '').title()),
                                 'summary': row.get('summary', ''),
