@@ -3140,6 +3140,7 @@ def tour_page(key):
     custom_logo = get_kiosk_custom_logo(preview_account=active_account)
     hero_booking = get_hero_booking_settings(preview_account=active_account)
     kiosk_settings = get_kiosk_settings(preview_account=active_account)
+    shop_config = load_shop_config(None)  # Load default shop config
     
     # Track if this is a web visitor from QR
     is_web_visitor = referral_account is not None
@@ -3154,6 +3155,7 @@ def tour_page(key):
                           custom_logo=custom_logo,
                           hero_booking=hero_booking,
                           kiosk_settings=kiosk_settings,
+                          shop_config=shop_config,
                           referral_account=referral_account,
                           active_account=active_account,
                           is_web_visitor=is_web_visitor))
