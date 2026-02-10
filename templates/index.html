@@ -17440,35 +17440,55 @@
     
     
     function showKioskBookingRedirect() {
+      console.log('🔍 showKioskBookingRedirect called');
+      console.log('🔍 currentProtectedTourData:', currentProtectedTourData);
+      
       if (currentProtectedTourData) {
         // PRIORITY 1: Check account-specific booking URL from HERO_BOOKING.tour_overrides
         let bookingUrl = null;
         const tourKey = currentProtectedTourData.key;
         
+        console.log('🔍 Tour key from protected data:', tourKey);
+        console.log('🔍 HERO_BOOKING exists:', typeof HERO_BOOKING !== 'undefined');
+        console.log('🔍 HERO_BOOKING.tour_overrides:', HERO_BOOKING?.tour_overrides ? Object.keys(HERO_BOOKING.tour_overrides).length + ' tours' : 'none');
+        
         if (tourKey && typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tourKey]) {
           const tourOverrides = HERO_BOOKING.tour_overrides[tourKey];
+          console.log('🔍 Found tour overrides:', tourOverrides);
           if (tourOverrides.booking_button_url) {
             bookingUrl = tourOverrides.booking_button_url;
-            console.log('🎫 Using account-configured booking URL:', bookingUrl);
+            console.log('✅ Using account-configured booking URL:', bookingUrl);
           }
+        } else {
+          console.log('⚠️ Tour override NOT FOUND for key:', tourKey);
+          console.log('⚠️ Available override keys:', HERO_BOOKING?.tour_overrides ? Object.keys(HERO_BOOKING.tour_overrides).slice(0, 10) : 'none');
         }
         
         // PRIORITY 2: Fall back to tour data booking URLs
         if (!bookingUrl) {
+          console.log('⚠️ FALLING BACK to tour data URLs');
+          console.log('⚠️ link_booking:', currentProtectedTourData.link_booking);
+          console.log('⚠️ booking_link:', currentProtectedTourData.booking_link);
+          console.log('⚠️ booking_url:', currentProtectedTourData.booking_url);
           bookingUrl = currentProtectedTourData.link_booking || 
                        currentProtectedTourData.booking_link || 
                        currentProtectedTourData.booking_url ||
                        getRezdyUrlForTour(currentProtectedTourData.name, currentProtectedTourData.company || currentProtectedTourData.company_name);
+          console.log('⚠️ Using fallback URL:', bookingUrl);
         }
         
         if (bookingUrl) {
+          console.log('🎫 FINAL QR URL:', bookingUrl);
           showQRPaymentModal(bookingUrl, currentProtectedTourData.name || 'Book This Tour');
         } else {
           const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
           if (moreInfoUrl) {
+            console.log('🔗 Using more info URL:', moreInfoUrl);
             showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
           }
         }
+      } else {
+        console.error('❌ currentProtectedTourData is null/undefined!');
       }
     }
     
