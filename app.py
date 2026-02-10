@@ -2805,18 +2805,28 @@ def index():
     # Check for preview mode (for logged-in admins testing)
     preview_account = request.args.get('preview')
     
-    # Demo mode: if no referral and no login, use "awda" as default demo account
-    # This allows public access without login (for website visitors)
-    is_demo_mode = False
-    if not referral_account and 'user' not in session:
-        # Use "awda" as the default demo account - shows all tours, no booking buttons
-        referral_account = 'awda'
-        is_demo_mode = True
-        print(f"[INDEX] Demo mode - using 'awda' account for public access")
+    # Get the kiosk instance account (from instance.json - persists through restarts)
+    kiosk_account = get_active_account()
     
     # Determine which account to use for filtering tours
-    # Priority: 1) preview mode, 2) referral from QR, 3) kiosk instance
-    active_account = preview_account or referral_account or get_active_account()
+    # Priority: 1) preview mode, 2) referral from QR, 3) kiosk instance, 4) demo mode
+    is_demo_mode = False
+    if preview_account:
+        active_account = preview_account
+    elif referral_account:
+        active_account = referral_account
+    elif kiosk_account:
+        # Kiosk has an account set in instance.json - use it!
+        active_account = kiosk_account
+        print(f"[INDEX] Using kiosk account from instance.json: {kiosk_account}")
+    elif 'user' in session:
+        # Logged in user viewing the kiosk
+        active_account = session.get('user')
+    else:
+        # No account set anywhere - use demo mode for public visitors
+        active_account = 'awda'
+        is_demo_mode = True
+        print(f"[INDEX] Demo mode - no kiosk account set, using 'awda' for public access")
     
     if preview_account:
         session['preview_account'] = preview_account
@@ -3034,7 +3044,12 @@ def api_tours():
     print(f"[API] Final matching tours: {len(filtered_tours)}")
     print(f"[API] ========================================")
     
+    # Randomize tours first, then sort by promotion level
+    # This ensures promoted tours stay at top but non-promoted tours are randomized
+    random.shuffle(filtered_tours)
+    
     # Sort filtered tours: promoted tours first, then by promotion level
+    # Using stable sort preserves random order within same promotion level
     promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
     filtered_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
     
