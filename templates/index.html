@@ -15961,6 +15961,9 @@
         <!-- QR code will be generated here -->
       </div>
       
+      <!-- Debug: Show URL encoded in QR -->
+      <div id="qr-debug-url" style="font-size: 10px; color: #666; max-width: 280px; word-break: break-all; margin: 10px auto; padding: 5px; background: #f5f5f5; border-radius: 4px; display: none;"></div>
+      
       <p class="qr-help-text" id="qr-modal-help">
         Apple Pay, Google Pay and cards supported.
       </p>
@@ -26017,6 +26020,13 @@
       // Log the URL being encoded
       console.log('QR Payment Modal opened for:', checkoutUrl);
       
+      // Show debug URL (temporarily visible for debugging)
+      const debugUrl = document.getElementById('qr-debug-url');
+      if (debugUrl) {
+        debugUrl.textContent = 'URL: ' + checkoutUrl;
+        debugUrl.style.display = 'block';
+      }
+      
       // Generate QR code - try multiple methods
       try {
         // Method 1: QRCode library with toDataURL
@@ -27858,51 +27868,7 @@
     });
   </script>
   
-  <!-- QR Code Modal - HIDDEN BY DEFAULT -->
-  <div id="qr-modal" style="display: none !important; visibility: hidden;">
-    <div class="qr-modal-content">
-      <button class="qr-modal-close" onclick="closeQRModal()">×</button>
-      <div class="qr-modal-title">📱 Scan to Book</div>
-      <div class="qr-modal-subtitle" id="qr-tour-name"></div>
-      <div class="qr-code-container">
-        <img id="qr-code-image" src="" alt="QR Code">
-      </div>
-      <div class="qr-modal-instruction">
-        Open your phone's camera and point it at the QR code.<br>
-        Tap the notification to view full details and book directly.
-      </div>
-    </div>
-  </div>
-  
-  <script>
-    // QR Code functionality
-    function showQRCode(tourUrl, tourName) {
-      const modal = document.getElementById('qr-modal');
-      const qrImage = document.getElementById('qr-code-image');
-      const tourNameEl = document.getElementById('qr-tour-name');
-      
-      // Use a free QR code API to generate the QR code
-      // tourUrl is now the link_more_info (tour company's page)
-      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(tourUrl)}`;
-      
-      qrImage.src = qrApiUrl;
-      tourNameEl.textContent = tourName;
-      modal.style.display = 'flex';
-      modal.style.visibility = 'visible';
-    }
-    
-    function closeQRModal() {
-      const modal = document.getElementById('qr-modal');
-      modal.style.display = 'none';
-      modal.style.visibility = 'hidden';
-    }
-    
-    // Close modal when clicking outside
-    document.getElementById('qr-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeQRModal();
-      }
-    });
+  <!-- Old QR Modal removed - using qr-payment-modal instead -->
     
     // =====================================================================
     // MAP VIEW FUNCTIONALITY

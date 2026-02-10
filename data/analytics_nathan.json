@@ -1607,6 +1607,78 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-10T23:23:06.857766",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-10T23:23:08.575927",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-10T23:23:14.256365",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-10T23:23:29.771668",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-10T23:23:36.126007",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-10T23:25:59.823047",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "63 Foot Ketch Whitsunday Adventure"
+      ],
+      "tours_booked": [
+        "63 Foot Ketch Whitsunday Adventure"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-10T23:25:59.823047",
+      "duration_seconds": 247.942442
+    },
+    {
+      "session_id": "session_d3d15af23ae6_1770729961",
+      "account": "nathan",
+      "started_at": "2026-02-10T23:26:01.346470",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-10T23:26:01.346470",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -1618,5 +1690,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-10T23:21:51.882607"
+  "last_updated": "2026-02-10T23:26:01.348496"
 }
