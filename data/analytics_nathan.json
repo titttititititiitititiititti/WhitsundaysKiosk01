@@ -1693,10 +1693,57 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-10T23:31:36.979725",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-10T23:31:43.216628",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-10T23:34:16.709780",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
+      "tours_viewed": [
+        "Camira Sailing Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-10T23:34:16.709780",
+      "duration_seconds": 495.36331
+    },
+    {
+      "session_id": "session_2e30a4ac2bfa_1770730458",
+      "account": "nathan",
+      "started_at": "2026-02-10T23:34:18.668529",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-10T23:34:18.668529",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -1704,5 +1751,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-10T23:27:32.952601"
+  "last_updated": "2026-02-10T23:34:18.672390"
 }
