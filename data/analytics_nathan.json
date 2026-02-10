@@ -1944,10 +1944,143 @@
           "data": {
             "mode": "newcomer-info"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T06:57:49.944448",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "newcomer-info",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T06:57:49.944448",
+      "duration_seconds": 240.386933
+    },
+    {
+      "session_id": "session_8e4b939e877f_1770757071",
+      "account": "nathan",
+      "started_at": "2026-02-11T06:57:51.045880",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T06:57:51.045880",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:00:16.915929",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:00:16.915929",
+      "duration_seconds": 145.870049
+    },
+    {
+      "session_id": "session_0592380d12d0_1770757217",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:00:17.438240",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:00:17.438240",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T07:01:59.083777",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T07:02:00.218569",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T07:02:18.980172",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:07:45.033969",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:07:45.033969",
+      "duration_seconds": 447.595729
+    },
+    {
+      "session_id": "session_a920a36fc557_1770757665",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:07:45.471525",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:07:45.471525",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T07:09:50.248167",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T07:09:50.248167",
+      "duration_seconds": 124.776642
+    },
+    {
+      "session_id": "session_2dd529c605c1_1770757791",
+      "account": "nathan",
+      "started_at": "2026-02-11T07:09:51.184993",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T07:09:51.184993",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -1955,5 +2088,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T06:55:31.583437"
+  "last_updated": "2026-02-11T07:09:51.185991"
 }
