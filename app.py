@@ -1780,9 +1780,8 @@ def kiosk_settings():
         settings['kiosk_settings'] = kiosk
         save_account_settings(username, settings)
         
-        # Note: We don't auto-update instance.json here anymore
-        # Each shop's repo has its own instance.json set up once with setup_kiosk.py
-        # This prevents conflicts when multiple accounts exist in the same codebase
+        # Sync kiosk settings to connected devices
+        git_sync_changes(f"Updated kiosk settings for {username}")
         
         return redirect(url_for('kiosk_settings') + '?saved=1')
     
@@ -1811,6 +1810,9 @@ def update_account_tours():
     
     settings['enabled_tours'] = enabled_tours
     save_account_settings(username, settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Updated enabled tours for {username}")
     
     return jsonify({'success': True, 'enabled_count': len(enabled_tours)})
 
