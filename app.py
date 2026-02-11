@@ -2509,8 +2509,8 @@ def save_tour_settings(tour_key):
     
     save_account_settings(username, account_settings)
     
-    # Sync to connected devices (account settings are gitignored, but this triggers update check)
-    git_sync_changes(f"Updated settings for {tour_key}")
+    # Sync to connected kiosks via git push
+    git_sync_changes(f"Updated tour settings: {tour_key}")
     
     return jsonify({'success': True, 'settings': tour_settings})
 
