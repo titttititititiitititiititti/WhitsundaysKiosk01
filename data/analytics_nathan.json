@@ -2573,6 +2573,66 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T13:31:54.564126",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T13:31:55.647953",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T13:32:01.084903",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-02-11T13:32:04.194823",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T13:34:02.898220",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Viper Outer Great Barrier Reef Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T13:34:02.898220",
+      "duration_seconds": 18312.647066
+    },
+    {
+      "session_id": "session_af5ce8005240_1770780843",
+      "account": "nathan",
+      "started_at": "2026-02-11T13:34:03.558807",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T13:34:03.558807",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
         }
       ],
       "language": null,
@@ -2584,5 +2644,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T08:28:50.254496"
+  "last_updated": "2026-02-11T13:34:03.561158"
 }
