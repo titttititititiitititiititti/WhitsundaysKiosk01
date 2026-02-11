@@ -267,14 +267,30 @@ def load_account_settings(username):
         'created_at': datetime.now().isoformat()
     }
 
-def save_account_settings(username, settings):
-    """Save settings for a specific account"""
+def save_account_settings(username, settings, sync_to_git=True):
+    """Save settings for a specific account
+    
+    Saves to both:
+    - config/accounts/{username}/ (local, gitignored) - for local state
+    - config/defaults/{username}/ (tracked in git) - for syncing to other devices
+    """
+    settings['last_updated'] = datetime.now().isoformat()
+    
+    # Save to local (gitignored) directory
     config_dir = get_account_config_dir(username)
     os.makedirs(config_dir, exist_ok=True)
     settings_file = os.path.join(config_dir, 'settings.json')
-    settings['last_updated'] = datetime.now().isoformat()
     with open(settings_file, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2, ensure_ascii=False)
+    
+    # ALSO save to defaults directory (tracked in git) for syncing
+    if sync_to_git:
+        defaults_dir = f'config/defaults/{username}'
+        os.makedirs(defaults_dir, exist_ok=True)
+        defaults_file = os.path.join(defaults_dir, 'settings.json')
+        with open(defaults_file, 'w', encoding='utf-8') as f:
+            json.dump(settings, f, indent=2, ensure_ascii=False)
+        print(f"[CONFIG SYNC] Saved {username} settings to git-tracked location")
 
 def is_tour_enabled_for_account(username, tour_key):
     """Check if a tour is enabled for a specific account"""
