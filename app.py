@@ -2307,6 +2307,10 @@ def bulk_update_tours():
     
     account_settings['enabled_tours'] = enabled_tours
     save_account_settings(username, account_settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Bulk tour update: {action}")
+    
     return jsonify({'success': True})
 
 @app.route('/admin/agent/api/toggle-company-images', methods=['POST'])
