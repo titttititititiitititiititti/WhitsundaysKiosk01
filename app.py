@@ -2211,6 +2211,9 @@ def toggle_tour_visibility():
     account_settings['enabled_tours'] = enabled_tours
     save_account_settings(username, account_settings)
     
+    # Sync to connected kiosks
+    git_sync_changes(f"Toggled tour status: {tour_key}")
+    
     return jsonify({'success': True, 'enabled': enabled})
 
 @app.route('/admin/agent/api/set-promotion', methods=['POST'])
@@ -2248,6 +2251,9 @@ def set_tour_promotion():
     
     account_settings['promoted_tours'] = promoted
     save_account_settings(username, account_settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Updated tour promotion: {tour_key}")
     
     return jsonify({'success': True, 'level': level})
 
