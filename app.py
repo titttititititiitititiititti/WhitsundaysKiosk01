@@ -2371,12 +2371,14 @@ def manage_overlay_presets():
         config = data.get('config', {})
         account_settings['overlay_presets'][name] = config
         save_account_settings(username, account_settings)
+        git_sync_changes(f"Saved overlay preset: {name}")
         return jsonify({'success': True, 'message': f'Preset "{name}" saved'})
     
     elif action == 'delete':
         if name in account_settings['overlay_presets']:
             del account_settings['overlay_presets'][name]
             save_account_settings(username, account_settings)
+            git_sync_changes(f"Deleted overlay preset: {name}")
             return jsonify({'success': True, 'message': f'Preset "{name}" deleted'})
         else:
             return jsonify({'success': False, 'error': 'Preset not found'})
