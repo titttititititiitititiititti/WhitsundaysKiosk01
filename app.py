@@ -7431,6 +7431,54 @@ def sync_analytics_to_git():
     except Exception as e:
         print(f"[ANALYTICS] Sync error: {e}")
 
+def pull_analytics_only(account=None):
+    """Pull only the analytics file for a specific account from remote"""
+    try:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        account = account or DEFAULT_ANALYTICS_ACCOUNT
+        
+        analytics_file = f'data/analytics_{account}.json' if account != 'default' else 'data/analytics.json'
+        
+        # Fetch latest from remote
+        subprocess.run(['git', 'fetch', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=30)
+        
+        # Checkout just the analytics file from remote
+        result = subprocess.run(
+            ['git', 'checkout', 'origin/main', '--', analytics_file],
+            cwd=repo_path, capture_output=True, text=True, timeout=10
+        )
+        
+        if result.returncode == 0:
+            print(f"[ANALYTICS] Pulled latest {analytics_file}")
+            return True
+        else:
+            # File might not exist on remote yet
+            print(f"[ANALYTICS] Could not pull {analytics_file}: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        print(f"[ANALYTICS] Pull error: {e}")
+        return False
+
+@app.route('/api/analytics/refresh', methods=['POST'])
+@agent_required
+def refresh_analytics():
+    """Pull the latest analytics for the logged-in user's account"""
+    try:
+        username = session.get('user')
+        if not username:
+            return jsonify({'success': False, 'error': 'Not logged in'}), 401
+        
+        success = pull_analytics_only(username)
+        
+        if success:
+            return jsonify({'success': True, 'message': f'Analytics refreshed for {username}'})
+        else:
+            return jsonify({'success': True, 'message': 'No remote analytics found (may be up to date)'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 def analytics_sync_loop():
     """Background thread that syncs analytics periodically"""
     time.sleep(30)  # Wait before first sync

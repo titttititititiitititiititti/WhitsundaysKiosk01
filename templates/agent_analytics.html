@@ -287,7 +287,7 @@
                 👤 {{ account or 'bailey' }}
             </span>
             <a href="/admin/agent" class="btn btn-secondary">← Back to Dashboard</a>
-            <button onclick="location.reload()" class="btn btn-primary">🔄 Refresh</button>
+            <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh</button>
         </div>
     </div>
     
@@ -519,7 +519,39 @@
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="location.reload()">🔄 Refresh Data</button>
+    <button class="refresh-btn" onclick="refreshAnalytics()" id="refresh-btn">🔄 Refresh Data</button>
+    
+    <script>
+        async function refreshAnalytics() {
+            const btn = document.getElementById('refresh-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Pulling from remote...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/analytics/refresh', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    btn.textContent = '✅ Updated!';
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    btn.textContent = '❌ ' + (data.error || 'Failed');
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Refresh error:', error);
+                btn.textContent = '❌ Network error';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+    </script>
     
     <style>
         .session-modal {
