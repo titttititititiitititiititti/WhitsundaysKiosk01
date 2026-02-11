@@ -7295,8 +7295,8 @@ def get_session_details(session_id):
 # AUTO-UPDATE SYSTEM - Automatically pull from GitHub and restart
 # ============================================================================
 
-AUTO_UPDATE_ENABLED = True
-AUTO_UPDATE_INTERVAL = 60  # Check every 60 seconds
+AUTO_UPDATE_ENABLED = False  # Disabled for stability - updates should be manual for shop kiosks
+AUTO_UPDATE_INTERVAL = 300  # Check every 5 minutes (when enabled)
 _update_available = False
 _last_update_check = 0
 _update_thread = None
