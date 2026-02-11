@@ -2428,6 +2428,9 @@ def bulk_apply_overlay_preset():
     account_settings['tour_overrides'] = tour_overrides
     save_account_settings(username, account_settings)
     
+    # Sync to connected kiosks
+    git_sync_changes(f"Bulk applied overlay preset to {updated_count} tours")
+    
     company_msg = f' from {company}' if company else ''
     return jsonify({
         'success': True, 
