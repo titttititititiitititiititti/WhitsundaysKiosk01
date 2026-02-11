@@ -1842,6 +1842,9 @@ def save_account_tour_override():
     
     save_account_settings(username, settings)
     
+    # Sync to connected kiosks
+    git_sync_changes(f"Updated tour override: {tour_key}")
+    
     return jsonify({'success': True})
 
 # Store password reset tokens in memory (with expiration)
