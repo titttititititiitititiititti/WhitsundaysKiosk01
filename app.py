@@ -7302,16 +7302,21 @@ _update_thread = None
 def check_git_updates():
     """Check if there are updates available on GitHub"""
     global _update_available, _last_update_check
+    import sys
     
     try:
         repo_path = os.path.dirname(os.path.abspath(__file__))
         
         # Check if this is a git repo
         if not os.path.exists(os.path.join(repo_path, '.git')):
+            print("[AUTO-UPDATE] Not a git repo, skipping check", flush=True)
             return False
         
+        print("[AUTO-UPDATE] Fetching from origin...", flush=True)
+        sys.stdout.flush()
+        
         # Fetch latest from remote
-        result = subprocess.run(
+        fetch_result = subprocess.run(
             ['git', 'fetch', 'origin', 'main'],
             cwd=repo_path,
             capture_output=True,
@@ -7319,9 +7324,13 @@ def check_git_updates():
             timeout=30
         )
         
-        # Check if local is behind remote
+        if fetch_result.returncode != 0:
+            print(f"[AUTO-UPDATE] Fetch failed: {fetch_result.stderr}", flush=True)
+            return False
+        
+        # Use rev-list to count commits we're behind (more reliable)
         result = subprocess.run(
-            ['git', 'status', '-uno'],
+            ['git', 'rev-list', 'HEAD..origin/main', '--count'],
             cwd=repo_path,
             capture_output=True,
             text=True,
@@ -7330,15 +7339,24 @@ def check_git_updates():
         
         _last_update_check = time.time()
         
-        if 'Your branch is behind' in result.stdout:
-            print("[AUTO-UPDATE] Updates available from GitHub!")
+        try:
+            commits_behind = int(result.stdout.strip())
+        except:
+            commits_behind = 0
+        
+        if commits_behind > 0:
+            print(f"[AUTO-UPDATE] ✅ {commits_behind} new commit(s) available!", flush=True)
             _update_available = True
             return True
+        else:
+            print("[AUTO-UPDATE] No new updates", flush=True)
         
         return False
         
     except Exception as e:
-        print(f"[AUTO-UPDATE] Error checking for updates: {e}")
+        print(f"[AUTO-UPDATE] Error checking for updates: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
         return False
 
 def pull_and_restart():
@@ -7401,15 +7419,19 @@ def auto_update_loop():
     """Background thread that checks for updates periodically"""
     global _update_available
     
-    print("[AUTO-UPDATE] Background updater started")
+    print("[AUTO-UPDATE] Background updater started", flush=True)
     
     # Wait a bit before first check
     time.sleep(10)
     
+    check_count = 0
     while True:
         try:
+            check_count += 1
             if AUTO_UPDATE_ENABLED:
+                print(f"[AUTO-UPDATE] Check #{check_count}...", flush=True)
                 if check_git_updates():
+                    print("[AUTO-UPDATE] Updates found! Pulling and restarting...", flush=True)
                     # Give browsers 5 seconds to receive the update notification
                     time.sleep(5)
                     pull_and_restart()
@@ -7417,7 +7439,9 @@ def auto_update_loop():
             time.sleep(AUTO_UPDATE_INTERVAL)
             
         except Exception as e:
-            print(f"[AUTO-UPDATE] Error in update loop: {e}")
+            print(f"[AUTO-UPDATE] Error in update loop: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
             time.sleep(60)
 
 @app.route('/api/check-update')

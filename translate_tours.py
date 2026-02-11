@@ -31,7 +31,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 import deepl
 try:
-    from googletrans import Translator as GoogleTranslator
+from googletrans import Translator as GoogleTranslator
 except:
     GoogleTranslator = None
 from dotenv import load_dotenv
