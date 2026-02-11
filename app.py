@@ -7404,13 +7404,75 @@ def api_trigger_update():
     return jsonify({'status': 'no_update', 'message': 'Already up to date'})
 
 # ============================================================================
+# ANALYTICS SYNC - Push analytics to git for remote viewing
+# ============================================================================
 
-if __name__ == '__main__':
-    # Start auto-update background thread
+def sync_analytics_to_git():
+    """Sync analytics files to git so they can be viewed remotely"""
+    try:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        
+        # Check if there are analytics changes
+        result = subprocess.run(
+            ['git', 'status', '--porcelain', 'data/analytics*.json'],
+            cwd=repo_path, capture_output=True, text=True, timeout=10
+        )
+        
+        if result.stdout.strip():
+            # There are changes, commit and push them
+            subprocess.run(['git', 'add', 'data/analytics*.json'], cwd=repo_path, capture_output=True, timeout=10)
+            subprocess.run(
+                ['git', 'commit', '-m', f'Auto-sync analytics {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+                cwd=repo_path, capture_output=True, timeout=30
+            )
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=60)
+            print("[ANALYTICS] Synced analytics to git")
+            
+    except Exception as e:
+        print(f"[ANALYTICS] Sync error: {e}")
+
+def analytics_sync_loop():
+    """Background thread that syncs analytics periodically"""
+    time.sleep(30)  # Wait before first sync
+    
+    while True:
+        try:
+            sync_analytics_to_git()
+            time.sleep(300)  # Sync every 5 minutes
+        except Exception as e:
+            print(f"[ANALYTICS] Sync loop error: {e}")
+            time.sleep(60)
+
+# ============================================================================
+# STARTUP - Initialize background threads
+# ============================================================================
+
+_startup_done = False
+
+def start_background_services():
+    """Start all background services (auto-update, analytics sync)"""
+    global _startup_done, _update_thread
+    
+    if _startup_done:
+        return
+    _startup_done = True
+    
+    print("[STARTUP] Initializing background services...")
+    
+    # Start auto-update thread
     if AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()
         print("[AUTO-UPDATE] Auto-update system enabled (checking every 60s)")
     
-    app.run(debug=True) 
+    # Start analytics sync thread
+    analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
+    analytics_thread.start()
+    print("[ANALYTICS] Analytics auto-sync enabled (every 5 minutes)")
+
+# Start services when module loads (works with both direct run and Waitress)
+start_background_services()
+
+if __name__ == '__main__':
+    app.run(debug=False)  # debug=False for production stability 
 

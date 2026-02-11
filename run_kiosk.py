@@ -8,7 +8,7 @@ Usage:
 
 Features:
 - Automatically restarts the app if it crashes
-- Handles graceful restarts for updates (via flag file)
+- Handles graceful restarts for updates
 - Logs crashes and restarts
 - Works reliably on Windows
 - Prevents crash loops
@@ -21,10 +21,9 @@ import time
 from datetime import datetime
 
 # Configuration
-RESTART_DELAY = 2  # Seconds to wait before restarting
+RESTART_DELAY = 3  # Seconds to wait before restarting
 MAX_RAPID_RESTARTS = 5  # Max restarts within RAPID_RESTART_WINDOW
 RAPID_RESTART_WINDOW = 60  # Seconds - if 5 restarts in 60s, wait longer
-RESTART_FLAG_FILE = 'config/.restart_requested'
 LOG_FILE = 'logs/kiosk_runner.log'
 
 # Track restart history
@@ -53,38 +52,40 @@ def check_rapid_restarts():
     restart_times = [t for t in restart_times if now - t < RAPID_RESTART_WINDOW]
     
     if len(restart_times) >= MAX_RAPID_RESTARTS:
-        log(f"⚠️ CRASH LOOP: {len(restart_times)} restarts in {RAPID_RESTART_WINDOW}s")
+        log(f"⚠️ CRASH LOOP DETECTED: {len(restart_times)} restarts in {RAPID_RESTART_WINDOW}s")
         log("Waiting 60 seconds before next attempt...")
         time.sleep(60)
         restart_times = []
     
     restart_times.append(now)
 
-def check_restart_flag():
-    """Check if the app requested a restart"""
-    if os.path.exists(RESTART_FLAG_FILE):
-        try:
-            os.remove(RESTART_FLAG_FILE)
-            return True
-        except:
-            pass
-    return False
-
 def run_flask_app():
     """Run the Flask app and return the exit code"""
     log("🚀 Starting Flask app...")
+    
+    # Change to script directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
     
     # Determine which server to use
     try:
         import waitress
         log("✅ Using Waitress production server")
-        # Run with waitress
+        # Run with waitress inline for better signal handling
         cmd = [
             sys.executable, '-c',
-            'from app import app; import waitress; waitress.serve(app, host="0.0.0.0", port=5000, threads=4)'
+            '''
+import sys
+sys.path.insert(0, ".")
+from app import app
+import waitress
+print("[WAITRESS] Starting server on http://0.0.0.0:5000")
+waitress.serve(app, host="0.0.0.0", port=5000, threads=4)
+'''
         ]
     except ImportError:
-        log("⚠️ Using Flask dev server (install waitress for better stability)")
+        log("⚠️ Waitress not found, using Flask dev server")
+        log("   Install waitress for better stability: pip install waitress")
         cmd = [sys.executable, 'app.py']
     
     # Set up environment
@@ -92,54 +93,66 @@ def run_flask_app():
     env['PYTHONUNBUFFERED'] = '1'
     
     # Start Flask
+    process = None
     try:
         process = subprocess.Popen(
             cmd,
-            cwd=os.path.dirname(os.path.abspath(__file__)) or '.',
-            env=env
+            cwd=script_dir,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
         )
         
         log(f"App started (PID: {process.pid})")
         
-        # Wait for the process, checking for restart flag periodically
-        while process.poll() is None:
-            # Check if restart was requested
-            if check_restart_flag():
-                log("🔄 Restart requested, stopping app...")
-                process.terminate()
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
-                return 'restart'
-            
-            time.sleep(1)
+        # Stream output
+        while True:
+            if process.stdout:
+                line = process.stdout.readline()
+                if line:
+                    print(line.rstrip())
+                elif process.poll() is not None:
+                    break
+            else:
+                if process.poll() is not None:
+                    break
+                time.sleep(0.1)
         
         exit_code = process.returncode
         log(f"App exited with code: {exit_code}")
         return exit_code
         
     except KeyboardInterrupt:
-        log("Keyboard interrupt - shutting down...")
+        log("⌨️ Keyboard interrupt - shutting down...")
         if process:
             process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
         return 'stop'
     except Exception as e:
-        log(f"Error running app: {e}")
+        log(f"❌ Error running app: {e}")
+        if process:
+            try:
+                process.terminate()
+            except:
+                pass
         return 1
 
 def main():
     """Main loop - keeps the app running forever"""
-    os.makedirs('config', exist_ok=True)
     os.makedirs('logs', exist_ok=True)
     
-    log("=" * 50)
+    log("=" * 60)
     log("KIOSK RUNNER STARTED")
     log(f"Directory: {os.getcwd()}")
     log(f"Python: {sys.executable}")
+    log("The app will automatically restart if it crashes")
     log("Press Ctrl+C to stop")
-    log("=" * 50)
+    log("=" * 60)
     
     while True:
         check_rapid_restarts()
@@ -147,13 +160,13 @@ def main():
         result = run_flask_app()
         
         if result == 'stop':
-            log("Clean shutdown")
+            log("🛑 Clean shutdown requested")
             break
-        elif result == 'restart':
-            log(f"Restarting in {RESTART_DELAY}s...")
         elif result == 0:
-            log(f"App exited normally, restarting in {RESTART_DELAY}s...")
+            # Clean exit - likely an update restart
+            log(f"🔄 App exited cleanly, restarting in {RESTART_DELAY}s...")
         else:
+            # Crash
             log(f"💥 App crashed (code {result}), restarting in {RESTART_DELAY}s...")
         
         time.sleep(RESTART_DELAY)
