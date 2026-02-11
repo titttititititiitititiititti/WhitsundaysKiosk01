@@ -2633,16 +2633,60 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T13:47:22.461619",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T13:47:23.351279",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T13:47:31.341724",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-11T13:47:45.347609",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-02-11T13:47:58.595859",
+          "data": {
+            "tour_name": "63 Foot Ketch Whitsunday Adventure",
+            "company": "Summertime-Whitsundays"
+          }
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "63 Foot Ketch Whitsunday Adventure"
+      ],
+      "tours_booked": [
+        "63 Foot Ketch Whitsunday Adventure"
+      ],
       "chat_messages": []
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T13:34:03.561158"
+  "last_updated": "2026-02-11T13:47:58.597370"
 }
