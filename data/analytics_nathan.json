@@ -2673,6 +2673,11 @@
             "tour_name": "63 Foot Ketch Whitsunday Adventure",
             "company": "Summertime-Whitsundays"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T13:51:46.264373",
+          "data": {}
         }
       ],
       "language": "en",
@@ -2683,10 +2688,32 @@
       "tours_booked": [
         "63 Foot Ketch Whitsunday Adventure"
       ],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T13:51:46.264373",
+      "duration_seconds": 1062.705566
+    },
+    {
+      "session_id": "session_fa16f1de9c81_1770781906",
+      "account": "nathan",
+      "started_at": "2026-02-11T13:51:46.838794",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T13:51:46.838794",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
       "chat_messages": []
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-11T13:47:58.597370"
+  "last_updated": "2026-02-11T13:51:46.839836"
 }

@@ -19008,6 +19008,26 @@
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         console.log('   📱 Generating QR code for tour:', tour.name);
+        
+        // Use the SAME booking URL as Book Now button
+        // Priority 1: Check HERO_BOOKING overrides for booking URL
+        if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tour.key]) {
+          const bookingUrl = HERO_BOOKING.tour_overrides[tour.key].booking_button_url;
+          if (bookingUrl) {
+            console.log('📱 Using booking URL from tour overrides:', bookingUrl);
+            showQRPaymentModal(bookingUrl, tour.name || 'Book This Tour');
+            return;
+          }
+        }
+        
+        // Priority 2: Check tour.link_booking
+        if (tour.link_booking) {
+          console.log('📱 Using link_booking:', tour.link_booking);
+          showQRPaymentModal(tour.link_booking, tour.name);
+          return;
+        }
+        
+        // Fallback: Generate QR for tour page
         generateQRCodeForTour(tour.key, tour);
       } else {
         console.warn('⚠️ currentCardIndex out of bounds:', currentCardIndex, '>=', swipeCards.length);
@@ -25900,7 +25920,27 @@
           console.log('📱 Continue on Phone button clicked!');
           // Track send to phone click with analytics
           Analytics.logEvent('send_to_phone_clicked', { tour_name: data.name, company: data.company });
-          // Generate QR code or show share modal
+          
+          // Use the SAME booking URL as the Book Now button
+          // Priority 1: Check HERO_BOOKING overrides for booking URL
+          if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[key]) {
+            const bookingUrl = HERO_BOOKING.tour_overrides[key].booking_button_url;
+            if (bookingUrl) {
+              console.log('📱 Using booking URL from tour overrides:', bookingUrl);
+              showQRPaymentModal(bookingUrl, data.name || 'Book This Tour');
+              return;
+            }
+          }
+          
+          // Priority 2: Check data.link_booking
+          if (data.link_booking) {
+            console.log('📱 Using link_booking:', data.link_booking);
+            showQRPaymentModal(data.link_booking, data.name);
+            return;
+          }
+          
+          // Fallback: Generate QR for tour page
+          console.log('📱 Falling back to tour page QR');
           generateQRCodeForTour(key, data);
         };
         console.log('   ✓ Continue Phone button click handler attached');
