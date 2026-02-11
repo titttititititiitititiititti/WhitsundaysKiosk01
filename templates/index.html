@@ -33464,12 +33464,62 @@
   <script>
     (function() {
       const AUTO_UPDATE_CHECK_INTERVAL = 30000; // Check every 30 seconds
+      const RECONNECT_CHECK_INTERVAL = 2000; // Check every 2 seconds when server is down
       let lastVersion = null;
+      let serverDown = false;
+      let reconnectAttempts = 0;
+      
+      function showReconnectNotification() {
+        // Remove existing notification
+        const existing = document.getElementById('server-reconnect-notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.id = 'server-reconnect-notification';
+        notification.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0,0,0,0.9);
+          color: white;
+          padding: 40px 60px;
+          border-radius: 20px;
+          font-size: 1.3em;
+          font-weight: 600;
+          z-index: 999999;
+          text-align: center;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        `;
+        notification.innerHTML = `
+          <div style="font-size: 2em; margin-bottom: 15px;">🔄</div>
+          <div>Updating kiosk...</div>
+          <div style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">
+            Reconnecting<span id="reconnect-dots">...</span>
+          </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Animate dots
+        let dots = 0;
+        setInterval(() => {
+          dots = (dots + 1) % 4;
+          const dotsEl = document.getElementById('reconnect-dots');
+          if (dotsEl) dotsEl.textContent = '.'.repeat(dots + 1);
+        }, 500);
+      }
       
       async function checkForUpdates() {
         try {
-          const response = await fetch('/api/check-update');
+          const response = await fetch('/api/check-update', { timeout: 5000 });
           const data = await response.json();
+          
+          // Server is back online!
+          if (serverDown) {
+            console.log('[AUTO-UPDATE] ✅ Server is back online! Reloading...');
+            window.location.reload();
+            return;
+          }
           
           // Store version on first check
           if (lastVersion === null) {
@@ -33501,24 +33551,30 @@
             notification.innerHTML = '⚡ Updating... Please wait';
             document.body.appendChild(notification);
             
-            // Add animation keyframes
-            const style = document.createElement('style');
-            style.textContent = `
-              @keyframes slideDown {
-                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-                to { opacity: 1; transform: translateX(-50%) translateY(0); }
-              }
-            `;
-            document.head.appendChild(style);
-            
             // Refresh after a short delay to allow server to restart
             setTimeout(() => {
               window.location.reload();
             }, 3000);
           }
+          
+          reconnectAttempts = 0;
+          
         } catch (error) {
-          // Server might be restarting, try again soon
-          console.log('[AUTO-UPDATE] Server check failed, will retry...');
+          // Server is down!
+          reconnectAttempts++;
+          
+          if (!serverDown && reconnectAttempts >= 2) {
+            console.log('[AUTO-UPDATE] ⚠️ Server appears to be restarting...');
+            serverDown = true;
+            showReconnectNotification();
+          }
+          
+          if (serverDown) {
+            console.log(`[AUTO-UPDATE] Waiting for server... (attempt ${reconnectAttempts})`);
+            // Check more frequently when server is down
+            setTimeout(checkForUpdates, RECONNECT_CHECK_INTERVAL);
+            return; // Don't use regular interval
+          }
         }
       }
       

@@ -2670,62 +2670,24 @@ def check_for_updates():
 
 @app.route('/admin/agent/api/apply-update', methods=['POST'])
 def apply_update():
-    """Pull latest changes from GitHub and restart the app"""
+    """Signal restart for updates - run_kiosk.py wrapper handles the actual restart"""
     try:
-        # Pull the latest changes
-        result = subprocess.run(
-            ['git', 'pull', 'origin', 'main'],
-            capture_output=True,
-            text=True,
-            cwd=os.path.dirname(os.path.abspath(__file__)),
-            timeout=60
-        )
-        
-        if result.returncode != 0:
-            return jsonify({
-                'success': False,
-                'error': result.stderr or 'Git pull failed'
-            })
-        
-        # Schedule a restart
-        # On Windows, we'll use a separate approach
-        import sys
         import threading
         
-        def restart_app():
-            import time
-            time.sleep(1)  # Give time for response to be sent
-            
-            # On Windows, we restart by running a batch command
-            if sys.platform == 'win32':
-                # Create a restart script
-                restart_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'restart.bat')
-                with open(restart_script, 'w') as f:
-                    f.write('@echo off\n')
-                    f.write('timeout /t 2 /nobreak > nul\n')
-                    f.write(f'cd /d "{os.path.dirname(os.path.abspath(__file__))}"\n')
-                    f.write(f'start "" "{sys.executable}" app.py\n')
-                    f.write('exit\n')
-                
-                subprocess.Popen(['cmd', '/c', restart_script], 
-                               creationflags=subprocess.CREATE_NEW_CONSOLE)
-            else:
-                # On Linux/Mac, use os.execv to restart in place
-                os.execv(sys.executable, [sys.executable] + sys.argv)
-            
-            os._exit(0)
+        def do_restart():
+            time.sleep(2)  # Give time for response to be sent
+            print("[MANUAL-UPDATE] Exiting for restart...")
+            os._exit(42)  # Special exit code for "update and restart"
         
         # Start restart in background thread
-        threading.Thread(target=restart_app, daemon=True).start()
+        threading.Thread(target=do_restart, daemon=True).start()
         
         return jsonify({
             'success': True,
-            'message': 'Update applied, restarting...',
-            'output': result.stdout
+            'message': 'Restarting for update... The kiosk will reload automatically.',
+            'note': 'Make sure run_kiosk.py is running as the wrapper'
         })
         
-    except subprocess.TimeoutExpired:
-        return jsonify({'success': False, 'error': 'Timeout during update'}), 500
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -7295,8 +7257,8 @@ def get_session_details(session_id):
 # AUTO-UPDATE SYSTEM - Automatically pull from GitHub and restart
 # ============================================================================
 
-AUTO_UPDATE_ENABLED = False  # Disabled for stability - updates should be manual for shop kiosks
-AUTO_UPDATE_INTERVAL = 300  # Check every 5 minutes (when enabled)
+AUTO_UPDATE_ENABLED = True  # Enabled - use run_kiosk.py as wrapper for reliable restarts
+AUTO_UPDATE_INTERVAL = 60  # Check every 60 seconds
 _update_available = False
 _last_update_check = 0
 _update_thread = None
@@ -7344,7 +7306,7 @@ def check_git_updates():
         return False
 
 def pull_and_restart():
-    """Pull updates from GitHub and restart the app"""
+    """Pull updates and signal restart to the wrapper script (run_kiosk.py)"""
     global _update_available
     
     try:
@@ -7352,7 +7314,7 @@ def pull_and_restart():
         
         print("[AUTO-UPDATE] Pulling updates...")
         
-        # Stash any local changes
+        # Stash any local changes first
         subprocess.run(['git', 'stash'], cwd=repo_path, capture_output=True, timeout=30)
         
         # Pull latest changes
@@ -7368,19 +7330,31 @@ def pull_and_restart():
         
         if result.returncode == 0:
             # Install any new dependencies quietly
-            subprocess.run(
-                [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt', '-q'],
-                cwd=repo_path,
-                capture_output=True,
-                timeout=120
-            )
+            try:
+                subprocess.run(
+                    [sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt', '-q'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    timeout=120
+                )
+            except:
+                pass
             
             _update_available = False
-            print("[AUTO-UPDATE] Updates applied! Restarting...")
+            print("[AUTO-UPDATE] Updates applied! Requesting restart...")
             
-            # Restart the app
-            time.sleep(1)
-            os.execv(sys.executable, [sys.executable] + sys.argv)
+            # Create restart flag file for the runner script
+            restart_flag = os.path.join(repo_path, 'config', '.restart_requested')
+            os.makedirs(os.path.dirname(restart_flag), exist_ok=True)
+            with open(restart_flag, 'w') as f:
+                f.write(f'restart_requested_at={time.time()}')
+            
+            # Give the runner time to see the flag
+            time.sleep(2)
+            
+            # Exit cleanly - the runner will restart us
+            print("[AUTO-UPDATE] Exiting for restart...")
+            os._exit(0)
         else:
             print(f"[AUTO-UPDATE] Pull failed: {result.stderr}")
             
