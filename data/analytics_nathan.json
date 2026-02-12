@@ -1,139 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_d8b22e0e3c76_1770729711",
-      "account": "nathan",
-      "started_at": "2026-02-10T23:21:51.880605",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T23:21:51.880605",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T23:23:06.857766",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T23:23:08.575927",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T23:23:14.256365",
-          "data": {
-            "tour_name": "63 Foot Ketch Whitsunday Adventure",
-            "company": "Summertime-Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-02-10T23:23:29.771668",
-          "data": {
-            "tour_name": "63 Foot Ketch Whitsunday Adventure",
-            "company": "Summertime-Whitsundays",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-02-10T23:23:36.126007",
-          "data": {
-            "tour_name": "63 Foot Ketch Whitsunday Adventure",
-            "company": "Summertime-Whitsundays",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T23:25:59.823047",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "63 Foot Ketch Whitsunday Adventure"
-      ],
-      "tours_booked": [
-        "63 Foot Ketch Whitsunday Adventure"
-      ],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T23:25:59.823047",
-      "duration_seconds": 247.942442
-    },
-    {
-      "session_id": "session_d3d15af23ae6_1770729961",
-      "account": "nathan",
-      "started_at": "2026-02-10T23:26:01.346470",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T23:26:01.346470",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T23:27:31.474195",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T23:27:32.951586",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T23:31:36.979725",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T23:31:43.216628",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T23:34:16.709780",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Camira Sailing Adventure"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T23:34:16.709780",
-      "duration_seconds": 495.36331
-    },
-    {
       "session_id": "session_2e30a4ac2bfa_1770730458",
       "account": "nathan",
       "started_at": "2026-02-10T23:34:18.668529",
@@ -27853,9 +27720,63 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T03:31:15.346391",
       "duration_seconds": 0.09165
+    },
+    {
+      "session_id": "session_e279fd41c788_1770917716",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:35:16.142736",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:35:16.142736",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:35:16.240358",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:35:16.240358",
+      "duration_seconds": 0.097622
+    },
+    {
+      "session_id": "session_b73bc81e0232_1770917956",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:39:17.041288",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:39:17.041288",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:39:17.138520",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:39:17.138520",
+      "duration_seconds": 0.097232
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T03:31:15.347391"
+  "last_updated": "2026-02-13T03:39:17.138520"
 }
