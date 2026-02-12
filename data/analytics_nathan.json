@@ -1,33 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_5969ec7836f8_1770722365",
-      "account": "nathan",
-      "started_at": "2026-02-10T21:19:25.335397",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T21:19:25.335397",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T21:21:25.722065",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T21:21:25.722065",
-      "duration_seconds": 120.386668
-    },
-    {
       "session_id": "session_43b81aee6b4e_1770722486",
       "account": "nathan",
       "started_at": "2026-02-10T21:21:26.300090",
@@ -28187,9 +28160,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T00:34:35.782494",
       "duration_seconds": 0.092814
+    },
+    {
+      "session_id": "session_5b2d0855c439_1770907116",
+      "account": "nathan",
+      "started_at": "2026-02-13T00:38:36.633934",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T00:38:36.633934",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T00:38:36.738638",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T00:38:36.738638",
+      "duration_seconds": 0.104704
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T00:34:35.782494"
+  "last_updated": "2026-02-13T00:38:36.739638"
 }
