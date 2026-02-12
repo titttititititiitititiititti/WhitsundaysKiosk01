@@ -1,51 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_2aeb5c504bb1_1770730579",
-      "account": "nathan",
-      "started_at": "2026-02-10T23:36:19.818685",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T23:36:19.818685",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T23:37:21.997549",
-          "data": {
-            "language": "zh"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T23:37:23.142368",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T23:37:26.106379",
-          "data": {
-            "tour_name": "Sameera\u65e5\u843d\u98ce\u683c",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        }
-      ],
-      "language": "zh",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Sameera\u65e5\u843d\u98ce\u683c"
-      ],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
       "session_id": "session_e36ac6e88da9_1770756238",
       "account": "nathan",
       "started_at": "2026-02-11T06:43:58.488252",
@@ -27774,9 +27729,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T03:43:18.051215",
       "duration_seconds": 0.098296
+    },
+    {
+      "session_id": "session_3f40b1e24a6f_1770918438",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:47:18.851559",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:47:18.851559",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:47:18.946335",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:47:18.946335",
+      "duration_seconds": 0.094776
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T03:43:18.051215"
+  "last_updated": "2026-02-13T03:47:18.947336"
 }
