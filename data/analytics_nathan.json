@@ -1,69 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_f4d0024b33a9_1770728056",
-      "account": "nathan",
-      "started_at": "2026-02-10T22:54:16.068703",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T22:54:16.068703",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T22:54:18.028621",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T22:54:19.025395",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T22:54:23.088132",
-          "data": {
-            "tour_name": "63 Foot Ketch Whitsunday Adventure",
-            "company": "Summertime-Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-02-10T22:55:19.687830",
-          "data": {
-            "tour_name": "63 Foot Ketch Whitsunday Adventure",
-            "company": "Summertime-Whitsundays",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T22:59:25.725732",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "63 Foot Ketch Whitsunday Adventure"
-      ],
-      "tours_booked": [
-        "63 Foot Ketch Whitsunday Adventure"
-      ],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T22:59:25.725732",
-      "duration_seconds": 309.657029
-    },
-    {
       "session_id": "session_24e06fe230f2_1770728587",
       "account": "nathan",
       "started_at": "2026-02-10T23:03:07.636723",
@@ -27960,9 +27897,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T03:03:09.208984",
       "duration_seconds": 0.097972
+    },
+    {
+      "session_id": "session_62ed45923018_1770916029",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:07:09.978048",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:07:09.978048",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:07:10.068619",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:07:10.068619",
+      "duration_seconds": 0.090571
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T03:03:09.208984"
+  "last_updated": "2026-02-13T03:07:10.069605"
 }
