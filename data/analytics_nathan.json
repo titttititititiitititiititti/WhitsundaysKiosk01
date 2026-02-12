@@ -1,58 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_0592380d12d0_1770757217",
-      "account": "nathan",
-      "started_at": "2026-02-11T07:00:17.438240",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T07:00:17.438240",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T07:01:59.083777",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T07:02:00.218569",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T07:02:18.980172",
-          "data": {
-            "tour_name": "Great Barrier Reef Snorkel Adventure",
-            "company": "Red Cat Adventures",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T07:07:45.033969",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Great Barrier Reef Snorkel Adventure"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T07:07:45.033969",
-      "duration_seconds": 447.595729
-    },
-    {
       "session_id": "session_a920a36fc557_1770757665",
       "account": "nathan",
       "started_at": "2026-02-11T07:07:45.471525",
@@ -27705,9 +27653,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T04:07:23.677090",
       "duration_seconds": 0.096944
+    },
+    {
+      "session_id": "session_500fb6b24c5b_1770919884",
+      "account": "nathan",
+      "started_at": "2026-02-13T04:11:24.432889",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T04:11:24.432889",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T04:11:24.530468",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T04:11:24.530468",
+      "duration_seconds": 0.097579
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T04:07:23.678077"
+  "last_updated": "2026-02-13T04:11:24.530468"
 }
