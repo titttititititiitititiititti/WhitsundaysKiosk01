@@ -1771,6 +1771,13 @@ def kiosk_settings():
         kiosk['weather_widget_enabled'] = request.form.get('weather_widget') == 'on'
         kiosk['currency'] = request.form.get('currency', 'AUD')
         
+        # Mode toggles
+        kiosk['mode_ai_enabled'] = request.form.get('mode_ai_enabled') == 'on'
+        kiosk['mode_quick_enabled'] = request.form.get('mode_quick_enabled') == 'on'
+        kiosk['mode_browse_enabled'] = request.form.get('mode_browse_enabled') == 'on'
+        
+        print(f"[KIOSK] Mode settings for {username}: AI={kiosk['mode_ai_enabled']}, Quick={kiosk['mode_quick_enabled']}, Browse={kiosk['mode_browse_enabled']}")
+        
         # Get selected languages
         selected_languages = request.form.getlist('languages')
         if not selected_languages:

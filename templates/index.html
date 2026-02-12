@@ -15504,6 +15504,58 @@
     // Hero Booking Platform settings (for unified booking widgets)
     const HERO_BOOKING = {{ hero_booking | tojson | safe if hero_booking else '{"enabled": false, "availability_widget_url": "", "pricing_widget_url": ""}' | safe }};
     
+    // Kiosk mode settings (which modes are enabled/disabled)
+    const KIOSK_MODES = {
+      ai_enabled: {{ 'true' if kiosk_settings is not defined or kiosk_settings.get('mode_ai_enabled', true) else 'false' }},
+      quick_enabled: {{ 'true' if kiosk_settings is not defined or kiosk_settings.get('mode_quick_enabled', true) else 'false' }},
+      browse_enabled: {{ 'true' if kiosk_settings is not defined or kiosk_settings.get('mode_browse_enabled', true) else 'false' }}
+    };
+    console.log('🎮 Kiosk modes:', KIOSK_MODES);
+    
+    // Hide disabled modes when DOM is ready
+    function applyModeVisibility() {
+      // Mode selection screen buttons
+      if (!KIOSK_MODES.ai_enabled) {
+        const aiBtn = document.getElementById('ai-assistant-btn');
+        if (aiBtn) aiBtn.style.display = 'none';
+        // Also hide header AI buttons
+        document.querySelectorAll('.mobile-ai-btn, .ai-btn-header, [onclick*="startAIAssistant"]').forEach(el => {
+          if (!el.classList.contains('browse-all-tours-btn')) el.style.display = 'none';
+        });
+        console.log('🚫 AI mode disabled');
+      }
+      
+      if (!KIOSK_MODES.quick_enabled) {
+        const quickBtn = document.getElementById('quick-decision-btn');
+        if (quickBtn) quickBtn.style.display = 'none';
+        // Also hide header Quick Decision buttons
+        document.querySelectorAll('.mobile-quick-btn, .quick-decision-btn-header, [onclick*="startQuickDecision"]').forEach(el => {
+          el.style.display = 'none';
+        });
+        console.log('🚫 Quick Decision mode disabled');
+      }
+      
+      if (!KIOSK_MODES.browse_enabled) {
+        const browseBtn = document.getElementById('browse-all-tours-btn');
+        if (browseBtn) browseBtn.style.display = 'none';
+        // Also hide header Browse buttons
+        document.querySelectorAll('.mobile-browse-btn, .browse-all-btn-header, [onclick*="goToHomePage"]').forEach(el => {
+          if (!el.id || el.id !== 'browse-all-tours-questions') el.style.display = 'none';
+        });
+        console.log('🚫 Browse All mode disabled');
+      }
+    }
+    
+    // Apply immediately and also after DOM load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyModeVisibility);
+    } else {
+      applyModeVisibility();
+    }
+    // Re-apply after a short delay to catch dynamically added elements
+    setTimeout(applyModeVisibility, 500);
+    setTimeout(applyModeVisibility, 2000);
+    
     // Simple video loader - for kiosk mode we only use local file
     // No complex logic, no reloads - video is already in the HTML
     function loadVideoSmart(videoElement, startPlaying = true, forceReload = false) {
@@ -15701,6 +15753,9 @@
       // Mark splash as shown for this session
       sessionStorage.setItem('splash_shown', 'true');
       console.log('🚀 Dismissing splash screen');
+      
+      // NOW start analytics session (user has actually engaged)
+      Analytics.init();
       const splash = document.getElementById('main-splash-screen');
       const tourTrack = document.getElementById('splash-tour-track');
       
@@ -15765,6 +15820,9 @@
       
       // Mark splash as shown
       sessionStorage.setItem('splash_shown', 'true');
+      
+      // NOW start analytics session (user has actually engaged)
+      Analytics.init();
       
       const splash = document.getElementById('main-splash-screen');
       const tourTrack = document.getElementById('splash-tour-track');
@@ -17711,8 +17769,9 @@
       }
     };
     
-    // Initialize analytics on page load
-    Analytics.init();
+    // Analytics is now initialized AFTER user taps to begin (not on page load)
+    // This prevents logging sessions from idle splash screens
+    // Analytics.init() is called in dismissSplashScreen() and selectSplashLanguage()
     
     // Go back to language selection when clicking logo
     window.goToLanguageSelection = function() {

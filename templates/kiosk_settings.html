@@ -428,6 +428,55 @@
                 </div>
             </div>
             
+            <!-- Kiosk Modes Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2>📱 Kiosk Modes</h2>
+                    <p>Enable or disable different modes on your kiosk</p>
+                </div>
+                <div class="section-content">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">🤖 AI Mode</div>
+                            <div class="setting-description">Voice-powered AI assistant to help customers find tours</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="mode_ai_enabled" 
+                                    {% if settings.kiosk_settings.mode_ai_enabled is not defined or settings.kiosk_settings.mode_ai_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">⚡ Quick Decision Mode</div>
+                            <div class="setting-description">Swipe-based tour discovery (like dating apps)</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="mode_quick_enabled" 
+                                    {% if settings.kiosk_settings.mode_quick_enabled is not defined or settings.kiosk_settings.mode_quick_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label">📋 Browse All Mode</div>
+                            <div class="setting-description">Traditional list view of all available tours</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" name="mode_browse_enabled" 
+                                    {% if settings.kiosk_settings.mode_browse_enabled is not defined or settings.kiosk_settings.mode_browse_enabled %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- AI Assistant Settings -->
             <div class="settings-section">
                 <div class="section-header">
