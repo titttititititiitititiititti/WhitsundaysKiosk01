@@ -1,97 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_10dcd07e9d8f_1770756375",
-      "account": "nathan",
-      "started_at": "2026-02-11T06:46:15.350170",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T06:46:15.350170",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T06:46:38.251380",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T06:46:39.496812",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T06:48:09.554892",
-          "data": {
-            "tour_name": "Details and Bookings",
-            "company": "Providencesailing",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T06:48:41.805686",
-          "data": {
-            "tour_name": "Apollo 3D2N",
-            "company": "Sailing-Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T06:52:49.278384",
-          "data": {
-            "tour_name": "Details and Bookings",
-            "company": "Providencesailing",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T06:53:48.691226",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Details and Bookings",
-        "Apollo 3D2N"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T06:53:48.691226",
-      "duration_seconds": 453.341056
-    },
-    {
-      "session_id": "session_ef6a0c9f404f_1770756725",
-      "account": "nathan",
-      "started_at": "2026-02-11T06:52:05.550121",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T06:52:05.550121",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
       "session_id": "session_ffdb7b2e1534_1770756829",
       "account": "nathan",
       "started_at": "2026-02-11T06:53:49.557515",
@@ -27756,9 +27665,63 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T03:51:19.840300",
       "duration_seconds": 0.098256
+    },
+    {
+      "session_id": "session_c9f2a1bede41_1770918920",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:55:20.848967",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:55:20.848967",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:55:20.945014",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:55:20.945014",
+      "duration_seconds": 0.096047
+    },
+    {
+      "session_id": "session_42ee270bd126_1770919161",
+      "account": "nathan",
+      "started_at": "2026-02-13T03:59:21.808081",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T03:59:21.808081",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T03:59:21.914663",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T03:59:21.914663",
+      "duration_seconds": 0.106582
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T03:51:19.841301"
+  "last_updated": "2026-02-13T03:59:21.915733"
 }
