@@ -1,85 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_bdc021cb04e2_1770786473",
-      "account": "nathan",
-      "started_at": "2026-02-11T15:07:53.658718",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T15:07:53.658718",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T15:09:54.231587",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T15:09:54.231587",
-      "duration_seconds": 120.572869
-    },
-    {
-      "session_id": "session_d2a3654116c4_1770786594",
-      "account": "nathan",
-      "started_at": "2026-02-11T15:09:54.499192",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T15:09:54.499192",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T15:14:31.864990",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T15:14:34.325687",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T15:14:36.811078",
-          "data": {
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T15:14:44.477677",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T15:14:44.477677",
-      "duration_seconds": 289.978485
-    },
-    {
       "session_id": "session_ce17c86704dd_1770786884",
       "account": "nathan",
       "started_at": "2026-02-11T15:14:44.771115",
@@ -27276,9 +27197,63 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T06:07:59.601225",
       "duration_seconds": 0.093723
+    },
+    {
+      "session_id": "session_3c3d41f23d91_1770927121",
+      "account": "nathan",
+      "started_at": "2026-02-13T06:12:01.518050",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T06:12:01.518050",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T06:12:01.611794",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T06:12:01.611794",
+      "duration_seconds": 0.093744
+    },
+    {
+      "session_id": "session_d8e0d1cb7d62_1770927363",
+      "account": "nathan",
+      "started_at": "2026-02-13T06:16:03.553044",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T06:16:03.553044",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T06:16:03.646787",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T06:16:03.646787",
+      "duration_seconds": 0.093743
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T06:07:59.601225"
+  "last_updated": "2026-02-13T06:16:03.646787"
 }
