@@ -26615,9 +26615,71 @@
       "chat_messages": [],
       "ended_at": "2026-02-12T20:41:29.577678",
       "duration_seconds": 0.17388
+    },
+    {
+      "session_id": "session_5426efa9a6a0_1770893234",
+      "account": "nathan",
+      "started_at": "2026-02-12T20:47:14.538907",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-12T20:47:14.538907",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-12T20:47:16.004316",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-12T20:47:17.829033",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-12T20:47:20.309973",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-12T20:47:30.090419",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-12T20:49:34.814150",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights",
+        "Airlie Beach Sunset Cruise on Sundowner"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-12T20:49:34.814150",
+      "duration_seconds": 140.275243
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-12T20:41:29.578677"
+  "last_updated": "2026-02-12T20:49:34.814150"
 }
