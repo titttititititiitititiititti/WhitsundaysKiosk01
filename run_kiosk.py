@@ -67,30 +67,15 @@ def run_flask_app():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
     
-    # Determine which server to use
-    try:
-        import waitress
-        log("✅ Using Waitress production server")
-        # Run with waitress inline for better signal handling
-        cmd = [
-            sys.executable, '-c',
-            '''
-import sys
-sys.path.insert(0, ".")
-from app import app
-import waitress
-print("[WAITRESS] Starting server on http://0.0.0.0:5000")
-waitress.serve(app, host="0.0.0.0", port=5000, threads=4)
-'''
-        ]
-    except ImportError:
-        log("⚠️ Waitress not found, using Flask dev server")
-        log("   Install waitress for better stability: pip install waitress")
-        cmd = [sys.executable, 'app.py']
+    # Simple approach: just run app.py directly
+    # Flask's dev server is reliable for kiosk use
+    cmd = [sys.executable, 'app.py']
+    log(f"Running: {' '.join(cmd)}")
     
     # Set up environment
     env = os.environ.copy()
     env['PYTHONUNBUFFERED'] = '1'
+    env['FLASK_ENV'] = 'production'
     
     # Start Flask
     process = None
@@ -107,12 +92,13 @@ waitress.serve(app, host="0.0.0.0", port=5000, threads=4)
         
         log(f"App started (PID: {process.pid})")
         
-        # Stream output
+        # Stream output - print each line as it comes
         while True:
             if process.stdout:
                 line = process.stdout.readline()
                 if line:
-                    print(line.rstrip())
+                    # Print without extra newline
+                    print(line, end='', flush=True)
                 elif process.poll() is not None:
                     break
             else:
@@ -135,6 +121,8 @@ waitress.serve(app, host="0.0.0.0", port=5000, threads=4)
         return 'stop'
     except Exception as e:
         log(f"❌ Error running app: {e}")
+        import traceback
+        traceback.print_exc()
         if process:
             try:
                 process.terminate()
