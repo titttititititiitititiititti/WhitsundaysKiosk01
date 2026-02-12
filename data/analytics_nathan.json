@@ -1,58 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_9a5463b328c0_1770759295",
-      "account": "nathan",
-      "started_at": "2026-02-11T07:34:55.457840",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T07:34:55.457840",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T07:36:38.050259",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T07:36:39.884216",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T07:36:51.633862",
-          "data": {
-            "tour_name": "British Defender 3D2N",
-            "company": "Sailing-Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T07:39:55.542270",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "British Defender 3D2N"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T07:39:55.542270",
-      "duration_seconds": 300.08443
-    },
-    {
       "session_id": "session_78e3a769a25d_1770759596",
       "account": "nathan",
       "started_at": "2026-02-11T07:39:56.939538",
@@ -27553,9 +27501,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T04:47:32.446185",
       "duration_seconds": 0.089783
+    },
+    {
+      "session_id": "session_52141d5674dc_1770922293",
+      "account": "nathan",
+      "started_at": "2026-02-13T04:51:33.276902",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T04:51:33.276902",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T04:51:33.364467",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T04:51:33.364467",
+      "duration_seconds": 0.087565
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T04:47:32.446185"
+  "last_updated": "2026-02-13T04:51:33.365466"
 }
