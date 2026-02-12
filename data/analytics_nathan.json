@@ -1,89 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_c9a6f2ee744a_1770727166",
-      "account": "nathan",
-      "started_at": "2026-02-10T22:39:26.636876",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T22:39:26.636876",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T22:41:30.565240",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T22:41:32.396392",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T22:41:38.663731",
-          "data": {
-            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
-            "company": "Sundowner Cruises",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-02-10T22:41:59.310203",
-          "data": {
-            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
-            "company": "Sundowner Cruises",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T22:42:04.610748",
-          "data": {
-            "tour_name": "Camira Sunset Sail",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-02-10T22:42:31.167668",
-          "data": {
-            "tour_name": "Camira Sunset Sail",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T22:45:31.712422",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Airlie Beach Sunset Cruise on Sundowner",
-        "Camira Sunset Sail"
-      ],
-      "tours_booked": [
-        "Airlie Beach Sunset Cruise on Sundowner",
-        "Camira Sunset Sail"
-      ],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T22:45:31.712422",
-      "duration_seconds": 365.075546
-    },
-    {
       "session_id": "session_5ab80cc7915b_1770727532",
       "account": "nathan",
       "started_at": "2026-02-10T22:45:32.728670",
@@ -28016,9 +27933,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T02:51:06.519808",
       "duration_seconds": 0.086458
+    },
+    {
+      "session_id": "session_ef7744dbbdef_1770915307",
+      "account": "nathan",
+      "started_at": "2026-02-13T02:55:07.338062",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T02:55:07.338062",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T02:55:07.435187",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T02:55:07.435187",
+      "duration_seconds": 0.097125
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T02:51:06.519808"
+  "last_updated": "2026-02-13T02:55:07.435187"
 }
