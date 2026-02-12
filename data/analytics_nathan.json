@@ -1,85 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_d1468080e25c_1770758647",
-      "account": "nathan",
-      "started_at": "2026-02-11T07:24:07.803581",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T07:24:07.803581",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T07:26:07.843742",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T07:26:07.843742",
-      "duration_seconds": 120.040161
-    },
-    {
-      "session_id": "session_252c593560bf_1770758768",
-      "account": "nathan",
-      "started_at": "2026-02-11T07:26:08.349830",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T07:26:08.349830",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T07:28:24.997775",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T07:28:27.602943",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-11T07:28:42.717274",
-          "data": {
-            "tour_name": "Just Tuk\u2019n Around \u2013 Guided Tours",
-            "company": "Justtuknaround",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T07:28:49.205050",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Just Tuk\u2019n Around \u2013 Guided Tours"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T07:28:49.205050",
-      "duration_seconds": 160.85522
-    },
-    {
       "session_id": "session_26da7a9ad595_1770758929",
       "account": "nathan",
       "started_at": "2026-02-11T07:28:49.695501",
@@ -27592,9 +27513,63 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T04:31:29.046154",
       "duration_seconds": 0.097447
+    },
+    {
+      "session_id": "session_cb65670915b9_1770921329",
+      "account": "nathan",
+      "started_at": "2026-02-13T04:35:29.755337",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T04:35:29.755337",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T04:35:29.854317",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T04:35:29.854317",
+      "duration_seconds": 0.09898
+    },
+    {
+      "session_id": "session_2a1be740e04e_1770921570",
+      "account": "nathan",
+      "started_at": "2026-02-13T04:39:30.620422",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T04:39:30.620422",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T04:39:30.708522",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T04:39:30.708522",
+      "duration_seconds": 0.0881
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T04:31:29.046154"
+  "last_updated": "2026-02-13T04:39:30.709523"
 }
