@@ -1,68 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_3b268d3ece94_1770725041",
-      "account": "nathan",
-      "started_at": "2026-02-10T22:04:01.192045",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-10T22:04:01.192045",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-10T22:04:59.886733",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-10T22:05:00.962039",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T22:05:04.567600",
-          "data": {
-            "tour_name": "Airlie Adventure Tour",
-            "company": "Jetskitour",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-02-10T22:06:17.317581",
-          "data": {
-            "tour_name": "Airlie Beach Glass Bottom Boat Day Tours",
-            "company": "Pioneer Adventures",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-10T22:08:43.611759",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Airlie Adventure Tour",
-        "Airlie Beach Glass Bottom Boat Day Tours"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-10T22:08:43.611759",
-      "duration_seconds": 282.419714
-    },
-    {
       "session_id": "session_6a8380f70f47_1770725324",
       "account": "nathan",
       "started_at": "2026-02-10T22:08:44.208259",
@@ -28187,9 +28125,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T02:02:55.723799",
       "duration_seconds": 0.095909
+    },
+    {
+      "session_id": "session_3e550afc322c_1770912416",
+      "account": "nathan",
+      "started_at": "2026-02-13T02:06:56.547175",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T02:06:56.547175",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T02:06:56.650040",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T02:06:56.650040",
+      "duration_seconds": 0.102865
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T02:02:55.723799"
+  "last_updated": "2026-02-13T02:06:56.651044"
 }
