@@ -1,47 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_ce17c86704dd_1770786884",
-      "account": "nathan",
-      "started_at": "2026-02-11T15:14:44.771115",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-11T15:14:44.772116",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-11T15:16:18.708369",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-11T15:16:19.982836",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-11T15:16:21.474064",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-11T15:16:21.474064",
-      "duration_seconds": 96.702949
-    },
-    {
       "session_id": "session_7c8b60a6edc4_1770786981",
       "account": "nathan",
       "started_at": "2026-02-11T15:16:21.811108",
@@ -27251,9 +27210,36 @@
       "chat_messages": [],
       "ended_at": "2026-02-13T06:16:03.646787",
       "duration_seconds": 0.093743
+    },
+    {
+      "session_id": "session_fa962a031c8d_1770927605",
+      "account": "nathan",
+      "started_at": "2026-02-13T06:20:05.527589",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T06:20:05.527589",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T06:20:05.636946",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T06:20:05.636946",
+      "duration_seconds": 0.109357
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-13T06:16:03.646787"
+  "last_updated": "2026-02-13T06:20:05.636946"
 }
