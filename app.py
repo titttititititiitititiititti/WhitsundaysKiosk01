@@ -242,8 +242,8 @@ def git_sync_changes(commit_message="Update tour data"):
                             print(f"[GIT SYNC] Pushed to {remote}")
                         except subprocess.TimeoutExpired:
                             print(f"[GIT SYNC] Push to {remote} timed out")
-                    except Exception as e:
-                        print(f"[GIT SYNC] Push to {remote} failed: {e}")
+                        except Exception as e:
+                            print(f"[GIT SYNC] Push to {remote} failed: {e}")
             
             print(f"[GIT SYNC] Changes synced: {commit_message}")
             
