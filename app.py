@@ -7466,7 +7466,10 @@ def is_safe_to_update():
 # AUTO-UPDATE SYSTEM - Automatically pull from GitHub and restart
 # ============================================================================
 
-AUTO_UPDATE_ENABLED = True  # Enabled - use run_kiosk.py as wrapper for reliable restarts
+# Auto-update is for local kiosks only - disabled on Render (no git repo there)
+# Render auto-deploys when GitHub receives pushes anyway
+IS_RENDER = os.environ.get('RENDER', False)
+AUTO_UPDATE_ENABLED = not IS_RENDER  # Disable on Render, enable on local kiosks
 AUTO_UPDATE_INTERVAL = 60  # Check every 60 seconds
 _update_available = False
 _last_update_check = 0
@@ -7895,11 +7898,13 @@ def start_background_services():
     
     print("[STARTUP] Initializing background services...")
     
-    # Start auto-update thread
+    # Start auto-update thread (only on local kiosks, not Render)
     if AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()
         print("[AUTO-UPDATE] Auto-update system enabled (checking every 60s)")
+    else:
+        print("[AUTO-UPDATE] Disabled (running on Render - auto-deploys from GitHub)")
     
     # DISABLED: Analytics auto-push causes git conflicts between shop and dev machines
     # Analytics are stored locally and can be manually synced via agent dashboard
