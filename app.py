@@ -915,7 +915,29 @@ def normalize_image_url(img_url):
         return '/' + img_url
     return img_url
 
-def load_tour_images(tour, max_images=5):
+def filter_hidden_images(gallery, tour_key, username=None):
+    """Filter out images that are hidden for the specified account"""
+    if not username or not gallery:
+        return gallery
+    
+    settings = load_account_settings(username)
+    hidden_images = settings.get('hidden_images', {}).get(tour_key, [])
+    
+    if not hidden_images:
+        return gallery
+    
+    # Filter out hidden images (check both with and without leading slash)
+    filtered = []
+    for img in gallery:
+        normalized = img.lstrip('/') if img else ''
+        img_with_slash = '/' + normalized if normalized else ''
+        
+        if normalized not in hidden_images and img_with_slash not in hidden_images and img not in hidden_images:
+            filtered.append(img)
+    
+    return filtered
+
+def load_tour_images(tour, max_images=5, account_username=None):
     """
     Load images for a specific tour on demand.
     Returns (thumbnail, gallery, uses_placeholder) tuple.
@@ -960,6 +982,15 @@ def load_tour_images(tour, max_images=5):
             if not thumb_path and gallery:
                 thumb_path = gallery[0]
             
+            # Filter out hidden images for this account
+            if account_username:
+                gallery = filter_hidden_images(gallery, key, account_username)
+                # Update thumbnail if it was filtered out
+                if thumb_path and thumb_path not in gallery and gallery:
+                    thumb_path = gallery[0]
+                elif thumb_path and thumb_path not in gallery:
+                    thumb_path = None
+            
             print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")
             return thumb_path, gallery, False
     
@@ -989,6 +1020,15 @@ def load_tour_images(tour, max_images=5):
     # If we still don't have enough images, just use what we have
     if not gallery and thumb_path:
         gallery = [thumb_path]
+    
+    # Filter out hidden images for this account
+    if account_username:
+        gallery = filter_hidden_images(gallery, key, account_username)
+        # Update thumbnail if it was filtered out
+        if thumb_path and thumb_path not in gallery and gallery:
+            thumb_path = gallery[0]
+        elif thumb_path and thumb_path not in gallery:
+            thumb_path = None
     
     print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")
     return thumb_path, gallery, False  # False = uses real images
@@ -1455,6 +1495,24 @@ def save_company_display_names(names):
     except Exception as e:
         print(f"Error saving company names: {e}")
         return False
+
+def get_company_display_names_for_account(username=None):
+    """Get company display names with account-specific overrides applied"""
+    # Start with global names
+    names = dict(COMPANY_DISPLAY_NAMES)
+    
+    # Apply account-specific overrides if username provided
+    if username:
+        settings = load_account_settings(username)
+        overrides = settings.get('company_name_overrides', {})
+        names.update(overrides)
+    
+    return names
+
+def get_company_display_name(company_key, username=None):
+    """Get a single company's display name with optional account override"""
+    names = get_company_display_names_for_account(username)
+    return names.get(company_key, company_key.title())
 
 # Load on startup
 COMPANY_DISPLAY_NAMES = load_company_display_names()
@@ -2689,7 +2747,7 @@ def agent_dashboard():
                           promoted_counts=promoted_counts,
                           disabled_count=len(disabled_tours_list),
                           total_tours=len(all_tours),
-                          company_names=COMPANY_DISPLAY_NAMES,
+                          company_names=get_company_display_names_for_account(username),
                           version=APP_VERSION,
                           kiosk_account=kiosk_account,
                           is_kiosk_account=is_kiosk_account)
@@ -3355,10 +3413,10 @@ def index():
     random.shuffle(tours)
     initial_tours = tours[:12]
     
-    # Load images lazily for initial tours only
+    # Load images lazily for initial tours only (with account-specific hidden images filtered)
     print(f"[INDEX] Loading images for {len(initial_tours)} initial tours (account: {active_account})")
     for tour in initial_tours:
-        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
         tour['thumbnail'] = thumb
         tour['gallery'] = gallery
         tour['uses_placeholder_images'] = uses_placeholder
@@ -3457,6 +3515,9 @@ def api_tours():
     """API endpoint to fetch filtered tours for video question flow"""
     language = request.args.get('lang', 'en')
     
+    # Get the active account for filtering hidden images
+    active_account = get_active_account()
+    
     # Get filter parameters
     duration = request.args.get('duration', '')
     family_friendly = request.args.get('family_friendly', '')
@@ -3466,9 +3527,10 @@ def api_tours():
     print(f"[API] Duration filter: '{duration}'")
     print(f"[API] Family friendly filter: '{family_friendly}'")
     print(f"[API] Activities filter: {activities}")
+    print(f"[API] Active account: {active_account}")
     
     # Load all tours
-    tours = load_all_tours(language)
+    tours = load_all_tours(language, preview_account=active_account)
     print(f"[API] Total tours loaded: {len(tours)}")
     
     filtered_tours = []
@@ -3565,12 +3627,12 @@ def api_tours():
     filtered_tours.sort(key=lambda t: promotion_order.get(t.get('promotion'), 3))
     
     # Add gallery, includes, and company_name to each tour
-    # Load images lazily only for tours we're returning
+    # Load images lazily only for tours we're returning (with account-specific hidden images filtered)
     result_tours = []
     print(f"[API] Loading images for {len(filtered_tours)} filtered tours...")
     for tour in filtered_tours:
         # Load images lazily for this tour
-        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
         
         # Parse video URLs if present
         video_urls = tour.get('video_urls', '')
@@ -3653,9 +3715,9 @@ def tour_page(key):
     random.shuffle(tours)
     initial_tours = tours[:12]
     
-    # Load images lazily for initial tours only
+    # Load images lazily for initial tours only (with account-specific hidden images filtered)
     for tour in initial_tours:
-        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
         tour['thumbnail'] = thumb
         tour['gallery'] = gallery
         tour['uses_placeholder_images'] = uses_placeholder
@@ -4133,10 +4195,10 @@ def filter_tours():
         non_promoted.sort(key=lambda t: t.get('name', '').lower())  # Stable alphabetical sort
         limited_tours = promoted + non_promoted
     
-    # Load images for each tour (lazy loading)
+    # Load images for each tour (lazy loading, with account-specific hidden images filtered)
     for tour in limited_tours:
         if not tour.get('thumbnail'):
-            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1)
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
             tour['thumbnail'] = thumb
             tour['gallery'] = gallery
             tour['uses_placeholder_images'] = uses_placeholder
@@ -4185,10 +4247,10 @@ def more_tours():
     
     print(f"[MORE-TOURS] Total: {total_count}, Excluded: {len(exclude_keys)}, Selected: {len(selected)}")
     
-    # Load images for each selected tour (lazy loading)
+    # Load images for each selected tour (lazy loading, with account-specific hidden images filtered)
     for tour in selected:
         if not tour.get('thumbnail'):
-            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1)
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
             tour['thumbnail'] = thumb
             tour['gallery'] = gallery
             tour['uses_placeholder_images'] = uses_placeholder
@@ -4302,6 +4364,7 @@ def get_similar_tours(key):
     """Get similar tours based on RAG embeddings"""
     language = request.args.get('lang', 'en')
     n_results = int(request.args.get('n', 3))
+    active_account = get_active_account()
     
     print(f"[SIMILAR] Finding similar tours for: {key}")
     
@@ -4329,7 +4392,7 @@ def get_similar_tours(key):
         
         # Filter out the current tour and convert to tour data
         similar_tours = []
-        all_tours = load_all_tours(language)
+        all_tours = load_all_tours(language, preview_account=active_account)
         tours_by_key = {t['key']: t for t in all_tours}
         
         for i, (tour_key, metadata, distance) in enumerate(zip(
@@ -4344,8 +4407,8 @@ def get_similar_tours(key):
             # Get full tour data
             tour_data = tours_by_key.get(tour_key)
             if tour_data:
-                # Load thumbnail
-                thumb, _, _ = load_tour_images(tour_data, max_images=1)
+                # Load thumbnail (with account-specific hidden images filtered)
+                thumb, _, _ = load_tour_images(tour_data, max_images=1, account_username=active_account)
                 
                 similar_tours.append({
                     'key': tour_key,
@@ -5617,6 +5680,9 @@ def chat():
         # Import price conversion for display
         from elevenlabs_tts import convert_price_for_display
         
+        # Get active account for filtering hidden images
+        active_account = get_active_account()
+        
         data = request.get_json()
         user_message = data.get('message', '')
         language = data.get('language', 'en')
@@ -5750,7 +5816,7 @@ Reply ONLY: SEARCH or ASK"""
             print(f"[CHAT] Intent check: '{safe_msg}' -> {intent} (should_search={should_search_tours})")
         
         # Load all tours - MUST be outside the if/else so it's always available
-        all_tours = load_all_tours(language)
+        all_tours = load_all_tours(language, preview_account=active_account)
         
         # Detect if user wants DIFFERENT tours early (need this for LLM call)
         wants_different_early = any(phrase in user_message.lower() for phrase in [
@@ -6395,8 +6461,8 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 tour = next((t for t in tours if t.get('key') == tour_key), None)
                 if tour:
                     tour_copy = tour.copy()
-                    # Load images lazily for this tour
-                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                    # Load images lazily for this tour (with account-specific hidden images filtered)
+                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
                     tour_copy['thumbnail'] = thumb
                     tour_copy['gallery'] = gallery
                     tour_copy['uses_placeholder_images'] = uses_placeholder
@@ -6491,8 +6557,8 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 print(f"[LAZY-IMAGES] Loading images for {len(filtered_tours)} tours...")
                 for tour in filtered_tours:
                     tour_copy = tour.copy()
-                    # Load images lazily for this tour
-                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                    # Load images lazily for this tour (with account-specific hidden images filtered)
+                    thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
                     tour_copy['thumbnail'] = thumb
                     tour_copy['gallery'] = gallery
                     tour_copy['uses_placeholder_images'] = uses_placeholder
@@ -6544,8 +6610,8 @@ Be conversational, ask questions, and help them discover their perfect adventure
                     print(f"[LAZY-IMAGES] Loading images for {len(late_tours)} late-search tours...")
                     for tour in late_tours:
                         tour_copy = tour.copy()
-                        # Load images lazily for this tour
-                        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5)
+                        # Load images lazily for this tour (with account-specific hidden images filtered)
+                        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
                         tour_copy['thumbnail'] = thumb
                         tour_copy['gallery'] = gallery
                         tour_copy['uses_placeholder_images'] = uses_placeholder
@@ -6987,16 +7053,23 @@ def tour_editor():
     
     print(f"[Editor] Loaded {len(companies)} companies with tours")
     
+    # Get company names with account-specific overrides
+    account_company_names = get_company_display_names_for_account(username)
+    
     return render_template('tour_editor.html', 
                           companies=companies,
-                          company_names=COMPANY_DISPLAY_NAMES,
+                          company_names=account_company_names,
                           username=username,
                           needs_approval=needs_approval,
                           is_admin=is_admin_user(username))
 
 @app.route('/admin/api/company-name', methods=['POST'])
 def update_company_display_name():
-    """Update a company's display name"""
+    """Update a company's display name
+    
+    For non-admin users: Stores as account-specific override (only affects their view)
+    For admin users: Can update globally or per-account
+    """
     global COMPANY_DISPLAY_NAMES
     
     username = session.get('user')
@@ -7006,28 +7079,24 @@ def update_company_display_name():
     data = request.get_json()
     company_key = data.get('company_key')
     display_name = data.get('display_name', '').strip()
+    update_globally = data.get('update_globally', False)  # Only admins can use this
     
     if not company_key or not display_name:
         return jsonify({'error': 'Company key and display name required'}), 400
     
-    # Check if approval is needed
-    if requires_approval(username):
-        # Create a change request
-        request_id = create_change_request(
-            requested_by=username,
-            change_type='company_name_edit',
-            description=f'Rename company "{COMPANY_DISPLAY_NAMES.get(company_key, company_key)}" to "{display_name}"',
-            changes_data={
-                'company_key': company_key,
-                'before': COMPANY_DISPLAY_NAMES.get(company_key, company_key),
-                'after': display_name
-            }
-        )
+    # For non-admin users, always save as account-specific override
+    if requires_approval(username) or not update_globally:
+        settings = load_account_settings(username)
+        if 'company_name_overrides' not in settings:
+            settings['company_name_overrides'] = {}
+        
+        settings['company_name_overrides'][company_key] = display_name
+        save_account_settings(username, settings)
+        
         return jsonify({
             'success': True,
-            'pending_approval': True,
-            'request_id': request_id,
-            'message': 'Company name change submitted for approval'
+            'account_specific': True,
+            'message': 'Company name updated for your account'
         })
     
     # Admin - apply directly
@@ -7258,11 +7327,18 @@ def export_tours():
 
 @app.route('/admin/api/tour/<key>/images')
 def get_tour_images(key):
-    """API endpoint to get all images for a tour"""
+    """API endpoint to get all images for a tour (filtered by account's hidden images)"""
     try:
         company, tid = key.split('__', 1)
     except ValueError:
         return jsonify({'error': 'Invalid tour key'}), 400
+    
+    # Get hidden images for current user
+    username = session.get('user')
+    hidden_images = []
+    if username:
+        settings = load_account_settings(username)
+        hidden_images = settings.get('hidden_images', {}).get(key, [])
     
     extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
     images = []
@@ -7316,6 +7392,12 @@ def get_tour_images(key):
             ext = os.path.splitext(filename)[1].lower()
             if ext in extensions:
                 filepath = f"/{found_folder}/{filename}".replace("\\", "/")
+                
+                # Skip hidden images for this user
+                normalized_filepath = filepath.lstrip('/')
+                if normalized_filepath in hidden_images or filepath in hidden_images:
+                    continue
+                
                 is_thumb = filename.lower().startswith('thumbnail')
                 images.append({
                     'path': filepath,
@@ -7505,7 +7587,15 @@ def upload_tour_images(key):
 
 @app.route('/admin/api/tour/<key>/images/delete', methods=['POST'])
 def delete_tour_image(key):
-    """API endpoint to delete a tour image"""
+    """API endpoint to delete/hide a tour image
+    
+    For non-admin users: Hides the image for their account only (stored in settings)
+    For admin users: Can choose to delete globally or hide for specific account
+    """
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     try:
         company, tid = key.split('__', 1)
     except ValueError:
@@ -7513,32 +7603,59 @@ def delete_tour_image(key):
     
     data = request.get_json()
     image_path = data.get('image_path', '').lstrip('/')
+    delete_globally = data.get('delete_globally', False)  # Only admins can use this
     
     if not image_path:
         return jsonify({'error': 'No image path provided'}), 400
     
-    # Normalize path
-    image_path = image_path.replace('/', os.sep).replace('\\', os.sep)
+    # Normalize the image path for storage (use forward slashes for consistency)
+    normalized_path = image_path.replace('\\', '/')
+    
+    # For non-admin users, always hide instead of delete
+    if requires_approval(username) or not delete_globally:
+        # Store in account's hidden_images
+        settings = load_account_settings(username)
+        if 'hidden_images' not in settings:
+            settings['hidden_images'] = {}
+        
+        # Store by tour_key for easy lookup
+        if key not in settings['hidden_images']:
+            settings['hidden_images'][key] = []
+        
+        if normalized_path not in settings['hidden_images'][key]:
+            settings['hidden_images'][key].append(normalized_path)
+        
+        save_account_settings(username, settings)
+        
+        return jsonify({
+            'success': True, 
+            'hidden': True,
+            'message': 'Image hidden for your account'
+        })
+    
+    # Admin with delete_globally=True - actually delete the file
+    # Normalize path for filesystem
+    fs_path = image_path.replace('/', os.sep).replace('\\', os.sep)
     
     # Security check: ensure the path is within the tour images folder
     expected_prefix = f"static{os.sep}tour_images{os.sep}{company}"
-    if not image_path.startswith(expected_prefix):
+    if not fs_path.startswith(expected_prefix):
         return jsonify({'error': 'Invalid image path'}), 403
     
-    if not os.path.exists(image_path):
+    if not os.path.exists(fs_path):
         return jsonify({'error': 'Image not found'}), 404
     
     # Don't allow deleting the thumbnail directly (use set_thumbnail instead)
-    if os.path.basename(image_path).lower().startswith('thumbnail'):
+    if os.path.basename(fs_path).lower().startswith('thumbnail'):
         return jsonify({'error': 'Cannot delete thumbnail directly. Set another image as thumbnail first.'}), 400
     
     try:
-        os.remove(image_path)
+        os.remove(fs_path)
         # Sync remaining images to CSV
         sync_tour_images_to_csv(company, tid)
         # Sync deletion to git
         git_sync_changes(f"Deleted image for {company}/{tid}")
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'deleted': True, 'message': 'Image deleted globally'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
