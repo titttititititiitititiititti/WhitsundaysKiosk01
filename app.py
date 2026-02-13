@@ -582,6 +582,20 @@ def apply_approved_changes(request):
             
             print(f"[CHANGE REQUEST] Applied tour content edit for {tour_key}")
         
+        elif change_type == 'company_name_edit':
+            # Update company display name
+            global COMPANY_DISPLAY_NAMES
+            company_key = changes.get('company_key')
+            new_name = changes.get('after')
+            
+            if company_key and new_name:
+                COMPANY_DISPLAY_NAMES[company_key] = new_name
+                save_company_display_names(COMPANY_DISPLAY_NAMES)
+                print(f"[CHANGE REQUEST] Applied company name edit: {company_key} -> {new_name}")
+            else:
+                print(f"[CHANGE REQUEST] Missing company_key or new name")
+                return False
+        
         else:
             print(f"[CHANGE REQUEST] Unknown change type: {change_type}")
             return False
@@ -1398,25 +1412,52 @@ def get_analytics_summary(account=None):
         }
     }
 
-# Company name mapping for prettier display
-COMPANY_DISPLAY_NAMES = {
-    'redcatadventures': 'Red Cat Adventures',
-    'cruisewhitsundays': 'Cruise Whitsundays',
-    'helireef': 'HeliReef',
-    'sundownercruises': 'Sundowner Cruises',
-    'iconicwhitsunday': 'Iconic Whitsunday',
-    'oceanrafting': 'Ocean Rafting',
-    'zigzagwhitsundays': 'Zigzag Whitsundays',
-    'truebluesailing': 'True Blue Sailing',
-    'airliebeachdiving': 'Airlie Beach Diving',
-    'crocodilesafari': 'Crocodile Safari',
-    'exploregroup': 'Explore Group',
-    'explorewhitsundays': 'Explore Whitsundays',
-    'oceandynamics': 'Ocean Dynamics',
-    'ozsail': 'OzSail',
-    'pioneeradventures': 'Pioneer Adventures',
-    'prosail': 'ProSail'
-}
+# Company name mapping for prettier display - load from config or use defaults
+def load_company_display_names():
+    """Load company display names from config file, with defaults as fallback"""
+    config_file = 'config/company_names.json'
+    defaults = {
+        'redcatadventures': 'Red Cat Adventures',
+        'cruisewhitsundays': 'Cruise Whitsundays',
+        'helireef': 'HeliReef',
+        'sundownercruises': 'Sundowner Cruises',
+        'iconicwhitsunday': 'Iconic Whitsunday',
+        'oceanrafting': 'Ocean Rafting',
+        'zigzagwhitsundays': 'Zigzag Whitsundays',
+        'truebluesailing': 'True Blue Sailing',
+        'airliebeachdiving': 'Airlie Beach Diving',
+        'crocodilesafari': 'Crocodile Safari',
+        'exploregroup': 'Explore Group',
+        'explorewhitsundays': 'Explore Whitsundays',
+        'oceandynamics': 'Ocean Dynamics',
+        'ozsail': 'OzSail',
+        'pioneeradventures': 'Pioneer Adventures',
+        'prosail': 'ProSail'
+    }
+    try:
+        if os.path.exists(config_file):
+            with open(config_file, 'r', encoding='utf-8') as f:
+                saved = json.load(f)
+                # Merge saved with defaults (saved takes priority)
+                return {**defaults, **saved}
+    except Exception as e:
+        print(f"Error loading company names: {e}")
+    return defaults
+
+def save_company_display_names(names):
+    """Save company display names to config file"""
+    config_file = 'config/company_names.json'
+    try:
+        os.makedirs('config', exist_ok=True)
+        with open(config_file, 'w', encoding='utf-8') as f:
+            json.dump(names, f, indent=2)
+        return True
+    except Exception as e:
+        print(f"Error saving company names: {e}")
+        return False
+
+# Load on startup
+COMPANY_DISPLAY_NAMES = load_company_display_names()
 
 def get_english_tour_name(company, tid):
     """Get the English tour name for a tour (for image matching purposes)"""
@@ -6910,6 +6951,14 @@ def get_all_tour_csvs():
 @app.route('/admin/editor')
 def tour_editor():
     """Tour Editor - Developer Mode for editing tour listings"""
+    # Require login
+    username = session.get('user')
+    if not username:
+        return redirect(url_for('login'))
+    
+    # Check if this user needs approval for changes
+    needs_approval = requires_approval(username)
+    
     # Load all tours grouped by company
     companies = {}
     
@@ -6940,7 +6989,54 @@ def tour_editor():
     
     return render_template('tour_editor.html', 
                           companies=companies,
-                          company_names=COMPANY_DISPLAY_NAMES)
+                          company_names=COMPANY_DISPLAY_NAMES,
+                          username=username,
+                          needs_approval=needs_approval,
+                          is_admin=is_admin_user(username))
+
+@app.route('/admin/api/company-name', methods=['POST'])
+def update_company_display_name():
+    """Update a company's display name"""
+    global COMPANY_DISPLAY_NAMES
+    
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    data = request.get_json()
+    company_key = data.get('company_key')
+    display_name = data.get('display_name', '').strip()
+    
+    if not company_key or not display_name:
+        return jsonify({'error': 'Company key and display name required'}), 400
+    
+    # Check if approval is needed
+    if requires_approval(username):
+        # Create a change request
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='company_name_edit',
+            description=f'Rename company "{COMPANY_DISPLAY_NAMES.get(company_key, company_key)}" to "{display_name}"',
+            changes_data={
+                'company_key': company_key,
+                'before': COMPANY_DISPLAY_NAMES.get(company_key, company_key),
+                'after': display_name
+            }
+        )
+        return jsonify({
+            'success': True,
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': 'Company name change submitted for approval'
+        })
+    
+    # Admin - apply directly
+    COMPANY_DISPLAY_NAMES[company_key] = display_name
+    if save_company_display_names(COMPANY_DISPLAY_NAMES):
+        git_sync_changes(f"Renamed company: {company_key} -> {display_name}")
+        return jsonify({'success': True, 'message': 'Company name updated'})
+    else:
+        return jsonify({'error': 'Failed to save company name'}), 500
 
 @app.route('/admin/api/tour/<key>')
 def get_tour_for_editor(key):

@@ -165,12 +165,42 @@
             background: var(--border-color);
         }
         
+        .company-name {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .company-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .edit-company-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            padding: 2px 4px;
+        }
+        
+        .company-header:hover .edit-company-btn {
+            opacity: 0.6;
+        }
+        
+        .edit-company-btn:hover {
+            opacity: 1 !important;
+        }
+        
         .tour-count {
             background: var(--bg-primary);
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.75rem;
             color: var(--text-secondary);
+            cursor: pointer;
         }
         
         .tour-list {
@@ -1787,7 +1817,17 @@
     <header class="editor-header">
         <div class="editor-title">
             <h1>🏝️ Tour Editor</h1>
-            <span class="dev-badge">Developer Mode</span>
+            {% if is_admin %}
+            <span class="dev-badge">Admin Mode</span>
+            {% else %}
+            <span class="dev-badge" style="background: linear-gradient(135deg, #f093fb, #f5576c);">Request Mode</span>
+            {% endif %}
+            <span class="user-badge" style="margin-left: 10px; padding: 4px 12px; background: rgba(255,255,255,0.1); border-radius: 15px; font-size: 0.85rem;">
+                👤 {{ username }}
+                {% if needs_approval %}
+                <span style="color: #f5576c; margin-left: 5px;" title="Your content changes require approval">⏳</span>
+                {% endif %}
+            </span>
         </div>
         <div class="header-actions">
             <div class="save-status saved" id="saveStatus">
@@ -1796,11 +1836,11 @@
             <button class="btn btn-secondary preview-toggle-btn" onclick="togglePreview()">
                 <span id="previewIcon">👁️</span> <span id="previewText">Preview</span>
             </button>
-            <button class="btn btn-secondary" onclick="location.href='/'">
-                ← Back to Kiosk
+            <button class="btn btn-secondary" onclick="location.href='/admin/agent'">
+                ← Back to Dashboard
             </button>
             <button class="btn btn-primary" id="saveBtn" onclick="saveTour()">
-                💾 Save Changes
+                {% if needs_approval %}📋 Submit for Approval{% else %}💾 Save Changes{% endif %}
             </button>
         </div>
     </header>
@@ -1813,9 +1853,12 @@
             <div id="tourList">
                 {% for company, tours in companies.items() %}
                 <div class="company-group" data-company="{{ company }}">
-                    <div class="company-header" onclick="toggleCompany(this)">
-                        <span>{{ company_names.get(company, company) }}</span>
-                        <span class="tour-count">{{ tours|length }}</span>
+                    <div class="company-header">
+                        <span class="company-name" data-company="{{ company }}" onclick="toggleCompany(this.parentElement)">{{ company_names.get(company, company) }}</span>
+                        <div class="company-actions">
+                            <button class="edit-company-btn" onclick="event.stopPropagation(); editCompanyName('{{ company }}', '{{ company_names.get(company, company) }}')" title="Edit company name">✏️</button>
+                            <span class="tour-count" onclick="toggleCompany(this.parentElement.parentElement)">{{ tours|length }}</span>
+                        </div>
                     </div>
                     <div class="tour-list">
                         {% for tour in tours %}
@@ -2041,8 +2084,41 @@
         };
         
         function toggleCompany(header) {
-            const group = header.parentElement;
+            const group = header.closest('.company-group');
             group.classList.toggle('expanded');
+        }
+        
+        async function editCompanyName(companyKey, currentName) {
+            const newName = prompt('Enter new display name for this company:', currentName);
+            if (!newName || newName.trim() === currentName) return;
+            
+            try {
+                const response = await fetch('/admin/api/company-name', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        company_key: companyKey,
+                        display_name: newName.trim()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.pending_approval) {
+                    showToast('📋 Company name change submitted for approval', 'info');
+                } else if (result.success) {
+                    // Update the UI
+                    const companySpan = document.querySelector(`.company-name[data-company="${companyKey}"]`);
+                    if (companySpan) {
+                        companySpan.textContent = newName.trim();
+                    }
+                    showToast('✅ Company name updated!', 'success');
+                } else {
+                    showToast('❌ ' + (result.error || 'Failed to update'), 'error');
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, 'error');
+            }
         }
         
         function filterTours() {
