@@ -7341,6 +7341,12 @@ def check_git_updates():
         print("[AUTO-UPDATE] Fetching from origin...", flush=True)
         sys.stdout.flush()
         
+        # Get current HEAD hash BEFORE fetch
+        head_before = subprocess.run(
+            ['git', 'rev-parse', 'HEAD'],
+            cwd=repo_path, capture_output=True, text=True, timeout=10
+        ).stdout.strip()
+        
         # Fetch latest from remote
         fetch_result = subprocess.run(
             ['git', 'fetch', 'origin', 'main'],
@@ -7354,7 +7360,21 @@ def check_git_updates():
             print(f"[AUTO-UPDATE] Fetch failed: {fetch_result.stderr}", flush=True)
             return False
         
-        # Use rev-list to count commits we're behind (more reliable)
+        # Get origin/main hash
+        origin_hash = subprocess.run(
+            ['git', 'rev-parse', 'origin/main'],
+            cwd=repo_path, capture_output=True, text=True, timeout=10
+        ).stdout.strip()
+        
+        _last_update_check = time.time()
+        
+        # Only update if origin/main is DIFFERENT from our HEAD
+        if head_before == origin_hash:
+            print("[AUTO-UPDATE] Already up to date (same commit)", flush=True)
+            _update_available = False
+            return False
+        
+        # Check if we're behind origin/main (not just diverged)
         result = subprocess.run(
             ['git', 'rev-list', 'HEAD..origin/main', '--count'],
             cwd=repo_path,
@@ -7363,19 +7383,34 @@ def check_git_updates():
             timeout=10
         )
         
-        _last_update_check = time.time()
-        
         try:
             commits_behind = int(result.stdout.strip())
         except:
             commits_behind = 0
         
-        if commits_behind > 0:
+        # Also check if we're ahead (diverged history)
+        ahead_result = subprocess.run(
+            ['git', 'rev-list', 'origin/main..HEAD', '--count'],
+            cwd=repo_path, capture_output=True, text=True, timeout=10
+        )
+        try:
+            commits_ahead = int(ahead_result.stdout.strip())
+        except:
+            commits_ahead = 0
+        
+        if commits_behind > 0 and commits_ahead == 0:
+            # We're strictly behind - safe to fast-forward
             print(f"[AUTO-UPDATE] ✅ {commits_behind} new commit(s) available!", flush=True)
+            _update_available = True
+            return True
+        elif commits_behind > 0 and commits_ahead > 0:
+            # Diverged history - force reset to origin to get latest
+            print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind. Will reset to origin.", flush=True)
             _update_available = True
             return True
         else:
             print("[AUTO-UPDATE] No new updates", flush=True)
+            _update_available = False
         
         return False
         
@@ -7394,19 +7429,35 @@ def pull_and_restart():
         
         print("[AUTO-UPDATE] Pulling updates...")
         
-        # Stash any local changes first
-        subprocess.run(['git', 'stash'], cwd=repo_path, capture_output=True, timeout=30)
+        # Save local analytics before reset (so we don't lose data)
+        analytics_backup = {}
+        analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
+        for af in analytics_files:
+            try:
+                with open(af, 'r', encoding='utf-8') as f:
+                    analytics_backup[af] = f.read()
+            except:
+                pass
         
-        # Pull latest changes
+        # Use reset --hard to ensure we match origin exactly (handles diverged history)
+        # This is safer than pull which can fail on merge conflicts
         result = subprocess.run(
-            ['git', 'pull', 'origin', 'main'],
+            ['git', 'reset', '--hard', 'origin/main'],
             cwd=repo_path,
             capture_output=True,
             text=True,
             timeout=60
         )
         
-        print(f"[AUTO-UPDATE] Pull result: {result.stdout}")
+        print(f"[AUTO-UPDATE] Reset result: {result.stdout}")
+        
+        # Restore analytics files (they might have been overwritten)
+        for af, content in analytics_backup.items():
+            try:
+                with open(af, 'w', encoding='utf-8') as f:
+                    f.write(content)
+            except:
+                pass
         
         if result.returncode == 0:
             # Install any new dependencies quietly
