@@ -7650,10 +7650,11 @@ def start_background_services():
         _update_thread.start()
         print("[AUTO-UPDATE] Auto-update system enabled (checking every 60s)")
     
-    # Start analytics sync thread
-    analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
-    analytics_thread.start()
-    print("[ANALYTICS] Analytics auto-sync enabled (every 5 minutes)")
+    # DISABLED: Analytics auto-push causes git conflicts between shop and dev machines
+    # Analytics are stored locally and can be manually synced via agent dashboard
+    # analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
+    # analytics_thread.start()
+    print("[ANALYTICS] Analytics stored locally (manual sync available in agent dashboard)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()
