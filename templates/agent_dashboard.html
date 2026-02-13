@@ -2170,8 +2170,7 @@
                     booking_button_url: document.getElementById('bookingButtonUrl').value,
                     hero_widget_html: document.getElementById('heroWidgetHtml').value,
                     notes: document.getElementById('tourNotes').value,
-                    button_overlay: buttonOverlay,
-                    tour_name: currentTourName || currentTourKey
+                    button_overlay: buttonOverlay
                 };
                 
                 try {
@@ -2182,21 +2181,6 @@
                     });
                     
                     if (response.ok) {
-                        const result = await response.json();
-                        
-                        // Check if change requires approval
-                        if (result.pending_approval) {
-                            const saveStatus = document.getElementById('saveStatus');
-                            saveStatus.innerHTML = '📋 Request submitted';
-                            saveStatus.classList.add('show');
-                            setTimeout(() => {
-                                saveStatus.classList.remove('show');
-                                saveStatus.innerHTML = '<span>✓</span> Saved';
-                            }, 3000);
-                            showToast('📋 Change request submitted for approval', 'info');
-                            return;
-                        }
-                        
                         // Show save indicator
                         const saveStatus = document.getElementById('saveStatus');
                         saveStatus.classList.add('show');
@@ -2386,26 +2370,16 @@
         }
         
         async function toggleTour(key, enabled) {
-            const item = document.querySelector(`.tour-item[data-key="${key}"]`);
-            const tourName = item ? item.dataset.name || key : key;
-            
             try {
                 const response = await fetch('/admin/agent/api/toggle-tour', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tour_key: key, tour_name: tourName, enabled })
+                    body: JSON.stringify({ tour_key: key, enabled })
                 });
                 
                 if (!response.ok) throw new Error('Failed to update');
                 
-                const data = await response.json();
-                
-                // Check if change requires approval
-                if (data.pending_approval) {
-                    showToast('📋 Request submitted for approval', 'info');
-                    return;
-                }
-                
+                const item = document.querySelector(`.tour-item[data-key="${key}"]`);
                 item.classList.toggle('disabled', !enabled);
                 item.dataset.enabled = enabled ? 'true' : 'false';
                 
@@ -2428,27 +2402,18 @@
         
         async function setPromotion(key, level) {
             const actualLevel = level === 'none' ? null : level;
-            const item = document.querySelector(`.tour-item[data-key="${key}"]`);
-            const tourName = item ? item.dataset.name || key : key;
             
             try {
                 const response = await fetch('/admin/agent/api/set-promotion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tour_key: key, tour_name: tourName, level: actualLevel })
+                    body: JSON.stringify({ tour_key: key, level: actualLevel })
                 });
                 
                 if (!response.ok) throw new Error('Failed to update');
                 
-                const data = await response.json();
-                
-                // Check if change requires approval
-                if (data.pending_approval) {
-                    showToast('📋 Request submitted for approval', 'info');
-                    return;
-                }
-                
                 // Update UI
+                const item = document.querySelector(`.tour-item[data-key="${key}"]`);
                 item.querySelectorAll('.promo-btn').forEach(btn => btn.classList.remove('active', 'popular', 'featured', 'best_value'));
                 
                 if (actualLevel) {

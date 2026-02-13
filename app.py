@@ -526,6 +526,62 @@ def apply_approved_changes(request):
             settings['kiosk_settings'] = kiosk
             save_account_settings(username, settings)
         
+        elif change_type == 'tour_content_edit':
+            # Apply tour content changes (name, description, images, etc.) to CSV
+            # This edits the actual tour data, not just account overrides
+            new_data = changes.get('new_data', {})
+            
+            if not tour_key or not new_data:
+                print("[CHANGE REQUEST] Missing tour_key or new_data")
+                return False
+            
+            try:
+                company, tid = tour_key.split('__', 1)
+            except ValueError:
+                print(f"[CHANGE REQUEST] Invalid tour key: {tour_key}")
+                return False
+            
+            csv_file = find_company_csv(company)
+            if not csv_file:
+                print(f"[CHANGE REQUEST] Company CSV not found: {company}")
+                return False
+            
+            # Read, update, and write back to CSV
+            rows = []
+            fieldnames = None
+            
+            with open(csv_file, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                fieldnames = reader.fieldnames
+                rows = list(reader)
+            
+            # Add any new fields
+            new_fields = [f for f in new_data.keys() if f not in fieldnames]
+            if new_fields:
+                fieldnames = list(fieldnames) + new_fields
+            
+            # Find and update the tour
+            tour_found = False
+            for i, row in enumerate(rows):
+                if row.get('id') == tid:
+                    for field, value in new_data.items():
+                        row[field] = value
+                    rows[i] = row
+                    tour_found = True
+                    break
+            
+            if not tour_found:
+                print(f"[CHANGE REQUEST] Tour not found: {tour_key}")
+                return False
+            
+            # Write back
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+            
+            print(f"[CHANGE REQUEST] Applied tour content edit for {tour_key}")
+        
         else:
             print(f"[CHANGE REQUEST] Unknown change type: {change_type}")
             return False
@@ -2088,27 +2144,8 @@ def update_account_tours():
     
     action = data.get('action')
     tour_key = data.get('tour_key')
-    tour_name = data.get('tour_name', tour_key)
     
-    # Check if user requires approval for changes
-    if requires_approval(username):
-        # Create a change request instead of applying directly
-        description = f"{'Enable' if action == 'enable' else 'Disable'} tour: {tour_name}"
-        request_id = create_change_request(
-            requested_by=username,
-            change_type='tour_toggle',
-            description=description,
-            changes_data={'enabled': action == 'enable'},
-            tour_key=tour_key
-        )
-        return jsonify({
-            'success': True, 
-            'pending_approval': True,
-            'request_id': request_id,
-            'message': f'Change request submitted for approval'
-        })
-    
-    # Admin user - apply directly
+    # Apply directly - toggles don't require approval
     settings = load_account_settings(username)
     enabled_tours = settings.get('enabled_tours', [])
     
@@ -2622,7 +2659,6 @@ def toggle_tour_visibility():
     """Toggle a tour's visibility (enabled/disabled) - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
-    tour_name = data.get('tour_name', tour_key)
     enabled = data.get('enabled', True)
     
     if not tour_key:
@@ -2633,24 +2669,7 @@ def toggle_tour_visibility():
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
-    # Check if user requires approval for changes
-    if requires_approval(username):
-        description = f"{'Show' if enabled else 'Hide'} tour: {tour_name}"
-        request_id = create_change_request(
-            requested_by=username,
-            change_type='tour_toggle',
-            description=description,
-            changes_data={'enabled': enabled},
-            tour_key=tour_key
-        )
-        return jsonify({
-            'success': True,
-            'pending_approval': True,
-            'request_id': request_id,
-            'message': f'Change request submitted for approval'
-        })
-    
-    # Admin user - apply directly
+    # Apply directly - toggles don't require approval
     account_settings = load_account_settings(username)
     enabled_tours = account_settings.get('enabled_tours', [])
     
@@ -2673,7 +2692,6 @@ def set_tour_promotion():
     """Set or remove a tour's promotion level - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
-    tour_name = data.get('tour_name', tour_key)
     level = data.get('level')  # 'popular', 'featured', 'best_value', or None to remove
     
     if not tour_key:
@@ -2684,25 +2702,7 @@ def set_tour_promotion():
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
-    # Check if user requires approval for changes
-    if requires_approval(username):
-        level_display = level.replace('_', ' ').title() if level else 'None'
-        description = f"Set promotion for {tour_name}: {level_display}"
-        request_id = create_change_request(
-            requested_by=username,
-            change_type='tour_promotion',
-            description=description,
-            changes_data={'level': level},
-            tour_key=tour_key
-        )
-        return jsonify({
-            'success': True,
-            'pending_approval': True,
-            'request_id': request_id,
-            'message': 'Change request submitted for approval'
-        })
-    
-    # Admin user - apply directly
+    # Apply directly - promotions don't require approval
     account_settings = load_account_settings(username)
     promoted = account_settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
     
@@ -2952,7 +2952,7 @@ def get_tour_settings(tour_key):
 
 @app.route('/admin/agent/api/tour-settings/<tour_key>', methods=['POST'])
 def save_tour_settings(tour_key):
-    """Save per-tour agent settings - saves to account settings"""
+    """Save per-tour agent settings - saves to account settings (booking URLs, widgets)"""
     data = request.get_json()
     
     # Use account-specific settings
@@ -2960,57 +2960,7 @@ def save_tour_settings(tour_key):
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
-    # Build changes data
-    changes = {}
-    if 'booking_button_url' in data:
-        changes['booking_button_url'] = data['booking_button_url'].strip()
-    if 'hero_widget_html' in data:
-        changes['hero_widget_html'] = data['hero_widget_html'].strip()
-    if 'notes' in data:
-        changes['notes'] = data['notes'].strip()
-    if 'button_overlay' in data:
-        overlay = data['button_overlay']
-        if overlay and overlay.get('width') and float(overlay.get('width', 0)) > 0:
-            changes['button_overlay'] = {
-                'top': str(overlay.get('top', 0)),
-                'left': str(overlay.get('left', 0)),
-                'width': str(overlay.get('width', 0)),
-                'height': str(overlay.get('height', 0))
-            }
-        else:
-            changes['button_overlay'] = None  # Clear overlay
-    
-    # Check if user requires approval for changes
-    if requires_approval(username):
-        # Build description of what's changing
-        tour_name = data.get('tour_name', tour_key)
-        change_parts = []
-        if changes.get('booking_button_url'):
-            change_parts.append('booking URL')
-        if changes.get('hero_widget_html'):
-            change_parts.append('widget HTML')
-        if changes.get('button_overlay'):
-            change_parts.append('button overlay')
-        if changes.get('notes'):
-            change_parts.append('notes')
-        
-        description = f"Update {tour_name}: {', '.join(change_parts) if change_parts else 'settings'}"
-        
-        request_id = create_change_request(
-            requested_by=username,
-            change_type='tour_update',
-            description=description,
-            changes_data=changes,
-            tour_key=tour_key
-        )
-        return jsonify({
-            'success': True,
-            'pending_approval': True,
-            'request_id': request_id,
-            'message': 'Change request submitted for approval'
-        })
-    
-    # Admin user - apply directly
+    # Apply directly - booking settings don't require approval
     account_settings = load_account_settings(username)
     if 'tour_overrides' not in account_settings:
         account_settings['tour_overrides'] = {}
@@ -3018,16 +2968,28 @@ def save_tour_settings(tour_key):
     # Get existing or create new
     tour_settings = account_settings['tour_overrides'].get(tour_key, {})
     
-    # Apply changes
-    for key, value in changes.items():
-        if key == 'button_overlay':
-            if value:
-                tour_settings['button_overlay'] = value
-                print(f"[OVERLAY] Saved button overlay for {tour_key}: {value}")
-            elif 'button_overlay' in tour_settings:
+    # Update fields (only if provided)
+    if 'booking_button_url' in data:
+        tour_settings['booking_button_url'] = data['booking_button_url'].strip()
+    if 'hero_widget_html' in data:
+        tour_settings['hero_widget_html'] = data['hero_widget_html'].strip()
+    if 'notes' in data:
+        tour_settings['notes'] = data['notes'].strip()
+    if 'button_overlay' in data:
+        overlay = data['button_overlay']
+        # Validate overlay data
+        if overlay and overlay.get('width') and float(overlay.get('width', 0)) > 0:
+            tour_settings['button_overlay'] = {
+                'top': str(overlay.get('top', 0)),
+                'left': str(overlay.get('left', 0)),
+                'width': str(overlay.get('width', 0)),
+                'height': str(overlay.get('height', 0))
+            }
+            print(f"[OVERLAY] Saved button overlay for {tour_key}: {tour_settings['button_overlay']}")
+        else:
+            # Clear overlay if empty/invalid
+            if 'button_overlay' in tour_settings:
                 del tour_settings['button_overlay']
-        elif value:
-            tour_settings[key] = value
     
     # Clean up empty settings
     tour_settings = {k: v for k, v in tour_settings.items() if v}
@@ -7011,7 +6973,11 @@ def get_tour_for_editor(key):
 
 @app.route('/admin/api/tour/<key>', methods=['POST'])
 def save_tour_from_editor(key):
-    """API endpoint to save tour changes back to CSV"""
+    """API endpoint to save tour changes back to CSV - requires approval for non-admins"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     try:
         company, tid = key.split('__', 1)
     except ValueError:
@@ -7026,52 +6992,155 @@ def save_tour_from_editor(key):
         # Get the new data
         new_data = request.get_json()
         
-        # Read all tours
+        # Read all tours to get current data
         rows = []
         fieldnames = None
+        original_tour = None
         
         with open(csv_file, newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             fieldnames = reader.fieldnames
             rows = list(reader)
         
-        # Check for new fields that need to be added
-        new_fields = []
-        for field in new_data.keys():
-            if field not in fieldnames:
-                new_fields.append(field)
-        
-        if new_fields:
-            fieldnames = list(fieldnames) + new_fields
-        
-        # Find and update the tour
-        tour_found = False
-        for i, row in enumerate(rows):
+        # Find the current tour data
+        for row in rows:
             if row.get('id') == tid:
-                # Update the row with new data
-                for field, value in new_data.items():
-                    row[field] = value
-                rows[i] = row
-                tour_found = True
+                original_tour = dict(row)
                 break
         
-        if not tour_found:
+        if not original_tour:
             return jsonify({'error': 'Tour not found'}), 404
         
-        # Write back to CSV
-        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        # Determine which fields require approval (content changes)
+        # These fields contain actual tour content that needs review
+        APPROVAL_REQUIRED_FIELDS = {
+            'name', 'description', 'highlights', 'inclusions', 'exclusions',
+            'what_to_bring', 'itinerary', 'important_info', 'images',
+            'image_url', 'thumbnail', 'gallery'
+        }
         
-        # Sync changes to connected devices
-        tour_name = new_data.get('name', tid)
-        git_sync_changes(f"Updated tour: {tour_name}")
+        # Separate changes that need approval from those that don't
+        changes_needing_approval = {}
+        changes_not_needing_approval = {}
         
-        return jsonify({'success': True, 'message': 'Tour saved successfully'})
+        for field, new_value in new_data.items():
+            old_value = original_tour.get(field, '')
+            if str(old_value) != str(new_value):  # Only track actual changes
+                if field in APPROVAL_REQUIRED_FIELDS:
+                    changes_needing_approval[field] = {
+                        'before': old_value,
+                        'after': new_value
+                    }
+                else:
+                    changes_not_needing_approval[field] = new_value
+        
+        # For admin users, apply everything directly
+        if is_admin_user(username):
+            # Apply all changes
+            for i, row in enumerate(rows):
+                if row.get('id') == tid:
+                    for field, value in new_data.items():
+                        row[field] = value
+                    rows[i] = row
+                    break
+            
+            # Check for new fields
+            new_fields = [f for f in new_data.keys() if f not in fieldnames]
+            if new_fields:
+                fieldnames = list(fieldnames) + new_fields
+            
+            # Write back to CSV
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+            
+            tour_name = new_data.get('name', original_tour.get('name', tid))
+            git_sync_changes(f"Updated tour: {tour_name}")
+            
+            return jsonify({'success': True, 'message': 'Tour saved successfully'})
+        
+        # For non-admin users:
+        # 1. Apply changes that don't need approval directly
+        # 2. Create a change request for content changes
+        
+        applied_changes = []
+        
+        # Apply non-approval changes directly
+        if changes_not_needing_approval:
+            for i, row in enumerate(rows):
+                if row.get('id') == tid:
+                    for field, value in changes_not_needing_approval.items():
+                        row[field] = value
+                    rows[i] = row
+                    break
+            
+            new_fields = [f for f in changes_not_needing_approval.keys() if f not in fieldnames]
+            if new_fields:
+                fieldnames = list(fieldnames) + new_fields
+            
+            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
+            
+            applied_changes = list(changes_not_needing_approval.keys())
+            git_sync_changes(f"Updated tour technical fields: {key}")
+        
+        # Create change request for content changes
+        if changes_needing_approval:
+            tour_name = new_data.get('name', original_tour.get('name', tid))
+            
+            # Build a readable description of changes
+            change_summary = []
+            for field in changes_needing_approval:
+                if field == 'name':
+                    change_summary.append('name')
+                elif field == 'description':
+                    change_summary.append('description')
+                elif field in ('images', 'image_url', 'thumbnail', 'gallery'):
+                    change_summary.append('images')
+                else:
+                    change_summary.append(field.replace('_', ' '))
+            
+            description = f"Edit {tour_name}: {', '.join(set(change_summary))}"
+            
+            # Build the new_data that would be applied (only the content fields)
+            content_changes = {field: new_data[field] for field in changes_needing_approval}
+            
+            request_id = create_change_request(
+                requested_by=username,
+                change_type='tour_content_edit',
+                description=description,
+                changes_data={
+                    'new_data': content_changes,
+                    'before_after': changes_needing_approval,
+                    'tour_name': tour_name,
+                    'company': company
+                },
+                tour_key=key
+            )
+            
+            message = 'Content changes submitted for approval'
+            if applied_changes:
+                message += f' (other changes applied: {", ".join(applied_changes)})'
+            
+            return jsonify({
+                'success': True,
+                'pending_approval': True,
+                'request_id': request_id,
+                'message': message,
+                'applied_fields': applied_changes,
+                'pending_fields': list(changes_needing_approval.keys())
+            })
+        
+        # No changes at all (shouldn't normally happen)
+        return jsonify({'success': True, 'message': 'No changes detected'})
         
     except Exception as e:
         print(f"Error saving tour: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/admin/api/tours/export')

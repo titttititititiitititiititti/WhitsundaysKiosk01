@@ -483,6 +483,11 @@
             border-color: var(--accent-red);
         }
         
+        .toast.info {
+            border-color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.15);
+        }
+        
         /* Custom section modal */
         .modal-overlay {
             display: none;
@@ -2673,10 +2678,29 @@
                 
                 if (!response.ok) throw new Error('Save failed');
                 
+                const result = await response.json();
+                
+                // Check if changes need approval
+                if (result.pending_approval) {
+                    hasUnsavedChanges = false;
+                    updateSaveStatus('saved');
+                    
+                    // Build message about what happened
+                    let message = '📋 Content changes submitted for approval';
+                    if (result.applied_fields && result.applied_fields.length > 0) {
+                        message += `\n✅ Applied: ${result.applied_fields.join(', ')}`;
+                    }
+                    if (result.pending_fields && result.pending_fields.length > 0) {
+                        message += `\n⏳ Pending: ${result.pending_fields.join(', ')}`;
+                    }
+                    
+                    showToast(message, 'info');
+                    return;
+                }
+                
                 // Also save reviews
                 await saveReviews();
                 
-                const result = await response.json();
                 currentTour = { ...formData };
                 hasUnsavedChanges = false;
                 updateSaveStatus('saved');
