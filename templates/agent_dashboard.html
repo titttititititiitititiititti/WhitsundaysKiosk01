@@ -1080,6 +1080,9 @@
             <a href="{{ url_for('agent_analytics_page') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                 📊 Analytics
             </a>
+            <a href="{{ url_for('tour_editor') }}" class="btn btn-secondary">
+                ✏️ Edit Tours
+            </a>
             {% if session.user == 'bailey' %}
             <a href="/admin/change-requests" class="btn btn-secondary" id="change-requests-btn" style="position: relative;">
                 📋 Requests
@@ -1087,9 +1090,6 @@
             </a>
             <a href="{{ url_for('operator_dashboard') }}" class="btn btn-secondary">
                 🏢 Operator View
-            </a>
-            <a href="{{ url_for('tour_editor') }}" class="btn btn-secondary">
-                ✏️ Full Editor
             </a>
             {% endif %}
             <a href="/" class="btn btn-secondary">
