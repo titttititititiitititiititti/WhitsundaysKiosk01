@@ -964,7 +964,17 @@ def get_analytics_summary(account=None):
     """Get summary statistics from analytics data for an account"""
     account = account or DEFAULT_ANALYTICS_ACCOUNT
     analytics = load_analytics(account)
-    sessions = analytics.get('sessions', [])
+    all_sessions = analytics.get('sessions', [])
+    
+    # Filter out meaningless sessions (0 seconds or no real activity)
+    # A meaningful session must have: duration > 5 seconds OR viewed at least 1 tour OR sent chat messages
+    MIN_SESSION_DURATION = 5  # seconds
+    sessions = [
+        s for s in all_sessions 
+        if s.get('duration_seconds', 0) >= MIN_SESSION_DURATION 
+        or len(s.get('tours_viewed', [])) > 0 
+        or len(s.get('chat_messages', [])) > 0
+    ]
     
     if not sessions:
         return {
@@ -977,7 +987,7 @@ def get_analytics_summary(account=None):
             'total_chats': 0
         }
     
-    # Calculate stats
+    # Calculate stats (only meaningful sessions)
     total_sessions = len(sessions)
     
     # Average duration (only for ended sessions)
@@ -1047,7 +1057,7 @@ def get_analytics_summary(account=None):
         'top_tours_viewed': top_tours_viewed,
         'top_tours_booked': top_tours_booked,
         'total_chats': total_chats,
-        'recent_sessions': sessions[-20:][::-1],  # Last 20, newest first
+        'recent_sessions': sessions[-20:][::-1],  # Last 20 meaningful sessions, newest first
         'account': account,
         'qr_stats': {
             'codes_generated': qr_codes_generated,
@@ -6825,6 +6835,9 @@ def upload_tour_images(key):
     # IMPORTANT: Sync images to CSV so they appear in listings
     image_paths = sync_tour_images_to_csv(company, tid)
     
+    # Sync changes to git (images + CSV updates)
+    git_sync_changes(f"Uploaded {uploaded} images for {company}/{tid}")
+    
     return jsonify({
         'success': True,
         'uploaded': uploaded,
@@ -6865,6 +6878,8 @@ def delete_tour_image(key):
         os.remove(image_path)
         # Sync remaining images to CSV
         sync_tour_images_to_csv(company, tid)
+        # Sync deletion to git
+        git_sync_changes(f"Deleted image for {company}/{tid}")
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -6878,6 +6893,10 @@ def sync_images_endpoint(key):
         return jsonify({'error': 'Invalid tour key'}), 400
     
     image_paths = sync_tour_images_to_csv(company, tid)
+    
+    # Sync CSV changes to git
+    git_sync_changes(f"Synced images for {company}/{tid}")
+    
     return jsonify({
         'success': True,
         'images_synced': len(image_paths),
