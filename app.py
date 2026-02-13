@@ -242,7 +242,11 @@ def load_account_settings(username):
     # Second, check for default settings (for demo accounts on Render/cloud)
     defaults_file = f'config/defaults/{username}/settings.json'
     if os.path.exists(defaults_file):
-        print(f"[CONFIG] Loading default settings for '{username}' from {defaults_file}")
+        # Only log once per session to reduce spam
+        log_key = f'_logged_settings_{username}'
+        if not getattr(load_account_settings, log_key, False):
+            print(f"[CONFIG] Using default settings for '{username}'")
+            setattr(load_account_settings, log_key, True)
         with open(defaults_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
@@ -7525,6 +7529,21 @@ def pull_and_restart():
         
         print("[AUTO-UPDATE] Pulling updates...")
         
+        # Remove the restart flag file FIRST (it blocks git operations)
+        restart_flag = os.path.join(repo_path, 'config', '.restart_requested')
+        if os.path.exists(restart_flag):
+            try:
+                os.remove(restart_flag)
+                print("[AUTO-UPDATE] Removed old restart flag")
+            except:
+                pass
+        
+        # Clean up any untracked files in config/ that might block reset
+        subprocess.run(
+            ['git', 'clean', '-f', 'config/'],
+            cwd=repo_path, capture_output=True, timeout=10
+        )
+        
         # Save local analytics before reset (so we don't lose data)
         analytics_backup = {}
         analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
@@ -7532,6 +7551,16 @@ def pull_and_restart():
             try:
                 with open(af, 'r', encoding='utf-8') as f:
                     analytics_backup[af] = f.read()
+            except:
+                pass
+        
+        # Also backup instance.json (local device config - shouldn't be in git)
+        instance_file = os.path.join(repo_path, 'config', 'instance.json')
+        instance_backup = None
+        if os.path.exists(instance_file):
+            try:
+                with open(instance_file, 'r', encoding='utf-8') as f:
+                    instance_backup = f.read()
             except:
                 pass
         
@@ -7552,6 +7581,15 @@ def pull_and_restart():
             try:
                 with open(af, 'w', encoding='utf-8') as f:
                     f.write(content)
+            except:
+                pass
+        
+        # Restore instance.json (local device config)
+        if instance_backup:
+            try:
+                os.makedirs(os.path.dirname(instance_file), exist_ok=True)
+                with open(instance_file, 'w', encoding='utf-8') as f:
+                    f.write(instance_backup)
             except:
                 pass
         
