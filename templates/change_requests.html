@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=0.35, maximum-scale=2.0, user-scalable=yes">
+    <title>Change Requests - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green), #2ea043);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #da3633);
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .pending-badge {
+            background: var(--accent-orange);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        
+        /* Sections */
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 16px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* Request Cards */
+        .request-list {
+            padding: 16px;
+        }
+        
+        .request-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.15s;
+        }
+        
+        .request-card:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .request-info {
+            flex: 1;
+        }
+        
+        .request-type {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-purple);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .request-description {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .request-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .request-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .request-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+        
+        /* Changes Detail */
+        .changes-detail {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .changes-detail-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .change-item {
+            display: flex;
+            margin-bottom: 6px;
+        }
+        
+        .change-key {
+            color: var(--accent-blue);
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        .change-value {
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--accent-orange);
+        }
+        
+        .status-approved {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .status-denied {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--accent-red);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state-text {
+            font-size: 1.1rem;
+        }
+        
+        /* Review note input */
+        .review-note-input {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            display: none;
+        }
+        
+        .review-note-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .request-card.reviewing .review-note-input {
+            display: block;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            border-color: var(--accent-green);
+        }
+        
+        .toast.error {
+            border-color: var(--accent-red);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <div class="header-title">
+                📋 Change Requests
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="/admin/agent" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <h1 class="page-title">
+            Pending Approvals
+            {% if pending_requests %}
+            <span class="pending-badge">{{ pending_requests|length }} pending</span>
+            {% endif %}
+        </h1>
+        
+        <!-- Pending Requests Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">⏳ Awaiting Your Review</div>
+            </div>
+            <div class="request-list">
+                {% if pending_requests %}
+                    {% for req in pending_requests %}
+                    <div class="request-card" data-id="{{ req.id }}">
+                        <div class="request-header">
+                            <div class="request-info">
+                                <div class="request-type">{{ req.type | replace('_', ' ') }}</div>
+                                <div class="request-description">{{ req.description }}</div>
+                                <div class="request-meta">
+                                    <span>👤 {{ req.requested_by }}</span>
+                                    <span>🕐 {{ req.requested_at[:16] | replace('T', ' ') }}</span>
+                                    {% if req.tour_key %}
+                                    <span>🎫 {{ req.tour_key }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="request-actions">
+                                <button class="btn btn-primary" onclick="approveRequest('{{ req.id }}')">
+                                    ✓ Approve
+                                </button>
+                                <button class="btn btn-danger" onclick="denyRequest('{{ req.id }}')">
+                                    ✕ Deny
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% if req.changes %}
+                        <div class="changes-detail">
+                            <div class="changes-detail-title">Requested Changes</div>
+                            {% for key, value in req.changes.items() %}
+                                {% if value %}
+                                <div class="change-item">
+                                    <span class="change-key">{{ key }}:</span>
+                                    <span class="change-value">{{ value }}</span>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <input type="text" class="review-note-input" placeholder="Add a note (optional)...">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <div class="empty-state-text">No pending requests - you're all caught up!</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Recent History Section -->
+        {% if recent_requests %}
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">📜 Recent History</div>
+            </div>
+            <div class="request-list">
+                {% for req in recent_requests %}
+                <div class="request-card" style="opacity: 0.8;">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <div class="request-type">{{ req.type | replace('_', ' ') }}</div>
+                            <div class="request-description">{{ req.description }}</div>
+                            <div class="request-meta">
+                                <span>👤 {{ req.requested_by }}</span>
+                                <span>🕐 {{ req.requested_at[:16] | replace('T', ' ') }}</span>
+                                {% if req.reviewed_by %}
+                                <span>✓ Reviewed by {{ req.reviewed_by }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ req.status }}">
+                            {{ req.status }}
+                        </span>
+                    </div>
+                    {% if req.review_note %}
+                    <div class="changes-detail" style="margin-top: 8px;">
+                        <span style="color: var(--text-secondary);">Note:</span> {{ req.review_note }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+    
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+    
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        async function approveRequest(requestId) {
+            const card = document.querySelector(`[data-id="${requestId}"]`);
+            const noteInput = card.querySelector('.review-note-input');
+            const note = noteInput ? noteInput.value : '';
+            
+            try {
+                const response = await fetch(`/admin/api/change-requests/${requestId}/approve`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ note })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ Changes approved and applied!', 'success');
+                    card.style.opacity = '0.5';
+                    card.style.pointerEvents = 'none';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('❌ ' + (data.message || 'Failed to approve'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Network error', 'error');
+                console.error(error);
+            }
+        }
+        
+        async function denyRequest(requestId) {
+            const card = document.querySelector(`[data-id="${requestId}"]`);
+            card.classList.add('reviewing');
+            
+            const noteInput = card.querySelector('.review-note-input');
+            noteInput.focus();
+            noteInput.placeholder = 'Reason for denial (press Enter to submit)...';
+            
+            noteInput.onkeydown = async (e) => {
+                if (e.key === 'Enter') {
+                    const note = noteInput.value;
+                    
+                    try {
+                        const response = await fetch(`/admin/api/change-requests/${requestId}/deny`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ note })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            showToast('Request denied', 'success');
+                            card.style.opacity = '0.5';
+                            card.style.pointerEvents = 'none';
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showToast('❌ ' + (data.message || 'Failed'), 'error');
+                        }
+                    } catch (error) {
+                        showToast('❌ Network error', 'error');
+                        console.error(error);
+                    }
+                }
+            };
+        }
+    </script>
+</body>
+</html>
+

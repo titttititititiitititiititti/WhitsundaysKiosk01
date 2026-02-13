@@ -348,6 +348,202 @@ def save_account_settings(username, settings, sync_to_git=True):
             json.dump(settings, f, indent=2, ensure_ascii=False)
         print(f"[CONFIG SYNC] Saved {username} settings to git-tracked location")
 
+# ============================================================================
+# CHANGE REQUEST SYSTEM - Agents request changes, admin approves/denies
+# ============================================================================
+
+PENDING_CHANGES_FILE = 'config/pending_changes.json'
+ADMIN_USERS = ['bailey']  # Users who can approve/deny requests
+
+def load_pending_changes():
+    """Load all pending change requests"""
+    if os.path.exists(PENDING_CHANGES_FILE):
+        try:
+            with open(PENDING_CHANGES_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {'requests': []}
+    return {'requests': []}
+
+def save_pending_changes(data):
+    """Save pending change requests"""
+    os.makedirs(os.path.dirname(PENDING_CHANGES_FILE), exist_ok=True)
+    with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+def create_change_request(requested_by, change_type, description, changes_data, tour_key=None):
+    """Create a new change request for admin approval"""
+    data = load_pending_changes()
+    
+    request_id = f"req_{uuid.uuid4().hex[:8]}_{int(time.time())}"
+    
+    new_request = {
+        'id': request_id,
+        'requested_by': requested_by,
+        'requested_at': datetime.now().isoformat(),
+        'type': change_type,  # 'tour_update', 'tour_toggle', 'settings_change', etc.
+        'description': description,
+        'tour_key': tour_key,
+        'changes': changes_data,  # The actual changes to apply
+        'status': 'pending',  # pending, approved, denied
+        'reviewed_by': None,
+        'reviewed_at': None,
+        'review_note': None
+    }
+    
+    data['requests'].append(new_request)
+    save_pending_changes(data)
+    
+    print(f"[CHANGE REQUEST] New request {request_id} from {requested_by}: {description}")
+    return request_id
+
+def get_pending_requests(status='pending'):
+    """Get all requests with a specific status"""
+    data = load_pending_changes()
+    if status == 'all':
+        return data['requests']
+    return [r for r in data['requests'] if r.get('status') == status]
+
+def get_request_by_id(request_id):
+    """Get a specific request by ID"""
+    data = load_pending_changes()
+    for req in data['requests']:
+        if req['id'] == request_id:
+            return req
+    return None
+
+def approve_change_request(request_id, reviewed_by, note=None):
+    """Approve a change request and apply the changes"""
+    data = load_pending_changes()
+    
+    for req in data['requests']:
+        if req['id'] == request_id and req['status'] == 'pending':
+            # Apply the changes based on type
+            success = apply_approved_changes(req)
+            
+            if success:
+                req['status'] = 'approved'
+                req['reviewed_by'] = reviewed_by
+                req['reviewed_at'] = datetime.now().isoformat()
+                req['review_note'] = note
+                save_pending_changes(data)
+                
+                # Sync to git so kiosks get the update
+                git_sync_changes(f"Approved change: {req['description']}")
+                
+                print(f"[CHANGE REQUEST] Approved {request_id} by {reviewed_by}")
+                return True, "Changes approved and applied"
+            else:
+                return False, "Failed to apply changes"
+    
+    return False, "Request not found or already processed"
+
+def deny_change_request(request_id, reviewed_by, note=None):
+    """Deny a change request"""
+    data = load_pending_changes()
+    
+    for req in data['requests']:
+        if req['id'] == request_id and req['status'] == 'pending':
+            req['status'] = 'denied'
+            req['reviewed_by'] = reviewed_by
+            req['reviewed_at'] = datetime.now().isoformat()
+            req['review_note'] = note
+            save_pending_changes(data)
+            
+            print(f"[CHANGE REQUEST] Denied {request_id} by {reviewed_by}")
+            return True, "Request denied"
+    
+    return False, "Request not found or already processed"
+
+def apply_approved_changes(request):
+    """Apply the changes from an approved request"""
+    try:
+        change_type = request['type']
+        changes = request['changes']
+        username = request['requested_by']
+        tour_key = request.get('tour_key')
+        
+        if change_type == 'tour_toggle':
+            # Enable/disable a tour
+            settings = load_account_settings(username)
+            enabled_tours = settings.get('enabled_tours', [])
+            
+            if changes.get('enabled'):
+                if tour_key not in enabled_tours:
+                    enabled_tours.append(tour_key)
+            else:
+                if tour_key in enabled_tours:
+                    enabled_tours.remove(tour_key)
+            
+            settings['enabled_tours'] = enabled_tours
+            save_account_settings(username, settings)
+            
+        elif change_type == 'tour_update':
+            # Update tour settings (booking URL, name override, etc.)
+            settings = load_account_settings(username)
+            if 'tour_overrides' not in settings:
+                settings['tour_overrides'] = {}
+            
+            if tour_key not in settings['tour_overrides']:
+                settings['tour_overrides'][tour_key] = {}
+            
+            # Apply each change
+            for key, value in changes.items():
+                if value:  # Only apply non-empty values
+                    settings['tour_overrides'][tour_key][key] = value
+                elif key in settings['tour_overrides'][tour_key]:
+                    del settings['tour_overrides'][tour_key][key]
+            
+            save_account_settings(username, settings)
+            
+        elif change_type == 'tour_promotion':
+            # Change tour promotion status
+            settings = load_account_settings(username)
+            promoted = settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
+            
+            new_level = changes.get('level', '')
+            
+            # Remove from all promotion levels first
+            for level in ['popular', 'featured', 'best_value']:
+                if tour_key in promoted.get(level, []):
+                    promoted[level].remove(tour_key)
+            
+            # Add to new level if specified
+            if new_level and new_level in promoted:
+                promoted[new_level].append(tour_key)
+            
+            settings['promoted_tours'] = promoted
+            save_account_settings(username, settings)
+            
+        elif change_type == 'kiosk_settings':
+            # Update kiosk settings
+            settings = load_account_settings(username)
+            kiosk = settings.get('kiosk_settings', {})
+            
+            for key, value in changes.items():
+                kiosk[key] = value
+            
+            settings['kiosk_settings'] = kiosk
+            save_account_settings(username, settings)
+        
+        else:
+            print(f"[CHANGE REQUEST] Unknown change type: {change_type}")
+            return False
+        
+        return True
+        
+    except Exception as e:
+        print(f"[CHANGE REQUEST] Error applying changes: {e}")
+        return False
+
+def is_admin_user(username):
+    """Check if user is an admin who can approve changes"""
+    return username in ADMIN_USERS
+
+def requires_approval(username):
+    """Check if a user's changes require approval (non-admin agents)"""
+    return username not in ADMIN_USERS
+
 def is_tour_enabled_for_account(username, tour_key):
     """Check if a tour is enabled for a specific account"""
     settings = load_account_settings(username)
@@ -1890,11 +2086,30 @@ def update_account_tours():
     username = session.get('user')
     data = request.get_json()
     
-    settings = load_account_settings(username)
-    
     action = data.get('action')
     tour_key = data.get('tour_key')
+    tour_name = data.get('tour_name', tour_key)
     
+    # Check if user requires approval for changes
+    if requires_approval(username):
+        # Create a change request instead of applying directly
+        description = f"{'Enable' if action == 'enable' else 'Disable'} tour: {tour_name}"
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='tour_toggle',
+            description=description,
+            changes_data={'enabled': action == 'enable'},
+            tour_key=tour_key
+        )
+        return jsonify({
+            'success': True, 
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': f'Change request submitted for approval'
+        })
+    
+    # Admin user - apply directly
+    settings = load_account_settings(username)
     enabled_tours = settings.get('enabled_tours', [])
     
     if action == 'enable' and tour_key not in enabled_tours:
@@ -1918,19 +2133,53 @@ def save_account_tour_override():
     data = request.get_json()
     
     tour_key = data.get('tour_key')
+    tour_name = data.get('tour_name', tour_key)
     if not tour_key:
         return jsonify({'error': 'No tour key provided'}), 400
     
+    changes = {
+        'booking_url': data.get('booking_url', ''),
+        'widget_html': data.get('widget_html', ''),
+        'price_override': data.get('price_override', ''),
+        'notes': data.get('notes', ''),
+    }
+    
+    # Check if user requires approval for changes
+    if requires_approval(username):
+        # Create a change request instead of applying directly
+        # Build description of what's changing
+        change_parts = []
+        if changes['booking_url']:
+            change_parts.append('booking URL')
+        if changes['widget_html']:
+            change_parts.append('widget HTML')
+        if changes['price_override']:
+            change_parts.append(f'price to {changes["price_override"]}')
+        
+        description = f"Update {tour_name}: {', '.join(change_parts) if change_parts else 'settings'}"
+        
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='tour_update',
+            description=description,
+            changes_data=changes,
+            tour_key=tour_key
+        )
+        return jsonify({
+            'success': True,
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': 'Change request submitted for approval'
+        })
+    
+    # Admin user - apply directly
     settings = load_account_settings(username)
     
     if 'tour_overrides' not in settings:
         settings['tour_overrides'] = {}
     
     settings['tour_overrides'][tour_key] = {
-        'booking_url': data.get('booking_url', ''),
-        'widget_html': data.get('widget_html', ''),
-        'price_override': data.get('price_override', ''),
-        'notes': data.get('notes', ''),
+        **changes,
         'last_updated': datetime.now().isoformat()
     }
     
@@ -1940,6 +2189,95 @@ def save_account_tour_override():
     git_sync_changes(f"Updated tour override: {tour_key}")
     
     return jsonify({'success': True})
+
+# ============================================================================
+# CHANGE REQUEST ADMIN API - Review, approve, deny requests
+# ============================================================================
+
+@app.route('/admin/change-requests')
+@login_required
+def change_requests_page():
+    """Admin page to review pending change requests"""
+    username = session.get('user')
+    
+    if not is_admin_user(username):
+        return "Access denied - admin only", 403
+    
+    pending = get_pending_requests('pending')
+    recent_reviewed = [r for r in get_pending_requests('all') 
+                       if r['status'] in ['approved', 'denied']][-20:]  # Last 20
+    
+    return render_template('change_requests.html',
+                          pending_requests=pending,
+                          recent_requests=recent_reviewed[::-1])  # Newest first
+
+@app.route('/admin/api/change-requests')
+@login_required
+def api_get_change_requests():
+    """API to get pending change requests"""
+    username = session.get('user')
+    
+    if not is_admin_user(username):
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    status = request.args.get('status', 'pending')
+    requests = get_pending_requests(status)
+    
+    return jsonify({
+        'success': True,
+        'requests': requests,
+        'count': len(requests)
+    })
+
+@app.route('/admin/api/change-requests/<request_id>/approve', methods=['POST'])
+@login_required
+def api_approve_request(request_id):
+    """API to approve a change request"""
+    username = session.get('user')
+    
+    if not is_admin_user(username):
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    data = request.get_json() or {}
+    note = data.get('note', '')
+    
+    success, message = approve_change_request(request_id, username, note)
+    
+    return jsonify({
+        'success': success,
+        'message': message
+    })
+
+@app.route('/admin/api/change-requests/<request_id>/deny', methods=['POST'])
+@login_required
+def api_deny_request(request_id):
+    """API to deny a change request"""
+    username = session.get('user')
+    
+    if not is_admin_user(username):
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    data = request.get_json() or {}
+    note = data.get('note', '')
+    
+    success, message = deny_change_request(request_id, username, note)
+    
+    return jsonify({
+        'success': success,
+        'message': message
+    })
+
+@app.route('/admin/api/change-requests/pending-count')
+@login_required  
+def api_pending_count():
+    """Get count of pending requests (for notification badge)"""
+    username = session.get('user')
+    
+    if not is_admin_user(username):
+        return jsonify({'count': 0})
+    
+    pending = get_pending_requests('pending')
+    return jsonify({'count': len(pending)})
 
 # Store password reset tokens in memory (with expiration)
 password_reset_tokens = {}  # {username: {'code': '123456', 'expires': datetime}}
@@ -2284,6 +2622,7 @@ def toggle_tour_visibility():
     """Toggle a tour's visibility (enabled/disabled) - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
+    tour_name = data.get('tour_name', tour_key)
     enabled = data.get('enabled', True)
     
     if not tour_key:
@@ -2294,6 +2633,24 @@ def toggle_tour_visibility():
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
+    # Check if user requires approval for changes
+    if requires_approval(username):
+        description = f"{'Show' if enabled else 'Hide'} tour: {tour_name}"
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='tour_toggle',
+            description=description,
+            changes_data={'enabled': enabled},
+            tour_key=tour_key
+        )
+        return jsonify({
+            'success': True,
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': f'Change request submitted for approval'
+        })
+    
+    # Admin user - apply directly
     account_settings = load_account_settings(username)
     enabled_tours = account_settings.get('enabled_tours', [])
     
@@ -2316,6 +2673,7 @@ def set_tour_promotion():
     """Set or remove a tour's promotion level - saves to account settings"""
     data = request.get_json()
     tour_key = data.get('tour_key')
+    tour_name = data.get('tour_name', tour_key)
     level = data.get('level')  # 'popular', 'featured', 'best_value', or None to remove
     
     if not tour_key:
@@ -2326,6 +2684,25 @@ def set_tour_promotion():
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
+    # Check if user requires approval for changes
+    if requires_approval(username):
+        level_display = level.replace('_', ' ').title() if level else 'None'
+        description = f"Set promotion for {tour_name}: {level_display}"
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='tour_promotion',
+            description=description,
+            changes_data={'level': level},
+            tour_key=tour_key
+        )
+        return jsonify({
+            'success': True,
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': 'Change request submitted for approval'
+        })
+    
+    # Admin user - apply directly
     account_settings = load_account_settings(username)
     promoted = account_settings.get('promoted_tours', {'popular': [], 'featured': [], 'best_value': []})
     
@@ -2583,6 +2960,57 @@ def save_tour_settings(tour_key):
     if not username:
         return jsonify({'error': 'Not logged in'}), 401
     
+    # Build changes data
+    changes = {}
+    if 'booking_button_url' in data:
+        changes['booking_button_url'] = data['booking_button_url'].strip()
+    if 'hero_widget_html' in data:
+        changes['hero_widget_html'] = data['hero_widget_html'].strip()
+    if 'notes' in data:
+        changes['notes'] = data['notes'].strip()
+    if 'button_overlay' in data:
+        overlay = data['button_overlay']
+        if overlay and overlay.get('width') and float(overlay.get('width', 0)) > 0:
+            changes['button_overlay'] = {
+                'top': str(overlay.get('top', 0)),
+                'left': str(overlay.get('left', 0)),
+                'width': str(overlay.get('width', 0)),
+                'height': str(overlay.get('height', 0))
+            }
+        else:
+            changes['button_overlay'] = None  # Clear overlay
+    
+    # Check if user requires approval for changes
+    if requires_approval(username):
+        # Build description of what's changing
+        tour_name = data.get('tour_name', tour_key)
+        change_parts = []
+        if changes.get('booking_button_url'):
+            change_parts.append('booking URL')
+        if changes.get('hero_widget_html'):
+            change_parts.append('widget HTML')
+        if changes.get('button_overlay'):
+            change_parts.append('button overlay')
+        if changes.get('notes'):
+            change_parts.append('notes')
+        
+        description = f"Update {tour_name}: {', '.join(change_parts) if change_parts else 'settings'}"
+        
+        request_id = create_change_request(
+            requested_by=username,
+            change_type='tour_update',
+            description=description,
+            changes_data=changes,
+            tour_key=tour_key
+        )
+        return jsonify({
+            'success': True,
+            'pending_approval': True,
+            'request_id': request_id,
+            'message': 'Change request submitted for approval'
+        })
+    
+    # Admin user - apply directly
     account_settings = load_account_settings(username)
     if 'tour_overrides' not in account_settings:
         account_settings['tour_overrides'] = {}
@@ -2590,28 +3018,16 @@ def save_tour_settings(tour_key):
     # Get existing or create new
     tour_settings = account_settings['tour_overrides'].get(tour_key, {})
     
-    # Update fields (only if provided)
-    if 'booking_button_url' in data:
-        tour_settings['booking_button_url'] = data['booking_button_url'].strip()
-    if 'hero_widget_html' in data:
-        tour_settings['hero_widget_html'] = data['hero_widget_html'].strip()
-    if 'notes' in data:
-        tour_settings['notes'] = data['notes'].strip()
-    if 'button_overlay' in data:
-        overlay = data['button_overlay']
-        # Validate overlay data
-        if overlay and overlay.get('width') and float(overlay.get('width', 0)) > 0:
-            tour_settings['button_overlay'] = {
-                'top': str(overlay.get('top', 0)),
-                'left': str(overlay.get('left', 0)),
-                'width': str(overlay.get('width', 0)),
-                'height': str(overlay.get('height', 0))
-            }
-            print(f"[OVERLAY] Saved button overlay for {tour_key}: {tour_settings['button_overlay']}")
-        else:
-            # Clear overlay if empty/invalid
-            if 'button_overlay' in tour_settings:
+    # Apply changes
+    for key, value in changes.items():
+        if key == 'button_overlay':
+            if value:
+                tour_settings['button_overlay'] = value
+                print(f"[OVERLAY] Saved button overlay for {tour_key}: {value}")
+            elif 'button_overlay' in tour_settings:
                 del tour_settings['button_overlay']
+        elif value:
+            tour_settings[key] = value
     
     # Clean up empty settings
     tour_settings = {k: v for k, v in tour_settings.items() if v}
