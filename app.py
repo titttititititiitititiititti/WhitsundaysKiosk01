@@ -7461,9 +7461,12 @@ def check_git_updates():
         
         # Only update if origin/main is DIFFERENT from our HEAD
         if head_before == origin_hash:
-            print("[AUTO-UPDATE] Already up to date (same commit)", flush=True)
+            print(f"[AUTO-UPDATE] Already up to date (HEAD={head_before[:8]})", flush=True)
             _update_available = False
+            api_check_update._notified = False  # Reset notification flag
             return False
+        
+        print(f"[AUTO-UPDATE] HEAD={head_before[:8]} vs origin/main={origin_hash[:8]}", flush=True)
         
         # Check if we're behind origin/main (not just diverged)
         result = subprocess.run(
@@ -7493,11 +7496,13 @@ def check_git_updates():
             # We're strictly behind - safe to fast-forward
             print(f"[AUTO-UPDATE] ✅ {commits_behind} new commit(s) available!", flush=True)
             _update_available = True
+            api_check_update._notified = False  # Reset so frontend gets notified
             return True
         elif commits_behind > 0 and commits_ahead > 0:
             # Diverged history - force reset to origin to get latest
             print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind. Will reset to origin.", flush=True)
             _update_available = True
+            api_check_update._notified = False  # Reset so frontend gets notified
             return True
         else:
             print("[AUTO-UPDATE] No new updates", flush=True)
@@ -7630,9 +7635,20 @@ def auto_update_loop():
 @app.route('/api/check-update')
 def api_check_update():
     """Endpoint for browser to check if updates are pending"""
-    global _update_available
+    global _update_available, _update_notified
+    
+    # Only tell frontend about update ONCE per cycle
+    # This prevents the notification from showing repeatedly
+    if _update_available and not getattr(api_check_update, '_notified', False):
+        api_check_update._notified = True
+        return jsonify({
+            'update_available': True,
+            'last_check': _last_update_check,
+            'version': APP_VERSION
+        })
+    
     return jsonify({
-        'update_available': _update_available,
+        'update_available': False,
         'last_check': _last_update_check,
         'version': APP_VERSION
     })
