@@ -17676,6 +17676,7 @@
     const Analytics = {
       sessionId: null,
       initialized: false,
+      heartbeatInterval: null,
       
       // Initialize analytics session
       async init() {
@@ -17686,6 +17687,7 @@
         if (existingSession) {
           this.sessionId = existingSession;
           this.initialized = true;
+          this.startHeartbeat();
           console.log('📊 Analytics: Resumed session', this.sessionId);
           return;
         }
@@ -17701,11 +17703,53 @@
             this.sessionId = data.session_id;
             sessionStorage.setItem('analytics_session_id', this.sessionId);
             this.initialized = true;
+            this.startHeartbeat();
             console.log('📊 Analytics: Started session', this.sessionId);
           }
         } catch (error) {
           console.error('📊 Analytics: Failed to start session', error);
         }
+      },
+      
+      // Send heartbeat to indicate active session (prevents updates during use)
+      startHeartbeat() {
+        if (this.heartbeatInterval) return;
+        
+        // Send initial heartbeat
+        this.sendHeartbeat();
+        
+        // Then every 15 seconds
+        this.heartbeatInterval = setInterval(() => {
+          this.sendHeartbeat();
+        }, 15000);
+      },
+      
+      stopHeartbeat() {
+        if (this.heartbeatInterval) {
+          clearInterval(this.heartbeatInterval);
+          this.heartbeatInterval = null;
+        }
+      },
+      
+      async sendHeartbeat() {
+        if (!this.sessionId) return;
+        try {
+          fetch('/api/session/heartbeat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: this.sessionId })
+          }).catch(() => {}); // Silently fail
+        } catch (e) {}
+      },
+      
+      // Notify server that session ended (safe to update)
+      async notifySessionEnd() {
+        try {
+          fetch('/api/session/end', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          }).catch(() => {});
+        } catch (e) {}
       },
       
       // Log an event
@@ -17763,6 +17807,8 @@
       
       endSession() {
         this.logEvent('session_end', {});
+        this.stopHeartbeat();
+        this.notifySessionEnd();
         sessionStorage.removeItem('analytics_session_id');
         this.sessionId = null;
         this.initialized = false;

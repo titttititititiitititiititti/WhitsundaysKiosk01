@@ -960,21 +960,42 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
     save_analytics(analytics, account)
     return session
 
+def is_meaningful_session(session):
+    """Check if a session has meaningful user activity (not just idle timeout)"""
+    # Check for any meaningful events (not just session_start/session_end)
+    meaningful_event_types = {
+        'tour_view', 'tour_viewed', 'tour_click', 'tour_detail',
+        'mode_select', 'mode_selected', 'browse_all', 'quick_decision', 'ai_mode',
+        'chat_message', 'chat_sent',
+        'qr_code_generated', 'qr_tour_visit',
+        'book_now_clicked', 'booking_click', 'send_to_phone',
+        'language_select', 'language_selected',
+        'swipe', 'card_swipe', 'like', 'dislike'
+    }
+    
+    events = session.get('events', [])
+    for event in events:
+        event_type = event.get('type', '')
+        if event_type in meaningful_event_types:
+            return True
+    
+    # Also check if tours were viewed or chat messages sent
+    if len(session.get('tours_viewed', [])) > 0:
+        return True
+    if len(session.get('chat_messages', [])) > 0:
+        return True
+    
+    return False
+
 def get_analytics_summary(account=None):
     """Get summary statistics from analytics data for an account"""
     account = account or DEFAULT_ANALYTICS_ACCOUNT
     analytics = load_analytics(account)
     all_sessions = analytics.get('sessions', [])
     
-    # Filter out meaningless sessions (0 seconds or no real activity)
-    # A meaningful session must have: duration > 5 seconds OR viewed at least 1 tour OR sent chat messages
-    MIN_SESSION_DURATION = 5  # seconds
-    sessions = [
-        s for s in all_sessions 
-        if s.get('duration_seconds', 0) >= MIN_SESSION_DURATION 
-        or len(s.get('tours_viewed', [])) > 0 
-        or len(s.get('chat_messages', [])) > 0
-    ]
+    # Filter out meaningless sessions - must have REAL user activity
+    # Not just session_start + session_end from idle timeout
+    sessions = [s for s in all_sessions if is_meaningful_session(s)]
     
     if not sessions:
         return {
@@ -7316,6 +7337,76 @@ def get_session_details(session_id):
         return jsonify({'error': str(e)}), 500
 
 # ============================================================================
+# ACTIVE SESSION TRACKING - Don't interrupt customers during updates
+# ============================================================================
+
+_active_session_id = None
+_active_session_started = None
+_session_last_activity = None
+
+@app.route('/api/session/heartbeat', methods=['POST'])
+def session_heartbeat():
+    """Called by frontend to indicate user is actively using the kiosk"""
+    global _active_session_id, _active_session_started, _session_last_activity
+    
+    data = request.get_json() or {}
+    session_id = data.get('session_id')
+    
+    if session_id:
+        if _active_session_id != session_id:
+            _active_session_id = session_id
+            _active_session_started = time.time()
+        _session_last_activity = time.time()
+    
+    return jsonify({'success': True, 'session_id': _active_session_id})
+
+@app.route('/api/session/end', methods=['POST'])
+def session_end_notification():
+    """Called when user returns to home/splash screen (session ended)"""
+    global _active_session_id, _active_session_started, _session_last_activity
+    
+    _active_session_id = None
+    _active_session_started = None
+    _session_last_activity = None
+    
+    return jsonify({'success': True, 'message': 'Session ended'})
+
+@app.route('/api/session/status')
+def session_status():
+    """Check if there's an active session (for admin/debug)"""
+    global _active_session_id, _active_session_started, _session_last_activity
+    
+    is_active = False
+    idle_seconds = None
+    
+    if _active_session_id and _session_last_activity:
+        idle_seconds = time.time() - _session_last_activity
+        # Consider session active if activity in last 60 seconds
+        is_active = idle_seconds < 60
+    
+    return jsonify({
+        'active': is_active,
+        'session_id': _active_session_id if is_active else None,
+        'idle_seconds': round(idle_seconds, 1) if idle_seconds else None,
+        'started_at': _active_session_started,
+        'safe_to_update': not is_active
+    })
+
+def is_safe_to_update():
+    """Check if it's safe to apply updates (no active customer session)"""
+    global _active_session_id, _session_last_activity
+    
+    if not _active_session_id:
+        return True
+    
+    if not _session_last_activity:
+        return True
+    
+    # Consider safe if no activity in last 30 seconds
+    idle_time = time.time() - _session_last_activity
+    return idle_time > 30
+
+# ============================================================================
 # AUTO-UPDATE SYSTEM - Automatically pull from GitHub and restart
 # ============================================================================
 
@@ -7508,10 +7599,25 @@ def auto_update_loop():
             if AUTO_UPDATE_ENABLED:
                 print(f"[AUTO-UPDATE] Check #{check_count}...", flush=True)
                 if check_git_updates():
-                    print("[AUTO-UPDATE] Updates found! Pulling and restarting...", flush=True)
-                    # Give browsers 5 seconds to receive the update notification
-                    time.sleep(5)
-                    pull_and_restart()
+                    # Check if there's an active customer session
+                    if not is_safe_to_update():
+                        print("[AUTO-UPDATE] ⏳ Updates found but customer is active - waiting...", flush=True)
+                        # Wait and check again in 30 seconds
+                        for _ in range(6):  # Max wait 3 minutes
+                            time.sleep(30)
+                            if is_safe_to_update():
+                                break
+                            print("[AUTO-UPDATE] ⏳ Still waiting for customer session to end...", flush=True)
+                    
+                    # Final check before updating
+                    if is_safe_to_update():
+                        print("[AUTO-UPDATE] ✅ Safe to update - pulling and restarting...", flush=True)
+                        # Give browsers 5 seconds to receive the update notification
+                        time.sleep(5)
+                        pull_and_restart()
+                    else:
+                        print("[AUTO-UPDATE] ⚠️ Customer still active after 3 min - will try again next cycle", flush=True)
+                        _update_available = True  # Keep flag set for next cycle
             
             time.sleep(AUTO_UPDATE_INTERVAL)
             
@@ -7600,18 +7706,57 @@ def pull_analytics_only(account=None):
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Pull the latest analytics for the logged-in user's account"""
+    """Push local analytics to git, then pull latest (for syncing between devices)"""
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
-        success = pull_analytics_only(username)
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        analytics_file = get_analytics_file(username)
         
-        if success:
-            return jsonify({'success': True, 'message': f'Analytics refreshed for {username}'})
-        else:
-            return jsonify({'success': True, 'message': 'No remote analytics found (may be up to date)'})
+        pushed = False
+        pulled = False
+        
+        # First, PUSH local analytics to git (if we have any)
+        if os.path.exists(analytics_file):
+            try:
+                # Add and commit analytics
+                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
+                commit_result = subprocess.run(
+                    ['git', 'commit', '-m', f'Analytics sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+                    cwd=repo_path, capture_output=True, text=True, timeout=30
+                )
+                
+                if 'nothing to commit' not in commit_result.stdout and commit_result.returncode == 0:
+                    # Push to origin
+                    push_result = subprocess.run(
+                        ['git', 'push', 'origin', 'main'],
+                        cwd=repo_path, capture_output=True, text=True, timeout=60
+                    )
+                    if push_result.returncode == 0:
+                        pushed = True
+                        print(f"[ANALYTICS] Pushed local analytics for {username}")
+            except Exception as e:
+                print(f"[ANALYTICS] Push error: {e}")
+        
+        # Then, PULL latest analytics from remote (might have data from other device)
+        pulled = pull_analytics_only(username)
+        
+        message = []
+        if pushed:
+            message.append('Analytics pushed to cloud')
+        if pulled:
+            message.append('Latest analytics pulled')
+        if not pushed and not pulled:
+            message.append('Analytics already synced')
+        
+        return jsonify({
+            'success': True, 
+            'message': ' | '.join(message),
+            'pushed': pushed,
+            'pulled': pulled
+        })
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

@@ -283,11 +283,14 @@
     <div class="header">
         <h1>📊 Kiosk Analytics</h1>
         <div class="header-actions">
+            <span id="kiosk-status" style="padding: 8px 16px; border-radius: 20px; font-weight: 600; background: #666;">
+                ⏳ Checking...
+            </span>
             <span style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 16px; border-radius: 20px; font-weight: 600;">
                 👤 {{ account or 'bailey' }}
             </span>
             <a href="/admin/agent" class="btn btn-secondary">← Back to Dashboard</a>
-            <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh</button>
+            <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh & Sync</button>
         </div>
     </div>
     
@@ -525,7 +528,7 @@
         async function refreshAnalytics() {
             const btn = document.getElementById('refresh-btn');
             const originalText = btn.textContent;
-            btn.textContent = '⏳ Pulling from remote...';
+            btn.textContent = '⏳ Syncing analytics...';
             btn.disabled = true;
             
             try {
@@ -533,8 +536,13 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    btn.textContent = '✅ Updated!';
-                    setTimeout(() => location.reload(), 500);
+                    let msg = '✅ ';
+                    if (data.pushed && data.pulled) msg += 'Pushed & Pulled!';
+                    else if (data.pushed) msg += 'Pushed to cloud!';
+                    else if (data.pulled) msg += 'Pulled latest!';
+                    else msg += 'Already synced!';
+                    btn.textContent = msg;
+                    setTimeout(() => location.reload(), 800);
                 } else {
                     btn.textContent = '❌ ' + (data.error || 'Failed');
                     setTimeout(() => {
@@ -551,6 +559,33 @@
                 }, 2000);
             }
         }
+        
+        // Check kiosk session status
+        async function checkKioskStatus() {
+            const statusEl = document.getElementById('kiosk-status');
+            try {
+                const response = await fetch('/api/session/status');
+                const data = await response.json();
+                
+                if (data.active) {
+                    statusEl.style.background = '#e74c3c';
+                    statusEl.innerHTML = '🔴 Customer Active';
+                    statusEl.title = `Session active for ${Math.round(data.idle_seconds || 0)}s idle`;
+                } else {
+                    statusEl.style.background = '#27ae60';
+                    statusEl.innerHTML = '🟢 Kiosk Idle';
+                    statusEl.title = 'Safe to make changes';
+                }
+            } catch (error) {
+                statusEl.style.background = '#666';
+                statusEl.innerHTML = '⚫ Offline';
+                statusEl.title = 'Cannot connect to kiosk';
+            }
+        }
+        
+        // Check status on load and every 10 seconds
+        checkKioskStatus();
+        setInterval(checkKioskStatus, 10000);
     </script>
     
     <style>
