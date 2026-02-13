@@ -129,11 +129,43 @@ _git_sync_lock = threading.Lock()
 _last_git_sync = 0
 GIT_SYNC_COOLDOWN = 5  # Minimum seconds between git syncs
 
+# GitHub token for authenticated push from Render/cloud deployments
+# Set GITHUB_TOKEN environment variable with a Personal Access Token
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
+
+def get_authenticated_remote_url():
+    """Get the remote URL with authentication token embedded (for Render/cloud)"""
+    if not GITHUB_TOKEN:
+        return None
+    
+    try:
+        # Get current origin URL
+        result = subprocess.run(
+            ['git', 'remote', 'get-url', 'origin'],
+            capture_output=True, text=True, cwd=os.getcwd(), timeout=10
+        )
+        origin_url = result.stdout.strip()
+        
+        # Convert https://github.com/user/repo.git to https://token@github.com/user/repo.git
+        if origin_url.startswith('https://github.com/'):
+            # Remove any existing credentials
+            url_without_auth = origin_url.replace('https://', '')
+            if '@' in url_without_auth:
+                url_without_auth = url_without_auth.split('@', 1)[1]
+            return f'https://{GITHUB_TOKEN}@{url_without_auth}'
+        
+        return None
+    except:
+        return None
+
 def git_sync_changes(commit_message="Update tour data"):
     """
     Commit and push changes to git repository.
     This allows connected shop devices to pull updates automatically.
     Runs in a background thread to avoid blocking the response.
+    
+    On Render/cloud: Uses GITHUB_TOKEN env var for authenticated push.
+    On local: Uses stored git credentials.
     """
     def _do_git_sync():
         global _last_git_sync
@@ -173,23 +205,43 @@ def git_sync_changes(commit_message="Update tour data"):
                 cwd=os.getcwd(), capture_output=True
             )
             
-            # Push to all remotes (origin and shop)
-            remotes_result = subprocess.run(
-                ['git', 'remote'],
-                capture_output=True, text=True, cwd=os.getcwd()
-            )
-            remotes = remotes_result.stdout.strip().split('\n')
+            # Push changes
+            # On Render/cloud: use authenticated URL with token
+            # On local: use regular git push with stored credentials
+            auth_url = get_authenticated_remote_url()
             
-            for remote in remotes:
-                if remote:
-                    try:
-                        subprocess.run(
-                            ['git', 'push', remote, 'main'],
-                            cwd=os.getcwd(), capture_output=True, timeout=30
-                        )
-                        print(f"[GIT SYNC] Pushed to {remote}")
-                    except subprocess.TimeoutExpired:
-                        print(f"[GIT SYNC] Push to {remote} timed out")
+            if auth_url:
+                # Use authenticated URL for Render/cloud deployment
+                print("[GIT SYNC] Using authenticated push (GITHUB_TOKEN)")
+                try:
+                    push_result = subprocess.run(
+                        ['git', 'push', auth_url, 'main'],
+                        cwd=os.getcwd(), capture_output=True, text=True, timeout=60
+                    )
+                    if push_result.returncode == 0:
+                        print("[GIT SYNC] Pushed to origin (authenticated)")
+                    else:
+                        print(f"[GIT SYNC] Push failed: {push_result.stderr}")
+                except subprocess.TimeoutExpired:
+                    print("[GIT SYNC] Authenticated push timed out")
+            else:
+                # Local development - push to all remotes with stored credentials
+                remotes_result = subprocess.run(
+                    ['git', 'remote'],
+                    capture_output=True, text=True, cwd=os.getcwd()
+                )
+                remotes = remotes_result.stdout.strip().split('\n')
+                
+                for remote in remotes:
+                    if remote:
+                        try:
+                            subprocess.run(
+                                ['git', 'push', remote, 'main'],
+                                cwd=os.getcwd(), capture_output=True, timeout=30
+                            )
+                            print(f"[GIT SYNC] Pushed to {remote}")
+                        except subprocess.TimeoutExpired:
+                            print(f"[GIT SYNC] Push to {remote} timed out")
                     except Exception as e:
                         print(f"[GIT SYNC] Push to {remote} failed: {e}")
             
