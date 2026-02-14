@@ -1038,6 +1038,7 @@ def load_tour_images(tour, max_images=5, account_username=None):
                         gallery.append(img_url)
         except Exception as e:
             # print(f"[LAZY-IMAGES] Error reading {image_folder}: {e}")  # Disabled for cleaner logs
+            pass  # Silently ignore errors reading image folder
     
     # If we still don't have enough images, just use what we have
     if not gallery and thumb_path:
