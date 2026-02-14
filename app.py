@@ -194,8 +194,23 @@ def git_sync_changes(commit_message="Update tour data"):
                 print("[GIT SYNC] No changes to commit")
                 return
             
+            # Show what files are being changed
+            changed_files = result.stdout.strip().split('\n')
+            print(f"[GIT SYNC] Staging {len(changed_files)} changed file(s):")
+            for line in changed_files[:10]:  # Show first 10
+                if line.strip():
+                    print(f"  - {line.strip()}")
+            if len(changed_files) > 10:
+                print(f"  ... and {len(changed_files) - 10} more")
+            
             # Stage all changes
-            subprocess.run(['git', 'add', '-A'], cwd=os.getcwd(), check=True)
+            add_result = subprocess.run(
+                ['git', 'add', '-A'], 
+                cwd=os.getcwd(), 
+                capture_output=True,
+                text=True,
+                check=True
+            )
             
             # Commit
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -210,8 +225,12 @@ def git_sync_changes(commit_message="Update tour data"):
                 if 'nothing to commit' in commit_result.stdout:
                     print("[GIT SYNC] No changes to commit (already committed?)")
                 else:
-                    print(f"[GIT SYNC] Commit failed: {commit_result.stderr}")
+                    print(f"[GIT SYNC] ❌ Commit failed: {commit_result.stderr}")
+                    if commit_result.stdout:
+                        print(f"[GIT SYNC] Commit stdout: {commit_result.stdout}")
                 return
+            else:
+                print(f"[GIT SYNC] ✅ Committed: {full_message}")
             
             # Push changes
             # On Render/cloud: use authenticated URL with token
