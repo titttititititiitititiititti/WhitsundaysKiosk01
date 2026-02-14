@@ -200,10 +200,18 @@ def git_sync_changes(commit_message="Update tour data"):
             # Commit
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             full_message = f"{commit_message} [{timestamp}]"
-            subprocess.run(
+            commit_result = subprocess.run(
                 ['git', 'commit', '-m', full_message],
-                cwd=os.getcwd(), capture_output=True
+                cwd=os.getcwd(), 
+                capture_output=True,
+                text=True
             )
+            if commit_result.returncode != 0:
+                if 'nothing to commit' in commit_result.stdout:
+                    print("[GIT SYNC] No changes to commit (already committed?)")
+                else:
+                    print(f"[GIT SYNC] Commit failed: {commit_result.stderr}")
+                return
             
             # Push changes
             # On Render/cloud: use authenticated URL with token
@@ -219,9 +227,11 @@ def git_sync_changes(commit_message="Update tour data"):
                         cwd=os.getcwd(), capture_output=True, text=True, timeout=60
                     )
                     if push_result.returncode == 0:
-                        print("[GIT SYNC] Pushed to origin (authenticated)")
+                        print("[GIT SYNC] ✅ Successfully pushed to origin (authenticated)")
                     else:
-                        print(f"[GIT SYNC] Push failed: {push_result.stderr}")
+                        print(f"[GIT SYNC] ❌ Push failed: {push_result.stderr}")
+                        print(f"[GIT SYNC] ❌ Push stdout: {push_result.stdout}")
+                        return  # Don't continue if push failed
                 except subprocess.TimeoutExpired:
                     print("[GIT SYNC] Authenticated push timed out")
             else:
@@ -232,20 +242,32 @@ def git_sync_changes(commit_message="Update tour data"):
                 )
                 remotes = remotes_result.stdout.strip().split('\n')
                 
+                push_success = False
                 for remote in remotes:
                     if remote:
                         try:
-                            subprocess.run(
+                            push_result = subprocess.run(
                                 ['git', 'push', remote, 'main'],
-                                cwd=os.getcwd(), capture_output=True, timeout=30
+                                cwd=os.getcwd(), 
+                                capture_output=True, 
+                                text=True,
+                                timeout=60
                             )
-                            print(f"[GIT SYNC] Pushed to {remote}")
+                            if push_result.returncode == 0:
+                                print(f"[GIT SYNC] ✅ Successfully pushed to {remote}")
+                                push_success = True
+                            else:
+                                print(f"[GIT SYNC] ❌ Push to {remote} failed: {push_result.stderr}")
                         except subprocess.TimeoutExpired:
-                            print(f"[GIT SYNC] Push to {remote} timed out")
+                            print(f"[GIT SYNC] ❌ Push to {remote} timed out")
                         except Exception as e:
-                            print(f"[GIT SYNC] Push to {remote} failed: {e}")
+                            print(f"[GIT SYNC] ❌ Push to {remote} failed: {e}")
+                
+                if not push_success and remotes:
+                    print(f"[GIT SYNC] ⚠️ WARNING: Push failed to all remotes!")
+                    return
             
-            print(f"[GIT SYNC] Changes synced: {commit_message}")
+            print(f"[GIT SYNC] ✅ Changes synced: {commit_message}")
             
         except Exception as e:
             print(f"[GIT SYNC] Error: {e}")
@@ -961,7 +983,7 @@ def load_tour_images(tour, max_images=5, account_username=None):
         # Use placeholder images
         thumb_path = get_random_placeholder_image()
         gallery = get_random_placeholder_gallery(max_images)
-        print(f"[LAZY-IMAGES] {name}: using {len(gallery)} placeholder images")
+        # print(f"[LAZY-IMAGES] {name}: using {len(gallery)} placeholder images")  # Disabled for cleaner logs
         return thumb_path, gallery, True  # True = uses_placeholder_images
     
     # Images enabled - FIRST check if tour already has image_urls from CSV
@@ -991,7 +1013,7 @@ def load_tour_images(tour, max_images=5, account_username=None):
                 elif thumb_path and thumb_path not in gallery:
                     thumb_path = None
             
-            print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")
+            # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")  # Disabled for cleaner logs
             return thumb_path, gallery, False
     
     # Fallback: find images by scanning folder
@@ -1015,7 +1037,7 @@ def load_tour_images(tour, max_images=5, account_username=None):
                     if img_url not in gallery:
                         gallery.append(img_url)
         except Exception as e:
-            print(f"[LAZY-IMAGES] Error reading {image_folder}: {e}")
+            # print(f"[LAZY-IMAGES] Error reading {image_folder}: {e}")  # Disabled for cleaner logs
     
     # If we still don't have enough images, just use what we have
     if not gallery and thumb_path:
@@ -1030,7 +1052,7 @@ def load_tour_images(tour, max_images=5, account_username=None):
         elif thumb_path and thumb_path not in gallery:
             thumb_path = None
     
-    print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")
+    # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")  # Disabled for cleaner logs
     return thumb_path, gallery, False  # False = uses real images
 
 # ============================================================================
@@ -6570,7 +6592,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
                 
                 # Convert prices and load images for display (lazy loading)
                 tour_details = []
-                print(f"[LAZY-IMAGES] Loading images for {len(filtered_tours)} tours...")
+                # print(f"[LAZY-IMAGES] Loading images for {len(filtered_tours)} tours...")  # Disabled for cleaner logs
                 for tour in filtered_tours:
                     tour_copy = tour.copy()
                     # Load images lazily for this tour (with account-specific hidden images filtered)
@@ -6623,7 +6645,7 @@ Be conversational, ask questions, and help them discover their perfect adventure
                     # Limit and convert prices
                     late_tours = late_tours[:3]
                     tour_details = []
-                    print(f"[LAZY-IMAGES] Loading images for {len(late_tours)} late-search tours...")
+                    # print(f"[LAZY-IMAGES] Loading images for {len(late_tours)} late-search tours...")  # Disabled for cleaner logs
                     for tour in late_tours:
                         tour_copy = tour.copy()
                         # Load images lazily for this tour (with account-specific hidden images filtered)
@@ -8506,26 +8528,68 @@ def pull_analytics_only(account=None):
         account = account or DEFAULT_ANALYTICS_ACCOUNT
         
         analytics_file = f'data/analytics_{account}.json' if account != 'default' else 'data/analytics.json'
+        analytics_path = os.path.join(repo_path, analytics_file)
         
         # Fetch latest from remote
-        subprocess.run(['git', 'fetch', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=30)
-        
-        # Checkout just the analytics file from remote
-        result = subprocess.run(
-            ['git', 'checkout', 'origin/main', '--', analytics_file],
-            cwd=repo_path, capture_output=True, text=True, timeout=10
+        fetch_result = subprocess.run(
+            ['git', 'fetch', 'origin', 'main'], 
+            cwd=repo_path, 
+            capture_output=True, 
+            text=True,
+            timeout=30
         )
         
-        if result.returncode == 0:
-            print(f"[ANALYTICS] Pulled latest {analytics_file}")
-            return True
+        if fetch_result.returncode != 0:
+            print(f"[ANALYTICS] Fetch failed: {fetch_result.stderr}")
+            return False
+        
+        # Use git show to get the file content from origin/main
+        # This is more reliable than checkout for getting remote file content
+        show_result = subprocess.run(
+            ['git', 'show', f'origin/main:{analytics_file}'],
+            cwd=repo_path,
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        
+        if show_result.returncode == 0 and show_result.stdout:
+            # File exists on remote - write it to local file
+            os.makedirs(os.path.dirname(analytics_path), exist_ok=True)
+            
+            # Check if local file exists and compare content
+            local_content = None
+            if os.path.exists(analytics_path):
+                try:
+                    with open(analytics_path, 'r', encoding='utf-8') as f:
+                        local_content = f.read()
+                except:
+                    pass
+            
+            # Only update if content is different
+            if local_content != show_result.stdout:
+                with open(analytics_path, 'w', encoding='utf-8') as f:
+                    f.write(show_result.stdout)
+                print(f"[ANALYTICS] Pulled latest {analytics_file} from remote")
+                return True
+            else:
+                print(f"[ANALYTICS] {analytics_file} already up to date")
+                return False
         else:
-            # File might not exist on remote yet
-            print(f"[ANALYTICS] Could not pull {analytics_file}: {result.stderr}")
+            # File doesn't exist on remote yet (first time, no remote data)
+            if show_result.stderr and 'does not exist' in show_result.stderr:
+                print(f"[ANALYTICS] {analytics_file} doesn't exist on remote yet (no remote data to pull)")
+            else:
+                print(f"[ANALYTICS] Could not pull {analytics_file}: {show_result.stderr}")
             return False
             
+    except subprocess.TimeoutExpired:
+        print(f"[ANALYTICS] Pull timeout - operation took too long")
+        return False
     except Exception as e:
         print(f"[ANALYTICS] Pull error: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 @app.route('/api/analytics/refresh', methods=['POST'])
@@ -8547,23 +8611,62 @@ def refresh_analytics():
         if os.path.exists(analytics_file):
             try:
                 # Add and commit analytics
-                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
+                add_result = subprocess.run(
+                    ['git', 'add', analytics_file], 
+                    cwd=repo_path, 
+                    capture_output=True, 
+                    text=True,
+                    timeout=10
+                )
+                if add_result.returncode != 0:
+                    print(f"[ANALYTICS] ❌ Git add failed: {add_result.stderr}")
+                
                 commit_result = subprocess.run(
                     ['git', 'commit', '-m', f'Analytics sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                    cwd=repo_path, capture_output=True, text=True, timeout=30
+                    cwd=repo_path, 
+                    capture_output=True, 
+                    text=True, 
+                    timeout=30
                 )
                 
                 if 'nothing to commit' not in commit_result.stdout and commit_result.returncode == 0:
-                    # Push to origin
-                    push_result = subprocess.run(
-                        ['git', 'push', 'origin', 'main'],
-                        cwd=repo_path, capture_output=True, text=True, timeout=60
-                    )
+                    # Use authenticated URL if available (for cloud deployments)
+                    auth_url = get_authenticated_remote_url()
+                    
+                    if auth_url:
+                        # Use authenticated push
+                        push_result = subprocess.run(
+                            ['git', 'push', auth_url, 'main'],
+                            cwd=repo_path, 
+                            capture_output=True, 
+                            text=True, 
+                            timeout=60
+                        )
+                    else:
+                        # Regular push
+                        push_result = subprocess.run(
+                            ['git', 'push', 'origin', 'main'],
+                            cwd=repo_path, 
+                            capture_output=True, 
+                            text=True, 
+                            timeout=60
+                        )
+                    
                     if push_result.returncode == 0:
                         pushed = True
-                        print(f"[ANALYTICS] Pushed local analytics for {username}")
+                        print(f"[ANALYTICS] ✅ Pushed local analytics for {username}")
+                    else:
+                        print(f"[ANALYTICS] ❌ Push failed: {push_result.stderr}")
+                        if push_result.stdout:
+                            print(f"[ANALYTICS] Push stdout: {push_result.stdout}")
+                elif 'nothing to commit' in commit_result.stdout:
+                    print(f"[ANALYTICS] No changes to commit (already synced)")
+                else:
+                    print(f"[ANALYTICS] ❌ Commit failed: {commit_result.stderr}")
             except Exception as e:
-                print(f"[ANALYTICS] Push error: {e}")
+                print(f"[ANALYTICS] ❌ Push error: {e}")
+                import traceback
+                traceback.print_exc()
         
         # Then, PULL latest analytics from remote (might have data from other device)
         pulled = pull_analytics_only(username)
@@ -8634,5 +8737,26 @@ def start_background_services():
 start_background_services()
 
 if __name__ == '__main__':
-    app.run(debug=False)  # debug=False for production stability 
+    import socket
+    # Explicitly set host and port for reliability
+    host = '127.0.0.1'  # localhost only for security
+    port = 5000
+    
+    print(f"[STARTUP] Starting Flask server on {host}:{port}...")
+    print(f"[STARTUP] Access the kiosk at: http://localhost:{port}")
+    
+    try:
+        app.run(host=host, port=port, debug=False, threaded=True)
+    except OSError as e:
+        if "Address already in use" in str(e) or "address is already in use" in str(e).lower():
+            print(f"[ERROR] Port {port} is already in use!")
+            print(f"[ERROR] Another instance might be running. Please stop it first.")
+        else:
+            print(f"[ERROR] Failed to start server: {e}")
+        raise
+    except Exception as e:
+        print(f"[ERROR] Unexpected error starting server: {e}")
+        import traceback
+        traceback.print_exc()
+        raise 
 

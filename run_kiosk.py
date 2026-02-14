@@ -57,7 +57,7 @@ def check_for_updates():
         if not os.path.exists(os.path.join(script_dir, '.git')):
             return False
         
-        # Fetch latest from origin
+        # Fetch latest from origin (with verbose output for debugging)
         fetch_result = subprocess.run(
             ['git', 'fetch', 'origin', 'main'],
             cwd=script_dir,
@@ -67,32 +67,64 @@ def check_for_updates():
         )
         
         if fetch_result.returncode != 0:
-            log(f"[UPDATE] Fetch failed: {fetch_result.stderr}")
+            log(f"[UPDATE] ❌ Fetch failed: {fetch_result.stderr}")
+            if fetch_result.stdout:
+                log(f"[UPDATE] Fetch stdout: {fetch_result.stdout}")
             return False
         
-        # Check how many commits behind we are
-        result = subprocess.run(
-            ['git', 'rev-list', 'HEAD..origin/main', '--count'],
+        # Get current HEAD commit
+        local_head = subprocess.run(
+            ['git', 'rev-parse', 'HEAD'],
             cwd=script_dir,
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=5
         )
         
-        if result.returncode == 0:
-            commits_behind = int(result.stdout.strip() or '0')
-            if commits_behind > 0:
-                log(f"[UPDATE] ✨ {commits_behind} new commit(s) available!")
-                return True
+        # Get remote HEAD commit
+        remote_head = subprocess.run(
+            ['git', 'rev-parse', 'origin/main'],
+            cwd=script_dir,
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        if local_head.returncode != 0 or remote_head.returncode != 0:
+            log(f"[UPDATE] ⚠️ Could not get commit hashes")
+            return False
+        
+        local_commit = local_head.stdout.strip()
+        remote_commit = remote_head.stdout.strip()
+        
+        # Check if they're different
+        if local_commit != remote_commit:
+            # Check how many commits behind we are
+            result = subprocess.run(
+                ['git', 'rev-list', 'HEAD..origin/main', '--count'],
+                cwd=script_dir,
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            if result.returncode == 0:
+                commits_behind = int(result.stdout.strip() or '0')
+                if commits_behind > 0:
+                    log(f"[UPDATE] ✨ {commits_behind} new commit(s) available!")
+                    log(f"[UPDATE] Local: {local_commit[:8]}... Remote: {remote_commit[:8]}...")
+                    return True
         
         last_update_check = time.time()
         return False
         
     except subprocess.TimeoutExpired:
-        log("[UPDATE] Timeout checking for updates")
+        log("[UPDATE] ⚠️ Timeout checking for updates")
         return False
     except Exception as e:
-        log(f"[UPDATE] Error checking: {e}")
+        log(f"[UPDATE] ❌ Error checking: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def pull_updates():
@@ -171,41 +203,135 @@ def run_flask_app():
     env['PYTHONUNBUFFERED'] = '1'
     env['FLASK_ENV'] = 'production'
     
-    # Start Flask
+    # Start Flask - read as bytes and decode manually for bulletproof encoding handling
     process = None
+    stdout_wrapper = None
     try:
+        import io
         process = subprocess.Popen(
             cmd,
             cwd=script_dir,
             env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1
+            bufsize=0  # Unbuffered for immediate output
+        )
+        
+        # Wrap stdout in TextIOWrapper with explicit UTF-8 encoding and error handling
+        stdout_wrapper = io.TextIOWrapper(
+            process.stdout,
+            encoding='utf-8',
+            errors='replace',  # Replace invalid bytes with replacement character
+            line_buffering=True
         )
         
         log(f"App started (PID: {process.pid})")
         
+        # Wait a moment and check if process is still alive
+        time.sleep(2)
+        if process.poll() is not None:
+            # Process died immediately - read any error output
+            log(f"⚠️ App process died immediately (exit code: {process.returncode})")
+            try:
+                # Try to read any remaining output
+                remaining = stdout_wrapper.read()
+                if remaining:
+                    log("Error output:")
+                    print(remaining, end='', flush=True)
+            except Exception as e:
+                log(f"Could not read error output: {e}")
+        
         # Stream output - print each line as it comes
+        startup_timeout = 30  # Give app 30 seconds to start
+        startup_start = time.time()
+        server_ready = False
+        last_output_time = time.time()
+        
         while True:
-            if process.stdout:
-                line = process.stdout.readline()
+            # Check if process died
+            if process.poll() is not None:
+                break
+            
+            # Check for startup timeout
+            if not server_ready and (time.time() - startup_start) > startup_timeout:
+                log(f"⚠️ App hasn't shown 'Running on' message after {startup_timeout}s - may be stuck")
+                log("⚠️ Check the output above for errors")
+                server_ready = True  # Stop warning, but keep monitoring
+            
+            # Check for hung process (no output for 5 minutes)
+            if (time.time() - last_output_time) > 300:
+                log("⚠️ No output for 5 minutes - process may be hung")
+                last_output_time = time.time()  # Reset timer
+            
+            try:
+                # Read line with timeout using select/poll if available, otherwise just read
+                line = stdout_wrapper.readline()
                 if line:
+                    last_output_time = time.time()
                     # Print without extra newline
                     print(line, end='', flush=True)
+                    
+                    # Check if Flask server is ready
+                    if ('Running on' in line or ' * Running on' in line) and not server_ready:
+                        server_ready = True
+                        log("✅ Flask server is ready!")
+                        
+                        # Verify server is actually responding (health check)
+                        import urllib.request
+                        import socket
+                        try:
+                            # Quick connection test to verify server is listening
+                            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                            sock.settimeout(2)
+                            result = sock.connect_ex(('127.0.0.1', 5000))
+                            sock.close()
+                            if result == 0:
+                                log("✅ Server is listening on port 5000 - ready to accept connections!")
+                            else:
+                                log("⚠️ Server message printed but port 5000 not accessible")
+                        except Exception as e:
+                            log(f"⚠️ Could not verify server connection: {e}")
                 elif process.poll() is not None:
+                    # Process ended and no more output
                     break
-            else:
+                else:
+                    # No line available yet, small sleep to avoid busy-waiting
+                    time.sleep(0.01)
+            except (UnicodeDecodeError, UnicodeError) as e:
+                # This should never happen with errors='replace', but just in case
+                log(f"⚠️ Encoding error (unexpected): {e}, continuing...")
+                if process.poll() is not None:
+                    break
+                time.sleep(0.1)
+            except BrokenPipeError:
+                # Process closed stdout
+                break
+            except Exception as e:
+                # Catch any other unexpected errors
+                log(f"⚠️ Unexpected error reading output: {e}, continuing...")
                 if process.poll() is not None:
                     break
                 time.sleep(0.1)
         
+        # Clean up the wrapper
+        try:
+            stdout_wrapper.close()
+        except:
+            pass
+        
         exit_code = process.returncode
+        if exit_code is None:
+            exit_code = 1  # Process was terminated
         log(f"App exited with code: {exit_code}")
         return exit_code
         
     except KeyboardInterrupt:
         log("⌨️ Keyboard interrupt - shutting down...")
+        if stdout_wrapper:
+            try:
+                stdout_wrapper.close()
+            except:
+                pass
         if process:
             process.terminate()
             try:
@@ -217,6 +343,11 @@ def run_flask_app():
         log(f"❌ Error running app: {e}")
         import traceback
         traceback.print_exc()
+        if stdout_wrapper:
+            try:
+                stdout_wrapper.close()
+            except:
+                pass
         if process:
             try:
                 process.terminate()
