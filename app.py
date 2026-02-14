@@ -3356,6 +3356,102 @@ def apply_update():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/admin/agent/api/force-sync', methods=['POST'])
+@agent_required
+def force_git_sync():
+    """Manually trigger git sync and return the result (for debugging)"""
+    try:
+        username = session.get('user')
+        if not username:
+            return jsonify({'success': False, 'error': 'Not logged in'}), 401
+        
+        # Check git status
+        status_result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            capture_output=True,
+            text=True,
+            cwd=os.getcwd(),
+            timeout=10
+        )
+        
+        if status_result.returncode != 0:
+            return jsonify({
+                'success': False,
+                'error': 'Not a git repository',
+                'details': status_result.stderr
+            })
+        
+        changed_files = status_result.stdout.strip().split('\n') if status_result.stdout.strip() else []
+        
+        if not changed_files:
+            return jsonify({
+                'success': True,
+                'message': 'No changes to commit',
+                'changed_files': []
+            })
+        
+        # Stage and commit
+        subprocess.run(['git', 'add', '-A'], cwd=os.getcwd(), check=True, timeout=10)
+        
+        commit_msg = f"Manual sync for {username} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        commit_result = subprocess.run(
+            ['git', 'commit', '-m', commit_msg],
+            cwd=os.getcwd(),
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if commit_result.returncode != 0:
+            return jsonify({
+                'success': False,
+                'error': 'Commit failed',
+                'details': commit_result.stderr,
+                'stdout': commit_result.stdout
+            })
+        
+        # Push
+        auth_url = get_authenticated_remote_url()
+        if auth_url:
+            push_result = subprocess.run(
+                ['git', 'push', auth_url, 'main'],
+                cwd=os.getcwd(),
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+        else:
+            push_result = subprocess.run(
+                ['git', 'push', 'origin', 'main'],
+                cwd=os.getcwd(),
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+        
+        if push_result.returncode == 0:
+            return jsonify({
+                'success': True,
+                'message': 'Successfully synced to GitHub',
+                'changed_files': [f.strip() for f in changed_files if f.strip()],
+                'commit': commit_msg
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Push failed',
+                'details': push_result.stderr,
+                'stdout': push_result.stdout
+            })
+            
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
 # ============================================================================
 # OPERATOR MODE ROUTES
 # ============================================================================
