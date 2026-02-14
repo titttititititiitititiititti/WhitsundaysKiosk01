@@ -2685,12 +2685,15 @@ def agent_dashboard():
                                 promotion = promo_type
                                 break
                         
+                        # Use account-specific company name override if available
+                        company_display = get_company_display_name(company, username)
+                        
                         all_tours.append({
                             'key': tour_key,
                             'id': row.get('id', ''),
                             'name': row.get('name', 'Unnamed Tour'),
                             'company': company,
-                            'company_display': COMPANY_DISPLAY_NAMES.get(company, company),
+                            'company_display': company_display,
                             'price': row.get('price_adult', ''),
                             'enabled': is_enabled,
                             'promotion': promotion,
@@ -2718,34 +2721,47 @@ def agent_dashboard():
         'best_value': len(account_promotions.get('best_value', []))
     }
     
-    # Separate enabled and disabled tours
-    enabled_companies = {}
-    disabled_tours_list = []
+    # Separate companies into: those with enabled tours, and those without
+    active_companies = {}  # Companies with at least one enabled tour
+    inactive_companies = {}  # Companies with ALL tours disabled
     
     for company_id, company_data in companies.items():
         enabled_tours = [t for t in company_data['tours'] if t['enabled']]
         disabled_tours = [t for t in company_data['tours'] if not t['enabled']]
         
         if enabled_tours:
-            enabled_companies[company_id] = {
+            # Company has at least one enabled tour - show ALL tours (enabled & disabled)
+            active_companies[company_id] = {
                 'name': company_data['name'],
-                'tours': enabled_tours,
-                'images_enabled': company_data['images_enabled']
+                'tours': company_data['tours'],  # ALL tours, not just enabled
+                'images_enabled': company_data['images_enabled'],
+                'enabled_count': len(enabled_tours),
+                'disabled_count': len(disabled_tours)
             }
-        
-        disabled_tours_list.extend(disabled_tours)
+        else:
+            # Company has NO enabled tours - goes to inactive section
+            inactive_companies[company_id] = {
+                'name': company_data['name'],
+                'tours': disabled_tours,
+                'images_enabled': company_data['images_enabled'],
+                'enabled_count': 0,
+                'disabled_count': len(disabled_tours)
+            }
     
     # Get the active kiosk account (what's actually displayed on the kiosk)
     kiosk_account = get_active_account()
     is_kiosk_account = (username == kiosk_account) if username else False
     
+    # Count total disabled tours for display
+    total_disabled = sum(c['disabled_count'] for c in active_companies.values()) + sum(c['disabled_count'] for c in inactive_companies.values())
+    
     return render_template('agent_dashboard.html',
-                          companies=enabled_companies,
-                          disabled_tours=disabled_tours_list,
+                          companies=active_companies,
+                          inactive_companies=inactive_companies,
                           settings=account_settings if username else global_settings,
                           tour_overrides=account_tour_overrides,
                           promoted_counts=promoted_counts,
-                          disabled_count=len(disabled_tours_list),
+                          disabled_count=total_disabled,
                           total_tours=len(all_tours),
                           company_names=get_company_display_names_for_account(username),
                           version=APP_VERSION,

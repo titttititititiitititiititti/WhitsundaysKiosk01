@@ -669,30 +669,28 @@
             color: var(--text-primary);
         }
         
-        /* Unavailable Tours Section */
-        .unavailable-section {
+        /* Inactive Companies Section */
+        .inactive-companies-section {
             margin-top: 40px;
-            padding: 24px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
         }
         
-        .unavailable-section .section-header {
+        .section-divider {
+            padding: 20px 0;
             margin-bottom: 20px;
+            border-top: 2px solid var(--border-color);
         }
         
-        .unavailable-section .section-header h2 {
-            font-size: 1.2rem;
+        .section-divider h2 {
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 8px;
         }
         
-        .unavailable-section .section-desc {
+        .section-divider .section-desc {
             color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 5px;
+            font-size: 0.9rem;
         }
         
         .count-badge {
@@ -704,34 +702,21 @@
             font-weight: 600;
         }
         
-        .unavailable-tours-list {
-            display: grid;
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
+        .company-group.inactive {
+            opacity: 0.8;
+            border-color: rgba(248, 81, 73, 0.3);
         }
         
-        .unavailable-tour-item {
-            display: grid;
-            grid-template-columns: 40px 1fr auto auto;
-            gap: 16px;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            opacity: 0.7;
-            transition: all 0.2s;
-        }
-        
-        .unavailable-tour-item:hover {
+        .company-group.inactive:hover {
             opacity: 1;
-            border-color: var(--accent-blue);
         }
         
-        .unavailable-tour-item .tour-company {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .company-group.inactive .company-header {
+            background: rgba(248, 81, 73, 0.1);
+        }
+        
+        .company-stat.disabled {
+            color: var(--accent-red);
         }
         
         /* Toast */
@@ -1258,33 +1243,64 @@
             {% endfor %}
         </div>
         
-        <!-- Unavailable Tours Section -->
-        {% if disabled_tours %}
-        <div class="unavailable-section">
-            <div class="section-header">
-                <h2>🚫 Unavailable Tours <span class="count-badge">{{ disabled_tours|length }}</span></h2>
-                <p class="section-desc">Tours you don't currently sell. Enable them to add to your kiosk.</p>
+        <!-- Inactive Companies Section (Companies with NO enabled tours) -->
+        {% if inactive_companies %}
+        <div class="inactive-companies-section">
+            <div class="section-divider">
+                <h2>🚫 Unavailable Companies <span class="count-badge">{{ inactive_companies|length }}</span></h2>
+                <p class="section-desc">Companies with no tours currently enabled. Enable tours to add them to your kiosk.</p>
             </div>
-            <div class="unavailable-tours-list">
-                {% for tour in disabled_tours %}
-                <div class="unavailable-tour-item" data-key="{{ tour.key }}">
-                    <label class="toggle-switch">
-                        <input type="checkbox" onchange="toggleTour('{{ tour.key }}', this.checked)">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <div class="tour-info">
-                        <div class="tour-name">{{ tour.name }}</div>
-                        <div class="tour-company">{{ tour.company_display }}</div>
+            
+            {% for company_id, company_data in inactive_companies.items() %}
+            <div class="company-group inactive" data-company="{{ company_id }}" data-images-enabled="{{ 'true' if company_data.images_enabled else 'false' }}">
+                <div class="company-header">
+                    <div class="company-name" onclick="toggleCompany(this.parentElement)">
+                        🏢 {{ company_data.name }}
+                        <span class="company-stats">
+                            <span class="company-stat disabled">{{ company_data.tours | length }} inactive</span>
+                        </span>
                     </div>
-                    <div class="tour-price">{{ tour.price }}</div>
-                    <div class="tour-actions">
-                        <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
-                            ✏️ Edit
+                    <div class="company-controls">
+                        <button class="images-toggle-btn {{ 'active' if company_data.images_enabled else 'disabled' }}" 
+                                onclick="event.stopPropagation(); toggleCompanyImages('{{ company_id }}', {{ 'false' if company_data.images_enabled else 'true' }})"
+                                title="{{ 'Click to hide images (legal compliance)' if company_data.images_enabled else 'Click to show images' }}">
+                            🖼️ Images {{ 'ON' if company_data.images_enabled else 'OFF' }}
                         </button>
+                        <span class="images-warning">⚠️ Only enable images you are authorised to use</span>
+                        <span class="company-toggle" onclick="toggleCompany(this.parentElement.parentElement)">▼</span>
                     </div>
                 </div>
-                {% endfor %}
+                <div class="tour-list">
+                    {% for tour in company_data.tours %}
+                    <div class="tour-item disabled" 
+                         data-key="{{ tour.key }}"
+                         data-name="{{ tour.name | lower }}"
+                         data-company="{{ company_id | lower }}"
+                         data-company-display="{{ company_data.name | lower }}"
+                         data-enabled="false"
+                         data-promoted="">
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleTour('{{ tour.key }}', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <div class="tour-info">
+                            <div class="tour-name">
+                                {{ tour.name }}
+                            </div>
+                            <div class="tour-meta">
+                                <span class="tour-price">FROM {{ tour.price }}</span>
+                            </div>
+                        </div>
+                        <div class="tour-actions">
+                            <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
+                                ✏️ Edit
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
+            {% endfor %}
         </div>
         {% endif %}
     </main>
@@ -2290,21 +2306,7 @@
                 item.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
             });
             
-            // Also filter unavailable tours section
-            document.querySelectorAll('.unavailable-tour-item').forEach(item => {
-                const tourInfo = item.querySelector('.tour-info');
-                const name = (tourInfo?.querySelector('.tour-name')?.textContent || '').toLowerCase();
-                const company = (tourInfo?.querySelector('.tour-company')?.textContent || '').toLowerCase();
-                
-                let matchesSearch = true;
-                if (search) {
-                    matchesSearch = name.includes(search) || company.includes(search);
-                }
-                
-                item.style.display = matchesSearch ? '' : 'none';
-            });
-            
-            // Update company visibility - show group if ANY visible tours
+            // Update company visibility - show group if ANY visible tours (applies to both active and inactive companies)
             document.querySelectorAll('.company-group').forEach(group => {
                 const companyId = (group.dataset.company || '').toLowerCase();
                 const companyName = (group.querySelector('.company-name')?.textContent || '').toLowerCase();
@@ -2325,11 +2327,11 @@
                 }
             });
             
-            // Show/hide unavailable section based on visible items
-            const unavailableSection = document.querySelector('.unavailable-section');
-            if (unavailableSection) {
-                const visibleUnavailable = unavailableSection.querySelectorAll('.unavailable-tour-item:not([style*="display: none"])');
-                unavailableSection.style.display = visibleUnavailable.length > 0 ? '' : 'none';
+            // Show/hide inactive companies section based on visible items
+            const inactiveSection = document.querySelector('.inactive-companies-section');
+            if (inactiveSection) {
+                const visibleInactiveGroups = inactiveSection.querySelectorAll('.company-group:not([style*="display: none"])');
+                inactiveSection.style.display = visibleInactiveGroups.length > 0 ? '' : 'none';
             }
         }
         
