@@ -162,6 +162,8 @@ def pull_updates():
             log("[UPDATE] Restored instance.json")
         
         log("[UPDATE] ✅ Code updated successfully!")
+        log("[UPDATE] ⚠️ NOTE: run_kiosk.py updates require a manual restart to take effect")
+        log("[UPDATE] ⚠️ The current process is still running old code - please restart run_kiosk.py")
         return True
         
     except subprocess.TimeoutExpired:
