@@ -30077,8 +30077,8 @@
     async function loadWeatherData() {
       try {
         // Using Open-Meteo API (free, no API key required)
-        const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${AIRLIE_BEACH_LAT}&longitude=${AIRLIE_BEACH_LON}&current=temperature_2m,weathercode,windspeed_10m&timezone=Australia/Brisbane`;
-        const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${AIRLIE_BEACH_LAT}&longitude=${AIRLIE_BEACH_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Australia/Brisbane&forecast_days=7`;
+        const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${AIRLIE_BEACH_LAT}&longitude=${AIRLIE_BEACH_LON}&current=temperature_2m,weathercode,windspeed_10m&windspeed_unit=kn&timezone=Australia/Brisbane`;
+        const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${AIRLIE_BEACH_LAT}&longitude=${AIRLIE_BEACH_LON}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&windspeed_unit=kn&timezone=Australia/Brisbane&forecast_days=7`;
         
         const [currentResponse, forecastResponse] = await Promise.all([
           fetch(currentWeatherUrl),
@@ -30194,7 +30194,7 @@
       document.getElementById('current-temp').textContent = `${current.temp}°C`;
       document.getElementById('current-weather-icon').textContent = getWeatherEmoji(current.weatherCode);
       document.getElementById('current-weather-desc').textContent = getWeatherDescription(current.weatherCode);
-      document.getElementById('current-wind').textContent = `Wind: ${current.windSpeed} km/h`;
+      document.getElementById('current-wind').textContent = `Wind: ${current.windSpeed} kn`;
       
       // 7-day forecast with card styling
       const forecastContainer = document.getElementById('forecast-days');
@@ -30218,7 +30218,7 @@
               <span style="color:#0077b6;font-weight:600;">${day.tempMax}°</span>
               <span style="color:#999;">${day.tempMin}°</span>
             </div>
-            <div style="font-size:0.6em;color:#666;margin-top:3px;">💨 ${day.windSpeed} km/h</div>
+            <div style="font-size:0.6em;color:#666;margin-top:3px;">💨 ${day.windSpeed} kn</div>
             ${day.precipProb > 30 ? `<div style="font-size:0.6em;color:#0077b6;margin-top:2px;">💧${day.precipProb}%</div>` : ''}
           </div>
         `;
@@ -31352,12 +31352,13 @@
         // Windy.com embed for Airlie Beach/Whitsundays area - shows radar, wind, etc.
         // No menu param = full layer picker shown, calendar=now shows timeline
         // zoom=7 shows wider regional view, detailLat/Lon centers on Airlie Beach
-        iframe.src = 'https://embed.windy.com/embed2.html?lat=-20.27&lon=148.72&detailLat=-20.27&detailLon=148.72&width=900&height=600&zoom=7&level=surface&overlay=wind&product=ecmwf&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1';
+        iframe.src = 'https://embed.windy.com/embed2.html?lat=-20.27&lon=148.72&detailLat=-20.27&detailLon=148.72&width=900&height=600&zoom=7&level=surface&overlay=wind&product=ecmwf&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1';
         if (widget) {
           widget.style.width = '900px';
           widget.style.maxWidth = 'calc(100vw - 48px)';
-          widget.style.maxHeight = '90vh';
-          widget.style.bottom = '60px';
+          widget.style.maxHeight = '92vh';
+          widget.style.bottom = '20px';
+          widget.style.overflow = 'auto';
         }
         if (btnText) btnText.textContent = 'Hide Radar';
       } else {
@@ -31368,6 +31369,8 @@
         if (widget) {
           widget.style.width = '480px';
           widget.style.bottom = '120px';
+          widget.style.overflow = 'hidden';
+          widget.style.maxHeight = '';
         }
         if (btnText) btnText.textContent = 'View Live Radar';
       }
@@ -31386,7 +31389,7 @@
         }
         
         // Fullscreen Windy with all controls: no menu param = full layer picker, calendar=now for timeline
-        iframe.src = 'https://embed.windy.com/embed2.html?lat=-20.27&lon=148.72&detailLat=-20.27&detailLon=148.72&width=1920&height=1080&zoom=8&level=surface&overlay=wind&product=ecmwf&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1';
+        iframe.src = 'https://embed.windy.com/embed2.html?lat=-20.27&lon=148.72&detailLat=-20.27&detailLon=148.72&width=1920&height=1080&zoom=8&level=surface&overlay=wind&product=ecmwf&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1';
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
       }
@@ -33417,7 +33420,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">☀️</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">⛅</button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:480px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
@@ -33435,7 +33438,7 @@
             <div id="current-weather-desc" style="color:#666;">Clear</div>
           </div>
         </div>
-        <div id="current-wind" style="color:#666;">Wind: 15 km/h</div>
+        <div id="current-wind" style="color:#666;">Wind: 15 kn</div>
       </div>
       <div style="font-weight:600;margin-bottom:10px;color:#2c3e50;font-size:0.95em;">7-Day Forecast</div>
       <div id="forecast-days" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:16px;"></div>
