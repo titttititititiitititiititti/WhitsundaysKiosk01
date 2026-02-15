@@ -1363,53 +1363,8 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
     
     save_analytics(analytics, account)
     
-    # Auto-push analytics to git periodically (every 10 new sessions or every 5 minutes)
-    # This allows shop computers to sync their analytics automatically
-    if not hasattr(log_analytics_event, '_last_push_time'):
-        log_analytics_event._last_push_time = {}
-        log_analytics_event._session_count_since_push = {}
-    
-    now = time.time()
-    last_push = log_analytics_event._last_push_time.get(account, 0)
-    session_count = log_analytics_event._session_count_since_push.get(account, 0) + 1
-    log_analytics_event._session_count_since_push[account] = session_count
-    
-    # Push if: 10+ new sessions OR 5+ minutes since last push
-    if session_count >= 10 or (now - last_push) > 300:
-        def _auto_push_analytics():
-            try:
-                repo_path = os.path.dirname(os.path.abspath(__file__))
-                analytics_file = get_analytics_file(account)
-                
-                # Check if file has changes
-                result = subprocess.run(
-                    ['git', 'status', '--porcelain', analytics_file],
-                    cwd=repo_path, capture_output=True, text=True, timeout=10
-                )
-                
-                if result.stdout.strip():
-                    # Has changes - commit and push
-                    subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
-                    subprocess.run(
-                        ['git', 'commit', '-m', f'Auto-push analytics for {account} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                        cwd=repo_path, capture_output=True, text=True, timeout=30
-                    )
-                    
-                    # Use authenticated URL if available
-                    auth_url = get_authenticated_remote_url()
-                    if auth_url:
-                        subprocess.run(['git', 'push', auth_url, 'main'], cwd=repo_path, capture_output=True, timeout=60)
-                    else:
-                        subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=60)
-                    
-                    print(f"[ANALYTICS] Auto-pushed analytics for {account}")
-            except Exception as e:
-                print(f"[ANALYTICS] Auto-push error: {e}")
-        
-        # Push in background thread
-        threading.Thread(target=_auto_push_analytics, daemon=True).start()
-        log_analytics_event._last_push_time[account] = now
-        log_analytics_event._session_count_since_push[account] = 0
+    # Analytics are stored locally and only pushed when manually requested
+    # from the agent dashboard analytics page (no more auto-push commits)
     
     return session
 
