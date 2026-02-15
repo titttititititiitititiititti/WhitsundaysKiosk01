@@ -14646,11 +14646,11 @@
         <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
           <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
-        <button class="map-view-btn-start" id="map-view-btn" onclick="event.stopPropagation(); startModeWithAnimation('map-view')">
-          <span id="map-view-text" data-translate="map_view">🗺️ Map View</span>
-        </button>
         <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); startModeWithAnimation('newcomer-info')">
           <span id="newcomer-info-text">ℹ️ Newcomer Important Information</span>
+        </button>
+        <button class="map-view-btn-start" id="map-view-btn" onclick="event.stopPropagation(); startModeWithAnimation('map-view')">
+          <span id="map-view-text" data-translate="map_view">🗺️ Map View</span>
         </button>
         
         <!-- Language Flags on Mode Selection Page -->
@@ -31557,6 +31557,12 @@
       const toggleBtn = document.getElementById('google-draw-toggle-btn');
       if (drawTools) drawTools.style.display = 'none';
       if (toggleBtn) toggleBtn.style.borderColor = '#4CAF50';
+      
+      // Reset placed images and gallery
+      removeAllMapImages();
+      mapGalleryOpen = false;
+      const gallery = document.getElementById('map-image-gallery');
+      if (gallery) gallery.style.transform = 'translateY(calc(100% - 60px))';
     };
     
     // Retry function for map loading
@@ -31870,6 +31876,343 @@
         googleMapDrawingContext.clearRect(0, 0, canvas.width, canvas.height);
       }
     };
+
+    // ========== MAP VIEW PRESENTATION - IMAGE GALLERY & DRAG/DROP ==========
+    let mapGalleryOpen = false;
+    let mapPlacedImages = []; // Track placed images for removal
+    
+    // Toggle gallery tray open/closed
+    window.toggleImageGallery = function() {
+      const gallery = document.getElementById('map-image-gallery');
+      if (!gallery) return;
+      mapGalleryOpen = !mapGalleryOpen;
+      if (mapGalleryOpen) {
+        gallery.style.transform = 'translateY(0)';
+      } else {
+        gallery.style.transform = 'translateY(calc(100% - 60px))';
+      }
+    };
+    
+    // Remove all placed images from map
+    window.removeAllMapImages = function() {
+      const container = document.getElementById('map-placed-images');
+      if (container) container.innerHTML = '';
+      mapPlacedImages = [];
+      updateRemoveAllBtn();
+    };
+    
+    // Clear everything (images + drawing)
+    window.clearAllMapPresentation = function() {
+      removeAllMapImages();
+      clearGoogleMapDrawing();
+    };
+    
+    // Show/hide "Remove All Images" button
+    function updateRemoveAllBtn() {
+      const btn = document.getElementById('remove-all-images-btn');
+      if (btn) {
+        btn.style.display = mapPlacedImages.length > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    // Place an image on the map at a given position
+    function placeImageOnMap(imgSrc, x, y) {
+      const container = document.getElementById('map-placed-images');
+      if (!container) return;
+      
+      // Create wrapper for the placed image
+      const wrapper = document.createElement('div');
+      wrapper.className = 'map-placed-img-wrapper';
+      wrapper.style.cssText = `
+        position:absolute;
+        left:${x - 100}px;
+        top:${y - 75}px;
+        width:200px;
+        height:150px;
+        pointer-events:auto;
+        cursor:move;
+        z-index:1;
+        border:3px solid rgba(255,255,255,0.8);
+        border-radius:12px;
+        overflow:hidden;
+        box-shadow:0 6px 25px rgba(0,0,0,0.6);
+        transition:box-shadow 0.2s;
+        touch-action:none;
+      `;
+      
+      const img = document.createElement('img');
+      img.src = imgSrc;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-drag:none;';
+      img.draggable = false;
+      
+      // Remove button (X) on the image
+      const removeBtn = document.createElement('button');
+      removeBtn.innerHTML = '✕';
+      removeBtn.style.cssText = `
+        position:absolute;top:4px;right:4px;width:28px;height:28px;
+        background:rgba(200,50,50,0.9);color:#fff;border:2px solid #fff;
+        border-radius:50%;cursor:pointer;font-size:14px;font-weight:700;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 8px rgba(0,0,0,0.5);z-index:5;
+        pointer-events:auto;
+      `;
+      removeBtn.onclick = function(e) {
+        e.stopPropagation();
+        wrapper.remove();
+        mapPlacedImages = mapPlacedImages.filter(w => w !== wrapper);
+        updateRemoveAllBtn();
+      };
+      // Touch support for remove button
+      removeBtn.ontouchend = function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        wrapper.remove();
+        mapPlacedImages = mapPlacedImages.filter(w => w !== wrapper);
+        updateRemoveAllBtn();
+      };
+      
+      // Resize handle (bottom-right corner)
+      const resizeHandle = document.createElement('div');
+      resizeHandle.style.cssText = `
+        position:absolute;bottom:0;right:0;width:30px;height:30px;
+        cursor:nwse-resize;z-index:5;pointer-events:auto;
+        background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,0.8) 50%);
+        border-radius:0 0 10px 0;
+      `;
+      
+      wrapper.appendChild(img);
+      wrapper.appendChild(removeBtn);
+      wrapper.appendChild(resizeHandle);
+      container.appendChild(wrapper);
+      mapPlacedImages.push(wrapper);
+      updateRemoveAllBtn();
+      
+      // ---- DRAG (MOVE) support for placed image ----
+      let isDragging = false;
+      let dragOffsetX = 0, dragOffsetY = 0;
+      
+      // Mouse drag
+      wrapper.addEventListener('mousedown', function(e) {
+        if (e.target === resizeHandle || e.target === removeBtn) return;
+        isDragging = true;
+        dragOffsetX = e.clientX - wrapper.getBoundingClientRect().left;
+        dragOffsetY = e.clientY - wrapper.getBoundingClientRect().top;
+        wrapper.style.zIndex = '10';
+        wrapper.style.boxShadow = '0 10px 40px rgba(0,0,0,0.8)';
+        e.preventDefault();
+      });
+      
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        const containerRect = container.getBoundingClientRect();
+        wrapper.style.left = (e.clientX - containerRect.left - dragOffsetX) + 'px';
+        wrapper.style.top = (e.clientY - containerRect.top - dragOffsetY) + 'px';
+      });
+      
+      document.addEventListener('mouseup', function() {
+        if (isDragging) {
+          isDragging = false;
+          wrapper.style.zIndex = '1';
+          wrapper.style.boxShadow = '0 6px 25px rgba(0,0,0,0.6)';
+        }
+      });
+      
+      // Touch drag
+      wrapper.addEventListener('touchstart', function(e) {
+        if (e.target === resizeHandle || e.target === removeBtn) return;
+        isDragging = true;
+        const touch = e.touches[0];
+        dragOffsetX = touch.clientX - wrapper.getBoundingClientRect().left;
+        dragOffsetY = touch.clientY - wrapper.getBoundingClientRect().top;
+        wrapper.style.zIndex = '10';
+        wrapper.style.boxShadow = '0 10px 40px rgba(0,0,0,0.8)';
+        e.preventDefault();
+      }, { passive: false });
+      
+      wrapper.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        const containerRect = container.getBoundingClientRect();
+        wrapper.style.left = (touch.clientX - containerRect.left - dragOffsetX) + 'px';
+        wrapper.style.top = (touch.clientY - containerRect.top - dragOffsetY) + 'px';
+        e.preventDefault();
+      }, { passive: false });
+      
+      wrapper.addEventListener('touchend', function() {
+        if (isDragging) {
+          isDragging = false;
+          wrapper.style.zIndex = '1';
+          wrapper.style.boxShadow = '0 6px 25px rgba(0,0,0,0.6)';
+        }
+      });
+      
+      // ---- RESIZE support ----
+      let isResizing = false;
+      let resizeStartX, resizeStartY, startW, startH;
+      
+      resizeHandle.addEventListener('mousedown', function(e) {
+        isResizing = true;
+        resizeStartX = e.clientX;
+        resizeStartY = e.clientY;
+        startW = wrapper.offsetWidth;
+        startH = wrapper.offsetHeight;
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      
+      document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+        const dw = e.clientX - resizeStartX;
+        const dh = e.clientY - resizeStartY;
+        const newW = Math.max(80, startW + dw);
+        const newH = Math.max(60, startH + dh);
+        wrapper.style.width = newW + 'px';
+        wrapper.style.height = newH + 'px';
+      });
+      
+      document.addEventListener('mouseup', function() {
+        isResizing = false;
+      });
+      
+      // Touch resize
+      resizeHandle.addEventListener('touchstart', function(e) {
+        isResizing = true;
+        const touch = e.touches[0];
+        resizeStartX = touch.clientX;
+        resizeStartY = touch.clientY;
+        startW = wrapper.offsetWidth;
+        startH = wrapper.offsetHeight;
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false });
+      
+      resizeHandle.addEventListener('touchmove', function(e) {
+        if (!isResizing) return;
+        const touch = e.touches[0];
+        const dw = touch.clientX - resizeStartX;
+        const dh = touch.clientY - resizeStartY;
+        const newW = Math.max(80, startW + dw);
+        const newH = Math.max(60, startH + dh);
+        wrapper.style.width = newW + 'px';
+        wrapper.style.height = newH + 'px';
+        e.preventDefault();
+      }, { passive: false });
+      
+      resizeHandle.addEventListener('touchend', function() {
+        isResizing = false;
+      });
+    }
+    
+    // ---- Gallery thumbnail drag-to-map (TOUCH support for kiosk) ----
+    (function() {
+      let dragClone = null;
+      let dragSrc = null;
+      
+      // Setup touch drag from gallery thumbnails
+      document.addEventListener('DOMContentLoaded', function() {
+        setupGalleryDrag();
+      });
+      // Also try immediately in case DOM is already loaded
+      setTimeout(setupGalleryDrag, 500);
+      
+      function setupGalleryDrag() {
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        thumbs.forEach(function(thumb) {
+          // Prevent default drag on images
+          thumb.addEventListener('dragstart', function(e) { e.preventDefault(); });
+          
+          // TOUCH: drag from gallery
+          thumb.addEventListener('touchstart', function(e) {
+            dragSrc = thumb.src;
+            const touch = e.touches[0];
+            
+            // Create a floating clone
+            dragClone = document.createElement('img');
+            dragClone.src = thumb.src;
+            dragClone.style.cssText = `
+              position:fixed;width:140px;height:100px;object-fit:cover;
+              border-radius:12px;border:3px solid #fff;opacity:0.85;
+              pointer-events:none;z-index:999999;
+              box-shadow:0 8px 30px rgba(0,0,0,0.6);
+              transform:translate(-50%,-50%);
+            `;
+            dragClone.style.left = touch.clientX + 'px';
+            dragClone.style.top = touch.clientY + 'px';
+            document.body.appendChild(dragClone);
+            
+            // Close gallery while dragging (so user can see map)
+            if (mapGalleryOpen) {
+              const gallery = document.getElementById('map-image-gallery');
+              if (gallery) gallery.style.transform = 'translateY(calc(100% - 60px))';
+              mapGalleryOpen = false;
+            }
+            
+            e.preventDefault();
+          }, { passive: false });
+          
+          thumb.addEventListener('touchmove', function(e) {
+            if (!dragClone) return;
+            const touch = e.touches[0];
+            dragClone.style.left = touch.clientX + 'px';
+            dragClone.style.top = touch.clientY + 'px';
+            e.preventDefault();
+          }, { passive: false });
+          
+          thumb.addEventListener('touchend', function(e) {
+            if (!dragClone || !dragSrc) return;
+            
+            // Get drop position relative to the map container
+            const container = document.getElementById('map-placed-images');
+            if (container) {
+              const rect = container.getBoundingClientRect();
+              const lastTouch = e.changedTouches[0];
+              const x = lastTouch.clientX - rect.left;
+              const y = lastTouch.clientY - rect.top;
+              
+              // Only place if dropped within map area (not back in gallery)
+              if (y > 0 && y < rect.height && x > 0 && x < rect.width) {
+                placeImageOnMap(dragSrc, x, y);
+              }
+            }
+            
+            // Clean up clone
+            dragClone.remove();
+            dragClone = null;
+            dragSrc = null;
+          });
+          
+          thumb.addEventListener('touchcancel', function() {
+            if (dragClone) { dragClone.remove(); dragClone = null; }
+            dragSrc = null;
+          });
+          
+          // MOUSE: click to place at center of map (simpler for mouse users)
+          thumb.addEventListener('click', function() {
+            const container = document.getElementById('map-placed-images');
+            if (container) {
+              const rect = container.getBoundingClientRect();
+              placeImageOnMap(thumb.src, rect.width / 2, rect.height / 2);
+            }
+          });
+        });
+      }
+    })();
+    
+    // ---- Hover effects for gallery thumbnails ----
+    document.addEventListener('DOMContentLoaded', function() {
+      const style = document.createElement('style');
+      style.textContent = `
+        .gallery-thumb:hover {
+          transform: scale(1.08) !important;
+          box-shadow: 0 6px 20px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.5) !important;
+          border-color: #22d3ee !important;
+        }
+        .gallery-thumb:active {
+          transform: scale(0.95) !important;
+        }
+      `;
+      document.head.appendChild(style);
+    });
 
     const setupWeatherLauncher = () => {
       const launcher = document.getElementById('weather-widget-launcher');
@@ -33040,6 +33383,9 @@
       <iframe id="fullscreen-google-map-iframe" src="" style="width:100%;height:100%;border:none;border-radius:16px;" allowfullscreen></iframe>
       <!-- Drawing canvas overlay for Google Maps -->
       <canvas id="google-map-drawing-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1000;pointer-events:none;border-radius:16px;"></canvas>
+      <!-- Placed images container (images dragged onto the map) -->
+      <div id="map-placed-images" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:999;pointer-events:none;border-radius:16px;overflow:hidden;"></div>
+      
       <!-- Drawing toolbar for Google Maps - positioned at top-left (close button is on right) -->
       <div id="google-map-drawing-toolbar" style="position:absolute;top:20px;left:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;">
         <button onclick="toggleGoogleMapDrawing()" id="google-draw-toggle-btn" style="padding:14px 20px;background:rgba(0,0,0,0.85);color:#fff;border:3px solid #4CAF50;border-radius:12px;cursor:pointer;font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,0.4);">
@@ -33058,6 +33404,32 @@
             <button onclick="setGoogleDrawLineWidth(10)" style="flex:1;padding:10px;background:rgba(100,100,100,0.9);color:#fff;border:2px solid #888;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;">Thick</button>
           </div>
           <button onclick="clearGoogleMapDrawing()" style="padding:12px;background:rgba(200,50,50,0.95);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;margin-top:4px;">🗑️ Clear Drawing</button>
+        </div>
+        <!-- Quick action buttons -->
+        <button onclick="removeAllMapImages()" id="remove-all-images-btn" style="display:none;padding:14px 20px;background:rgba(200,50,50,0.9);color:#fff;border:3px solid #ff6666;border-radius:12px;cursor:pointer;font-size:16px;font-weight:600;display:none;align-items:center;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+          <span style="font-size:22px;">🗑️</span> Remove All Images
+        </button>
+        <button onclick="clearAllMapPresentation()" style="padding:14px 20px;background:rgba(100,100,100,0.85);color:#fff;border:3px solid #aaa;border-radius:12px;cursor:pointer;font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+          <span style="font-size:22px;">🔄</span> Reset All
+        </button>
+      </div>
+      
+      <!-- Image Gallery Tray (slides up from bottom) -->
+      <div id="map-image-gallery" style="position:absolute;bottom:0;left:0;right:0;z-index:99998;transition:transform 0.3s ease;transform:translateY(calc(100% - 60px));">
+        <!-- Gallery handle / toggle bar -->
+        <div id="gallery-handle" onclick="toggleImageGallery()" style="height:60px;background:linear-gradient(180deg,rgba(0,0,0,0.7),rgba(0,0,0,0.95));border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;gap:12px;padding:0 20px;">
+          <div style="width:60px;height:5px;background:rgba(255,255,255,0.5);border-radius:3px;"></div>
+          <span style="color:#fff;font-size:16px;font-weight:600;">📸 Image Gallery — Drag images onto the map</span>
+          <div style="width:60px;height:5px;background:rgba(255,255,255,0.5);border-radius:3px;"></div>
+        </div>
+        <!-- Gallery content -->
+        <div id="gallery-content" style="background:rgba(0,0,0,0.95);padding:20px;display:flex;gap:16px;overflow-x:auto;align-items:center;min-height:160px;-webkit-overflow-scrolling:touch;">
+          <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach drone shot.png') }}" alt="Whitehaven Beach Aerial" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach.png') }}" alt="Whitehaven Beach" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          <img src="{{ url_for('static', filename='newcomer_images/snorkelling at the great barrier reef.png') }}" alt="Snorkelling GBR" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          <img src="{{ url_for('static', filename='newcomer_images/Heart Reef drone shot.png') }}" alt="Heart Reef" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          <img src="{{ url_for('static', filename='newcomer_images/box jellyfish.png') }}" alt="Box Jellyfish" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          <img src="{{ url_for('static', filename='newcomer_images/iruakndji jellyfish.jpg') }}" alt="Irukandji Jellyfish" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
         </div>
       </div>
     </div>
