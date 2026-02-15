@@ -14537,6 +14537,7 @@
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
+          <button class="map-view-btn-header" id="vq-map-view-btn" onclick="startModeWithAnimation('map-view')" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="vq-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -14958,6 +14959,7 @@
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
+          <button class="map-view-btn-header" id="home-map-view-btn" onclick="startModeWithAnimation('map-view')" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="home-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -31421,6 +31423,40 @@
         if (drawTools) drawTools.style.display = 'none';
         if (toggleBtn) toggleBtn.style.borderColor = '#4CAF50';
       }
+    };
+    
+    // Map View Mode - Fullscreen Google Maps for drawing
+    window.openMapView = function() {
+      console.log('🗺️ Opening Map View mode...');
+      
+      // Track mode selection
+      if (typeof Analytics !== 'undefined' && Analytics.modeSelected) {
+        Analytics.modeSelected('map-view');
+      }
+      
+      // Use Google Maps overlay instead of Leaflet
+      const overlay = document.getElementById('fullscreen-google-map-overlay');
+      const iframe = document.getElementById('fullscreen-google-map-iframe');
+      
+      if (!overlay || !iframe) {
+        console.error('Fullscreen Google Maps overlay not found');
+        return;
+      }
+      
+      // Center on Airlie Beach area
+      const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=-20.27,148.72&zoom=13&maptype=roadmap`;
+      
+      iframe.src = mapUrl;
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Reset drawing state
+      googleMapDrawingEnabled = false;
+      clearGoogleMapDrawing();
+      const drawTools = document.getElementById('google-draw-tools');
+      const toggleBtn = document.getElementById('google-draw-toggle-btn');
+      if (drawTools) drawTools.style.display = 'none';
+      if (toggleBtn) toggleBtn.style.borderColor = '#4CAF50';
     };
     
     // ========== MAP DRAWING FUNCTIONALITY ==========
