@@ -2209,6 +2209,30 @@
       box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
     }
     
+    /* Map View Button in Header (Teal/Cyan) */
+    .map-view-btn-header {
+      padding: 12px 20px;
+      font-size: 1em;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+    }
+    .map-view-btn-header:hover {
+      background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+    }
+    .map-view-btn-header:active {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 3px 10px rgba(6, 182, 212, 0.3);
+    }
+    
     /* Newcomer Important Info Button (Blue) */
     .newcomer-info-btn {
       padding: 18px 35px;
@@ -19926,6 +19950,8 @@
           window.goToHomePage && window.goToHomePage();
         } else if (mode === 'newcomer-info') {
           window.openNewcomerInfo && window.openNewcomerInfo();
+        } else if (mode === 'map-view') {
+          window.openMapView && window.openMapView();
         }
       });
     }
@@ -19937,6 +19963,7 @@
       const aiBtn = document.getElementById('ai-assistant-btn');
       const quickBtn = document.getElementById('quick-decision-btn');
       const browseBtn = document.getElementById('browse-all-tours-btn');
+      const mapBtn = document.getElementById('map-view-btn');
       const newcomerBtn = document.getElementById('newcomer-info-btn');
       
       if (!aiBtn || !quickBtn || !browseBtn) {
@@ -19960,25 +19987,36 @@
         buttonsToAnimate = [
           { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
           { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
+          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
           { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
         ];
       } else if (selectedMode === 'quick-decision') {
         buttonsToAnimate = [
           { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
           { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
+          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
           { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
         ];
       } else if (selectedMode === 'browse-all') {
         buttonsToAnimate = [
           { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
           { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
+          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
+          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
+        ];
+      } else if (selectedMode === 'map-view') {
+        buttonsToAnimate = [
+          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
+          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
           { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
         ];
       } else if (selectedMode === 'newcomer-info') {
         buttonsToAnimate = [
           { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
           { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' }
+          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
+          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' }
         ];
       }
       
@@ -20099,7 +20137,10 @@
       
       // Also fade out the clicked button
       const clickedBtn = selectedMode === 'ai-assistant' ? aiBtn : 
-                         selectedMode === 'quick-decision' ? quickBtn : browseBtn;
+                         selectedMode === 'quick-decision' ? quickBtn :
+                         selectedMode === 'browse-all' ? browseBtn :
+                         selectedMode === 'map-view' ? mapBtn :
+                         selectedMode === 'newcomer-info' ? newcomerBtn : browseBtn;
       if (clickedBtn) {
         clickedBtn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
         clickedBtn.style.opacity = '0';
@@ -20109,7 +20150,7 @@
       // Call callback after animation completes
       setTimeout(() => {
         // Reset all original buttons
-        [aiBtn, quickBtn, browseBtn].forEach(btn => {
+        [aiBtn, quickBtn, browseBtn, mapBtn, newcomerBtn].forEach(btn => {
           if (btn) {
             btn.style.opacity = '';
             btn.style.transform = '';
