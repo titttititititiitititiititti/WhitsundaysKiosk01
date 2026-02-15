@@ -2769,17 +2769,14 @@
     }
 
     .kiosk-header .header-left .quick-decision-btn-header,
-    .kiosk-header .header-left .ai-assistant-btn-header {
+    .kiosk-header .header-left .ai-assistant-btn-header,
+    .kiosk-header .header-left .browse-all-btn-header,
+    .kiosk-header .header-left .map-view-btn-header,
+    .kiosk-header .header-left .newcomer-info-btn-header {
       padding: 12px 24px !important;
       font-size: 1em !important;
-      min-width: 160px !important;
+      min-width: 140px !important;
       border-radius: 25px !important;
-    }
-    
-    .page.home-page .quick-decision-btn-header,
-    .page.home-page .ai-assistant-btn-header {
-      padding: 8px 16px;
-      font-size: 0.85em;
     }
     
     /* Hide Browse All Tours button on home page - we're already here! */
@@ -2837,7 +2834,7 @@
       position: absolute;
       right: 50px;
       display: flex;
-      gap: 10px;
+      gap: 15px;
       align-items: center;
     }
     
@@ -13371,6 +13368,16 @@
       color: white !important;
     }
     
+    .mode-button-clone.map-view {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+      color: white !important;
+    }
+    
+    .mode-button-clone.newcomer-info {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+      color: white !important;
+    }
+    
     /* =========================================================
        UNIFIED HEADER STYLES - Consistent across all pages
        ========================================================= */
@@ -14563,7 +14570,7 @@
           <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-          <button class="map-view-btn-header" id="vq-map-view-btn" onclick="startModeWithAnimation('map-view')" data-translate="map_view">🗺️ Map View</button>
+          <button class="map-view-btn-header" id="vq-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="vq-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -14985,7 +14992,7 @@
           <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Decision</button>
           <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-          <button class="map-view-btn-header" id="home-map-view-btn" onclick="startModeWithAnimation('map-view')" data-translate="map_view">🗺️ Map View</button>
+          <button class="map-view-btn-header" id="home-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="home-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -15585,8 +15592,8 @@
       if (!KIOSK_MODES.ai_enabled) {
         const aiBtn = document.getElementById('ai-assistant-btn');
         if (aiBtn) aiBtn.style.display = 'none';
-        // Also hide header AI buttons
-        document.querySelectorAll('.mobile-ai-btn, .ai-btn-header, [onclick*="startAIAssistant"]').forEach(el => {
+        // Also hide header AI buttons (both mobile and desktop)
+        document.querySelectorAll('.mobile-ai-btn, .ai-assistant-btn-header, [onclick*="openAIAssistant"]').forEach(el => {
           if (!el.classList.contains('browse-all-tours-btn')) el.style.display = 'none';
         });
         console.log('🚫 AI mode disabled');
@@ -19968,190 +19975,212 @@
       const mapBtn = document.getElementById('map-view-btn');
       const newcomerBtn = document.getElementById('newcomer-info-btn');
       
-      if (!aiBtn || !quickBtn || !browseBtn) {
+      // Check if we're on the start screen (buttons visible) - ONLY animate from mode selection page
+      const startScreen = document.getElementById('video-start-screen');
+      const isOnStartScreen = startScreen && startScreen.style.display !== 'none' && startScreen.offsetParent !== null;
+      
+      if (!isOnStartScreen) {
+        console.log('   ⚠️ Not on start screen, switching mode directly (no animation)');
+        if (callback) callback();
+        return;
+      }
+      
+      if (!aiBtn && !quickBtn && !browseBtn) {
         console.log('   ⚠️ Start screen buttons not found, skipping animation');
         if (callback) callback();
         return;
       }
       
-      // Check if we're on the start screen (buttons visible)
-      const startScreen = document.getElementById('video-start-screen');
-      if (!startScreen || startScreen.style.display === 'none') {
-        console.log('   ⚠️ Not on start screen, skipping animation');
-        if (callback) callback();
-        return;
-      }
+      // Filter disabled modes from animation
+      const allModeButtons = [
+        { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant', enabled: KIOSK_MODES.ai_enabled },
+        { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision', enabled: KIOSK_MODES.quick_enabled },
+        { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours', enabled: KIOSK_MODES.browse_enabled },
+        { element: mapBtn, type: 'map-view', text: '🗺️ Map View', enabled: true },
+        { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Important Info', enabled: true }
+      ];
       
-      // Determine which buttons to animate based on selected mode
-      let buttonsToAnimate = [];
-      
-      if (selectedMode === 'ai-assistant') {
-        buttonsToAnimate = [
-          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
-          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
-          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
-        ];
-      } else if (selectedMode === 'quick-decision') {
-        buttonsToAnimate = [
-          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
-          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
-          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
-        ];
-      } else if (selectedMode === 'browse-all') {
-        buttonsToAnimate = [
-          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' },
-          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
-        ];
-      } else if (selectedMode === 'map-view') {
-        buttonsToAnimate = [
-          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
-          { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Info' }
-        ];
-      } else if (selectedMode === 'newcomer-info') {
-        buttonsToAnimate = [
-          { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Decision' },
-          { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant' },
-          { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours' },
-          { element: mapBtn, type: 'map-view', text: '🗺️ Map View' }
-        ];
-      }
+      // Buttons to animate = all enabled modes EXCEPT the selected one
+      let buttonsToAnimate = allModeButtons.filter(btn => 
+        btn.element && btn.enabled && btn.type !== selectedMode
+      );
       
       // Detect if mobile
       const isMobile = window.innerWidth <= 768;
       
-      // Target positions vary by screen size
-      let headerTop, headerLeftStart, buttonGap, targetWidth, targetHeight;
+      // We need to figure out the ACTUAL target positions by measuring
+      // where the header buttons will end up. Execute the callback first
+      // to set up the page, measure positions, then animate.
+      // Actually, let's calculate the target positions based on the header-left area.
       
-      if (isMobile) {
-        // Mobile: buttons go to top-left, circular, smaller
-        headerTop = 8;
-        headerLeftStart = 10;
-        buttonGap = 48; // 38px button + 10px gap
-        targetWidth = 38;
-        targetHeight = 38;
-      } else {
-        // Desktop: buttons go to header-left area
-        headerTop = 12;
-        headerLeftStart = 70;
-        buttonGap = 160;
-        targetWidth = 140;
-        targetHeight = 40;
-      }
+      // First, hide the header buttons in the target page so they don't show during animation
+      // We'll use a class for this
+      const hideHeaderBtnsStyle = document.createElement('style');
+      hideHeaderBtnsStyle.id = 'hide-header-during-animation';
+      hideHeaderBtnsStyle.textContent = `
+        .kiosk-header .header-left .quick-decision-btn-header,
+        .kiosk-header .header-left .ai-assistant-btn-header,
+        .kiosk-header .header-left .browse-all-btn-header,
+        .kiosk-header .header-left .map-view-btn-header,
+        .kiosk-header .header-left .newcomer-info-btn-header {
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(hideHeaderBtnsStyle);
       
-      // Create clones and animate
+      const animationDuration = 600; // ms
+      
+      // Create clones from original start screen buttons
       const clones = [];
-      const animationDuration = 700; // ms - slow enough to see
       
-      buttonsToAnimate.forEach((btn, index) => {
+      buttonsToAnimate.forEach((btn) => {
+        if (!btn.element || btn.element.style.display === 'none') return;
         const sourceRect = btn.element.getBoundingClientRect();
+        if (sourceRect.width === 0) return; // Hidden button
         
         // Create clone
         const clone = document.createElement('div');
         clone.className = `mode-button-clone ${btn.type}`;
-        clone.innerHTML = isMobile ? btn.text.split(' ')[0] : btn.text; // Just emoji on mobile
+        clone.textContent = isMobile ? btn.text.split(' ')[0] : btn.text;
         clone.style.cssText = `
+          position: fixed;
+          z-index: 999999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          white-space: nowrap;
+          font-weight: 700;
+          color: white;
+          cursor: default;
+          pointer-events: none;
           left: ${sourceRect.left}px;
           top: ${sourceRect.top}px;
           width: ${sourceRect.width}px;
           height: ${sourceRect.height}px;
           font-size: ${window.getComputedStyle(btn.element).fontSize};
           padding: ${window.getComputedStyle(btn.element).padding};
+          border-radius: ${window.getComputedStyle(btn.element).borderRadius};
+          background: ${window.getComputedStyle(btn.element).backgroundImage || window.getComputedStyle(btn.element).background};
+          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         `;
         
         document.body.appendChild(clone);
-        clones.push(clone);
+        clones.push({ clone, btn, sourceRect });
         
         // Hide original button immediately
         btn.element.style.opacity = '0';
-        btn.element.style.transform = 'scale(0.8)';
-        
-        // Calculate target position (fixed header position)
-        const targetLeft = headerLeftStart + (index * buttonGap);
-        const targetTop = headerTop;
-        
-        // Animate with requestAnimationFrame for smooth animation
-        const startTime = performance.now();
-        const startLeft = sourceRect.left;
-        const startTop = sourceRect.top;
-        const startWidth = sourceRect.width;
-        const startHeight = sourceRect.height;
-        const startFontSize = parseFloat(window.getComputedStyle(btn.element).fontSize);
-        
-        function animate(currentTime) {
-          const elapsed = currentTime - startTime;
-          const progress = Math.min(elapsed / animationDuration, 1);
-          
-          // Easing function (ease-out-cubic) for smooth deceleration
-          const eased = 1 - Math.pow(1 - progress, 3);
-          
-          // Interpolate values
-          const currentLeft = startLeft + (targetLeft - startLeft) * eased;
-          const currentTop = startTop + (targetTop - startTop) * eased;
-          const currentWidth = startWidth + (targetWidth - startWidth) * eased;
-          const currentHeight = startHeight + (targetHeight - startHeight) * eased;
-          
-          // Font size and padding differ for mobile vs desktop
-          const targetFontSize = isMobile ? 18 : 14;
-          const currentFontSize = startFontSize + (targetFontSize - startFontSize) * eased;
-          const currentPaddingV = isMobile ? 0 : (15 - (15 - 10) * eased);
-          const currentPaddingH = isMobile ? 0 : (25 - (25 - 20) * eased);
-          
-          // Border radius: start at 30px, go to 50% on mobile (circular)
-          const targetBorderRadius = isMobile ? Math.min(currentWidth, currentHeight) / 2 : 25;
-          const startBorderRadius = 30;
-          const currentBorderRadius = startBorderRadius + (targetBorderRadius - startBorderRadius) * eased;
-          
-          clone.style.left = `${currentLeft}px`;
-          clone.style.top = `${currentTop}px`;
-          clone.style.width = `${currentWidth}px`;
-          clone.style.height = `${currentHeight}px`;
-          clone.style.fontSize = `${currentFontSize}px`;
-          clone.style.padding = `${currentPaddingV}px ${currentPaddingH}px`;
-          clone.style.borderRadius = `${currentBorderRadius}px`;
-          
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          } else {
-            // Animation complete - fade out clone smoothly
-            clone.style.transition = 'opacity 0.15s ease';
-            clone.style.opacity = '0';
-            setTimeout(() => {
-              clone.remove();
-            }, 150);
-          }
-        }
-        
-        requestAnimationFrame(animate);
       });
       
-      // Fade out the title text during animation
+      // Fade out the title text and selected button
       const titleText = document.getElementById('video-start-title');
       if (titleText) {
-        titleText.style.transition = 'opacity 0.4s ease';
+        titleText.style.transition = 'opacity 0.3s ease';
         titleText.style.opacity = '0';
       }
       
-      // Also fade out the clicked button
-      const clickedBtn = selectedMode === 'ai-assistant' ? aiBtn : 
-                         selectedMode === 'quick-decision' ? quickBtn :
-                         selectedMode === 'browse-all' ? browseBtn :
-                         selectedMode === 'map-view' ? mapBtn :
-                         selectedMode === 'newcomer-info' ? newcomerBtn : browseBtn;
-      if (clickedBtn) {
-        clickedBtn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        clickedBtn.style.opacity = '0';
-        clickedBtn.style.transform = 'scale(1.1)';
+      const clickedBtn = allModeButtons.find(b => b.type === selectedMode);
+      if (clickedBtn && clickedBtn.element) {
+        clickedBtn.element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        clickedBtn.element.style.opacity = '0';
+        clickedBtn.element.style.transform = 'scale(1.1)';
       }
       
-      // Call callback after animation completes
+      // After a tiny delay (to let page begin transitioning), execute callback
+      // and then measure where the header buttons land
       setTimeout(() => {
-        // Reset all original buttons
+        if (callback) callback();
+        
+        // Now measure where the real header buttons are
+        // Give a moment for the DOM to update
+        requestAnimationFrame(() => {
+          // Find header buttons in the now-active page
+          const headerLeft = document.querySelector('.page.active .kiosk-header .header-left') ||
+                             document.querySelector('.page:not([style*="display: none"]):not([style*="display:none"]) .kiosk-header .header-left');
+          
+          let targetPositions = [];
+          if (headerLeft) {
+            const headerBtns = headerLeft.querySelectorAll('button:not([style*="display: none"]):not([style*="display:none"])');
+            headerBtns.forEach(hBtn => {
+              // Match by class
+              let type = null;
+              if (hBtn.classList.contains('quick-decision-btn-header')) type = 'quick-decision';
+              else if (hBtn.classList.contains('ai-assistant-btn-header')) type = 'ai-assistant';
+              else if (hBtn.classList.contains('browse-all-btn-header')) type = 'browse-all';
+              else if (hBtn.classList.contains('map-view-btn-header')) type = 'map-view';
+              else if (hBtn.classList.contains('newcomer-info-btn-header')) type = 'newcomer-info';
+              
+              if (type) {
+                const rect = hBtn.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                  targetPositions.push({ type, rect });
+                }
+              }
+            });
+          }
+          
+          // Animate each clone to its target position
+          const startTime = performance.now();
+          
+          function animateClones(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / animationDuration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
+            
+            clones.forEach(({ clone, btn, sourceRect }, index) => {
+              // Find target position for this button type
+              const target = targetPositions.find(t => t.type === btn.type);
+              
+              let targetLeft, targetTop, targetW, targetH;
+              if (target) {
+                targetLeft = target.rect.left;
+                targetTop = target.rect.top;
+                targetW = target.rect.width;
+                targetH = target.rect.height;
+              } else {
+                // Fallback: estimate position
+                targetLeft = 70 + index * 160;
+                targetTop = 12;
+                targetW = 140;
+                targetH = 44;
+              }
+              
+              clone.style.left = `${sourceRect.left + (targetLeft - sourceRect.left) * eased}px`;
+              clone.style.top = `${sourceRect.top + (targetTop - sourceRect.top) * eased}px`;
+              clone.style.width = `${sourceRect.width + (targetW - sourceRect.width) * eased}px`;
+              clone.style.height = `${sourceRect.height + (targetH - sourceRect.height) * eased}px`;
+              
+              const startFS = parseFloat(window.getComputedStyle(btn.element).fontSize) || 16;
+              const targetFS = isMobile ? 14 : 14;
+              clone.style.fontSize = `${startFS + (targetFS - startFS) * eased}px`;
+              clone.style.padding = `${12 - (12 - 12) * eased}px ${24 - (24 - 24) * eased}px`;
+              clone.style.borderRadius = '25px';
+            });
+            
+            if (progress < 1) {
+              requestAnimationFrame(animateClones);
+            } else {
+              // Animation complete - remove clones and show real header buttons
+              clones.forEach(({ clone }) => {
+                clone.style.transition = 'opacity 0.1s ease';
+                clone.style.opacity = '0';
+                setTimeout(() => clone.remove(), 100);
+              });
+              
+              // Remove the hiding style to reveal real header buttons
+              setTimeout(() => {
+                const hideStyle = document.getElementById('hide-header-during-animation');
+                if (hideStyle) hideStyle.remove();
+              }, 100);
+            }
+          }
+          
+          requestAnimationFrame(animateClones);
+        });
+      }, 50);
+      
+      // Safety: reset original start screen buttons and clean up after animation
+      setTimeout(() => {
         [aiBtn, quickBtn, browseBtn, mapBtn, newcomerBtn].forEach(btn => {
           if (btn) {
             btn.style.opacity = '';
@@ -20163,8 +20192,12 @@
           titleText.style.opacity = '';
           titleText.style.transition = '';
         }
-        if (callback) callback();
-      }, animationDuration + 50);
+        // Safety: ensure hiding style is removed
+        const hideStyle = document.getElementById('hide-header-during-animation');
+        if (hideStyle) hideStyle.remove();
+        // Safety: remove any leftover clones
+        document.querySelectorAll('.mode-button-clone').forEach(c => c.remove());
+      }, animationDuration + 300);
     }
     
     // ===================================================================
