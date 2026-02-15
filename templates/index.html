@@ -2817,6 +2817,60 @@
       padding: 0 !important;
       margin: 0 !important;
       overflow: hidden !important;
+    }
+    
+    /* ========== DISABLED MODE HIDING (body class based, overrides all !important rules) ========== */
+    /* AI mode disabled */
+    body.ai-mode-disabled #ai-assistant-btn,
+    body.ai-mode-disabled .ai-assistant-btn-header,
+    body.ai-mode-disabled .mobile-ai-btn,
+    body.ai-mode-disabled .kiosk-header .ai-assistant-btn-header,
+    body.ai-mode-disabled .kiosk-header .header-left .ai-assistant-btn-header,
+    body.ai-mode-disabled button.ai-assistant-btn-header,
+    body.ai-mode-disabled #vq-ai-assistant-btn,
+    body.ai-mode-disabled #home-ai-assistant-btn,
+    body.ai-mode-disabled #detail-ai-assistant-btn {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+    
+    /* Quick Decision mode disabled */
+    body.quick-mode-disabled #quick-decision-btn,
+    body.quick-mode-disabled .quick-decision-btn-header,
+    body.quick-mode-disabled .mobile-quick-btn,
+    body.quick-mode-disabled .kiosk-header .quick-decision-btn-header,
+    body.quick-mode-disabled .kiosk-header .header-left .quick-decision-btn-header,
+    body.quick-mode-disabled button.quick-decision-btn-header {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+    
+    /* Browse All mode disabled */
+    body.browse-mode-disabled #browse-all-tours-btn,
+    body.browse-mode-disabled .browse-all-btn-header,
+    body.browse-mode-disabled .mobile-browse-btn,
+    body.browse-mode-disabled .kiosk-header .browse-all-btn-header,
+    body.browse-mode-disabled .kiosk-header .header-left .browse-all-btn-header,
+    body.browse-mode-disabled button.browse-all-btn-header {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
       pointer-events: none !important;
     }
     
@@ -5496,6 +5550,8 @@
     /* Pricing section styling for Quick Decision - matches Browse All Tours */
     .swipe-pricing-section {
       background: rgba(255, 255, 255, 0.95) !important;
+      padding: 50px 60px !important;
+      border-radius: 25px !important;
     }
     
     /* Hero Booking Widget - for embedded Rezdy/FareHarbor/Hero widgets */
@@ -15586,36 +15642,18 @@
     };
     console.log('🎮 Kiosk modes:', KIOSK_MODES);
     
-    // Hide disabled modes when DOM is ready
+    // Hide disabled modes using body classes (CSS !important overrides all inline styles)
     function applyModeVisibility() {
-      // Mode selection screen buttons
       if (!KIOSK_MODES.ai_enabled) {
-        const aiBtn = document.getElementById('ai-assistant-btn');
-        if (aiBtn) aiBtn.style.display = 'none';
-        // Also hide header AI buttons (both mobile and desktop)
-        document.querySelectorAll('.mobile-ai-btn, .ai-assistant-btn-header, [onclick*="openAIAssistant"]').forEach(el => {
-          if (!el.classList.contains('browse-all-tours-btn')) el.style.display = 'none';
-        });
+        document.body.classList.add('ai-mode-disabled');
         console.log('🚫 AI mode disabled');
       }
-      
       if (!KIOSK_MODES.quick_enabled) {
-        const quickBtn = document.getElementById('quick-decision-btn');
-        if (quickBtn) quickBtn.style.display = 'none';
-        // Also hide header Quick Decision buttons
-        document.querySelectorAll('.mobile-quick-btn, .quick-decision-btn-header, [onclick*="startQuickDecision"]').forEach(el => {
-          el.style.display = 'none';
-        });
+        document.body.classList.add('quick-mode-disabled');
         console.log('🚫 Quick Decision mode disabled');
       }
-      
       if (!KIOSK_MODES.browse_enabled) {
-        const browseBtn = document.getElementById('browse-all-tours-btn');
-        if (browseBtn) browseBtn.style.display = 'none';
-        // Also hide header Browse buttons
-        document.querySelectorAll('.mobile-browse-btn, .browse-all-btn-header, [onclick*="goToHomePage"]').forEach(el => {
-          if (!el.id || el.id !== 'browse-all-tours-questions') el.style.display = 'none';
-        });
+        document.body.classList.add('browse-mode-disabled');
         console.log('🚫 Browse All mode disabled');
       }
     }
@@ -15626,9 +15664,6 @@
     } else {
       applyModeVisibility();
     }
-    // Re-apply after a short delay to catch dynamically added elements
-    setTimeout(applyModeVisibility, 500);
-    setTimeout(applyModeVisibility, 2000);
     
     // Simple video loader - for kiosk mode we only use local file
     // No complex logic, no reloads - video is already in the HTML
@@ -19262,14 +19297,12 @@
       
       // PRICING SECTION - Check for per-tour Hero widget HTML first
       if (swipeTourOverrides && swipeTourOverrides.hero_widget_html) {
-        // Show custom Hero HTML widget for this tour - full height, scrollable
+        // Show custom Hero HTML widget for this tour - matches Browse All Tours layout
         detailsHtml += `
-          <div class="swipe-detail-section description-section swipe-pricing-section" style="padding:0 !important;">
-            <div style="padding:15px 15px 10px 15px;background:white;border-radius:12px 12px 0 0;">
-              <h3 style="margin:0;">📅 Book Now</h3>
-              <p style="font-size:0.85em;color:#666;margin:5px 0 0 0;">Select your date and options below</p>
-            </div>
-            <div class="hero-booking-widget" style="width:100%;min-height:900px;border-radius:0 0 12px 12px;background:white;">
+          <div class="swipe-detail-section description-section swipe-pricing-section">
+            <h3 style="font-size:2.2em;font-weight:700;color:#0077b6;margin:0 0 10px 0;text-align:center;">📅 Book Now</h3>
+            <p style="font-size:1.1em;color:#555;margin:0 0 25px 0;font-style:italic;text-align:center;">Select your date and options below</p>
+            <div class="hero-booking-widget" style="width:100%;min-height:900px;border-radius:12px;background:white;">
               ${enhanceWidgetHtml(swipeTourOverrides.hero_widget_html)}
             </div>
           </div>
@@ -33076,8 +33109,21 @@
         
         if (currentRotation === 180) {
           document.body.classList.add('screen-rotated');
+          // When rotated 180°, scroll to bottom so visual top shows page start
+          requestAnimationFrame(() => {
+            window.scrollTo(0, document.documentElement.scrollHeight);
+            // Also scroll any active page container
+            const activePage = document.querySelector('.page.active');
+            if (activePage) activePage.scrollTop = activePage.scrollHeight;
+          });
         } else {
           document.body.classList.remove('screen-rotated');
+          // When back to normal, scroll to top
+          requestAnimationFrame(() => {
+            window.scrollTo(0, 0);
+            const activePage = document.querySelector('.page.active');
+            if (activePage) activePage.scrollTop = 0;
+          });
         }
         
         showRotationToast();
