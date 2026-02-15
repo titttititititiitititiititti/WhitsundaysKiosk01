@@ -8461,8 +8461,30 @@ def check_git_updates():
             api_check_update._notified = False  # Reset so frontend gets notified
             return True
         elif commits_behind > 0 and commits_ahead > 0:
-            # Diverged history - force reset to origin to get latest
-            print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind. Will reset to origin.", flush=True)
+            # Diverged history - try to push local commits first, then reset
+            print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind.", flush=True)
+            
+            # Try to push local commits (like analytics) before resetting
+            # This preserves shop's local work
+            try:
+                push_result = subprocess.run(
+                    ['git', 'push', 'origin', 'main'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                if push_result.returncode == 0:
+                    print(f"[AUTO-UPDATE] ✅ Pushed {commits_ahead} local commit(s) to origin", flush=True)
+                    # After pushing, we might still be behind, so check again
+                    # But for now, proceed with update
+                else:
+                    print(f"[AUTO-UPDATE] ⚠️ Could not push local commits: {push_result.stderr[:200]}", flush=True)
+                    print(f"[AUTO-UPDATE] Will reset to origin (local commits will be lost)", flush=True)
+            except Exception as e:
+                print(f"[AUTO-UPDATE] ⚠️ Error pushing local commits: {e}. Will reset to origin.", flush=True)
+            
+            print(f"[AUTO-UPDATE] Will reset to origin to get latest updates.", flush=True)
             _update_available = True
             api_check_update._notified = False  # Reset so frontend gets notified
             return True
@@ -8522,6 +8544,34 @@ def pull_and_restart():
             except:
                 pass
         
+        # Before resetting, try to push any local commits (like analytics auto-push)
+        # This prevents losing local work when branches have diverged
+        try:
+            push_check = subprocess.run(
+                ['git', 'rev-list', 'origin/main..HEAD', '--count'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            commits_ahead = int(push_check.stdout.strip() or '0')
+            
+            if commits_ahead > 0:
+                print(f"[AUTO-UPDATE] Pushing {commits_ahead} local commit(s) before reset...")
+                push_result = subprocess.run(
+                    ['git', 'push', 'origin', 'main'],
+                    cwd=repo_path,
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                if push_result.returncode == 0:
+                    print(f"[AUTO-UPDATE] ✅ Pushed local commits successfully")
+                else:
+                    print(f"[AUTO-UPDATE] ⚠️ Could not push local commits: {push_result.stderr[:100]}")
+        except Exception as e:
+            print(f"[AUTO-UPDATE] ⚠️ Error checking/pushing local commits: {e}")
+        
         # Use reset --hard to ensure we match origin exactly (handles diverged history)
         # This is safer than pull which can fail on merge conflicts
         result = subprocess.run(
@@ -8532,7 +8582,12 @@ def pull_and_restart():
             timeout=60
         )
         
-        print(f"[AUTO-UPDATE] Reset result: {result.stdout}")
+        if result.returncode == 0:
+            print(f"[AUTO-UPDATE] ✅ Reset successful")
+        else:
+            print(f"[AUTO-UPDATE] Reset result: {result.stdout}")
+            if result.stderr:
+                print(f"[AUTO-UPDATE] Reset stderr: {result.stderr[:200]}")
         
         # Restore analytics files (they might have been overwritten)
         for af, content in analytics_backup.items():
