@@ -2732,6 +2732,66 @@
       box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
     }
     
+    /* ========== DUAL LANGUAGE SUBTEXT ========== */
+    .dual-lang-sub {
+      display: block;
+      font-size: 0.55em;
+      opacity: 0.55;
+      font-weight: 400;
+      line-height: 1.2;
+      margin-top: 2px;
+      letter-spacing: 0;
+      font-style: italic;
+    }
+    /* Buttons - compact subtext */
+    button .dual-lang-sub,
+    .chip .dual-lang-sub {
+      margin-top: 1px;
+      font-size: 0.6em;
+    }
+    /* Headings */
+    h2 .dual-lang-sub,
+    h3 .dual-lang-sub {
+      font-size: 0.5em;
+      opacity: 0.5;
+      font-style: italic;
+    }
+    /* Mode selection buttons - larger for readability */
+    .video-start-screen button .dual-lang-sub {
+      font-size: 0.5em;
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+    /* Header buttons - tight */
+    .kiosk-header button .dual-lang-sub {
+      font-size: 0.6em;
+      margin-top: 1px;
+      display: block;
+      line-height: 1.1;
+    }
+    /* Question cards */
+    .video-question-card .dual-lang-sub,
+    .filter-question-card .dual-lang-sub {
+      font-size: 0.55em;
+      margin-top: 4px;
+    }
+    /* Swipe action buttons */
+    .swipe-btn .dual-lang-sub {
+      font-size: 0.6em;
+      margin-top: 1px;
+    }
+    /* Tour detail section headings */
+    .swipe-detail-section h3 .dual-lang-sub,
+    .tour-detail-page h3 .dual-lang-sub {
+      font-size: 0.55em;
+      opacity: 0.5;
+    }
+    /* Filter answer chips */
+    .filter-answer .dual-lang-sub {
+      font-size: 0.6em;
+      margin-top: 2px;
+    }
+
     /* AI Assistant button in header (purple) */
     .ai-assistant-btn-header {
       padding: 12px 20px;
@@ -17245,13 +17305,27 @@
       }
       
       const lang = uiTranslations[langCode];
-      console.log('🌐 Applying language NOW:', langCode, lang.name);
+      const enLang = uiTranslations['en'];
+      const showDual = langCode !== 'en' && enLang;
+      console.log('🌐 Applying language NOW:', langCode, lang.name, showDual ? '(with English subtext)' : '');
+      
+      // Helper: create dual-language HTML for an element
+      function dualText(primaryText, key) {
+        if (!showDual || !enLang || !enLang[key]) return primaryText;
+        const enText = enLang[key];
+        if (enText === primaryText) return primaryText;
+        return `${primaryText}<span class="dual-lang-sub">${enText}</span>`;
+      }
       
       // Process ALL elements with data-translate attribute
       document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (lang[key]) {
-          el.textContent = lang[key];
+          if (showDual && enLang[key] && enLang[key] !== lang[key]) {
+            el.innerHTML = `${lang[key]}<span class="dual-lang-sub">${enLang[key]}</span>`;
+          } else {
+            el.textContent = lang[key];
+          }
         }
       });
       
@@ -17261,34 +17335,32 @@
       const quickDecisionText = document.getElementById('quick-decision-text');
       const browseAllToursText = document.getElementById('browse-all-tours-text');
       
-      console.log('🔍 Found elements:', {
-        videoStartTitle: !!videoStartTitle,
-        aiAssistantText: !!aiAssistantText,
-        quickDecisionText: !!quickDecisionText,
-        browseAllToursText: !!browseAllToursText
-      });
-      
       if (videoStartTitle && lang.video_start_title) {
-        videoStartTitle.textContent = lang.video_start_title;
-        console.log('✓ Updated title to:', lang.video_start_title);
+        videoStartTitle.innerHTML = dualText(lang.video_start_title, 'video_start_title');
       }
       if (aiAssistantText && lang.ai_assistant_btn) {
-        aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
+        aiAssistantText.innerHTML = '🤖 ' + dualText(lang.ai_assistant_btn, 'ai_assistant_btn');
       }
       if (quickDecisionText && lang.quick_decision_btn) {
-        quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
+        quickDecisionText.innerHTML = '⚡ ' + dualText(lang.quick_decision_btn, 'quick_decision_btn');
       }
       if (browseAllToursText && lang.browse_all_tours_btn) {
-        browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+        browseAllToursText.innerHTML = '🗂️ ' + dualText(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       }
       
       // Update Newcomer Info button
       const newcomerInfoText = document.getElementById('newcomer-info-text');
       if (newcomerInfoText && newcomerTranslations[langCode]) {
-        newcomerInfoText.textContent = newcomerTranslations[langCode].button_text;
+        const primaryNI = newcomerTranslations[langCode].button_text;
+        const enNI = newcomerTranslations['en'] ? newcomerTranslations['en'].button_text : null;
+        if (showDual && enNI && enNI !== primaryNI) {
+          newcomerInfoText.innerHTML = `${primaryNI}<span class="dual-lang-sub">${enNI}</span>`;
+        } else {
+          newcomerInfoText.textContent = primaryNI;
+        }
       }
       
-      // Update search placeholder
+      // Update search placeholder (no dual-lang for placeholders - just primary)
       const searchInput = document.getElementById('home-search-input');
       if (searchInput && lang.search_tours_placeholder) {
         searchInput.placeholder = lang.search_tours_placeholder;
@@ -17297,8 +17369,37 @@
       // Update Map View buttons
       const mapToggleBtn = document.getElementById('home-map-toggle-btn');
       const vqMapToggleBtn = document.getElementById('vq-map-toggle-btn');
-      if (mapToggleBtn && lang.map_view) mapToggleBtn.textContent = lang.map_view;
-      if (vqMapToggleBtn && lang.map_view) vqMapToggleBtn.textContent = lang.map_view;
+      if (mapToggleBtn && lang.map_view) {
+        mapToggleBtn.innerHTML = dualText(lang.map_view, 'map_view');
+      }
+      if (vqMapToggleBtn && lang.map_view) {
+        vqMapToggleBtn.innerHTML = dualText(lang.map_view, 'map_view');
+      }
+      
+      // Update header mode buttons with dual language
+      document.querySelectorAll('.quick-decision-btn-header').forEach(btn => {
+        if (lang.quick_decision_btn) btn.innerHTML = '⚡ ' + dualText(lang.quick_decision_btn, 'quick_decision_btn');
+      });
+      document.querySelectorAll('.ai-assistant-btn-header').forEach(btn => {
+        if (lang.ai_assistant_btn) btn.innerHTML = '🤖 ' + dualText(lang.ai_assistant_btn, 'ai_assistant_btn');
+      });
+      document.querySelectorAll('.browse-all-btn-header').forEach(btn => {
+        if (lang.browse_all_tours_btn) btn.innerHTML = '🗂️ ' + dualText(lang.browse_all_tours_btn, 'browse_all_tours_btn');
+      });
+      document.querySelectorAll('.map-view-btn-header').forEach(btn => {
+        if (lang.map_view) btn.innerHTML = dualText(lang.map_view, 'map_view');
+      });
+      document.querySelectorAll('.newcomer-info-btn-header').forEach(btn => {
+        if (newcomerTranslations[langCode]) {
+          const primaryNI = newcomerTranslations[langCode].button_text;
+          const enNI = newcomerTranslations['en'] ? newcomerTranslations['en'].button_text : null;
+          if (showDual && enNI && enNI !== primaryNI) {
+            btn.innerHTML = `${primaryNI}<span class="dual-lang-sub">${enNI}</span>`;
+          } else {
+            btn.textContent = primaryNI;
+          }
+        }
+      });
       
       // Also call the full applyLanguage if available
       if (typeof applyLanguage === 'function') {
@@ -17970,34 +18071,34 @@
     
     const videoQuestions = [
       {
-        get question() { return t('duration_question'); },
+        get question() { return tDual('duration_question'); },
         answers: [
-          { get text() { return "⏰ " + t('half_day') + " <span>" + t('half_day_hours') + "</span>"; }, value: "half_day", filter: "duration" },
-          { get text() { return "☀️ " + t('full_day') + " <span>" + t('full_day_hours') + "</span>"; }, value: "full_day", filter: "duration" },
-          { get text() { return "🌅 " + t('multi_day') + " " + t('multi_day_adventure'); }, value: "multi_day", filter: "duration" },
-          { get text() { return "🤷 " + t('no_preference'); }, value: "", filter: "duration" }
+          { get text() { return "⏰ " + tDual('half_day') + " <span>" + t('half_day_hours') + "</span>"; }, value: "half_day", filter: "duration" },
+          { get text() { return "☀️ " + tDual('full_day') + " <span>" + t('full_day_hours') + "</span>"; }, value: "full_day", filter: "duration" },
+          { get text() { return "🌅 " + tDual('multi_day') + " " + t('multi_day_adventure'); }, value: "multi_day", filter: "duration" },
+          { get text() { return "🤷 " + tDual('no_preference'); }, value: "", filter: "duration" }
         ]
       },
       {
-        get question() { return t('family_question'); },
+        get question() { return tDual('family_question'); },
         answers: [
-          { get text() { return "👨‍👩‍👧‍👦 " + t('family_with_kids'); }, value: "true", filter: "family_friendly" },
-          { get text() { return "👥 " + t('adults_only'); }, value: "adults_only", filter: "family_friendly" },
-          { get text() { return t('no_preference'); }, value: "", filter: "family_friendly" }
+          { get text() { return "👨‍👩‍👧‍👦 " + tDual('family_with_kids'); }, value: "true", filter: "family_friendly" },
+          { get text() { return "👥 " + tDual('adults_only'); }, value: "adults_only", filter: "family_friendly" },
+          { get text() { return tDual('no_preference'); }, value: "", filter: "family_friendly" }
         ]
       },
       {
-        get question() { return t('activity_question'); },
+        get question() { return tDual('activity_question'); },
         multiple: true,
         answers: [
-          { get text() { return "🐠 " + t('activity_gbr'); }, value: "great_barrier_reef", filter: "activities" },
-          { get text() { return "🏖️ " + t('activity_whitehaven'); }, value: "whitehaven_beach", filter: "activities" },
-          { get text() { return "🏝️ " + t('activity_island'); }, value: "island_tours", filter: "activities" },
-          { get text() { return "⛵ " + t('activity_sailing'); }, value: "sailing", filter: "activities" },
-          { get text() { return "🤿 " + t('activity_snorkeling'); }, value: "snorkeling", filter: "activities" },
-          { get text() { return "🏊 " + t('activity_swimming'); }, value: "swimming", filter: "activities" },
-          { get text() { return "🌅 " + t('activity_scenic_views'); }, value: "scenic_views", filter: "activities" },
-          { get text() { return t('no_preference'); }, value: "", filter: "activities", isSkip: true }
+          { get text() { return "🐠 " + tDual('activity_gbr'); }, value: "great_barrier_reef", filter: "activities" },
+          { get text() { return "🏖️ " + tDual('activity_whitehaven'); }, value: "whitehaven_beach", filter: "activities" },
+          { get text() { return "🏝️ " + tDual('activity_island'); }, value: "island_tours", filter: "activities" },
+          { get text() { return "⛵ " + tDual('activity_sailing'); }, value: "sailing", filter: "activities" },
+          { get text() { return "🤿 " + tDual('activity_snorkeling'); }, value: "snorkeling", filter: "activities" },
+          { get text() { return "🏊 " + tDual('activity_swimming'); }, value: "swimming", filter: "activities" },
+          { get text() { return "🌅 " + tDual('activity_scenic_views'); }, value: "scenic_views", filter: "activities" },
+          { get text() { return tDual('no_preference'); }, value: "", filter: "activities", isSkip: true }
         ]
       }
     ];
@@ -18187,7 +18288,7 @@
       const questionText = document.getElementById('vq-question-text');
       const answersContainer = document.getElementById('vq-answers');
       
-      questionText.textContent = question.question;
+      questionText.innerHTML = question.question;
       answersContainer.innerHTML = '';
       
       // Update progress indicator
@@ -18284,7 +18385,7 @@
       const continueBtn = document.createElement('button');
       continueBtn.id = 'vq-continue-btn';
       continueBtn.className = 'vq-answer-btn vq-continue-btn';
-      continueBtn.innerHTML = t('continue') + ' →';
+      continueBtn.innerHTML = tDual('continue') + ' →';
       continueBtn.onclick = nextVideoQuestion;
       continueBtn.style.opacity = '0';
       continueBtn.style.transform = 'translateY(20px)';
@@ -19001,7 +19102,7 @@
         
         if (itemsList) {
           includesBox.innerHTML = `
-            <h3>✓ ${t('whats_included')}</h3>
+            <h3>✓ ${tDual('whats_included')}</h3>
             <ul>${itemsList}</ul>
           `;
           sectionsAdded++;
@@ -19027,7 +19128,7 @@
         
         if (highlightsList) {
           highlightsBox.innerHTML = `
-            <h3>⭐ ${t('highlights')}</h3>
+            <h3>⭐ ${tDual('highlights')}</h3>
             <ul>${highlightsList}</ul>
           `;
           sectionsAdded++;
@@ -19275,7 +19376,7 @@
       
       const acceptBtn = document.getElementById('accept-btn');
       if (acceptBtn) {
-        acceptBtn.querySelector('.swipe-btn-text').textContent = t('book_now');
+        acceptBtn.querySelector('.swipe-btn-text').innerHTML = tDual('book_now');
         acceptBtn.querySelector('.swipe-btn-icon').textContent = '✓';
         acceptBtn.classList.add('booking-mode');
         acceptBtn.onclick = () => acceptCardWithAnimation();
@@ -19283,7 +19384,7 @@
       
       const rejectBtn = document.getElementById('reject-btn');
       if (rejectBtn) {
-        rejectBtn.querySelector('.swipe-btn-text').textContent = t('next_tour') || 'Next Tour';
+        rejectBtn.querySelector('.swipe-btn-text').innerHTML = tDual('next_tour') || 'Next Tour';
         rejectBtn.querySelector('.swipe-btn-icon').textContent = '✕';
         rejectBtn.onclick = () => rejectCardWithAnimation();
       }
@@ -19317,8 +19418,8 @@
         
         detailsHtml += `
           <div class="swipe-detail-section description-section swipe-pricing-section">
-            <h3>📅 ${t('book_now')}</h3>
-            <p style="font-size:0.85em;color:#666;margin:0 0 12px 0;">${t('select_date_options')}</p>
+            <h3>📅 ${tDual('book_now')}</h3>
+            <p style="font-size:0.85em;color:#666;margin:0 0 12px 0;">${tDual('select_date_options')}</p>
             <div class="hero-booking-widget" style="width:100%;min-height:350px;border-radius:12px;overflow:hidden;background:#f8f9fa;">
               <iframe 
                 src="${heroUrl}" 
@@ -19334,7 +19435,7 @@
         // Default pricing tiers display
         detailsHtml += `
           <div class="swipe-detail-section description-section swipe-pricing-section">
-            <h3>💰 ${t('pricing')}</h3>
+            <h3>💰 ${tDual('pricing')}</h3>
             <p style="font-size:0.85em;color:#666;margin:0 0 12px 0;">Tap to select your pricing option</p>
             <div class="swipe-price-tiers">
         `;
@@ -19363,7 +19464,7 @@
         // Fallback to single price if no tiers
         detailsHtml += `
           <div class="swipe-detail-section description-section swipe-pricing-section">
-            <h3>💰 ${t('pricing')}</h3>
+            <h3>💰 ${tDual('pricing')}</h3>
             <div class="swipe-price-tier-btn swipe-pricing-selected" style="background:#0077b6;color:#ffffff;">
               From ${fullTourData.price}
             </div>
@@ -19381,7 +19482,7 @@
         const cleanedTimes = cleanBracketFormatting(fullTourData.departure_times);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>🕐 ${t('times')}</h3>
+            <h3>🕐 ${tDual('times')}</h3>
             <div>${cleanedTimes}</div>
           </div>
         `;
@@ -19393,7 +19494,7 @@
         const cleanedAges = cleanBracketFormatting(fullTourData.age_requirements);
         detailsHtml += `
           <div class="swipe-detail-section ${ageClass}">
-            <h3>👥 ${t('ages')}</h3>
+            <h3>👥 ${tDual('ages')}</h3>
             <div>${cleanedAges}</div>
           </div>
         `;
@@ -19405,7 +19506,7 @@
         const cleanedIdealFor = cleanBracketFormatting(fullTourData.ideal_for);
         detailsHtml += `
           <div class="swipe-detail-section ${idealClass}">
-            <h3>🎯 ${t('ideal_for')}</h3>
+            <h3>🎯 ${tDual('ideal_for')}</h3>
             <div>${cleanedIdealFor}</div>
           </div>
         `;
@@ -19415,7 +19516,7 @@
         const cleanedDescription = cleanBracketFormatting(fullTourData.description);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>📝 ${t('about_this_tour')}</h3>
+            <h3>📝 ${tDual('about_this_tour')}</h3>
             <div>${cleanedDescription}</div>
           </div>
         `;
@@ -19425,7 +19526,7 @@
         const formattedItinerary = cleanBracketFormatting(fullTourData.itinerary);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>📅 ${t('itinerary')}</h3>
+            <h3>📅 ${tDual('itinerary')}</h3>
             <div>${formattedItinerary}</div>
           </div>
         `;
@@ -19435,7 +19536,7 @@
         const formattedMenu = cleanBracketFormatting(fullTourData.menu);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>🍽️ ${t('menu')}</h3>
+            <h3>🍽️ ${tDual('menu')}</h3>
             <div>${formattedMenu}</div>
           </div>
         `;
@@ -19445,7 +19546,7 @@
         const formattedInfo = cleanBracketFormatting(fullTourData.important_information);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>⚠️ ${t('important_information')}</h3>
+            <h3>⚠️ ${tDual('important_information')}</h3>
             <div>${formattedInfo}</div>
           </div>
         `;
@@ -19460,7 +19561,7 @@
         const bringClass = !hasExtra ? 'description-section' : '';
         detailsHtml += `
           <div class="swipe-detail-section ${bringClass}">
-            <h3>🎒 ${t('what_to_bring')}</h3>
+            <h3>🎒 ${tDual('what_to_bring')}</h3>
             <div>${formattedBring}</div>
           </div>
         `;
@@ -19472,7 +19573,7 @@
         const extraClass = !hasBring ? 'description-section' : '';
         detailsHtml += `
           <div class="swipe-detail-section ${extraClass}">
-            <h3>💰 ${t('whats_extra')}</h3>
+            <h3>💰 ${tDual('whats_extra')}</h3>
             <div>${formattedExtra}</div>
           </div>
         `;
@@ -19482,7 +19583,7 @@
         const formattedPolicy = cleanBracketFormatting(fullTourData.cancellation_policy);
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>📋 ${t('cancellation_policy')}</h3>
+            <h3>📋 ${tDual('cancellation_policy')}</h3>
             <div>${formattedPolicy}</div>
           </div>
         `;
@@ -19496,11 +19597,11 @@
         const swipeMapUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullTourData.departure_location)}&zoom=14`;
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3>📍 ${t('departure_location')}</h3>
+            <h3>📍 ${tDual('departure_location')}</h3>
             <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${fullTourData.departure_location}</div>
             <div style="width: 100%; height: 350px; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
               <button onclick="openFullscreenGoogleMap('${swipeMapUrl.replace(/'/g, "\\'")}')" style="position:absolute;top:10px;right:10px;padding:10px 16px;background:rgba(0,119,182,0.95);color:white;border:2px solid rgba(255,255,255,0.8);border-radius:10px;font-size:0.95em;font-weight:600;cursor:pointer;z-index:10;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-                <span style="font-size:1.1em;">⛶</span> ${t('enlarge_map')}
+                <span style="font-size:1.1em;">⛶</span> ${tDual('enlarge_map')}
               </button>
               <iframe 
                 width="100%" 
@@ -19511,7 +19612,7 @@
                 allowfullscreen>
               </iframe>
             </div>
-            <div style="color: #2c3e50; font-size: 1.05em;">${t('arrive_early')}</div>
+            <div style="color: #2c3e50; font-size: 1.05em;">${tDual('arrive_early')}</div>
           </div>
         `;
       }
@@ -19522,7 +19623,7 @@
         console.log('🎬 [Quick Decision] Adding video section with', fullTourData.video_urls.length, 'videos');
         detailsHtml += `
           <div class="swipe-detail-section description-section" style="background: #ffffff; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            <h3 style="color: #0077b6; margin-bottom: 20px;">🎬 ${t('tour_videos')}</h3>
+            <h3 style="color: #0077b6; margin-bottom: 20px;">🎬 ${tDual('tour_videos')}</h3>
             <div class="swipe-video-grid" style="display: grid; gap: 15px;">
         `;
         fullTourData.video_urls.forEach((videoUrl, idx) => {
@@ -19545,12 +19646,12 @@
       if (fullTourData.reviews && fullTourData.reviews.overall_rating > 0 && fullTourData.reviews.review_count > 0) {
         detailsHtml += `
           <div class="swipe-detail-section description-section">
-            <h3 style="margin-bottom: 12px;">⭐ ${t('customer_reviews')}</h3>
+            <h3 style="margin-bottom: 12px;">⭐ ${tDual('customer_reviews')}</h3>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
               <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${fullTourData.reviews.overall_rating.toFixed(1)}</div>
               <div style="display: flex; flex-direction: column; gap: 3px;">
                 <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
-                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${t('based_on_reviews').replace('{count}', fullTourData.reviews.review_count)}</div>
+                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replace('{count}', fullTourData.reviews.review_count)}</div>
               </div>
             </div>
             <div class="swipe-reviews-grid">
@@ -22240,15 +22341,15 @@
     function getAICategories() {
       return {
         welcome: [
-          { text: t('ai_reef_tours'), category: "reef", action: "expand-duration" },
-          { text: t('ai_beach_tours'), category: "beach", action: "expand-duration" },
-          { text: t('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: t('ai_popular'), category: "general", action: "send", value: "Show me popular tours" }
+          { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
+          { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
+          { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
+          { text: tDual('ai_popular'), category: "general", action: "send", value: "Show me popular tours" }
         ],
         followup: [
-          { text: t('ai_other_options'), category: "general", action: "send", value: "Show me other options" },
-          { text: t('ai_different_activity'), category: "activities", action: "expand" },
-          { text: t('ai_whos_going'), category: "audience", action: "expand" }
+          { text: tDual('ai_other_options'), category: "general", action: "send", value: "Show me other options" },
+          { text: tDual('ai_different_activity'), category: "activities", action: "expand" },
+          { text: tDual('ai_whos_going'), category: "audience", action: "expand" }
         ]
       };
     }
@@ -22256,10 +22357,10 @@
     // Duration options shown after selecting an activity
     function getDurationOptions() {
       return [
-        { text: t('ai_half_day'), duration: "half day" },
-        { text: t('ai_full_day'), duration: "full day" },
-        { text: t('ai_multi_day'), duration: "overnight or multi-day" },
-        { text: t('ai_no_preference'), duration: null }
+        { text: tDual('ai_half_day'), duration: "half day" },
+        { text: tDual('ai_full_day'), duration: "full day" },
+        { text: tDual('ai_multi_day'), duration: "overnight or multi-day" },
+        { text: tDual('ai_no_preference'), duration: null }
       ];
     }
     
@@ -22267,19 +22368,19 @@
     function getAISubOptions() {
       return {
         audience: [
-          { text: "👨‍👩‍👧 " + t('family_with_kids'), value: "We're traveling with kids" },
-          { text: "💑 " + t('adults_only'), value: "It's just the two of us" },
-          { text: "🎉 " + t('activity_scenic'), value: "We're a group of friends" },
+          { text: "👨‍👩‍👧 " + tDual('family_with_kids'), value: "We're traveling with kids" },
+          { text: "💑 " + tDual('adults_only'), value: "It's just the two of us" },
+          { text: "🎉 " + tDual('activity_scenic'), value: "We're a group of friends" },
           { text: "🧳 Solo", value: "I'm traveling solo" },
-          { text: t('ai_back'), action: "back" }
+          { text: tDual('ai_back'), action: "back" }
         ],
         activities: [
-          { text: t('ai_reef_tours'), category: "reef", action: "expand-duration" },
-          { text: t('ai_beach_tours'), category: "beach", action: "expand-duration" },
-          { text: t('ai_sailing'), category: "sailing", action: "expand-duration" },
+          { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
+          { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
+          { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
           { text: "🚁 Scenic Flight", value: "Show me scenic flights" },
           { text: "🚤 Jet Ski", value: "Show me jet ski tours" },
-          { text: t('ai_back'), action: "back" }
+          { text: tDual('ai_back'), action: "back" }
         ]
       };
     }
@@ -22328,7 +22429,7 @@
         ${durationOptions.map(d => 
           `<button class="ai-suggestion-btn" data-duration="${d.duration || ''}" onclick="selectAIDuration(this)">${d.text}</button>`
         ).join('')}
-        <button class="ai-suggestion-btn ai-back-btn" onclick="showAISuggestions('${aiSuggestionState}')">${t('ai_back')}</button>
+        <button class="ai-suggestion-btn ai-back-btn" onclick="showAISuggestions('${aiSuggestionState}')">${tDual('ai_back')}</button>
       `;
     }
     
@@ -23435,7 +23536,7 @@
         hasFilters = true;
       }
       if (activeFilters.family) {
-        const familyText = activeFilters.family === 'true' ? t('family_with_kids') : t('adults_only');
+        const familyText = activeFilters.family === 'true' ? tDual('family_with_kids') : tDual('adults_only');
         html += `<div class="filter-summary-item">👨‍👩‍👧‍👦 ${familyText}</div>`;
         hasFilters = true;
       }
@@ -23452,11 +23553,11 @@
         hasFilters = true;
       }
       if (activeFilters.meals) {
-        html += `<div class="filter-summary-item">🍽️ ${t('meals_included')}</div>`;
+        html += `<div class="filter-summary-item">🍽️ ${tDual('meals_included')}</div>`;
         hasFilters = true;
       }
       if (activeFilters.equipment) {
-        html += `<div class="filter-summary-item">🎒 ${t('equipment_provided')}</div>`;
+        html += `<div class="filter-summary-item">🎒 ${tDual('equipment_provided')}</div>`;
         hasFilters = true;
       }
       
@@ -23553,8 +23654,8 @@
       // Reset tour titles
       const titleEl = document.getElementById('home-tours-title');
       const subtitleEl = document.getElementById('home-tours-subtitle');
-      if (titleEl) titleEl.textContent = t('tap_any_card');
-      if (subtitleEl) subtitleEl.textContent = t('showing_all_tours');
+      if (titleEl) titleEl.innerHTML = tDual('tap_any_card');
+      if (subtitleEl) subtitleEl.innerHTML = tDual('showing_all_tours');
       
       // Clear budget slider
       const budgetSliderEl = document.getElementById('budget-slider');
@@ -23729,7 +23830,7 @@
         skipBudgetBtn.onclick = () => {
           delete activeFilters.price;
           budgetSlider.value = 0;
-          budgetLabel.textContent = t('move_slider');
+          budgetLabel.innerHTML = tDual('move_slider');
           confirmBudgetBtn.style.display = 'none';
           updateFilterSummary();
           applyFilters();
@@ -24091,7 +24192,7 @@
           // Update subtitle with total count
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            subtitle.textContent = t('showing_all_tours');
+            subtitle.innerHTML = tDual('showing_all_tours');
           }
           
           // Also fetch ALL tours for map view (with location data)
@@ -24476,7 +24577,7 @@
         // No filters yet
         const subtitle = document.getElementById('home-tours-subtitle');
         if (subtitle) {
-          subtitle.textContent = t('showing_all_tours');
+          subtitle.innerHTML = tDual('showing_all_tours');
         }
         
         // If in map view, show all tours
@@ -24685,7 +24786,7 @@
           // No filters left, show all tours
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            subtitle.textContent = t('showing_all_tours');
+            subtitle.innerHTML = tDual('showing_all_tours');
           }
           
           if (isMapView) {
@@ -24756,13 +24857,13 @@
       // Reset and reload ALL tours
       const subtitle = document.getElementById('home-tours-subtitle');
       if (subtitle) {
-        subtitle.textContent = t('showing_all_tours');
+        subtitle.innerHTML = tDual('showing_all_tours');
       }
       
       // Update title
       const title = document.getElementById('home-tours-title');
       if (title) {
-        title.textContent = t('tap_any_card');
+        title.innerHTML = tDual('tap_any_card');
       }
       
       // Check which view we're in and refresh accordingly
@@ -24873,21 +24974,21 @@
           if (hasFilters) {
             const filterLabels = [];
             if (activeFilters.duration) {
-              const durationLabel = activeFilters.duration === 'half_day' ? t('half_day') :
-                                    activeFilters.duration === 'full_day' ? t('full_day') :
-                                    activeFilters.duration === 'multi_day' ? t('multi_day') : '';
+              const durationLabel = activeFilters.duration === 'half_day' ? tDual('half_day') :
+                                    activeFilters.duration === 'full_day' ? tDual('full_day') :
+                                    activeFilters.duration === 'multi_day' ? tDual('multi_day') : '';
               if (durationLabel) filterLabels.push(durationLabel);
             }
             
             if (filterLabels.length > 0) {
-              subtitle.textContent = t('showing_tours').replace('{count}', `${totalCount} ${filterLabels.join(', ')}`);
+              subtitle.innerHTML = tDual('showing_tours').replace('{count}', `${totalCount} ${filterLabels.join(', ')}`);
             } else {
-              subtitle.textContent = t('showing_tours').replace('{count}', totalCount);
+              subtitle.innerHTML = tDual('showing_tours').replace('{count}', totalCount);
             }
-            title.textContent = t('filtered_tours');
+            title.innerHTML = tDual('filtered_tours');
           } else {
-            subtitle.textContent = t('showing_tours').replace('{count}', totalCount);
-            title.textContent = t('tap_any_card') || 'Tap Any Card For Booking and More Info';
+            subtitle.innerHTML = tDual('showing_tours').replace('{count}', totalCount);
+            title.innerHTML = tDual('tap_any_card') || 'Tap Any Card For Booking and More Info';
           }
           
           // Store filtered tours in mapTourData for map view
@@ -25891,7 +25992,7 @@
       container.innerHTML = `
         <div class="similar-tours-section" style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
           <h3 style="color: #0077b6; font-size: 1.3em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-            ✨ ${t('similar_tours_title') || 'Similar Tours You Might Like'}
+            ✨ ${tDual('similar_tours_title') || 'Similar Tours You Might Like'}
           </h3>
           <div style="text-align: center; padding: 20px; color: #666;">
             <span style="display: inline-block; animation: pulse 1.5s infinite;">Loading recommendations...</span>
@@ -25932,7 +26033,7 @@
               <div style="position: relative; height: 150px; background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);">
                 ${tour.thumbnail ? `<img src="${tour.thumbnail}" alt="${tour.name}" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
                 <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,119,182,0.9); color: white; padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9em;">
-                  ${tour.similarity}% ${t('match') || 'match'}
+                  ${tour.similarity}% ${tDual('match') || 'match'}
                 </div>
               </div>
               <div style="padding: 15px;">
@@ -25950,7 +26051,7 @@
         container.innerHTML = `
           <div class="similar-tours-section" style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
             <h3 style="color: #0077b6; font-size: 1.3em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-              ✨ ${t('similar_tours_title') || 'Similar Tours You Might Like'}
+              ✨ ${tDual('similar_tours_title') || 'Similar Tours You Might Like'}
             </h3>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
               ${toursHtml}
@@ -26855,7 +26956,7 @@
             aboutSection.style.display = 'none';
             // Store formatted description to add later
             window.pendingAboutContent = {
-              title: t('about_this_tour'),
+              title: tDual('about_this_tour'),
               content: formattedDesc
             };
           }
@@ -26880,7 +26981,7 @@
             // Check if this tour has Hero widget HTML configured
             if (tourOverrides && tourOverrides.hero_widget_html) {
               // Show custom Hero HTML widget
-              pricingSection.querySelector('h2').textContent = 'Book Now';
+              pricingSection.querySelector('h2').innerHTML = tDual('book_now');
               pricingSection.querySelector('.pricing-hint').textContent = 'Select your date and options below.';
               
               pricingHTML = `
@@ -26899,7 +27000,7 @@
                 .replace('{tour_name}', encodeURIComponent(tourName))
                 .replace('{tour_key}', encodeURIComponent(tourKey));
               
-              pricingSection.querySelector('h2').textContent = 'Book Now';
+              pricingSection.querySelector('h2').innerHTML = tDual('book_now');
               pricingSection.querySelector('.pricing-hint').textContent = 'Select your date and options below.';
               
               pricingHTML = `
@@ -26918,7 +27019,7 @@
               setTimeout(() => protectBookingWidgets({...data, key: key}), 100);
             } else {
               // Default pricing display
-              pricingSection.querySelector('h2').textContent = 'Pricing';
+              pricingSection.querySelector('h2').innerHTML = tDual('pricing');
               pricingSection.querySelector('.pricing-hint').textContent = 'Tap to select your pricing option.';
               
           if (data.price_tiers && data.price_tiers.trim()) {
@@ -26950,7 +27051,7 @@
                 const bgColor = isFirst ? '#0077b6' : '#f0f4f8';
                 const textColor = isFirst ? '#ffffff' : '#2c3e50';
                 const selectedClass = isFirst ? ' pricing-selected' : '';
-                pricingHTML += `<div class="pricing-tier-option${selectedClass}" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:${textColor};cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('adult')}:</b> ${convertedAdultPrice}</div>`;
+                pricingHTML += `<div class="pricing-tier-option${selectedClass}" data-tier="${t('adult')}: ${data.price_adult}" data-original-price="${data.price_adult}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:${textColor};cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${tDual('adult')}:</b> ${convertedAdultPrice}</div>`;
                 priceIndex++;
             }
             if (data.price_child && data.price_child !== 'N/A') {
@@ -26959,7 +27060,7 @@
                 const bgColor = isFirst ? '#0077b6' : '#f5f8fa';
                 const textColor = isFirst ? '#ffffff' : '#2c3e50';
                 const selectedClass = isFirst ? ' pricing-selected' : '';
-                pricingHTML += `<div class="pricing-tier-option${selectedClass}" data-tier="${t('child')}: ${data.price_child}" data-original-price="${data.price_child}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:${textColor};cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${t('child')}:</b> ${convertedChildPrice}</div>`;
+                pricingHTML += `<div class="pricing-tier-option${selectedClass}" data-tier="${t('child')}: ${data.price_child}" data-original-price="${data.price_child}" style="background:${bgColor};padding:16px 24px;border-radius:8px;font-size:1.2em;border:3px solid #e0e7ee;color:${textColor};cursor:pointer;transition:all 0.3s ease;user-select:none;"><b>${tDual('child')}:</b> ${convertedChildPrice}</div>`;
               }
             }
             
@@ -27048,7 +27149,7 @@
               // If no includes to pair with, make full width
               const highlightsClass = !hasIncludes ? 'description-section' : '';
               info += `<div class="swipe-detail-section ${highlightsClass}">
-                <h3>⭐ ${t('highlights')}</h3>
+                <h3>⭐ ${tDual('highlights')}</h3>
                 <ul>${highlightsList}</ul>
               </div>`;
             }
@@ -27065,7 +27166,7 @@
               // If no highlights to pair with, make full width
               const includesClass = !hasHighlights ? 'description-section' : '';
               info += `<div class="swipe-detail-section ${includesClass}">
-                <h3>✅ ${t('whats_included')}</h3>
+                <h3>✅ ${tDual('whats_included')}</h3>
                 <ul>${includesList}</ul>
               </div>`;
             }
@@ -27078,7 +27179,7 @@
           if (hasAgeInfo) {
             const ageClass = !hasIdealFor ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${ageClass}">
-              <h3>${hasAgeInfo.icon} ${hasAgeInfo.title}</h3>
+              <h3>${hasAgeInfo.icon} ${tDual('ages')}</h3>
               <div>${cleanBracketFormatting(hasAgeInfo.content)}</div>
             </div>`;
           }
@@ -27086,7 +27187,7 @@
           if (hasIdealFor) {
             const idealClass = !hasAgeInfo ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${idealClass}">
-              <h3>${hasIdealFor.icon} ${hasIdealFor.title}</h3>
+              <h3>${hasIdealFor.icon} ${tDual('ideal_for')}</h3>
               <div>${cleanBracketFormatting(hasIdealFor.content)}</div>
             </div>`;
           }
@@ -27095,7 +27196,7 @@
           const hasTimesInfo = quickInfoItems.find(i => i.title === t('times'));
           if (hasTimesInfo) {
             info += `<div class="swipe-detail-section description-section">
-              <h3>${hasTimesInfo.icon} ${hasTimesInfo.title}</h3>
+              <h3>${hasTimesInfo.icon} ${tDual('times')}</h3>
               <div>${cleanBracketFormatting(hasTimesInfo.content)}</div>
             </div>`;
           }
@@ -27103,7 +27204,7 @@
           // === ABOUT THIS TOUR - always full width ===
           if (window.pendingAboutContent) {
             info += `<div class="swipe-detail-section description-section">
-              <h3>📝 ${window.pendingAboutContent.title}</h3>
+              <h3>📝 ${tDual('about_this_tour')}</h3>
               <div>${window.pendingAboutContent.content}</div>
             </div>`;
             window.pendingAboutContent = null;
@@ -27114,7 +27215,7 @@
             const formattedItinerary = cleanBracketFormatting(data.itinerary);
             const itineraryClass = !hasMenu ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${itineraryClass}">
-              <h3>📅 ${t('itinerary')}</h3>
+              <h3>📅 ${tDual('itinerary')}</h3>
               <div>${formattedItinerary}</div>
             </div>`;
           }
@@ -27124,7 +27225,7 @@
             const formattedMenu = cleanBracketFormatting(data.menu);
             const menuClass = !hasItinerary ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${menuClass}">
-              <h3>🍽️ ${t('menu')}</h3>
+              <h3>🍽️ ${tDual('menu')}</h3>
               <div>${formattedMenu}</div>
             </div>`;
           }
@@ -27133,7 +27234,7 @@
           if (data.important_information && data.important_information.trim() && data.important_information !== 'N/A' && data.important_information !== 'null') {
             let formattedInfo = cleanBracketFormatting(data.important_information);
             info += `<div class="swipe-detail-section description-section">
-              <h3>⚠️ ${t('important_information')}</h3>
+              <h3>⚠️ ${tDual('important_information')}</h3>
               <div>${formattedInfo}</div>
             </div>`;
           }
@@ -27144,7 +27245,7 @@
             // If no extra to pair with, make full width
             const bringClass = !hasExtra ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${bringClass}">
-              <h3>🎒 ${t('what_to_bring')}</h3>
+              <h3>🎒 ${tDual('what_to_bring')}</h3>
               <div>${formattedBring}</div>
             </div>`;
           }
@@ -27155,7 +27256,7 @@
             // If no bring to pair with, make full width
             const extraClass = !hasBring ? 'description-section' : '';
             info += `<div class="swipe-detail-section ${extraClass}">
-              <h3>💰 ${t('whats_extra')}</h3>
+              <h3>💰 ${tDual('whats_extra')}</h3>
               <div>${formattedExtra}</div>
             </div>`;
           }
@@ -27164,7 +27265,7 @@
           if (data.cancellation_policy && data.cancellation_policy.trim() && data.cancellation_policy !== 'N/A' && data.cancellation_policy !== 'null') {
             let formattedPolicy = cleanBracketFormatting(data.cancellation_policy);
             info += `<div class="swipe-detail-section description-section">
-              <h3>📋 ${t('cancellation_policy')}</h3>
+              <h3>📋 ${tDual('cancellation_policy')}</h3>
               <div>${formattedPolicy}</div>
             </div>`;
           }
@@ -27175,7 +27276,7 @@
             const browseMapUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(data.departure_location)}&zoom=14`;
             // Use Google Maps embed like Quick Decision mode
             info += `<div class="swipe-detail-section description-section">
-              <h3>📍 ${t('departure_location')}</h3>
+              <h3>📍 ${tDual('departure_location')}</h3>
               <div style="font-weight: 600; margin-bottom: 15px; color: #2c3e50; font-size: 1.15em;">${data.departure_location}</div>
               <div style="width: 100%; height: ${mapHeight}; border-radius: 15px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); position: relative;">
                 <button onclick="openFullscreenGoogleMap('${browseMapUrl.replace(/'/g, "\\'")}')" style="position:absolute;top:10px;right:10px;padding:10px 16px;background:rgba(0,119,182,0.95);color:white;border:2px solid rgba(255,255,255,0.8);border-radius:10px;font-size:0.95em;font-weight:600;cursor:pointer;z-index:10;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
@@ -27197,12 +27298,12 @@
           // REVIEWS SECTION - Inside the grid, horizontally scrollable like Quick Decision
           if (data.reviews && data.reviews.overall_rating > 0 && data.reviews.review_count > 0) {
             info += `<div class="swipe-detail-section description-section">
-              <h3 style="margin-bottom: 12px;">⭐ ${t('customer_reviews')}</h3>
+              <h3 style="margin-bottom: 12px;">⭐ ${tDual('customer_reviews')}</h3>
               <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
                 <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${data.reviews.overall_rating.toFixed(1)}</div>
                 <div style="display: flex; flex-direction: column; gap: 3px;">
                   <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
-                  <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${t('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
+                  <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
                 </div>
               </div>
               <div class="swipe-reviews-grid">`;
@@ -27796,7 +27897,7 @@
       // Update subtitle on home page
       const subtitle = document.getElementById('home-tours-subtitle');
       const title = document.getElementById('home-tours-title');
-      if (title) title.textContent = t('tours_by').replace('{company}', companyName);
+      if (title) title.innerHTML = tDual('tours_by').replace('{company}', companyName);
       if (subtitle) subtitle.textContent = 'Loading...';
       
       // Scroll to top
@@ -28581,8 +28682,8 @@
         // Update button text
         if (mapToggleBtn) mapToggleBtn.textContent = 'Map view';
         
-        header.textContent = t('tap_any_card');
-        resultsInfo.textContent = t('tap_to_filter');
+        header.innerHTML = tDual('tap_any_card');
+        resultsInfo.innerHTML = tDual('tap_to_filter');
         
         // Clear location filter from map view
         if (selectedLocation) {
@@ -29233,6 +29334,18 @@
       return inlineDefaults[key] || key;
     }
     
+    // Dual-language translation helper - returns HTML with primary text + English subtext
+    // Use in innerHTML/template literal contexts only (NOT textContent or comparisons)
+    function tDual(key) {
+      const primaryText = t(key);
+      // If already English, no subtext needed
+      if (currentLanguage === 'en') return primaryText;
+      // Get English text
+      const enText = uiTranslations['en'] && uiTranslations['en'][key];
+      if (!enText || enText === primaryText) return primaryText;
+      return `${primaryText}<span class="dual-lang-sub">${enText}</span>`;
+    }
+    
     // Home page language menu
     window.toggleHomeLanguageMenu = function(event) {
       console.log('🌐 toggleHomeLanguageMenu called');
@@ -29669,49 +29782,79 @@
       
       // Update results info if it's the default text
       const resultsInfo = document.getElementById('results-info');
-      if (resultsInfo && resultsInfo.textContent.includes('Tap an option')) {
-        resultsInfo.textContent = lang.tap_to_filter;
+      if (resultsInfo && (resultsInfo.textContent.includes('Tap an option') || resultsInfo.textContent.includes(lang.tap_to_filter))) {
+        resultsInfo.innerHTML = showDualF ? dualF(lang.tap_to_filter, 'tap_to_filter') : lang.tap_to_filter;
       }
       
-      // Update filter questions and options
+      // Update filter questions and options (with dual-language subtext)
+      // Helper to add English subtext to filter option text
+      const enLangF = uiTranslations['en'];
+      const showDualF = langCode !== 'en' && enLangF;
+      function dualF(text, enKey) {
+        if (!showDualF || !enLangF[enKey]) return text;
+        const enText = enLangF[enKey];
+        if (enText === text) return text;
+        return `${text}<span class="dual-lang-sub">${enText}</span>`;
+      }
+      function dualQ(text, enKey) {
+        if (!showDualF || !enLangF[enKey]) return text;
+        const enText = enLangF[enKey];
+        if (enText === text) return text;
+        return `${text}<span class="dual-lang-sub">${enText}</span>`;
+      }
+      
       // Question 0: Duration
-      updateFilterQuestion(0, lang.duration_question, {
-        'half_day': `⏰ ${lang.half_day} <span style="opacity:0.8;">${lang.half_day_hours}</span>`,
-        'full_day': `☀️ ${lang.full_day} <span style="opacity:0.8;">${lang.full_day_hours}</span>`,
-        'multi_day': `🌅 ${lang.multi_day} ${lang.multi_day_adventure}`,
-        '': `🤷 ${lang.no_preference}`
+      updateFilterQuestion(0, dualQ(lang.duration_question, 'duration_question'), {
+        'half_day': `⏰ ${dualF(lang.half_day, 'half_day')} <span style="opacity:0.8;">${lang.half_day_hours}</span>`,
+        'full_day': `☀️ ${dualF(lang.full_day, 'full_day')} <span style="opacity:0.8;">${lang.full_day_hours}</span>`,
+        'multi_day': `🌅 ${dualF(lang.multi_day, 'multi_day')} ${lang.multi_day_adventure}`,
+        '': `🤷 ${dualF(lang.no_preference, 'no_preference')}`
       });
       
       // Question 1: Budget slider - skip (no options to translate, uses slider)
       
       // Question 2: Activity
-      updateFilterQuestion(2, lang.activity_question, {
-        'whitehaven_beach': lang.activity_whitehaven,
-        'great_barrier_reef': lang.activity_gbr,
-        'scenic_adventure': lang.activity_scenic,
-        'island_tours': lang.activity_island,
-        '': lang.activity_other
+      updateFilterQuestion(2, dualQ(lang.activity_question, 'activity_question'), {
+        'whitehaven_beach': dualF(lang.activity_whitehaven, 'activity_whitehaven'),
+        'great_barrier_reef': dualF(lang.activity_gbr, 'activity_gbr'),
+        'scenic_adventure': dualF(lang.activity_scenic, 'activity_scenic'),
+        'island_tours': dualF(lang.activity_island, 'activity_island'),
+        '': dualF(lang.activity_other, 'activity_other')
       });
       
       // Question 3: Family
-      updateFilterQuestion(3, lang.family_question, {
-        'true': lang.family_with_kids,
-        'false': lang.adults_only,
-        '': lang.no_preference
+      updateFilterQuestion(3, dualQ(lang.family_question, 'family_question'), {
+        'true': dualF(lang.family_with_kids, 'family_with_kids'),
+        'false': dualF(lang.adults_only, 'adults_only'),
+        '': dualF(lang.no_preference, 'no_preference')
       });
       
       // Question 4: Inclusions
-      updateFilterQuestion(4, lang.extras_question, {
-        'meals': lang.extras_meals,
-        'equipment': lang.extras_equipment,
-        '': lang.no_preference
+      updateFilterQuestion(4, dualQ(lang.extras_question, 'extras_question'), {
+        'meals': dualF(lang.extras_meals, 'extras_meals'),
+        'equipment': dualF(lang.extras_equipment, 'extras_equipment'),
+        '': dualF(lang.no_preference, 'no_preference')
       });
       
       // Update all elements with data-translate attribute
+      // Dual-language helpers for applyLanguage
+      const enLangAL = uiTranslations['en'];
+      const showDualAL = langCode !== 'en' && enLangAL;
+      function dualAL(text, enKey) {
+        if (!showDualAL || !enLangAL[enKey]) return text;
+        const enText = enLangAL[enKey];
+        if (enText === text) return text;
+        return `${text}<span class="dual-lang-sub">${enText}</span>`;
+      }
+      
       document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (lang[key]) {
-          el.textContent = lang[key];
+          if (showDualAL && enLangAL[key] && enLangAL[key] !== lang[key]) {
+            el.innerHTML = `${lang[key]}<span class="dual-lang-sub">${enLangAL[key]}</span>`;
+          } else {
+            el.textContent = lang[key];
+          }
         }
       });
       
@@ -29735,14 +29878,14 @@
       const vqAiAssistantBtn = document.getElementById('vq-ai-assistant-btn');
       const detailAiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
       
-      if (homeQuickDecisionBtn) homeQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (vqQuickDecisionBtn) vqQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (detailQuickDecisionBtn) detailQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (homeBrowseAllBtn) homeBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
-      if (vqBrowseAllBtn) vqBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
-      if (homeAiAssistantBtn) homeAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
-      if (vqAiAssistantBtn) vqAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
-      if (detailAiAssistantBtn) detailAiAssistantBtn.textContent = '🤖 ' + lang.ai_assistant_btn;
+      if (homeQuickDecisionBtn) homeQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
+      if (vqQuickDecisionBtn) vqQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
+      if (detailQuickDecisionBtn) detailQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
+      if (homeBrowseAllBtn) homeBrowseAllBtn.innerHTML = '🏠 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
+      if (vqBrowseAllBtn) vqBrowseAllBtn.innerHTML = '🏠 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
+      if (homeAiAssistantBtn) homeAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
+      if (vqAiAssistantBtn) vqAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
+      if (detailAiAssistantBtn) detailAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
       
       // Update AI Assistant page header buttons
       const aiQuickDecisionBtn = document.getElementById('ai-quick-decision-btn');
@@ -29751,8 +29894,8 @@
       const aiTextInput = document.getElementById('ai-text-input');
       const aiMicHint = document.querySelector('.ai-mic-hint');
       
-      if (aiQuickDecisionBtn) aiQuickDecisionBtn.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (aiBrowseAllBtn) aiBrowseAllBtn.textContent = '🏠 ' + lang.browse_all_tours_btn;
+      if (aiQuickDecisionBtn) aiQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
+      if (aiBrowseAllBtn) aiBrowseAllBtn.innerHTML = '🏠 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       if (aiLanguageBtn) aiLanguageBtn.textContent = lang.code.toUpperCase();
       if (aiTextInput && lang.type_message) aiTextInput.placeholder = lang.type_message;
       if (aiMicHint && lang.tap_before_speaking) aiMicHint.textContent = lang.tap_before_speaking;
@@ -29762,9 +29905,9 @@
       const shareTourBtn = document.getElementById('share-tour-btn');
       const sendToPhoneBtn = document.getElementById('continue-phone-btn');
       
-      if (bookNowBtn) bookNowBtn.textContent = lang.book_now;
-      if (shareTourBtn) shareTourBtn.textContent = lang.share_tour;
-      if (sendToPhoneBtn) sendToPhoneBtn.textContent = lang.send_to_phone;
+      if (bookNowBtn) bookNowBtn.innerHTML = dualAL(lang.book_now, 'book_now');
+      if (shareTourBtn) shareTourBtn.innerHTML = dualAL(lang.share_tour, 'share_tour');
+      if (sendToPhoneBtn) sendToPhoneBtn.innerHTML = dualAL(lang.send_to_phone, 'send_to_phone');
       
       // Update "About This Tour" section title
       const aboutTourTitle = document.getElementById('about-tour-title');
@@ -29792,7 +29935,7 @@
       if (questions[questionIndex]) {
         const questionElement = questions[questionIndex].querySelector('.question-text');
         if (questionElement) {
-          questionElement.textContent = questionText;
+          questionElement.innerHTML = questionText;
         }
         
         const options = questions[questionIndex].querySelectorAll('.filter-option');
@@ -30907,14 +31050,14 @@
           const subtitle = document.getElementById('home-tours-subtitle');
           
           if (title) {
-            title.textContent = t('tap_any_card');
+            title.innerHTML = tDual('tap_any_card');
             title.style.background = '';
             title.style.webkitBackgroundClip = '';
             title.style.webkitTextFillColor = '';
           }
           
           if (subtitle) {
-            subtitle.textContent = t('showing_all_tours');
+            subtitle.innerHTML = tDual('showing_all_tours');
             subtitle.style.fontStyle = '';
             subtitle.style.color = '';
           }
