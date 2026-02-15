@@ -2877,11 +2877,13 @@
     }
 
     .page.video-question-page.showing-questions .header-left .ai-assistant-btn-header,
-    .page.video-question-page.showing-questions .header-left .browse-all-btn-header {
-      padding: 16px 30px !important;
-      font-size: 1.05em !important;
-      min-width: 150px !important;
-      border-radius: 28px !important;
+    .page.video-question-page.showing-questions .header-left .browse-all-btn-header,
+    .page.video-question-page.showing-questions .header-left .map-view-btn-header,
+    .page.video-question-page.showing-questions .header-left .newcomer-info-btn-header {
+      padding: 12px 24px !important;
+      font-size: 1em !important;
+      min-width: 160px !important;
+      border-radius: 25px !important;
     }
     
     /* Hide Quick Decision button on video question page, show Browse All Tours */
@@ -2907,8 +2909,8 @@
     }
     
     .page.video-question-page.showing-questions .ai-assistant-btn-header {
-      padding: 8px 16px !important;
-      font-size: 0.85em !important;
+      padding: 12px 24px !important;
+      font-size: 1em !important;
     }
     
     .page.video-question-page.showing-questions .logo-image {
@@ -2916,7 +2918,7 @@
       left: 50% !important;
       top: 50% !important;
       transform: translate(-50%, -50%) !important;
-      height: 40px !important;
+      height: 60px !important;
       width: auto !important;
       z-index: 1 !important;
     }
@@ -5372,7 +5374,7 @@
     
     .swipe-expanded-details {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1000px;
       display: grid;
       grid-template-columns: repeat(2, 1fr); /* Always 2 columns for symmetry */
       gap: 20px;
@@ -29412,6 +29414,34 @@
       console.log('✅ Language changed seamlessly to:', langCode);
     }
     
+    // selectHomeLanguage - called from header language dropdowns in both modes
+    function selectHomeLanguage(langCode) {
+      console.log('🌐 selectHomeLanguage called:', langCode);
+      // Switch language (applies translations, updates buttons, reloads tours)
+      switchLanguage(langCode);
+      // Close all language dropdown menus
+      ['vq-language-menu', 'home-language-menu'].forEach(id => {
+        const menu = document.getElementById(id);
+        if (menu) menu.style.display = 'none';
+      });
+    }
+
+    // selectHomeCurrency - called from header currency dropdowns in both modes
+    function selectHomeCurrency(currCode) {
+      console.log('💱 selectHomeCurrency called:', currCode);
+      switchCurrency(currCode);
+      // Update all currency buttons
+      const headerBtn = document.getElementById('header-currency-btn');
+      const vqBtn = document.getElementById('vq-currency-btn');
+      if (headerBtn) headerBtn.textContent = currCode;
+      if (vqBtn) vqBtn.textContent = currCode;
+      // Close all currency dropdown menus
+      ['vq-currency-menu', 'home-currency-menu'].forEach(id => {
+        const menu = document.getElementById(id);
+        if (menu) menu.style.display = 'none';
+      });
+    }
+
     // Apply language to UI - translations are inlined so always available
     function applyLanguage(langCode) {
       console.log('🌐 applyLanguage called with:', langCode);
