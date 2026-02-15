@@ -65,3 +65,6 @@ static/b_roll/
 config/users.json
 config/instance.json
 config/accounts/
+
+# ChromaDB embeddings database (local cache, shouldn't be synced)
+data/tour_embeddings/
