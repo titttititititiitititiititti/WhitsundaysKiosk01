@@ -1362,6 +1362,55 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
         analytics['sessions'] = analytics['sessions'][-1000:]
     
     save_analytics(analytics, account)
+    
+    # Auto-push analytics to git periodically (every 10 new sessions or every 5 minutes)
+    # This allows shop computers to sync their analytics automatically
+    if not hasattr(log_analytics_event, '_last_push_time'):
+        log_analytics_event._last_push_time = {}
+        log_analytics_event._session_count_since_push = {}
+    
+    now = time.time()
+    last_push = log_analytics_event._last_push_time.get(account, 0)
+    session_count = log_analytics_event._session_count_since_push.get(account, 0) + 1
+    log_analytics_event._session_count_since_push[account] = session_count
+    
+    # Push if: 10+ new sessions OR 5+ minutes since last push
+    if session_count >= 10 or (now - last_push) > 300:
+        def _auto_push_analytics():
+            try:
+                repo_path = os.path.dirname(os.path.abspath(__file__))
+                analytics_file = get_analytics_file(account)
+                
+                # Check if file has changes
+                result = subprocess.run(
+                    ['git', 'status', '--porcelain', analytics_file],
+                    cwd=repo_path, capture_output=True, text=True, timeout=10
+                )
+                
+                if result.stdout.strip():
+                    # Has changes - commit and push
+                    subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
+                    subprocess.run(
+                        ['git', 'commit', '-m', f'Auto-push analytics for {account} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+                        cwd=repo_path, capture_output=True, text=True, timeout=30
+                    )
+                    
+                    # Use authenticated URL if available
+                    auth_url = get_authenticated_remote_url()
+                    if auth_url:
+                        subprocess.run(['git', 'push', auth_url, 'main'], cwd=repo_path, capture_output=True, timeout=60)
+                    else:
+                        subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=60)
+                    
+                    print(f"[ANALYTICS] Auto-pushed analytics for {account}")
+            except Exception as e:
+                print(f"[ANALYTICS] Auto-push error: {e}")
+        
+        # Push in background thread
+        threading.Thread(target=_auto_push_analytics, daemon=True).start()
+        log_analytics_event._last_push_time[account] = now
+        log_analytics_event._session_count_since_push[account] = 0
+    
     return session
 
 def is_meaningful_session(session):
@@ -8670,26 +8719,54 @@ def pull_analytics_only(account=None):
         )
         
         if show_result.returncode == 0 and show_result.stdout:
-            # File exists on remote - write it to local file
+            # File exists on remote - merge with local instead of overwriting
             os.makedirs(os.path.dirname(analytics_path), exist_ok=True)
             
-            # Check if local file exists and compare content
-            local_content = None
+            # Load remote analytics
+            try:
+                remote_analytics = json.loads(show_result.stdout)
+            except json.JSONDecodeError as e:
+                print(f"[ANALYTICS] Failed to parse remote file: {e}")
+                return False
+            
+            # Load local analytics if it exists
+            local_analytics = None
             if os.path.exists(analytics_path):
                 try:
-                    with open(analytics_path, 'r', encoding='utf-8') as f:
-                        local_content = f.read()
+                    local_analytics = load_analytics(account)
                 except:
-                    pass
+                    local_analytics = {'sessions': [], 'summary': {}, 'account': account}
+            else:
+                local_analytics = {'sessions': [], 'summary': {}, 'account': account}
             
-            # Only update if content is different
-            if local_content != show_result.stdout:
-                with open(analytics_path, 'w', encoding='utf-8') as f:
-                    f.write(show_result.stdout)
-                print(f"[ANALYTICS] Pulled latest {analytics_file} from remote")
+            # Merge sessions - combine both, removing duplicates by session_id
+            local_session_ids = {s['session_id'] for s in local_analytics.get('sessions', [])}
+            remote_sessions = remote_analytics.get('sessions', [])
+            
+            merged_sessions = local_analytics.get('sessions', [])[:]
+            new_sessions_count = 0
+            
+            for remote_session in remote_sessions:
+                if remote_session.get('session_id') not in local_session_ids:
+                    merged_sessions.append(remote_session)
+                    new_sessions_count += 1
+            
+            # Update analytics with merged sessions
+            local_analytics['sessions'] = merged_sessions
+            local_analytics['account'] = account
+            
+            # Keep only last 1000 sessions to prevent file bloat
+            if len(local_analytics['sessions']) > 1000:
+                local_analytics['sessions'] = local_analytics['sessions'][-1000:]
+            
+            # Save merged analytics
+            save_analytics(local_analytics, account)
+            
+            if new_sessions_count > 0:
+                print(f"[ANALYTICS] Merged {new_sessions_count} new session(s) from remote into {analytics_file}")
                 return True
             else:
-                print(f"[ANALYTICS] {analytics_file} already up to date")
+                print(f"[ANALYTICS] {analytics_file} already up to date (no new sessions)")
                 return False
         else:
             # File doesn't exist on remote yet (first time, no remote data)
@@ -8787,11 +8864,41 @@ def refresh_analytics():
         # Then, PULL latest analytics from remote (might have data from other device)
         pulled = pull_analytics_only(username)
         
+        # After pulling and merging, push the merged result back to sync it
+        if pulled:
+            # Merged analytics are now local - push them back to sync the merge
+            try:
+                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
+                commit_result = subprocess.run(
+                    ['git', 'commit', '-m', f'Analytics merge sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+                    cwd=repo_path, capture_output=True, text=True, timeout=30
+                )
+                
+                if commit_result.returncode == 0 and 'nothing to commit' not in commit_result.stdout:
+                    # Use authenticated URL if available
+                    auth_url = get_authenticated_remote_url()
+                    if auth_url:
+                        push_result = subprocess.run(
+                            ['git', 'push', auth_url, 'main'],
+                            cwd=repo_path, capture_output=True, text=True, timeout=60
+                        )
+                    else:
+                        push_result = subprocess.run(
+                            ['git', 'push', 'origin', 'main'],
+                            cwd=repo_path, capture_output=True, text=True, timeout=60
+                        )
+                    
+                    if push_result.returncode == 0:
+                        print(f"[ANALYTICS] ✅ Pushed merged analytics for {username}")
+                        pushed = True  # Mark as pushed since we pushed the merge
+            except Exception as e:
+                print(f"[ANALYTICS] Error pushing merged analytics: {e}")
+        
         message = []
         if pushed:
             message.append('Analytics pushed to cloud')
         if pulled:
-            message.append('Latest analytics pulled')
+            message.append('Latest analytics pulled and merged')
         if not pushed and not pulled:
             message.append('Analytics already synced')
         
