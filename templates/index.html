@@ -29780,14 +29780,7 @@
         tourGridHeader.textContent = lang.available_tours;
       }
       
-      // Update results info if it's the default text
-      const resultsInfo = document.getElementById('results-info');
-      if (resultsInfo && (resultsInfo.textContent.includes('Tap an option') || resultsInfo.textContent.includes(lang.tap_to_filter))) {
-        resultsInfo.innerHTML = showDualF ? dualF(lang.tap_to_filter, 'tap_to_filter') : lang.tap_to_filter;
-      }
-      
-      // Update filter questions and options (with dual-language subtext)
-      // Helper to add English subtext to filter option text
+      // Dual-language helpers for filter questions
       const enLangF = uiTranslations['en'];
       const showDualF = langCode !== 'en' && enLangF;
       function dualF(text, enKey) {
@@ -29801,6 +29794,12 @@
         const enText = enLangF[enKey];
         if (enText === text) return text;
         return `${text}<span class="dual-lang-sub">${enText}</span>`;
+      }
+      
+      // Update results info if it's the default text
+      const resultsInfo = document.getElementById('results-info');
+      if (resultsInfo && (resultsInfo.textContent.includes('Tap an option') || resultsInfo.textContent.includes(lang.tap_to_filter))) {
+        resultsInfo.innerHTML = showDualF ? dualF(lang.tap_to_filter, 'tap_to_filter') : lang.tap_to_filter;
       }
       
       // Question 0: Duration
