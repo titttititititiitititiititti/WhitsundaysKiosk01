@@ -1,33 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_291d298a167c_1770854939",
-      "account": "nathan",
-      "started_at": "2026-02-12T10:08:59.436878",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-12T10:08:59.436878",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-12T10:10:59.472811",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-12T10:10:59.472811",
-      "duration_seconds": 120.035933
-    },
-    {
       "session_id": "session_43d4091bc2f6_1770855059",
       "account": "nathan",
       "started_at": "2026-02-12T10:10:59.781003",
@@ -28929,9 +28902,36 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_0a32c8ddf418_1771233410",
+      "account": "nathan",
+      "started_at": "2026-02-16T19:16:50.479094",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-16T19:16:50.479094",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T19:16:52.121151",
+          "data": {
+            "language": "en"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-16T18:45:19.506874"
+  "last_updated": "2026-02-16T19:18:59.311414"
 }
