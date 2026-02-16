@@ -1,33 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_1c68bde9ac83_1770847715",
-      "account": "nathan",
-      "started_at": "2026-02-12T08:08:35.584027",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-12T08:08:35.584027",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-12T08:10:35.647492",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-12T08:10:35.647492",
-      "duration_seconds": 120.063465
-    },
-    {
       "session_id": "session_107d0857d9c1_1770847835",
       "account": "nathan",
       "started_at": "2026-02-12T08:10:35.968839",
@@ -28289,9 +28262,76 @@
       "chat_messages": [],
       "ended_at": "2026-02-16T10:30:46.163674",
       "duration_seconds": 0.241428
+    },
+    {
+      "session_id": "session_ca71da607ba2_1771202203",
+      "account": "nathan",
+      "started_at": "2026-02-16T10:36:43.914369",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-16T10:36:43.914369",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-16T10:36:44.070385",
+          "data": {}
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T10:37:03.721915",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T10:37:04.976901",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T10:37:05.218350",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T10:37:05.343915",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T10:37:05.478889",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-16T10:39:06.060657",
+          "data": {}
+        }
+      ],
+      "language": "ja",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-16T10:39:06.060657",
+      "duration_seconds": 142.146288
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-16T10:30:46.164672"
+  "last_updated": "2026-02-16T10:39:06.062748"
 }

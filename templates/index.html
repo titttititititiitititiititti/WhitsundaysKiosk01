@@ -29656,6 +29656,16 @@
       
       console.log('🌐 Applying language:', langCode, lang.name);
       
+      // Dual-language helpers — must be declared early (before first dualAL call)
+      const enLangAL = uiTranslations['en'];
+      const showDualAL = langCode !== 'en' && enLangAL;
+      function dualAL(text, enKey) {
+        if (!showDualAL || !enLangAL[enKey]) return text;
+        const enText = enLangAL[enKey];
+        if (enText === text) return text;
+        return `${text}<span class="dual-lang-sub">${enText}</span>`;
+      }
+      
       // Process ALL elements with data-translate attribute
       document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
@@ -29858,17 +29868,7 @@
         '': dualF(lang.no_preference, 'no_preference')
       });
       
-      // Update all elements with data-translate attribute
-      // Dual-language helpers for applyLanguage
-      const enLangAL = uiTranslations['en'];
-      const showDualAL = langCode !== 'en' && enLangAL;
-      function dualAL(text, enKey) {
-        if (!showDualAL || !enLangAL[enKey]) return text;
-        const enText = enLangAL[enKey];
-        if (enText === text) return text;
-        return `${text}<span class="dual-lang-sub">${enText}</span>`;
-      }
-      
+      // Update all elements with data-translate attribute (with dual-language)
       document.querySelectorAll('[data-translate]').forEach(el => {
         const key = el.getAttribute('data-translate');
         if (lang[key]) {
