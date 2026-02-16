@@ -133,9 +133,50 @@
       "chat_messages": [],
       "ended_at": "2026-02-16T12:47:27.256833",
       "duration_seconds": 236.751202
+    },
+    {
+      "session_id": "session_d838b18310b8_1771211213",
+      "account": "nathan",
+      "started_at": "2026-02-16T13:06:53.629949",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-16T13:06:53.629949",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-16T13:06:57.094367",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-16T13:06:57.866328",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-16T13:07:31.097759",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-16T12:47:27.258217"
+  "last_updated": "2026-02-16T13:07:31.097759"
 }

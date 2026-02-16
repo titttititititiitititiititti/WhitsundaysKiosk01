@@ -674,6 +674,14 @@
             margin-top: 40px;
         }
         
+        .inactive-companies-section > .section-divider {
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border-top: 2px solid rgba(248, 81, 73, 0.3);
+            background: rgba(248, 81, 73, 0.05);
+            border-radius: 12px;
+        }
+        
         .section-divider {
             padding: 20px 0;
             margin-bottom: 20px;
@@ -1241,68 +1249,83 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
-        
-        <!-- Inactive Companies Section (Companies with NO enabled tours) -->
-        {% if inactive_companies %}
-        <div class="inactive-companies-section">
-            <div class="section-divider">
-                <h2>🚫 Unavailable Companies <span class="count-badge">{{ inactive_companies|length }}</span></h2>
-                <p class="section-desc">Companies with no tours currently enabled. Enable tours to add them to your kiosk.</p>
-            </div>
             
-            {% for company_id, company_data in inactive_companies.items() %}
-            <div class="company-group inactive" data-company="{{ company_id }}" data-images-enabled="{{ 'true' if company_data.images_enabled else 'false' }}">
-                <div class="company-header">
-                    <div class="company-name" onclick="toggleCompany(this.parentElement)">
-                        🏢 {{ company_data.name }}
-                        <span class="company-stats">
-                            <span class="company-stat disabled">{{ company_data.tours | length }} inactive</span>
-                        </span>
-                    </div>
-                    <div class="company-controls">
-                        <button class="images-toggle-btn {{ 'active' if company_data.images_enabled else 'disabled' }}" 
-                                onclick="event.stopPropagation(); toggleCompanyImages('{{ company_id }}', {{ 'false' if company_data.images_enabled else 'true' }})"
-                                title="{{ 'Click to hide images (legal compliance)' if company_data.images_enabled else 'Click to show images' }}">
-                            🖼️ Images {{ 'ON' if company_data.images_enabled else 'OFF' }}
-                        </button>
-                        <span class="images-warning">⚠️ Only enable images you are authorised to use</span>
-                        <span class="company-toggle" onclick="toggleCompany(this.parentElement.parentElement)">▼</span>
-                    </div>
+            <!-- Inactive Companies Section (Companies with NO enabled tours) -->
+            {% if inactive_companies %}
+            <div class="inactive-companies-section">
+                <div class="section-divider">
+                    <h2>🚫 Unavailable Companies <span class="count-badge">{{ inactive_companies|length }}</span></h2>
+                    <p class="section-desc">Companies with no tours currently enabled. Enable tours to add them to your kiosk.</p>
                 </div>
-                <div class="tour-list">
-                    {% for tour in company_data.tours %}
-                    <div class="tour-item disabled" 
-                         data-key="{{ tour.key }}"
-                         data-name="{{ tour.name | lower }}"
-                         data-company="{{ company_id | lower }}"
-                         data-company-display="{{ company_data.name | lower }}"
-                         data-enabled="false"
-                         data-promoted="">
-                        <label class="toggle-switch">
-                            <input type="checkbox" onchange="toggleTour('{{ tour.key }}', this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <div class="tour-info">
-                            <div class="tour-name">
-                                {{ tour.name }}
-                            </div>
-                            <div class="tour-meta">
-                                <span class="tour-price">FROM {{ tour.price }}</span>
-                            </div>
+                
+                {% for company_id, company_data in inactive_companies.items() %}
+                <div class="company-group inactive" data-company="{{ company_id }}" data-images-enabled="{{ 'true' if company_data.images_enabled else 'false' }}">
+                    <div class="company-header">
+                        <div class="company-name" onclick="toggleCompany(this.parentElement)">
+                            🏢 {{ company_data.name }}
+                            <span class="company-stats">
+                                <span class="company-stat disabled">{{ company_data.tours | length }} inactive</span>
+                            </span>
                         </div>
-                        <div class="tour-actions">
-                            <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
-                                ✏️ Edit
+                        <div class="company-controls">
+                            <button class="images-toggle-btn {{ 'active' if company_data.images_enabled else 'disabled' }}" 
+                                    onclick="event.stopPropagation(); toggleCompanyImages('{{ company_id }}', {{ 'false' if company_data.images_enabled else 'true' }})"
+                                    title="{{ 'Click to hide images (legal compliance)' if company_data.images_enabled else 'Click to show images' }}">
+                                🖼️ Images {{ 'ON' if company_data.images_enabled else 'OFF' }}
                             </button>
+                            <span class="images-warning">⚠️ Only enable images you are authorised to use</span>
+                            <span class="company-toggle" onclick="toggleCompany(this.parentElement.parentElement)">▼</span>
                         </div>
                     </div>
-                    {% endfor %}
+                    <div class="tour-list">
+                        {% for tour in company_data.tours %}
+                        <div class="tour-item disabled" 
+                             data-key="{{ tour.key }}"
+                             data-name="{{ tour.name | lower }}"
+                             data-company="{{ company_id | lower }}"
+                             data-company-display="{{ company_data.name | lower }}"
+                             data-enabled="false"
+                             data-promoted="">
+                            <label class="toggle-switch">
+                                <input type="checkbox" onchange="toggleTour('{{ tour.key }}', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="tour-info">
+                                <div class="tour-name">
+                                    {{ tour.name }}
+                                </div>
+                                <div class="tour-price">{{ tour.price }}</div>
+                            </div>
+                            <div class="promo-selector">
+                                <button class="promo-btn" 
+                                        onclick="togglePromotion('{{ tour.key }}', 'popular', this)"
+                                        title="Popular - High priority in search results">
+                                    🔥
+                                </button>
+                                <button class="promo-btn" 
+                                        onclick="togglePromotion('{{ tour.key }}', 'featured', this)"
+                                        title="Featured - Highlighted tours">
+                                    ⭐
+                                </button>
+                                <button class="promo-btn" 
+                                        onclick="togglePromotion('{{ tour.key }}', 'best_value', this)"
+                                        title="Best Value - Great value recommendation">
+                                    💎
+                                </button>
+                            </div>
+                            <div class="tour-actions">
+                                <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
+                                    ✏️ Edit
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+            {% endif %}
         </div>
-        {% endif %}
     </main>
     
     <div class="toast" id="toast"></div>
