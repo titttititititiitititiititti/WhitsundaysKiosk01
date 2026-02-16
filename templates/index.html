@@ -175,41 +175,57 @@
         height: 65px !important;
       }
       
-      /* DESKTOP: Header buttons - slightly shorter than header */
+      /* DESKTOP: Header buttons - uniform height for all mode buttons */
       .kiosk-header .quick-decision-btn-header,
-      .kiosk-header .ai-assistant-btn-header {
-        padding: 12px 24px !important;
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header .map-view-btn-header,
+      .kiosk-header .newcomer-info-btn-header {
+        padding: 4px 20px !important;
         font-size: 1em !important;
-        min-width: 160px !important;
+        min-width: 120px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
         border: none !important;
-        border-radius: 30px !important;
+        border-radius: 25px !important;
         color: white !important;
         font-weight: 600 !important;
         cursor: pointer !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        gap: 0 !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
+        line-height: 1.1 !important;
       }
       
-      /* Browse All Tours button - hidden by default, only shown via JS when coming from AI Assistant */
+      /* Browse All Tours button - hidden by default, only shown via JS */
       .kiosk-header .browse-all-btn-header {
-        padding: 12px 24px !important;
+        padding: 4px 20px !important;
         font-size: 1em !important;
-        min-width: 160px !important;
+        min-width: 120px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
         border: none !important;
-        border-radius: 30px !important;
+        border-radius: 25px !important;
         color: white !important;
         font-weight: 600 !important;
         cursor: pointer !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        gap: 0 !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
         background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+        line-height: 1.1 !important;
         /* Hidden by default - JS shows it when coming from AI Assistant */
         display: none !important;
       }
@@ -2829,17 +2845,19 @@
     .kiosk-header .header-left .browse-all-btn-header,
     .kiosk-header .header-left .map-view-btn-header,
     .kiosk-header .header-left .newcomer-info-btn-header {
-      padding: 6px 20px !important;
+      padding: 4px 20px !important;
       font-size: 1em !important;
       min-width: 120px !important;
       border-radius: 25px !important;
       height: 52px !important;
+      min-height: 52px !important;
+      max-height: 52px !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
       text-align: center !important;
-      white-space: nowrap !important;
       box-sizing: border-box !important;
+      overflow: hidden !important;
       line-height: 1.1 !important;
     }
     /* Allow dual-lang subtext to wrap inside header buttons */
@@ -16360,6 +16378,7 @@
         "select_all_that_apply": "Select all that apply",
         "tours_by": "Tours by {company}",
         "from_price": "FROM",
+        "contact_for_price": "Contact for Price",
         "back_to_previous_tour": "← Back to Previous Tour",
         "back_to_home_page": "🏠 Back to Home Page",
         "customer_reviews": "Customer Reviews",
@@ -16441,6 +16460,7 @@
         "select_all_that_apply": "該当するものをすべて選択",
         "tours_by": "{company}のツアー",
         "from_price": "から",
+        "contact_for_price": "お問い合わせください",
         "back_to_previous_tour": "← 前のツアーに戻る",
         "back_to_home_page": "🏠 ホームに戻る",
         "customer_reviews": "お客様のレビュー",
@@ -16522,6 +16542,7 @@
         "select_all_that_apply": "选择所有适用项",
         "tours_by": "{company}的旅程",
         "from_price": "起价",
+        "contact_for_price": "请联系询价",
         "back_to_previous_tour": "← 返回上一个旅程",
         "back_to_home_page": "🏠 返回主页",
         "customer_reviews": "顾客评价",
@@ -16603,6 +16624,7 @@
         "select_all_that_apply": "해당하는 항목을 모두 선택",
         "tours_by": "{company} 투어",
         "from_price": "부터",
+        "contact_for_price": "가격 문의",
         "back_to_previous_tour": "← 이전 투어로 돌아가기",
         "back_to_home_page": "🏠 홈으로 돌아가기",
         "customer_reviews": "고객 리뷰",
@@ -16684,6 +16706,7 @@
         "select_all_that_apply": "Alle zutreffenden auswählen",
         "tours_by": "Touren von {company}",
         "from_price": "AB",
+        "contact_for_price": "Preis auf Anfrage",
         "back_to_previous_tour": "← Zurück zur vorherigen Tour",
         "back_to_home_page": "🏠 Zurück zur Startseite",
         "customer_reviews": "Kundenbewertungen",
@@ -16765,6 +16788,7 @@
         "select_all_that_apply": "Sélectionnez tout ce qui s'applique",
         "tours_by": "Excursions de {company}",
         "from_price": "À PARTIR DE",
+        "contact_for_price": "Prix sur demande",
         "back_to_previous_tour": "← Retour à l'excursion précédente",
         "back_to_home_page": "🏠 Retour à l'accueil",
         "customer_reviews": "Avis clients",
@@ -16846,6 +16870,7 @@
         "select_all_that_apply": "सभी लागू चुनें",
         "tours_by": "{company} के टूर",
         "from_price": "से",
+        "contact_for_price": "कीमत के लिए संपर्क करें",
         "back_to_previous_tour": "← पिछले टूर पर वापस जाएं",
         "back_to_home_page": "🏠 होम पेज पर वापस जाएं",
         "customer_reviews": "ग्राहक समीक्षाएं",
@@ -16927,6 +16952,7 @@
         "select_all_that_apply": "Selecciona todos los que apliquen",
         "tours_by": "Tours de {company}",
         "from_price": "DESDE",
+        "contact_for_price": "Consultar precio",
         "back_to_previous_tour": "← Volver al tour anterior",
         "back_to_home_page": "🏠 Volver a la página principal",
         "customer_reviews": "Opiniones de clientes",

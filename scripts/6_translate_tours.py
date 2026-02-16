@@ -62,7 +62,7 @@ LANGUAGES = {
     'de': {'name': 'German', 'deepl': 'DE', 'google': 'de', 'service': 'deepl'},
     'fr': {'name': 'French', 'deepl': 'FR', 'google': 'fr', 'service': 'deepl'},
     'es': {'name': 'Spanish', 'deepl': 'ES', 'google': 'es', 'service': 'deepl'},
-    'hi': {'name': 'Hindi', 'deepl': None, 'google': 'hi', 'service': 'google'}
+    'hi': {'name': 'Hindi', 'deepl': 'HI', 'google': 'hi', 'service': 'deepl'}
 }
 
 # Fields to translate
