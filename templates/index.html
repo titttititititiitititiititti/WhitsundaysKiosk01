@@ -32359,6 +32359,95 @@
       }
     };
     
+    // Tide panel toggle
+    let tideOpen = false;
+    let tideDataLoaded = false;
+    
+    window.toggleTidePanel = function() {
+      const container = document.getElementById('tide-container');
+      const btnText = document.getElementById('tide-btn-text');
+      if (!container) return;
+      
+      tideOpen = !tideOpen;
+      
+      if (tideOpen) {
+        container.style.display = 'block';
+        if (btnText) btnText.textContent = 'Hide Tides';
+        if (!tideDataLoaded) {
+          loadTideData();
+        }
+      } else {
+        container.style.display = 'none';
+        if (btnText) btnText.textContent = 'Tide Times';
+      }
+    };
+    
+    async function loadTideData() {
+      const content = document.getElementById('tide-content');
+      if (!content) return;
+      
+      try {
+        const resp = await fetch('/api/tides/public');
+        const data = await resp.json();
+        
+        if (!data.success || !data.days || data.days.length === 0) {
+          content.innerHTML = '<div style="text-align:center;color:#999;padding:16px;">Tide data unavailable</div>';
+          return;
+        }
+        
+        tideDataLoaded = true;
+        let html = '';
+        
+        // Show first 7 days
+        data.days.forEach((day, i) => {
+          const isToday = i === 0;
+          const ratingEmoji = day.hill_inlet_rating === 'great' ? '⭐' : 
+                              day.hill_inlet_rating === 'good' ? '👍' : 
+                              day.hill_inlet_rating === 'poor' ? '😐' : '';
+          const ratingColor = day.hill_inlet_rating === 'great' ? '#27ae60' : 
+                              day.hill_inlet_rating === 'good' ? '#f39c12' : 
+                              day.hill_inlet_rating === 'poor' ? '#e74c3c' : '#999';
+          
+          html += `<div style="padding:10px 0;${i > 0 ? 'border-top:1px solid #e0e8ef;' : ''}">`;
+          html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">`;
+          html += `<strong style="color:#0a3055;font-size:0.9em;">${isToday ? '📅 Today' : day.date_label}</strong>`;
+          if (ratingEmoji) {
+            html += `<span style="font-size:0.75em;padding:2px 8px;border-radius:10px;background:${ratingColor}22;color:${ratingColor};font-weight:600;">${ratingEmoji} Hill Inlet</span>`;
+          }
+          html += `</div>`;
+          
+          // Tide rows
+          day.tides.forEach(t => {
+            const isHigh = t.type === 'high';
+            const color = isHigh ? '#2980b9' : '#d35400';
+            const arrow = isHigh ? '▲' : '▼';
+            html += `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:0.85em;">`;
+            html += `<span style="color:${color};font-weight:700;width:14px;">${arrow}</span>`;
+            html += `<span style="color:#666;width:36px;">${t.type === 'high' ? 'High' : 'Low'}</span>`;
+            html += `<span style="font-weight:600;color:#2c3e50;flex:1;">${t.time}</span>`;
+            html += `<span style="font-weight:700;color:${color};">${t.height_m.toFixed(2)}m</span>`;
+            html += `</div>`;
+          });
+          
+          // Hill Inlet note
+          if (day.hill_inlet_note) {
+            html += `<div style="font-size:0.75em;color:${ratingColor};margin-top:4px;padding-left:22px;">${day.hill_inlet_note}</div>`;
+          }
+          
+          html += `</div>`;
+        });
+        
+        // Data source note
+        html += `<div style="text-align:center;font-size:0.7em;color:#999;padding-top:8px;border-top:1px solid #e0e8ef;">Shute Harbour tides · Hill Inlet best at low tide < 1.0m</div>`;
+        
+        content.innerHTML = html;
+        
+      } catch (e) {
+        console.error('Failed to load tide data:', e);
+        content.innerHTML = '<div style="text-align:center;color:#e74c3c;padding:16px;">Failed to load tide data</div>';
+      }
+    }
+    
     // Fullscreen radar functions
     window.openFullscreenRadar = function() {
       const overlay = document.getElementById('fullscreen-radar-overlay');
@@ -34444,6 +34533,18 @@
           <span>Best Time to Visit</span>
         </div>
         <div id="best-time-message" style="font-size:0.85em;color:#1b5e20;">Perfect weather for exploring!</div>
+      </div>
+      <!-- Tide Button -->
+      <button id="tide-toggle-btn" onclick="toggleTidePanel()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0a3055,#0d5d8a);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;margin-bottom:8px;">
+        <span>🌊</span>
+        <span id="tide-btn-text">Tide Times</span>
+        <span style="font-size:0.8em;">▼</span>
+      </button>
+      <!-- Tide Container (hidden by default) -->
+      <div id="tide-container" style="display:none;margin-bottom:12px;border-radius:12px;overflow:hidden;background:#f0f7fa;border:1px solid #d0e8f2;">
+        <div id="tide-content" style="padding:14px;">
+          <div style="text-align:center;color:#666;padding:20px;">Loading tide data...</div>
+        </div>
       </div>
       <!-- Radar Button -->
       <button id="radar-toggle-btn" onclick="toggleWeatherRadar()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;">

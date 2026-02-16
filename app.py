@@ -8488,6 +8488,18 @@ def refresh_tides():
         'days_count': len(tide_days)
     })
 
+@app.route('/api/tides/public')
+def api_tides_public():
+    """Public tide data for kiosk weather widget (no auth required)"""
+    tide_days = get_tide_data()
+    # Return only first 7 days for the widget
+    return jsonify({
+        'success': True,
+        'location': 'Shute Harbour',
+        'days': tide_days[:7],
+        'cached_at': _tide_cache.get('fetched_at', '').isoformat() if _tide_cache.get('fetched_at') else None
+    })
+
 @app.route('/api/analytics/session/<session_id>')
 @agent_required
 def get_session_details(session_id):
@@ -8751,7 +8763,7 @@ def pull_and_restart():
         analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
         for af in analytics_files:
             try:
-                with open(af, 'r', encoding='utf-8') as f:
+                with open(af, 'r', encoding='utf-8-sig') as f:
                     analytics_backup[af] = f.read()
             except:
                 pass
@@ -8822,7 +8834,9 @@ def pull_and_restart():
         # sessions pushed by another kiosk with our local-only data
         for af, backup_content in analytics_backup.items():
             try:
-                local_data = json.loads(backup_content)
+                # Strip BOM if present (PowerShell/Windows can add UTF-8 BOM)
+                clean_content = backup_content.lstrip('\ufeff')
+                local_data = json.loads(clean_content)
                 local_sessions = local_data.get('sessions', [])
                 local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
                 
@@ -8830,7 +8844,7 @@ def pull_and_restart():
                 remote_sessions = []
                 if os.path.exists(af):
                     try:
-                        with open(af, 'r', encoding='utf-8') as f:
+                        with open(af, 'r', encoding='utf-8-sig') as f:
                             remote_data = json.load(f)
                         remote_sessions = remote_data.get('sessions', [])
                     except:

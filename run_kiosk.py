@@ -155,7 +155,7 @@ def pull_updates():
         analytics_backup = {}
         for af in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
             try:
-                with open(af, 'r', encoding='utf-8') as f:
+                with open(af, 'r', encoding='utf-8-sig') as f:
                     analytics_backup[af] = f.read()
                 log(f"[UPDATE] Backed up {os.path.basename(af)}")
             except:
@@ -179,7 +179,9 @@ def pull_updates():
         # Restore analytics files - MERGE local backup with remote data
         for af, backup_content in analytics_backup.items():
             try:
-                local_data = json.loads(backup_content)
+                # Strip BOM if present
+                clean_content = backup_content.lstrip('\ufeff')
+                local_data = json.loads(clean_content)
                 local_sessions = local_data.get('sessions', [])
                 local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
                 
@@ -187,7 +189,7 @@ def pull_updates():
                 remote_sessions = []
                 if os.path.exists(af):
                     try:
-                        with open(af, 'r', encoding='utf-8') as f:
+                        with open(af, 'r', encoding='utf-8-sig') as f:
                             remote_data = json.load(f)
                         remote_sessions = remote_data.get('sessions', [])
                     except:
