@@ -2299,7 +2299,69 @@ def kiosk_settings():
     
     return render_template('kiosk_settings.html', 
                           settings=settings,
-                          saved=request.args.get('saved'))
+                          saved=request.args.get('saved'),
+                          gallery_images=get_newcomer_images())
+
+
+@app.route('/admin/api/gallery/upload', methods=['POST'])
+@login_required
+def gallery_upload_images():
+    """Upload images to the map view presentation gallery"""
+    files = request.files.getlist('gallery_images')
+    if not files:
+        return jsonify({'error': 'No images provided'}), 400
+    
+    gallery_dir = 'static/newcomer_images'
+    os.makedirs(gallery_dir, exist_ok=True)
+    
+    uploaded = []
+    for f in files:
+        if f and f.filename:
+            from werkzeug.utils import secure_filename
+            filename = secure_filename(f.filename)
+            # Keep original name but make safe
+            if not filename:
+                continue
+            filepath = os.path.join(gallery_dir, filename)
+            # If file already exists, add a number suffix
+            if os.path.exists(filepath):
+                name, ext = os.path.splitext(filename)
+                counter = 1
+                while os.path.exists(filepath):
+                    filename = f"{name}_{counter}{ext}"
+                    filepath = os.path.join(gallery_dir, filename)
+                    counter += 1
+            f.save(filepath)
+            uploaded.append(filename)
+    
+    if uploaded:
+        username = session.get('user', 'unknown')
+        git_sync_changes(f"Gallery: {username} added {len(uploaded)} image(s)")
+    
+    return jsonify({'success': True, 'uploaded': uploaded, 'count': len(uploaded)})
+
+
+@app.route('/admin/api/gallery/delete', methods=['POST'])
+@login_required
+def gallery_delete_image():
+    """Delete an image from the map view presentation gallery"""
+    data = request.get_json()
+    filename = data.get('filename')
+    
+    if not filename:
+        return jsonify({'error': 'Filename required'}), 400
+    
+    # Security: only allow deleting from newcomer_images dir
+    safe_path = os.path.join('static', 'newcomer_images', os.path.basename(filename))
+    
+    if os.path.exists(safe_path):
+        os.remove(safe_path)
+        username = session.get('user', 'unknown')
+        git_sync_changes(f"Gallery: {username} removed {os.path.basename(filename)}")
+        return jsonify({'success': True})
+    else:
+        return jsonify({'error': 'File not found'}), 404
+
 
 @app.route('/admin/api/account/tours', methods=['POST'])
 @login_required

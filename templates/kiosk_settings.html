@@ -672,6 +672,40 @@
                 <button type="submit" class="save-btn">💾 Save Settings</button>
             </div>
         </form>
+        
+        <!-- Map View Gallery Images (outside form - uses its own AJAX) -->
+        <div class="settings-section" style="margin-top: 20px;">
+            <div class="section-header">
+                <h2>🗺️ Map View Gallery Images</h2>
+                <p>Manage images available in the map view presentation gallery. Workers can drag these onto the map during presentations.</p>
+            </div>
+            <div class="section-content">
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <label style="padding: 10px 20px; background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s;">
+                            📁 Upload Images
+                            <input type="file" id="galleryUploadInput" multiple accept="image/png,image/jpeg,image/jpg,image/webp" style="display:none;" onchange="uploadGalleryImages(this)">
+                        </label>
+                        <span id="galleryUploadStatus" style="color: var(--accent-green); font-size: 0.85rem;"></span>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.8rem; opacity: 0.6;">Supports PNG, JPG, WEBP. Images sync to kiosk automatically.</div>
+                </div>
+                <div id="galleryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px;">
+                    {% for img in gallery_images %}
+                    <div class="gallery-item" data-filename="{{ img.path | replace('newcomer_images/', '') }}" style="position: relative; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); transition: border-color 0.2s;">
+                        <img src="{{ url_for('static', filename=img.path) }}" alt="{{ img.alt }}" style="width: 100%; height: 120px; object-fit: cover; display: block;">
+                        <div style="padding: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.7rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;" title="{{ img.path | replace('newcomer_images/', '') }}">{{ img.path | replace('newcomer_images/', '') }}</span>
+                            <button type="button" onclick="deleteGalleryImage(this, '{{ img.path | replace('newcomer_images/', '') }}')" style="background: rgba(248,81,73,0.2); border: 1px solid rgba(248,81,73,0.4); color: #f85149; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: background 0.2s;">🗑️</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not gallery_images %}
+                    <div id="galleryEmpty" style="grid-column: 1 / -1; text-align: center; padding: 40px; opacity: 0.5; font-size: 0.9rem;">No gallery images yet. Upload some above!</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -714,6 +748,84 @@
             document.getElementById('removeLogoInput').value = 'true';
             document.getElementById('logoInput').value = '';
             document.getElementById('logoPreview').innerHTML = '<span class="placeholder">No logo</span>';
+        }
+        
+        // ========== Gallery Image Management ==========
+        async function uploadGalleryImages(input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
+            
+            const status = document.getElementById('galleryUploadStatus');
+            status.textContent = `Uploading ${files.length} image(s)...`;
+            status.style.color = 'var(--accent-blue, #58a6ff)';
+            
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('gallery_images', files[i]);
+            }
+            
+            try {
+                const resp = await fetch('/admin/api/gallery/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await resp.json();
+                
+                if (data.success) {
+                    status.textContent = `✅ Uploaded ${data.count} image(s)! Refreshing...`;
+                    status.style.color = 'var(--accent-green, #3fb950)';
+                    // Reload the page to show new images
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    status.textContent = `❌ Error: ${data.error}`;
+                    status.style.color = 'var(--accent-red, #f85149)';
+                }
+            } catch (err) {
+                status.textContent = `❌ Upload failed: ${err.message}`;
+                status.style.color = 'var(--accent-red, #f85149)';
+            }
+            
+            input.value = '';
+        }
+        
+        async function deleteGalleryImage(btn, filename) {
+            if (!confirm(`Delete "${filename}" from the gallery?`)) return;
+            
+            btn.textContent = '⏳';
+            btn.disabled = true;
+            
+            try {
+                const resp = await fetch('/admin/api/gallery/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: filename })
+                });
+                const data = await resp.json();
+                
+                if (data.success) {
+                    // Animate removal
+                    const item = btn.closest('.gallery-item');
+                    item.style.transition = 'opacity 0.3s, transform 0.3s';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        item.remove();
+                        // Check if grid is now empty
+                        const grid = document.getElementById('galleryGrid');
+                        if (grid.querySelectorAll('.gallery-item').length === 0) {
+                            grid.innerHTML = '<div id="galleryEmpty" style="grid-column: 1 / -1; text-align: center; padding: 40px; opacity: 0.5; font-size: 0.9rem;">No gallery images. Upload some above!</div>';
+                        }
+                    }, 300);
+                } else {
+                    alert(`Error: ${data.error}`);
+                    btn.textContent = '🗑️';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert(`Delete failed: ${err.message}`);
+                btn.textContent = '🗑️';
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
