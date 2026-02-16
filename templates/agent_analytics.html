@@ -289,7 +289,8 @@
             <span style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 16px; border-radius: 20px; font-weight: 600;">
                 👤 {{ account or 'bailey' }}
             </span>
-            <a href="/admin/agent" class="btn btn-secondary">← Back to Dashboard</a>
+            <a href="/admin/agent" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('agent_tides_page') }}" class="btn btn-secondary" style="background: rgba(0, 119, 182, 0.3); border-color: rgba(0, 180, 216, 0.4);">🌊 Tides</a>
             <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh & Sync</button>
         </div>
     </div>

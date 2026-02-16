@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes">
+    <title>Tide Forecast - Shute Harbour</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a3055 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #0077b6;
+        }
+        
+        .btn-primary:hover {
+            background: #0088cc;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+        
+        /* Location header */
+        .location-banner {
+            background: linear-gradient(135deg, rgba(0, 119, 182, 0.3), rgba(0, 180, 216, 0.15));
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .location-info h2 {
+            font-size: 1.4em;
+            margin-bottom: 4px;
+        }
+        
+        .location-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+        }
+        
+        .cache-info {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8em;
+        }
+        
+        /* Hill Inlet Guide */
+        .guide-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 30px;
+        }
+        
+        .guide-section h3 {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #00b4d8;
+        }
+        
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        
+        .guide-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .guide-card.great {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .guide-card.good {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.3);
+        }
+        
+        .guide-card.poor {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        .guide-card .emoji {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+        
+        .guide-card h4 {
+            font-size: 1em;
+            margin-bottom: 4px;
+        }
+        
+        .guide-card p {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Today's tides */
+        .today-section {
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.15), rgba(0, 119, 182, 0.1));
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 30px;
+        }
+        
+        .today-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        
+        .today-tides {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .tide-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .tide-chip.high {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+        
+        .tide-chip.low {
+            background: rgba(230, 126, 34, 0.2);
+            border: 1px solid rgba(230, 126, 34, 0.3);
+        }
+        
+        .tide-chip .icon {
+            font-size: 1.5em;
+        }
+        
+        .tide-chip .info {
+            flex: 1;
+        }
+        
+        .tide-chip .info .type {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .tide-chip .info .time {
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+        
+        .tide-chip .height {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        
+        .tide-chip.high .height {
+            color: #3498db;
+        }
+        
+        .tide-chip.low .height {
+            color: #e67e22;
+        }
+        
+        .hill-inlet-banner {
+            margin-top: 16px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .hill-inlet-banner.great {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        
+        .hill-inlet-banner.good {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.3);
+            color: #f1c40f;
+        }
+        
+        .hill-inlet-banner.poor {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        .hill-inlet-banner.none {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* 7-day forecast grid */
+        .forecast-section {
+            margin-bottom: 30px;
+        }
+        
+        .forecast-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        
+        .day-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .day-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .day-card.today {
+            border-color: rgba(0, 180, 216, 0.4);
+            background: rgba(0, 180, 216, 0.08);
+        }
+        
+        .day-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .day-card-header h4 {
+            font-size: 1.05em;
+        }
+        
+        .day-card-header .badge {
+            font-size: 0.75em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .badge.great {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+        
+        .badge.good {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+        
+        .badge.poor {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+        
+        .badge.none {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .tide-row {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            gap: 10px;
+        }
+        
+        .tide-row .arrow {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .tide-row .arrow.high { color: #3498db; }
+        .tide-row .arrow.low { color: #e67e22; }
+        
+        .tide-row .type {
+            width: 50px;
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .tide-row .time {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .tide-row .height {
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+        
+        .tide-row .height.high { color: #3498db; }
+        .tide-row .height.low { color: #e67e22; }
+        
+        .day-card-note {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Best days summary */
+        .best-days {
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 30px;
+        }
+        
+        .best-days h3 {
+            font-size: 1.2em;
+            margin-bottom: 16px;
+            color: #2ecc71;
+        }
+        
+        .best-day-chips {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .best-day-chip {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.25);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 140px;
+        }
+        
+        .best-day-chip .day {
+            font-weight: 700;
+            font-size: 1em;
+        }
+        
+        .best-day-chip .detail {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .no-data h2 {
+            margin-bottom: 12px;
+        }
+        
+        /* Refresh button */
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #0077b6, #00b4d8);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-family: inherit;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(0, 119, 182, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌊 Tide Forecast</h1>
+        <div class="header-actions">
+            <a href="/admin/agent" class="btn btn-secondary">← Dashboard</a>
+            <a href="{{ url_for('agent_analytics_page') }}" class="btn btn-secondary">📊 Analytics</a>
+            <button onclick="refreshTides()" class="btn btn-primary">🔄 Refresh</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        {% if not tide_days %}
+        <div class="no-data">
+            <h2>🌊 Unable to load tide data</h2>
+            <p>Check your internet connection and try refreshing.</p>
+            <button onclick="refreshTides()" class="btn btn-primary" style="margin-top: 20px;">🔄 Try Again</button>
+        </div>
+        {% else %}
+        
+        <!-- Location banner -->
+        <div class="location-banner">
+            <div class="location-info">
+                <h2>📍 {{ location }} — Whitsundays</h2>
+                <p>Tide predictions for tour planning &amp; Hill Inlet viewing</p>
+            </div>
+            <div class="cache-info">
+                {% if cache_time %}
+                Updated: {{ cache_time.strftime('%I:%M %p, %d %b') }}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick guide -->
+        <div class="guide-section">
+            <h3>📋 Quick Guide — Hill Inlet Lookout</h3>
+            <div class="guide-grid">
+                <div class="guide-card great">
+                    <div class="emoji">⭐</div>
+                    <h4>Great (below 1.0m)</h4>
+                    <p>Stunning swirling sand patterns clearly visible. Best possible viewing.</p>
+                </div>
+                <div class="guide-card good">
+                    <div class="emoji">👍</div>
+                    <h4>Good (1.0m – 1.5m)</h4>
+                    <p>Sand patterns visible but less defined. Still worth recommending.</p>
+                </div>
+                <div class="guide-card poor">
+                    <div class="emoji">😐</div>
+                    <h4>Not ideal (above 1.5m)</h4>
+                    <p>Water covers most sand. Beach walk still good, but lookout less impressive.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Best days for Hill Inlet -->
+        {% set great_days = tide_days | selectattr('hill_inlet_rating', 'equalto', 'great') | list %}
+        {% if great_days %}
+        <div class="best-days">
+            <h3>⭐ Best Days for Hill Inlet This Period</h3>
+            <div class="best-day-chips">
+                {% for day in great_days[:10] %}
+                <div class="best-day-chip">
+                    <span class="day">{{ day.date_label }}</span>
+                    <span class="detail">{{ day.hill_inlet_note.split(' - ')[0] if ' - ' in day.hill_inlet_note else day.hill_inlet_note }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Today's tides -->
+        {% if tide_days | length > 0 %}
+        {% set today = tide_days[0] %}
+        <div class="today-section">
+            <h3>📅 Today — {{ today.date_label }}</h3>
+            <div class="today-tides">
+                {% for tide in today.tides %}
+                <div class="tide-chip {{ tide.type }}">
+                    <span class="icon">{{ '🔵' if tide.type == 'high' else '🟠' }}</span>
+                    <div class="info">
+                        <div class="type">{{ tide.type }} tide</div>
+                        <div class="time">{{ tide.time }}</div>
+                    </div>
+                    <span class="height">{{ '%.2f' | format(tide.height_m) }}m</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% if today.hill_inlet_rating != 'none' %}
+            <div class="hill-inlet-banner {{ today.hill_inlet_rating }}">
+                {% if today.hill_inlet_rating == 'great' %}⭐{% elif today.hill_inlet_rating == 'good' %}👍{% else %}😐{% endif %}
+                <span>Hill Inlet: {{ today.hill_inlet_note }}</span>
+            </div>
+            {% else %}
+            <div class="hill-inlet-banner none">
+                🌙 <span>No daytime low tide suitable for Hill Inlet viewing today</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- 7-day forecast -->
+        <div class="forecast-section">
+            <h3>🗓️ Extended Forecast ({{ tide_days | length }} days)</h3>
+            <div class="forecast-grid">
+                {% for day in tide_days %}
+                <div class="day-card {{ 'today' if loop.first else '' }}">
+                    <div class="day-card-header">
+                        <h4>{{ day.date_label }}{% if loop.first %} (Today){% endif %}</h4>
+                        {% if day.hill_inlet_rating == 'great' %}
+                        <span class="badge great">⭐ Great</span>
+                        {% elif day.hill_inlet_rating == 'good' %}
+                        <span class="badge good">👍 Good</span>
+                        {% elif day.hill_inlet_rating == 'poor' %}
+                        <span class="badge poor">Not ideal</span>
+                        {% else %}
+                        <span class="badge none">No daytime low</span>
+                        {% endif %}
+                    </div>
+                    {% for tide in day.tides %}
+                    <div class="tide-row">
+                        <span class="arrow {{ tide.type }}">{{ '▲' if tide.type == 'high' else '▼' }}</span>
+                        <span class="type">{{ tide.type | title }}</span>
+                        <span class="time">{{ tide.time }}</span>
+                        <span class="height {{ tide.type }}">{{ '%.2f' | format(tide.height_m) }}m</span>
+                    </div>
+                    {% endfor %}
+                    {% if day.hill_inlet_note %}
+                    <div class="day-card-note">{{ day.hill_inlet_note }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        {% endif %}
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshTides()" id="refresh-btn">🔄 Refresh Tides</button>
+    
+    <script>
+        async function refreshTides() {
+            const btn = document.getElementById('refresh-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Loading...';
+            btn.disabled = true;
+            
+            try {
+                const resp = await fetch('/api/tides/refresh', { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    btn.textContent = '❌ Failed';
+                    setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
+                }
+            } catch (e) {
+                console.error('Refresh failed:', e);
+                btn.textContent = '❌ Error';
+                setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
+

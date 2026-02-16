@@ -8350,6 +8350,144 @@ def agent_analytics_page():
     summary = get_analytics_summary(account)
     return render_template('agent_analytics.html', summary=summary, account=account)
 
+# ============================================================================
+# TIDE DATA - Shute Harbour / Whitsundays
+# ============================================================================
+
+_tide_cache = {
+    'data': None,
+    'fetched_at': None
+}
+
+def scrape_tide_data(location='Shute-Harbour-Australia'):
+    """Scrape 7-day tide data from tide-forecast.com for the Whitsundays"""
+    import urllib.request
+    import re as _re
+    
+    url = f'https://www.tide-forecast.com/locations/{location}/tides/latest'
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    resp = urllib.request.urlopen(req, timeout=15)
+    html = resp.read().decode('utf-8', errors='replace')
+    
+    days = []
+    tables = html.split('<table class="tide-day-tides">')
+    
+    for table_html in tables[1:]:
+        table_html = table_html[:table_html.find('</table>')]
+        
+        rows = _re.findall(
+            r'<tr(?:\s[^>]*)?>.*?<td>((?:High|Low)\s+Tide)</td>'
+            r'.*?<b>\s*(\d{1,2}:\d{2}\s*(?:AM|PM))\s*</b>'
+            r'.*?<span[^>]*>\(([^)]+)\)</span>'
+            r'.*?<b[^>]*>(\d+\.\d+)\s*m</b>',
+            table_html,
+            _re.DOTALL
+        )
+        
+        if not rows:
+            continue
+        
+        day_date = rows[0][2].strip()
+        tides = []
+        for tide_type, time_str, date_str, height in rows:
+            tides.append({
+                'type': 'high' if 'High' in tide_type else 'low',
+                'time': time_str.strip(),
+                'height_m': float(height),
+            })
+        
+        # Analyze Hill Inlet suitability
+        low_tides = [t for t in tides if t['type'] == 'low']
+        hill_inlet_rating = 'none'
+        hill_inlet_note = ''
+        best_low = None
+        
+        daytime_lows = []
+        for lt in low_tides:
+            try:
+                t = datetime.strptime(lt['time'], '%I:%M %p')
+                if 6 <= t.hour <= 16:
+                    daytime_lows.append(lt)
+            except:
+                pass
+        
+        if daytime_lows:
+            best_low = min(daytime_lows, key=lambda x: x['height_m'])
+            if best_low['height_m'] < 1.0:
+                hill_inlet_rating = 'great'
+                hill_inlet_note = f"Low tide {best_low['time']} at {best_low['height_m']:.2f}m - excellent sand patterns"
+            elif best_low['height_m'] < 1.5:
+                hill_inlet_rating = 'good'
+                hill_inlet_note = f"Low tide {best_low['time']} at {best_low['height_m']:.2f}m - visible sand patterns"
+            else:
+                hill_inlet_rating = 'poor'
+                hill_inlet_note = f"Lowest daytime tide {best_low['time']} at {best_low['height_m']:.2f}m - limited visibility"
+        
+        if tides:
+            days.append({
+                'date_label': day_date,
+                'tides': tides,
+                'hill_inlet_rating': hill_inlet_rating,
+                'hill_inlet_note': hill_inlet_note,
+            })
+    
+    return days
+
+def get_tide_data():
+    """Get tide data with 6-hour caching"""
+    now = datetime.now()
+    
+    if (_tide_cache['data'] is not None and 
+        _tide_cache['fetched_at'] is not None and
+        (now - _tide_cache['fetched_at']).total_seconds() < 6 * 3600):
+        return _tide_cache['data']
+    
+    try:
+        data = scrape_tide_data()
+        _tide_cache['data'] = data
+        _tide_cache['fetched_at'] = now
+        print(f"[TIDES] Fetched {len(data)} days of tide data")
+        return data
+    except Exception as e:
+        print(f"[TIDES] Error fetching tide data: {e}")
+        if _tide_cache['data'] is not None:
+            return _tide_cache['data']
+        return []
+
+@app.route('/agent/tides')
+@agent_required
+def agent_tides_page():
+    """Tide forecast page for shop workers"""
+    tide_days = get_tide_data()
+    return render_template('agent_tides.html', 
+                         tide_days=tide_days,
+                         location='Shute Harbour',
+                         cache_time=_tide_cache.get('fetched_at'))
+
+@app.route('/api/tides')
+@agent_required
+def api_tides():
+    """JSON API for tide data"""
+    tide_days = get_tide_data()
+    return jsonify({
+        'success': True,
+        'location': 'Shute Harbour',
+        'days': tide_days,
+        'cached_at': _tide_cache.get('fetched_at', '').isoformat() if _tide_cache.get('fetched_at') else None
+    })
+
+@app.route('/api/tides/refresh', methods=['POST'])
+@agent_required
+def refresh_tides():
+    """Force refresh tide data"""
+    _tide_cache['data'] = None
+    _tide_cache['fetched_at'] = None
+    tide_days = get_tide_data()
+    return jsonify({
+        'success': True,
+        'days_count': len(tide_days)
+    })
+
 @app.route('/api/analytics/session/<session_id>')
 @agent_required
 def get_session_details(session_id):
