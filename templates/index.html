@@ -15231,7 +15231,7 @@
                 ☀️ <span id="home-full-day-text">Full Day</span> <span id="home-full-day-hours" style="opacity:0.8;">(5–8 hours)</span>
               </button>
               <button class="duration-pill" data-value="multi_day" onclick="selectDuration('multi_day')" id="home-multi-day-btn">
-                🌅 <span id="home-multi-day-text">Multi-day</span> <span id="home-multi-day-hours" style="opacity:0.8;">Adventure</span>
+                🌅 <span id="home-multi-day-text">Multi-day</span> <span id="home-multi-day-hours">Adventure</span>
               </button>
               <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')" id="home-no-pref-duration-btn">
                 🤷 <span id="home-no-pref-duration-text">No preference</span>
@@ -15554,7 +15554,8 @@
         <button class="mobile-browse-btn" onclick="goToHomePage()">📁</button>
         <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">⚡ Quick Decision</button>
         <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-        <button class="browse-all-btn-header" id="detail-browse-all-btn" onclick="goToHomePage()" style="display: none; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📁 Browse All Tours</button>
+        <button class="browse-all-btn-header" id="detail-browse-all-btn" onclick="goToHomePage()" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📁 Browse All Tours</button>
+        <button class="map-view-btn-header" id="detail-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
         <button class="newcomer-info-btn-header" id="detail-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -19651,7 +19652,7 @@
               <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${fullTourData.reviews.overall_rating.toFixed(1)}</div>
               <div style="display: flex; flex-direction: column; gap: 3px;">
                 <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(fullTourData.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(fullTourData.reviews.overall_rating))}</div>
-                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replace('{count}', fullTourData.reviews.review_count)}</div>
+                <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replaceAll('{count}', fullTourData.reviews.review_count)}</div>
               </div>
             </div>
             <div class="swipe-reviews-grid">
@@ -24981,13 +24982,13 @@
             }
             
             if (filterLabels.length > 0) {
-              subtitle.innerHTML = tDual('showing_tours').replace('{count}', `${totalCount} ${filterLabels.join(', ')}`);
+              subtitle.innerHTML = tDual('showing_tours').replaceAll('{count}', `${totalCount} ${filterLabels.join(', ')}`);
             } else {
-              subtitle.innerHTML = tDual('showing_tours').replace('{count}', totalCount);
+              subtitle.innerHTML = tDual('showing_tours').replaceAll('{count}', totalCount);
             }
             title.innerHTML = tDual('filtered_tours');
           } else {
-            subtitle.innerHTML = tDual('showing_tours').replace('{count}', totalCount);
+            subtitle.innerHTML = tDual('showing_tours').replaceAll('{count}', totalCount);
             title.innerHTML = tDual('tap_any_card') || 'Tap Any Card For Booking and More Info';
           }
           
@@ -27303,7 +27304,7 @@
                 <div style="font-size: 2em; font-weight: 700; color: #0077b6; line-height: 1;">${data.reviews.overall_rating.toFixed(1)}</div>
                 <div style="display: flex; flex-direction: column; gap: 3px;">
                   <div style="font-size: 1.2em; color: #ffa500; line-height: 1; letter-spacing: 1px;">${'★'.repeat(Math.floor(data.reviews.overall_rating))}${'☆'.repeat(5 - Math.floor(data.reviews.overall_rating))}</div>
-                  <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replace('{count}', data.reviews.review_count)}</div>
+                  <div style="color: #2c3e50; font-size: 0.9em; line-height: 1;">${tDual('based_on_reviews').replaceAll('{count}', data.reviews.review_count)}</div>
                 </div>
               </div>
               <div class="swipe-reviews-grid">`;
@@ -27717,11 +27718,17 @@
               const quickDecisionBtn = document.getElementById('detail-quick-decision-btn');
               const aiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
               const browseAllBtn = document.getElementById('detail-browse-all-btn');
+              const mapViewBtn = document.getElementById('detail-map-view-btn');
+              const newcomerInfoBtn = document.getElementById('detail-newcomer-info-btn');
               
               console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
               
               // Clear all mode classes first
               document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
+              
+              // Always show Map View and Newcomer Info
+              if (mapViewBtn) mapViewBtn.style.cssText = 'display: inline-flex !important;';
+              if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display: inline-flex !important;';
               
               if (window.cameFromAIAssistant) {
                 console.log('🤖 Came from AI Assistant - show Quick Decision + Browse All, hide AI');
@@ -27897,7 +27904,7 @@
       // Update subtitle on home page
       const subtitle = document.getElementById('home-tours-subtitle');
       const title = document.getElementById('home-tours-title');
-      if (title) title.innerHTML = tDual('tours_by').replace('{company}', companyName);
+      if (title) title.innerHTML = tDual('tours_by').replaceAll('{company}', companyName);
       if (subtitle) subtitle.textContent = 'Loading...';
       
       // Scroll to top
@@ -29515,6 +29522,12 @@
       window.location.href = '/?lang=' + langCode + '#mode-selection';
     }
     
+    // Language → Currency mapping
+    const langCurrencyMap = {
+      'en': 'AUD', 'ja': 'JPY', 'zh': 'CNY', 'ko': 'KRW',
+      'de': 'EUR', 'fr': 'EUR', 'hi': 'INR', 'es': 'EUR'
+    };
+    
     async function switchLanguage(langCode) {
       console.log('🌐 Switching language to:', langCode);
       
@@ -29523,6 +29536,16 @@
       
       // Update current language WITHOUT page reload
       currentLanguage = langCode;
+      
+      // Auto-switch currency to match language
+      const mappedCurrency = langCurrencyMap[langCode] || 'AUD';
+      if (typeof switchCurrency === 'function') {
+        switchCurrency(mappedCurrency);
+        // Update all currency button displays
+        document.querySelectorAll('[id*="currency-btn"]').forEach(btn => {
+          btn.textContent = mappedCurrency;
+        });
+      }
       
       // Update URL without reload (for bookmarking/sharing)
       const url = new URL(window.location.href);
@@ -29664,12 +29687,12 @@
       const quickDecisionText = document.getElementById('quick-decision-text');
       const browseAllToursText = document.getElementById('browse-all-tours-text');
       
-      if (videoStartTitle) videoStartTitle.textContent = lang.video_start_title;
-      if (aiAssistantText) aiAssistantText.textContent = '🤖 ' + lang.ai_assistant_btn;
-      if (quickDecisionText) quickDecisionText.textContent = '⚡ ' + lang.quick_decision_btn;
-      if (browseAllToursText) browseAllToursText.textContent = '🗂️ ' + lang.browse_all_tours_btn;
+      if (videoStartTitle) videoStartTitle.innerHTML = dualAL(lang.video_start_title, 'video_start_title');
+      if (aiAssistantText) aiAssistantText.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
+      if (quickDecisionText) quickDecisionText.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
+      if (browseAllToursText) browseAllToursText.innerHTML = '🗂️ ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       
-      // Update home page filter questions
+      // Update home page filter questions (with dual-language)
       const homeDurationQuestion = document.getElementById('home-duration-question');
       const homeFamilyQuestion = document.getElementById('home-family-question');
       const homeHalfDayText = document.getElementById('home-half-day-text');
@@ -29683,42 +29706,42 @@
       const homeAdultsOnlyText = document.getElementById('home-adults-only-text');
       const homeNoPrefFamilyText = document.getElementById('home-no-pref-family-text');
       
-      if (homeDurationQuestion) homeDurationQuestion.textContent = lang.duration_question;
-      if (homeFamilyQuestion) homeFamilyQuestion.textContent = lang.family_question;
-      if (homeHalfDayText) homeHalfDayText.textContent = lang.half_day;
+      if (homeDurationQuestion) homeDurationQuestion.innerHTML = dualAL(lang.duration_question, 'duration_question');
+      if (homeFamilyQuestion) homeFamilyQuestion.innerHTML = dualAL(lang.family_question, 'family_question');
+      if (homeHalfDayText) homeHalfDayText.innerHTML = dualAL(lang.half_day, 'half_day');
       if (homeHalfDayHours) homeHalfDayHours.textContent = lang.half_day_hours;
-      if (homeFullDayText) homeFullDayText.textContent = lang.full_day;
+      if (homeFullDayText) homeFullDayText.innerHTML = dualAL(lang.full_day, 'full_day');
       if (homeFullDayHours) homeFullDayHours.textContent = lang.full_day_hours;
-      if (homeMultiDayText) homeMultiDayText.textContent = lang.multi_day;
+      if (homeMultiDayText) homeMultiDayText.innerHTML = dualAL(lang.multi_day, 'multi_day');
       if (homeMultiDayHours) homeMultiDayHours.textContent = lang.multi_day_adventure;
-      if (homeNoPrefDurationText) homeNoPrefDurationText.textContent = lang.no_preference;
-      if (homeFamilyKidsText) homeFamilyKidsText.textContent = '👨‍👩‍👧‍👦 ' + lang.family_with_kids;
-      if (homeAdultsOnlyText) homeAdultsOnlyText.textContent = '👥 ' + lang.adults_only;
-      if (homeNoPrefFamilyText) homeNoPrefFamilyText.textContent = lang.no_preference;
+      if (homeNoPrefDurationText) homeNoPrefDurationText.innerHTML = dualAL(lang.no_preference, 'no_preference');
+      if (homeFamilyKidsText) homeFamilyKidsText.innerHTML = '👨‍👩‍👧‍👦 ' + dualAL(lang.family_with_kids, 'family_with_kids');
+      if (homeAdultsOnlyText) homeAdultsOnlyText.innerHTML = '👥 ' + dualAL(lang.adults_only, 'adults_only');
+      if (homeNoPrefFamilyText) homeNoPrefFamilyText.innerHTML = dualAL(lang.no_preference, 'no_preference');
       
       // Update home page action buttons
       const homeShowEverythingText = document.getElementById('home-show-everything-text');
       const homeContinueText = document.getElementById('home-continue-text');
-      if (homeShowEverythingText) homeShowEverythingText.textContent = lang.show_me_everything;
-      if (homeContinueText) homeContinueText.textContent = lang.continue;
+      if (homeShowEverythingText) homeShowEverythingText.innerHTML = dualAL(lang.show_me_everything, 'show_me_everything');
+      if (homeContinueText) homeContinueText.innerHTML = dualAL(lang.continue, 'continue');
       
       // Update home page titles
       const homeToursTitle = document.getElementById('home-tours-title');
       const homeToursSubtitle = document.getElementById('home-tours-subtitle');
-      if (homeToursTitle && homeToursTitle.textContent.includes('Tap Any Card')) {
-        homeToursTitle.textContent = lang.tap_any_card;
+      if (homeToursTitle && (homeToursTitle.textContent.includes('Tap Any Card') || homeToursTitle.textContent.includes(lang.tap_any_card))) {
+        homeToursTitle.innerHTML = dualAL(lang.tap_any_card, 'tap_any_card');
       }
-      if (homeToursSubtitle && homeToursSubtitle.textContent.includes('Showing all')) {
-        homeToursSubtitle.textContent = lang.showing_all_tours;
+      if (homeToursSubtitle && (homeToursSubtitle.textContent.includes('Showing all') || homeToursSubtitle.textContent.includes(lang.showing_all_tours))) {
+        homeToursSubtitle.innerHTML = dualAL(lang.showing_all_tours, 'showing_all_tours');
       }
       
       // Update company filter nav buttons
       const backToTourText = document.getElementById('back-to-tour-text');
       const backToHomeText = document.getElementById('back-to-home-text');
-      if (backToTourText) backToTourText.textContent = lang.back_to_previous_tour;
-      if (backToHomeText) backToHomeText.textContent = lang.back_to_home_page;
+      if (backToTourText) backToTourText.innerHTML = dualAL(lang.back_to_previous_tour, 'back_to_previous_tour');
+      if (backToHomeText) backToHomeText.innerHTML = dualAL(lang.back_to_home_page, 'back_to_home_page');
       
-      // Update home page activity question and options
+      // Update home page activity question and options (with dual-language)
       const homeActivityQuestion = document.getElementById('home-activity-question');
       const homeSelectAllText = document.getElementById('home-select-all-text');
       const homeActivityGbrText = document.getElementById('home-activity-gbr-text');
@@ -29729,20 +29752,20 @@
       const homeActivitySwimmingText = document.getElementById('home-activity-swimming-text');
       const homeActivityScenicText = document.getElementById('home-activity-scenic-text');
       
-      if (homeActivityQuestion) homeActivityQuestion.textContent = lang.activity_question;
-      if (homeSelectAllText) homeSelectAllText.textContent = lang.select_all_that_apply;
-      if (homeActivityGbrText) homeActivityGbrText.textContent = '🐠 ' + lang.activity_gbr;
-      if (homeActivityWhitehavenText) homeActivityWhitehavenText.textContent = '🏖️ ' + lang.activity_whitehaven;
-      if (homeActivityIslandText) homeActivityIslandText.textContent = '🏝️ ' + lang.activity_island;
-      if (homeActivitySailingText) homeActivitySailingText.textContent = '⛵ ' + lang.activity_sailing;
-      if (homeActivitySnorkelingText) homeActivitySnorkelingText.textContent = '🤿 ' + lang.activity_snorkeling;
-      if (homeActivitySwimmingText) homeActivitySwimmingText.textContent = '🏊 ' + lang.activity_swimming;
-      if (homeActivityScenicText) homeActivityScenicText.textContent = '🌅 ' + lang.activity_scenic_views;
+      if (homeActivityQuestion) homeActivityQuestion.innerHTML = dualAL(lang.activity_question, 'activity_question');
+      if (homeSelectAllText) homeSelectAllText.innerHTML = dualAL(lang.select_all_that_apply, 'select_all_that_apply');
+      if (homeActivityGbrText) homeActivityGbrText.innerHTML = '🐠 ' + dualAL(lang.activity_gbr, 'activity_gbr');
+      if (homeActivityWhitehavenText) homeActivityWhitehavenText.innerHTML = '🏖️ ' + dualAL(lang.activity_whitehaven, 'activity_whitehaven');
+      if (homeActivityIslandText) homeActivityIslandText.innerHTML = '🏝️ ' + dualAL(lang.activity_island, 'activity_island');
+      if (homeActivitySailingText) homeActivitySailingText.innerHTML = '⛵ ' + dualAL(lang.activity_sailing, 'activity_sailing');
+      if (homeActivitySnorkelingText) homeActivitySnorkelingText.innerHTML = '🤿 ' + dualAL(lang.activity_snorkeling, 'activity_snorkeling');
+      if (homeActivitySwimmingText) homeActivitySwimmingText.innerHTML = '🏊 ' + dualAL(lang.activity_swimming, 'activity_swimming');
+      if (homeActivityScenicText) homeActivityScenicText.innerHTML = '🌅 ' + dualAL(lang.activity_scenic_views, 'activity_scenic_views');
       
       // Update hero title and search placeholder
       const heroTitle = document.getElementById('hero-title');
       const searchInput = document.getElementById('home-search-input');
-      if (heroTitle) heroTitle.textContent = lang.find_perfect_tour;
+      if (heroTitle) heroTitle.innerHTML = dualAL(lang.find_perfect_tour, 'find_perfect_tour');
       if (searchInput) searchInput.placeholder = lang.search_tours_placeholder;
       
       // Update filter panel elements
@@ -29873,18 +29896,32 @@
       const detailQuickDecisionBtn = document.getElementById('detail-quick-decision-btn');
       const homeBrowseAllBtn = document.getElementById('home-browse-all-btn');
       const vqBrowseAllBtn = document.getElementById('vq-browse-all-btn');
+      const detailBrowseAllBtn = document.getElementById('detail-browse-all-btn');
       const homeAiAssistantBtn = document.getElementById('home-ai-assistant-btn');
       const vqAiAssistantBtn = document.getElementById('vq-ai-assistant-btn');
       const detailAiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
+      const detailMapViewBtn = document.getElementById('detail-map-view-btn');
+      const detailNewcomerInfoBtn = document.getElementById('detail-newcomer-info-btn');
       
       if (homeQuickDecisionBtn) homeQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
       if (vqQuickDecisionBtn) vqQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
       if (detailQuickDecisionBtn) detailQuickDecisionBtn.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
       if (homeBrowseAllBtn) homeBrowseAllBtn.innerHTML = '🏠 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       if (vqBrowseAllBtn) vqBrowseAllBtn.innerHTML = '🏠 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
+      if (detailBrowseAllBtn) detailBrowseAllBtn.innerHTML = '📁 ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       if (homeAiAssistantBtn) homeAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
       if (vqAiAssistantBtn) vqAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
       if (detailAiAssistantBtn) detailAiAssistantBtn.innerHTML = '🤖 ' + dualAL(lang.ai_assistant_btn, 'ai_assistant_btn');
+      if (detailMapViewBtn) detailMapViewBtn.innerHTML = dualAL(lang.map_view, 'map_view');
+      if (detailNewcomerInfoBtn && newcomerTranslations[langCode]) {
+        const niPrimary = newcomerTranslations[langCode].button_text;
+        const niEn = newcomerTranslations['en'] ? newcomerTranslations['en'].button_text : null;
+        if (showDualAL && niEn && niEn !== niPrimary) {
+          detailNewcomerInfoBtn.innerHTML = `${niPrimary}<span class="dual-lang-sub">${niEn}</span>`;
+        } else {
+          detailNewcomerInfoBtn.innerHTML = niPrimary;
+        }
+      }
       
       // Update AI Assistant page header buttons
       const aiQuickDecisionBtn = document.getElementById('ai-quick-decision-btn');
