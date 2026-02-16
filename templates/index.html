@@ -18328,6 +18328,11 @@
       console.log('🔍 currentBookingUrl:', currentBookingUrl);
       console.log('🔍 currentOpenTourKey:', currentOpenTourKey);
       
+      // Track embedded booking button click (user tapped a booking button inside the tour detail)
+      const tourName = currentProtectedTourData?.name || 'Unknown';
+      const tourCompany = currentProtectedTourData?.company || 'Unknown';
+      Analytics.bookNowClicked(tourName, tourCompany, 'embedded-booking');
+      
       // PRIORITY 1: Use currentBookingUrl (set by setupFooterButtons - same as footer button uses)
       if (currentBookingUrl) {
         console.log('✅ Using stored booking URL (same as footer button):', currentBookingUrl);
@@ -18498,11 +18503,24 @@
       sessionId: null,
       initialized: false,
       heartbeatInterval: null,
+      _initPromise: null,
       
       // Initialize analytics session
       async init() {
         if (this.initialized) return;
         
+        // Prevent concurrent init calls from creating duplicate sessions
+        if (this._initPromise) return this._initPromise;
+        
+        this._initPromise = this._doInit();
+        try {
+          await this._initPromise;
+        } finally {
+          this._initPromise = null;
+        }
+      },
+      
+      async _doInit() {
         // Check for existing session in sessionStorage
         const existingSession = sessionStorage.getItem('analytics_session_id');
         if (existingSession) {
@@ -18627,6 +18645,11 @@
       },
       
       endSession() {
+        if (!this.sessionId) {
+          // No active session — skip to avoid creating a ghost session
+          this.stopHeartbeat();
+          return;
+        }
         this.logEvent('session_end', {});
         this.stopHeartbeat();
         this.notifySessionEnd();
@@ -19913,6 +19936,9 @@
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         
+        // Track Book Now click from swipe mode
+        Analytics.bookNowClicked(tour.name, tour.company, 'swipe');
+        
         // Always go directly to QR code modal - let user scan to continue on phone
         // This gives them the booking page or tour detail page depending on what's available
         console.log('   📱 Opening QR code to send tour to phone');
@@ -19934,6 +19960,9 @@
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
         console.log('   📱 Generating QR code for tour:', tour.name);
+        
+        // Track Send to Phone click from swipe mode
+        Analytics.logEvent('send_to_phone_clicked', { tour_name: tour.name, company: tour.company, source: 'swipe' });
         
         // Use the SAME booking URL as Book Now button
         // Priority 1: Check HERO_BOOKING overrides for booking URL
@@ -26951,7 +26980,7 @@
         continuePhoneBtn.onclick = () => {
           console.log('📱 Continue on Phone button clicked!');
           // Track send to phone click with analytics
-          Analytics.logEvent('send_to_phone_clicked', { tour_name: data.name, company: data.company });
+          Analytics.logEvent('send_to_phone_clicked', { tour_name: data.name, company: data.company, source: 'tour-detail' });
           
           // Use the SAME booking URL as the Book Now button
           // Priority 1: Check HERO_BOOKING overrides for booking URL
@@ -32080,6 +32109,10 @@
           alert('No recommendations to send. Please try again.');
           return;
         }
+        
+        // Track Send to Phone click from AI assistant
+        const tourNames = (recommendations.tours || []).map(t => t.name || t.tour_name).filter(Boolean).join(', ');
+        Analytics.logEvent('send_to_phone_clicked', { tour_name: tourNames, source: 'ai-assistant', tour_count: (recommendations.tours || []).length });
         
         // Extract preferences from response data or user message
         const preferences = {};

@@ -397,6 +397,47 @@
         </div>
         {% endif %}
         
+        <!-- Conversion Tracking: Book Now + Send to Phone -->
+        {% if summary.book_now_clicks or summary.send_to_phone_clicks %}
+        <div class="section">
+            <h2>🎯 Conversion Tracking</h2>
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-card">
+                    <h3>📱 Send to Phone</h3>
+                    <div class="stat-value">{{ summary.send_to_phone_clicks }}</div>
+                    <div class="stat-sub">Total clicks (partial conversions)</div>
+                </div>
+                <div class="stat-card">
+                    <h3>🎟️ Book Now</h3>
+                    <div class="stat-value">{{ summary.book_now_clicks }}</div>
+                    <div class="stat-sub">Total clicks</div>
+                </div>
+            </div>
+            {% if summary.send_to_phone_by_source %}
+            <h3 style="margin-top: 20px; margin-bottom: 10px; color: rgba(255, 255, 255, 0.9); font-size: 0.95em;">📱 Send to Phone — by Mode</h3>
+            <div class="tour-list">
+                {% for source, count in summary.send_to_phone_by_source.items() | sort(attribute='1', reverse=True) %}
+                <div class="tour-item">
+                    <span class="tour-name">{{ source | replace('-', ' ') | title }}</span>
+                    <span class="tour-count">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if summary.book_now_by_source %}
+            <h3 style="margin-top: 20px; margin-bottom: 10px; color: rgba(255, 255, 255, 0.9); font-size: 0.95em;">🎟️ Book Now — by Mode</h3>
+            <div class="tour-list">
+                {% for source, count in summary.book_now_by_source.items() | sort(attribute='1', reverse=True) %}
+                <div class="tour-item">
+                    <span class="tour-name">{{ source | replace('-', ' ') | title }}</span>
+                    <span class="tour-count">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
         <!-- QR Code Tracking -->
         {% if summary.qr_stats and summary.qr_stats.codes_generated > 0 %}
         <div class="section">
@@ -490,7 +531,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if session.duration_seconds %}
+                                {% if session.ended_at %}
                                 {{ (session.duration_seconds // 60) | int }}m {{ (session.duration_seconds % 60) | int }}s
                                 {% else %}
                                 Active
@@ -786,11 +827,11 @@
                 case 'tour_clicked':
                     return `Viewed: <strong>${data.tour_name || 'Unknown'}</strong> (from ${data.source || 'unknown'})`;
                 case 'book_now_clicked':
-                    return `Booked: <strong>${data.tour_name || 'Unknown'}</strong>`;
+                    return `Booked: <strong>${data.tour_name || 'Unknown'}</strong> (from ${data.source || 'unknown'})`;
                 case 'share_clicked':
                     return `Shared: <strong>${data.tour_name || 'Unknown'}</strong>`;
                 case 'send_to_phone_clicked':
-                    return `Sent to phone: <strong>${data.tour_name || 'Unknown'}</strong>`;
+                    return `Sent to phone: <strong>${data.tour_name || 'Unknown'}</strong> (from ${data.source || 'unknown'})`;
                 case 'chat_message':
                     const role = data.role === 'user' ? 'User' : 'Assistant';
                     const cls = data.role === 'user' ? 'chat-user' : 'chat-assistant';

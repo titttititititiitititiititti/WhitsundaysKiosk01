@@ -1319,6 +1319,9 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
             break
     
     if not session:
+        # Don't create a new session just for a session_end event (prevents ghost sessions)
+        if event_type == 'session_end':
+            return None
         session = {
             'session_id': session_id,
             'account': account,
@@ -1397,7 +1400,7 @@ def is_meaningful_session(session):
         'mode_select', 'mode_selected', 'browse_all', 'quick_decision', 'ai_mode',
         'chat_message', 'chat_sent',
         'qr_code_generated', 'qr_tour_visit',
-        'book_now_clicked', 'booking_click', 'send_to_phone',
+        'book_now_clicked', 'booking_click', 'send_to_phone', 'send_to_phone_clicked',
         'language_select', 'language_selected',
         'swipe', 'card_swipe', 'like', 'dislike'
     }
@@ -1478,6 +1481,10 @@ def get_analytics_summary(account=None):
     qr_tour_visits = 0
     qr_book_now_clicks = 0
     qr_conversions = []
+    send_to_phone_clicks = 0
+    book_now_clicks = 0
+    send_to_phone_by_source = {}
+    book_now_by_source = {}
     
     for s in sessions:
         for event in s.get('events', []):
@@ -1486,8 +1493,15 @@ def get_analytics_summary(account=None):
             elif event.get('type') == 'qr_tour_visit':
                 qr_tour_visits += 1
             elif event.get('type') == 'book_now_clicked':
+                book_now_clicks += 1
+                src = event.get('data', {}).get('source', 'unknown')
+                book_now_by_source[src] = book_now_by_source.get(src, 0) + 1
                 if event.get('data', {}).get('from_qr_code'):
                     qr_book_now_clicks += 1
+            elif event.get('type') == 'send_to_phone_clicked':
+                send_to_phone_clicks += 1
+                src = event.get('data', {}).get('source', 'unknown')
+                send_to_phone_by_source[src] = send_to_phone_by_source.get(src, 0) + 1
         
         # Collect QR conversions
         for conversion in s.get('qr_conversions', []):
@@ -1516,7 +1530,11 @@ def get_analytics_summary(account=None):
             'conversion_rate': qr_conversion_rate,
             'total_conversions': len(qr_conversions),
             'recent_conversions': sorted(qr_conversions, key=lambda x: x.get('timestamp', ''), reverse=True)[:20]
-        }
+        },
+        'send_to_phone_clicks': send_to_phone_clicks,
+        'send_to_phone_by_source': send_to_phone_by_source,
+        'book_now_clicks': book_now_clicks,
+        'book_now_by_source': book_now_by_source
     }
 
 # Company name mapping for prettier display - load from config or use defaults
