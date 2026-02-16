@@ -8490,15 +8490,22 @@ def refresh_tides():
 
 @app.route('/api/tides/public')
 def api_tides_public():
-    """Public tide data for kiosk weather widget (no auth required)"""
+    """Public tide data JSON (no auth required)"""
     tide_days = get_tide_data()
-    # Return only first 7 days for the widget
     return jsonify({
         'success': True,
         'location': 'Shute Harbour',
         'days': tide_days[:7],
         'cached_at': _tide_cache.get('fetched_at', '').isoformat() if _tide_cache.get('fetched_at') else None
     })
+
+@app.route('/tides')
+def kiosk_tides_page():
+    """Public tide forecast page accessible from the kiosk"""
+    tide_days = get_tide_data()
+    return render_template('kiosk_tides.html',
+                         tide_days=tide_days,
+                         location='Shute Harbour')
 
 @app.route('/api/analytics/session/<session_id>')
 @agent_required
