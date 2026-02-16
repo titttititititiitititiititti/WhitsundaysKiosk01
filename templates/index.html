@@ -33915,12 +33915,9 @@
         </div>
         <!-- Gallery content -->
         <div id="gallery-content" style="background:rgba(0,0,0,0.95);padding:20px;display:flex;gap:16px;overflow-x:auto;align-items:center;min-height:160px;-webkit-overflow-scrolling:touch;">
-          <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach drone shot.png') }}" alt="Whitehaven Beach Aerial" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-          <img src="{{ url_for('static', filename='newcomer_images/whitehaven beach.png') }}" alt="Whitehaven Beach" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-          <img src="{{ url_for('static', filename='newcomer_images/snorkelling at the great barrier reef.png') }}" alt="Snorkelling GBR" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-          <img src="{{ url_for('static', filename='newcomer_images/Heart Reef drone shot.png') }}" alt="Heart Reef" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-          <img src="{{ url_for('static', filename='newcomer_images/box jellyfish.png') }}" alt="Box Jellyfish" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-          <img src="{{ url_for('static', filename='newcomer_images/iruakndji jellyfish.jpg') }}" alt="Irukandji Jellyfish" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          {% for img in newcomer_images %}
+          <img src="{{ url_for('static', filename=img.path) }}" alt="{{ img.alt }}" class="gallery-thumb" draggable="true" style="width:140px;height:100px;object-fit:cover;border-radius:12px;cursor:grab;border:3px solid rgba(255,255,255,0.6);flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+          {% endfor %}
         </div>
       </div>
     </div>

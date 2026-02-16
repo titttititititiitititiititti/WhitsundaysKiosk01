@@ -928,6 +928,27 @@ def get_placeholder_images():
     # Convert to web paths
     return ['/' + img.replace('\\', '/') for img in images]
 
+
+def get_newcomer_images():
+    """Get list of all images from the newcomer_images folder for map view gallery"""
+    newcomer_dir = 'static/newcomer_images'
+    if not os.path.exists(newcomer_dir):
+        return []
+    
+    images = []
+    for ext in ['jpg', 'jpeg', 'png', 'webp']:
+        images.extend(glob.glob(f'{newcomer_dir}/*.{ext}'))
+    
+    # Convert to relative paths (newcomer_images/filename) for url_for
+    result = []
+    for img in sorted(images):
+        filename = os.path.basename(img)
+        result.append({
+            'path': f'newcomer_images/{filename}',
+            'alt': os.path.splitext(filename)[0].replace('_', ' ').replace('-', ' ')
+        })
+    return result
+
 def get_random_placeholder_image():
     """Get a random placeholder image"""
     images = get_placeholder_images()
@@ -3609,7 +3630,8 @@ def index():
                            referral_account=referral_account,
                            active_account=active_account,
                            is_web_visitor=is_web_visitor,
-                           is_demo_mode=is_demo_mode)
+                           is_demo_mode=is_demo_mode,
+                           newcomer_images=get_newcomer_images())
 
 @app.route('/api/semantic-search')
 def api_semantic_search():
@@ -3912,7 +3934,8 @@ def tour_page(key):
                           shop_config=shop_config,
                           referral_account=referral_account,
                           active_account=active_account,
-                          is_web_visitor=is_web_visitor))
+                          is_web_visitor=is_web_visitor,
+                          newcomer_images=get_newcomer_images()))
     
     # Set referral cookie so subsequent page loads use the same account
     if ref and ref != 'qr':
