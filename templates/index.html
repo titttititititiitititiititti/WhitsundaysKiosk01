@@ -2211,7 +2211,7 @@
     
     /* Map View Button in Header (Teal/Cyan) */
     .map-view-btn-header {
-      padding: 12px 20px;
+      padding: 6px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
@@ -2653,7 +2653,7 @@
     
     /* Quick Decision Button in Header (GREEN) */
     .quick-decision-btn-header {
-      padding: 12px 20px;
+      padding: 6px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
@@ -2663,7 +2663,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-      white-space: nowrap;
     }
     
     .quick-decision-btn-header:hover {
@@ -2680,7 +2679,7 @@
     
     /* Browse All Tours button in header (orange - same as Quick Decision) */
     .browse-all-btn-header {
-      padding: 12px 20px;
+      padding: 6px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
@@ -2690,7 +2689,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-      white-space: nowrap;
     }
     
     .browse-all-btn-header:hover {
@@ -2702,7 +2700,7 @@
     
     /* Newcomer Info button in header (Blue) */
     .newcomer-info-btn-header {
-      padding: 12px 20px;
+      padding: 6px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
@@ -2712,7 +2710,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-      white-space: nowrap;
     }
     
     .newcomer-info-btn-header:hover {
@@ -2794,7 +2791,7 @@
 
     /* AI Assistant button in header (purple) */
     .ai-assistant-btn-header {
-      padding: 12px 20px;
+      padding: 6px 20px;
       font-size: 1em;
       font-weight: 700;
       color: white;
@@ -2804,7 +2801,6 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-      white-space: nowrap;
     }
     
     .ai-assistant-btn-header:hover {
@@ -2833,10 +2829,25 @@
     .kiosk-header .header-left .browse-all-btn-header,
     .kiosk-header .header-left .map-view-btn-header,
     .kiosk-header .header-left .newcomer-info-btn-header {
-      padding: 12px 24px !important;
+      padding: 6px 20px !important;
       font-size: 1em !important;
-      min-width: 140px !important;
+      min-width: 120px !important;
       border-radius: 25px !important;
+      height: 52px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      box-sizing: border-box !important;
+      line-height: 1.1 !important;
+    }
+    /* Allow dual-lang subtext to wrap inside header buttons */
+    .kiosk-header .header-left button .dual-lang-sub {
+      display: block;
+      white-space: nowrap;
+      line-height: 1;
+      margin-top: 1px;
     }
     
     /* Hide Browse All Tours button on home page - we're already here! */
@@ -19862,106 +19873,140 @@
     // Apply translations to newcomer info page
     function applyNewcomerTranslations(langCode) {
       const translations = newcomerTranslations[langCode] || newcomerTranslations['en'];
+      const enTrans = newcomerTranslations['en'];
+      const showDualNC = langCode !== 'en' && enTrans;
+      
+      // Helper: dual-language text for newcomer page
+      function dualNC(text, enText) {
+        if (!showDualNC || !enText || enText === text) return text;
+        return `${text}<span class="dual-lang-sub" style="font-size:0.65em;display:block;opacity:0.5;font-style:italic;margin-top:2px;">${enText}</span>`;
+      }
+      
+      // Helper: dual-language for list items
+      function dualList(items, enItems) {
+        if (!showDualNC || !enItems) return items.map(item => `<li>${item}</li>`).join('');
+        return items.map((item, i) => {
+          const enItem = enItems[i] || '';
+          if (!enItem || enItem === item) return `<li>${item}</li>`;
+          return `<li>${item}<span class="dual-lang-sub" style="font-size:0.75em;display:block;opacity:0.45;font-style:italic;margin-top:1px;">${enItem}</span></li>`;
+        }).join('');
+      }
+      
+      // Helper: dual-language for paragraph items (checklists)
+      function dualParas(items, enItems) {
+        if (!showDualNC || !enItems) return items.map(item => `<p>${item}</p>`).join('');
+        return items.map((item, i) => {
+          const enItem = enItems[i] || '';
+          if (!enItem || enItem === item) return `<p>${item}</p>`;
+          return `<p>${item}<span class="dual-lang-sub" style="font-size:0.75em;display:block;opacity:0.45;font-style:italic;margin-top:1px;">${enItem}</span></p>`;
+        }).join('');
+      }
       
       // Main titles
       const mainTitle = document.getElementById('newcomer-main-title');
       const subtitle = document.getElementById('newcomer-subtitle');
-      if (mainTitle) mainTitle.textContent = translations.main_title;
-      if (subtitle) subtitle.textContent = translations.subtitle;
+      if (mainTitle) mainTitle.innerHTML = dualNC(translations.main_title, enTrans.main_title);
+      if (subtitle) subtitle.innerHTML = dualNC(translations.subtitle, enTrans.subtitle);
       
       // Why Airlie
       const whyTitle = document.getElementById('newcomer-why-title');
       const whyText = document.getElementById('newcomer-why-text');
-      if (whyTitle) whyTitle.textContent = translations.why_title;
-      if (whyText) whyText.textContent = translations.why_text;
+      if (whyTitle) whyTitle.innerHTML = dualNC(translations.why_title, enTrans.why_title);
+      if (whyText) whyText.innerHTML = dualNC(translations.why_text, enTrans.why_text);
       
       // Marine Safety
       const marineTitle = document.getElementById('newcomer-marine-title');
-      if (marineTitle) marineTitle.textContent = translations.marine_title;
+      if (marineTitle) marineTitle.innerHTML = dualNC(translations.marine_title, enTrans.marine_title);
       
       // Stingers
       const stingersTitle = document.getElementById('newcomer-stingers-title');
       const stingersList = document.getElementById('newcomer-stingers-list');
       const stingersChecklist = document.getElementById('newcomer-stingers-checklist');
-      if (stingersTitle) stingersTitle.textContent = translations.stingers_title;
-      if (stingersList) stingersList.innerHTML = translations.stingers_list.map(item => `<li>${item}</li>`).join('');
-      if (stingersChecklist) stingersChecklist.innerHTML = `<p><strong>${translations.what_to_do}</strong></p>` + translations.stingers_checklist.map(item => `<p>${item}</p>`).join('');
+      if (stingersTitle) stingersTitle.innerHTML = dualNC(translations.stingers_title, enTrans.stingers_title);
+      if (stingersList) stingersList.innerHTML = dualList(translations.stingers_list, enTrans.stingers_list);
+      if (stingersChecklist) stingersChecklist.innerHTML = `<p><strong>${dualNC(translations.what_to_do, enTrans.what_to_do)}</strong></p>` + dualParas(translations.stingers_checklist, enTrans.stingers_checklist);
       
       // Sharks
       const sharksTitle = document.getElementById('newcomer-sharks-title');
       const sharksList = document.getElementById('newcomer-sharks-list');
-      if (sharksTitle) sharksTitle.textContent = translations.sharks_title;
-      if (sharksList) sharksList.innerHTML = translations.sharks_list.map(item => `<li>${item}</li>`).join('');
+      if (sharksTitle) sharksTitle.innerHTML = dualNC(translations.sharks_title, enTrans.sharks_title);
+      if (sharksList) sharksList.innerHTML = dualList(translations.sharks_list, enTrans.sharks_list);
       
       // Ocean
       const oceanTitle = document.getElementById('newcomer-ocean-title');
       const oceanList = document.getElementById('newcomer-ocean-list');
       const oceanChecklist = document.getElementById('newcomer-ocean-checklist');
-      if (oceanTitle) oceanTitle.textContent = translations.ocean_title;
-      if (oceanList) oceanList.innerHTML = translations.ocean_list.map(item => `<li>${item}</li>`).join('');
-      if (oceanChecklist) oceanChecklist.innerHTML = `<p><strong>${translations.safer_options}</strong></p>` + translations.ocean_checklist.map(item => `<p>${item}</p>`).join('');
+      if (oceanTitle) oceanTitle.innerHTML = dualNC(translations.ocean_title, enTrans.ocean_title);
+      if (oceanList) oceanList.innerHTML = dualList(translations.ocean_list, enTrans.ocean_list);
+      if (oceanChecklist) oceanChecklist.innerHTML = `<p><strong>${dualNC(translations.safer_options, enTrans.safer_options)}</strong></p>` + dualParas(translations.ocean_checklist, enTrans.ocean_checklist);
       
       // Island Facts
       const islandTitle = document.getElementById('newcomer-island-title');
-      if (islandTitle) islandTitle.textContent = translations.island_title;
+      if (islandTitle) islandTitle.innerHTML = dualNC(translations.island_title, enTrans.island_title);
       
       // Whitehaven
       const whitehavenTitle = document.getElementById('newcomer-whitehaven-title');
       const whitehavenList = document.getElementById('newcomer-whitehaven-list');
       const whitehavenChecklist = document.getElementById('newcomer-whitehaven-checklist');
-      if (whitehavenTitle) whitehavenTitle.textContent = translations.whitehaven_title;
-      if (whitehavenList) whitehavenList.innerHTML = translations.whitehaven_list.map(item => `<li>${item}</li>`).join('');
-      if (whitehavenChecklist) whitehavenChecklist.innerHTML = translations.whitehaven_checklist.map(item => `<p>${item}</p>`).join('');
+      if (whitehavenTitle) whitehavenTitle.innerHTML = dualNC(translations.whitehaven_title, enTrans.whitehaven_title);
+      if (whitehavenList) whitehavenList.innerHTML = dualList(translations.whitehaven_list, enTrans.whitehaven_list);
+      if (whitehavenChecklist) whitehavenChecklist.innerHTML = dualParas(translations.whitehaven_checklist, enTrans.whitehaven_checklist);
       
       // Sailing
       const sailingTitle = document.getElementById('newcomer-sailing-title');
       const sailingList = document.getElementById('newcomer-sailing-list');
       const sailingChecklist = document.getElementById('newcomer-sailing-checklist');
-      if (sailingTitle) sailingTitle.textContent = translations.sailing_title;
-      if (sailingList) sailingList.innerHTML = translations.sailing_list.map(item => `<li>${item}</li>`).join('');
-      if (sailingChecklist) sailingChecklist.innerHTML = translations.sailing_checklist.map(item => `<p>${item}</p>`).join('');
+      if (sailingTitle) sailingTitle.innerHTML = dualNC(translations.sailing_title, enTrans.sailing_title);
+      if (sailingList) sailingList.innerHTML = dualList(translations.sailing_list, enTrans.sailing_list);
+      if (sailingChecklist) sailingChecklist.innerHTML = dualParas(translations.sailing_checklist, enTrans.sailing_checklist);
       
       // Snorkelling
       const snorkellingTitle = document.getElementById('newcomer-snorkelling-title');
       const snorkellingList = document.getElementById('newcomer-snorkelling-list');
       const snorkellingChecklist = document.getElementById('newcomer-snorkelling-checklist');
-      if (snorkellingTitle) snorkellingTitle.textContent = translations.snorkelling_title;
-      if (snorkellingList) snorkellingList.innerHTML = translations.snorkelling_list.map(item => `<li>${item}</li>`).join('');
-      if (snorkellingChecklist) snorkellingChecklist.innerHTML = translations.snorkelling_checklist.map(item => `<p>${item}</p>`).join('');
+      if (snorkellingTitle) snorkellingTitle.innerHTML = dualNC(translations.snorkelling_title, enTrans.snorkelling_title);
+      if (snorkellingList) snorkellingList.innerHTML = dualList(translations.snorkelling_list, enTrans.snorkelling_list);
+      if (snorkellingChecklist) snorkellingChecklist.innerHTML = dualParas(translations.snorkelling_checklist, enTrans.snorkelling_checklist);
       
       // Flights
       const flightsTitle = document.getElementById('newcomer-flights-title');
       const flightsList = document.getElementById('newcomer-flights-list');
-      if (flightsTitle) flightsTitle.textContent = translations.flights_title;
-      if (flightsList) flightsList.innerHTML = translations.flights_list.map(item => `<li>${item}</li>`).join('');
+      if (flightsTitle) flightsTitle.innerHTML = dualNC(translations.flights_title, enTrans.flights_title);
+      if (flightsList) flightsList.innerHTML = dualList(translations.flights_list, enTrans.flights_list);
       
       // Weather
       const weatherTitle = document.getElementById('newcomer-weather-title');
       const weatherList = document.getElementById('newcomer-weather-list');
       const weatherChecklist = document.getElementById('newcomer-weather-checklist');
-      if (weatherTitle) weatherTitle.textContent = translations.weather_title;
-      if (weatherList) weatherList.innerHTML = translations.weather_list.map(item => `<li>${item}</li>`).join('');
-      if (weatherChecklist) weatherChecklist.innerHTML = translations.weather_checklist.map(item => `<p>${item}</p>`).join('');
+      if (weatherTitle) weatherTitle.innerHTML = dualNC(translations.weather_title, enTrans.weather_title);
+      if (weatherList) weatherList.innerHTML = dualList(translations.weather_list, enTrans.weather_list);
+      if (weatherChecklist) weatherChecklist.innerHTML = dualParas(translations.weather_checklist, enTrans.weather_checklist);
       
       // Wet Season
       const wetTitle = document.getElementById('newcomer-wet-title');
       const wetList = document.getElementById('newcomer-wet-list');
-      if (wetTitle) wetTitle.textContent = translations.wet_title;
-      if (wetList) wetList.innerHTML = translations.wet_list.map(item => `<li>${item}</li>`).join('');
+      if (wetTitle) wetTitle.innerHTML = dualNC(translations.wet_title, enTrans.wet_title);
+      if (wetList) wetList.innerHTML = dualList(translations.wet_list, enTrans.wet_list);
       
       // Tips
       const tipsTitle = document.getElementById('newcomer-tips-title');
       const tipsList = document.getElementById('newcomer-tips-list');
-      if (tipsTitle) tipsTitle.textContent = translations.tips_title;
-      if (tipsList) tipsList.innerHTML = translations.tips_list.map(item => `<li>${item}</li>`).join('');
+      if (tipsTitle) tipsTitle.innerHTML = dualNC(translations.tips_title, enTrans.tips_title);
+      if (tipsList) tipsList.innerHTML = dualList(translations.tips_list, enTrans.tips_list);
       
       // CTA
       const ctaText = document.getElementById('newcomer-cta-text');
-      if (ctaText) ctaText.textContent = translations.cta_text;
+      if (ctaText) ctaText.innerHTML = dualNC(translations.cta_text, enTrans.cta_text);
       
       // Button text
       const newcomerInfoText = document.getElementById('newcomer-info-text');
-      if (newcomerInfoText) newcomerInfoText.textContent = translations.button_text;
+      if (newcomerInfoText) {
+        if (showDualNC) {
+          newcomerInfoText.innerHTML = `${translations.button_text}<span class="dual-lang-sub">${enTrans.button_text}</span>`;
+        } else {
+          newcomerInfoText.textContent = translations.button_text;
+        }
+      }
     }
     
     // Fullscreen image viewer for newcomer info page
