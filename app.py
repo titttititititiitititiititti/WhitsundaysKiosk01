@@ -142,7 +142,7 @@ def get_authenticated_remote_url():
         # Get current origin URL
         result = subprocess.run(
             ['git', 'remote', 'get-url', 'origin'],
-            capture_output=True, text=True, cwd=os.getcwd(), timeout=10
+            capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd(), timeout=10
         )
         origin_url = result.stdout.strip()
         
@@ -182,7 +182,7 @@ def git_sync_changes(commit_message="Update tour data"):
             # Check if we're in a git repo
             result = subprocess.run(
                 ['git', 'status', '--porcelain'],
-                capture_output=True, text=True, cwd=os.getcwd()
+                capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd()
             )
             
             if result.returncode != 0:
@@ -209,6 +209,8 @@ def git_sync_changes(commit_message="Update tour data"):
                 cwd=os.getcwd(), 
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 check=True
             )
             
@@ -219,7 +221,9 @@ def git_sync_changes(commit_message="Update tour data"):
                 ['git', 'commit', '-m', full_message],
                 cwd=os.getcwd(), 
                 capture_output=True,
-                text=True
+                text=True,
+                encoding='utf-8',
+                errors='replace'
             )
             if commit_result.returncode != 0:
                 if 'nothing to commit' in commit_result.stdout:
@@ -243,7 +247,7 @@ def git_sync_changes(commit_message="Update tour data"):
                 try:
                     push_result = subprocess.run(
                         ['git', 'push', auth_url, 'main'],
-                        cwd=os.getcwd(), capture_output=True, text=True, timeout=60
+                        cwd=os.getcwd(), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
                     )
                     if push_result.returncode == 0:
                         print("[GIT SYNC] ✅ Successfully pushed to origin (authenticated)")
@@ -257,7 +261,7 @@ def git_sync_changes(commit_message="Update tour data"):
                 # Local development - push to all remotes with stored credentials
                 remotes_result = subprocess.run(
                     ['git', 'remote'],
-                    capture_output=True, text=True, cwd=os.getcwd()
+                    capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd()
                 )
                 remotes = remotes_result.stdout.strip().split('\n')
                 
@@ -270,6 +274,8 @@ def git_sync_changes(commit_message="Update tour data"):
                                 cwd=os.getcwd(), 
                                 capture_output=True, 
                                 text=True,
+                                encoding='utf-8',
+                                errors='replace',
                                 timeout=60
                             )
                             if push_result.returncode == 0:
@@ -3396,6 +3402,8 @@ def check_for_updates():
             ['git', 'fetch', 'origin'],
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             cwd=os.path.dirname(os.path.abspath(__file__)),
             timeout=30
         )
@@ -3405,6 +3413,8 @@ def check_for_updates():
             ['git', 'rev-list', 'HEAD..origin/main', '--count'],
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             cwd=os.path.dirname(os.path.abspath(__file__)),
             timeout=10
         )
@@ -3417,6 +3427,8 @@ def check_for_updates():
                 ['git', 'log', 'HEAD..origin/main', '--oneline', '--no-decorate'],
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 cwd=os.path.dirname(os.path.abspath(__file__)),
                 timeout=10
             )
@@ -3475,6 +3487,8 @@ def force_git_sync():
             ['git', 'status', '--porcelain'],
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             cwd=os.getcwd(),
             timeout=10
         )
@@ -3504,6 +3518,8 @@ def force_git_sync():
             cwd=os.getcwd(),
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=30
         )
         
@@ -3523,6 +3539,8 @@ def force_git_sync():
                 cwd=os.getcwd(),
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=60
             )
         else:
@@ -3531,6 +3549,8 @@ def force_git_sync():
                 cwd=os.getcwd(),
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=60
             )
         
@@ -8455,7 +8475,7 @@ def check_git_updates():
         # Get current HEAD hash BEFORE fetch
         head_before = subprocess.run(
             ['git', 'rev-parse', 'HEAD'],
-            cwd=repo_path, capture_output=True, text=True, timeout=10
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
         ).stdout.strip()
         
         # Fetch latest from remote
@@ -8464,6 +8484,8 @@ def check_git_updates():
             cwd=repo_path,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=30
         )
         
@@ -8474,7 +8496,7 @@ def check_git_updates():
         # Get origin/main hash
         origin_hash = subprocess.run(
             ['git', 'rev-parse', 'origin/main'],
-            cwd=repo_path, capture_output=True, text=True, timeout=10
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
         ).stdout.strip()
         
         _last_update_check = time.time()
@@ -8494,6 +8516,8 @@ def check_git_updates():
             cwd=repo_path,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=10
         )
         
@@ -8505,7 +8529,7 @@ def check_git_updates():
         # Also check if we're ahead (diverged history)
         ahead_result = subprocess.run(
             ['git', 'rev-list', 'origin/main..HEAD', '--count'],
-            cwd=repo_path, capture_output=True, text=True, timeout=10
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
         )
         try:
             commits_ahead = int(ahead_result.stdout.strip())
@@ -8530,6 +8554,8 @@ def check_git_updates():
                     cwd=repo_path,
                     capture_output=True,
                     text=True,
+                    encoding='utf-8',
+                    errors='replace',
                     timeout=30
                 )
                 if push_result.returncode == 0:
@@ -8610,6 +8636,8 @@ def pull_and_restart():
                 cwd=repo_path,
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=5
             )
             commits_ahead = int(push_check.stdout.strip() or '0')
@@ -8621,6 +8649,8 @@ def pull_and_restart():
                     cwd=repo_path,
                     capture_output=True,
                     text=True,
+                    encoding='utf-8',
+                    errors='replace',
                     timeout=30
                 )
                 if push_result.returncode == 0:
@@ -8637,6 +8667,8 @@ def pull_and_restart():
             cwd=repo_path,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=60
         )
         
@@ -8647,13 +8679,52 @@ def pull_and_restart():
             if result.stderr:
                 print(f"[AUTO-UPDATE] Reset stderr: {result.stderr[:200]}")
         
-        # Restore analytics files (they might have been overwritten)
-        for af, content in analytics_backup.items():
+        # Restore analytics files - MERGE local backup with remote data (from git reset)
+        # This is critical for multi-kiosk setups: we don't want to overwrite
+        # sessions pushed by another kiosk with our local-only data
+        for af, backup_content in analytics_backup.items():
             try:
+                local_data = json.loads(backup_content)
+                local_sessions = local_data.get('sessions', [])
+                local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
+                
+                # Read the remote version that git reset just brought in
+                remote_sessions = []
+                if os.path.exists(af):
+                    try:
+                        with open(af, 'r', encoding='utf-8') as f:
+                            remote_data = json.load(f)
+                        remote_sessions = remote_data.get('sessions', [])
+                    except:
+                        pass
+                
+                # Merge: start with all local sessions, add remote-only sessions
+                merged = local_sessions[:]
+                added = 0
+                for rs in remote_sessions:
+                    if rs.get('session_id') and rs['session_id'] not in local_ids:
+                        merged.append(rs)
+                        added += 1
+                
+                # Sort by started_at and cap at 1000
+                merged.sort(key=lambda s: s.get('started_at', ''))
+                if len(merged) > 1000:
+                    merged = merged[-1000:]
+                
+                local_data['sessions'] = merged
                 with open(af, 'w', encoding='utf-8') as f:
-                    f.write(content)
-            except:
-                pass
+                    json.dump(local_data, f, indent=2)
+                
+                if added > 0:
+                    print(f"[AUTO-UPDATE] Merged analytics: kept {len(local_sessions)} local + {added} remote sessions")
+            except Exception as e:
+                # Fallback: just restore the backup as-is
+                print(f"[AUTO-UPDATE] ⚠️ Analytics merge failed ({e}), restoring backup")
+                try:
+                    with open(af, 'w', encoding='utf-8') as f:
+                        f.write(backup_content)
+                except:
+                    pass
         
         # Restore instance.json (local device config)
         if instance_backup:
@@ -8783,17 +8854,17 @@ def sync_analytics_to_git():
         # Check if there are analytics changes
         result = subprocess.run(
             ['git', 'status', '--porcelain', 'data/analytics*.json'],
-            cwd=repo_path, capture_output=True, text=True, timeout=10
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
         )
         
         if result.stdout.strip():
             # There are changes, commit and push them
-            subprocess.run(['git', 'add', 'data/analytics*.json'], cwd=repo_path, capture_output=True, timeout=10)
+            subprocess.run(['git', 'add', 'data/analytics*.json'], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10)
             subprocess.run(
                 ['git', 'commit', '-m', f'Auto-sync analytics {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                cwd=repo_path, capture_output=True, timeout=30
+                cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=30
             )
-            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, timeout=60)
+            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=60)
             print("[ANALYTICS] Synced analytics to git")
             
     except Exception as e:
@@ -8814,6 +8885,8 @@ def pull_analytics_only(account=None):
             cwd=repo_path, 
             capture_output=True, 
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=30
         )
         
@@ -8828,6 +8901,8 @@ def pull_analytics_only(account=None):
             cwd=repo_path,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=10
         )
         
@@ -8922,6 +8997,8 @@ def refresh_analytics():
                     cwd=repo_path, 
                     capture_output=True, 
                     text=True,
+                    encoding='utf-8',
+                    errors='replace',
                     timeout=10
                 )
                 if add_result.returncode != 0:
@@ -8931,7 +9008,9 @@ def refresh_analytics():
                     ['git', 'commit', '-m', f'Analytics sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
                     cwd=repo_path, 
                     capture_output=True, 
-                    text=True, 
+                    text=True,
+                    encoding='utf-8',
+                    errors='replace',
                     timeout=30
                 )
                 
@@ -8945,7 +9024,9 @@ def refresh_analytics():
                             ['git', 'push', auth_url, 'main'],
                             cwd=repo_path, 
                             capture_output=True, 
-                            text=True, 
+                            text=True,
+                            encoding='utf-8',
+                            errors='replace',
                             timeout=60
                         )
                     else:
@@ -8954,7 +9035,9 @@ def refresh_analytics():
                             ['git', 'push', 'origin', 'main'],
                             cwd=repo_path, 
                             capture_output=True, 
-                            text=True, 
+                            text=True,
+                            encoding='utf-8',
+                            errors='replace',
                             timeout=60
                         )
                     
@@ -8981,10 +9064,10 @@ def refresh_analytics():
         if pulled:
             # Merged analytics are now local - push them back to sync the merge
             try:
-                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, timeout=10)
+                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10)
                 commit_result = subprocess.run(
                     ['git', 'commit', '-m', f'Analytics merge sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                    cwd=repo_path, capture_output=True, text=True, timeout=30
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                 )
                 
                 if commit_result.returncode == 0 and 'nothing to commit' not in commit_result.stdout:
@@ -8993,12 +9076,12 @@ def refresh_analytics():
                     if auth_url:
                         push_result = subprocess.run(
                             ['git', 'push', auth_url, 'main'],
-                            cwd=repo_path, capture_output=True, text=True, timeout=60
+                            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
                         )
                     else:
                         push_result = subprocess.run(
                             ['git', 'push', 'origin', 'main'],
-                            cwd=repo_path, capture_output=True, text=True, timeout=60
+                            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
                         )
                     
                     if push_result.returncode == 0:

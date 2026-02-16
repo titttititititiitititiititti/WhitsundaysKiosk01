@@ -63,6 +63,8 @@ def check_for_updates():
             cwd=script_dir,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=30
         )
         
@@ -78,6 +80,8 @@ def check_for_updates():
             cwd=script_dir,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=5
         )
         
@@ -87,6 +91,8 @@ def check_for_updates():
             cwd=script_dir,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=5
         )
         
@@ -105,6 +111,8 @@ def check_for_updates():
                 cwd=script_dir,
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',
                 timeout=10
             )
             
@@ -130,6 +138,8 @@ def check_for_updates():
 def pull_updates():
     """Pull latest code from origin. Returns True if successful."""
     try:
+        import json
+        import glob as globmod
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
         log("[UPDATE] 📥 Pulling latest code...")
@@ -141,18 +151,73 @@ def pull_updates():
             with open(instance_file, 'r', encoding='utf-8') as f:
                 instance_backup = f.read()
         
+        # Backup local analytics files before reset (critical for multi-kiosk setups)
+        analytics_backup = {}
+        for af in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
+            try:
+                with open(af, 'r', encoding='utf-8') as f:
+                    analytics_backup[af] = f.read()
+                log(f"[UPDATE] Backed up {os.path.basename(af)}")
+            except:
+                pass
+        
         # Force reset to match origin exactly
         result = subprocess.run(
             ['git', 'reset', '--hard', 'origin/main'],
             cwd=script_dir,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=60
         )
         
         if result.returncode != 0:
             log(f"[UPDATE] Reset failed: {result.stderr}")
             return False
+        
+        # Restore analytics files - MERGE local backup with remote data
+        for af, backup_content in analytics_backup.items():
+            try:
+                local_data = json.loads(backup_content)
+                local_sessions = local_data.get('sessions', [])
+                local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
+                
+                # Read the remote version that git reset just brought in
+                remote_sessions = []
+                if os.path.exists(af):
+                    try:
+                        with open(af, 'r', encoding='utf-8') as f:
+                            remote_data = json.load(f)
+                        remote_sessions = remote_data.get('sessions', [])
+                    except:
+                        pass
+                
+                # Merge: start with all local sessions, add remote-only sessions
+                merged = local_sessions[:]
+                added = 0
+                for rs in remote_sessions:
+                    if rs.get('session_id') and rs['session_id'] not in local_ids:
+                        merged.append(rs)
+                        added += 1
+                
+                # Sort by started_at and cap at 1000
+                merged.sort(key=lambda s: s.get('started_at', ''))
+                if len(merged) > 1000:
+                    merged = merged[-1000:]
+                
+                local_data['sessions'] = merged
+                with open(af, 'w', encoding='utf-8') as f:
+                    json.dump(local_data, f, indent=2)
+                
+                log(f"[UPDATE] Merged analytics: {len(local_sessions)} local + {added} remote = {len(merged)} total")
+            except Exception as e:
+                log(f"[UPDATE] ⚠️ Analytics merge failed ({e}), restoring backup")
+                try:
+                    with open(af, 'w', encoding='utf-8') as f:
+                        f.write(backup_content)
+                except:
+                    pass
         
         # Restore instance.json
         if instance_backup:
