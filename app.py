@@ -8847,28 +8847,123 @@ def api_trigger_update():
 # ============================================================================
 
 def sync_analytics_to_git():
-    """Sync analytics files to git so they can be viewed remotely"""
+    """Sync analytics files to git so they can be viewed remotely.
+    
+    Robust pull-merge-push flow for multi-kiosk setups:
+    1. Fetch latest from remote
+    2. Merge remote analytics into local (picks up other kiosks' sessions)
+    3. Commit the merged result
+    4. Push to remote (retries with pull-merge if behind)
+    """
     try:
         repo_path = os.path.dirname(os.path.abspath(__file__))
         
-        # Check if there are analytics changes
-        result = subprocess.run(
+        # Step 1: Fetch latest from remote
+        subprocess.run(
+            ['git', 'fetch', 'origin', 'main'],
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+        )
+        
+        # Step 2: For each analytics file, merge remote sessions into local
+        analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
+        merged_any = False
+        
+        for af in analytics_files:
+            rel_path = os.path.relpath(af, repo_path).replace('\\', '/')
+            try:
+                # Get remote version of this file
+                show_result = subprocess.run(
+                    ['git', 'show', f'origin/main:{rel_path}'],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+                )
+                
+                if show_result.returncode == 0 and show_result.stdout.strip():
+                    remote_data = json.loads(show_result.stdout)
+                    remote_sessions = remote_data.get('sessions', [])
+                    
+                    # Load local file
+                    with open(af, 'r', encoding='utf-8') as f:
+                        local_data = json.load(f)
+                    local_sessions = local_data.get('sessions', [])
+                    local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
+                    
+                    # Add remote-only sessions to local
+                    added = 0
+                    for rs in remote_sessions:
+                        if rs.get('session_id') and rs['session_id'] not in local_ids:
+                            local_sessions.append(rs)
+                            added += 1
+                    
+                    if added > 0:
+                        # Sort and cap
+                        local_sessions.sort(key=lambda s: s.get('started_at', ''))
+                        if len(local_sessions) > 1000:
+                            local_sessions = local_sessions[-1000:]
+                        
+                        local_data['sessions'] = local_sessions
+                        local_data['last_updated'] = datetime.now().isoformat()
+                        
+                        with open(af, 'w', encoding='utf-8') as f:
+                            json.dump(local_data, f, indent=2)
+                        
+                        merged_any = True
+                        print(f"[ANALYTICS SYNC] Merged {added} remote session(s) into {os.path.basename(af)}")
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f"[ANALYTICS SYNC] Skipping merge for {os.path.basename(af)}: {e}")
+        
+        # Step 3: Check if there are any changes to commit (local new sessions + merged remote)
+        status_result = subprocess.run(
             ['git', 'status', '--porcelain', 'data/analytics*.json'],
             cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
         )
         
-        if result.stdout.strip():
-            # There are changes, commit and push them
-            subprocess.run(['git', 'add', 'data/analytics*.json'], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10)
-            subprocess.run(
-                ['git', 'commit', '-m', f'Auto-sync analytics {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=30
+        if not status_result.stdout.strip():
+            # No changes - nothing to push
+            return
+        
+        # Step 4: Add, commit, push
+        subprocess.run(
+            ['git', 'add', 'data/analytics*.json'],
+            cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10
+        )
+        
+        commit_result = subprocess.run(
+            ['git', 'commit', '-m', f'Analytics sync {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+        )
+        
+        if commit_result.returncode != 0:
+            if 'nothing to commit' in (commit_result.stdout or ''):
+                return
+            print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr}")
+            return
+        
+        # Step 5: Push (with retry on rejection)
+        for attempt in range(2):
+            push_result = subprocess.run(
+                ['git', 'push', 'origin', 'main'],
+                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
             )
-            subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=60)
-            print("[ANALYTICS] Synced analytics to git")
+            
+            if push_result.returncode == 0:
+                print(f"[ANALYTICS SYNC] ✅ Pushed analytics to git")
+                return
+            
+            if attempt == 0 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
+                # Behind remote - pull, rebase, and try again
+                print(f"[ANALYTICS SYNC] Push rejected (another device pushed first), rebasing...")
+                subprocess.run(
+                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                )
+            else:
+                print(f"[ANALYTICS SYNC] ❌ Push failed: {push_result.stderr}")
+                return
             
     except Exception as e:
-        print(f"[ANALYTICS] Sync error: {e}")
+        print(f"[ANALYTICS SYNC] Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 def pull_analytics_only(account=None):
     """Pull only the analytics file for a specific account from remote"""
@@ -8976,119 +9071,24 @@ def pull_analytics_only(account=None):
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Push local analytics to git, then pull latest (for syncing between devices)"""
+    """Sync analytics with git: push local changes, pull from other devices, merge"""
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
-        repo_path = os.path.dirname(os.path.abspath(__file__))
-        analytics_file = get_analytics_file(username)
-        
         pushed = False
         pulled = False
         
-        # First, PUSH local analytics to git (if we have any)
-        if os.path.exists(analytics_file):
-            try:
-                # Add and commit analytics
-                add_result = subprocess.run(
-                    ['git', 'add', analytics_file], 
-                    cwd=repo_path, 
-                    capture_output=True, 
-                    text=True,
-                    encoding='utf-8',
-                    errors='replace',
-                    timeout=10
-                )
-                if add_result.returncode != 0:
-                    print(f"[ANALYTICS] ❌ Git add failed: {add_result.stderr}")
-                
-                commit_result = subprocess.run(
-                    ['git', 'commit', '-m', f'Analytics sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                    cwd=repo_path, 
-                    capture_output=True, 
-                    text=True,
-                    encoding='utf-8',
-                    errors='replace',
-                    timeout=30
-                )
-                
-                if 'nothing to commit' not in commit_result.stdout and commit_result.returncode == 0:
-                    # Use authenticated URL if available (for cloud deployments)
-                    auth_url = get_authenticated_remote_url()
-                    
-                    if auth_url:
-                        # Use authenticated push
-                        push_result = subprocess.run(
-                            ['git', 'push', auth_url, 'main'],
-                            cwd=repo_path, 
-                            capture_output=True, 
-                            text=True,
-                            encoding='utf-8',
-                            errors='replace',
-                            timeout=60
-                        )
-                    else:
-                        # Regular push
-                        push_result = subprocess.run(
-                            ['git', 'push', 'origin', 'main'],
-                            cwd=repo_path, 
-                            capture_output=True, 
-                            text=True,
-                            encoding='utf-8',
-                            errors='replace',
-                            timeout=60
-                        )
-                    
-                    if push_result.returncode == 0:
-                        pushed = True
-                        print(f"[ANALYTICS] ✅ Pushed local analytics for {username}")
-                    else:
-                        print(f"[ANALYTICS] ❌ Push failed: {push_result.stderr}")
-                        if push_result.stdout:
-                            print(f"[ANALYTICS] Push stdout: {push_result.stdout}")
-                elif 'nothing to commit' in commit_result.stdout:
-                    print(f"[ANALYTICS] No changes to commit (already synced)")
-                else:
-                    print(f"[ANALYTICS] ❌ Commit failed: {commit_result.stderr}")
-            except Exception as e:
-                print(f"[ANALYTICS] ❌ Push error: {e}")
-                import traceback
-                traceback.print_exc()
+        # Use the robust sync function (pull-merge-push) to sync all analytics
+        try:
+            sync_analytics_to_git()
+            pushed = True
+        except Exception as e:
+            print(f"[ANALYTICS REFRESH] Sync error: {e}")
         
-        # Then, PULL latest analytics from remote (might have data from other device)
+        # Also do a targeted pull for this user's analytics (in case sync didn't cover it)
         pulled = pull_analytics_only(username)
-        
-        # After pulling and merging, push the merged result back to sync it
-        if pulled:
-            # Merged analytics are now local - push them back to sync the merge
-            try:
-                subprocess.run(['git', 'add', analytics_file], cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10)
-                commit_result = subprocess.run(
-                    ['git', 'commit', '-m', f'Analytics merge sync for {username} - {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
-                )
-                
-                if commit_result.returncode == 0 and 'nothing to commit' not in commit_result.stdout:
-                    # Use authenticated URL if available
-                    auth_url = get_authenticated_remote_url()
-                    if auth_url:
-                        push_result = subprocess.run(
-                            ['git', 'push', auth_url, 'main'],
-                            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
-                        )
-                    else:
-                        push_result = subprocess.run(
-                            ['git', 'push', 'origin', 'main'],
-                            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
-                        )
-                    
-                    if push_result.returncode == 0:
-                        print(f"[ANALYTICS] ✅ Pushed merged analytics for {username}")
-                        pushed = True  # Mark as pushed since we pushed the merge
-            except Exception as e:
-                print(f"[ANALYTICS] Error pushing merged analytics: {e}")
         
         message = []
         if pushed:
@@ -9146,11 +9146,14 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # DISABLED: Analytics auto-push causes git conflicts between shop and dev machines
-    # Analytics are stored locally and can be manually synced via agent dashboard
-    # analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
-    # analytics_thread.start()
-    print("[ANALYTICS] Analytics stored locally (manual sync available in agent dashboard)")
+    # Enable analytics auto-sync on all devices with git repos
+    # The sync function now does pull-merge-push, so multiple kiosks won't conflict
+    if HAS_GIT_REPO and not IS_RENDER:
+        analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
+        analytics_thread.start()
+        print("[ANALYTICS] Auto-sync enabled (push every 5 min, with merge from other devices)")
+    else:
+        print("[ANALYTICS] Auto-sync disabled (no git repo or cloud deployment)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()
