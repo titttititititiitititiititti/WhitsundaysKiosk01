@@ -2437,6 +2437,67 @@
       font-size: 1em;
     }
     
+    /* FAQ accordion styles */
+    .newcomer-faq-item {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .newcomer-faq-item.open {
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+    .newcomer-faq-question {
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05em;
+      font-weight: 600;
+      color: #e2e8f0;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .newcomer-faq-question:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .newcomer-faq-question .faq-toggle {
+      font-size: 1.2em;
+      color: #fbbf24;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+    .newcomer-faq-item.open .faq-toggle {
+      transform: rotate(90deg);
+    }
+    .newcomer-faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+      padding: 0 20px;
+      color: #cbd5e1;
+      line-height: 1.7;
+      font-size: 1em;
+    }
+    .newcomer-faq-item.open .newcomer-faq-answer {
+      max-height: 500px;
+      padding: 0 20px 16px 20px;
+    }
+    .newcomer-faq-category {
+      color: #93c5fd;
+      font-size: 1.15em;
+      font-weight: 600;
+      margin: 20px 0 10px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(147, 197, 253, 0.2);
+    }
+    .newcomer-faq-category:first-child {
+      margin-top: 5px;
+    }
+    
     .newcomer-image-placeholder {
       width: 100%;
       height: 200px;
@@ -15109,6 +15170,134 @@
           </div>
         </section>
         
+        <!-- Section: FAQ -->
+        <section class="newcomer-section" id="section-faq">
+          <h2 id="newcomer-faq-title">❓ Frequently Asked Questions</h2>
+          <div id="newcomer-faq-container">
+            
+            <!-- Category: Getting Here & Getting Around -->
+            <div class="newcomer-faq-category" id="faq-cat-getting-here">🗺️ Getting Here & Getting Around</div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="location_q">Where are the Whitsundays located?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="location_a">The Whitsundays are a group of 74 tropical islands located off the central coast of Queensland, Australia, in the heart of the Great Barrier Reef.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="getting_here_q">How do I get to the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="getting_here_a">You can fly into Whitsunday Coast Airport (Proserpine) or Hamilton Island Airport. From there, transfers are available via shuttle, taxi, or ferry to Airlie Beach or island resorts.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="departure_q">Where do tours depart from in Airlie Beach?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="departure_a">Most tours depart from either Coral Sea Marina or Port of Airlie. Exact departure details will be provided with your tour confirmation. If you have any questions, feel free to contact our friendly, highly experienced team – we're here to help!</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="explore_alone_q">Can I explore the Whitsundays without a tour?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="explore_alone_a">Yes. You can explore on your own using ferries, hiking trails, or by hiring a private boat or yacht. That said, guided tours often provide better access and local insight.</span></div>
+            </div>
+            
+            <!-- Category: Tours & Activities -->
+            <div class="newcomer-faq-category" id="faq-cat-tours">🚤 Tours & Activities</div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="tour_types_q">What types of tours are available in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="tour_types_a">Popular options include snorkelling and diving tours, sailing adventures, scenic flights, jet boating, fishing charters, and sunset cruises.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="whitehaven_day_q">Can I visit Whitehaven Beach on a day trip?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="whitehaven_day_a">Absolutely. Daily tours depart from Airlie Beach and Hamilton Island, including boat cruises, seaplanes, and helicopter flights.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="charter_q">Can I charter a boat in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="charter_a">Yes. Both bareboat (self-skippered) and crewed charters are available. Booking in advance is recommended, especially in peak season.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="families_q">Are the Whitsundays suitable for families with kids?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="families_a">Absolutely. With calm beaches, wildlife encounters, family-friendly resorts, and safe tours, it's a great destination for all ages.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="young_old_q">Are there tours suitable for young kids or older travellers?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="young_old_a">Yes – calm water options like Camira or Cruise Whitsundays are great for all ages and comfort levels.</span></div>
+            </div>
+            
+            <!-- Category: The Reef & Marine Life -->
+            <div class="newcomer-faq-category" id="faq-cat-reef">🐠 The Reef & Marine Life</div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="reef_q">Are the Whitsundays part of the Great Barrier Reef?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="reef_a">Yes, the Whitsundays sit within the Great Barrier Reef Marine Park, offering easy access to both fringing and outer reef ecosystems.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="snorkelling_good_q">Is snorkelling good in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="snorkelling_good_a">Definitely. The region offers excellent snorkelling spots like Mantaray Bay, Chalkies Beach, and Border Island, known for vibrant coral and marine life.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="marine_life_q">What marine life can I see in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="marine_life_a">You may spot sea turtles, clownfish, parrotfish, manta rays, and during migration season, even dolphins or whales.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="stinger_suit_q">Do I need a stinger suit in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="stinger_suit_a">During stinger season (October to May), wearing a stinger suit is highly recommended when swimming or snorkelling to protect against jellyfish.</span></div>
+            </div>
+            
+            <!-- Category: Must-See Highlights -->
+            <div class="newcomer-faq-category" id="faq-cat-highlights">⭐ Must-See Highlights</div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="highlights_q">What are the must-see attractions in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="highlights_a">Highlights include Whitehaven Beach, Hill Inlet Lookout, Great Barrier Reef, Heart Reef, Hamilton Island, Daydream Island, and Airlie Beach Lagoon.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="overnight_q">Can I stay overnight on a Whitsunday Island?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="overnight_a">Yes, you can stay on islands like Hamilton Island, Daydream Island, and Long Island. National park camping is also available on select islands. To fully soak up the natural beauty of Airlie Beach and the Whitsundays, you'll want to spend at least four days exploring the area.</span></div>
+            </div>
+            
+            <!-- Category: Planning & Booking -->
+            <div class="newcomer-faq-category" id="faq-cat-planning">📋 Planning & Booking</div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="best_time_q">What is the best time to visit the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="best_time_a">The best time to visit the Whitsundays is from May to October. These months offer clear skies, low humidity, and ideal conditions for sailing, snorkeling, and beach activities.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="book_advance_q">Should I book my tours in advance or when I arrive?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="book_advance_a">Some sell out fast – especially in peak season. Pre-booking is recommended.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="weather_faq_q">What's the weather like in the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="weather_faq_a">The region enjoys a tropical climate with warm temperatures year-round. Expect highs of 23°C in winter and 31°C in summer.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="packing_q">What should I pack for a Whitsundays holiday?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="packing_a">Essentials include swimwear, reef-safe sunscreen, a hat, sunglasses, light clothing, walking shoes, insect repellent, and a reusable water bottle.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="budget_q">Are there budget-friendly ways to visit the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="budget_a">Yes. Backpacker tours, hostels, day trips, and camping offer great options for travellers on a budget.</span></div>
+            </div>
+            
+            <div class="newcomer-faq-item" onclick="this.classList.toggle('open')">
+              <div class="newcomer-faq-question"><span class="faq-toggle">▶</span><span class="faq-q" data-faq="insurance_q">Do I need travel insurance for the Whitsundays?</span></div>
+              <div class="newcomer-faq-answer"><span class="faq-a" data-faq="insurance_a">Travel insurance is highly recommended, especially for coverage against cancellations, weather disruptions, and medical emergencies.</span></div>
+            </div>
+            
+          </div>
+        </section>
+        
         <!-- Bottom CTA -->
         <div class="newcomer-cta">
           <button class="newcomer-cta-btn" onclick="closeNewcomerInfo(); startModeWithAnimation('browse-all')">
@@ -17044,7 +17233,55 @@
         "wet_list": ["Heavy rain possible", "Tours may change for safety", "This is normal and managed locally"],
         "tips_title": "🧭 Local Travel Tips (Worth Knowing)",
         "tips_list": ["Book popular tours early in peak season", "Some islands have no facilities", "Respect marine life — touching coral or wildlife can cause damage", "Follow crew and guide instructions at all times"],
-        "cta_text": "🗂️ Ready to Explore Tours"
+        "cta_text": "🗂️ Ready to Explore Tours",
+        "faq_title": "❓ Frequently Asked Questions",
+        "faq_cat_getting_here": "🗺️ Getting Here & Getting Around",
+        "faq_cat_tours": "🚤 Tours & Activities",
+        "faq_cat_reef": "🐠 The Reef & Marine Life",
+        "faq_cat_highlights": "⭐ Must-See Highlights",
+        "faq_cat_planning": "📋 Planning & Booking",
+        "faq_location_q": "Where are the Whitsundays located?",
+        "faq_location_a": "The Whitsundays are a group of 74 tropical islands located off the central coast of Queensland, Australia, in the heart of the Great Barrier Reef.",
+        "faq_getting_here_q": "How do I get to the Whitsundays?",
+        "faq_getting_here_a": "You can fly into Whitsunday Coast Airport (Proserpine) or Hamilton Island Airport. From there, transfers are available via shuttle, taxi, or ferry to Airlie Beach or island resorts.",
+        "faq_departure_q": "Where do tours depart from in Airlie Beach?",
+        "faq_departure_a": "Most tours depart from either Coral Sea Marina or Port of Airlie. Exact departure details will be provided with your tour confirmation. If you have any questions, feel free to contact our friendly, highly experienced team – we're here to help!",
+        "faq_explore_alone_q": "Can I explore the Whitsundays without a tour?",
+        "faq_explore_alone_a": "Yes. You can explore on your own using ferries, hiking trails, or by hiring a private boat or yacht. That said, guided tours often provide better access and local insight.",
+        "faq_tour_types_q": "What types of tours are available in the Whitsundays?",
+        "faq_tour_types_a": "Popular options include snorkelling and diving tours, sailing adventures, scenic flights, jet boating, fishing charters, and sunset cruises.",
+        "faq_whitehaven_day_q": "Can I visit Whitehaven Beach on a day trip?",
+        "faq_whitehaven_day_a": "Absolutely. Daily tours depart from Airlie Beach and Hamilton Island, including boat cruises, seaplanes, and helicopter flights.",
+        "faq_charter_q": "Can I charter a boat in the Whitsundays?",
+        "faq_charter_a": "Yes. Both bareboat (self-skippered) and crewed charters are available. Booking in advance is recommended, especially in peak season.",
+        "faq_families_q": "Are the Whitsundays suitable for families with kids?",
+        "faq_families_a": "Absolutely. With calm beaches, wildlife encounters, family-friendly resorts, and safe tours, it's a great destination for all ages.",
+        "faq_young_old_q": "Are there tours suitable for young kids or older travellers?",
+        "faq_young_old_a": "Yes – calm water options like Camira or Cruise Whitsundays are great for all ages and comfort levels.",
+        "faq_reef_q": "Are the Whitsundays part of the Great Barrier Reef?",
+        "faq_reef_a": "Yes, the Whitsundays sit within the Great Barrier Reef Marine Park, offering easy access to both fringing and outer reef ecosystems.",
+        "faq_snorkelling_good_q": "Is snorkelling good in the Whitsundays?",
+        "faq_snorkelling_good_a": "Definitely. The region offers excellent snorkelling spots like Mantaray Bay, Chalkies Beach, and Border Island, known for vibrant coral and marine life.",
+        "faq_marine_life_q": "What marine life can I see in the Whitsundays?",
+        "faq_marine_life_a": "You may spot sea turtles, clownfish, parrotfish, manta rays, and during migration season, even dolphins or whales.",
+        "faq_stinger_suit_q": "Do I need a stinger suit in the Whitsundays?",
+        "faq_stinger_suit_a": "During stinger season (October to May), wearing a stinger suit is highly recommended when swimming or snorkelling to protect against jellyfish.",
+        "faq_highlights_q": "What are the must-see attractions in the Whitsundays?",
+        "faq_highlights_a": "Highlights include Whitehaven Beach, Hill Inlet Lookout, Great Barrier Reef, Heart Reef, Hamilton Island, Daydream Island, and Airlie Beach Lagoon.",
+        "faq_overnight_q": "Can I stay overnight on a Whitsunday Island?",
+        "faq_overnight_a": "Yes, you can stay on islands like Hamilton Island, Daydream Island, and Long Island. National park camping is also available on select islands. To fully soak up the natural beauty of Airlie Beach and the Whitsundays, you'll want to spend at least four days exploring the area.",
+        "faq_best_time_q": "What is the best time to visit the Whitsundays?",
+        "faq_best_time_a": "The best time to visit the Whitsundays is from May to October. These months offer clear skies, low humidity, and ideal conditions for sailing, snorkeling, and beach activities.",
+        "faq_book_advance_q": "Should I book my tours in advance or when I arrive?",
+        "faq_book_advance_a": "Some sell out fast – especially in peak season. Pre-booking is recommended.",
+        "faq_weather_q": "What's the weather like in the Whitsundays?",
+        "faq_weather_a": "The region enjoys a tropical climate with warm temperatures year-round. Expect highs of 23°C in winter and 31°C in summer.",
+        "faq_packing_q": "What should I pack for a Whitsundays holiday?",
+        "faq_packing_a": "Essentials include swimwear, reef-safe sunscreen, a hat, sunglasses, light clothing, walking shoes, insect repellent, and a reusable water bottle.",
+        "faq_budget_q": "Are there budget-friendly ways to visit the Whitsundays?",
+        "faq_budget_a": "Yes. Backpacker tours, hostels, day trips, and camping offer great options for travellers on a budget.",
+        "faq_insurance_q": "Do I need travel insurance for the Whitsundays?",
+        "faq_insurance_a": "Travel insurance is highly recommended, especially for coverage against cancellations, weather disruptions, and medical emergencies."
       },
       "zh": {
         "button_text": "ℹ️ 新来者重要信息",
@@ -17082,7 +17319,55 @@
         "wet_list": ["可能有大雨", "为安全起见旅行可能会改变", "这是正常的，由当地管理"],
         "tips_title": "🧭 当地旅行提示（值得知道）",
         "tips_list": ["旺季时提前预订热门旅行", "有些岛屿没有设施", "尊重海洋生物——触摸珊瑚或野生动物会造成损害", "始终遵循船员和导游的指示"],
-        "cta_text": "🗂️ 准备探索旅行"
+        "cta_text": "🗂️ 准备探索旅行",
+        "faq_title": "❓ 常见问题",
+        "faq_cat_getting_here": "🗺️ 如何到达和出行",
+        "faq_cat_tours": "🚤 旅游和活动",
+        "faq_cat_reef": "🐠 大堡礁和海洋生物",
+        "faq_cat_highlights": "⭐ 必看景点",
+        "faq_cat_planning": "📋 规划和预订",
+        "faq_location_q": "圣灵群岛在哪里？",
+        "faq_location_a": "圣灵群岛是位于澳大利亚昆士兰州中部海岸、大堡礁心脏地带的74个热带岛屿群。",
+        "faq_getting_here_q": "如何到达圣灵群岛？",
+        "faq_getting_here_a": "您可以飞往圣灵海岸机场（普罗瑟派恩）或汉密尔顿岛机场。从那里可以乘坐班车、出租车或渡轮前往艾尔利海滩或岛屿度假村。",
+        "faq_departure_q": "艾尔利海滩的旅游从哪里出发？",
+        "faq_departure_a": "大多数旅游从珊瑚海码头或艾尔利港出发。确切的出发详情将随您的旅游确认提供。如果您有任何问题，请随时联系我们友好、经验丰富的团队——我们随时为您提供帮助！",
+        "faq_explore_alone_q": "没有旅游团可以探索圣灵群岛吗？",
+        "faq_explore_alone_a": "可以。您可以乘坐渡轮、远足小径或租用私人船只或游艇自行探索。不过，有导游的旅游通常能提供更好的入口和当地见解。",
+        "faq_tour_types_q": "圣灵群岛有哪些类型的旅游？",
+        "faq_tour_types_a": "热门选择包括浮潜和潜水之旅、帆船冒险、观光飞行、快艇、钓鱼包船和日落巡航。",
+        "faq_whitehaven_day_q": "可以一日游去白天堂海滩吗？",
+        "faq_whitehaven_day_a": "当然可以。每天都有从艾尔利海滩和汉密尔顿岛出发的旅游，包括游船、水上飞机和直升机。",
+        "faq_charter_q": "可以在圣灵群岛租船吗？",
+        "faq_charter_a": "可以。有裸船（自驾）和配船员的包船。建议提前预订，尤其是在旺季。",
+        "faq_families_q": "圣灵群岛适合带孩子的家庭吗？",
+        "faq_families_a": "非常适合。平静的海滩、野生动物邂逅、家庭友好型度假村和安全的旅游，是适合所有年龄段的绝佳目的地。",
+        "faq_young_old_q": "有适合幼儿或老年旅客的旅游吗？",
+        "faq_young_old_a": "有——像卡米拉号或圣灵群岛邮轮等平静水域的选择适合所有年龄和舒适度。",
+        "faq_reef_q": "圣灵群岛是大堡礁的一部分吗？",
+        "faq_reef_a": "是的，圣灵群岛位于大堡礁海洋公园内，可以轻松到达裙礁和外礁生态系统。",
+        "faq_snorkelling_good_q": "圣灵群岛的浮潜好吗？",
+        "faq_snorkelling_good_a": "绝对好。该地区有许多优秀的浮潜点，如曼塔雷湾、查基斯海滩和博德岛，以丰富的珊瑚和海洋生物而闻名。",
+        "faq_marine_life_q": "在圣灵群岛能看到什么海洋生物？",
+        "faq_marine_life_a": "您可能会看到海龟、小丑鱼、鹦鹉鱼、蝠鲼，在迁徙季节甚至还能看到海豚或鲸鱼。",
+        "faq_stinger_suit_q": "在圣灵群岛需要穿防蜇衣吗？",
+        "faq_stinger_suit_a": "在水母季节（10月至5月），游泳或浮潜时强烈建议穿防蜇衣以防止水母蜇伤。",
+        "faq_highlights_q": "圣灵群岛有哪些必看景点？",
+        "faq_highlights_a": "亮点包括白天堂海滩、希尔入口观景台、大堡礁、心形礁、汉密尔顿岛、白日梦岛和艾尔利海滩泻湖。",
+        "faq_overnight_q": "可以在圣灵群岛过夜吗？",
+        "faq_overnight_a": "可以，您可以住在汉密尔顿岛、白日梦岛和长岛等岛屿上。部分岛屿也提供国家公园露营。要充分体验艾尔利海滩和圣灵群岛的自然美景，建议至少花四天时间探索该地区。",
+        "faq_best_time_q": "什么时候去圣灵群岛最好？",
+        "faq_best_time_a": "5月至10月是游览圣灵群岛的最佳时间。这几个月天空晴朗、湿度低，是帆船、浮潜和海滩活动的理想条件。",
+        "faq_book_advance_q": "应该提前预订旅游还是到了再订？",
+        "faq_book_advance_a": "有些旅游很快就满了——尤其是在旺季。建议提前预订。",
+        "faq_weather_q": "圣灵群岛的天气怎么样？",
+        "faq_weather_a": "该地区全年享有温暖的热带气候。冬季最高温约23°C，夏季约31°C。",
+        "faq_packing_q": "去圣灵群岛度假应该带什么？",
+        "faq_packing_a": "必需品包括泳装、珊瑚礁安全防晒霜、帽子、太阳镜、轻便衣服、步行鞋、驱虫剂和可重复使用的水瓶。",
+        "faq_budget_q": "有没有经济实惠的方式游览圣灵群岛？",
+        "faq_budget_a": "有。背包客旅游、青年旅社、一日游和露营为预算有限的旅客提供了很好的选择。",
+        "faq_insurance_q": "去圣灵群岛需要旅行保险吗？",
+        "faq_insurance_a": "强烈建议购买旅行保险，尤其是涵盖取消、天气干扰和紧急医疗的保险。"
       },
       "ja": {
         "button_text": "ℹ️ 初めての方への重要情報",
@@ -17120,7 +17405,55 @@
         "wet_list": ["大雨の可能性", "安全のためツアーが変更される場合", "これは正常で地元で管理されています"],
         "tips_title": "🧭 地元の旅行のヒント（知っておく価値あり）",
         "tips_list": ["ピークシーズンには人気ツアーを早めに予約", "施設のない島もある", "海洋生物を尊重—サンゴや野生生物に触れると損傷を引き起こす可能性", "常にクルーとガイドの指示に従う"],
-        "cta_text": "🗂️ ツアーを探索する準備完了"
+        "cta_text": "🗂️ ツアーを探索する準備完了",
+        "faq_title": "❓ よくある質問",
+        "faq_cat_getting_here": "🗺️ アクセスと移動",
+        "faq_cat_tours": "🚤 ツアーとアクティビティ",
+        "faq_cat_reef": "🐠 リーフと海洋生物",
+        "faq_cat_highlights": "⭐ 必見スポット",
+        "faq_cat_planning": "📋 計画と予約",
+        "faq_location_q": "ウィットサンデー諸島はどこにありますか？",
+        "faq_location_a": "ウィットサンデー諸島は、オーストラリア・クイーンズランド州中部の沿岸沖、グレートバリアリーフの中心部に位置する74の熱帯島々です。",
+        "faq_getting_here_q": "ウィットサンデー諸島へはどうやって行けますか？",
+        "faq_getting_here_a": "ウィットサンデーコースト空港（プロサーパイン）またはハミルトン島空港に飛ぶことができます。そこからシャトル、タクシー、フェリーでエアリービーチや島のリゾートへ移動できます。",
+        "faq_departure_q": "エアリービーチのツアーはどこから出発しますか？",
+        "faq_departure_a": "ほとんどのツアーはコーラルシーマリーナまたはポートオブエアリーから出発します。正確な出発詳細はツアーの確認書に記載されます。ご質問がありましたら、お気軽にフレンドリーで経験豊富なチームにご連絡ください！",
+        "faq_explore_alone_q": "ツアーなしでウィットサンデー諸島を探索できますか？",
+        "faq_explore_alone_a": "はい。フェリー、ハイキングトレイル、プライベートボートやヨットのレンタルで自分で探索できます。ただし、ガイド付きツアーの方がアクセスや地元の情報が得られることが多いです。",
+        "faq_tour_types_q": "ウィットサンデー諸島にはどんな種類のツアーがありますか？",
+        "faq_tour_types_a": "人気のオプションには、シュノーケリングとダイビングツアー、セーリングアドベンチャー、遊覧飛行、ジェットボート、フィッシングチャーター、サンセットクルーズがあります。",
+        "faq_whitehaven_day_q": "ホワイトヘブンビーチは日帰りで行けますか？",
+        "faq_whitehaven_day_a": "もちろんです。エアリービーチやハミルトン島から毎日ツアーが出ており、ボートクルーズ、水上飛行機、ヘリコプターフライトなどがあります。",
+        "faq_charter_q": "ウィットサンデー諸島でボートをチャーターできますか？",
+        "faq_charter_a": "はい。ベアボート（自分で操縦）とクルー付きチャーターの両方があります。特にピークシーズンは事前予約をお勧めします。",
+        "faq_families_q": "ウィットサンデー諸島は子供連れの家族に適していますか？",
+        "faq_families_a": "もちろんです。穏やかなビーチ、野生動物との出会い、ファミリーフレンドリーなリゾート、安全なツアーがあり、あらゆる年齢層に最適な目的地です。",
+        "faq_young_old_q": "小さな子供やご年配の方に適したツアーはありますか？",
+        "faq_young_old_a": "はい – カミラ号やクルーズウィットサンデーズのような穏やかな水域のオプションは、あらゆる年齢と快適さのレベルに適しています。",
+        "faq_reef_q": "ウィットサンデー諸島はグレートバリアリーフの一部ですか？",
+        "faq_reef_a": "はい、ウィットサンデー諸島はグレートバリアリーフ海洋公園内にあり、裾礁と外洋リーフの生態系に簡単にアクセスできます。",
+        "faq_snorkelling_good_q": "ウィットサンデー諸島のシュノーケリングは良いですか？",
+        "faq_snorkelling_good_a": "間違いなく良いです。マンタレイベイ、チャルキーズビーチ、ボーダー島など、鮮やかなサンゴと海洋生物で知られる素晴らしいシュノーケリングスポットがあります。",
+        "faq_marine_life_q": "ウィットサンデー諸島ではどんな海洋生物が見られますか？",
+        "faq_marine_life_a": "ウミガメ、クマノミ、ブダイ、マンタなどが見られ、移動の時期にはイルカやクジラも見られることがあります。",
+        "faq_stinger_suit_q": "ウィットサンデー諸島でスティンガースーツは必要ですか？",
+        "faq_stinger_suit_a": "クラゲの季節（10月〜5月）には、泳いだりシュノーケリングをする際にクラゲから身を守るため、スティンガースーツの着用を強くお勧めします。",
+        "faq_highlights_q": "ウィットサンデー諸島の必見の観光名所は何ですか？",
+        "faq_highlights_a": "ホワイトヘブンビーチ、ヒルインレット展望台、グレートバリアリーフ、ハートリーフ、ハミルトン島、デイドリーム島、エアリービーチラグーンなどがあります。",
+        "faq_overnight_q": "ウィットサンデー諸島で一泊できますか？",
+        "faq_overnight_a": "はい、ハミルトン島、デイドリーム島、ロング島などの島に宿泊できます。一部の島では国立公園のキャンプも可能です。エアリービーチとウィットサンデー諸島の自然の美しさを十分に楽しむには、少なくとも4日間は過ごすことをお勧めします。",
+        "faq_best_time_q": "ウィットサンデー諸島を訪れるのに最適な時期はいつですか？",
+        "faq_best_time_a": "5月から10月がベストです。晴天、低湿度で、セーリング、シュノーケリング、ビーチアクティビティに理想的な条件です。",
+        "faq_book_advance_q": "ツアーは事前に予約すべきですか、それとも到着してから？",
+        "faq_book_advance_a": "特にピークシーズンはすぐに売り切れるものもあります。事前予約をお勧めします。",
+        "faq_weather_q": "ウィットサンデー諸島の天気はどうですか？",
+        "faq_weather_a": "一年中暖かい熱帯性気候です。冬は最高23°C、夏は31°Cほどです。",
+        "faq_packing_q": "ウィットサンデー旅行には何を持っていくべきですか？",
+        "faq_packing_a": "水着、リーフセーフ日焼け止め、帽子、サングラス、軽い服、ウォーキングシューズ、虫除け、再利用可能な水筒が必需品です。",
+        "faq_budget_q": "ウィットサンデー諸島を低予算で訪れる方法はありますか？",
+        "faq_budget_a": "はい。バックパッカーツアー、ホステル、日帰り旅行、キャンプなどが予算を抑えた旅行者に最適です。",
+        "faq_insurance_q": "ウィットサンデー諸島に旅行保険は必要ですか？",
+        "faq_insurance_a": "キャンセル、天候による中断、医療緊急事態への補償のため、旅行保険を強くお勧めします。"
       },
       "ko": {
         "button_text": "ℹ️ 신규 방문자 중요 정보",
@@ -17158,7 +17491,55 @@
         "wet_list": ["폭우 가능", "안전을 위해 투어가 변경될 수 있음", "이것은 정상이며 현지에서 관리됨"],
         "tips_title": "🧭 현지 여행 팁 (알아두면 좋은)",
         "tips_list": ["성수기에는 인기 투어 조기 예약", "일부 섬에는 시설이 없음", "해양 생물 존중 — 산호나 야생 동물을 만지면 손상될 수 있음", "항상 승무원과 가이드 지시를 따르기"],
-        "cta_text": "🗂️ 투어 탐색 준비 완료"
+        "cta_text": "🗂️ 투어 탐색 준비 완료",
+        "faq_title": "❓ 자주 묻는 질문",
+        "faq_cat_getting_here": "🗺️ 오는 방법 & 이동",
+        "faq_cat_tours": "🚤 투어 & 액티비티",
+        "faq_cat_reef": "🐠 산호초 & 해양 생물",
+        "faq_cat_highlights": "⭐ 필수 방문지",
+        "faq_cat_planning": "📋 계획 & 예약",
+        "faq_location_q": "휘트선데이 제도는 어디에 있나요?",
+        "faq_location_a": "휘트선데이 제도는 호주 퀸즐랜드 주 중부 해안에 위치한 74개의 열대 섬으로, 그레이트 배리어 리프의 중심부에 있습니다.",
+        "faq_getting_here_q": "휘트선데이 제도에 어떻게 가나요?",
+        "faq_getting_here_a": "휘트선데이 코스트 공항(프로서파인) 또는 해밀턴 아일랜드 공항으로 비행할 수 있습니다. 거기서 셔틀, 택시, 페리로 에어리 비치나 섬 리조트로 이동할 수 있습니다.",
+        "faq_departure_q": "에어리 비치에서 투어는 어디에서 출발하나요?",
+        "faq_departure_a": "대부분의 투어는 코럴 시 마리나 또는 포트 오브 에어리에서 출발합니다. 정확한 출발 정보는 투어 확인서에 제공됩니다. 궁금한 점이 있으시면 친절하고 경험이 풍부한 저희 팀에게 연락해 주세요!",
+        "faq_explore_alone_q": "투어 없이 휘트선데이 제도를 탐험할 수 있나요?",
+        "faq_explore_alone_a": "네. 페리, 하이킹 트레일, 개인 보트나 요트 대여로 자유롭게 탐험할 수 있습니다. 다만, 가이드 투어가 더 나은 접근성과 현지 정보를 제공하는 경우가 많습니다.",
+        "faq_tour_types_q": "휘트선데이 제도에서 어떤 종류의 투어가 있나요?",
+        "faq_tour_types_a": "인기 옵션으로는 스노클링 및 다이빙 투어, 세일링 모험, 경치 비행, 제트보트, 낚시 차터, 선셋 크루즈가 있습니다.",
+        "faq_whitehaven_day_q": "화이트헤이븐 비치를 당일 여행으로 갈 수 있나요?",
+        "faq_whitehaven_day_a": "물론입니다. 에어리 비치와 해밀턴 아일랜드에서 매일 보트 크루즈, 수상 비행기, 헬리콥터 투어가 출발합니다.",
+        "faq_charter_q": "휘트선데이 제도에서 보트를 빌릴 수 있나요?",
+        "faq_charter_a": "네. 베어보트(셀프 스키퍼)와 선원이 딸린 차터 모두 가능합니다. 특히 성수기에는 사전 예약을 권장합니다.",
+        "faq_families_q": "휘트선데이 제도는 아이들이 있는 가족에게 적합한가요?",
+        "faq_families_a": "물론입니다. 잔잔한 해변, 야생동물 관찰, 가족 친화적 리조트, 안전한 투어로 모든 연령대에 적합한 목적지입니다.",
+        "faq_young_old_q": "어린이나 고령 여행객에게 적합한 투어가 있나요?",
+        "faq_young_old_a": "네 – 카미라호나 크루즈 휘트선데이즈처럼 잔잔한 물에서 진행되는 옵션이 모든 연령과 편안함 수준에 적합합니다.",
+        "faq_reef_q": "휘트선데이 제도는 그레이트 배리어 리프의 일부인가요?",
+        "faq_reef_a": "네, 휘트선데이 제도는 그레이트 배리어 리프 해양 공원 내에 위치하여 주변 산호초와 외해 산호초 생태계에 쉽게 접근할 수 있습니다.",
+        "faq_snorkelling_good_q": "휘트선데이 제도에서 스노클링은 좋은가요?",
+        "faq_snorkelling_good_a": "확실히 좋습니다. 만타레이 베이, 초키스 비치, 보더 아일랜드 등 생생한 산호와 해양 생물로 유명한 훌륭한 스노클링 장소가 있습니다.",
+        "faq_marine_life_q": "휘트선데이 제도에서 어떤 해양 생물을 볼 수 있나요?",
+        "faq_marine_life_a": "바다거북, 흰동가리, 앵무새고기, 쥐가오리를 볼 수 있으며, 이동 시기에는 돌고래나 고래도 볼 수 있습니다.",
+        "faq_stinger_suit_q": "휘트선데이 제도에서 스팅거 수트가 필요한가요?",
+        "faq_stinger_suit_a": "스팅거 시즌(10월~5월) 동안 수영이나 스노클링 시 해파리로부터 보호하기 위해 스팅거 수트 착용을 강력히 권장합니다.",
+        "faq_highlights_q": "휘트선데이 제도의 필수 관광명소는 무엇인가요?",
+        "faq_highlights_a": "화이트헤이븐 비치, 힐 인렛 전망대, 그레이트 배리어 리프, 하트 리프, 해밀턴 아일랜드, 데이드림 아일랜드, 에어리 비치 라군이 있습니다.",
+        "faq_overnight_q": "휘트선데이 제도에서 숙박할 수 있나요?",
+        "faq_overnight_a": "네, 해밀턴 아일랜드, 데이드림 아일랜드, 롱 아일랜드 등의 섬에서 숙박할 수 있습니다. 일부 섬에서는 국립공원 캠핑도 가능합니다. 에어리 비치와 휘트선데이 제도의 자연미를 충분히 즐기려면 최소 4일은 탐험하는 것이 좋습니다.",
+        "faq_best_time_q": "휘트선데이 제도를 방문하기 가장 좋은 시기는 언제인가요?",
+        "faq_best_time_a": "5월부터 10월이 가장 좋습니다. 맑은 하늘, 낮은 습도, 세일링, 스노클링, 해변 활동에 이상적인 조건을 제공합니다.",
+        "faq_book_advance_q": "투어를 미리 예약해야 하나요, 아니면 도착 후에?",
+        "faq_book_advance_a": "특히 성수기에는 빠르게 매진되는 투어도 있습니다. 사전 예약을 권장합니다.",
+        "faq_weather_q": "휘트선데이 제도의 날씨는 어떤가요?",
+        "faq_weather_a": "연중 따뜻한 열대 기후입니다. 겨울에는 최고 23°C, 여름에는 31°C 정도입니다.",
+        "faq_packing_q": "휘트선데이 여행에 무엇을 챙겨야 하나요?",
+        "faq_packing_a": "수영복, 산호초 안전 선크림, 모자, 선글라스, 가벼운 옷, 운동화, 방충제, 재사용 물병이 필수입니다.",
+        "faq_budget_q": "휘트선데이 제도를 저예산으로 방문할 수 있나요?",
+        "faq_budget_a": "네. 배낭여행 투어, 호스텔, 당일치기, 캠핑 등이 예산이 적은 여행자에게 좋은 옵션입니다.",
+        "faq_insurance_q": "휘트선데이 제도에 여행 보험이 필요한가요?",
+        "faq_insurance_a": "취소, 기상 변동, 의료 응급 상황에 대한 보장을 위해 여행 보험을 강력히 권장합니다."
       },
       "de": {
         "button_text": "ℹ️ Wichtige Infos für Neuankömmlinge",
@@ -17196,7 +17577,55 @@
         "wet_list": ["Starker Regen möglich", "Touren können aus Sicherheitsgründen geändert werden", "Das ist normal und wird lokal gehandhabt"],
         "tips_title": "🧭 Lokale Reisetipps (Wissenswert)",
         "tips_list": ["Beliebte Touren in der Hochsaison früh buchen", "Einige Inseln haben keine Einrichtungen", "Meereslebewesen respektieren — das Berühren von Korallen oder Wildtieren kann Schäden verursachen", "Immer den Anweisungen der Crew und Guides folgen"],
-        "cta_text": "🗂️ Bereit, Touren zu erkunden"
+        "cta_text": "🗂️ Bereit, Touren zu erkunden",
+        "faq_title": "❓ Häufig gestellte Fragen",
+        "faq_cat_getting_here": "🗺️ Anreise & Fortbewegung",
+        "faq_cat_tours": "🚤 Touren & Aktivitäten",
+        "faq_cat_reef": "🐠 Das Riff & Meeresleben",
+        "faq_cat_highlights": "⭐ Sehenswürdigkeiten",
+        "faq_cat_planning": "📋 Planung & Buchung",
+        "faq_location_q": "Wo liegen die Whitsundays?",
+        "faq_location_a": "Die Whitsundays sind eine Gruppe von 74 tropischen Inseln vor der Zentralküste von Queensland, Australien, im Herzen des Great Barrier Reef.",
+        "faq_getting_here_q": "Wie komme ich zu den Whitsundays?",
+        "faq_getting_here_a": "Sie können zum Whitsunday Coast Airport (Proserpine) oder Hamilton Island Airport fliegen. Von dort stehen Transfers per Shuttle, Taxi oder Fähre nach Airlie Beach oder zu Inselresorts zur Verfügung.",
+        "faq_departure_q": "Wo starten die Touren in Airlie Beach?",
+        "faq_departure_a": "Die meisten Touren starten von der Coral Sea Marina oder dem Port of Airlie. Genaue Abfahrtsdetails werden mit Ihrer Tourbuchungsbestätigung bereitgestellt. Bei Fragen wenden Sie sich gerne an unser freundliches, erfahrenes Team – wir helfen Ihnen gerne!",
+        "faq_explore_alone_q": "Kann ich die Whitsundays ohne Tour erkunden?",
+        "faq_explore_alone_a": "Ja. Sie können auf eigene Faust mit Fähren, Wanderwegen oder einem gemieteten Privatboot oder einer Yacht erkunden. Geführte Touren bieten jedoch oft besseren Zugang und lokale Einblicke.",
+        "faq_tour_types_q": "Welche Arten von Touren gibt es in den Whitsundays?",
+        "faq_tour_types_a": "Beliebte Optionen sind Schnorchel- und Tauchtouren, Segelabenteuer, Rundflüge, Jetboating, Angelcharter und Sonnenuntergangsfahrten.",
+        "faq_whitehaven_day_q": "Kann ich Whitehaven Beach als Tagesausflug besuchen?",
+        "faq_whitehaven_day_a": "Absolut. Tägliche Touren starten von Airlie Beach und Hamilton Island, darunter Bootsfahrten, Wasserflugzeuge und Hubschrauberflüge.",
+        "faq_charter_q": "Kann ich in den Whitsundays ein Boot chartern?",
+        "faq_charter_a": "Ja. Sowohl Bareboat (selbstgesteuert) als auch Charter mit Crew sind verfügbar. Eine Vorabuchung wird empfohlen, besonders in der Hochsaison.",
+        "faq_families_q": "Sind die Whitsundays für Familien mit Kindern geeignet?",
+        "faq_families_a": "Absolut. Mit ruhigen Stränden, Tierbegegnungen, familienfreundlichen Resorts und sicheren Touren ist es ein großartiges Reiseziel für alle Altersgruppen.",
+        "faq_young_old_q": "Gibt es Touren für kleine Kinder oder ältere Reisende?",
+        "faq_young_old_a": "Ja – ruhige Gewässeroptionen wie die Camira oder Cruise Whitsundays sind für alle Altersgruppen und Komfortstufen geeignet.",
+        "faq_reef_q": "Gehören die Whitsundays zum Great Barrier Reef?",
+        "faq_reef_a": "Ja, die Whitsundays liegen im Great Barrier Reef Marine Park und bieten einfachen Zugang sowohl zu Saumriffen als auch zu Außenriff-Ökosystemen.",
+        "faq_snorkelling_good_q": "Ist das Schnorcheln in den Whitsundays gut?",
+        "faq_snorkelling_good_a": "Definitiv. Die Region bietet ausgezeichnete Schnorchelplätze wie Mantaray Bay, Chalkies Beach und Border Island, bekannt für lebhafte Korallen und Meeresleben.",
+        "faq_marine_life_q": "Welche Meereslebewesen kann ich in den Whitsundays sehen?",
+        "faq_marine_life_a": "Sie können Meeresschildkröten, Clownfische, Papageienfische, Mantarochen und während der Wanderungszeit sogar Delfine oder Wale entdecken.",
+        "faq_stinger_suit_q": "Brauche ich einen Stinger-Anzug in den Whitsundays?",
+        "faq_stinger_suit_a": "Während der Quallen-Saison (Oktober bis Mai) wird das Tragen eines Stinger-Anzugs beim Schwimmen oder Schnorcheln zum Schutz vor Quallen dringend empfohlen.",
+        "faq_highlights_q": "Was sind die Sehenswürdigkeiten der Whitsundays?",
+        "faq_highlights_a": "Highlights sind Whitehaven Beach, Hill Inlet Lookout, Great Barrier Reef, Heart Reef, Hamilton Island, Daydream Island und die Airlie Beach Lagoon.",
+        "faq_overnight_q": "Kann ich auf einer Whitsunday-Insel übernachten?",
+        "faq_overnight_a": "Ja, Sie können auf Inseln wie Hamilton Island, Daydream Island und Long Island übernachten. Auf ausgewählten Inseln ist auch Camping in Nationalparks möglich. Um die natürliche Schönheit von Airlie Beach und den Whitsundays voll zu genießen, sollten Sie mindestens vier Tage einplanen.",
+        "faq_best_time_q": "Wann ist die beste Reisezeit für die Whitsundays?",
+        "faq_best_time_a": "Mai bis Oktober ist die beste Zeit. Diese Monate bieten klaren Himmel, niedrige Luftfeuchtigkeit und ideale Bedingungen zum Segeln, Schnorcheln und für Strandaktivitäten.",
+        "faq_book_advance_q": "Sollte ich meine Touren im Voraus buchen oder vor Ort?",
+        "faq_book_advance_a": "Einige sind schnell ausgebucht – besonders in der Hochsaison. Vorab-Buchung wird empfohlen.",
+        "faq_weather_q": "Wie ist das Wetter in den Whitsundays?",
+        "faq_weather_a": "Die Region hat ein tropisches Klima mit ganzjährig warmen Temperaturen. Erwarten Sie Höchstwerte von 23°C im Winter und 31°C im Sommer.",
+        "faq_packing_q": "Was sollte ich für einen Whitsundays-Urlaub einpacken?",
+        "faq_packing_a": "Wichtig sind Badekleidung, rifffreundliche Sonnencreme, Hut, Sonnenbrille, leichte Kleidung, Wanderschuhe, Insektenschutz und eine wiederverwendbare Wasserflasche.",
+        "faq_budget_q": "Gibt es günstige Möglichkeiten, die Whitsundays zu besuchen?",
+        "faq_budget_a": "Ja. Backpacker-Touren, Hostels, Tagesausflüge und Camping bieten tolle Optionen für Reisende mit kleinem Budget.",
+        "faq_insurance_q": "Brauche ich eine Reiseversicherung für die Whitsundays?",
+        "faq_insurance_a": "Eine Reiseversicherung wird dringend empfohlen, insbesondere für Schutz bei Stornierungen, Wetterunterbrechungen und medizinischen Notfällen."
       },
       "fr": {
         "button_text": "ℹ️ Infos importantes pour les nouveaux visiteurs",
@@ -17234,7 +17663,55 @@
         "wet_list": ["Fortes pluies possibles", "Les excursions peuvent changer pour des raisons de sécurité", "C'est normal et géré localement"],
         "tips_title": "🧭 Conseils de voyage locaux (À savoir)",
         "tips_list": ["Réserver les excursions populaires tôt en haute saison", "Certaines îles n'ont pas d'installations", "Respecter la vie marine — toucher les coraux ou la faune peut causer des dommages", "Suivre les instructions de l'équipage et des guides en tout temps"],
-        "cta_text": "🗂️ Prêt à explorer les excursions"
+        "cta_text": "🗂️ Prêt à explorer les excursions",
+        "faq_title": "❓ Foire aux questions",
+        "faq_cat_getting_here": "🗺️ Comment venir & se déplacer",
+        "faq_cat_tours": "🚤 Excursions & activités",
+        "faq_cat_reef": "🐠 Le récif & la vie marine",
+        "faq_cat_highlights": "⭐ Incontournables",
+        "faq_cat_planning": "📋 Planification & réservation",
+        "faq_location_q": "Où se trouvent les Whitsundays ?",
+        "faq_location_a": "Les Whitsundays sont un groupe de 74 îles tropicales situées au large de la côte centrale du Queensland, en Australie, au cœur de la Grande Barrière de Corail.",
+        "faq_getting_here_q": "Comment se rendre aux Whitsundays ?",
+        "faq_getting_here_a": "Vous pouvez prendre l'avion pour l'aéroport de Whitsunday Coast (Proserpine) ou l'aéroport de Hamilton Island. De là, des transferts en navette, taxi ou ferry sont disponibles vers Airlie Beach ou les stations insulaires.",
+        "faq_departure_q": "D'où partent les excursions à Airlie Beach ?",
+        "faq_departure_a": "La plupart des excursions partent de la Coral Sea Marina ou du Port of Airlie. Les détails exacts de départ seront fournis avec votre confirmation. N'hésitez pas à contacter notre équipe sympathique et expérimentée – nous sommes là pour vous aider !",
+        "faq_explore_alone_q": "Peut-on explorer les Whitsundays sans excursion ?",
+        "faq_explore_alone_a": "Oui. Vous pouvez explorer par vous-même en ferry, sentiers de randonnée ou en louant un bateau privé ou un yacht. Cela dit, les excursions guidées offrent souvent un meilleur accès et des connaissances locales.",
+        "faq_tour_types_q": "Quels types d'excursions sont disponibles aux Whitsundays ?",
+        "faq_tour_types_a": "Les options populaires comprennent la plongée avec tuba et la plongée sous-marine, les aventures en voilier, les vols panoramiques, le jet boat, la pêche en charter et les croisières au coucher du soleil.",
+        "faq_whitehaven_day_q": "Peut-on visiter Whitehaven Beach en excursion d'une journée ?",
+        "faq_whitehaven_day_a": "Absolument. Des excursions quotidiennes partent d'Airlie Beach et de Hamilton Island, incluant des croisières, des hydravions et des vols en hélicoptère.",
+        "faq_charter_q": "Peut-on louer un bateau aux Whitsundays ?",
+        "faq_charter_a": "Oui. Des locations en bareboat (pilotage autonome) et avec équipage sont disponibles. La réservation à l'avance est recommandée, surtout en haute saison.",
+        "faq_families_q": "Les Whitsundays conviennent-elles aux familles avec enfants ?",
+        "faq_families_a": "Absolument. Avec des plages calmes, des rencontres avec la faune, des stations familiales et des excursions sûres, c'est une destination idéale pour tous les âges.",
+        "faq_young_old_q": "Y a-t-il des excursions adaptées aux jeunes enfants ou aux voyageurs plus âgés ?",
+        "faq_young_old_a": "Oui – les options en eaux calmes comme le Camira ou Cruise Whitsundays conviennent à tous les âges et niveaux de confort.",
+        "faq_reef_q": "Les Whitsundays font-elles partie de la Grande Barrière de Corail ?",
+        "faq_reef_a": "Oui, les Whitsundays se trouvent dans le parc marin de la Grande Barrière de Corail, offrant un accès facile aux écosystèmes du récif frangeant et du récif externe.",
+        "faq_snorkelling_good_q": "La plongée avec tuba est-elle bonne aux Whitsundays ?",
+        "faq_snorkelling_good_a": "Absolument. La région offre d'excellents spots de plongée comme Mantaray Bay, Chalkies Beach et Border Island, connus pour leurs coraux vibrants et leur vie marine.",
+        "faq_marine_life_q": "Quelle vie marine peut-on voir aux Whitsundays ?",
+        "faq_marine_life_a": "Vous pourrez observer des tortues de mer, des poissons-clowns, des poissons-perroquets, des raies manta, et pendant la saison de migration, même des dauphins ou des baleines.",
+        "faq_stinger_suit_q": "Ai-je besoin d'une combinaison anti-méduses aux Whitsundays ?",
+        "faq_stinger_suit_a": "Pendant la saison des méduses (octobre à mai), le port d'une combinaison est vivement recommandé lors de la baignade ou de la plongée pour se protéger des méduses.",
+        "faq_highlights_q": "Quels sont les incontournables des Whitsundays ?",
+        "faq_highlights_a": "Les incontournables incluent Whitehaven Beach, Hill Inlet Lookout, la Grande Barrière de Corail, Heart Reef, Hamilton Island, Daydream Island et le lagon d'Airlie Beach.",
+        "faq_overnight_q": "Peut-on passer la nuit sur une île des Whitsundays ?",
+        "faq_overnight_a": "Oui, vous pouvez séjourner sur des îles comme Hamilton Island, Daydream Island et Long Island. Le camping en parc national est aussi disponible sur certaines îles. Pour profiter pleinement de la beauté naturelle d'Airlie Beach et des Whitsundays, prévoyez au moins quatre jours d'exploration.",
+        "faq_best_time_q": "Quelle est la meilleure période pour visiter les Whitsundays ?",
+        "faq_best_time_a": "De mai à octobre. Ces mois offrent un ciel dégagé, une faible humidité et des conditions idéales pour la voile, la plongée et les activités de plage.",
+        "faq_book_advance_q": "Faut-il réserver ses excursions à l'avance ou sur place ?",
+        "faq_book_advance_a": "Certaines se remplissent vite – surtout en haute saison. La réservation à l'avance est recommandée.",
+        "faq_weather_q": "Quel temps fait-il aux Whitsundays ?",
+        "faq_weather_a": "La région bénéficie d'un climat tropical avec des températures chaudes toute l'année. Attendez-vous à des maximales de 23°C en hiver et 31°C en été.",
+        "faq_packing_q": "Que faut-il emporter pour des vacances aux Whitsundays ?",
+        "faq_packing_a": "Les essentiels : maillot de bain, crème solaire respectueuse des récifs, chapeau, lunettes de soleil, vêtements légers, chaussures de marche, anti-moustiques et une gourde réutilisable.",
+        "faq_budget_q": "Existe-t-il des moyens économiques de visiter les Whitsundays ?",
+        "faq_budget_a": "Oui. Les excursions backpacker, les auberges, les excursions d'une journée et le camping offrent de bonnes options pour les voyageurs à petit budget.",
+        "faq_insurance_q": "Ai-je besoin d'une assurance voyage pour les Whitsundays ?",
+        "faq_insurance_a": "L'assurance voyage est vivement recommandée, notamment pour la couverture des annulations, perturbations météo et urgences médicales."
       },
       "hi": {
         "button_text": "ℹ️ नए आगंतुकों के लिए महत्वपूर्ण जानकारी",
@@ -17272,7 +17749,55 @@
         "wet_list": ["भारी बारिश संभव", "सुरक्षा के लिए टूर बदल सकते हैं", "यह सामान्य है और स्थानीय रूप से प्रबंधित किया जाता है"],
         "tips_title": "🧭 स्थानीय यात्रा सुझाव (जानने योग्य)",
         "tips_list": ["पीक सीजन में लोकप्रिय टूर जल्दी बुक करें", "कुछ द्वीपों में कोई सुविधा नहीं है", "समुद्री जीवन का सम्मान करें — मूंगा या वन्यजीवों को छूने से नुकसान हो सकता है", "हमेशा क्रू और गाइड के निर्देशों का पालन करें"],
-        "cta_text": "🗂️ टूर एक्सप्लोर करने के लिए तैयार"
+        "cta_text": "🗂️ टूर एक्सप्लोर करने के लिए तैयार",
+        "faq_title": "❓ अक्सर पूछे जाने वाले प्रश्न",
+        "faq_cat_getting_here": "🗺️ यहाँ कैसे पहुँचें और घूमें",
+        "faq_cat_tours": "🚤 टूर और गतिविधियाँ",
+        "faq_cat_reef": "🐠 रीफ और समुद्री जीवन",
+        "faq_cat_highlights": "⭐ अवश्य देखने योग्य स्थान",
+        "faq_cat_planning": "📋 योजना और बुकिंग",
+        "faq_location_q": "व्हिट्संडे द्वीप समूह कहाँ स्थित है?",
+        "faq_location_a": "व्हिट्संडे द्वीप समूह ऑस्ट्रेलिया के क्वींसलैंड राज्य के मध्य तट से दूर, ग्रेट बैरियर रीफ के हृदय में स्थित 74 उष्णकटिबंधीय द्वीपों का समूह है।",
+        "faq_getting_here_q": "व्हिट्संडे द्वीप समूह तक कैसे पहुँचें?",
+        "faq_getting_here_a": "आप व्हिट्संडे कोस्ट एयरपोर्ट (प्रोसरपाइन) या हैमिल्टन आइलैंड एयरपोर्ट तक उड़ सकते हैं। वहाँ से शटल, टैक्सी या फेरी द्वारा एयरली बीच या द्वीप रिसॉर्ट तक जा सकते हैं।",
+        "faq_departure_q": "एयरली बीच में टूर कहाँ से शुरू होते हैं?",
+        "faq_departure_a": "अधिकांश टूर कोरल सी मरीना या पोर्ट ऑफ एयरली से शुरू होते हैं। सटीक प्रस्थान विवरण आपकी टूर पुष्टि के साथ प्रदान किया जाएगा। किसी भी प्रश्न के लिए, हमारी मित्रवत, अनुभवी टीम से संपर्क करें – हम मदद के लिए यहाँ हैं!",
+        "faq_explore_alone_q": "क्या बिना टूर के व्हिट्संडे का पता लगा सकते हैं?",
+        "faq_explore_alone_a": "हाँ। आप फेरी, हाइकिंग ट्रेल या निजी नाव या यॉट किराए पर लेकर स्वयं खोज सकते हैं। हालाँकि, गाइडेड टूर अक्सर बेहतर पहुँच और स्थानीय जानकारी प्रदान करते हैं।",
+        "faq_tour_types_q": "व्हिट्संडे में किस प्रकार के टूर उपलब्ध हैं?",
+        "faq_tour_types_a": "लोकप्रिय विकल्पों में स्नॉर्कलिंग और डाइविंग टूर, सेलिंग एडवेंचर, दर्शनीय उड़ानें, जेट बोटिंग, मछली पकड़ने के चार्टर और सनसेट क्रूज शामिल हैं।",
+        "faq_whitehaven_day_q": "क्या व्हाइटहेवन बीच एक दिन की यात्रा पर जा सकते हैं?",
+        "faq_whitehaven_day_a": "बिल्कुल। एयरली बीच और हैमिल्टन आइलैंड से प्रतिदिन बोट क्रूज, सी प्लेन और हेलीकॉप्टर उड़ानें उपलब्ध हैं।",
+        "faq_charter_q": "क्या व्हिट्संडे में नाव चार्टर कर सकते हैं?",
+        "faq_charter_a": "हाँ। बेयरबोट (स्व-संचालित) और क्रू वाले दोनों चार्टर उपलब्ध हैं। विशेष रूप से पीक सीज़न में अग्रिम बुकिंग की सिफारिश की जाती है।",
+        "faq_families_q": "क्या व्हिट्संडे बच्चों वाले परिवारों के लिए उपयुक्त है?",
+        "faq_families_a": "बिल्कुल। शांत समुद्र तट, वन्यजीव मुठभेड़, परिवार-अनुकूल रिसॉर्ट और सुरक्षित टूर के साथ, यह सभी उम्र के लिए एक शानदार गंतव्य है।",
+        "faq_young_old_q": "क्या छोटे बच्चों या बड़े यात्रियों के लिए टूर हैं?",
+        "faq_young_old_a": "हाँ – कामिरा या क्रूज़ व्हिट्संडे जैसे शांत पानी के विकल्प सभी उम्र और आराम स्तरों के लिए उपयुक्त हैं।",
+        "faq_reef_q": "क्या व्हिट्संडे ग्रेट बैरियर रीफ का हिस्सा है?",
+        "faq_reef_a": "हाँ, व्हिट्संडे ग्रेट बैरियर रीफ मरीन पार्क के भीतर स्थित है, जो फ्रिंजिंग और आउटर रीफ पारिस्थितिकी तंत्र दोनों तक आसान पहुँच प्रदान करता है।",
+        "faq_snorkelling_good_q": "क्या व्हिट्संडे में स्नॉर्कलिंग अच्छी है?",
+        "faq_snorkelling_good_a": "निश्चित रूप से। इस क्षेत्र में मंतारे बे, चॉकीज़ बीच और बॉर्डर आइलैंड जैसे उत्कृष्ट स्नॉर्कलिंग स्पॉट हैं, जो जीवंत कोरल और समुद्री जीवन के लिए प्रसिद्ध हैं।",
+        "faq_marine_life_q": "व्हिट्संडे में कौन से समुद्री जीव देख सकते हैं?",
+        "faq_marine_life_a": "आप समुद्री कछुए, क्लाउनफिश, पैरटफिश, मंता रे देख सकते हैं, और प्रवास के मौसम में डॉल्फिन या व्हेल भी।",
+        "faq_stinger_suit_q": "क्या व्हिट्संडे में स्टिंगर सूट की जरूरत है?",
+        "faq_stinger_suit_a": "स्टिंगर सीज़न (अक्टूबर से मई) के दौरान, जेलीफिश से बचाव के लिए तैराकी या स्नॉर्कलिंग करते समय स्टिंगर सूट पहनने की अत्यधिक सिफारिश की जाती है।",
+        "faq_highlights_q": "व्हिट्संडे में अवश्य देखने योग्य आकर्षण क्या हैं?",
+        "faq_highlights_a": "मुख्य आकर्षणों में व्हाइटहेवन बीच, हिल इनलेट लुकआउट, ग्रेट बैरियर रीफ, हार्ट रीफ, हैमिल्टन आइलैंड, डेड्रीम आइलैंड और एयरली बीच लैगून शामिल हैं।",
+        "faq_overnight_q": "क्या व्हिट्संडे द्वीप पर रात रुक सकते हैं?",
+        "faq_overnight_a": "हाँ, आप हैमिल्टन आइलैंड, डेड्रीम आइलैंड और लॉन्ग आइलैंड जैसे द्वीपों पर रुक सकते हैं। कुछ द्वीपों पर नेशनल पार्क कैम्पिंग भी उपलब्ध है। एयरली बीच और व्हिट्संडे की प्राकृतिक सुंदरता का पूरा आनंद लेने के लिए, कम से कम चार दिन बिताने की सिफारिश है।",
+        "faq_best_time_q": "व्हिट्संडे जाने का सबसे अच्छा समय कब है?",
+        "faq_best_time_a": "मई से अक्टूबर सबसे अच्छा समय है। इन महीनों में साफ आसमान, कम नमी और सेलिंग, स्नॉर्कलिंग और समुद्र तट गतिविधियों के लिए आदर्श स्थितियाँ होती हैं।",
+        "faq_book_advance_q": "क्या टूर पहले से बुक करने चाहिए या पहुँचने पर?",
+        "faq_book_advance_a": "कुछ जल्दी भर जाते हैं – खासकर पीक सीज़न में। अग्रिम बुकिंग की सिफारिश है।",
+        "faq_weather_q": "व्हिट्संडे में मौसम कैसा है?",
+        "faq_weather_a": "इस क्षेत्र में साल भर गर्म उष्णकटिबंधीय जलवायु रहती है। सर्दियों में अधिकतम 23°C और गर्मियों में 31°C की उम्मीद करें।",
+        "faq_packing_q": "व्हिट्संडे छुट्टी के लिए क्या पैक करें?",
+        "faq_packing_a": "आवश्यक वस्तुओं में स्विमवियर, रीफ-सेफ सनस्क्रीन, टोपी, धूप का चश्मा, हल्के कपड़े, चलने के जूते, कीट विकर्षक और पुन: प्रयोज्य पानी की बोतल शामिल हैं।",
+        "faq_budget_q": "क्या व्हिट्संडे कम बजट में जा सकते हैं?",
+        "faq_budget_a": "हाँ। बैकपैकर टूर, हॉस्टल, दिन की यात्राएँ और कैम्पिंग बजट यात्रियों के लिए बढ़िया विकल्प हैं।",
+        "faq_insurance_q": "क्या व्हिट्संडे के लिए ट्रैवल इंश्योरेंस जरूरी है?",
+        "faq_insurance_a": "ट्रैवल इंश्योरेंस की अत्यधिक सिफारिश की जाती है, विशेष रूप से कैंसलेशन, मौसम व्यवधान और चिकित्सा आपात स्थितियों के कवरेज के लिए।"
       },
       "es": {
         "button_text": "ℹ️ Información importante para nuevos visitantes",
@@ -17310,7 +17835,55 @@
         "wet_list": ["Posibles lluvias intensas", "Los tours pueden cambiar por seguridad", "Esto es normal y se gestiona localmente"],
         "tips_title": "🧭 Consejos de viaje locales (Vale la pena saber)",
         "tips_list": ["Reserva tours populares temprano en temporada alta", "Algunas islas no tienen instalaciones", "Respeta la vida marina — tocar coral o vida silvestre puede causar daños", "Sigue las instrucciones de la tripulación y guías en todo momento"],
-        "cta_text": "🗂️ Listo para explorar tours"
+        "cta_text": "🗂️ Listo para explorar tours",
+        "faq_title": "❓ Preguntas frecuentes",
+        "faq_cat_getting_here": "🗺️ Cómo llegar y moverse",
+        "faq_cat_tours": "🚤 Tours y actividades",
+        "faq_cat_reef": "🐠 El arrecife y vida marina",
+        "faq_cat_highlights": "⭐ Lugares imprescindibles",
+        "faq_cat_planning": "📋 Planificación y reservas",
+        "faq_location_q": "¿Dónde están las Whitsundays?",
+        "faq_location_a": "Las Whitsundays son un grupo de 74 islas tropicales ubicadas frente a la costa central de Queensland, Australia, en el corazón de la Gran Barrera de Coral.",
+        "faq_getting_here_q": "¿Cómo llego a las Whitsundays?",
+        "faq_getting_here_a": "Puede volar al aeropuerto de Whitsunday Coast (Proserpine) o al aeropuerto de Hamilton Island. Desde allí, hay traslados disponibles en shuttle, taxi o ferry a Airlie Beach o resorts insulares.",
+        "faq_departure_q": "¿De dónde salen los tours en Airlie Beach?",
+        "faq_departure_a": "La mayoría de los tours salen de Coral Sea Marina o Port of Airlie. Los detalles exactos de salida se proporcionarán con su confirmación. Si tiene alguna pregunta, no dude en contactar a nuestro amigable y experimentado equipo – ¡estamos aquí para ayudar!",
+        "faq_explore_alone_q": "¿Se pueden explorar las Whitsundays sin tour?",
+        "faq_explore_alone_a": "Sí. Puede explorar por su cuenta usando ferries, senderos o alquilando un barco privado o yate. Dicho esto, los tours guiados suelen ofrecer mejor acceso e información local.",
+        "faq_tour_types_q": "¿Qué tipos de tours hay en las Whitsundays?",
+        "faq_tour_types_a": "Las opciones populares incluyen tours de snorkel y buceo, aventuras en velero, vuelos panorámicos, jet boat, charters de pesca y cruceros al atardecer.",
+        "faq_whitehaven_day_q": "¿Se puede visitar Whitehaven Beach en un día?",
+        "faq_whitehaven_day_a": "Por supuesto. Hay tours diarios desde Airlie Beach y Hamilton Island, incluyendo cruceros, hidroaviones y vuelos en helicóptero.",
+        "faq_charter_q": "¿Se puede alquilar un barco en las Whitsundays?",
+        "faq_charter_a": "Sí. Hay charters bareboat (auto-dirigido) y con tripulación. Se recomienda reservar con antelación, especialmente en temporada alta.",
+        "faq_families_q": "¿Son las Whitsundays adecuadas para familias con niños?",
+        "faq_families_a": "Absolutamente. Con playas tranquilas, encuentros con fauna, resorts familiares y tours seguros, es un destino ideal para todas las edades.",
+        "faq_young_old_q": "¿Hay tours para niños pequeños o viajeros mayores?",
+        "faq_young_old_a": "Sí – opciones de aguas tranquilas como Camira o Cruise Whitsundays son ideales para todas las edades y niveles de comodidad.",
+        "faq_reef_q": "¿Las Whitsundays forman parte de la Gran Barrera de Coral?",
+        "faq_reef_a": "Sí, las Whitsundays están dentro del Parque Marino de la Gran Barrera de Coral, ofreciendo fácil acceso a ecosistemas de arrecife costero y exterior.",
+        "faq_snorkelling_good_q": "¿Es bueno el snorkel en las Whitsundays?",
+        "faq_snorkelling_good_a": "Definitivamente. La región ofrece excelentes puntos de snorkel como Mantaray Bay, Chalkies Beach y Border Island, conocidos por sus vibrantes corales y vida marina.",
+        "faq_marine_life_q": "¿Qué vida marina se puede ver en las Whitsundays?",
+        "faq_marine_life_a": "Puede ver tortugas marinas, peces payaso, peces loro, mantarrayas, y durante la temporada de migración, incluso delfines o ballenas.",
+        "faq_stinger_suit_q": "¿Necesito un traje anti-medusas en las Whitsundays?",
+        "faq_stinger_suit_a": "Durante la temporada de medusas (octubre a mayo), se recomienda encarecidamente usar un traje protector al nadar o hacer snorkel para protegerse de las medusas.",
+        "faq_highlights_q": "¿Cuáles son las atracciones imprescindibles de las Whitsundays?",
+        "faq_highlights_a": "Los imprescindibles incluyen Whitehaven Beach, Hill Inlet Lookout, Gran Barrera de Coral, Heart Reef, Hamilton Island, Daydream Island y Airlie Beach Lagoon.",
+        "faq_overnight_q": "¿Se puede pasar la noche en una isla Whitsunday?",
+        "faq_overnight_a": "Sí, puede alojarse en islas como Hamilton Island, Daydream Island y Long Island. También hay camping en parques nacionales en islas selectas. Para disfrutar plenamente de la belleza natural de Airlie Beach y las Whitsundays, se recomienda pasar al menos cuatro días explorando.",
+        "faq_best_time_q": "¿Cuál es la mejor época para visitar las Whitsundays?",
+        "faq_best_time_a": "De mayo a octubre. Estos meses ofrecen cielos despejados, baja humedad y condiciones ideales para navegar, hacer snorkel y actividades de playa.",
+        "faq_book_advance_q": "¿Debo reservar los tours con antelación o al llegar?",
+        "faq_book_advance_a": "Algunos se agotan rápido – especialmente en temporada alta. Se recomienda reservar con antelación.",
+        "faq_weather_q": "¿Cómo es el clima en las Whitsundays?",
+        "faq_weather_a": "La región disfruta de un clima tropical con temperaturas cálidas todo el año. Se esperan máximas de 23°C en invierno y 31°C en verano.",
+        "faq_packing_q": "¿Qué debo llevar para unas vacaciones en las Whitsundays?",
+        "faq_packing_a": "Lo esencial: traje de baño, protector solar apto para arrecifes, sombrero, gafas de sol, ropa ligera, calzado para caminar, repelente de insectos y una botella de agua reutilizable.",
+        "faq_budget_q": "¿Hay formas económicas de visitar las Whitsundays?",
+        "faq_budget_a": "Sí. Tours mochileros, hostales, excursiones de un día y camping ofrecen buenas opciones para viajeros con presupuesto ajustado.",
+        "faq_insurance_q": "¿Necesito seguro de viaje para las Whitsundays?",
+        "faq_insurance_a": "Se recomienda encarecidamente un seguro de viaje, especialmente para cobertura de cancelaciones, interrupciones por clima y emergencias médicas."
       }
     };
     
@@ -20019,6 +20592,37 @@
       const tipsList = document.getElementById('newcomer-tips-list');
       if (tipsTitle) tipsTitle.innerHTML = dualNC(translations.tips_title, enTrans.tips_title);
       if (tipsList) tipsList.innerHTML = dualList(translations.tips_list, enTrans.tips_list);
+      
+      // FAQ Section
+      const faqTitle = document.getElementById('newcomer-faq-title');
+      if (faqTitle) faqTitle.innerHTML = dualNC(translations.faq_title, enTrans.faq_title);
+      
+      // FAQ category headers
+      const faqCatMap = {
+        'faq-cat-getting-here': 'faq_cat_getting_here',
+        'faq-cat-tours': 'faq_cat_tours',
+        'faq-cat-reef': 'faq_cat_reef',
+        'faq-cat-highlights': 'faq_cat_highlights',
+        'faq-cat-planning': 'faq_cat_planning'
+      };
+      Object.entries(faqCatMap).forEach(([elId, key]) => {
+        const el = document.getElementById(elId);
+        if (el) el.innerHTML = dualNC(translations[key], enTrans[key]);
+      });
+      
+      // FAQ questions and answers
+      document.querySelectorAll('#newcomer-faq-container .faq-q[data-faq]').forEach(el => {
+        const key = 'faq_' + el.getAttribute('data-faq');
+        if (translations[key]) {
+          el.innerHTML = dualNC(translations[key], enTrans[key]);
+        }
+      });
+      document.querySelectorAll('#newcomer-faq-container .faq-a[data-faq]').forEach(el => {
+        const key = 'faq_' + el.getAttribute('data-faq');
+        if (translations[key]) {
+          el.innerHTML = dualNC(translations[key], enTrans[key]);
+        }
+      });
       
       // CTA
       const ctaText = document.getElementById('newcomer-cta-text');
