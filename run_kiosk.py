@@ -310,7 +310,7 @@ def launch_chrome_kiosk():
         '--no-default-browser-check',              # Skip default browser check
         '--disable-popup-blocking',                # Allow our QR popups
         '--disable-prompt-on-repost',              # No repost warnings
-        '--force-device-scale-factor=1.5',              # Zoom to 150% (tuned for shop touchscreens)
+        '--force-device-scale-factor=0.5',              # 50% scale (accounts for Windows display scaling on shop screens)
         '--user-data-dir=' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile'),
     ]
     
