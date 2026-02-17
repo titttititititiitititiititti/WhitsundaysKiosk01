@@ -311,7 +311,7 @@ def launch_chrome_kiosk():
         '--disable-popup-blocking',                # Allow our QR popups
         '--disable-prompt-on-repost',              # No repost warnings
         '--high-dpi-support=1',                         # Enable high DPI support
-        '--force-device-scale-factor=0.7',              # Tuned for shop touchscreens (delete chrome_kiosk_profile/ to reset)
+        '--force-device-scale-factor=0.875',             # Tuned for shop touchscreens (profile auto-cleared on launch)
         '--user-data-dir=' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile'),
     ]
     
