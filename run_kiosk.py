@@ -315,6 +315,16 @@ def launch_chrome_kiosk():
         '--user-data-dir=' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile'),
     ]
     
+    # Always start with a fresh profile to avoid cached zoom/settings issues
+    profile_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile')
+    import shutil
+    if os.path.exists(profile_dir):
+        try:
+            shutil.rmtree(profile_dir)
+            log("[KIOSK] Cleared old Chrome profile (fresh start)")
+        except:
+            pass
+    
     try:
         chrome_process = subprocess.Popen(
             chrome_args,
