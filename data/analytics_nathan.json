@@ -1,33 +1,6 @@
 {
   "sessions": [
     {
-      "session_id": "session_90a25efee389_1770855180",
-      "account": "nathan",
-      "started_at": "2026-02-12T10:13:00.147797",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-02-12T10:13:00.147797",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "referrer": "http://127.0.0.1:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-12T10:15:00.168855",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-12T10:15:00.168855",
-      "duration_seconds": 120.021058
-    },
-    {
       "session_id": "session_4587b8cea364_1770855300",
       "account": "nathan",
       "started_at": "2026-02-12T10:15:00.530382",
@@ -28997,9 +28970,83 @@
       "chat_messages": [],
       "ended_at": "2026-02-17T09:26:01.485744",
       "duration_seconds": 732.425932
+    },
+    {
+      "session_id": "session_abf8ff6d361a_1771287076",
+      "account": "nathan",
+      "started_at": "2026-02-17T10:11:16.234334",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-17T10:11:16.234334",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-17T10:11:18.739860",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-17T10:11:21.004276",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-17T10:11:22.998376",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-17T10:11:27.024766",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-17T10:11:30.147919",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-17T10:11:31.722076",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-17T10:13:54.090895",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-17T10:13:54.090895",
+      "duration_seconds": 157.856561
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-17T09:26:01.486724"
+  "last_updated": "2026-02-17T10:16:02.563317"
 }
