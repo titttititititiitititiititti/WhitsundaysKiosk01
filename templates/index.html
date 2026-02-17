@@ -35427,6 +35427,89 @@
       });
     })();
   </script>
+
+  <!-- Kiosk Lockdown: prevent accidental exits on touchscreen kiosks -->
+  <script>
+    (function() {
+      // Block right-click context menu
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      
+      // Block common keyboard shortcuts that could break the kiosk
+      document.addEventListener('keydown', function(e) {
+        // Allow: F5 (refresh - useful), F12 only with Ctrl+Shift (dev tools for admin)
+        
+        // Block: Escape (exit fullscreen)
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: F11 (toggle fullscreen - confuses users)
+        if (e.key === 'F11') {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: Ctrl+W / Ctrl+F4 (close tab)
+        if ((e.ctrlKey && e.key === 'w') || (e.ctrlKey && e.key === 'F4')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: Ctrl+T (new tab) / Ctrl+N (new window)
+        if (e.ctrlKey && (e.key === 't' || e.key === 'n')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: Ctrl+L / Alt+D (address bar)
+        if ((e.ctrlKey && e.key === 'l') || (e.altKey && e.key === 'd')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: Alt+Left/Right (browser back/forward)
+        if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+          e.preventDefault();
+          return false;
+        }
+        
+        // Block: Backspace when not in an input (browser back)
+        if (e.key === 'Backspace' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+          e.preventDefault();
+          return false;
+        }
+      });
+      
+      // Prevent drag-and-drop (can expose file system dialogs)
+      document.addEventListener('dragover', function(e) { e.preventDefault(); });
+      document.addEventListener('drop', function(e) { e.preventDefault(); });
+      
+      // Prevent text selection on non-input elements (looks messy on kiosk)
+      document.addEventListener('selectstart', function(e) {
+        if (!['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+          e.preventDefault();
+        }
+      });
+      
+      // Prevent pinch zoom via touch events
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Prevent zoom via gesture events (Safari/some touch devices)
+      document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+      });
+      
+      console.log('🔒 Kiosk lockdown active - right-click, keyboard shortcuts, and zoom disabled');
+    })();
+  </script>
 </body>
 </html>
 

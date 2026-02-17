@@ -68,3 +68,6 @@ config/accounts/
 
 # ChromaDB embeddings database (local cache, shouldn't be synced)
 data/tour_embeddings/
+
+# Chrome kiosk mode profile (local to each machine)
+chrome_kiosk_profile/

@@ -19,6 +19,7 @@ import subprocess
 import sys
 import os
 import time
+import json
 from datetime import datetime
 
 # Configuration
@@ -27,10 +28,12 @@ MAX_RAPID_RESTARTS = 5  # Max restarts within RAPID_RESTART_WINDOW
 RAPID_RESTART_WINDOW = 60  # Seconds - if 5 restarts in 60s, wait longer
 UPDATE_CHECK_INTERVAL = 60  # Seconds between update checks
 LOG_FILE = 'logs/kiosk_runner.log'
+KIOSK_PORT = 5000
 
 # Track restart history and last update check
 restart_times = []
 last_update_check = 0
+chrome_process = None
 
 def log(message):
     """Log with timestamp to console and file"""
@@ -255,6 +258,86 @@ def check_rapid_restarts():
     restart_times.append(now)
     return False
 
+def find_chrome():
+    """Find Chrome executable on Windows"""
+    chrome_paths = [
+        os.path.expandvars(r'%ProgramFiles%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%LocalAppData%\Google\Chrome\Application\chrome.exe'),
+    ]
+    for path in chrome_paths:
+        if os.path.exists(path):
+            return path
+    return None
+
+def launch_chrome_kiosk():
+    """Launch Chrome in kiosk mode (fullscreen, no UI chrome, locked down)"""
+    global chrome_process
+    
+    chrome_path = find_chrome()
+    if not chrome_path:
+        log("[KIOSK] ⚠️ Chrome not found - please open http://localhost:5000 manually")
+        return
+    
+    # Kill any existing Chrome kiosk instances we launched
+    if chrome_process and chrome_process.poll() is None:
+        try:
+            chrome_process.terminate()
+            chrome_process.wait(timeout=5)
+        except:
+            pass
+    
+    kiosk_url = f'http://localhost:{KIOSK_PORT}'
+    
+    # Chrome kiosk flags - removes ALL browser UI
+    chrome_args = [
+        chrome_path,
+        f'--kiosk',                              # True kiosk mode - fullscreen, no chrome
+        f'--app={kiosk_url}',                     # App mode (no tabs/address bar)
+        '--disable-pinch',                         # No pinch zoom
+        '--overscroll-history-navigation=0',       # No swipe back/forward
+        '--disable-session-crashed-bubble',        # No "restore pages" dialog
+        '--noerrdialogs',                          # Suppress error dialogs
+        '--disable-infobars',                      # No info bars
+        '--disable-translate',                     # No translate bar
+        '--disable-features=TranslateUI',          # Extra translate disable
+        '--disable-extensions',                    # No extensions popup
+        '--disable-component-update',              # No update prompts
+        '--check-for-update-interval=31536000',    # Check updates once a year
+        '--autoplay-policy=no-user-gesture-required',  # Allow autoplay
+        '--disable-background-networking',         # Reduce background activity
+        '--no-first-run',                          # Skip first-run experience
+        '--no-default-browser-check',              # Skip default browser check
+        '--disable-popup-blocking',                # Allow our QR popups
+        '--disable-prompt-on-repost',              # No repost warnings
+        '--user-data-dir=' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile'),
+    ]
+    
+    try:
+        chrome_process = subprocess.Popen(
+            chrome_args,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        log(f"[KIOSK] ✅ Chrome launched in kiosk mode (PID: {chrome_process.pid})")
+        log(f"[KIOSK] 🔒 To exit: press Alt+F4 or Ctrl+Alt+Delete")
+    except Exception as e:
+        log(f"[KIOSK] ❌ Failed to launch Chrome: {e}")
+
+def should_launch_chrome():
+    """Check if we should auto-launch Chrome in kiosk mode"""
+    # Check instance config
+    instance_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'instance.json')
+    if os.path.exists(instance_file):
+        try:
+            with open(instance_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            # Default to True for kiosk deployments, can be disabled in config
+            return config.get('chrome_kiosk_mode', True)
+        except:
+            pass
+    return True  # Default: yes, launch in kiosk mode
+
 def run_flask_app():
     """Run the Flask app and return the exit code"""
     log("🚀 Starting Flask app...")
@@ -352,12 +435,17 @@ def run_flask_app():
                             # Quick connection test to verify server is listening
                             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                             sock.settimeout(2)
-                            result = sock.connect_ex(('127.0.0.1', 5000))
+                            result = sock.connect_ex(('127.0.0.1', KIOSK_PORT))
                             sock.close()
                             if result == 0:
-                                log("✅ Server is listening on port 5000 - ready to accept connections!")
+                                log(f"✅ Server is listening on port {KIOSK_PORT} - ready to accept connections!")
+                                
+                                # Auto-launch Chrome in kiosk mode
+                                if should_launch_chrome():
+                                    time.sleep(1)  # Brief pause for server to fully initialize
+                                    launch_chrome_kiosk()
                             else:
-                                log("⚠️ Server message printed but port 5000 not accessible")
+                                log(f"⚠️ Server message printed but port {KIOSK_PORT} not accessible")
                         except Exception as e:
                             log(f"⚠️ Could not verify server connection: {e}")
                 elif process.poll() is not None:
@@ -407,6 +495,13 @@ def run_flask_app():
                 process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 process.kill()
+        # Also close Chrome kiosk
+        if chrome_process and chrome_process.poll() is None:
+            try:
+                chrome_process.terminate()
+                log("[KIOSK] Chrome kiosk closed")
+            except:
+                pass
         return 'stop'
     except Exception as e:
         log(f"❌ Error running app: {e}")
