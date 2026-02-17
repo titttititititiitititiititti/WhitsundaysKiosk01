@@ -28,6 +28,18 @@ MAX_RAPID_RESTARTS = 5  # Max restarts within RAPID_RESTART_WINDOW
 RAPID_RESTART_WINDOW = 60  # Seconds - if 5 restarts in 60s, wait longer
 UPDATE_CHECK_INTERVAL = 60  # Seconds between update checks
 LOG_FILE = 'logs/kiosk_runner.log'
+
+# Snapshot of our own code at startup — used to detect if run_kiosk.py itself changed
+_SELF_PATH = os.path.abspath(__file__)
+def _self_hash():
+    """Hash of run_kiosk.py on disk (to detect self-updates)."""
+    try:
+        with open(_SELF_PATH, 'rb') as f:
+            return hashlib.md5(f.read()).hexdigest()
+    except:
+        return None
+
+_STARTUP_HASH = _self_hash()
 KIOSK_PORT = 5000
 
 # Track restart history and last update check
@@ -232,8 +244,27 @@ def pull_updates():
             log("[UPDATE] Restored instance.json")
         
         log("[UPDATE] ✅ Code updated successfully!")
-        log("[UPDATE] ⚠️ NOTE: run_kiosk.py updates require a manual restart to take effect")
-        log("[UPDATE] ⚠️ The current process is still running old code - please restart run_kiosk.py")
+        
+        # Check if run_kiosk.py itself was updated
+        new_hash = _self_hash()
+        if new_hash and new_hash != _STARTUP_HASH:
+            log("[UPDATE] 🔄 run_kiosk.py itself was updated — restarting runner process...")
+            # Kill Chrome so the new process can launch fresh
+            global chrome_process
+            if chrome_process and chrome_process.poll() is None:
+                try:
+                    chrome_process.terminate()
+                    chrome_process.wait(timeout=5)
+                    log("[UPDATE] Chrome closed for clean re-exec")
+                except:
+                    try:
+                        chrome_process.kill()
+                    except:
+                        pass
+            # Re-exec: replaces current process with a fresh run of the updated script
+            os.execv(sys.executable, [sys.executable] + sys.argv)
+            # Note: os.execv never returns — the process is replaced
+        
         return True
         
     except subprocess.TimeoutExpired:
