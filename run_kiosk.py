@@ -310,6 +310,8 @@ def launch_chrome_kiosk():
         '--no-default-browser-check',              # Skip default browser check
         '--disable-popup-blocking',                # Allow our QR popups
         '--disable-prompt-on-repost',              # No repost warnings
+        '--high-dpi-support=1',                         # Enable high DPI support
+        '--force-device-scale-factor=1',                # Force 100% DPI (ignore Windows scaling)
         '--user-data-dir=' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile'),
     ]
     
