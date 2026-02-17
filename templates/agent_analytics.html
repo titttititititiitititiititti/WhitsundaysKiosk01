@@ -291,7 +291,7 @@
             </span>
             <a href="/admin/agent" class="btn btn-secondary">← Dashboard</a>
             <a href="{{ url_for('agent_tides_page') }}" class="btn btn-secondary" style="background: rgba(0, 119, 182, 0.3); border-color: rgba(0, 180, 216, 0.4);">🌊 Tides</a>
-            <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh & Sync</button>
+            <button onclick="refreshAnalytics()" class="btn btn-primary">🔄 Refresh Data</button>
         </div>
     </div>
     
@@ -570,7 +570,7 @@
         async function refreshAnalytics() {
             const btn = document.getElementById('refresh-btn');
             const originalText = btn.textContent;
-            btn.textContent = '⏳ Syncing analytics...';
+            btn.textContent = '⏳ Pulling latest data...';
             btn.disabled = true;
             
             try {
@@ -578,11 +578,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    let msg = '✅ ';
-                    if (data.pushed && data.pulled) msg += 'Pushed & Pulled!';
-                    else if (data.pushed) msg += 'Pushed to cloud!';
-                    else if (data.pulled) msg += 'Pulled latest!';
-                    else msg += 'Already synced!';
+                    let msg = data.pulled ? '✅ New sessions pulled!' : '✅ Already up to date';
                     btn.textContent = msg;
                     setTimeout(() => location.reload(), 800);
                 } else {

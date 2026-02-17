@@ -9230,37 +9230,24 @@ def pull_analytics_only(account=None):
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Sync analytics with git: push local changes, pull from other devices, merge"""
+    """Pull latest analytics from other kiosks and merge into local view"""
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
-        pushed = False
-        pulled = False
-        
-        # Use the robust sync function (pull-merge-push) to sync all analytics
-        try:
-            sync_analytics_to_git()
-            pushed = True
-        except Exception as e:
-            print(f"[ANALYTICS REFRESH] Sync error: {e}")
-        
-        # Also do a targeted pull for this user's analytics (in case sync didn't cover it)
+        # Pull and merge remote analytics into local (shop kiosks push via their own sync loop)
         pulled = pull_analytics_only(username)
         
-        message = []
-        if pushed:
-            message.append('Analytics pushed to cloud')
         if pulled:
-            message.append('Latest analytics pulled and merged')
-        if not pushed and not pulled:
-            message.append('Analytics already synced')
+            message = 'Pulled latest sessions from other kiosks'
+        else:
+            message = 'Analytics already up to date'
         
         return jsonify({
             'success': True, 
-            'message': ' | '.join(message),
-            'pushed': pushed,
+            'message': message,
+            'pushed': False,
             'pulled': pulled
         })
             
