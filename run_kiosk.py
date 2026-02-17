@@ -284,6 +284,7 @@ def launch_chrome_kiosk():
         try:
             chrome_process.terminate()
             chrome_process.wait(timeout=5)
+            time.sleep(2)  # Let Windows fully release file locks on profile
         except:
             pass
     
@@ -319,11 +320,17 @@ def launch_chrome_kiosk():
     profile_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chrome_kiosk_profile')
     import shutil
     if os.path.exists(profile_dir):
-        try:
-            shutil.rmtree(profile_dir)
-            log("[KIOSK] Cleared old Chrome profile (fresh start)")
-        except:
-            pass
+        for attempt in range(3):
+            try:
+                shutil.rmtree(profile_dir)
+                log("[KIOSK] Cleared old Chrome profile (fresh start)")
+                break
+            except Exception as e:
+                if attempt < 2:
+                    log(f"[KIOSK] Profile cleanup attempt {attempt+1} failed, retrying in 2s...")
+                    time.sleep(2)
+                else:
+                    log(f"[KIOSK] ⚠️ Could not clear Chrome profile: {e} (using existing)")
     
     try:
         chrome_process = subprocess.Popen(
@@ -452,10 +459,13 @@ def run_flask_app():
                             if result == 0:
                                 log(f"✅ Server is listening on port {KIOSK_PORT} - ready to accept connections!")
                                 
-                                # Auto-launch Chrome in kiosk mode
-                                if should_launch_chrome():
+                                # Auto-launch Chrome in kiosk mode (only on first start)
+                                # On restarts (auto-updates), the existing Chrome auto-reconnects
+                                if should_launch_chrome() and (chrome_process is None or chrome_process.poll() is not None):
                                     time.sleep(1)  # Brief pause for server to fully initialize
                                     launch_chrome_kiosk()
+                                elif chrome_process and chrome_process.poll() is None:
+                                    log("[KIOSK] Chrome already running — it will auto-reconnect")
                             else:
                                 log(f"⚠️ Server message printed but port {KIOSK_PORT} not accessible")
                         except Exception as e:
