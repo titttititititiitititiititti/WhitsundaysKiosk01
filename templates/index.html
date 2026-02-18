@@ -34122,8 +34122,8 @@
       
       // Touch events
       document.addEventListener('touchend', function(e) {
-        // Don't trigger if touching buttons, interactive elements, or tides overlay
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card, #tides-overlay')) return;
+        // Don't trigger if touching buttons or interactive elements
+        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
         
         const touch = e.changedTouches[0];
         handleTap(touch.clientX, touch.clientY);
@@ -34131,8 +34131,8 @@
       
       // Mouse events (for testing on desktop)
       document.addEventListener('click', function(e) {
-        // Don't trigger if clicking buttons, interactive elements, or tides overlay
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card, #tides-overlay')) return;
+        // Don't trigger if clicking buttons or interactive elements
+        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
         
         handleTap(e.clientX, e.clientY);
       });
@@ -34557,10 +34557,16 @@
     </div>
   </div>
   
-  <!-- Tides Overlay (in-page, fully opaque so it looks like its own page) -->
-  <div id="tides-overlay" onclick="event.stopPropagation();" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999999;background:linear-gradient(135deg,#0a1628 0%,#0d2137 50%,#0a3055 100%);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif;">
+  <!-- Tides Overlay (in-page, video background shows through) -->
+  <style>
+    body.tides-open .page,
+    body.tides-open .weather-widget,
+    body.tides-open #main-splash-screen,
+    body.tides-open .global-header { visibility: hidden !important; }
+  </style>
+  <div id="tides-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999999;background:rgba(10,22,40,0.85);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif;">
     <!-- Header -->
-    <div style="background:rgba(0,0,0,0.3);padding:16px 30px;display:flex;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.1);">
+    <div style="background:rgba(0,0,0,0.4);padding:16px 30px;display:flex;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.1);">
       <div style="flex:1;"><button onclick="event.stopPropagation();closeTidesOverlay();" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;cursor:pointer;font-weight:600;font-size:0.95rem;font-family:inherit;">← Back</button></div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="Logo" style="height:55px;width:auto;object-fit:contain;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" onclick="event.stopPropagation();closeTidesOverlay();">
@@ -34576,6 +34582,7 @@
   window.openTidesOverlay = function() {
     var overlay = document.getElementById('tides-overlay');
     var content = document.getElementById('tides-overlay-content');
+    document.body.classList.add('tides-open');
     overlay.style.display = 'block';
     overlay.scrollTop = 0;
     content.innerHTML = '<div style="text-align:center;padding:80px 20px;"><div style="font-size:2em;margin-bottom:16px;">🌊</div><div style="color:rgba(255,255,255,0.6);font-size:1.1em;">Loading tide data...</div></div>';
@@ -34596,6 +34603,7 @@
 
   window.closeTidesOverlay = function() {
     document.getElementById('tides-overlay').style.display = 'none';
+    document.body.classList.remove('tides-open');
   };
 
   function renderTidesContent(el, data) {
