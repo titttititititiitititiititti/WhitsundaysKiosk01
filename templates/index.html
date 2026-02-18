@@ -188,23 +188,25 @@
         height: 65px !important;
       }
       
-      /* DESKTOP: Header buttons - uniform height for all mode buttons */
+      /* DESKTOP: Header buttons - uniform style for all mode buttons */
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header,
       .kiosk-header .map-view-btn-header,
       .kiosk-header .newcomer-info-btn-header {
-        padding: 4px 20px !important;
-        font-size: 1em !important;
-        min-width: 120px !important;
-        height: 52px !important;
-        min-height: 52px !important;
-        max-height: 52px !important;
+        padding: 4px 14px !important;
+        font-size: 0.95em !important;
+        min-width: 0 !important;
+        max-width: 180px !important;
+        height: auto !important;
+        min-height: 40px !important;
+        max-height: 56px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
         font-weight: 600 !important;
         cursor: pointer !important;
         display: inline-flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
@@ -213,22 +215,25 @@
         gap: 0 !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
-        line-height: 1.1 !important;
+        line-height: 1.15 !important;
+        white-space: nowrap !important;
       }
       
       /* Browse All Tours button - hidden by default, only shown via JS */
       .kiosk-header .browse-all-btn-header {
-        padding: 4px 20px !important;
-        font-size: 1em !important;
-        min-width: 120px !important;
-        height: 52px !important;
-        min-height: 52px !important;
-        max-height: 52px !important;
+        padding: 4px 14px !important;
+        font-size: 0.95em !important;
+        min-width: 0 !important;
+        max-width: 180px !important;
+        height: auto !important;
+        min-height: 40px !important;
+        max-height: 56px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
         font-weight: 600 !important;
         cursor: pointer !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
@@ -238,7 +243,8 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
         background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
-        line-height: 1.1 !important;
+        line-height: 1.15 !important;
+        white-space: nowrap !important;
         /* Hidden by default - JS shows it when coming from AI Assistant */
         display: none !important;
       }
@@ -2912,6 +2918,8 @@
       display: flex;
       gap: 16px;
       align-items: center;
+      max-width: calc(50% - 80px);
+      overflow: hidden;
     }
 
     .kiosk-header .header-left .quick-decision-btn-header,
@@ -2919,27 +2927,39 @@
     .kiosk-header .header-left .browse-all-btn-header,
     .kiosk-header .header-left .map-view-btn-header,
     .kiosk-header .header-left .newcomer-info-btn-header {
-      padding: 4px 20px !important;
-      font-size: 1em !important;
-      min-width: 120px !important;
+      padding: 4px 14px !important;
+      font-size: 0.95em !important;
+      min-width: 0 !important;
+      max-width: 180px !important;
       border-radius: 25px !important;
-      height: 52px !important;
-      min-height: 52px !important;
-      max-height: 52px !important;
+      height: auto !important;
+      min-height: 40px !important;
+      max-height: 56px !important;
       display: inline-flex !important;
+      flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       text-align: center !important;
       box-sizing: border-box !important;
       overflow: hidden !important;
-      line-height: 1.1 !important;
+      line-height: 1.15 !important;
+      white-space: nowrap !important;
     }
-    /* Allow dual-lang subtext to wrap inside header buttons */
+    /* Dual-lang subtext stacks below main text inside header buttons */
     .kiosk-header .header-left button .dual-lang-sub {
       display: block;
       white-space: nowrap;
       line-height: 1;
       margin-top: 1px;
+      font-size: 0.65em;
+      opacity: 0.8;
+    }
+    /* Prevent header-left buttons from reaching the center logo */
+    .tour-detail-page .kiosk-header .header-left,
+    .home-page .kiosk-header .header-left,
+    .video-question-page .kiosk-header .header-left {
+      max-width: calc(50% - 60px) !important;
+      overflow: hidden !important;
     }
     
     /* Hide Browse All Tours button on home page - we're already here! */
@@ -3043,7 +3063,7 @@
       top: 50%;
       transform: translate(-50%, -50%);
       height: 60px;
-      z-index: 1;
+      z-index: 3;
     }
     
     /* Desktop: Language/currency buttons on right */
@@ -6209,7 +6229,7 @@
       margin: 0 !important;
       height: 40px !important;
       width: auto !important;
-      z-index: 1 !important;
+      z-index: 3 !important;
     }
     
     .tour-detail-page .kiosk-header .header-left {
@@ -6218,6 +6238,8 @@
       top: 50% !important;
       transform: translateY(-50%) !important;
       z-index: 2 !important;
+      max-width: calc(50% - 60px) !important;
+      overflow: hidden !important;
     }
     
     .tour-detail-page .kiosk-header .header-right {
@@ -28479,7 +28501,8 @@
               console.log('✅ Active class added');
               
               // Update header buttons based on where we came from
-              // Rule: Always show exactly 2 buttons - hide the button for the mode we came from
+              // Rule: Show available buttons, hide the one for the mode we came from
+              // IMPORTANT: Never show a button whose mode is disabled
               const quickDecisionBtn = document.getElementById('detail-quick-decision-btn');
               const aiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
               const browseAllBtn = document.getElementById('detail-browse-all-btn');
@@ -28488,18 +28511,32 @@
               
               console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
               
+              // Helper: only show button if its mode is enabled
+              function showIfEnabled(btn, disabledClass) {
+                if (!btn) return;
+                if (disabledClass && document.body.classList.contains(disabledClass)) {
+                  btn.style.cssText = 'display:none!important;width:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;';
+                } else {
+                  btn.style.cssText = 'display: inline-flex !important;';
+                }
+              }
+              function hideBtn(btn) {
+                if (!btn) return;
+                btn.style.cssText = 'display:none!important;width:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;';
+              }
+              
               // Clear all mode classes first
               document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
               
-              // Always show Map View and Newcomer Info
+              // Always show Map View and Newcomer Info (if they exist)
               if (mapViewBtn) mapViewBtn.style.cssText = 'display: inline-flex !important;';
               if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display: inline-flex !important;';
               
               if (window.cameFromAIAssistant) {
                 console.log('🤖 Came from AI Assistant - show Quick Decision + Browse All, hide AI');
                 document.body.classList.add('came-from-ai');
+                showIfEnabled(quickDecisionBtn, 'quick-mode-disabled');
                 if (quickDecisionBtn) {
-                  quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
                   quickDecisionBtn.onclick = function(e) {
                     e.stopPropagation();
                     const tourDetailPage = document.querySelector('.page.tour-detail-page');
@@ -28511,11 +28548,9 @@
                     startQuickDecision();
                   };
                 }
-                if (aiAssistantBtn) {
-                  aiAssistantBtn.style.cssText = 'display: none !important;';
-                }
+                hideBtn(aiAssistantBtn);
+                showIfEnabled(browseAllBtn, 'browse-mode-disabled');
                 if (browseAllBtn) {
-                  browseAllBtn.style.cssText = 'display: inline-flex !important;';
                   browseAllBtn.classList.add('show-btn');
                   browseAllBtn.onclick = function(e) {
                     e.stopPropagation();
@@ -28532,11 +28567,9 @@
               } else if (window.cameFromQuickDecision) {
                 console.log('⚡ Came from Quick Decision - show AI + Browse All, hide Quick Decision');
                 document.body.classList.add('came-from-quick-decision');
-                if (quickDecisionBtn) {
-                  quickDecisionBtn.style.cssText = 'display: none !important;';
-                }
+                hideBtn(quickDecisionBtn);
+                showIfEnabled(aiAssistantBtn, 'ai-mode-disabled');
                 if (aiAssistantBtn) {
-                  aiAssistantBtn.style.cssText = 'display: inline-flex !important;';
                   aiAssistantBtn.onclick = function(e) {
                     e.stopPropagation();
                     const tourDetailPage = document.querySelector('.page.tour-detail-page');
@@ -28548,8 +28581,8 @@
                     openAIAssistant();
                   };
                 }
+                showIfEnabled(browseAllBtn, 'browse-mode-disabled');
                 if (browseAllBtn) {
-                  browseAllBtn.style.cssText = 'display: inline-flex !important;';
                   browseAllBtn.classList.add('show-btn');
                   browseAllBtn.onclick = function(e) {
                     e.stopPropagation();
@@ -28566,18 +28599,16 @@
                 // Default: from Browse All Tours - show Quick Decision + AI, hide Browse All
                 console.log('📁 Came from Browse All Tours - show Quick Decision + AI, hide Browse All');
                 document.body.classList.add('came-from-browse-all');
+                showIfEnabled(quickDecisionBtn, 'quick-mode-disabled');
                 if (quickDecisionBtn) {
-                  quickDecisionBtn.style.cssText = 'display: inline-flex !important;';
                   quickDecisionBtn.onclick = function() { startQuickDecision(); };
                 }
+                showIfEnabled(aiAssistantBtn, 'ai-mode-disabled');
                 if (aiAssistantBtn) {
-                  aiAssistantBtn.style.cssText = 'display: inline-flex !important;';
                   aiAssistantBtn.onclick = function() { openAIAssistant(); };
                 }
-                if (browseAllBtn) {
-                  browseAllBtn.style.cssText = 'display: none !important;';
-                  browseAllBtn.classList.remove('show-btn');
-                }
+                hideBtn(browseAllBtn);
+                if (browseAllBtn) browseAllBtn.classList.remove('show-btn');
               }
             }, 50);
             
