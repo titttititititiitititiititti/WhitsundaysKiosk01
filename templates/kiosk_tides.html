@@ -19,17 +19,7 @@
             color: #fff;
         }
         
-        /* ===== SCREEN ROTATION ===== */
-        body.rotate-90 {
-            transform: rotate(90deg);
-            transform-origin: top left;
-            width: 100vh;
-            height: 100vw;
-            position: fixed;
-            top: 0;
-            left: 100vw;
-            overflow: auto;
-        }
+        /* ===== SCREEN ROTATION (180° flip only) ===== */
         body.rotate-180 {
             transform: rotate(180deg);
             transform-origin: center center;
@@ -38,35 +28,36 @@
             height: 100vh;
             overflow: auto;
         }
-        body.rotate-270 {
-            transform: rotate(270deg);
-            transform-origin: top left;
-            width: 100vh;
-            height: 100vw;
-            position: fixed;
-            top: 100vh;
-            left: 0;
-            overflow: auto;
-        }
         
         .header {
             background: rgba(0, 0, 0, 0.3);
             padding: 16px 30px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
         
-        .header-left {
+        .header-side {
+            flex: 1;
             display: flex;
             align-items: center;
-            gap: 16px;
+        }
+        
+        .header-side.right {
+            justify-content: flex-end;
+        }
+        
+        .header-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
         }
         
         .header-logo {
-            height: 50px;
+            height: 55px;
             width: auto;
             object-fit: contain;
             cursor: pointer;
@@ -78,9 +69,10 @@
             transform: scale(1.05);
         }
         
-        .header h1 {
-            font-size: 1.4em;
-            font-weight: 700;
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
         }
         
         .back-btn {
@@ -468,13 +460,16 @@
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
+        <div class="header-side">
+            <a href="/" class="back-btn">← Back</a>
+        </div>
+        <div class="header-center">
             <a href="/" title="Back to Kiosk">
                 <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="Logo" class="header-logo">
             </a>
-            <h1>🌊 Tide Times</h1>
+            <span class="header-title">🌊 Tide Times</span>
         </div>
-        <a href="/" class="back-btn">← Back to Kiosk</a>
+        <div class="header-side right"></div>
     </div>
     
     <div class="container">
@@ -604,36 +599,30 @@
     </div>
     
     <script>
-    // ===== SCREEN ROTATION (shared with main kiosk) =====
-    const ROTATION_STEPS = [0, 90, 180, 270];
-    let currentRotationIndex = 0;
+    // ===== SCREEN ROTATION (180° flip only, shared with main kiosk) =====
+    let isFlipped = false;
     const CORNER_SIZE = 100;
     
-    // Restore saved rotation
+    // Restore saved rotation (and clean up old 90/270 values)
     (function() {
         const saved = localStorage.getItem('kiosk_rotation');
-        if (saved !== null) {
-            const deg = parseInt(saved);
-            const idx = ROTATION_STEPS.indexOf(deg);
-            if (idx !== -1) {
-                currentRotationIndex = idx;
-                applyRotation(deg);
-            }
+        if (saved === '90' || saved === '270') {
+            localStorage.setItem('kiosk_rotation', '0');
+        } else if (saved === '180') {
+            isFlipped = true;
+            document.body.classList.add('rotate-180');
         }
     })();
     
-    function applyRotation(deg) {
-        document.body.classList.remove('rotate-90', 'rotate-180', 'rotate-270');
-        if (deg !== 0) {
-            document.body.classList.add('rotate-' + deg);
+    function toggleRotation() {
+        isFlipped = !isFlipped;
+        if (isFlipped) {
+            document.body.classList.add('rotate-180');
+            localStorage.setItem('kiosk_rotation', '180');
+        } else {
+            document.body.classList.remove('rotate-180');
+            localStorage.setItem('kiosk_rotation', '0');
         }
-    }
-    
-    function rotateScreen() {
-        currentRotationIndex = (currentRotationIndex + 1) % ROTATION_STEPS.length;
-        const deg = ROTATION_STEPS[currentRotationIndex];
-        applyRotation(deg);
-        localStorage.setItem('kiosk_rotation', deg);
         
         // Visual feedback
         const existing = document.getElementById('rotation-feedback');
@@ -641,13 +630,13 @@
         const fb = document.createElement('div');
         fb.id = 'rotation-feedback';
         fb.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:20px 40px;border-radius:16px;font-size:1.5em;font-weight:600;z-index:9999999;pointer-events:none;font-family:Poppins,sans-serif;backdrop-filter:blur(10px);';
-        fb.textContent = deg === 0 ? '🔄 0° (Normal)' : '🔄 ' + deg + '°';
+        fb.textContent = isFlipped ? '🔄 Flipped 180°' : '🔄 Normal';
         document.body.appendChild(fb);
         setTimeout(() => { fb.style.transition = 'opacity 0.5s'; fb.style.opacity = '0'; }, 800);
         setTimeout(() => fb.remove(), 1400);
     }
     
-    // Corner tap detection — tap any corner to rotate
+    // Corner tap detection — tap any corner to flip 180°
     document.addEventListener('click', function(e) {
         const x = e.clientX;
         const y = e.clientY;
@@ -656,9 +645,10 @@
         
         const inCorner = (x < CORNER_SIZE || x > w - CORNER_SIZE) && (y < CORNER_SIZE || y > h - CORNER_SIZE);
         if (inCorner) {
-            rotateScreen();
+            toggleRotation();
         }
     });
     </script>
 </body>
 </html>
+
