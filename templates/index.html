@@ -19373,6 +19373,7 @@
       
       let touchStartX = 0;
       let touchStartY = 0;
+      let touchStartTime = 0;
       let currentTranslateX = 0;
       let isSwiping = false;
       let isHorizontalSwipe = false;
@@ -19449,6 +19450,7 @@
         
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
         currentTranslateX = 0;
         isSwiping = true;
         isHorizontalSwipe = false;
@@ -19490,12 +19492,15 @@
         
         const elements = getSwipeElements();
         const screenWidth = window.innerWidth;
-        const threshold = screenWidth * 0.25; // 25% of screen width
+        const threshold = screenWidth * 0.08; // 8% of screen width — sensitive for large kiosk screens
+        const elapsed = Date.now() - touchStartTime;
+        const velocity = Math.abs(currentTranslateX) / Math.max(elapsed, 1); // px per ms
+        const isFlick = velocity > 0.4 && Math.abs(currentTranslateX) > 30; // fast flick with minimal distance
         
         // Add transition for smooth snap/fling
         setTransition(elements, 'transform 0.3s ease-out');
         
-        if (Math.abs(currentTranslateX) > threshold) {
+        if (Math.abs(currentTranslateX) > threshold || isFlick) {
           if (currentTranslateX > 0) {
             // Swipe right past threshold = Book
             console.log('👉 Swipe right - Book');
