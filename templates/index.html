@@ -45,11 +45,7 @@
     /* ===== SCREEN ROTATION (180° flip for upside-down kiosk screens) ===== */
     body.rotate-180 {
       transform: rotate(180deg);
-      transform-origin: center center;
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      overflow: auto;
+      transform-origin: 50vw 50vh;
     }
     
     body {
@@ -13503,6 +13499,13 @@
       // Only restart if user returns to tab
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden && video.paused) {
+          video.play().catch(() => {});
+        }
+      });
+      
+      // Resume video when navigating back (bfcache restore from tides page etc.)
+      window.addEventListener('pageshow', (e) => {
+        if (e.persisted && video.paused) {
           video.play().catch(() => {});
         }
       });
