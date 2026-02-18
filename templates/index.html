@@ -188,18 +188,15 @@
         height: 65px !important;
       }
       
-      /* DESKTOP: Header buttons - uniform style for all mode buttons */
+      /* DESKTOP: Header buttons - auto-size to fit text, subtext stacks below */
       .kiosk-header .quick-decision-btn-header,
       .kiosk-header .ai-assistant-btn-header,
       .kiosk-header .map-view-btn-header,
       .kiosk-header .newcomer-info-btn-header {
-        padding: 4px 14px !important;
-        font-size: 0.95em !important;
-        min-width: 0 !important;
-        max-width: 180px !important;
+        padding: 4px 12px !important;
+        font-size: 0.85em !important;
         height: auto !important;
-        min-height: 40px !important;
-        max-height: 56px !important;
+        min-height: 36px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
@@ -211,7 +208,6 @@
         justify-content: center !important;
         text-align: center !important;
         box-sizing: border-box !important;
-        overflow: hidden !important;
         gap: 0 !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
@@ -221,13 +217,10 @@
       
       /* Browse All Tours button - hidden by default, only shown via JS */
       .kiosk-header .browse-all-btn-header {
-        padding: 4px 14px !important;
-        font-size: 0.95em !important;
-        min-width: 0 !important;
-        max-width: 180px !important;
+        padding: 4px 12px !important;
+        font-size: 0.85em !important;
         height: auto !important;
-        min-height: 40px !important;
-        max-height: 56px !important;
+        min-height: 36px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
@@ -238,7 +231,6 @@
         justify-content: center !important;
         text-align: center !important;
         box-sizing: border-box !important;
-        overflow: hidden !important;
         gap: 0 !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         transition: transform 0.2s, box-shadow 0.2s !important;
@@ -2927,21 +2919,17 @@
     .kiosk-header .header-left .browse-all-btn-header,
     .kiosk-header .header-left .map-view-btn-header,
     .kiosk-header .header-left .newcomer-info-btn-header {
-      padding: 4px 14px !important;
-      font-size: 0.95em !important;
-      min-width: 0 !important;
-      max-width: 180px !important;
+      padding: 4px 12px !important;
+      font-size: 0.85em !important;
       border-radius: 25px !important;
       height: auto !important;
-      min-height: 40px !important;
-      max-height: 56px !important;
+      min-height: 36px !important;
       display: inline-flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       text-align: center !important;
       box-sizing: border-box !important;
-      overflow: hidden !important;
       line-height: 1.15 !important;
       white-space: nowrap !important;
     }
@@ -2951,15 +2939,15 @@
       white-space: nowrap;
       line-height: 1;
       margin-top: 1px;
-      font-size: 0.65em;
-      opacity: 0.8;
+      font-size: 0.7em;
+      opacity: 0.75;
     }
     /* Prevent header-left buttons from reaching the center logo */
     .tour-detail-page .kiosk-header .header-left,
     .home-page .kiosk-header .header-left,
     .video-question-page .kiosk-header .header-left {
       max-width: calc(50% - 60px) !important;
-      overflow: hidden !important;
+      overflow: visible !important;
     }
     
     /* Hide Browse All Tours button on home page - we're already here! */
@@ -16590,6 +16578,16 @@
       // Update current language
       currentLanguage = langCode;
       
+      // Auto-switch currency to match language (same as switchLanguage)
+      const mappedCurr = (typeof langCurrencyMap !== 'undefined' ? langCurrencyMap[langCode] : null) ||
+                         (typeof languageCurrencyMap !== 'undefined' ? languageCurrencyMap[langCode] : null) || 'AUD';
+      if (typeof switchCurrency === 'function') {
+        switchCurrency(mappedCurr);
+        document.querySelectorAll('[id*="currency-btn"]').forEach(btn => { btn.textContent = mappedCurr; });
+      } else {
+        currentCurrency = mappedCurr;
+      }
+      
       // Update URL without reload
       const url = new URL(window.location.href);
       url.searchParams.set('lang', langCode);
@@ -29359,8 +29357,10 @@
     
     // Wrapper function for mobile menu currency change
     function changeCurrency(currencyCode) {
-      // Update display
-      currentCurrency = currencyCode;
+      // Use the full switchCurrency which saves to localStorage AND updates all visible prices
+      switchCurrency(currencyCode);
+      
+      // Also update any extra display elements
       if (document.getElementById('currency-btn-text')) {
         document.getElementById('currency-btn-text').textContent = currencyCode;
       }
@@ -29372,6 +29372,11 @@
       if (typeof updateHeaderChips === 'function') {
         updateHeaderChips();
       }
+      
+      // Update all currency button displays across all pages
+      document.querySelectorAll('[id*="currency-btn"]').forEach(btn => {
+        btn.textContent = currencyCode;
+      });
       
       // Close currency menu
       const menu = document.getElementById('currency-menu');
@@ -30902,6 +30907,12 @@
       }
       
       updateCurrencyDisplay();
+      
+      // Update ALL currency buttons across all page headers
+      document.querySelectorAll('[id*="currency-btn"]').forEach(btn => {
+        btn.textContent = currentCurrency;
+      });
+      
       console.log('✓ Currency system initialized:', currentCurrency);
     }
     

@@ -667,9 +667,78 @@
       "chat_messages": [],
       "ended_at": "2026-02-18T15:19:47.614836",
       "duration_seconds": 54.478589
+    },
+    {
+      "session_id": "session_e560a0974319_1771393531",
+      "account": "nathan",
+      "started_at": "2026-02-18T15:45:31.448809",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T15:45:31.448809",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T15:45:32.846056",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T15:45:33.911448",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T15:47:43.960891",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T15:48:04.074453",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T15:48:04.443887",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T15:48:33.269768",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T15:50:44.976047",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T15:50:44.976047",
+      "duration_seconds": 313.527238
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-18T15:19:47.615856"
+  "last_updated": "2026-02-18T15:50:44.981952"
 }
