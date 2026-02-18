@@ -32625,6 +32625,40 @@
       window.openMapView();
     };
     
+    // ========== ROTATION-AWARE COORDINATE HELPERS ==========
+    // When the screen is rotated 180°, viewport (touch) coordinates don't match CSS positions.
+    // These helpers convert between viewport coords and CSS coords so gestures work correctly.
+    function isScreenRotated() {
+      return document.documentElement.classList.contains('screen-rotated');
+    }
+    // Convert viewport (clientX/clientY) to CSS coordinate space
+    function viewportToCSS(vx, vy) {
+      if (isScreenRotated()) {
+        return { x: window.innerWidth - vx, y: window.innerHeight - vy };
+      }
+      return { x: vx, y: vy };
+    }
+    // Get element bounding rect in CSS coordinate space
+    function cssRect(el) {
+      var r = el.getBoundingClientRect();
+      if (isScreenRotated()) {
+        return { left: window.innerWidth - r.right, top: window.innerHeight - r.bottom,
+                 right: window.innerWidth - r.left, bottom: window.innerHeight - r.top,
+                 width: r.width, height: r.height };
+      }
+      return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
+    }
+    // Convert viewport touch position to canvas pixel coordinates
+    function canvasCoord(clientX, clientY, canvas) {
+      var rect = canvas.getBoundingClientRect();
+      var vx = clientX - rect.left;
+      var vy = clientY - rect.top;
+      if (isScreenRotated()) {
+        return { x: canvas.width - vx, y: canvas.height - vy };
+      }
+      return { x: vx, y: vy };
+    }
+
     // ========== MAP DRAWING FUNCTIONALITY ==========
     let mapDrawingEnabled = false;
     let mapDrawingContext = null;
@@ -32642,6 +32676,7 @@
       
       if (mapDrawingEnabled) {
         canvas.style.pointerEvents = 'auto';
+        canvas.style.touchAction = 'none';
         if (drawTools) drawTools.style.display = 'flex';
         if (toggleBtn) {
           toggleBtn.style.borderColor = '#ff4444';
@@ -32650,6 +32685,7 @@
         initMapDrawingCanvas();
       } else {
         canvas.style.pointerEvents = 'none';
+        canvas.style.touchAction = '';
         if (drawTools) drawTools.style.display = 'none';
         if (toggleBtn) {
           toggleBtn.style.borderColor = '#4CAF50';
@@ -32683,48 +32719,44 @@
       canvas.onmousedown = function(e) {
         if (!mapDrawingEnabled) return;
         isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        lastDrawX = e.clientX - rect.left;
-        lastDrawY = e.clientY - rect.top;
+        var c = canvasCoord(e.clientX, e.clientY, canvas);
+        lastDrawX = c.x;
+        lastDrawY = c.y;
       };
       
       canvas.onmousemove = function(e) {
         if (!isDrawing || !mapDrawingEnabled) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        drawLine(lastDrawX, lastDrawY, x, y);
-        lastDrawX = x;
-        lastDrawY = y;
+        var c = canvasCoord(e.clientX, e.clientY, canvas);
+        drawLine(lastDrawX, lastDrawY, c.x, c.y);
+        lastDrawX = c.x;
+        lastDrawY = c.y;
       };
       
       canvas.onmouseup = function() { isDrawing = false; };
       canvas.onmouseleave = function() { isDrawing = false; };
       
-      // Touch events
-      canvas.ontouchstart = function(e) {
+      // Touch events — use addEventListener with { passive: false } so preventDefault works
+      canvas.addEventListener('touchstart', function(e) {
         if (!mapDrawingEnabled) return;
         e.preventDefault();
         isDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        lastDrawX = touch.clientX - rect.left;
-        lastDrawY = touch.clientY - rect.top;
-      };
+        var touch = e.touches[0];
+        var c = canvasCoord(touch.clientX, touch.clientY, canvas);
+        lastDrawX = c.x;
+        lastDrawY = c.y;
+      }, { passive: false });
       
-      canvas.ontouchmove = function(e) {
+      canvas.addEventListener('touchmove', function(e) {
         if (!isDrawing || !mapDrawingEnabled) return;
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        drawLine(lastDrawX, lastDrawY, x, y);
-        lastDrawX = x;
-        lastDrawY = y;
-      };
+        var touch = e.touches[0];
+        var c = canvasCoord(touch.clientX, touch.clientY, canvas);
+        drawLine(lastDrawX, lastDrawY, c.x, c.y);
+        lastDrawX = c.x;
+        lastDrawY = c.y;
+      }, { passive: false });
       
-      canvas.ontouchend = function() { isDrawing = false; };
+      canvas.addEventListener('touchend', function() { isDrawing = false; });
     }
     
     function drawLine(x1, y1, x2, y2) {
@@ -32808,6 +32840,7 @@
       
       if (googleMapDrawingEnabled) {
         canvas.style.pointerEvents = 'auto';
+        canvas.style.touchAction = 'none';
         if (drawTools) drawTools.style.display = 'flex';
         if (toggleBtn) {
           toggleBtn.style.borderColor = '#ff4444';
@@ -32816,6 +32849,7 @@
         initGoogleMapDrawingCanvas();
       } else {
         canvas.style.pointerEvents = 'none';
+        canvas.style.touchAction = '';
         if (drawTools) drawTools.style.display = 'none';
         if (toggleBtn) {
           toggleBtn.style.borderColor = '#4CAF50';
@@ -32849,48 +32883,44 @@
       canvas.onmousedown = function(e) {
         if (!googleMapDrawingEnabled) return;
         isGoogleDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        lastGoogleDrawX = e.clientX - rect.left;
-        lastGoogleDrawY = e.clientY - rect.top;
+        var c = canvasCoord(e.clientX, e.clientY, canvas);
+        lastGoogleDrawX = c.x;
+        lastGoogleDrawY = c.y;
       };
       
       canvas.onmousemove = function(e) {
         if (!isGoogleDrawing || !googleMapDrawingEnabled) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        drawGoogleLine(lastGoogleDrawX, lastGoogleDrawY, x, y);
-        lastGoogleDrawX = x;
-        lastGoogleDrawY = y;
+        var c = canvasCoord(e.clientX, e.clientY, canvas);
+        drawGoogleLine(lastGoogleDrawX, lastGoogleDrawY, c.x, c.y);
+        lastGoogleDrawX = c.x;
+        lastGoogleDrawY = c.y;
       };
       
       canvas.onmouseup = function() { isGoogleDrawing = false; };
       canvas.onmouseleave = function() { isGoogleDrawing = false; };
       
-      // Touch events
-      canvas.ontouchstart = function(e) {
+      // Touch events — use addEventListener with { passive: false } so preventDefault works
+      canvas.addEventListener('touchstart', function(e) {
         if (!googleMapDrawingEnabled) return;
         e.preventDefault();
         isGoogleDrawing = true;
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        lastGoogleDrawX = touch.clientX - rect.left;
-        lastGoogleDrawY = touch.clientY - rect.top;
-      };
+        var touch = e.touches[0];
+        var c = canvasCoord(touch.clientX, touch.clientY, canvas);
+        lastGoogleDrawX = c.x;
+        lastGoogleDrawY = c.y;
+      }, { passive: false });
       
-      canvas.ontouchmove = function(e) {
+      canvas.addEventListener('touchmove', function(e) {
         if (!isGoogleDrawing || !googleMapDrawingEnabled) return;
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        drawGoogleLine(lastGoogleDrawX, lastGoogleDrawY, x, y);
-        lastGoogleDrawX = x;
-        lastGoogleDrawY = y;
-      };
+        var touch = e.touches[0];
+        var c = canvasCoord(touch.clientX, touch.clientY, canvas);
+        drawGoogleLine(lastGoogleDrawX, lastGoogleDrawY, c.x, c.y);
+        lastGoogleDrawX = c.x;
+        lastGoogleDrawY = c.y;
+      }, { passive: false });
       
-      canvas.ontouchend = function() { isGoogleDrawing = false; };
+      canvas.addEventListener('touchend', function() { isGoogleDrawing = false; });
     }
     
     function drawGoogleLine(x1, y1, x2, y2) {
@@ -33058,6 +33088,7 @@
       }
       
       // ---- SINGLE-FINGER DRAG (MOVE) ----
+      // Uses viewportToCSS/cssRect helpers so drag works correctly when screen is rotated 180°
       let isDragging = false;
       let dragOffsetX = 0, dragOffsetY = 0;
       
@@ -33065,8 +33096,10 @@
       wrapper.addEventListener('mousedown', function(e) {
         if (e.target === resizeHandle || e.target === removeBtn) return;
         isDragging = true;
-        dragOffsetX = e.clientX - wrapper.getBoundingClientRect().left;
-        dragOffsetY = e.clientY - wrapper.getBoundingClientRect().top;
+        var pos = viewportToCSS(e.clientX, e.clientY);
+        var wRect = cssRect(wrapper);
+        dragOffsetX = pos.x - wRect.left;
+        dragOffsetY = pos.y - wRect.top;
         wrapper.style.zIndex = '10';
         wrapper.style.boxShadow = '0 10px 40px rgba(0,0,0,0.8)';
         e.preventDefault();
@@ -33074,9 +33107,10 @@
       
       document.addEventListener('mousemove', function(e) {
         if (!isDragging) return;
-        const containerRect = container.getBoundingClientRect();
-        wrapper.style.left = (e.clientX - containerRect.left - dragOffsetX) + 'px';
-        wrapper.style.top = (e.clientY - containerRect.top - dragOffsetY) + 'px';
+        var pos = viewportToCSS(e.clientX, e.clientY);
+        var cRect = cssRect(container);
+        wrapper.style.left = (pos.x - cRect.left - dragOffsetX) + 'px';
+        wrapper.style.top = (pos.y - cRect.top - dragOffsetY) + 'px';
       });
       
       document.addEventListener('mouseup', function() {
@@ -33109,11 +33143,13 @@
           e.preventDefault();
         } else if (e.touches.length === 1 && !isPinching) {
           // One finger: drag
-          if (e.target === resizeHandle) return; // let resize handle do its thing
+          if (e.target === resizeHandle) return;
           isDragging = true;
-          const touch = e.touches[0];
-          dragOffsetX = touch.clientX - wrapper.getBoundingClientRect().left;
-          dragOffsetY = touch.clientY - wrapper.getBoundingClientRect().top;
+          var touch = e.touches[0];
+          var pos = viewportToCSS(touch.clientX, touch.clientY);
+          var wRect = cssRect(wrapper);
+          dragOffsetX = pos.x - wRect.left;
+          dragOffsetY = pos.y - wRect.top;
           wrapper.style.zIndex = '10';
           wrapper.style.boxShadow = '0 10px 40px rgba(0,0,0,0.8)';
           e.preventDefault();
@@ -33126,7 +33162,7 @@
           const newDist = getTouchDistance(e.touches[0], e.touches[1]);
           const newAngle = getTouchAngle(e.touches[0], e.touches[1]);
           
-          // Scale based on pinch distance
+          // Scale based on pinch distance (distance is rotation-invariant)
           const scaleRatio = newDist / pinchStartDist;
           currentScale = Math.max(0.3, Math.min(5, pinchStartScale * scaleRatio));
           
@@ -33138,10 +33174,11 @@
           e.preventDefault();
         } else if (e.touches.length === 1 && isDragging && !isPinching) {
           // Single-finger drag
-          const touch = e.touches[0];
-          const containerRect = container.getBoundingClientRect();
-          wrapper.style.left = (touch.clientX - containerRect.left - dragOffsetX) + 'px';
-          wrapper.style.top = (touch.clientY - containerRect.top - dragOffsetY) + 'px';
+          var touch = e.touches[0];
+          var pos = viewportToCSS(touch.clientX, touch.clientY);
+          var cRect = cssRect(container);
+          wrapper.style.left = (pos.x - cRect.left - dragOffsetX) + 'px';
+          wrapper.style.top = (pos.y - cRect.top - dragOffsetY) + 'px';
           e.preventDefault();
         }
       }, { passive: false });
@@ -33163,8 +33200,9 @@
       
       resizeHandle.addEventListener('mousedown', function(e) {
         isResizing = true;
-        resizeStartX = e.clientX;
-        resizeStartY = e.clientY;
+        var pos = viewportToCSS(e.clientX, e.clientY);
+        resizeStartX = pos.x;
+        resizeStartY = pos.y;
         startW = wrapper.offsetWidth;
         startH = wrapper.offsetHeight;
         e.preventDefault();
@@ -33173,8 +33211,9 @@
       
       document.addEventListener('mousemove', function(e) {
         if (!isResizing) return;
-        const dw = e.clientX - resizeStartX;
-        const dh = e.clientY - resizeStartY;
+        var pos = viewportToCSS(e.clientX, e.clientY);
+        const dw = pos.x - resizeStartX;
+        const dh = pos.y - resizeStartY;
         wrapper.style.width = Math.max(80, startW + dw) + 'px';
         wrapper.style.height = Math.max(60, startH + dh) + 'px';
       });
@@ -33186,9 +33225,10 @@
       // Touch resize via handle (single finger on handle)
       resizeHandle.addEventListener('touchstart', function(e) {
         isResizing = true;
-        const touch = e.touches[0];
-        resizeStartX = touch.clientX;
-        resizeStartY = touch.clientY;
+        var touch = e.touches[0];
+        var pos = viewportToCSS(touch.clientX, touch.clientY);
+        resizeStartX = pos.x;
+        resizeStartY = pos.y;
         startW = wrapper.offsetWidth;
         startH = wrapper.offsetHeight;
         e.preventDefault();
@@ -33197,9 +33237,10 @@
       
       resizeHandle.addEventListener('touchmove', function(e) {
         if (!isResizing) return;
-        const touch = e.touches[0];
-        const dw = touch.clientX - resizeStartX;
-        const dh = touch.clientY - resizeStartY;
+        var touch = e.touches[0];
+        var pos = viewportToCSS(touch.clientX, touch.clientY);
+        const dw = pos.x - resizeStartX;
+        const dh = pos.y - resizeStartY;
         wrapper.style.width = Math.max(80, startW + dw) + 'px';
         wrapper.style.height = Math.max(60, startH + dh) + 'px';
         e.preventDefault();
@@ -33281,12 +33322,13 @@
             
             const container = document.getElementById('map-placed-images');
             if (container) {
-              const rect = container.getBoundingClientRect();
               const lastTouch = e.changedTouches[0];
-              const x = lastTouch.clientX - rect.left;
-              const y = lastTouch.clientY - rect.top;
+              const pos = viewportToCSS(lastTouch.clientX, lastTouch.clientY);
+              const cRect = cssRect(container);
+              const x = pos.x - cRect.left;
+              const y = pos.y - cRect.top;
               
-              if (y > 0 && y < rect.height && x > 0 && x < rect.width) {
+              if (y > 0 && y < cRect.height && x > 0 && x < cRect.width) {
                 placeImageOnMap(dragSrc, x, y);
               }
             }
@@ -33355,10 +33397,11 @@
             // Dragged: place image on map
             const container = document.getElementById('map-placed-images');
             if (container) {
-              const rect = container.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const y = e.clientY - rect.top;
-              if (y > 0 && y < rect.height && x > 0 && x < rect.width) {
+              const pos = viewportToCSS(e.clientX, e.clientY);
+              const cRect = cssRect(container);
+              const x = pos.x - cRect.left;
+              const y = pos.y - cRect.top;
+              if (y > 0 && y < cRect.height && x > 0 && x < cRect.width) {
                 placeImageOnMap(dragSrc, x, y);
               }
             }
@@ -33367,8 +33410,7 @@
             // Click (no drag): place at center
             const container = document.getElementById('map-placed-images');
             if (container) {
-              const rect = container.getBoundingClientRect();
-              placeImageOnMap(dragSrc, rect.width / 2, rect.height / 2);
+              placeImageOnMap(dragSrc, container.offsetWidth / 2, container.offsetHeight / 2);
             }
           }
           
@@ -33380,6 +33422,87 @@
       }
     })();
     
+    // ---- Gallery handle: TOUCH DRAG to open/close ----
+    (function() {
+      var gallery = null;
+      var handle = null;
+      var startY = 0;
+      var startTranslateY = 0;
+      var galleryFullHeight = 0;
+      var handleHeight = 60;
+      var dragging = false;
+      var dragThreshold = 10;
+      var hasDragged = false;
+
+      function getGalleryTranslateY() {
+        var tf = gallery.style.transform;
+        // translateY(0) = open, translateY(calc(100% - 60px)) = closed
+        if (tf === 'translateY(0px)' || tf === 'translateY(0)') return 0;
+        // Default closed = full height - handle height
+        return gallery.offsetHeight - handleHeight;
+      }
+
+      function initGalleryDrag() {
+        gallery = document.getElementById('map-image-gallery');
+        handle = document.getElementById('gallery-handle');
+        if (!gallery || !handle) return;
+        if (handle._dragSetup) return;
+        handle._dragSetup = true;
+
+        handle.addEventListener('touchstart', function(e) {
+          if (e.touches.length !== 1) return;
+          dragging = true;
+          hasDragged = false;
+          galleryFullHeight = gallery.offsetHeight;
+          startTranslateY = getGalleryTranslateY();
+          var touch = e.touches[0];
+          startY = isScreenRotated() ? (window.innerHeight - touch.clientY) : touch.clientY;
+        }, { passive: true });
+
+        handle.addEventListener('touchmove', function(e) {
+          if (!dragging || e.touches.length !== 1) return;
+          var touch = e.touches[0];
+          var currentY = isScreenRotated() ? (window.innerHeight - touch.clientY) : touch.clientY;
+          var dy = currentY - startY;
+          if (Math.abs(dy) > dragThreshold) hasDragged = true;
+          if (!hasDragged) return;
+          // dy negative = finger moving up = open, dy positive = finger moving down = close
+          var newTranslate = Math.max(0, Math.min(galleryFullHeight - handleHeight, startTranslateY + dy));
+          gallery.style.transition = 'none';
+          gallery.style.transform = 'translateY(' + newTranslate + 'px)';
+          e.preventDefault();
+        }, { passive: false });
+
+        handle.addEventListener('touchend', function() {
+          if (!dragging) return;
+          dragging = false;
+          gallery.style.transition = 'transform 0.3s ease';
+          if (!hasDragged) return; // Let click handler toggle
+          // Snap: if more than 40% of content is visible, open fully; else close
+          var currentTranslate = getGalleryTranslateY();
+          var maxTranslate = galleryFullHeight - handleHeight;
+          if (currentTranslate < maxTranslate * 0.6) {
+            gallery.style.transform = 'translateY(0)';
+            mapGalleryOpen = true;
+          } else {
+            gallery.style.transform = 'translateY(calc(100% - 60px))';
+            mapGalleryOpen = false;
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', initGalleryDrag);
+      setTimeout(initGalleryDrag, 600);
+      // Also re-init when map overlay opens
+      var origOpen = window.openGoogleMapView;
+      if (origOpen) {
+        window.openGoogleMapView = function() {
+          origOpen.apply(this, arguments);
+          setTimeout(initGalleryDrag, 200);
+        };
+      }
+    })();
+
     // ---- Gallery thumbnail hover styles ----
     (function() {
       const style = document.createElement('style');
@@ -34501,7 +34624,7 @@
         <div id="best-time-message" style="font-size:0.85em;color:#1b5e20;">Perfect weather for exploring!</div>
       </div>
       <!-- Tide Button - opens overlay -->
-      <button onclick="openTidesOverlay()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0a3055,#0d5d8a);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;margin-bottom:8px;font-family:inherit;">
+      <button onclick="toggleTidesOverlay()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0a3055,#0d5d8a);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;margin-bottom:8px;font-family:inherit;">
         <span>🌊</span>
         <span>Tide Times</span>
         <span style="font-size:0.8em;">→</span>
@@ -34582,6 +34705,15 @@
   window.closeTidesOverlay = function() {
     document.getElementById('tides-overlay').style.display = 'none';
     document.body.classList.remove('tides-open');
+  };
+
+  window.toggleTidesOverlay = function() {
+    var overlay = document.getElementById('tides-overlay');
+    if (overlay && overlay.style.display !== 'none') {
+      closeTidesOverlay();
+    } else {
+      openTidesOverlay();
+    }
   };
 
   function renderTidesContent(el, data) {
@@ -35708,9 +35840,17 @@
         }
       });
       
-      // Prevent pinch zoom via touch events
+      // Prevent pinch zoom via touch events (except inside map overlays where pinch is used for image manipulation)
       document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
+          var t = e.target;
+          // Allow multi-touch inside map overlays (for pinch-resize/rotate of placed images)
+          while (t && t !== document.body) {
+            if (t.classList && (t.classList.contains('map-placed-img-wrapper') || t.id === 'fullscreen-google-map-overlay' || t.id === 'fullscreen-map-overlay')) {
+              return; // Don't block
+            }
+            t = t.parentElement;
+          }
           e.preventDefault();
         }
       }, { passive: false });
