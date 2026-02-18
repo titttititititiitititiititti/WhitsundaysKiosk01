@@ -8490,12 +8490,12 @@ def refresh_tides():
 
 @app.route('/api/tides/public')
 def api_tides_public():
-    """Public tide data JSON (no auth required)"""
+    """Public tide data JSON (no auth required) - returns all days for kiosk overlay"""
     tide_days = get_tide_data()
     return jsonify({
         'success': True,
         'location': 'Shute Harbour',
-        'days': tide_days[:7],
+        'days': tide_days,
         'cached_at': _tide_cache.get('fetched_at', '').isoformat() if _tide_cache.get('fetched_at') else None
     })
 

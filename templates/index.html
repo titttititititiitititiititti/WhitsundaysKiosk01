@@ -34522,12 +34522,12 @@
         </div>
         <div id="best-time-message" style="font-size:0.85em;color:#1b5e20;">Perfect weather for exploring!</div>
       </div>
-      <!-- Tide Button - opens full page -->
-      <a href="/tides" style="width:100%;padding:12px;background:linear-gradient(135deg,#0a3055,#0d5d8a);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;margin-bottom:8px;text-decoration:none;">
+      <!-- Tide Button - opens overlay -->
+      <button onclick="openTidesOverlay()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0a3055,#0d5d8a);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;margin-bottom:8px;font-family:inherit;">
         <span>🌊</span>
         <span>Tide Times</span>
         <span style="font-size:0.8em;">→</span>
-      </a>
+      </button>
       <!-- Radar Button -->
       <button id="radar-toggle-btn" onclick="toggleWeatherRadar()" style="width:100%;padding:12px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;border:none;border-radius:12px;font-weight:600;font-size:0.95em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s ease;">
         <span>📡</span>
@@ -34557,6 +34557,158 @@
     </div>
   </div>
   
+  <!-- Tides Overlay (in-page, keeps video background visible) -->
+  <div id="tides-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999999;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif;">
+    <!-- Header -->
+    <div style="background:rgba(0,0,0,0.5);padding:16px 30px;display:flex;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.1);">
+      <div style="flex:1;"><button onclick="closeTidesOverlay()" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;cursor:pointer;font-weight:600;font-size:0.95rem;font-family:inherit;">← Back</button></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="Logo" style="height:55px;width:auto;object-fit:contain;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));" onclick="closeTidesOverlay()">
+        <span style="font-size:1.1em;font-weight:600;color:rgba(255,255,255,0.7);">🌊 Tide Times</span>
+      </div>
+      <div style="flex:1;"></div>
+    </div>
+    <!-- Content (populated by JS) -->
+    <div id="tides-overlay-content" style="max-width:1400px;margin:0 auto;padding:24px 30px 80px;color:#fff;"></div>
+  </div>
+  <script>
+  // ===== TIDES OVERLAY =====
+  window.openTidesOverlay = function() {
+    var overlay = document.getElementById('tides-overlay');
+    var content = document.getElementById('tides-overlay-content');
+    overlay.style.display = 'block';
+    overlay.scrollTop = 0;
+    content.innerHTML = '<div style="text-align:center;padding:80px 20px;"><div style="font-size:2em;margin-bottom:16px;">🌊</div><div style="color:rgba(255,255,255,0.6);font-size:1.1em;">Loading tide data...</div></div>';
+
+    fetch('/api/tides/public')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.success || !data.days || !data.days.length) {
+          content.innerHTML = '<div style="text-align:center;padding:80px 20px;"><h2>🌊 Unable to load tide data</h2><p style="color:rgba(255,255,255,0.5);margin-top:12px;">Please check the internet connection.</p></div>';
+          return;
+        }
+        renderTidesContent(content, data);
+      })
+      .catch(function() {
+        content.innerHTML = '<div style="text-align:center;padding:80px 20px;"><h2>🌊 Unable to load tide data</h2><p style="color:rgba(255,255,255,0.5);margin-top:12px;">Please check the internet connection.</p></div>';
+      });
+  };
+
+  window.closeTidesOverlay = function() {
+    document.getElementById('tides-overlay').style.display = 'none';
+  };
+
+  function renderTidesContent(el, data) {
+    var days = data.days;
+    var loc = data.location || 'Shute Harbour';
+    var today = days[0];
+    // Find great days
+    var greatDays = days.filter(function(d) { return d.hill_inlet_rating === 'great'; });
+
+    var html = '';
+
+    // Location banner
+    html += '<div style="background:linear-gradient(135deg,rgba(0,119,182,0.3),rgba(0,180,216,0.15));border:1px solid rgba(0,180,216,0.3);border-radius:16px;padding:20px 28px;margin-bottom:24px;">';
+    html += '<h2 style="font-size:1.3em;margin:0 0 4px;">📍 ' + loc + ' — Whitsundays</h2>';
+    html += '<p style="color:rgba(255,255,255,0.6);font-size:0.85em;margin:0;">Tide predictions &amp; Hill Inlet viewing guide</p>';
+    html += '</div>';
+
+    // Hill Inlet guide
+    html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 28px;margin-bottom:24px;">';
+    html += '<h3 style="font-size:1.1em;margin:0 0 12px;color:#00b4d8;">📋 Hill Inlet Viewing Guide</h3>';
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">';
+    html += '<div style="padding:14px;border-radius:12px;text-align:center;background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.3);"><div style="font-size:1.8em;margin-bottom:6px;">⭐</div><h4 style="font-size:0.95em;margin:0 0 4px;">Great (below 1.0m)</h4><p style="font-size:0.8em;color:rgba(255,255,255,0.6);margin:0;">Stunning swirling sand patterns clearly visible. Best viewing.</p></div>';
+    html += '<div style="padding:14px;border-radius:12px;text-align:center;background:rgba(241,196,15,0.15);border:1px solid rgba(241,196,15,0.3);"><div style="font-size:1.8em;margin-bottom:6px;">👍</div><h4 style="font-size:0.95em;margin:0 0 4px;">Good (1.0m – 1.5m)</h4><p style="font-size:0.8em;color:rgba(255,255,255,0.6);margin:0;">Sand patterns visible but less defined. Still worth visiting.</p></div>';
+    html += '<div style="padding:14px;border-radius:12px;text-align:center;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.2);"><div style="font-size:1.8em;margin-bottom:6px;">😐</div><h4 style="font-size:0.95em;margin:0 0 4px;">Not ideal (above 1.5m)</h4><p style="font-size:0.8em;color:rgba(255,255,255,0.6);margin:0;">Water covers most sand. Beach walk still great though!</p></div>';
+    html += '</div></div>';
+
+    // Best days
+    if (greatDays.length > 0) {
+      html += '<div style="background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.2);border-radius:16px;padding:20px 28px;margin-bottom:24px;">';
+      html += '<h3 style="font-size:1.1em;margin:0 0 14px;color:#2ecc71;">⭐ Best Days for Hill Inlet</h3>';
+      html += '<div style="display:flex;gap:10px;flex-wrap:wrap;">';
+      greatDays.slice(0, 10).forEach(function(d) {
+        var detail = d.hill_inlet_note || '';
+        if (detail.indexOf(' - ') !== -1) detail = detail.split(' - ')[0];
+        html += '<div style="background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.25);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;min-width:130px;">';
+        html += '<span style="font-weight:700;font-size:0.95em;">' + d.date_label + '</span>';
+        html += '<span style="font-size:0.75em;color:rgba(255,255,255,0.6);margin-top:2px;">' + detail + '</span>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    // Today's tides
+    html += '<div style="background:linear-gradient(135deg,rgba(0,180,216,0.15),rgba(0,119,182,0.1));border:1px solid rgba(0,180,216,0.25);border-radius:16px;padding:24px 28px;margin-bottom:24px;">';
+    html += '<h3 style="font-size:1.2em;margin:0 0 16px;">📅 Today — ' + today.date_label + '</h3>';
+    html += '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
+    today.tides.forEach(function(t) {
+      var isHigh = t.type === 'high';
+      var bg = isHigh ? 'rgba(52,152,219,0.2)' : 'rgba(230,126,34,0.2)';
+      var border = isHigh ? 'rgba(52,152,219,0.3)' : 'rgba(230,126,34,0.3)';
+      var hColor = isHigh ? '#3498db' : '#e67e22';
+      var icon = isHigh ? '🔵' : '🟠';
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;flex:1;min-width:180px;background:' + bg + ';border:1px solid ' + border + ';">';
+      html += '<span style="font-size:1.4em;">' + icon + '</span>';
+      html += '<div style="flex:1;"><div style="font-size:0.75em;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.6);">' + t.type + ' tide</div><div style="font-size:1.15em;font-weight:700;">' + t.time + '</div></div>';
+      html += '<span style="font-size:1.2em;font-weight:700;color:' + hColor + ';">' + t.height_m.toFixed(2) + 'm</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    // Hill inlet banner for today
+    var r = today.hill_inlet_rating;
+    if (r && r !== 'none') {
+      var bannerBg = r === 'great' ? 'rgba(46,204,113,0.2)' : r === 'good' ? 'rgba(241,196,15,0.15)' : 'rgba(231,76,60,0.1)';
+      var bannerBorder = r === 'great' ? 'rgba(46,204,113,0.3)' : r === 'good' ? 'rgba(241,196,15,0.3)' : 'rgba(231,76,60,0.2)';
+      var bannerColor = r === 'great' ? '#2ecc71' : r === 'good' ? '#f1c40f' : '#e74c3c';
+      var bannerIcon = r === 'great' ? '⭐' : r === 'good' ? '👍' : '😐';
+      html += '<div style="margin-top:14px;padding:12px 18px;border-radius:10px;font-weight:600;display:flex;align-items:center;gap:10px;background:' + bannerBg + ';border:1px solid ' + bannerBorder + ';color:' + bannerColor + ';">' + bannerIcon + ' <span>Hill Inlet: ' + (today.hill_inlet_note || '') + '</span></div>';
+    } else {
+      html += '<div style="margin-top:14px;padding:12px 18px;border-radius:10px;font-weight:600;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);">🌙 <span>No daytime low tide suitable for Hill Inlet viewing today</span></div>';
+    }
+    html += '</div>';
+
+    // Forecast grid
+    html += '<h3 style="font-size:1.2em;margin:0 0 16px;">🗓️ ' + days.length + '-Day Forecast</h3>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:24px;">';
+    days.forEach(function(day, i) {
+      var cardBg = i === 0 ? 'rgba(0,180,216,0.08)' : 'rgba(255,255,255,0.05)';
+      var cardBorder = i === 0 ? 'rgba(0,180,216,0.4)' : 'rgba(255,255,255,0.1)';
+      html += '<div style="background:' + cardBg + ';border:1px solid ' + cardBorder + ';border-radius:14px;padding:18px;">';
+      // Header
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);">';
+      html += '<h4 style="font-size:1em;margin:0;">' + day.date_label + (i === 0 ? ' (Today)' : '') + '</h4>';
+      var badge = '';
+      if (day.hill_inlet_rating === 'great') badge = '<span style="font-size:0.72em;padding:3px 10px;border-radius:20px;font-weight:600;background:rgba(46,204,113,0.2);color:#2ecc71;">⭐ Great</span>';
+      else if (day.hill_inlet_rating === 'good') badge = '<span style="font-size:0.72em;padding:3px 10px;border-radius:20px;font-weight:600;background:rgba(241,196,15,0.2);color:#f1c40f;">👍 Good</span>';
+      else if (day.hill_inlet_rating === 'poor') badge = '<span style="font-size:0.72em;padding:3px 10px;border-radius:20px;font-weight:600;background:rgba(231,76,60,0.15);color:#e74c3c;">Not ideal</span>';
+      else badge = '<span style="font-size:0.72em;padding:3px 10px;border-radius:20px;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">No daytime low</span>';
+      html += badge + '</div>';
+      // Tides
+      day.tides.forEach(function(t) {
+        var isH = t.type === 'high';
+        var arrow = isH ? '▲' : '▼';
+        var aColor = isH ? '#3498db' : '#e67e22';
+        html += '<div style="display:flex;align-items:center;padding:5px 0;gap:10px;">';
+        html += '<span style="width:22px;text-align:center;color:' + aColor + ';">' + arrow + '</span>';
+        html += '<span style="width:46px;font-size:0.82em;color:rgba(255,255,255,0.6);">' + (t.type.charAt(0).toUpperCase() + t.type.slice(1)) + '</span>';
+        html += '<span style="font-weight:600;flex:1;">' + t.time + '</span>';
+        html += '<span style="font-weight:700;font-size:0.92em;color:' + aColor + ';">' + t.height_m.toFixed(2) + 'm</span>';
+        html += '</div>';
+      });
+      if (day.hill_inlet_note) {
+        html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);font-size:0.78em;color:rgba(255,255,255,0.5);">' + day.hill_inlet_note + '</div>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div style="text-align:center;font-size:0.75em;color:rgba(255,255,255,0.3);padding:20px 0;">Tide data for Shute Harbour · Updated every 6 hours</div>';
+
+    el.innerHTML = html;
+  }
+  </script>
+
   <!-- Fullscreen Map Overlay (for Leaflet maps with drawing) -->
   <div id="fullscreen-map-overlay" class="fullscreen-overlay" onclick="closeFullscreenMap(event)">
     <div class="fullscreen-content" onclick="event.stopPropagation()" style="overflow:visible;">
