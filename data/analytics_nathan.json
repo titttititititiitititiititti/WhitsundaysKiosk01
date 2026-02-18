@@ -214,13 +214,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-17T17:06:00.558877",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-17T17:06:00.558877",
+      "duration_seconds": 199.895481
     },
     {
       "session_id": "session_5b885eb181b9_1771312045",
@@ -261,9 +268,50 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_d58ec049ece9_1771312556",
+      "account": "nathan",
+      "started_at": "2026-02-17T17:15:56.705814",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-17T17:15:56.705814",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-17T17:15:58.905067",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-17T17:15:59.652287",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-17T17:18:09.939029",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-17T17:18:09.939029",
+      "duration_seconds": 133.233215
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-17T17:10:03.509439"
+  "last_updated": "2026-02-17T17:18:09.940040"
 }
