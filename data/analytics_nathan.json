@@ -363,38 +363,10 @@
           "data": {
             "language": "en"
           }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T10:30:55.688376",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T10:30:56.626777",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T10:31:08.606507",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T10:31:09.233343",
-          "data": {
-            "mode": "browse-all"
-          }
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -418,44 +390,74 @@
           "data": {
             "language": "en"
           }
-        },
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_4ab6698051e2_1771376148",
+      "account": "nathan",
+      "started_at": "2026-02-18T10:55:48.493882",
+      "events": [
         {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T10:40:59.823829",
+          "type": "session_start",
+          "timestamp": "2026-02-18T10:55:48.493882",
           "data": {
-            "mode": "browse-all"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
           }
         },
         {
           "type": "language_selected",
-          "timestamp": "2026-02-18T10:42:59.088276",
+          "timestamp": "2026-02-18T10:55:50.520738",
           "data": {
             "language": "en"
           }
         },
         {
           "type": "mode_selected",
-          "timestamp": "2026-02-18T10:43:05.371678",
+          "timestamp": "2026-02-18T10:55:53.102708",
           "data": {
-            "mode": "browse-all"
+            "mode": "quick-decision"
           }
         },
         {
-          "type": "session_end",
-          "timestamp": "2026-02-18T10:45:06.070215",
-          "data": {}
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T10:55:55.046932",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T10:55:57.769575",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T10:56:02.166082",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-18T10:45:06.070215",
-      "duration_seconds": 276.566008
+      "chat_messages": []
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-18T10:45:06.070215"
+  "last_updated": "2026-02-18T10:56:02.166082"
 }
