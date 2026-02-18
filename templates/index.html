@@ -34425,22 +34425,24 @@
           // Trigger input event so other handlers know the value changed
           targetInputElement.dispatchEvent(new Event('input', { bubbles: true }));
           
-          // If this is the AI input, optionally send the message
-          if (targetInputElement.id === 'ai-text-input' || targetInputElement.id === 'chat-input') {
-            // Just close keyboard, let user press send
-            hideOnscreenKeyboard();
-          } else {
-            hideOnscreenKeyboard();
+          // For the search bar, also trigger the search function
+          if (targetInputElement.id === 'home-search-input' && typeof quickSearch === 'function') {
+            quickSearch(preview.value);
           }
+          
+          hideOnscreenKeyboard();
         } else {
           hideOnscreenKeyboard();
         }
       };
       
-      // Attach to AI text inputs when clicked
+      // IDs of inputs that should trigger the on-screen keyboard
+      var keyboardInputIds = ['ai-text-input', 'chat-input', 'home-search-input'];
+      
+      // Attach to text inputs when clicked
       document.addEventListener('click', function(e) {
         var input = e.target;
-        if (input.id === 'ai-text-input' || input.id === 'chat-input') {
+        if (keyboardInputIds.indexOf(input.id) !== -1) {
           e.preventDefault();
           showOnscreenKeyboard(input);
         }
@@ -34449,7 +34451,7 @@
       // Also handle touch events
       document.addEventListener('touchend', function(e) {
         var input = e.target;
-        if (input.id === 'ai-text-input' || input.id === 'chat-input') {
+        if (keyboardInputIds.indexOf(input.id) !== -1) {
           e.preventDefault();
           showOnscreenKeyboard(input);
         }
