@@ -32405,6 +32405,10 @@
           widget.style.overflow = 'auto';
         }
         if (btnText) btnText.textContent = 'Hide Radar';
+        // Auto-scroll widget to show the radar (it's at the bottom of the widget)
+        if (widget) {
+          setTimeout(function() { widget.scrollTop = widget.scrollHeight; }, 100);
+        }
       } else {
         // Collapse radar
         radarContainer.style.display = 'none';
@@ -34538,7 +34542,7 @@
     body.tides-open #main-splash-screen,
     body.tides-open .global-header { visibility: hidden !important; }
   </style>
-  <div id="tides-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999999;background:rgba(10,22,40,0.85);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif;">
+  <div id="tides-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999999;background:rgba(10,22,40,0.85);overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Poppins',sans-serif;">
     <!-- Header -->
     <div style="background:rgba(0,0,0,0.4);padding:16px 30px;display:flex;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.1);">
       <div style="flex:1;"><button onclick="event.stopPropagation();closeTidesOverlay();" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:white;cursor:pointer;font-weight:600;font-size:0.95rem;font-family:inherit;">← Back</button></div>
