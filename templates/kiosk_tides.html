@@ -461,10 +461,10 @@
 <body>
     <div class="header">
         <div class="header-side">
-            <a href="/" class="back-btn">← Back</a>
+            <button class="back-btn" onclick="history.back()">← Back</button>
         </div>
         <div class="header-center">
-            <a href="/" title="Back to Kiosk">
+            <a href="/" title="Back to Home">
                 <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="Logo" class="header-logo">
             </a>
             <span class="header-title">🌊 Tide Times</span>
