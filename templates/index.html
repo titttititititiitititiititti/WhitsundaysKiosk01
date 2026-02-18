@@ -15986,6 +15986,15 @@
       applyModeVisibility();
     }
     
+    // Universal scroll-to-top helper — works even when html is rotated 180°
+    // (When html.screen-rotated, window.scrollTo may not work because html has overflow:hidden)
+    function scrollPageToTop(smooth) {
+      var opts = { top: 0, behavior: smooth ? 'smooth' : 'auto' };
+      try { window.scrollTo(opts); } catch(e) {}
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+    
     // Simple video loader - for kiosk mode we only use local file
     // No complex logic, no reloads - video is already in the HTML
     function loadVideoSmart(videoElement, startPlaying = true, forceReload = false) {
@@ -20520,7 +20529,7 @@
       }
       
       // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollPageToTop(false);
       
       // Reapply translations after page switch (multiple passes to ensure all elements are updated)
       if (typeof applyLanguage === 'function' && typeof currentLanguage !== 'undefined') {
@@ -20563,8 +20572,10 @@
       // Update URL hash
       window.location.hash = 'newcomer-info';
       
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      // Scroll to top — must reset ALL possible scroll containers
+      // (when html is rotated 180°, body is the scroll container, window.scrollTo may not work)
+      scrollPageToTop(false);
+      if (newcomerPage) newcomerPage.scrollTop = 0;
     }
     
     window.closeNewcomerInfo = function() {
@@ -24469,7 +24480,7 @@
       document.querySelectorAll('.duration-pill').forEach(pill => pill.classList.remove('selected'));
       
       // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollPageToTop(true);
       
       // Reload all tours from scratch
       loadInitialFeaturedTours();
@@ -26179,7 +26190,7 @@
       }
       
       // Reset featured tours to initial state
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollPageToTop(true);
     }
     
     // Helper: should hide tour (e.g., exclude third-party resellers)
@@ -28686,7 +28697,7 @@
       document.body.classList.remove('tour-detail-open');
       
       // Scroll to top of page
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollPageToTop(false);
       
       // Hide the hero section and show company filter nav
       const heroSection = document.getElementById('hero-section');
@@ -28704,7 +28715,7 @@
       if (subtitle) subtitle.textContent = 'Loading...';
       
       // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollPageToTop(true);
       
       // Fetch tours by company
       const params = new URLSearchParams();
@@ -28831,7 +28842,7 @@
       }
       
       // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollPageToTop(true);
     }
     
     function goHome() {
@@ -33995,7 +34006,7 @@
         if (subtitle) subtitle.textContent = 'Searching...';
         
         // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollPageToTop(true);
         
         // Fetch and filter tours
         try {
@@ -34250,10 +34261,14 @@
         }
       }
       
+      // Exclusion selector — rotation ONLY triggers from plain background/empty area taps
+      // Includes img to prevent logo clicks from accidentally rotating the screen
+      var ROTATION_IGNORE = 'button, a, input, select, textarea, img, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card, .logo-image, .kiosk-logo, .language-selector, .language-dropdown, .newcomer-faq-item, .on-screen-keyboard, .gallery-thumb, .map-placed-img-wrapper, .fullscreen-overlay';
+      
       // Touch events
       document.addEventListener('touchend', function(e) {
-        // Don't trigger if touching buttons or interactive elements
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
+        // Don't trigger rotation if touching any interactive element
+        if (e.target.closest(ROTATION_IGNORE)) return;
         
         const touch = e.changedTouches[0];
         handleTap(touch.clientX, touch.clientY);
@@ -34261,8 +34276,8 @@
       
       // Mouse events (for testing on desktop)
       document.addEventListener('click', function(e) {
-        // Don't trigger if clicking buttons or interactive elements
-        if (e.target.closest('button, a, input, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card')) return;
+        // Don't trigger rotation if clicking any interactive element
+        if (e.target.closest(ROTATION_IGNORE)) return;
         
         handleTap(e.clientX, e.clientY);
       });
