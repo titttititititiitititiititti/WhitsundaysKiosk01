@@ -9232,24 +9232,39 @@ def pull_analytics_only(account=None):
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Pull latest analytics from other kiosks and merge into local view"""
+    """Push local analytics to git, then pull & merge from other kiosks"""
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
-        # Pull and merge remote analytics into local (shop kiosks push via their own sync loop)
+        pushed = False
+        pulled = False
+        
+        # Step 1: Push local analytics to git (so other devices/admin can see them)
+        if HAS_GIT_REPO and not IS_RENDER:
+            try:
+                sync_analytics_to_git()
+                pushed = True
+            except Exception as e:
+                print(f"[ANALYTICS] Push during refresh failed: {e}")
+        
+        # Step 2: Pull & merge remote analytics (picks up other kiosks' data)
         pulled = pull_analytics_only(username)
         
-        if pulled:
-            message = 'Pulled latest sessions from other kiosks'
+        if pushed and pulled:
+            message = 'Pushed local & pulled new sessions from other kiosks'
+        elif pushed:
+            message = 'Pushed local analytics (no new remote sessions)'
+        elif pulled:
+            message = 'Pulled new sessions from other kiosks'
         else:
             message = 'Analytics already up to date'
         
         return jsonify({
             'success': True, 
             'message': message,
-            'pushed': False,
+            'pushed': pushed,
             'pulled': pulled
         })
             
@@ -9294,14 +9309,10 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # Enable analytics auto-sync on all devices with git repos
-    # The sync function now does pull-merge-push, so multiple kiosks won't conflict
-    if HAS_GIT_REPO and not IS_RENDER:
-        analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
-        analytics_thread.start()
-        print("[ANALYTICS] Auto-sync enabled (push every 5 min, with merge from other devices)")
-    else:
-        print("[ANALYTICS] Auto-sync disabled (no git repo or cloud deployment)")
+    # Analytics are stored locally on each kiosk and only synced on demand
+    # (admin clicks "Pull Latest Analytics" in agent dashboard, or kiosk pushes during code updates)
+    # No auto-push loop — it creates git commits that trigger restarts on all kiosks
+    print("[ANALYTICS] Analytics stored locally (no auto-push — sync on demand only)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()

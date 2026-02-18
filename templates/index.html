@@ -43,9 +43,16 @@
     }
     
     /* ===== SCREEN ROTATION (180° flip for upside-down kiosk screens) ===== */
-    body.rotate-180 {
+    /* Applied to html (not body) so position:fixed video stays viewport-pinned */
+    html.screen-rotated {
       transform: rotate(180deg);
       transform-origin: 50vw 50vh;
+      overflow: hidden;   /* html doesn't scroll */
+      height: 100vh;
+    }
+    html.screen-rotated body {
+      height: 100vh;
+      overflow-y: auto;   /* body becomes the scroll container */
     }
     
     body {
@@ -16149,43 +16156,22 @@
       });
     })();
     
-    // ===== SCREEN ROTATION SYSTEM (180° flip only) =====
-    // Tapping corners of the splash screen flips the display upside-down (for kiosk screens)
-    let isFlipped = false;
-    
-    // Restore saved rotation on load (and clean up old 90/270 values)
+    // ===== SCREEN ROTATION (splash uses same system as general rotation below) =====
+    // Restore saved rotation on page load
     (function restoreRotation() {
       const saved = localStorage.getItem('kiosk_rotation');
       if (saved === '90' || saved === '270') {
-        // Old version saved 90/270 — reset to normal
         localStorage.setItem('kiosk_rotation', '0');
       } else if (saved === '180') {
-        isFlipped = true;
-        document.body.classList.add('rotate-180');
+        document.documentElement.classList.add('screen-rotated');
       }
     })();
     
     function toggleRotation() {
-      isFlipped = !isFlipped;
-      if (isFlipped) {
-        document.body.classList.add('rotate-180');
-        localStorage.setItem('kiosk_rotation', '180');
-      } else {
-        document.body.classList.remove('rotate-180');
-        localStorage.setItem('kiosk_rotation', '0');
+      // Delegate to the global rotateScreen() defined later
+      if (typeof window.rotateScreen === 'function') {
+        window.rotateScreen();
       }
-      console.log('🔄 Screen flipped:', isFlipped ? '180°' : 'Normal');
-      
-      // Brief visual feedback
-      const existing = document.getElementById('rotation-feedback');
-      if (existing) existing.remove();
-      const fb = document.createElement('div');
-      fb.id = 'rotation-feedback';
-      fb.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:20px 40px;border-radius:16px;font-size:1.5em;font-weight:600;z-index:9999999;pointer-events:none;font-family:Poppins,sans-serif;backdrop-filter:blur(10px);';
-      fb.textContent = isFlipped ? '🔄 Flipped 180°' : '🔄 Normal';
-      document.body.appendChild(fb);
-      setTimeout(() => { fb.style.transition = 'opacity 0.5s'; fb.style.opacity = '0'; }, 800);
-      setTimeout(() => fb.remove(), 1400);
     }
     
     // Corner tap detection size (px from edge)
@@ -33961,20 +33947,17 @@
     // SCREEN ROTATION FEATURE - Double-tap in any corner to rotate
     // =====================================================================
     (function() {
-      let currentRotation = 0; // 0 or 180
+      // Sync initial state from localStorage (may already be set by restoreRotation above)
+      let currentRotation = document.documentElement.classList.contains('screen-rotated') ? 180 : 0;
       const CORNER_SIZE = 100; // pixels from corner
       const DOUBLE_TAP_DELAY = 400; // ms between taps
       
       let lastTapTime = 0;
       let lastTapCorner = null;
       
-      // Add styles for rotation
+      // Add styles for corner indicators and toast (rotation CSS is in the main <style> block)
       const style = document.createElement('style');
       style.textContent = `
-        body.screen-rotated {
-          transform: rotate(180deg);
-          transform-origin: center center;
-        }
         /* Corner tap indicators */
         .corner-tap-indicator {
           position: fixed;
@@ -34067,27 +34050,16 @@
         }, 1000);
       }
       
-      // Rotate the screen
+      // Rotate the screen — uses html element (not body) so position:fixed video stays pinned
       window.rotateScreen = function() {
         currentRotation = currentRotation === 0 ? 180 : 0;
         
         if (currentRotation === 180) {
-          document.body.classList.add('screen-rotated');
-          // When rotated 180°, scroll to bottom so visual top shows page start
-          requestAnimationFrame(() => {
-            window.scrollTo(0, document.documentElement.scrollHeight);
-            // Also scroll any active page container
-            const activePage = document.querySelector('.page.active');
-            if (activePage) activePage.scrollTop = activePage.scrollHeight;
-          });
+          document.documentElement.classList.add('screen-rotated');
+          localStorage.setItem('kiosk_rotation', '180');
         } else {
-          document.body.classList.remove('screen-rotated');
-          // When back to normal, scroll to top
-          requestAnimationFrame(() => {
-            window.scrollTo(0, 0);
-            const activePage = document.querySelector('.page.active');
-            if (activePage) activePage.scrollTop = 0;
-          });
+          document.documentElement.classList.remove('screen-rotated');
+          localStorage.setItem('kiosk_rotation', '0');
         }
         
         showRotationToast();
