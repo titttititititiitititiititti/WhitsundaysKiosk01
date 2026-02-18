@@ -193,10 +193,10 @@
       .kiosk-header .ai-assistant-btn-header,
       .kiosk-header .map-view-btn-header,
       .kiosk-header .newcomer-info-btn-header {
-        padding: 4px 12px !important;
-        font-size: 0.85em !important;
+        padding: 10px 20px !important;
+        font-size: 1em !important;
         height: auto !important;
-        min-height: 36px !important;
+        min-height: 44px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
@@ -217,10 +217,10 @@
       
       /* Browse All Tours button - hidden by default, only shown via JS */
       .kiosk-header .browse-all-btn-header {
-        padding: 4px 12px !important;
-        font-size: 0.85em !important;
+        padding: 10px 20px !important;
+        font-size: 1em !important;
         height: auto !important;
-        min-height: 36px !important;
+        min-height: 44px !important;
         border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 25px !important;
         color: white !important;
@@ -2919,11 +2919,11 @@
     .kiosk-header .header-left .browse-all-btn-header,
     .kiosk-header .header-left .map-view-btn-header,
     .kiosk-header .header-left .newcomer-info-btn-header {
-      padding: 4px 12px !important;
-      font-size: 0.85em !important;
+      padding: 10px 20px !important;
+      font-size: 1em !important;
       border-radius: 25px !important;
       height: auto !important;
-      min-height: 36px !important;
+      min-height: 44px !important;
       display: inline-flex !important;
       flex-direction: column !important;
       align-items: center !important;
@@ -32765,7 +32765,11 @@
       mapDrawingContext.lineCap = 'round';
       mapDrawingContext.lineJoin = 'round';
       
-      // Remove old listeners
+      // Only add event listeners once
+      if (canvas._drawListenersAdded) return;
+      canvas._drawListenersAdded = true;
+      
+      // Remove old on* listeners
       canvas.onmousedown = null;
       canvas.onmousemove = null;
       canvas.onmouseup = null;
@@ -32929,7 +32933,11 @@
       googleMapDrawingContext.lineCap = 'round';
       googleMapDrawingContext.lineJoin = 'round';
       
-      // Remove old listeners
+      // Only add event listeners once
+      if (canvas._drawListenersAdded) return;
+      canvas._drawListenersAdded = true;
+      
+      // Remove old on* listeners
       canvas.onmousedown = null;
       canvas.onmousemove = null;
       canvas.onmouseup = null;
@@ -33552,10 +33560,10 @@
       document.addEventListener('DOMContentLoaded', initGalleryDrag);
       setTimeout(initGalleryDrag, 600);
       // Also re-init when map overlay opens
-      var origOpen = window.openGoogleMapView;
-      if (origOpen) {
-        window.openGoogleMapView = function() {
-          origOpen.apply(this, arguments);
+      var origOpenMap = window.openMapView;
+      if (origOpenMap) {
+        window.openMapView = function() {
+          origOpenMap.apply(this, arguments);
           setTimeout(initGalleryDrag, 200);
         };
       }
@@ -34960,7 +34968,7 @@
       <!-- Image Gallery Tray (slides up from bottom) -->
       <div id="map-image-gallery" style="position:absolute;bottom:0;left:120px;right:0;z-index:99998;transition:transform 0.3s ease;transform:translateY(calc(100% - 60px));">
         <!-- Gallery handle / toggle bar - left:120px leaves space for Google Maps satellite button -->
-        <div id="gallery-handle" onclick="toggleImageGallery()" style="height:60px;background:linear-gradient(180deg,rgba(0,0,0,0.7),rgba(0,0,0,0.95));border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;gap:12px;padding:0 20px;">
+        <div id="gallery-handle" onclick="toggleImageGallery()" style="height:60px;background:linear-gradient(180deg,rgba(0,0,0,0.7),rgba(0,0,0,0.95));border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:center;cursor:pointer;gap:12px;padding:0 20px;touch-action:none;">
           <div style="width:60px;height:5px;background:rgba(255,255,255,0.5);border-radius:3px;"></div>
           <span style="color:#fff;font-size:16px;font-weight:600;">📸 Image Gallery — Drag images onto the map</span>
           <div style="width:60px;height:5px;background:rgba(255,255,255,0.5);border-radius:3px;"></div>
