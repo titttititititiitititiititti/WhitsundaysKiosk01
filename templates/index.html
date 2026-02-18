@@ -42,6 +42,52 @@
       background: #1a3a4a !important; /* Dark blue-green fallback if video doesn't load */
     }
     
+    /* ===== SCREEN ROTATION (for kiosk screens mounted at different angles) ===== */
+    body.rotate-90 {
+      transform: rotate(90deg);
+      transform-origin: top left;
+      width: 100vh;
+      height: 100vw;
+      position: fixed;
+      top: 0;
+      left: 100vw;
+      overflow: auto;
+    }
+    body.rotate-180 {
+      transform: rotate(180deg);
+      transform-origin: center center;
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+    }
+    body.rotate-270 {
+      transform: rotate(270deg);
+      transform-origin: top left;
+      width: 100vh;
+      height: 100vw;
+      position: fixed;
+      top: 100vh;
+      left: 0;
+      overflow: auto;
+    }
+    
+    /* Corner rotation indicators on splash screen */
+    .rotation-corner {
+      position: fixed;
+      width: 70px;
+      height: 70px;
+      z-index: 1000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .rotation-corner.visible { opacity: 0.5; }
+    
     body {
       background: transparent !important;
     }
@@ -15871,7 +15917,7 @@
   </div>
   
   <!-- MAIN SPLASH SCREEN - Shows on initial load with scrolling tour cards -->
-  <div id="main-splash-screen" class="main-splash-screen" onclick="dismissSplashScreen()">
+  <div id="main-splash-screen" class="main-splash-screen" onclick="handleSplashTap(event)">
     <!-- Scrolling Tour Cards - Upper half -->
     <div class="splash-tour-carousel">
       <div class="splash-tour-track" id="splash-tour-track">
@@ -16135,6 +16181,89 @@
         }
       });
     })();
+    
+    // ===== SCREEN ROTATION SYSTEM =====
+    // Tapping corners of the splash screen rotates the display (for kiosk screens mounted at different angles)
+    const ROTATION_STEPS = [0, 90, 180, 270];
+    let currentRotationIndex = 0;
+    
+    // Restore saved rotation on load
+    (function restoreRotation() {
+      const saved = localStorage.getItem('kiosk_rotation');
+      if (saved !== null) {
+        const deg = parseInt(saved);
+        const idx = ROTATION_STEPS.indexOf(deg);
+        if (idx !== -1) {
+          currentRotationIndex = idx;
+          applyRotation(deg);
+        }
+      }
+    })();
+    
+    function applyRotation(deg) {
+      // Remove all rotation classes
+      document.body.classList.remove('rotate-90', 'rotate-180', 'rotate-270');
+      if (deg !== 0) {
+        document.body.classList.add('rotate-' + deg);
+      }
+    }
+    
+    function rotateScreen() {
+      currentRotationIndex = (currentRotationIndex + 1) % ROTATION_STEPS.length;
+      const deg = ROTATION_STEPS[currentRotationIndex];
+      applyRotation(deg);
+      localStorage.setItem('kiosk_rotation', deg);
+      console.log('🔄 Screen rotated to ' + deg + '°');
+      
+      // Brief visual feedback
+      showRotationFeedback(deg);
+    }
+    
+    function showRotationFeedback(deg) {
+      // Remove any existing feedback
+      const existing = document.getElementById('rotation-feedback');
+      if (existing) existing.remove();
+      
+      const fb = document.createElement('div');
+      fb.id = 'rotation-feedback';
+      fb.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:white;padding:20px 40px;border-radius:16px;font-size:1.5em;font-weight:600;z-index:9999999;pointer-events:none;font-family:Poppins,sans-serif;backdrop-filter:blur(10px);';
+      fb.textContent = deg === 0 ? '🔄 0° (Normal)' : '🔄 ' + deg + '°';
+      document.body.appendChild(fb);
+      setTimeout(() => { fb.style.transition = 'opacity 0.5s'; fb.style.opacity = '0'; }, 800);
+      setTimeout(() => fb.remove(), 1400);
+    }
+    
+    // Corner tap detection size (px from edge)
+    const CORNER_SIZE = 100;
+    
+    function isCornerTap(e) {
+      const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      
+      const inLeft = x < CORNER_SIZE;
+      const inRight = x > w - CORNER_SIZE;
+      const inTop = y < CORNER_SIZE;
+      const inBottom = y > h - CORNER_SIZE;
+      
+      return (inLeft || inRight) && (inTop || inBottom);
+    }
+    
+    function handleSplashTap(e) {
+      // If it's a corner tap, rotate instead of dismissing
+      if (isCornerTap(e)) {
+        e.stopPropagation();
+        rotateScreen();
+        return;
+      }
+      // Otherwise dismiss the splash
+      dismissSplashScreen();
+    }
+    
+    // Expose globally for tides page and other contexts
+    window.rotateScreen = rotateScreen;
+    window.isCornerTap = isCornerTap;
     
     // Dismiss splash and show main app
     function dismissSplashScreen() {

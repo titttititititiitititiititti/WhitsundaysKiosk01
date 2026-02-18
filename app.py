@@ -8503,9 +8503,11 @@ def api_tides_public():
 def kiosk_tides_page():
     """Public tide forecast page accessible from the kiosk"""
     tide_days = get_tide_data()
+    custom_logo = get_kiosk_custom_logo()
     return render_template('kiosk_tides.html',
                          tide_days=tide_days,
-                         location='Shute Harbour')
+                         location='Shute Harbour',
+                         custom_logo=custom_logo)
 
 @app.route('/api/analytics/session/<session_id>')
 @agent_required
