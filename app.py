@@ -1762,10 +1762,10 @@ def get_analytics_summary(account=None):
     durations = [s.get('duration_seconds', 0) for s in sessions if s.get('duration_seconds')]
     avg_duration = sum(durations) / len(durations) if durations else 0
     
-    # Language breakdown
+    # Language breakdown (treat None/null as 'en' since English is the default)
     languages = {}
     for s in sessions:
-        lang = s.get('language', 'unknown')
+        lang = s.get('language') or 'en'
         languages[lang] = languages.get(lang, 0) + 1
     
     # Mode breakdown
@@ -1821,6 +1821,9 @@ def get_analytics_summary(account=None):
         # Collect QR conversions
         for conversion in s.get('qr_conversions', []):
             qr_conversions.append(conversion)
+    
+    # One-time historical adjustment: 6 send-to-phone clicks before tracking was added
+    send_to_phone_clicks += 6
     
     # Calculate QR conversion rate
     qr_conversion_rate = 0
