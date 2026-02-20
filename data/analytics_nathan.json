@@ -28899,13 +28899,86 @@
             "filter_type": "activities",
             "filter_value": "great_barrier_reef"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T11:45:06.476921",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.409353",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.464121",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.062304",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.421553",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:46:21.135649",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:29.375581",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:31.037623",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:33.351954",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:48:29.830773",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:48:29.830773",
+      "duration_seconds": 3161.336891
     },
     {
       "session_id": "session_9813f3220eac_1771377215",
@@ -28953,27 +29026,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:19:18.281450",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-18T11:19:24.064609",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-18T11:19:24.064609",
-      "duration_seconds": 22.216127
+      "chat_messages": []
     },
     {
       "session_id": "session_d2228e414ed8_1771377571",
@@ -28998,20 +29057,6 @@
         {
           "type": "mode_selected",
           "timestamp": "2026-02-18T11:19:47.814804",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T11:23:09.266103",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:23:10.174617",
           "data": {
             "mode": "browse-all"
           }
@@ -29063,6 +29108,243 @@
       "chat_messages": [],
       "ended_at": "2026-02-18T11:33:17.839049",
       "duration_seconds": 54.07903
+    },
+    {
+      "session_id": "session_a830fa68f5d2_1771379312",
+      "account": "nathan",
+      "started_at": "2026-02-18T11:48:32.312254",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T11:48:32.312254",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:48:34.932467",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-18T11:48:38.416314",
+          "data": {
+            "tour_name": "Fly Raft - Lumi\u00e8res du Sud",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:49:34.053072",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft - Lumi\u00e8res du Sud"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:49:34.053072",
+      "duration_seconds": 61.740818
+    },
+    {
+      "session_id": "session_53c0c3e8f0ce_1771379375",
+      "account": "nathan",
+      "started_at": "2026-02-18T11:49:35.195414",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T11:49:35.195414",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T11:49:36.991280",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:49:39.136176",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:52:09.614486",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:52:09.614486",
+      "duration_seconds": 154.419072
+    },
+    {
+      "session_id": "session_9ae1e0a35df9_1771381283",
+      "account": "nathan",
+      "started_at": "2026-02-18T12:21:23.973525",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T12:21:23.973525",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T12:21:29.924059",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T12:24:13.680810",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "newcomer-info",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T12:24:13.680810",
+      "duration_seconds": 169.707285
+    },
+    {
+      "session_id": "session_abf7e3513225_1771383865",
+      "account": "nathan",
+      "started_at": "2026-02-18T13:04:25.424277",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T13:04:25.424277",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T13:04:27.375749",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T13:04:31.128551",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-18T13:04:52.264679",
+          "data": {
+            "tour_name": "Hamilton Island Freestyle",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T13:05:52.167139",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Hamilton Island Freestyle"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T13:05:52.167139",
+      "duration_seconds": 86.742862
+    },
+    {
+      "session_id": "session_42c1ff405b38_1771386004",
+      "account": "nathan",
+      "started_at": "2026-02-18T13:40:04.369160",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-18T13:40:04.369160",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T13:40:06.602751",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T13:40:09.976414",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T13:40:13.578134",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T13:40:16.228371",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T13:40:18.144723",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T13:43:54.887703",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-18T13:43:54.887703",
+      "duration_seconds": 230.518543
     },
     {
       "session_id": "session_30499d151352_1771391933",
@@ -29235,9 +29517,383 @@
       "chat_messages": [],
       "ended_at": "2026-02-18T17:52:13.977730",
       "duration_seconds": 201.936728
+    },
+    {
+      "session_id": "session_45960890a0ca_1771454294",
+      "account": "nathan",
+      "started_at": "2026-02-19T08:38:14.487495",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-19T08:38:14.487495",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-19T08:38:15.843892",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-19T08:38:18.860877",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-19T08:40:36.360700",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-19T08:40:36.360700",
+      "duration_seconds": 141.873205
+    },
+    {
+      "session_id": "session_5bd04a649269_1771461996",
+      "account": "nathan",
+      "started_at": "2026-02-19T10:46:36.056682",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-19T10:46:36.056682",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-19T10:46:39.632504",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-19T10:47:07.418494",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "Sealink",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-19T10:49:10.298495",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Purely Whitehaven Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-19T10:49:10.298495",
+      "duration_seconds": 154.241813
+    },
+    {
+      "session_id": "session_f9f56d3258af_1771464860",
+      "account": "nathan",
+      "started_at": "2026-02-19T11:34:20.535722",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-19T11:34:20.535722",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-19T11:34:24.256834",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-19T11:37:14.211785",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-19T11:37:14.211785",
+      "duration_seconds": 173.676063
+    },
+    {
+      "session_id": "session_3ae6f56a658a_1771472052",
+      "account": "nathan",
+      "started_at": "2026-02-19T13:34:12.794325",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-19T13:34:12.794325",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-19T13:34:14.599613",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-19T13:34:16.153898",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-19T13:34:34.284415",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-19T13:34:34.284415",
+      "duration_seconds": 21.49009
+    },
+    {
+      "session_id": "session_47aa30f2edfb_1771472091",
+      "account": "nathan",
+      "started_at": "2026-02-19T13:34:51.054683",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-19T13:34:51.054683",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-19T13:36:53.454467",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-19T13:36:53.454467",
+      "duration_seconds": 122.399784
+    },
+    {
+      "session_id": "session_6eb6a3c64dac_1771546707",
+      "account": "nathan",
+      "started_at": "2026-02-20T10:18:27.722202",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T10:18:27.722202",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T10:20:30.508661",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T10:20:30.508661",
+      "duration_seconds": 122.786459
+    },
+    {
+      "session_id": "session_548e00ea9230_1771547194",
+      "account": "nathan",
+      "started_at": "2026-02-20T10:26:34.271665",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T10:26:34.271665",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T10:26:37.127993",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T10:26:40.399737",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T10:26:43.459220",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T10:26:51.723910",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T10:26:54.494319",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T10:27:03.293124",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T10:27:53.780143",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T10:27:57.838508",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T10:28:06.853686",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T10:33:13.084107",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "Purely Whitehaven Day Tour"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T10:33:13.084107",
+      "duration_seconds": 398.812442
+    },
+    {
+      "session_id": "session_25156312eb62_1771551892",
+      "account": "nathan",
+      "started_at": "2026-02-20T11:44:52.550453",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T11:44:52.550453",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-20T11:44:55.528439",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T11:45:04.736189",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-20T11:45:08.543289",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T11:45:16.541507",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T11:45:16.541507",
+      "duration_seconds": 23.991054
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-20T12:07:13.985701"
+  "last_updated": "2026-02-20T12:14:37.868663"
 }
