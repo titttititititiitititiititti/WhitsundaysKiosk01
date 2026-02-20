@@ -438,10 +438,16 @@ def git_sync_changes(commit_message="Update tour data"):
             if len(changed_files) > 10:
                 print(f"  ... and {len(changed_files) - 10} more", flush=True)
             
-            # Stage all changes
+            # Stage all changes EXCEPT analytics files (analytics has its own sync path)
             subprocess.run(
                 ['git', 'add', '-A'], cwd=cwd,
                 capture_output=True, text=True, encoding='utf-8', errors='replace', check=True
+            )
+            # Unstage analytics files - they must NEVER be committed by admin changes
+            # Analytics are only committed via sync_analytics_to_git() to prevent data loss
+            subprocess.run(
+                ['git', 'reset', 'HEAD', '--', 'data/analytics_*.json', 'data/analytics_*_backup.json'],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace'
             )
             
             # Commit
@@ -1693,10 +1699,7 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
         except:
             pass
     
-    # Keep only last 1000 sessions to prevent file bloat
-    if len(analytics['sessions']) > 1000:
-        analytics['sessions'] = analytics['sessions'][-1000:]
-    
+    # No session cap - keep ALL sessions forever for historical tracking
     save_analytics(analytics, account)
     
     # Analytics are stored locally and only pushed when manually requested
@@ -1833,7 +1836,7 @@ def get_analytics_summary(account=None):
         'top_tours_viewed': top_tours_viewed,
         'top_tours_booked': top_tours_booked,
         'total_chats': total_chats,
-        'recent_sessions': sessions[-20:][::-1],  # Last 20 meaningful sessions, newest first
+        'recent_sessions': sessions[-50:][::-1],  # Last 50 meaningful sessions, newest first
         'account': account,
         'qr_stats': {
             'codes_generated': qr_codes_generated,
@@ -3931,8 +3934,12 @@ def force_git_sync():
                 'changed_files': []
             })
         
-        # Stage and commit
+        # Stage and commit (exclude analytics files - they have their own sync path)
         subprocess.run(['git', 'add', '-A'], cwd=os.getcwd(), check=True, timeout=10)
+        subprocess.run(
+            ['git', 'reset', 'HEAD', '--', 'data/analytics_*.json', 'data/analytics_*_backup.json'],
+            cwd=os.getcwd(), capture_output=True, text=True, timeout=10
+        )
         
         commit_msg = f"Manual sync for {username} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         commit_result = subprocess.run(
@@ -9313,17 +9320,15 @@ def pull_and_restart():
                         merged.append(rs)
                         added += 1
                 
-                # Sort by started_at and cap at 1000
+                # Sort by started_at - no cap, keep ALL sessions forever
                 merged.sort(key=lambda s: s.get('started_at', ''))
-                if len(merged) > 1000:
-                    merged = merged[-1000:]
                 
                 local_data['sessions'] = merged
                 with open(af, 'w', encoding='utf-8') as f:
                     json.dump(local_data, f, indent=2)
                 
                 if added > 0:
-                    print(f"[AUTO-UPDATE] Merged analytics: kept {len(local_sessions)} local + {added} remote sessions")
+                    print(f"[AUTO-UPDATE] Merged analytics: kept {len(local_sessions)} local + {added} remote = {len(merged)} total sessions")
             except Exception as e:
                 # Fallback: just restore the backup as-is
                 print(f"[AUTO-UPDATE] ⚠️ Analytics merge failed ({e}), restoring backup")
@@ -9459,21 +9464,23 @@ def sync_analytics_to_git():
     Robust pull-merge-push flow for multi-kiosk setups:
     1. Fetch latest from remote
     2. Merge remote analytics into local (picks up other kiosks' sessions)
-    3. Commit the merged result
+    3. Commit ONLY analytics files (never other files)
     4. Push to remote (retries with pull-merge if behind)
     """
     try:
         repo_path = os.path.dirname(os.path.abspath(__file__))
         
         # Step 1: Fetch latest from remote
-        subprocess.run(
+        fetch_result = subprocess.run(
             ['git', 'fetch', 'origin', 'main'],
             cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
         )
+        if fetch_result.returncode != 0:
+            print(f"[ANALYTICS SYNC] Fetch failed: {fetch_result.stderr[:200]}", flush=True)
         
         # Step 2: For each analytics file, merge remote sessions into local
-        analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
-        merged_any = False
+        analytics_files = [f for f in glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
+                          if '_backup' not in f]
         
         for af in analytics_files:
             rel_path = os.path.relpath(af, repo_path).replace('\\', '/')
@@ -9489,12 +9496,12 @@ def sync_analytics_to_git():
                     remote_sessions = remote_data.get('sessions', [])
                     
                     # Load local file
-                    with open(af, 'r', encoding='utf-8') as f:
+                    with open(af, 'r', encoding='utf-8-sig') as f:
                         local_data = json.load(f)
                     local_sessions = local_data.get('sessions', [])
                     local_ids = {s.get('session_id') for s in local_sessions if s.get('session_id')}
                     
-                    # Add remote-only sessions to local
+                    # Add remote-only sessions to local (ADDITIVE - never lose data)
                     added = 0
                     for rs in remote_sessions:
                         if rs.get('session_id') and rs['session_id'] not in local_ids:
@@ -9502,38 +9509,40 @@ def sync_analytics_to_git():
                             added += 1
                     
                     if added > 0:
-                        # Sort and cap
                         local_sessions.sort(key=lambda s: s.get('started_at', ''))
-                        if len(local_sessions) > 1000:
-                            local_sessions = local_sessions[-1000:]
-                        
                         local_data['sessions'] = local_sessions
                         local_data['last_updated'] = datetime.now().isoformat()
                         
                         with open(af, 'w', encoding='utf-8') as f:
                             json.dump(local_data, f, indent=2)
                         
-                        merged_any = True
-                        print(f"[ANALYTICS SYNC] Merged {added} remote session(s) into {os.path.basename(af)}")
+                        print(f"[ANALYTICS SYNC] Merged {added} remote session(s) into {os.path.basename(af)} (total: {len(local_sessions)})", flush=True)
             except (json.JSONDecodeError, KeyError) as e:
-                print(f"[ANALYTICS SYNC] Skipping merge for {os.path.basename(af)}: {e}")
+                print(f"[ANALYTICS SYNC] Skipping merge for {os.path.basename(af)}: {e}", flush=True)
         
-        # Step 3: Check if there are any changes to commit (local new sessions + merged remote)
-        status_result = subprocess.run(
-            ['git', 'status', '--porcelain', 'data/analytics*.json'],
-            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-        )
+        # Step 3: Stage ONLY analytics files (explicitly list them, no glob in git command)
+        files_to_add = []
+        for af in analytics_files:
+            rel_path = os.path.relpath(af, repo_path).replace('\\', '/')
+            files_to_add.append(rel_path)
         
-        if not status_result.stdout.strip():
-            # No changes - nothing to push
+        if not files_to_add:
             return
         
-        # Step 4: Add, commit, push
         subprocess.run(
-            ['git', 'add', 'data/analytics*.json'],
+            ['git', 'add'] + files_to_add,
             cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10
         )
         
+        # Check if there's actually anything staged
+        diff_result = subprocess.run(
+            ['git', 'diff', '--cached', '--name-only'],
+            cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+        )
+        if not diff_result.stdout.strip():
+            return  # Nothing staged, nothing to push
+        
+        # Step 4: Commit
         commit_result = subprocess.run(
             ['git', 'commit', '-m', f'Analytics sync {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
             cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
@@ -9542,33 +9551,41 @@ def sync_analytics_to_git():
         if commit_result.returncode != 0:
             if 'nothing to commit' in (commit_result.stdout or ''):
                 return
-            print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr}")
+            print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr[:200]}", flush=True)
             return
         
+        print(f"[ANALYTICS SYNC] Committed analytics update", flush=True)
+        
         # Step 5: Push (with retry on rejection)
-        for attempt in range(2):
+        for attempt in range(3):
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
             )
             
             if push_result.returncode == 0:
-                print(f"[ANALYTICS SYNC] ✅ Pushed analytics to git")
+                print(f"[ANALYTICS SYNC] ✅ Pushed analytics to git", flush=True)
                 return
             
-            if attempt == 0 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
-                # Behind remote - pull, rebase, and try again
-                print(f"[ANALYTICS SYNC] Push rejected (another device pushed first), rebasing...")
-                subprocess.run(
+            if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
+                print(f"[ANALYTICS SYNC] Push rejected (attempt {attempt+1}), pulling and retrying...", flush=True)
+                # Pull with rebase
+                pull_result = subprocess.run(
                     ['git', 'pull', '--rebase', 'origin', 'main'],
                     cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                 )
+                if pull_result.returncode != 0:
+                    # Abort rebase if it failed
+                    subprocess.run(['git', 'rebase', '--abort'], cwd=repo_path,
+                                 capture_output=True, text=True, timeout=10)
+                    print(f"[ANALYTICS SYNC] Rebase failed, aborting: {pull_result.stderr[:200]}", flush=True)
+                    return
             else:
-                print(f"[ANALYTICS SYNC] ❌ Push failed: {push_result.stderr}")
+                print(f"[ANALYTICS SYNC] ❌ Push failed: {push_result.stderr[:200]}", flush=True)
                 return
             
     except Exception as e:
-        print(f"[ANALYTICS SYNC] Error: {e}")
+        print(f"[ANALYTICS SYNC] Error: {e}", flush=True)
         import traceback
         traceback.print_exc()
 
@@ -9641,13 +9658,9 @@ def pull_analytics_only(account=None):
                     merged_sessions.append(remote_session)
                     new_sessions_count += 1
             
-            # Update analytics with merged sessions
+            # Update analytics with merged sessions - keep ALL sessions forever
             local_analytics['sessions'] = merged_sessions
             local_analytics['account'] = account
-            
-            # Keep only last 1000 sessions to prevent file bloat
-            if len(local_analytics['sessions']) > 1000:
-                local_analytics['sessions'] = local_analytics['sessions'][-1000:]
             
             # Save merged analytics
             save_analytics(local_analytics, account)
@@ -9717,17 +9730,51 @@ def refresh_analytics():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+_analytics_session_count_at_last_push = {}  # Track sessions per account at last push
+
 def analytics_sync_loop():
-    """Background thread that syncs analytics periodically"""
-    time.sleep(30)  # Wait before first sync
+    """Background thread that pushes analytics to git periodically.
+    Only pushes when there are genuinely new sessions since last push.
+    Runs every 10 minutes on local kiosks only.
+    """
+    time.sleep(60)  # Wait 60s before first check
     
     while True:
         try:
-            sync_analytics_to_git()
-            time.sleep(300)  # Sync every 5 minutes
+            # Check if there are new sessions worth pushing
+            has_new = False
+            for af in glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'analytics_*.json')):
+                if '_backup' in af:
+                    continue
+                try:
+                    with open(af, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    current_count = len(data.get('sessions', []))
+                    last_count = _analytics_session_count_at_last_push.get(af, 0)
+                    if current_count > last_count:
+                        has_new = True
+                        break
+                except:
+                    pass
+            
+            if has_new:
+                print("[ANALYTICS] New sessions detected, pushing to git...", flush=True)
+                sync_analytics_to_git()
+                # Update counts after successful push
+                for af in glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'analytics_*.json')):
+                    if '_backup' in af:
+                        continue
+                    try:
+                        with open(af, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        _analytics_session_count_at_last_push[af] = len(data.get('sessions', []))
+                    except:
+                        pass
+            
+            time.sleep(600)  # Check every 10 minutes
         except Exception as e:
             print(f"[ANALYTICS] Sync loop error: {e}")
-            time.sleep(60)
+            time.sleep(120)
 
 # ============================================================================
 # STARTUP - Initialize background threads
@@ -9780,10 +9827,13 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # Analytics are stored locally on each kiosk and only synced on demand
-    # (admin clicks "Pull Latest Analytics" in agent dashboard, or kiosk pushes during code updates)
-    # No auto-push loop — it creates git commits that trigger restarts on all kiosks
-    print("[ANALYTICS] Analytics stored locally (no auto-push — sync on demand only)")
+    # Start analytics auto-push on local kiosks (pushes to git every 10 min when new sessions exist)
+    if AUTO_UPDATE_ENABLED and HAS_GIT_REPO:
+        _analytics_thread = threading.Thread(target=analytics_sync_loop, daemon=True)
+        _analytics_thread.start()
+        print("[ANALYTICS] Auto-push enabled (every 10 min when new sessions exist)")
+    else:
+        print("[ANALYTICS] Analytics stored locally (sync on demand via Refresh Data)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()

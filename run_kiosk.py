@@ -218,10 +218,8 @@ def pull_updates():
                         merged.append(rs)
                         added += 1
                 
-                # Sort by started_at and cap at 1000
+                # Sort by started_at - no cap, keep ALL sessions forever
                 merged.sort(key=lambda s: s.get('started_at', ''))
-                if len(merged) > 1000:
-                    merged = merged[-1000:]
                 
                 local_data['sessions'] = merged
                 with open(af, 'w', encoding='utf-8') as f:
