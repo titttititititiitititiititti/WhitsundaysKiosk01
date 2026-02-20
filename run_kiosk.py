@@ -118,6 +118,13 @@ def check_for_updates():
         local_commit = local_head.stdout.strip()
         remote_commit = remote_head.stdout.strip()
         
+        # Always check for analytics push requests after fetch (even if no code updates)
+        # This lets kiosks respond to admin "Refresh Data" requests promptly
+        try:
+            check_analytics_push_request()
+        except Exception as e:
+            log(f"[ANALYTICS] Error during push check: {e}")
+        
         # Check if they're different
         if local_commit != remote_commit:
             # Check how many commits behind we are
@@ -271,6 +278,125 @@ def pull_updates():
     except Exception as e:
         log(f"[UPDATE] Error pulling: {e}")
         return False
+
+_last_analytics_push_time = 0  # Timestamp of last analytics push
+
+def check_analytics_push_request():
+    """Check if admin has requested analytics push via signal file.
+    If the signal is recent (within last 5 minutes), push local analytics to git.
+    """
+    global _last_analytics_push_time
+    import json
+    import glob as globmod
+    
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        signal_file = os.path.join(script_dir, 'data', 'analytics_request.json')
+        
+        if not os.path.exists(signal_file):
+            return
+        
+        # Read the request signal
+        try:
+            with open(signal_file, 'r', encoding='utf-8') as f:
+                signal = json.load(f)
+        except:
+            return
+        
+        requested_at = signal.get('requested_at', '')
+        if not requested_at:
+            return
+        
+        # Parse the request timestamp
+        from datetime import datetime
+        try:
+            request_time = datetime.fromisoformat(requested_at)
+            # Only respond to requests from the last 5 minutes
+            age_seconds = (datetime.now() - request_time).total_seconds()
+            if age_seconds > 300:
+                return  # Signal is old, ignore
+        except:
+            return
+        
+        # Don't push more than once per request (use timestamp as key)
+        if _last_analytics_push_time >= request_time.timestamp():
+            return  # Already responded to this request
+        
+        log(f"[ANALYTICS] Push request received (from {signal.get('requested_by', '?')}, {int(age_seconds)}s ago)")
+        
+        # Push local analytics files to git
+        analytics_files = [f for f in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json'))
+                          if '_backup' not in f and '_request' not in f]
+        
+        if not analytics_files:
+            log("[ANALYTICS] No analytics files to push")
+            return
+        
+        # Stage only analytics files
+        rel_paths = []
+        for af in analytics_files:
+            rel = os.path.relpath(af, script_dir).replace('\\', '/')
+            rel_paths.append(rel)
+        
+        subprocess.run(
+            ['git', 'add'] + rel_paths,
+            cwd=script_dir, capture_output=True, text=True, timeout=10
+        )
+        
+        # Check if anything was staged
+        diff_result = subprocess.run(
+            ['git', 'diff', '--cached', '--name-only'],
+            cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+        )
+        if not diff_result.stdout.strip():
+            log("[ANALYTICS] No new analytics changes to push")
+            _last_analytics_push_time = request_time.timestamp()
+            return
+        
+        # Commit
+        hostname = os.environ.get('COMPUTERNAME', os.environ.get('HOSTNAME', 'unknown'))
+        commit_result = subprocess.run(
+            ['git', 'commit', '-m', f'Analytics push from {hostname}'],
+            cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+        )
+        
+        if commit_result.returncode != 0:
+            if 'nothing to commit' in (commit_result.stdout or ''):
+                log("[ANALYTICS] Nothing new to commit")
+                _last_analytics_push_time = request_time.timestamp()
+                return
+            log(f"[ANALYTICS] Commit failed: {commit_result.stderr[:200]}")
+            return
+        
+        # Push with retry
+        for attempt in range(3):
+            push_result = subprocess.run(
+                ['git', 'push', 'origin', 'main'],
+                cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+            )
+            
+            if push_result.returncode == 0:
+                log("[ANALYTICS] ✅ Analytics pushed to git successfully!")
+                _last_analytics_push_time = request_time.timestamp()
+                return
+            
+            if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
+                log(f"[ANALYTICS] Push rejected (attempt {attempt+1}), pulling and retrying...")
+                pull_result = subprocess.run(
+                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                    cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                )
+                if pull_result.returncode != 0:
+                    subprocess.run(['git', 'rebase', '--abort'], cwd=script_dir,
+                                 capture_output=True, text=True, timeout=10)
+                    log(f"[ANALYTICS] Rebase failed, aborting")
+                    return
+            else:
+                log(f"[ANALYTICS] Push failed: {push_result.stderr[:200]}")
+                return
+        
+    except Exception as e:
+        log(f"[ANALYTICS] Error checking push request: {e}")
 
 def check_rapid_restarts():
     """Check if we're in a crash loop. Returns True if crash loop detected."""
