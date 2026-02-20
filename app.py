@@ -2489,6 +2489,7 @@ def register():
                     'company': None
                 }
                 save_users(users)
+                git_sync_changes(f"New account created: {username}")
                 success = 'Account created successfully! You can now log in.'
                 print(f"[OK] New account created: {username} ({email})")
     
@@ -2514,6 +2515,9 @@ def account_onboarding():
         settings['enabled_companies'] = selected_companies
         settings['onboarding_complete'] = True
         save_account_settings(username, settings)
+        
+        # Sync onboarding settings to connected kiosks
+        git_sync_changes(f"Onboarding complete for {username}")
         
         # Note: Don't auto-link to kiosk here - use setup_kiosk.py for that
         # Each shop's repo should have instance.json pre-configured
@@ -2837,10 +2841,7 @@ def api_approve_request(request_id):
     note = data.get('note', '')
     
     success, message = approve_change_request(request_id, username, note)
-    
-    # Sync approved changes to connected kiosks
-    if success:
-        git_sync_changes(f"Approved change request: {request_id}")
+    # Note: git_sync_changes is called inside approve_change_request() on success
     
     return jsonify({
         'success': success,
@@ -2860,6 +2861,10 @@ def api_deny_request(request_id):
     note = data.get('note', '')
     
     success, message = deny_change_request(request_id, username, note)
+    
+    # Sync denial status to connected kiosks
+    if success:
+        git_sync_changes(f"Denied change request: {request_id}")
     
     return jsonify({
         'success': success,
@@ -2977,8 +2982,9 @@ def reset_password():
             if username in users:
                 users[username]['password'] = generate_password_hash(new_password)
                 save_users(users)
+                git_sync_changes(f"Password reset for {username}")
                 del password_reset_tokens[username]
-                print(f"ðŸ”‘ Password reset successful for {username}")
+                print(f"[OK] Password reset successful for {username}")
                 return redirect(url_for('login') + '?reset=success')
             else:
                 error = 'User not found'
@@ -3036,6 +3042,7 @@ def account_settings():
                     user['name'] = new_name
                     user['email'] = new_email
                     save_users(users)
+                    git_sync_changes(f"Profile updated for {username}")
                     # Update session
                     session['name'] = new_name
                     success = 'Profile updated successfully!'
@@ -3073,8 +3080,9 @@ def account_settings():
                     # Update password
                     user['password'] = generate_password_hash(new_password)
                     save_users(users)
+                    git_sync_changes(f"Password changed for {username}")
                     success = 'Password changed successfully!'
-                    print(f"ðŸ”‘ Password changed for {username}")
+                    print(f"[OK] Password changed for {username}")
     
     return render_template('account_settings.html', 
                           user=user, 
@@ -3386,6 +3394,9 @@ def toggle_company_images():
     
     settings['disabled_images_companies'] = disabled_images
     save_agent_settings(settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Toggled images for company: {company}")
     
     return jsonify({'success': True, 'images_enabled': enabled})
 
@@ -8168,6 +8179,9 @@ def set_tour_thumbnail(key):
     thumb_path = os.path.join(folder, f"thumbnail{ext}")
     shutil.copy2(source_path, thumb_path)
     
+    # Sync to connected kiosks
+    git_sync_changes(f"Set thumbnail for {company}/{tid}")
+    
     return jsonify({
         'success': True,
         'thumbnail': f"/{thumb_path}".replace("\\", "/")
@@ -8594,6 +8608,9 @@ def save_tour_reviews(key):
         with open(review_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
+        # Sync to connected kiosks
+        git_sync_changes(f"Updated reviews for {company}/{tid}")
+        
         return jsonify({
             'success': True,
             'message': 'Reviews saved successfully'
@@ -8634,6 +8651,9 @@ def apply_reviews_to_company(company):
             with open(review_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             saved_count += 1
+        
+        # Sync to connected kiosks
+        git_sync_changes(f"Applied reviews to {saved_count} {company} tours")
         
         return jsonify({
             'success': True,
