@@ -141,6 +141,11 @@ GIT_SYNC_COOLDOWN = 5  # Minimum seconds between git syncs
 # Set GITHUB_TOKEN environment variable with a Personal Access Token
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 
+# Render sets RENDER_GIT_REPO_SLUG automatically (e.g. "owner/repo")
+# Fallback: user can set GITHUB_REPO env var manually (e.g. "owner/repo")
+GITHUB_REPO_SLUG = (os.environ.get('RENDER_GIT_REPO_SLUG') or 
+                    os.environ.get('GITHUB_REPO') or '')
+
 def _update_sync_status(success, message):
     """Track the last sync status so admin can see it"""
     global _last_git_sync_status
@@ -152,8 +157,55 @@ def _update_sync_status(success, message):
     status_icon = "✅" if success else "❌"
     print(f"[GIT SYNC] {status_icon} {message}", flush=True)
 
+def _ensure_git_remote():
+    """Ensure the 'origin' remote exists. Render strips remotes on deploy."""
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    try:
+        # Check if origin remote exists
+        result = subprocess.run(
+            ['git', 'remote', 'get-url', 'origin'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return True  # origin exists
+        
+        # Origin missing — try to reconstruct from environment
+        owner, repo = _get_github_repo_info()
+        if owner and repo:
+            remote_url = f'https://github.com/{owner}/{repo}.git'
+            add_result = subprocess.run(
+                ['git', 'remote', 'add', 'origin', remote_url],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5
+            )
+            if add_result.returncode == 0:
+                print(f"[GIT SYNC] ✅ Added missing origin remote: {remote_url}", flush=True)
+                return True
+            else:
+                # Remote might already exist with wrong URL, try set-url
+                subprocess.run(
+                    ['git', 'remote', 'set-url', 'origin', remote_url],
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5
+                )
+                print(f"[GIT SYNC] ✅ Set origin remote URL: {remote_url}", flush=True)
+                return True
+        
+        print("[GIT SYNC] ⚠️ Cannot add origin remote — repo info unknown", flush=True)
+        return False
+    except Exception as e:
+        print(f"[GIT SYNC] Error ensuring remote: {e}", flush=True)
+        return False
+
 def _get_github_repo_info():
-    """Extract owner/repo from git remote URL"""
+    """Extract owner/repo from git remote URL or environment variables"""
+    # Priority 1: Render's auto-set env var or user-set GITHUB_REPO
+    if GITHUB_REPO_SLUG and '/' in GITHUB_REPO_SLUG:
+        parts = GITHUB_REPO_SLUG.strip().split('/')
+        if len(parts) >= 2:
+            owner = parts[0]
+            repo = parts[1].replace('.git', '')
+            return owner, repo
+    
+    # Priority 2: git remote URL
     try:
         result = subprocess.run(
             ['git', 'remote', 'get-url', 'origin'],
@@ -162,32 +214,22 @@ def _get_github_repo_info():
         )
         origin_url = result.stdout.strip()
         
-        if not origin_url or result.returncode != 0:
-            print(f"[GIT SYNC] Could not get origin URL: returncode={result.returncode}, stderr={result.stderr.strip()}", flush=True)
-            return None, None
-        
-        # Handle various URL formats:
-        # https://github.com/owner/repo.git
-        # https://token@github.com/owner/repo.git
-        # https://x-access-token:TOKEN@github.com/owner/repo.git
-        # git@github.com:owner/repo.git
-        # ssh://git@github.com/owner/repo.git
-        import re as _re
-        match = _re.search(r'github\.com[:/]([^/]+)/([^/\s.]+?)(?:\.git)?$', origin_url)
-        if match:
-            return match.group(1), match.group(2)
-        
-        # Broader fallback: any URL with /owner/repo pattern after github.com
-        match = _re.search(r'github\.com[:/]([^/]+)/([^/\s]+)', origin_url)
-        if match:
-            repo_name = match.group(2).rstrip('.git').rstrip('/')
-            return match.group(1), repo_name
-        
-        print(f"[GIT SYNC] Could not parse owner/repo from origin URL: {origin_url[:100]}", flush=True)
-        return None, None
-    except Exception as e:
-        print(f"[GIT SYNC] Error getting repo info: {e}", flush=True)
-        return None, None
+        if origin_url and result.returncode == 0:
+            # Handle various URL formats
+            import re as _re
+            match = _re.search(r'github\.com[:/]([^/]+)/([^/\s.]+?)(?:\.git)?$', origin_url)
+            if match:
+                return match.group(1), match.group(2)
+            
+            match = _re.search(r'github\.com[:/]([^/]+)/([^/\s]+)', origin_url)
+            if match:
+                repo_name = match.group(2).rstrip('.git').rstrip('/')
+                return match.group(1), repo_name
+    except:
+        pass
+    
+    print("[GIT SYNC] Could not determine GitHub repo from env vars or git remote", flush=True)
+    return None, None
 
 def _configure_git_identity():
     """Configure git user.name and user.email if not set (required for commits on Render)"""
@@ -224,8 +266,11 @@ def get_authenticated_remote_url():
     if not GITHUB_TOKEN:
         return None
     
+    # Ensure origin remote exists (Render strips remotes on deploy)
+    _ensure_git_remote()
+    
     try:
-        # Get current origin URL
+        # Try to get origin URL from git remote
         result = subprocess.run(
             ['git', 'remote', 'get-url', 'origin'],
             capture_output=True, text=True, encoding='utf-8', errors='replace',
@@ -233,18 +278,22 @@ def get_authenticated_remote_url():
         )
         origin_url = result.stdout.strip()
         
-        # Convert https://github.com/user/repo.git to https://token@github.com/user/repo.git
-        if 'github.com' in origin_url:
+        if origin_url and 'github.com' in origin_url:
             # Remove any existing credentials from URL
             if origin_url.startswith('https://'):
                 url_without_auth = origin_url.replace('https://', '')
                 if '@' in url_without_auth:
                     url_without_auth = url_without_auth.split('@', 1)[1]
                 return f'https://{GITHUB_TOKEN}@{url_without_auth}'
-        
-        return None
     except:
-        return None
+        pass
+    
+    # Fallback: build URL from repo info (env vars)
+    owner, repo = _get_github_repo_info()
+    if owner and repo:
+        return f'https://{GITHUB_TOKEN}@github.com/{owner}/{repo}.git'
+    
+    return None
 
 def _github_api_push(changed_files_dict, commit_message):
     """
@@ -3611,6 +3660,8 @@ def git_sync_status():
         'github_token_prefix': GITHUB_TOKEN[:8] + '...' if GITHUB_TOKEN else '(empty)',
         'has_git_repo': os.path.exists(os.path.join(cwd, '.git')),
         'is_render': bool(os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')),
+        'render_git_repo_slug': os.environ.get('RENDER_GIT_REPO_SLUG', '(not set)'),
+        'github_repo_env': os.environ.get('GITHUB_REPO', '(not set)'),
         'app_cwd': cwd,
     }
     
@@ -9655,18 +9706,30 @@ def start_background_services():
     
     print("[STARTUP] Initializing background services...")
     
-    # Configure git identity early (critical for Render where it's not set)
+    # Configure git identity and remote early (critical for Render where these are missing)
     if HAS_GIT_REPO:
         _configure_git_identity()
+        
+        # Detect repo info (from Render env vars or git remote)
         owner, repo = _get_github_repo_info()
         if owner and repo:
             print(f"[GIT SYNC] Repository: {owner}/{repo}")
         else:
-            print("[GIT SYNC] ⚠️ Could not determine GitHub repository from git remote")
+            print("[GIT SYNC] ⚠️ Could not determine GitHub repository")
+            print("[GIT SYNC]   Set GITHUB_REPO env var (e.g. 'owner/repo') on Render to fix this")
+        
         if GITHUB_TOKEN:
             print("[GIT SYNC] GITHUB_TOKEN is set ✅")
         else:
             print("[GIT SYNC] ⚠️ GITHUB_TOKEN not set — push to GitHub will likely fail")
+        
+        # Ensure origin remote exists (Render strips remotes on deploy)
+        _ensure_git_remote()
+        
+        if GITHUB_REPO_SLUG:
+            print(f"[GIT SYNC] Repo slug from env: {GITHUB_REPO_SLUG}")
+        else:
+            print("[GIT SYNC] No RENDER_GIT_REPO_SLUG or GITHUB_REPO env var found")
     
     # Start auto-update thread (only on local kiosks with git, not Render)
     if AUTO_UPDATE_ENABLED:
