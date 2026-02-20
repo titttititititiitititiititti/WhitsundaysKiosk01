@@ -342,6 +342,7 @@
                         {% elif lang == 'fr' %}🇫🇷 Français
                         {% elif lang == 'es' %}🇪🇸 Español
                         {% elif lang == 'hi' %}🇮🇳 हिन्दी
+                        {% elif lang == 'ko' %}🇰🇷 한국어
                         {% else %}{{ lang }}
                         {% endif %}
                     </span>
@@ -516,6 +517,7 @@
                                     {% elif session.language == 'fr' %}🇫🇷
                                     {% elif session.language == 'es' %}🇪🇸
                                     {% elif session.language == 'hi' %}🇮🇳
+                                    {% elif session.language == 'ko' %}🇰🇷
                                     {% else %}{{ session.language or '?' }}
                                     {% endif %}
                                 </span>
