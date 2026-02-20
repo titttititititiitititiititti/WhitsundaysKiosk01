@@ -161,13 +161,32 @@ def _get_github_repo_info():
             cwd=os.path.dirname(os.path.abspath(__file__)), timeout=10
         )
         origin_url = result.stdout.strip()
-        # Handle both https://github.com/owner/repo.git and git@github.com:owner/repo.git
+        
+        if not origin_url or result.returncode != 0:
+            print(f"[GIT SYNC] Could not get origin URL: returncode={result.returncode}, stderr={result.stderr.strip()}", flush=True)
+            return None, None
+        
+        # Handle various URL formats:
+        # https://github.com/owner/repo.git
+        # https://token@github.com/owner/repo.git
+        # https://x-access-token:TOKEN@github.com/owner/repo.git
+        # git@github.com:owner/repo.git
+        # ssh://git@github.com/owner/repo.git
         import re as _re
-        match = _re.search(r'github\.com[:/]([^/]+)/([^/.]+)', origin_url)
+        match = _re.search(r'github\.com[:/]([^/]+)/([^/\s.]+?)(?:\.git)?$', origin_url)
         if match:
-            return match.group(1), match.group(2).replace('.git', '')
+            return match.group(1), match.group(2)
+        
+        # Broader fallback: any URL with /owner/repo pattern after github.com
+        match = _re.search(r'github\.com[:/]([^/]+)/([^/\s]+)', origin_url)
+        if match:
+            repo_name = match.group(2).rstrip('.git').rstrip('/')
+            return match.group(1), repo_name
+        
+        print(f"[GIT SYNC] Could not parse owner/repo from origin URL: {origin_url[:100]}", flush=True)
         return None, None
-    except:
+    except Exception as e:
+        print(f"[GIT SYNC] Error getting repo info: {e}", flush=True)
         return None, None
 
 def _configure_git_identity():
@@ -3589,8 +3608,10 @@ def git_sync_status():
     info = {
         'last_sync': _last_git_sync_status,
         'github_token_set': bool(GITHUB_TOKEN),
+        'github_token_prefix': GITHUB_TOKEN[:8] + '...' if GITHUB_TOKEN else '(empty)',
         'has_git_repo': os.path.exists(os.path.join(cwd, '.git')),
         'is_render': bool(os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')),
+        'app_cwd': cwd,
     }
     
     # Check git identity
@@ -3601,13 +3622,30 @@ def git_sync_status():
             cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
         info['git_user'] = name_result.stdout.strip() or '(not set)'
         info['git_email'] = email_result.stdout.strip() or '(not set)'
-    except:
-        info['git_user'] = '(error)'
-        info['git_email'] = '(error)'
+    except Exception as e:
+        info['git_user'] = f'(error: {e})'
+        info['git_email'] = f'(error: {e})'
+    
+    # Show the raw remote URL (helps debug why repo detection fails)
+    try:
+        remote_result = subprocess.run(['git', 'remote', '-v'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
+        info['git_remotes'] = remote_result.stdout.strip() if remote_result.returncode == 0 else f'(error: {remote_result.stderr.strip()})'
+        
+        origin_result = subprocess.run(['git', 'remote', 'get-url', 'origin'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
+        raw_url = origin_result.stdout.strip()
+        # Mask any tokens in the URL for security
+        import re as _re
+        masked_url = _re.sub(r'https://[^@]+@', 'https://***@', raw_url)
+        info['origin_url'] = masked_url if origin_result.returncode == 0 else f'(error: {origin_result.stderr.strip()})'
+    except Exception as e:
+        info['git_remotes'] = f'(error: {e})'
+        info['origin_url'] = f'(error: {e})'
     
     # Check repo info
     owner, repo = _get_github_repo_info()
-    info['github_repo'] = f"{owner}/{repo}" if owner else '(unknown)'
+    info['github_repo'] = f"{owner}/{repo}" if owner else '(unknown - check origin_url above)'
     
     # Check for uncommitted changes
     try:
@@ -3615,10 +3653,52 @@ def git_sync_status():
             cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10)
         uncommitted = [l.strip() for l in result.stdout.strip().split('\n') if l.strip()]
         info['uncommitted_changes'] = len(uncommitted)
+        if uncommitted:
+            info['uncommitted_files'] = uncommitted[:10]
     except:
         info['uncommitted_changes'] = '(error)'
     
+    # Auto-configure git identity if needed (so next sync works)
+    _configure_git_identity()
+    
+    # Test: try to determine auth URL
+    auth_url = get_authenticated_remote_url()
+    info['auth_push_url_available'] = bool(auth_url)
+    
     return jsonify(info)
+
+@app.route('/admin/agent/api/test-git-sync', methods=['POST'])
+def test_git_sync():
+    """Test the git sync mechanism by making a tiny change and pushing it"""
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    
+    # Configure identity first
+    _configure_git_identity()
+    
+    # Write a test timestamp file
+    test_file = os.path.join(cwd, 'config', 'defaults', '_sync_test.json')
+    os.makedirs(os.path.dirname(test_file), exist_ok=True)
+    
+    import json as _json
+    test_data = {
+        'last_test': datetime.now().isoformat(),
+        'source': 'filtour.com sync test',
+        'status': 'testing'
+    }
+    with open(test_file, 'w', encoding='utf-8') as f:
+        _json.dump(test_data, f, indent=2)
+    
+    # Now try to sync
+    git_sync_changes("Sync test from filtour.com admin")
+    
+    # Wait a moment for the background thread to start
+    time.sleep(3)
+    
+    return jsonify({
+        'success': True,
+        'message': 'Sync test initiated. Check /admin/agent/api/git-sync-status in a few seconds to see the result.',
+        'last_sync': _last_git_sync_status
+    })
 
 @app.route('/admin/agent/api/set-device-account', methods=['POST'])
 def set_device_account():
@@ -9574,6 +9654,19 @@ def start_background_services():
     _startup_done = True
     
     print("[STARTUP] Initializing background services...")
+    
+    # Configure git identity early (critical for Render where it's not set)
+    if HAS_GIT_REPO:
+        _configure_git_identity()
+        owner, repo = _get_github_repo_info()
+        if owner and repo:
+            print(f"[GIT SYNC] Repository: {owner}/{repo}")
+        else:
+            print("[GIT SYNC] ⚠️ Could not determine GitHub repository from git remote")
+        if GITHUB_TOKEN:
+            print("[GIT SYNC] GITHUB_TOKEN is set ✅")
+        else:
+            print("[GIT SYNC] ⚠️ GITHUB_TOKEN not set — push to GitHub will likely fail")
     
     # Start auto-update thread (only on local kiosks with git, not Render)
     if AUTO_UPDATE_ENABLED:
