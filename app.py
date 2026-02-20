@@ -2838,6 +2838,10 @@ def api_approve_request(request_id):
     
     success, message = approve_change_request(request_id, username, note)
     
+    # Sync approved changes to connected kiosks
+    if success:
+        git_sync_changes(f"Approved change request: {request_id}")
+    
     return jsonify({
         'success': success,
         'message': message
@@ -7781,6 +7785,9 @@ def update_company_display_name():
         settings['company_name_overrides'][company_key] = display_name
         save_account_settings(username, settings)
         
+        # Sync to connected kiosks
+        git_sync_changes(f"Updated company name override: {company_key}")
+        
         return jsonify({
             'success': True,
             'account_specific': True,
@@ -8212,6 +8219,9 @@ def sync_tour_images_to_csv(company, tid):
                 writer.writeheader()
                 writer.writerows(rows)
             print(f"[Sync] Successfully wrote CSV: {csv_file}")
+            
+            # Sync image updates to connected kiosks
+            git_sync_changes(f"Synced images for tour {tid}")
         except Exception as e:
             print(f"[Sync] Error updating CSV: {e}")
             import traceback
@@ -8314,6 +8324,9 @@ def delete_tour_image(key):
             settings['hidden_images'][key].append(normalized_path)
         
         save_account_settings(username, settings)
+        
+        # Sync to connected kiosks
+        git_sync_changes(f"Hidden image for tour {key}")
         
         return jsonify({
             'success': True, 
@@ -8424,6 +8437,9 @@ def tour_video_urls(key):
                 writer.writeheader()
                 writer.writerows(rows)
             
+            # Sync to connected kiosks
+            git_sync_changes(f"Updated video URLs for tour {tid}")
+            
             return jsonify({
                 'success': True,
                 'video_urls': video_urls
@@ -8527,6 +8543,9 @@ def delete_tour(key):
             print(f"[Delete] Deleted review file: {review_file}")
         except Exception as e:
             print(f"[Delete] Warning: Could not delete review file: {e}")
+    
+    # Sync deletion to connected kiosks
+    git_sync_changes(f"Deleted tour: {tid} from {company}")
     
     return jsonify({
         'success': True,
