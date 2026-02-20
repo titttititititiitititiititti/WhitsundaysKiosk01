@@ -1717,7 +1717,8 @@ def is_meaningful_session(session):
         'qr_code_generated', 'qr_tour_visit',
         'book_now_clicked', 'booking_click', 'send_to_phone', 'send_to_phone_clicked',
         'language_select', 'language_selected',
-        'swipe', 'card_swipe', 'like', 'dislike'
+        'swipe', 'card_swipe', 'like', 'dislike',
+        'weather_opened'
     }
     
     events = session.get('events', [])

@@ -359,8 +359,11 @@
                 <div class="breakdown-item">
                     <span class="breakdown-label">
                         {% if mode == 'ai-assistant' %}🤖 AI Assistant
-                        {% elif mode == 'quick-decision' %}⚡ Quick Decision
+                        {% elif mode == 'quick-decision' %}⚡ Quick Match
                         {% elif mode == 'browse-all' %}🗂️ Browse All Tours
+                        {% elif mode == 'newcomer-info' %}ℹ️ Newcomer Info
+                        {% elif mode == 'map-view' %}🗺️ Map View
+                        {% elif mode == 'weather' %}⛅ Weather
                         {% else %}{{ mode }}
                         {% endif %}
                     </span>
@@ -526,9 +529,15 @@
                                 {% if session.mode == 'ai-assistant' %}
                                 <span class="badge badge-ai">🤖 AI</span>
                                 {% elif session.mode == 'quick-decision' %}
-                                <span class="badge badge-quick">⚡ Quick</span>
+                                <span class="badge badge-quick">⚡ Quick Match</span>
                                 {% elif session.mode == 'browse-all' %}
                                 <span class="badge badge-browse">🗂️ Browse</span>
+                                {% elif session.mode == 'newcomer-info' %}
+                                <span class="badge badge-browse">ℹ️ Newcomer</span>
+                                {% elif session.mode == 'map-view' %}
+                                <span class="badge badge-browse">🗺️ Map</span>
+                                {% elif session.mode == 'weather' %}
+                                <span class="badge badge-browse">⛅ Weather</span>
                                 {% else %}
                                 <span class="badge badge-unknown">{{ session.mode or '?' }}</span>
                                 {% endif %}
