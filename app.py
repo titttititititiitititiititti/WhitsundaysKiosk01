@@ -125,13 +125,80 @@ def get_referral_account():
 # GIT SYNC - AUTO-PUSH CHANGES TO CONNECTED DEVICES
 # ============================================================================
 
+import base64
+try:
+    import requests as http_requests  # Renamed to avoid conflict with flask.request
+except ImportError:
+    http_requests = None
+    print("[GIT SYNC] WARNING: requests library not available - GitHub API fallback disabled")
+
 _git_sync_lock = threading.Lock()
 _last_git_sync = 0
+_last_git_sync_status = {'success': None, 'message': '', 'timestamp': None}
 GIT_SYNC_COOLDOWN = 5  # Minimum seconds between git syncs
 
 # GitHub token for authenticated push from Render/cloud deployments
 # Set GITHUB_TOKEN environment variable with a Personal Access Token
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
+
+def _update_sync_status(success, message):
+    """Track the last sync status so admin can see it"""
+    global _last_git_sync_status
+    _last_git_sync_status = {
+        'success': success,
+        'message': message,
+        'timestamp': datetime.now().isoformat()
+    }
+    status_icon = "✅" if success else "❌"
+    print(f"[GIT SYNC] {status_icon} {message}", flush=True)
+
+def _get_github_repo_info():
+    """Extract owner/repo from git remote URL"""
+    try:
+        result = subprocess.run(
+            ['git', 'remote', 'get-url', 'origin'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace',
+            cwd=os.path.dirname(os.path.abspath(__file__)), timeout=10
+        )
+        origin_url = result.stdout.strip()
+        # Handle both https://github.com/owner/repo.git and git@github.com:owner/repo.git
+        import re as _re
+        match = _re.search(r'github\.com[:/]([^/]+)/([^/.]+)', origin_url)
+        if match:
+            return match.group(1), match.group(2).replace('.git', '')
+        return None, None
+    except:
+        return None, None
+
+def _configure_git_identity():
+    """Configure git user.name and user.email if not set (required for commits on Render)"""
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    try:
+        # Check if user.name is set
+        result = subprocess.run(
+            ['git', 'config', 'user.name'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=cwd, timeout=5
+        )
+        if not result.stdout.strip():
+            subprocess.run(
+                ['git', 'config', 'user.name', 'Filtour Bot'],
+                cwd=cwd, capture_output=True, text=True, timeout=5
+            )
+            print("[GIT SYNC] Configured git user.name = 'Filtour Bot'", flush=True)
+        
+        # Check if user.email is set
+        result = subprocess.run(
+            ['git', 'config', 'user.email'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=cwd, timeout=5
+        )
+        if not result.stdout.strip():
+            subprocess.run(
+                ['git', 'config', 'user.email', 'bot@filtour.com'],
+                cwd=cwd, capture_output=True, text=True, timeout=5
+            )
+            print("[GIT SYNC] Configured git user.email = 'bot@filtour.com'", flush=True)
+    except Exception as e:
+        print(f"[GIT SYNC] Warning: Could not configure git identity: {e}", flush=True)
 
 def get_authenticated_remote_url():
     """Get the remote URL with authentication token embedded (for Render/cloud)"""
@@ -142,21 +209,115 @@ def get_authenticated_remote_url():
         # Get current origin URL
         result = subprocess.run(
             ['git', 'remote', 'get-url', 'origin'],
-            capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd(), timeout=10
+            capture_output=True, text=True, encoding='utf-8', errors='replace',
+            cwd=os.path.dirname(os.path.abspath(__file__)), timeout=10
         )
         origin_url = result.stdout.strip()
         
         # Convert https://github.com/user/repo.git to https://token@github.com/user/repo.git
-        if origin_url.startswith('https://github.com/'):
-            # Remove any existing credentials
-            url_without_auth = origin_url.replace('https://', '')
-            if '@' in url_without_auth:
-                url_without_auth = url_without_auth.split('@', 1)[1]
-            return f'https://{GITHUB_TOKEN}@{url_without_auth}'
+        if 'github.com' in origin_url:
+            # Remove any existing credentials from URL
+            if origin_url.startswith('https://'):
+                url_without_auth = origin_url.replace('https://', '')
+                if '@' in url_without_auth:
+                    url_without_auth = url_without_auth.split('@', 1)[1]
+                return f'https://{GITHUB_TOKEN}@{url_without_auth}'
         
         return None
     except:
         return None
+
+def _github_api_push(changed_files_dict, commit_message):
+    """
+    Push file changes to GitHub using the REST API.
+    This is the most reliable method for Render/cloud where git CLI push may fail.
+    
+    changed_files_dict: {filepath: content_bytes_or_str, ...}
+    Returns: (success: bool, message: str)
+    """
+    if not http_requests:
+        return False, "requests library not available"
+    if not GITHUB_TOKEN:
+        return False, "GITHUB_TOKEN not set"
+    
+    owner, repo = _get_github_repo_info()
+    if not owner or not repo:
+        return False, "Could not determine GitHub repo owner/name from git remote"
+    
+    headers = {
+        'Authorization': f'token {GITHUB_TOKEN}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    api_base = f'https://api.github.com/repos/{owner}/{repo}'
+    
+    try:
+        # 1. Get the current commit SHA of the main branch
+        ref_resp = http_requests.get(f'{api_base}/git/ref/heads/main', headers=headers, timeout=15)
+        if ref_resp.status_code != 200:
+            return False, f"Failed to get branch ref: {ref_resp.status_code} {ref_resp.text[:200]}"
+        current_sha = ref_resp.json()['object']['sha']
+        
+        # 2. Get the current tree SHA
+        commit_resp = http_requests.get(f'{api_base}/git/commits/{current_sha}', headers=headers, timeout=15)
+        if commit_resp.status_code != 200:
+            return False, f"Failed to get commit: {commit_resp.status_code}"
+        base_tree_sha = commit_resp.json()['tree']['sha']
+        
+        # 3. Create blobs for each changed file
+        tree_items = []
+        for filepath, content in changed_files_dict.items():
+            if isinstance(content, bytes):
+                blob_data = {
+                    'content': base64.b64encode(content).decode('utf-8'),
+                    'encoding': 'base64'
+                }
+            else:
+                blob_data = {
+                    'content': content,
+                    'encoding': 'utf-8'
+                }
+            
+            blob_resp = http_requests.post(f'{api_base}/git/blobs', headers=headers, json=blob_data, timeout=30)
+            if blob_resp.status_code != 201:
+                return False, f"Failed to create blob for {filepath}: {blob_resp.status_code}"
+            
+            tree_items.append({
+                'path': filepath,
+                'mode': '100644',
+                'type': 'blob',
+                'sha': blob_resp.json()['sha']
+            })
+        
+        # 4. Create new tree
+        tree_resp = http_requests.post(f'{api_base}/git/trees', headers=headers, json={
+            'base_tree': base_tree_sha,
+            'tree': tree_items
+        }, timeout=30)
+        if tree_resp.status_code != 201:
+            return False, f"Failed to create tree: {tree_resp.status_code}"
+        new_tree_sha = tree_resp.json()['sha']
+        
+        # 5. Create new commit
+        new_commit_resp = http_requests.post(f'{api_base}/git/commits', headers=headers, json={
+            'message': commit_message,
+            'tree': new_tree_sha,
+            'parents': [current_sha]
+        }, timeout=30)
+        if new_commit_resp.status_code != 201:
+            return False, f"Failed to create commit: {new_commit_resp.status_code}"
+        new_commit_sha = new_commit_resp.json()['sha']
+        
+        # 6. Update the branch reference
+        update_resp = http_requests.patch(f'{api_base}/git/refs/heads/main', headers=headers, json={
+            'sha': new_commit_sha
+        }, timeout=15)
+        if update_resp.status_code == 200:
+            return True, f"Pushed {len(changed_files_dict)} file(s) via GitHub API"
+        else:
+            return False, f"Failed to update ref: {update_resp.status_code} {update_resp.text[:200]}"
+    
+    except Exception as e:
+        return False, f"GitHub API error: {e}"
 
 def git_sync_changes(commit_message="Update tour data"):
     """
@@ -164,7 +325,7 @@ def git_sync_changes(commit_message="Update tour data"):
     This allows connected shop devices to pull updates automatically.
     Runs in a background thread to avoid blocking the response.
     
-    On Render/cloud: Uses GITHUB_TOKEN env var for authenticated push.
+    On Render/cloud: Uses GITHUB_TOKEN for authenticated push, with GitHub API fallback.
     On local: Uses stored git credentials.
     """
     def _do_git_sync():
@@ -174,44 +335,45 @@ def git_sync_changes(commit_message="Update tour data"):
             # Cooldown to prevent rapid-fire commits
             now = time.time()
             if now - _last_git_sync < GIT_SYNC_COOLDOWN:
-                print(f"[GIT SYNC] Skipping - cooldown active ({GIT_SYNC_COOLDOWN}s)")
+                print(f"[GIT SYNC] Skipping - cooldown active ({GIT_SYNC_COOLDOWN}s)", flush=True)
                 return
             _last_git_sync = now
         
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        
         try:
+            # Ensure git identity is configured (critical for Render/cloud)
+            _configure_git_identity()
+            
             # Check if we're in a git repo
             result = subprocess.run(
                 ['git', 'status', '--porcelain'],
-                capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd()
+                capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=cwd
             )
             
             if result.returncode != 0:
-                print("[GIT SYNC] Not a git repository - skipping sync")
+                # No git repo — try GitHub API directly
+                _update_sync_status(False, "Not a git repository - trying GitHub API")
+                _try_github_api_fallback(cwd, commit_message)
                 return
             
             # Check if there are changes
             if not result.stdout.strip():
-                print("[GIT SYNC] No changes to commit")
+                print("[GIT SYNC] No changes to commit", flush=True)
                 return
             
             # Show what files are being changed
-            changed_files = result.stdout.strip().split('\n')
-            print(f"[GIT SYNC] Staging {len(changed_files)} changed file(s):")
-            for line in changed_files[:10]:  # Show first 10
-                if line.strip():
-                    print(f"  - {line.strip()}")
+            changed_files = [l.strip() for l in result.stdout.strip().split('\n') if l.strip()]
+            print(f"[GIT SYNC] Staging {len(changed_files)} changed file(s):", flush=True)
+            for line in changed_files[:10]:
+                print(f"  - {line}", flush=True)
             if len(changed_files) > 10:
-                print(f"  ... and {len(changed_files) - 10} more")
+                print(f"  ... and {len(changed_files) - 10} more", flush=True)
             
             # Stage all changes
-            add_result = subprocess.run(
-                ['git', 'add', '-A'], 
-                cwd=os.getcwd(), 
-                capture_output=True,
-                text=True,
-                encoding='utf-8',
-                errors='replace',
-                check=True
+            subprocess.run(
+                ['git', 'add', '-A'], cwd=cwd,
+                capture_output=True, text=True, encoding='utf-8', errors='replace', check=True
             )
             
             # Commit
@@ -219,83 +381,159 @@ def git_sync_changes(commit_message="Update tour data"):
             full_message = f"{commit_message} [{timestamp}]"
             commit_result = subprocess.run(
                 ['git', 'commit', '-m', full_message],
-                cwd=os.getcwd(), 
-                capture_output=True,
-                text=True,
-                encoding='utf-8',
-                errors='replace'
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace'
             )
             if commit_result.returncode != 0:
-                if 'nothing to commit' in commit_result.stdout:
-                    print("[GIT SYNC] No changes to commit (already committed?)")
+                stderr = commit_result.stderr.strip()
+                stdout = commit_result.stdout.strip()
+                if 'nothing to commit' in stdout:
+                    print("[GIT SYNC] No changes to commit (already committed?)", flush=True)
+                elif 'tell me who you are' in stderr or 'user.email' in stderr:
+                    _update_sync_status(False, f"Git identity error — falling back to GitHub API")
+                    _try_github_api_fallback(cwd, commit_message)
                 else:
-                    print(f"[GIT SYNC] ❌ Commit failed: {commit_result.stderr}")
-                    if commit_result.stdout:
-                        print(f"[GIT SYNC] Commit stdout: {commit_result.stdout}")
+                    _update_sync_status(False, f"Commit failed: {stderr[:200]}")
+                    # Try GitHub API as fallback
+                    _try_github_api_fallback(cwd, commit_message)
                 return
+            
+            print(f"[GIT SYNC] ✅ Committed: {full_message}", flush=True)
+            
+            # --- PUSH ---
+            # Try git push first, then GitHub API fallback
+            push_success = _try_git_push(cwd)
+            
+            if push_success:
+                _update_sync_status(True, f"Changes synced: {commit_message}")
             else:
-                print(f"[GIT SYNC] ✅ Committed: {full_message}")
-            
-            # Push changes
-            # On Render/cloud: use authenticated URL with token
-            # On local: use regular git push with stored credentials
-            auth_url = get_authenticated_remote_url()
-            
-            if auth_url:
-                # Use authenticated URL for Render/cloud deployment
-                print("[GIT SYNC] Using authenticated push (GITHUB_TOKEN)")
-                try:
-                    push_result = subprocess.run(
-                        ['git', 'push', auth_url, 'main'],
-                        cwd=os.getcwd(), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
-                    )
-                    if push_result.returncode == 0:
-                        print("[GIT SYNC] ✅ Successfully pushed to origin (authenticated)")
-                    else:
-                        print(f"[GIT SYNC] ❌ Push failed: {push_result.stderr}")
-                        print(f"[GIT SYNC] ❌ Push stdout: {push_result.stdout}")
-                        return  # Don't continue if push failed
-                except subprocess.TimeoutExpired:
-                    print("[GIT SYNC] Authenticated push timed out")
-            else:
-                # Local development - push to all remotes with stored credentials
-                remotes_result = subprocess.run(
-                    ['git', 'remote'],
-                    capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=os.getcwd()
-                )
-                remotes = remotes_result.stdout.strip().split('\n')
-                
-                push_success = False
-                for remote in remotes:
-                    if remote:
-                        try:
-                            push_result = subprocess.run(
-                                ['git', 'push', remote, 'main'],
-                                cwd=os.getcwd(), 
-                                capture_output=True, 
-                                text=True,
-                                encoding='utf-8',
-                                errors='replace',
-                                timeout=60
-                            )
-                            if push_result.returncode == 0:
-                                print(f"[GIT SYNC] ✅ Successfully pushed to {remote}")
-                                push_success = True
-                            else:
-                                print(f"[GIT SYNC] ❌ Push to {remote} failed: {push_result.stderr}")
-                        except subprocess.TimeoutExpired:
-                            print(f"[GIT SYNC] ❌ Push to {remote} timed out")
-                        except Exception as e:
-                            print(f"[GIT SYNC] ❌ Push to {remote} failed: {e}")
-                
-                if not push_success and remotes:
-                    print(f"[GIT SYNC] ⚠️ WARNING: Push failed to all remotes!")
-                    return
-            
-            print(f"[GIT SYNC] ✅ Changes synced: {commit_message}")
+                # Git push failed — try GitHub API
+                print("[GIT SYNC] Git push failed, trying GitHub API fallback...", flush=True)
+                _try_github_api_fallback(cwd, full_message)
             
         except Exception as e:
-            print(f"[GIT SYNC] Error: {e}")
+            _update_sync_status(False, f"Sync error: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def _try_git_push(cwd):
+        """Try to push using git CLI. Returns True on success."""
+        auth_url = get_authenticated_remote_url()
+        
+        # Pull --rebase first to handle diverged history
+        pull_target = auth_url if auth_url else 'origin'
+        try:
+            pull_result = subprocess.run(
+                ['git', 'pull', '--rebase', pull_target, 'main'],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+            )
+            if pull_result.returncode != 0:
+                print(f"[GIT SYNC] Pull --rebase failed: {pull_result.stderr[:200]}", flush=True)
+                # Try to abort rebase if it got stuck
+                subprocess.run(['git', 'rebase', '--abort'], cwd=cwd,
+                             capture_output=True, text=True, timeout=10)
+        except subprocess.TimeoutExpired:
+            print("[GIT SYNC] Pull --rebase timed out", flush=True)
+        except Exception as e:
+            print(f"[GIT SYNC] Pull --rebase error: {e}", flush=True)
+        
+        if auth_url:
+            # Use authenticated URL for Render/cloud deployment
+            print("[GIT SYNC] Pushing with GITHUB_TOKEN auth...", flush=True)
+            try:
+                push_result = subprocess.run(
+                    ['git', 'push', auth_url, 'main'],
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+                )
+                if push_result.returncode == 0:
+                    print("[GIT SYNC] ✅ Pushed to origin (authenticated)", flush=True)
+                    return True
+                else:
+                    print(f"[GIT SYNC] ❌ Auth push failed: {push_result.stderr[:200]}", flush=True)
+                    return False
+            except subprocess.TimeoutExpired:
+                print("[GIT SYNC] Auth push timed out", flush=True)
+                return False
+        else:
+            # Local development - push with stored credentials
+            try:
+                push_result = subprocess.run(
+                    ['git', 'push', 'origin', 'main'],
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+                )
+                if push_result.returncode == 0:
+                    print("[GIT SYNC] ✅ Pushed to origin", flush=True)
+                    return True
+                else:
+                    print(f"[GIT SYNC] ❌ Push failed: {push_result.stderr[:200]}", flush=True)
+                    return False
+            except subprocess.TimeoutExpired:
+                print("[GIT SYNC] Push timed out", flush=True)
+                return False
+    
+    def _try_github_api_fallback(cwd, commit_msg):
+        """Collect changed files and push via GitHub API"""
+        if not GITHUB_TOKEN:
+            _update_sync_status(False, "Push failed and GITHUB_TOKEN not set — cannot sync to GitHub. "
+                               "Set GITHUB_TOKEN env var on Render to enable syncing.")
+            return
+        
+        if not http_requests:
+            _update_sync_status(False, "Push failed and requests library unavailable")
+            return
+        
+        try:
+            # Get list of changed/untracked files from the working directory
+            result = subprocess.run(
+                ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+            )
+            
+            if result.returncode != 0:
+                # Fallback: get all tracked modified files
+                result = subprocess.run(
+                    ['git', 'status', '--porcelain'],
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+                )
+                file_paths = []
+                for line in result.stdout.strip().split('\n'):
+                    if line.strip():
+                        # Format is "XY filename" or "XY old -> new"
+                        parts = line.strip().split(None, 1)
+                        if len(parts) >= 2:
+                            fp = parts[1].split(' -> ')[-1]  # Handle renames
+                            file_paths.append(fp)
+            else:
+                file_paths = [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
+            
+            if not file_paths:
+                _update_sync_status(False, "GitHub API fallback: no changed files found")
+                return
+            
+            # Read file contents
+            files_dict = {}
+            for fp in file_paths:
+                full_path = os.path.join(cwd, fp)
+                if not os.path.exists(full_path):
+                    continue  # Deleted file — skip for now
+                try:
+                    # Try text first
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        files_dict[fp] = f.read()
+                except (UnicodeDecodeError, ValueError):
+                    # Binary file
+                    with open(full_path, 'rb') as f:
+                        files_dict[fp] = f.read()
+            
+            if not files_dict:
+                _update_sync_status(False, "GitHub API fallback: no readable files to push")
+                return
+            
+            print(f"[GIT SYNC] GitHub API: pushing {len(files_dict)} file(s)...", flush=True)
+            success, message = _github_api_push(files_dict, commit_msg)
+            _update_sync_status(success, f"GitHub API: {message}")
+            
+        except Exception as e:
+            _update_sync_status(False, f"GitHub API fallback error: {e}")
     
     # Run in background thread
     thread = threading.Thread(target=_do_git_sync, daemon=True)
@@ -3343,6 +3581,44 @@ import subprocess
 def health_check():
     """Simple health check endpoint for monitoring and update restart detection"""
     return jsonify({'status': 'ok', 'version': APP_VERSION})
+
+@app.route('/admin/agent/api/git-sync-status')
+def git_sync_status():
+    """Diagnostic endpoint to check git sync health (for debugging push issues)"""
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    info = {
+        'last_sync': _last_git_sync_status,
+        'github_token_set': bool(GITHUB_TOKEN),
+        'has_git_repo': os.path.exists(os.path.join(cwd, '.git')),
+        'is_render': bool(os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')),
+    }
+    
+    # Check git identity
+    try:
+        name_result = subprocess.run(['git', 'config', 'user.name'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
+        email_result = subprocess.run(['git', 'config', 'user.email'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
+        info['git_user'] = name_result.stdout.strip() or '(not set)'
+        info['git_email'] = email_result.stdout.strip() or '(not set)'
+    except:
+        info['git_user'] = '(error)'
+        info['git_email'] = '(error)'
+    
+    # Check repo info
+    owner, repo = _get_github_repo_info()
+    info['github_repo'] = f"{owner}/{repo}" if owner else '(unknown)'
+    
+    # Check for uncommitted changes
+    try:
+        result = subprocess.run(['git', 'status', '--porcelain'],
+            cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10)
+        uncommitted = [l.strip() for l in result.stdout.strip().split('\n') if l.strip()]
+        info['uncommitted_changes'] = len(uncommitted)
+    except:
+        info['uncommitted_changes'] = '(error)'
+    
+    return jsonify(info)
 
 @app.route('/admin/agent/api/set-device-account', methods=['POST'])
 def set_device_account():
