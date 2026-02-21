@@ -8272,9 +8272,229 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_55d2ef35378a_1771668552",
+      "account": "bailey",
+      "started_at": "2026-02-21T20:09:12.735014",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T20:09:12.735014",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T20:09:14.321397",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T20:09:16.873913",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T20:09:25.431574",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_4fada48ddb6b_1771668568",
+      "account": "bailey",
+      "started_at": "2026-02-21T20:09:28.619578",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T20:09:28.619578",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_e532669ebcea_1771668716",
+      "account": "bailey",
+      "started_at": "2026-02-21T20:11:56.246950",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T20:11:56.246950",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T20:11:57.403034",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T20:11:58.961935",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T20:12:22.416328",
+          "data": {
+            "tour_name": "Spank Me Whitsunday Sailing",
+            "company": "OzSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T20:12:33.811703",
+          "data": {
+            "tour_name": "Let The Sea Set You Free",
+            "company": "Whitsundaybullet",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T20:13:12.631862",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Spank Me Whitsunday Sailing",
+        "Let The Sea Set You Free"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T20:13:12.631862",
+      "duration_seconds": 76.384912
+    },
+    {
+      "session_id": "session_6de2e93cfc54_1771668793",
+      "account": "bailey",
+      "started_at": "2026-02-21T20:13:13.955540",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T20:13:13.955540",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T20:13:15.292338",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T20:13:15.841997",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T20:13:19.091942",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T20:13:19.091942",
+      "duration_seconds": 5.136402
+    },
+    {
+      "session_id": "session_1b67a1cdec74_1771668800",
+      "account": "bailey",
+      "started_at": "2026-02-21T20:13:20.181964",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T20:13:20.181964",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T20:13:21.620599",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T20:13:22.322320",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T20:13:30.193819",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T20:15:01.357643",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T20:15:01.357643",
+      "duration_seconds": 101.175679
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-10T21:13:21.288807"
+  "last_updated": "2026-02-21T20:15:01.358640"
 }

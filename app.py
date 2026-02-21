@@ -1925,7 +1925,7 @@ def load_company_display_names():
         'ozsail': 'OzSail',
         'pioneeradventures': 'Pioneer Adventures',
         'prosail': 'ProSail',
-        'sailing-whitsundays': 'Airlie Beach Tourism',
+        'sailing-whitsundays': 'Sailing Whitsundays',
     }
     try:
         if os.path.exists(config_file):
