@@ -29577,13 +29577,86 @@
             "filter_type": "activities",
             "filter_value": "great_barrier_reef"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T11:45:06.476921",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.409353",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.464121",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.062304",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.421553",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:46:21.135649",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:29.375581",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:31.037623",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:33.351954",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:48:29.830773",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:48:29.830773",
+      "duration_seconds": 3161.336891
     },
     {
       "session_id": "session_9813f3220eac_1771377215",
@@ -29631,27 +29704,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:19:18.281450",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-18T11:19:24.064609",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-18T11:19:24.064609",
-      "duration_seconds": 22.216127
+      "chat_messages": []
     },
     {
       "session_id": "session_d2228e414ed8_1771377571",
@@ -29676,20 +29735,6 @@
         {
           "type": "mode_selected",
           "timestamp": "2026-02-18T11:19:47.814804",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T11:23:09.266103",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:23:10.174617",
           "data": {
             "mode": "browse-all"
           }
@@ -33261,6 +33306,61 @@
       "chat_messages": []
     },
     {
+      "session_id": "session_43baab5ee795_1771557181",
+      "account": "nathan",
+      "started_at": "2026-02-20T13:13:01.984653",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T13:13:01.984653",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T13:13:09.523768",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-20T13:13:43.411334",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Sailing-Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T13:14:02.739211",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-20T13:14:37.458390",
+          "data": {
+            "tour_name": "Camira Sunset Sail",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [
+        "Apollo 3D2N",
+        "Camira Sunset Sail"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
       "session_id": "session_ff1ba415ca20_1771557789",
       "account": "nathan",
       "started_at": "2026-02-20T13:23:09.196890",
@@ -33320,20 +33420,13 @@
           "data": {
             "language": "en"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-20T13:26:36.127966",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-20T13:26:36.127966",
-      "duration_seconds": 185.333729
+      "chat_messages": []
     },
     {
       "session_id": "session_75f57b1fa271_1771560217",
@@ -33452,6 +33545,65 @@
       "duration_seconds": 895.612328
     },
     {
+      "session_id": "session_561822bb6765_1771562668",
+      "account": "nathan",
+      "started_at": "2026-02-20T14:44:28.941721",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T14:44:28.941721",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-20T14:44:33.932216",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T14:44:49.921054",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-20T14:44:52.526630",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T14:44:58.431958",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T14:45:15.317949",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T14:45:15.317949",
+      "duration_seconds": 46.376228
+    },
+    {
       "session_id": "session_a6374e57db1c_1771562722",
       "account": "nathan",
       "started_at": "2026-02-20T14:45:22.378188",
@@ -33512,6 +33664,64 @@
       "chat_messages": [],
       "ended_at": "2026-02-20T14:53:49.338180",
       "duration_seconds": 506.959992
+    },
+    {
+      "session_id": "session_c8fbb3a9ea67_1771562868",
+      "account": "nathan",
+      "started_at": "2026-02-20T14:47:49.019347",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T14:47:49.019347",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T14:47:51.945900",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T14:47:57.921363",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T14:48:00.794500",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T14:48:08.323666",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T14:51:41.171665",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T14:51:41.171665",
+      "duration_seconds": 232.152318
     },
     {
       "session_id": "session_2f8bce4da40c_1771563242",
@@ -33714,6 +33924,134 @@
       "chat_messages": [],
       "ended_at": "2026-02-20T16:03:34.539774",
       "duration_seconds": 268.611612
+    },
+    {
+      "session_id": "session_e7c99ecfa959_1771570059",
+      "account": "nathan",
+      "started_at": "2026-02-20T16:47:39.418999",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T16:47:39.418999",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T16:47:43.620638",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T16:47:50.407118",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T16:47:53.048348",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-20T16:48:02.354081",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T16:48:48.664439",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T16:48:51.631991",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-20T16:48:55.359748",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T16:51:10.993162",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-20T16:51:10.993162",
+      "duration_seconds": 211.574163
+    },
+    {
+      "session_id": "session_7edc4b668078_1771570312",
+      "account": "nathan",
+      "started_at": "2026-02-20T16:51:52.576435",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-20T16:51:52.576435",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T16:51:56.935295",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-20T16:51:57.293115",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T10:01:59.399218",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T10:01:59.399218",
+      "duration_seconds": 61806.822783
     },
     {
       "session_id": "session_b7b21e404a0b_1771570367",
@@ -33936,5 +34274,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-21T09:56:33.055499"
+  "last_updated": "2026-02-21T10:01:59.400211"
 }
