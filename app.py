@@ -950,15 +950,17 @@ def apply_approved_changes(request):
             print(f"[CHANGE REQUEST] Applied tour content edit for {tour_key}")
         
         elif change_type == 'company_name_edit':
-            # Update company display name
-            global COMPANY_DISPLAY_NAMES
+            # Update company display name (per-account)
             company_key = changes.get('company_key')
             new_name = changes.get('after')
             
             if company_key and new_name:
-                COMPANY_DISPLAY_NAMES[company_key] = new_name
-                save_company_display_names(COMPANY_DISPLAY_NAMES)
-                print(f"[CHANGE REQUEST] Applied company name edit: {company_key} -> {new_name}")
+                settings = load_account_settings(username)
+                if 'company_name_overrides' not in settings:
+                    settings['company_name_overrides'] = {}
+                settings['company_name_overrides'][company_key] = new_name
+                save_account_settings(username, settings)
+                print(f"[CHANGE REQUEST] Applied company name edit for {username}: {company_key} -> {new_name}")
             else:
                 print(f"[CHANGE REQUEST] Missing company_key or new name")
                 return False
@@ -1255,24 +1257,43 @@ def get_placeholder_images():
     return ['/' + img.replace('\\', '/') for img in images]
 
 
-def get_newcomer_images():
-    """Get list of all images from the newcomer_images folder for map view gallery"""
-    newcomer_dir = 'static/newcomer_images'
-    if not os.path.exists(newcomer_dir):
-        return []
+def get_newcomer_images(username=None):
+    """Get list of all images for the gallery, with per-account support.
     
-    images = []
-    for ext in ['jpg', 'jpeg', 'png', 'webp']:
-        images.extend(glob.glob(f'{newcomer_dir}/*.{ext}'))
-    
-    # Convert to relative paths (newcomer_images/filename) for url_for
+    Priority: account-specific gallery > shared fallback
+    """
     result = []
-    for img in sorted(images):
-        filename = os.path.basename(img)
-        result.append({
-            'path': f'newcomer_images/{filename}',
-            'alt': os.path.splitext(filename)[0].replace('_', ' ').replace('-', ' ')
-        })
+    
+    # 1. Check account-specific gallery first
+    if username:
+        account_gallery = f'static/gallery/{username}'
+        if os.path.exists(account_gallery):
+            images = []
+            for ext in ['jpg', 'jpeg', 'png', 'webp']:
+                images.extend(glob.glob(f'{account_gallery}/*.{ext}'))
+            for img in sorted(images):
+                filename = os.path.basename(img)
+                result.append({
+                    'path': f'gallery/{username}/{filename}',
+                    'alt': os.path.splitext(filename)[0].replace('_', ' ').replace('-', ' ')
+                })
+    
+    # 2. Also include shared newcomer_images as fallback (for backwards compat)
+    newcomer_dir = 'static/newcomer_images'
+    if os.path.exists(newcomer_dir):
+        images = []
+        for ext in ['jpg', 'jpeg', 'png', 'webp']:
+            images.extend(glob.glob(f'{newcomer_dir}/*.{ext}'))
+        existing_filenames = {r['alt'] for r in result}
+        for img in sorted(images):
+            filename = os.path.basename(img)
+            alt = os.path.splitext(filename)[0].replace('_', ' ').replace('-', ' ')
+            if alt not in existing_filenames:
+                result.append({
+                    'path': f'newcomer_images/{filename}',
+                    'alt': alt
+                })
+    
     return result
 
 def get_random_placeholder_image():
@@ -1378,6 +1399,14 @@ def load_tour_images(tour, max_images=5, account_username=None):
                     thumb_path = gallery[0]
                 elif thumb_path and thumb_path not in gallery:
                     thumb_path = None
+                
+                # Add account-specific extra images
+                settings = load_account_settings(account_username)
+                extra = settings.get('extra_images', {}).get(key, [])
+                for img_path in extra:
+                    full_path = '/' + img_path.replace('\\', '/')
+                    if full_path not in gallery:
+                        gallery.append(full_path)
             
             # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")  # Disabled for cleaner logs
             return thumb_path, gallery, False
@@ -1418,6 +1447,14 @@ def load_tour_images(tour, max_images=5, account_username=None):
             thumb_path = gallery[0]
         elif thumb_path and thumb_path not in gallery:
             thumb_path = None
+        
+        # Add account-specific extra images
+        settings = load_account_settings(account_username)
+        extra = settings.get('extra_images', {}).get(key, [])
+        for img_path in extra:
+            full_path = '/' + img_path.replace('\\', '/')
+            if full_path not in gallery:
+                gallery.append(full_path)
     
     # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")  # Disabled for cleaner logs
     return thumb_path, gallery, False  # False = uses real images
@@ -1930,17 +1967,8 @@ def get_company_display_name(company_key, username=None):
     names = get_company_display_names_for_account(username)
     return names.get(company_key, company_key.title())
 
-# Load on startup
+# Load on startup (base defaults — account-specific overrides are applied at request time)
 COMPANY_DISPLAY_NAMES = load_company_display_names()
-_company_names_last_loaded = time.time()
-
-def refresh_company_display_names():
-    """Reload company display names from config file if stale (checks every 30 seconds)"""
-    global COMPANY_DISPLAY_NAMES, _company_names_last_loaded
-    now = time.time()
-    if now - _company_names_last_loaded > 30:
-        COMPANY_DISPLAY_NAMES = load_company_display_names()
-        _company_names_last_loaded = now
 
 def get_english_tour_name(company, tid):
     """Get the English tour name for a tour (for image matching purposes)"""
@@ -2189,10 +2217,20 @@ def has_equipment_included(includes):
     text = includes.lower()
     return any(word in text for word in ["equipment", "gear", "snorkel", "mask", "fins", "wetsuit"])
 
-def load_reviews(company, tour_id):
-    """Load review data for a specific tour"""
-    review_file = os.path.join('tour_reviews', company, f"{tour_id}.json")
+def load_reviews(company, tour_id, username=None):
+    """Load review data for a specific tour (per-account overrides first, then shared fallback)"""
+    # Check account-specific reviews first
+    if username:
+        account_review_file = os.path.join('tour_reviews', username, company, f"{tour_id}.json")
+        if os.path.exists(account_review_file):
+            try:
+                with open(account_review_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"Error loading account reviews for {username}/{company}/{tour_id}: {e}")
     
+    # Fall back to shared reviews
+    review_file = os.path.join('tour_reviews', company, f"{tour_id}.json")
     if os.path.exists(review_file):
         try:
             with open(review_file, 'r', encoding='utf-8') as f:
@@ -2210,6 +2248,9 @@ def load_all_tours(language='en', preview_account=None):
         language: Language code for translations
         preview_account: If specified, use this account's settings instead of the kiosk's active account
     """
+    # Get account-specific display names
+    account_display_names = get_company_display_names_for_account(preview_account)
+    
     tours = []
     csv_files = []
     loaded_companies = set()
@@ -2271,8 +2312,8 @@ def load_all_tours(language='en', preview_account=None):
                         thumb_path = None  # Will be loaded later
                         gallery = []  # Will be loaded later
                         
-                        # Load review data
-                        review_data = load_reviews(company, tid)
+                        # Load review data (per-account)
+                        review_data = load_reviews(company, tid, username=preview_account)
                         
                         # Check if tour is disabled by agent (use preview account if specified)
                         if not is_tour_enabled(key, preview_account=preview_account):
@@ -2290,7 +2331,7 @@ def load_all_tours(language='en', preview_account=None):
                             'thumbnail': thumb_path, 
                             'key': key,
                             'company': company,
-                            'company_name': COMPANY_DISPLAY_NAMES.get(company, company.title()),
+                            'company_name': account_display_names.get(company, company.title()),
                             'price_adult': row.get('price_adult', ''),
                             'price_child': row.get('price_child', ''),
                             'price_tiers': row.get('price_tiers', ''),
@@ -2362,6 +2403,17 @@ def load_all_tours(language='en', preview_account=None):
             for tour in tours_missing_videos:
                 if tour['key'] in en_video_cache:
                     tour['video_urls'] = en_video_cache[tour['key']]
+    
+    # Apply per-account tour_overrides (e.g. video_urls, booking_url, prices)
+    if preview_account:
+        settings = load_account_settings(preview_account)
+        overrides = settings.get('tour_overrides', {})
+        if overrides:
+            for tour in tours:
+                tour_key = tour.get('key', '')
+                if tour_key in overrides:
+                    for field, value in overrides[tour_key].items():
+                        tour[field] = value
     
     return tours
 
@@ -2593,7 +2645,7 @@ def account_onboarding():
                     reader = csv.DictReader(f)
                     for row in reader:
                         company = row.get('company_name', 'unknown')
-                        company_display = COMPANY_DISPLAY_NAMES.get(company, company)
+                        company_display = get_company_display_name(company, username)
                         
                         if company not in companies:
                             companies[company] = {
@@ -2691,18 +2743,23 @@ def kiosk_settings():
     return render_template('kiosk_settings.html', 
                           settings=settings,
                           saved=request.args.get('saved'),
-                          gallery_images=get_newcomer_images())
+                          gallery_images=get_newcomer_images(session.get('user')))
 
 
 @app.route('/admin/api/gallery/upload', methods=['POST'])
 @login_required
 def gallery_upload_images():
-    """Upload images to the map view presentation gallery"""
+    """Upload images to the account-specific gallery"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     files = request.files.getlist('gallery_images')
     if not files:
         return jsonify({'error': 'No images provided'}), 400
     
-    gallery_dir = 'static/newcomer_images'
+    # Save to account-specific gallery folder
+    gallery_dir = f'static/gallery/{username}'
     os.makedirs(gallery_dir, exist_ok=True)
     
     uploaded = []
@@ -2726,7 +2783,6 @@ def gallery_upload_images():
             uploaded.append(filename)
     
     if uploaded:
-        username = session.get('user', 'unknown')
         git_sync_changes(f"Gallery: {username} added {len(uploaded)} image(s)")
     
     return jsonify({'success': True, 'uploaded': uploaded, 'count': len(uploaded)})
@@ -2735,23 +2791,34 @@ def gallery_upload_images():
 @app.route('/admin/api/gallery/delete', methods=['POST'])
 @login_required
 def gallery_delete_image():
-    """Delete an image from the map view presentation gallery"""
+    """Delete an image from the account-specific gallery"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     data = request.get_json()
     filename = data.get('filename')
     
     if not filename:
         return jsonify({'error': 'Filename required'}), 400
     
-    # Security: only allow deleting from newcomer_images dir
-    safe_path = os.path.join('static', 'newcomer_images', os.path.basename(filename))
+    base_filename = os.path.basename(filename)
     
-    if os.path.exists(safe_path):
-        os.remove(safe_path)
-        username = session.get('user', 'unknown')
-        git_sync_changes(f"Gallery: {username} removed {os.path.basename(filename)}")
+    # Try account-specific gallery first
+    account_path = os.path.join('static', 'gallery', username, base_filename)
+    if os.path.exists(account_path):
+        os.remove(account_path)
+        git_sync_changes(f"Gallery: {username} removed {base_filename}")
         return jsonify({'success': True})
-    else:
-        return jsonify({'error': 'File not found'}), 404
+    
+    # Fallback: check shared newcomer_images (for backward compat)
+    shared_path = os.path.join('static', 'newcomer_images', base_filename)
+    if os.path.exists(shared_path):
+        os.remove(shared_path)
+        git_sync_changes(f"Gallery: {username} removed {base_filename}")
+        return jsonify({'success': True})
+    
+    return jsonify({'error': 'File not found'}), 404
 
 
 @app.route('/admin/api/account/tours', methods=['POST'])
@@ -4106,7 +4173,7 @@ def operator_dashboard():
     
     return render_template('operator_dashboard.html',
                           company=user_company,
-                          company_display=COMPANY_DISPLAY_NAMES.get(user_company, user_company),
+                          company_display=get_company_display_name(user_company, session.get('user')),
                           tours=tours,
                           is_agent=is_agent)
 
@@ -4130,7 +4197,6 @@ def operator_edit_tour(tour_key):
 
 @app.route('/')
 def index():
-    refresh_company_display_names()
     # Check for referral from QR code scan (allows public access)
     referral_account = get_referral_account()
     
@@ -4215,7 +4281,7 @@ def index():
                            active_account=active_account,
                            is_web_visitor=is_web_visitor,
                            is_demo_mode=is_demo_mode,
-                           newcomer_images=get_newcomer_images())
+                           newcomer_images=get_newcomer_images(active_account))
 
 @app.route('/api/semantic-search')
 def api_semantic_search():
@@ -4277,7 +4343,6 @@ def api_semantic_search():
 @app.route('/api/tours')
 def api_tours():
     """API endpoint to fetch filtered tours for video question flow"""
-    refresh_company_display_names()
     language = request.args.get('lang', 'en')
     
     # Get the active account for filtering hidden images
@@ -4520,7 +4585,7 @@ def tour_page(key):
                           referral_account=referral_account,
                           active_account=active_account,
                           is_web_visitor=is_web_visitor,
-                          newcomer_images=get_newcomer_images()))
+                          newcomer_images=get_newcomer_images(active_account)))
     
     # Set referral cookie so subsequent page loads use the same account
     if ref and ref != 'qr':
@@ -4559,8 +4624,8 @@ def tour_page(key):
                                             image_urls.append(img_url)
                             gallery = [thumb] + image_urls if thumb else image_urls
                             
-                            # Load review data
-                            review_data = load_reviews(company, tid)
+                            # Load review data (per-account)
+                            review_data = load_reviews(company, tid, username=active_account)
                             
                             tour_data = {
                                 'key': key,
@@ -4908,7 +4973,6 @@ def apply_filters(tours, criteria, user_message_context=None, conversation_histo
 @app.route('/filter-tours')
 def filter_tours():
     """New endpoint for filtering tours"""
-    refresh_company_display_names()
     # Get filter parameters
     language = request.args.get('lang', 'en')
     duration = request.args.get('duration', '')
@@ -5027,9 +5091,11 @@ def more_tours():
 @app.route('/tour-detail/<key>')
 def tour_detail(key):
     # key is company__id
-    refresh_company_display_names()
     language = request.args.get('lang', 'en')
     company, tid = key.split('__', 1)
+    # Get account-specific display names
+    active_account = get_active_account()
+    account_display_names = get_company_display_names_for_account(active_account)
     # Load from language-specific CSV
     csv_pattern = f'data/{company}/{language}/*_with_media.csv'
     csv_files = glob.glob(csv_pattern)
@@ -5093,14 +5159,21 @@ def tour_detail(key):
                                         break
                             video_urls = [v.strip() for v in video_urls_raw.split(',') if v.strip()] if video_urls_raw else []
                             
-                            # Load full review data for detail page
-                            review_data = load_reviews(company, tid)
+                            # Apply per-account video URL override
+                            if active_account:
+                                acct_settings = load_account_settings(active_account)
+                                override_videos = acct_settings.get('tour_overrides', {}).get(key, {}).get('video_urls')
+                                if override_videos is not None:
+                                    video_urls = [v.strip() for v in override_videos.split(',') if v.strip()]
+                            
+                            # Load full review data for detail page (per-account)
+                            review_data = load_reviews(company, tid, username=active_account)
                             
                             # Return all info needed for the detail page
                             return jsonify({
                                 'key': key,  # Include the tour key for widget protection
                                 'name': row.get('name', ''),
-                                'company': COMPANY_DISPLAY_NAMES.get(row.get('company_name', ''), row.get('company_name', '').title()),
+                                'company': account_display_names.get(row.get('company_name', ''), row.get('company_name', '').title()),
                                 'summary': row.get('summary', ''),
                                 'description': row.get('description', ''),
                                 'price_adult': row.get('price_adult', ''),
@@ -5311,7 +5384,7 @@ def send_booking_email(booking_data):
                 <div class="content">
                     <div class="section">
                         <p><span class="label">Tour:</span> <span class="value">{booking_data.get('tour_name', 'N/A')}</span></p>
-                        <p><span class="label">Company:</span> <span class="value">{COMPANY_DISPLAY_NAMES.get(company, company.title())}</span></p>
+                        <p><span class="label">Company:</span> <span class="value">{get_company_display_name(company, get_active_account())}</span></p>
                         <p><span class="label">Selected Pricing:</span> <span class="value">{booking_data.get('selected_pricing', 'Not specified')}</span></p>
                     </div>
                     
@@ -7868,31 +7941,22 @@ def update_company_display_name():
     if not company_key or not display_name:
         return jsonify({'error': 'Company key and display name required'}), 400
     
-    # For non-admin users, always save as account-specific override
-    if requires_approval(username) or not update_globally:
-        settings = load_account_settings(username)
-        if 'company_name_overrides' not in settings:
-            settings['company_name_overrides'] = {}
-        
-        settings['company_name_overrides'][company_key] = display_name
-        save_account_settings(username, settings)
-        
-        # Sync to connected kiosks
-        git_sync_changes(f"Updated company name override: {company_key}")
-        
-        return jsonify({
-            'success': True,
-            'account_specific': True,
-            'message': 'Company name updated for your account'
-        })
+    # ALL company name changes are per-account (never modify the global file)
+    settings = load_account_settings(username)
+    if 'company_name_overrides' not in settings:
+        settings['company_name_overrides'] = {}
     
-    # Admin - apply directly
-    COMPANY_DISPLAY_NAMES[company_key] = display_name
-    if save_company_display_names(COMPANY_DISPLAY_NAMES):
-        git_sync_changes(f"Renamed company: {company_key} -> {display_name}")
-        return jsonify({'success': True, 'message': 'Company name updated'})
-    else:
-        return jsonify({'error': 'Failed to save company name'}), 500
+    settings['company_name_overrides'][company_key] = display_name
+    save_account_settings(username, settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Updated company name override: {company_key}")
+    
+    return jsonify({
+        'success': True,
+        'account_specific': True,
+        'message': 'Company name updated for your account'
+    })
 
 @app.route('/admin/api/tour/<key>')
 def get_tour_for_editor(key):
@@ -8194,6 +8258,21 @@ def get_tour_images(key):
                 if is_thumb:
                     thumbnail_path = filepath
     
+    # Add account-specific extra images
+    if username:
+        settings = load_account_settings(username)
+        extra = settings.get('extra_images', {}).get(key, [])
+        for img_path in extra:
+            full_path = '/' + img_path.replace('\\', '/')
+            if os.path.exists(img_path):
+                filename = os.path.basename(img_path)
+                images.append({
+                    'path': full_path,
+                    'filename': filename,
+                    'is_thumbnail': False,
+                    'account_specific': True
+                })
+    
     # If no explicit thumbnail, find the largest image
     if not thumbnail_path and images:
         try:
@@ -8326,8 +8405,12 @@ def sync_tour_images_to_csv(company, tid):
 
 @app.route('/admin/api/tour/<key>/images/upload', methods=['POST'])
 def upload_tour_images(key):
-    """API endpoint to upload images for a tour"""
+    """API endpoint to upload images for a tour (per-account)"""
     from werkzeug.utils import secure_filename
+    
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
     
     try:
         company, tid = key.split('__', 1)
@@ -8341,14 +8424,13 @@ def upload_tour_images(key):
     if not files:
         return jsonify({'error': 'No images provided'}), 400
     
-    # ALWAYS use consistent folder structure: static/tour_images/{company}/{tour_id}/
-    folder = f"static/tour_images/{company}/{tid}"
-    
-    # Create folder if it doesn't exist
+    # Save to account-specific folder: static/tour_images/{username}/{company}/{tour_id}/
+    folder = f"static/tour_images/{username}/{company}/{tid}"
     os.makedirs(folder, exist_ok=True)
-    print(f"[Upload] Saving images to: {folder}")
+    print(f"[Upload] Saving images to: {folder} (account: {username})")
     
     uploaded = 0
+    new_paths = []
     for file in files:
         if file and file.filename:
             # Generate unique filename
@@ -8363,19 +8445,27 @@ def upload_tour_images(key):
             
             filepath = os.path.join(folder, filename)
             file.save(filepath)
+            new_paths.append(f"tour_images/{username}/{company}/{tid}/{filename}")
             uploaded += 1
     
-    # IMPORTANT: Sync images to CSV so they appear in listings
-    image_paths = sync_tour_images_to_csv(company, tid)
+    # Track account-specific images in settings
+    if new_paths:
+        settings = load_account_settings(username)
+        if 'extra_images' not in settings:
+            settings['extra_images'] = {}
+        if key not in settings['extra_images']:
+            settings['extra_images'][key] = []
+        settings['extra_images'][key].extend(new_paths)
+        save_account_settings(username, settings)
     
-    # Sync changes to git (images + CSV updates)
-    git_sync_changes(f"Uploaded {uploaded} images for {company}/{tid}")
+    # Sync changes to git
+    git_sync_changes(f"Uploaded {uploaded} images for {company}/{tid} (account: {username})")
     
     return jsonify({
         'success': True,
         'uploaded': uploaded,
         'folder': folder,
-        'total_images': len(image_paths)
+        'total_images': uploaded
     })
 
 @app.route('/admin/api/tour/<key>/images/delete', methods=['POST'])
@@ -8404,56 +8494,50 @@ def delete_tour_image(key):
     # Normalize the image path for storage (use forward slashes for consistency)
     normalized_path = image_path.replace('\\', '/')
     
-    # For non-admin users, always hide instead of delete
-    if requires_approval(username) or not delete_globally:
-        # Store in account's hidden_images
-        settings = load_account_settings(username)
-        if 'hidden_images' not in settings:
-            settings['hidden_images'] = {}
-        
-        # Store by tour_key for easy lookup
-        if key not in settings['hidden_images']:
-            settings['hidden_images'][key] = []
-        
-        if normalized_path not in settings['hidden_images'][key]:
-            settings['hidden_images'][key].append(normalized_path)
-        
+    # ALL image deletions are per-account
+    settings = load_account_settings(username)
+    
+    # Check if this is an account-specific uploaded image — if so, actually delete the file
+    extra_images = settings.get('extra_images', {}).get(key, [])
+    if normalized_path in extra_images or image_path in extra_images:
+        # Remove from extra_images list
+        settings.setdefault('extra_images', {})
+        settings['extra_images'][key] = [p for p in extra_images if p != normalized_path and p != image_path]
         save_account_settings(username, settings)
         
-        # Sync to connected kiosks
-        git_sync_changes(f"Hidden image for tour {key}")
+        # Actually delete the file since it belongs to this account
+        fs_path = normalized_path if os.path.exists(normalized_path) else image_path
+        if os.path.exists(fs_path):
+            os.remove(fs_path)
         
+        git_sync_changes(f"Deleted account image for tour {key}")
         return jsonify({
             'success': True, 
-            'hidden': True,
-            'message': 'Image hidden for your account'
+            'deleted': True,
+            'message': 'Image deleted from your account'
         })
     
-    # Admin with delete_globally=True - actually delete the file
-    # Normalize path for filesystem
-    fs_path = image_path.replace('/', os.sep).replace('\\', os.sep)
+    # For shared/base images, hide instead of delete
+    if 'hidden_images' not in settings:
+        settings['hidden_images'] = {}
     
-    # Security check: ensure the path is within the tour images folder
-    expected_prefix = f"static{os.sep}tour_images{os.sep}{company}"
-    if not fs_path.startswith(expected_prefix):
-        return jsonify({'error': 'Invalid image path'}), 403
+    # Store by tour_key for easy lookup
+    if key not in settings['hidden_images']:
+        settings['hidden_images'][key] = []
     
-    if not os.path.exists(fs_path):
-        return jsonify({'error': 'Image not found'}), 404
+    if normalized_path not in settings['hidden_images'][key]:
+        settings['hidden_images'][key].append(normalized_path)
     
-    # Don't allow deleting the thumbnail directly (use set_thumbnail instead)
-    if os.path.basename(fs_path).lower().startswith('thumbnail'):
-        return jsonify({'error': 'Cannot delete thumbnail directly. Set another image as thumbnail first.'}), 400
+    save_account_settings(username, settings)
     
-    try:
-        os.remove(fs_path)
-        # Sync remaining images to CSV
-        sync_tour_images_to_csv(company, tid)
-        # Sync deletion to git
-        git_sync_changes(f"Deleted image for {company}/{tid}")
-        return jsonify({'success': True, 'deleted': True, 'message': 'Image deleted globally'})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    # Sync to connected kiosks
+    git_sync_changes(f"Hidden image for tour {key}")
+    
+    return jsonify({
+        'success': True, 
+        'hidden': True,
+        'message': 'Image hidden for your account'
+    })
 
 @app.route('/admin/api/tour/<key>/sync-images', methods=['POST'])
 def sync_images_endpoint(key):
@@ -8487,8 +8571,21 @@ def tour_video_urls(key):
         return jsonify({'error': f'Company not found: {company}'}), 404
     
     if request.method == 'GET':
-        # Return current video URLs
+        # Return video URLs (per-account override takes priority)
         try:
+            username = session.get('user')
+            
+            # Check account-specific override first
+            if username:
+                settings = load_account_settings(username)
+                override = settings.get('tour_overrides', {}).get(key, {}).get('video_urls')
+                if override is not None:
+                    return jsonify({
+                        'video_urls': override,
+                        'video_list': [v.strip() for v in override.split(',') if v.strip()]
+                    })
+            
+            # Fall back to CSV
             with open(csv_file, newline='', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
@@ -8502,38 +8599,29 @@ def tour_video_urls(key):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
     
-    else:  # POST - update video URLs
+    else:  # POST - update video URLs (per-account)
+        username = session.get('user')
+        if not username:
+            return jsonify({'error': 'Not logged in'}), 401
+        
         data = request.get_json()
         video_urls = data.get('video_urls', '')
         
-        print(f"[Video Save] Key: {key}, Company: {company}, TourID: {tid}")
+        print(f"[Video Save] Key: {key}, Account: {username}")
         print(f"[Video Save] Received video_urls: {repr(video_urls)}")
         
         try:
-            rows = []
-            fieldnames = None
-            with open(csv_file, newline='', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                fieldnames = reader.fieldnames
-                
-                # Add video_urls column if it doesn't exist
-                if 'video_urls' not in fieldnames:
-                    fieldnames = list(fieldnames) + ['video_urls']
-                
-                for row in reader:
-                    if row.get('id') == tid:
-                        row['video_urls'] = video_urls
-                        print(f"[Video] Updated video_urls for {tid}: {video_urls}")
-                    rows.append(row)
-            
-            # Write back
-            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(rows)
+            # Save to account settings (never modify the shared CSV)
+            settings = load_account_settings(username)
+            if 'tour_overrides' not in settings:
+                settings['tour_overrides'] = {}
+            if key not in settings['tour_overrides']:
+                settings['tour_overrides'][key] = {}
+            settings['tour_overrides'][key]['video_urls'] = video_urls
+            save_account_settings(username, settings)
             
             # Sync to connected kiosks
-            git_sync_changes(f"Updated video URLs for tour {tid}")
+            git_sync_changes(f"Updated video URLs for tour {tid} (account: {username})")
             
             return jsonify({
                 'success': True,
@@ -8656,7 +8744,7 @@ def get_tour_reviews(key):
     except ValueError:
         return jsonify({'error': 'Invalid tour key'}), 400
     
-    reviews_data = load_reviews(company, tid)
+    reviews_data = load_reviews(company, tid, username=session.get('user'))
     
     if reviews_data:
         return jsonify(reviews_data)
@@ -8670,7 +8758,11 @@ def get_tour_reviews(key):
 
 @app.route('/admin/api/tour/<key>/reviews', methods=['POST'])
 def save_tour_reviews(key):
-    """API endpoint to save reviews for a tour"""
+    """API endpoint to save reviews for a tour (per-account)"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     try:
         company, tid = key.split('__', 1)
     except ValueError:
@@ -8678,8 +8770,8 @@ def save_tour_reviews(key):
     
     data = request.get_json()
     
-    # Ensure the reviews directory exists
-    reviews_dir = os.path.join('tour_reviews', company)
+    # Save to account-specific reviews directory
+    reviews_dir = os.path.join('tour_reviews', username, company)
     os.makedirs(reviews_dir, exist_ok=True)
     
     # Save the reviews
@@ -8690,7 +8782,7 @@ def save_tour_reviews(key):
             json.dump(data, f, indent=2, ensure_ascii=False)
         
         # Sync to connected kiosks
-        git_sync_changes(f"Updated reviews for {company}/{tid}")
+        git_sync_changes(f"Updated reviews for {company}/{tid} (account: {username})")
         
         return jsonify({
             'success': True,
@@ -8702,7 +8794,11 @@ def save_tour_reviews(key):
 
 @app.route('/admin/api/company/<company>/apply-reviews', methods=['POST'])
 def apply_reviews_to_company(company):
-    """Apply reviews from one tour to all tours in the same company"""
+    """Apply reviews from one tour to all tours in the same company (per-account)"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     data = request.get_json()
     
     # Load all tours for this company to get their IDs
@@ -8721,8 +8817,8 @@ def apply_reviews_to_company(company):
         if not tour_ids:
             return jsonify({'error': 'No tours found for this company'}), 404
         
-        # Ensure the reviews directory exists
-        reviews_dir = os.path.join('tour_reviews', company)
+        # Save to account-specific reviews directory
+        reviews_dir = os.path.join('tour_reviews', username, company)
         os.makedirs(reviews_dir, exist_ok=True)
         
         # Save reviews to all tour files
@@ -8734,7 +8830,7 @@ def apply_reviews_to_company(company):
             saved_count += 1
         
         # Sync to connected kiosks
-        git_sync_changes(f"Applied reviews to {saved_count} {company} tours")
+        git_sync_changes(f"Applied reviews to {saved_count} {company} tours (account: {username})")
         
         return jsonify({
             'success': True,
@@ -8747,7 +8843,11 @@ def apply_reviews_to_company(company):
 
 @app.route('/admin/api/company/<company>/update-field', methods=['POST'])
 def update_company_field(company):
-    """API endpoint to update a field for ALL tours from a company"""
+    """API endpoint to update a field for ALL tours from a company (per-account)"""
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
     data = request.get_json()
     field_name = data.get('field')
     field_value = data.get('value')
@@ -8760,38 +8860,35 @@ def update_company_field(company):
     if field_name not in allowed_fields:
         return jsonify({'error': f'Field "{field_name}" cannot be bulk-updated'}), 400
     
+    # Get all tour keys for this company to apply overrides
     csv_file = find_company_csv(company)
     if not csv_file:
         return jsonify({'error': f'Company not found: {company}'}), 404
     
     try:
-        # Read all tours
-        rows = []
-        fieldnames = None
-        
+        # Read tour keys from CSV (don't modify the CSV itself)
+        tour_keys = []
         with open(csv_file, newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-            fieldnames = reader.fieldnames
-            rows = list(reader)
+            for row in reader:
+                tour_keys.append(f"{company}__{row.get('id', '')}")
         
-        # Add field if it doesn't exist
-        if field_name not in fieldnames:
-            fieldnames = list(fieldnames) + [field_name]
+        # Save as per-account overrides
+        settings = load_account_settings(username)
+        if 'tour_overrides' not in settings:
+            settings['tour_overrides'] = {}
         
-        # Update all rows
         updated_count = 0
-        for row in rows:
-            row[field_name] = field_value
+        for tour_key in tour_keys:
+            if tour_key not in settings['tour_overrides']:
+                settings['tour_overrides'][tour_key] = {}
+            settings['tour_overrides'][tour_key][field_name] = field_value
             updated_count += 1
         
-        # Write back to CSV
-        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+        save_account_settings(username, settings)
         
         # Sync changes to connected devices
-        git_sync_changes(f"Updated {field_name} for {company} tours")
+        git_sync_changes(f"Updated {field_name} for {company} tours (account: {username})")
         
         return jsonify({
             'success': True,

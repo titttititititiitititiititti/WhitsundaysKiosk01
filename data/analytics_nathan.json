@@ -34232,9 +34232,133 @@
       "chat_messages": [],
       "ended_at": "2026-02-21T09:56:33.054501",
       "duration_seconds": 120.010466
+    },
+    {
+      "session_id": "session_e24ad59f05fb_1771657774",
+      "account": "nathan",
+      "started_at": "2026-02-21T17:09:34.678995",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T17:09:34.678995",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T17:09:41.930560",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T17:09:43.878195",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T17:11:55.585947",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T17:11:55.585947",
+      "duration_seconds": 140.906952
+    },
+    {
+      "session_id": "session_169d698f7e21_1771658082",
+      "account": "nathan",
+      "started_at": "2026-02-21T17:14:42.285875",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T17:14:42.285875",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T17:14:43.789763",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T17:14:57.856065",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T17:15:03.069927",
+          "data": {
+            "tour_name": "\ud50c\ub77c\uc774 \ub798\ud504\ud2b8 - \ub0a8\uadf9\uad11",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T17:15:25.167003",
+          "data": {
+            "tour_name": "\ub178\ub358 \uc775\uc2a4\ud3ec\uc800 \uc5d0\ucf54 \uc5b4\ub4dc\ubca4\ucc98",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T17:15:34.329573",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T17:15:44.919624",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T17:18:24.277753",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [
+        "\ud50c\ub77c\uc774 \ub798\ud504\ud2b8 - \ub0a8\uadf9\uad11",
+        "\ub178\ub358 \uc775\uc2a4\ud3ec\uc800 \uc5d0\ucf54 \uc5b4\ub4dc\ubca4\ucc98",
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T17:18:24.277753",
+      "duration_seconds": 221.991878
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-21T10:03:10.116618"
+  "last_updated": "2026-02-21T17:18:24.284180"
 }
