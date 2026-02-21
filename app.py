@@ -1887,7 +1887,8 @@ def load_company_display_names():
         'oceandynamics': 'Ocean Dynamics',
         'ozsail': 'OzSail',
         'pioneeradventures': 'Pioneer Adventures',
-        'prosail': 'ProSail'
+        'prosail': 'ProSail',
+        'sailing-whitsundays': 'Airlie Beach Tourism',
     }
     try:
         if os.path.exists(config_file):
@@ -1931,6 +1932,15 @@ def get_company_display_name(company_key, username=None):
 
 # Load on startup
 COMPANY_DISPLAY_NAMES = load_company_display_names()
+_company_names_last_loaded = time.time()
+
+def refresh_company_display_names():
+    """Reload company display names from config file if stale (checks every 30 seconds)"""
+    global COMPANY_DISPLAY_NAMES, _company_names_last_loaded
+    now = time.time()
+    if now - _company_names_last_loaded > 30:
+        COMPANY_DISPLAY_NAMES = load_company_display_names()
+        _company_names_last_loaded = now
 
 def get_english_tour_name(company, tid):
     """Get the English tour name for a tour (for image matching purposes)"""
@@ -2271,6 +2281,9 @@ def load_all_tours(language='en', preview_account=None):
                         # Get promotion status (use preview account if specified)
                         promotion = get_tour_promotion_status(key, preview_account=preview_account)
                         
+                        # Get video_urls (fall back to English CSV if missing)
+                        video_urls_raw = row.get('video_urls', '')
+                        
                         # Add parsed filter data
                         tour_data = {
                             'name': name, 
@@ -2290,6 +2303,7 @@ def load_all_tours(language='en', preview_account=None):
                             'ideal_for': row.get('ideal_for', ''),
                             'age_requirements': row.get('age_requirements', ''),
                             'departure_location': row.get('departure_location', ''),
+                            'video_urls': video_urls_raw,
                             'gallery': gallery,  # Gallery images for slideshow
                             'uses_placeholder_images': not images_enabled,  # Flag for placeholder image indicator
                             # Parsed filter fields
@@ -2323,6 +2337,31 @@ def load_all_tours(language='en', preview_account=None):
         except Exception as e:
             print(f"Error processing {csvfile}: {e}")
             continue
+    
+    # For non-English: fill in missing video_urls from English CSVs
+    if language != 'en':
+        tours_missing_videos = [t for t in tours if not t.get('video_urls')]
+        if tours_missing_videos:
+            # Build a cache of English video_urls
+            en_video_cache = {}
+            for company_dir in glob.glob('data/*/'):
+                company_name = os.path.basename(company_dir.rstrip('/\\'))
+                en_csvs = glob.glob(f'{company_dir}en/*_with_media.csv')
+                for en_csv in en_csvs:
+                    try:
+                        with open(en_csv, newline='', encoding='utf-8') as ef:
+                            reader = csv.DictReader(ef)
+                            for row in reader:
+                                vid = row.get('video_urls', '')
+                                if vid:
+                                    en_key = f"{row.get('company_name', company_name)}__{row.get('id', '')}"
+                                    en_video_cache[en_key] = vid
+                    except Exception:
+                        pass
+            # Fill in missing video_urls
+            for tour in tours_missing_videos:
+                if tour['key'] in en_video_cache:
+                    tour['video_urls'] = en_video_cache[tour['key']]
     
     return tours
 
@@ -4091,6 +4130,7 @@ def operator_edit_tour(tour_key):
 
 @app.route('/')
 def index():
+    refresh_company_display_names()
     # Check for referral from QR code scan (allows public access)
     referral_account = get_referral_account()
     
@@ -4237,6 +4277,7 @@ def api_semantic_search():
 @app.route('/api/tours')
 def api_tours():
     """API endpoint to fetch filtered tours for video question flow"""
+    refresh_company_display_names()
     language = request.args.get('lang', 'en')
     
     # Get the active account for filtering hidden images
@@ -4867,6 +4908,7 @@ def apply_filters(tours, criteria, user_message_context=None, conversation_histo
 @app.route('/filter-tours')
 def filter_tours():
     """New endpoint for filtering tours"""
+    refresh_company_display_names()
     # Get filter parameters
     language = request.args.get('lang', 'en')
     duration = request.args.get('duration', '')
@@ -4985,6 +5027,7 @@ def more_tours():
 @app.route('/tour-detail/<key>')
 def tour_detail(key):
     # key is company__id
+    refresh_company_display_names()
     language = request.args.get('lang', 'en')
     company, tid = key.split('__', 1)
     # Load from language-specific CSV
@@ -5030,8 +5073,24 @@ def tour_detail(key):
                                 # Images disabled - use random placeholders
                                 gallery = get_random_placeholder_gallery(5)
                             
-                            # Parse video URLs
+                            # Parse video URLs (fall back to English CSV if missing in translated CSV)
                             video_urls_raw = row.get('video_urls', '')
+                            if not video_urls_raw and language != 'en':
+                                # Try loading video_urls from English CSV
+                                en_csv_pattern = f'data/{company}/en/*_with_media.csv'
+                                en_csv_files = glob.glob(en_csv_pattern)
+                                for en_csv in en_csv_files:
+                                    try:
+                                        with open(en_csv, newline='', encoding='utf-8') as ef:
+                                            en_reader = csv.DictReader(ef)
+                                            for en_row in en_reader:
+                                                if en_row.get('id') == tid:
+                                                    video_urls_raw = en_row.get('video_urls', '')
+                                                    break
+                                    except Exception:
+                                        pass
+                                    if video_urls_raw:
+                                        break
                             video_urls = [v.strip() for v in video_urls_raw.split(',') if v.strip()] if video_urls_raw else []
                             
                             # Load full review data for detail page

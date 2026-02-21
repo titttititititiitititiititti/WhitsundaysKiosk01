@@ -18940,6 +18940,7 @@
       
       try {
         const params = new URLSearchParams();
+        params.append('lang', currentLanguage);
         if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
         if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
         
@@ -19270,6 +19271,7 @@
           });
         }
         
+        params.append('lang', currentLanguage);
         const url = `/api/tours${params.toString() ? '?' + params.toString() : ''}`;
         const response = await fetch(url);
         
@@ -30429,12 +30431,36 @@
       const homePage = document.querySelector('.home-page');
       if (homePage && (homePage.style.display === 'flex' || homePage.classList.contains('active'))) {
         console.log('🔄 Reloading tours for new language:', langCode);
-        if (typeof loadInitialFeaturedTours === 'function') {
+        // Re-apply filters if any are active, otherwise reload all tours
+        const hasActiveFilters = typeof activeFilters !== 'undefined' && Object.values(activeFilters).some(v => v);
+        if (hasActiveFilters && typeof applyFilters === 'function') {
+          console.log('🔄 Re-applying filters in new language');
+          applyFilters();
+        } else if (typeof loadInitialFeaturedTours === 'function') {
           // Reset pagination state
           homePageOffset = 0;
           homePageLoadedKeys = [];
           homePageHasMore = true;
           loadInitialFeaturedTours();
+        }
+      }
+      
+      // If a tour detail page is open (Browse All Tours), re-render it in the new language
+      const tourDetailPage = document.querySelector('.tour-detail-page');
+      const tourDetailVisible = tourDetailPage && (tourDetailPage.classList.contains('active') || tourDetailPage.style.display === 'flex');
+      if (tourDetailVisible && currentOpenTourKey) {
+        console.log('🔄 Re-rendering tour detail in new language:', langCode, currentOpenTourKey);
+        // Re-call openTourDetail which fully re-fetches and re-renders all content
+        openTourDetail(currentOpenTourKey);
+      }
+      
+      // If Quick Match swipe cards are visible, reload them in the new language
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      if (swipeOverlay && swipeOverlay.style.display !== 'none') {
+        console.log('🔄 Reloading Quick Match swipe cards for new language:', langCode);
+        // Re-fetch swipe results with new language
+        if (typeof showSwipeResults === 'function') {
+          showSwipeResults();
         }
       }
       
