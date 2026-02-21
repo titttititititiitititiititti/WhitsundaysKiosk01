@@ -443,12 +443,20 @@ def git_sync_changes(commit_message="Update tour data"):
                 ['git', 'add', '-A'], cwd=cwd,
                 capture_output=True, text=True, encoding='utf-8', errors='replace', check=True
             )
-            # Unstage analytics files - they must NEVER be committed by admin changes
+            # Unstage analytics DATA files - they must NEVER be committed by admin changes
             # Analytics are only committed via sync_analytics_to_git() to prevent data loss
-            subprocess.run(
-                ['git', 'reset', 'HEAD', '--', 'data/analytics_*.json', 'data/analytics_*_backup.json'],
-                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace'
-            )
+            # Note: analytics_request.json is NOT an analytics data file, it's a signal file
+            import glob as _glob
+            analytics_data_files = [os.path.relpath(f, cwd).replace('\\', '/')
+                                   for f in _glob.glob(os.path.join(cwd, 'data', 'analytics_*.json'))
+                                   if 'request' not in os.path.basename(f)]
+            analytics_data_files += [os.path.relpath(f, cwd).replace('\\', '/')
+                                    for f in _glob.glob(os.path.join(cwd, 'data', 'analytics_*_backup.json'))]
+            if analytics_data_files:
+                subprocess.run(
+                    ['git', 'reset', 'HEAD', '--'] + analytics_data_files,
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace'
+                )
             
             # Commit
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -1824,7 +1832,10 @@ def get_analytics_summary(account=None):
             qr_conversions.append(conversion)
     
     # One-time historical adjustment: 6 send-to-phone clicks before tracking was added
+    # 2 from Quick Match (swipe mode), 4 from Browse All Tours (tour-detail)
     send_to_phone_clicks += 6
+    send_to_phone_by_source['swipe'] = send_to_phone_by_source.get('swipe', 0) + 2
+    send_to_phone_by_source['tour-detail'] = send_to_phone_by_source.get('tour-detail', 0) + 4
     
     # Calculate QR conversion rate
     qr_conversion_rate = 0
