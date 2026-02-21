@@ -29577,86 +29577,13 @@
             "filter_type": "activities",
             "filter_value": "great_barrier_reef"
           }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T11:45:06.476921",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:45:08.409353",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:45:08.464121",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:45:47.062304",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:45:47.421553",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:46:21.135649",
-          "data": {
-            "mode": "quick-decision"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-02-18T11:47:29.375581",
-          "data": {
-            "filter_type": "duration",
-            "filter_value": "full_day"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-02-18T11:47:31.037623",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-02-18T11:47:33.351954",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "whitehaven_beach"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-18T11:48:29.830773",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-18T11:48:29.830773",
-      "duration_seconds": 3161.336891
+      "chat_messages": []
     },
     {
       "session_id": "session_9813f3220eac_1771377215",
@@ -29704,13 +29631,27 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:19:18.281450",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:19:24.064609",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:19:24.064609",
+      "duration_seconds": 22.216127
     },
     {
       "session_id": "session_d2228e414ed8_1771377571",
@@ -29735,6 +29676,20 @@
         {
           "type": "mode_selected",
           "timestamp": "2026-02-18T11:19:47.814804",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T11:23:09.266103",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:23:10.174617",
           "data": {
             "mode": "browse-all"
           }
@@ -33420,13 +33375,20 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-20T13:26:36.127966",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-20T13:26:36.127966",
+      "duration_seconds": 185.333729
     },
     {
       "session_id": "session_75f57b1fa271_1771560217",
@@ -34274,5 +34236,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-21T10:01:59.400211"
+  "last_updated": "2026-02-21T10:03:10.116618"
 }
