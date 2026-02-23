@@ -16558,6 +16558,7 @@
     // GLOBAL VARIABLES - Inactivity Timer & Language
     // =====================================================================
     let inactivityTimer;
+    const INACTIVITY_TIMEOUT = {{ (kiosk_settings.get('session_timeout_minutes', 2) | int) * 60000 if kiosk_settings else 120000 }}; // {{ kiosk_settings.get('session_timeout_minutes', 2) if kiosk_settings else 2 }} minutes
     const urlParams = new URLSearchParams(window.location.search);
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
@@ -18972,7 +18973,7 @@
         if (hasStarted) {
           resetVideoQuestionFlow();
         }
-      }, 120000);
+      }, INACTIVITY_TIMEOUT || 120000);
     }
     
     function resetVideoQuestionFlow() {
@@ -30856,8 +30857,6 @@
     // INACTIVITY TIMER - Auto reset after period of inactivity (for home page)
     // =====================================================================
     
-    const INACTIVITY_TIMEOUT = 120000; // 2 minutes in milliseconds
-    
     function resetInactivityTimerHomePage() {
       // Clear existing timer
       if (inactivityTimer) {
@@ -30899,7 +30898,7 @@
       
       // Start the timer
       resetInactivityTimerHomePage();
-      console.log('✓ Inactivity monitor initialized (2 minute timeout)');
+      console.log('✓ Inactivity monitor initialized (' + (INACTIVITY_TIMEOUT / 60000) + ' minute timeout)');
     }
     
     // =====================================================================
