@@ -4758,23 +4758,22 @@
     
     .ai-input-area {
       position: fixed;
-      bottom: 0;
+      bottom: 100px;
       left: 0;
       right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
-      padding: 20px;
-      padding-bottom: 30px;
+      background: transparent;
+      padding: 10px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       z-index: 10005; /* Above suggestions */
-      gap: 15px;
+      gap: 10px;
     }
     
     /* Quick Reply Suggestions Wrapper - ABOVE the input area */
     .ai-suggestions-wrapper {
       position: fixed;
-      bottom: 240px;
+      bottom: 170px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10010;
@@ -4825,7 +4824,7 @@
     
     /* Make chat container end higher to not overlap with suggestions */
     .ai-assistant-page .ai-chat-container {
-      padding-bottom: 200px !important;
+      padding-bottom: 260px !important;
       max-height: calc(100vh - 280px) !important;
     }
     
@@ -22523,7 +22522,7 @@
           indicator.innerHTML = '🔇 Tap orb to unmute';
           indicator.style.cssText = `
             position: fixed;
-            bottom: 200px;
+            bottom: 180px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.8);
