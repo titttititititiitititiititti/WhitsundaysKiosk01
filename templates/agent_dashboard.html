@@ -2374,6 +2374,24 @@
         }
         
         function filterByPromotion(promotionType) {
+            // Toggle: if already filtering by this type, reset to 'all'
+            if (currentFilter === promotionType) {
+                currentFilter = 'all';
+                
+                // Clear promotion level active states
+                document.querySelectorAll('.promo-level').forEach(level => {
+                    level.classList.remove('active');
+                });
+                
+                // Re-activate the "All" filter button
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.filter === 'all');
+                });
+                
+                filterTours();
+                return;
+            }
+            
             // Set the filter
             currentFilter = promotionType;
             
