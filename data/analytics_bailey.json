@@ -8492,9 +8492,265 @@
       "chat_messages": [],
       "ended_at": "2026-02-21T20:15:01.357643",
       "duration_seconds": 101.175679
+    },
+    {
+      "session_id": "session_d4f8ea294c84_1771890683",
+      "account": "bailey",
+      "started_at": "2026-02-24T09:51:23.100731",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-24T09:51:23.100731",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-24T09:51:24.508635",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-24T09:51:32.656508",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-24T09:51:50.035024",
+          "data": {
+            "role": "user",
+            "message": "I want a overnight or multi-day reef snorkeling tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-24T09:52:05.799213",
+          "data": {
+            "role": "assistant",
+            "message": "Exploring the reef over multiple days sounds like an incredible adventure! \ud83c\udf0a Here are some fantastic options that will take you on an unforgettable journey through the Whitsundays and the Great Barrier Reef:\n\n1. **Atlantic Clipper Overnight Tour** - Experience the ultimate fun and social sailing adventure aboard the Atlantic Clipper, the largest sailing boat in the Whitsundays. This tour is perfect for young and adventurous travelers, offering a vibrant atmosphere with lively banter, exciting w"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-24T09:52:30.743161",
+          "data": {
+            "tour_name": "Atlantic Clipper Overnight Tour",
+            "company": "True Blue Sailing",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-24T10:00:30.837825",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Atlantic Clipper Overnight Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a overnight or multi-day reef snorkeling tour",
+          "timestamp": "2026-02-24T09:51:50.035024"
+        },
+        {
+          "role": "assistant",
+          "message": "Exploring the reef over multiple days sounds like an incredible adventure! \ud83c\udf0a Here are some fantastic options that will take you on an unforgettable journey through the Whitsundays and the Great Barrier Reef:\n\n1. **Atlantic Clipper Overnight Tour** - Experience the ultimate fun and social sailing adventure aboard the Atlantic Clipper, the largest sailing boat in the Whitsundays. This tour is perfect for young and adventurous travelers, offering a vibrant atmosphere with lively banter, exciting w",
+          "timestamp": "2026-02-24T09:52:05.799213"
+        }
+      ],
+      "ended_at": "2026-02-24T10:00:30.837825",
+      "duration_seconds": 547.737094
+    },
+    {
+      "session_id": "session_8c353b09d7f8_1771892600",
+      "account": "bailey",
+      "started_at": "2026-02-24T10:23:20.271189",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-24T10:23:20.271189",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-24T10:23:21.243238",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-24T10:24:14.350464",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-24T10:32:51.924621",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-24T10:32:51.924621",
+      "duration_seconds": 571.653432
+    },
+    {
+      "session_id": "session_ad26edd40cf9_1772011744",
+      "account": "bailey",
+      "started_at": "2026-02-25T19:29:04.550005",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-25T19:29:04.550005",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-25T19:29:07.853981",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-25T19:29:19.137324",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-25T19:29:26.280377",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:30:00.062394",
+          "data": {
+            "tour_name": "Airlie Adventure Tour",
+            "company": "Jetskitour",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:30:07.135655",
+          "data": {
+            "tour_name": "\uc5d0\uc5bc\ub9ac \uc5b4\ub4dc\ubca4\ucc98 \ud22c\uc5b4",
+            "company": "Jetskitour",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:30:08.860560",
+          "data": {
+            "tour_name": "Airlie Adventure Tour",
+            "company": "Jetskitour",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:31:20.994506",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:31:33.329122",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:32:21.004566",
+          "data": {
+            "tour_name": "Lady Enid Adults Only Sailing Day Trip",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:32:40.937710",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:32:59.434331",
+          "data": {
+            "tour_name": "Sundowner Cruises - Sunset Cruise & Dine",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-25T19:33:05.599804",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-25T19:33:11.743969",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Airlie Adventure Tour",
+        "\uc5d0\uc5bc\ub9ac \uc5b4\ub4dc\ubca4\ucc98 \ud22c\uc5b4",
+        "Viper Outer Great Barrier Reef Tour",
+        "Lady Enid Adults Only Sailing Day Trip",
+        "Airlie Beach Sunset Cruise on Sundowner",
+        "Sundowner Cruises - Sunset Cruise & Dine"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-25T19:33:11.743969",
+      "duration_seconds": 247.193964
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-21T20:15:01.358640"
+  "last_updated": "2026-02-25T19:33:11.745261"
 }
