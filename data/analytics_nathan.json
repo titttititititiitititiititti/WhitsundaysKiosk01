@@ -29577,13 +29577,86 @@
             "filter_type": "activities",
             "filter_value": "great_barrier_reef"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-18T11:45:06.476921",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.409353",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:08.464121",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.062304",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:45:47.421553",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-18T11:46:21.135649",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:29.375581",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:31.037623",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-18T11:47:33.351954",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-18T11:48:29.830773",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-02-18T11:48:29.830773",
+      "duration_seconds": 3161.336891
     },
     {
       "session_id": "session_9813f3220eac_1771377215",
@@ -29631,27 +29704,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:19:18.281450",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-18T11:19:24.064609",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-18T11:19:24.064609",
-      "duration_seconds": 22.216127
+      "chat_messages": []
     },
     {
       "session_id": "session_d2228e414ed8_1771377571",
@@ -29676,20 +29735,6 @@
         {
           "type": "mode_selected",
           "timestamp": "2026-02-18T11:19:47.814804",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-02-18T11:23:09.266103",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-02-18T11:23:10.174617",
           "data": {
             "mode": "browse-all"
           }
@@ -33375,20 +33420,13 @@
           "data": {
             "language": "en"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-02-20T13:26:36.127966",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-02-20T13:26:36.127966",
-      "duration_seconds": 185.333729
+      "chat_messages": []
     },
     {
       "session_id": "session_75f57b1fa271_1771560217",
@@ -34234,6 +34272,98 @@
       "duration_seconds": 120.010466
     },
     {
+      "session_id": "session_712294271625_1771638652",
+      "account": "nathan",
+      "started_at": "2026-02-21T11:50:52.610203",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T11:50:52.610203",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T11:53:28.352403",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T11:53:28.352403",
+      "duration_seconds": 155.7422
+    },
+    {
+      "session_id": "session_6d53a65e7632_1771653836",
+      "account": "nathan",
+      "started_at": "2026-02-21T16:03:56.535710",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T16:03:56.535710",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T16:04:00.022531",
+          "data": {
+            "language": "es"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T16:04:10.303754",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-21T16:04:15.617122",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-21T16:04:19.289379",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-21T16:04:32.363163",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T16:07:42.028331",
+          "data": {}
+        }
+      ],
+      "language": "es",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T16:07:42.028331",
+      "duration_seconds": 225.492621
+    },
+    {
       "session_id": "session_e24ad59f05fb_1771657774",
       "account": "nathan",
       "started_at": "2026-02-21T17:09:34.678995",
@@ -34397,9 +34527,530 @@
       "chat_messages": [],
       "ended_at": "2026-02-21T20:08:16.120550",
       "duration_seconds": 6.414053
+    },
+    {
+      "session_id": "session_4f640845dfeb_1771675341",
+      "account": "nathan",
+      "started_at": "2026-02-21T22:02:21.975263",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T22:02:21.975263",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T22:02:23.389674",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T22:02:24.978373",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T22:02:26.384366",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T22:02:26.384366",
+      "duration_seconds": 4.409103
+    },
+    {
+      "session_id": "session_9c8e4f1c2b71_1771675347",
+      "account": "nathan",
+      "started_at": "2026-02-21T22:02:28.011165",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T22:02:28.011165",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T22:02:29.816520",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T22:02:30.523223",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T22:02:32.959360",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T22:02:36.160217",
+          "data": {
+            "tour_name": "Fly Raft - S\u00fcdliche Lichter",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T22:02:43.964554",
+          "data": {
+            "tour_name": "Fly Raft - Lumi\u00e8res du Sud",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T22:02:46.966253",
+          "data": {
+            "tour_name": "Balsa - Luces del Sur",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T22:02:59.058419",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights",
+        "Fly Raft - S\u00fcdliche Lichter",
+        "Fly Raft - Lumi\u00e8res du Sud",
+        "Balsa - Luces del Sur"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T22:02:59.058419",
+      "duration_seconds": 31.047254
+    },
+    {
+      "session_id": "session_3a407fd3c663_1771675380",
+      "account": "nathan",
+      "started_at": "2026-02-21T22:03:00.516217",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T22:03:00.516217",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-21T22:03:01.912513",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-21T22:03:03.472333",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-21T22:03:12.432814",
+          "data": {
+            "tour_name": "Reefsuites Underwater Accommodation",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T22:03:29.098728",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Reefsuites Underwater Accommodation"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T22:03:29.098728",
+      "duration_seconds": 28.582511
+    },
+    {
+      "session_id": "session_67deea3c3fcb_1771675410",
+      "account": "nathan",
+      "started_at": "2026-02-21T22:03:30.783913",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-21T22:03:30.783913",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-21T22:05:36.176915",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-21T22:05:36.176915",
+      "duration_seconds": 125.393002
+    },
+    {
+      "session_id": "session_958f557356eb_1771722233",
+      "account": "nathan",
+      "started_at": "2026-02-22T11:03:53.731091",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-22T11:03:53.731091",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-22T11:05:56.415706",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-22T11:05:56.415706",
+      "duration_seconds": 122.684615
+    },
+    {
+      "session_id": "session_c3f7e70ef9c1_1771728584",
+      "account": "nathan",
+      "started_at": "2026-02-22T12:49:44.109969",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-22T12:49:44.109969",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-22T12:49:46.805169",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-22T12:51:47.085143",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-22T12:51:47.085143",
+      "duration_seconds": 122.975174
+    },
+    {
+      "session_id": "session_474673107a2a_1771732952",
+      "account": "nathan",
+      "started_at": "2026-02-22T14:02:32.802349",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-22T14:02:32.802349",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-22T14:02:36.057048",
+          "data": {
+            "language": "fr"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-22T14:04:57.117644",
+          "data": {}
+        }
+      ],
+      "language": "fr",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-22T14:04:57.117644",
+      "duration_seconds": 144.315295
+    },
+    {
+      "session_id": "session_e74ddf13be5d_1771810664",
+      "account": "nathan",
+      "started_at": "2026-02-23T11:37:44.511535",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-23T11:37:44.511535",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-23T11:37:46.472795",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-23T11:39:59.517519",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-23T11:39:59.517519",
+      "duration_seconds": 135.005984
+    },
+    {
+      "session_id": "session_4555d082c9aa_1771891054",
+      "account": "nathan",
+      "started_at": "2026-02-24T09:57:34.606432",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-24T09:57:34.606432",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-24T09:57:37.080689",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-24T09:57:40.592727",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-24T09:57:43.235912",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-24T09:57:45.538079",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-24T09:57:52.392409",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-24T09:57:56.267628",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-24T09:57:57.383712",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-24T10:05:48.225499",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-24T10:05:48.225499",
+      "duration_seconds": 493.619067
+    },
+    {
+      "session_id": "session_f556609c2ab8_1772065747",
+      "account": "nathan",
+      "started_at": "2026-02-26T10:29:07.728874",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-26T10:29:07.728874",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-26T11:24:02.121495",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-26T11:24:02.121495",
+      "duration_seconds": 3294.392621
+    },
+    {
+      "session_id": "session_c09f64d85db6_1772087809",
+      "account": "nathan",
+      "started_at": "2026-02-26T16:36:49.278823",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-26T16:36:49.278823",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-26T16:36:55.637781",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-26T16:36:56.013233",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-26T16:43:55.012396",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-26T16:43:55.012396",
+      "duration_seconds": 425.733573
+    },
+    {
+      "session_id": "session_5f09078b2729_1772111564",
+      "account": "nathan",
+      "started_at": "2026-02-26T23:12:44.436827",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-26T23:12:44.436827",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-26T23:12:47.071725",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-26T23:12:48.390608",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-26T23:12:49.740988",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-26T23:12:49.740988",
+      "duration_seconds": 5.304161
     }
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-02-21T20:08:16.120550"
+  "last_updated": "2026-02-26T23:12:49.741988"
 }
