@@ -10003,6 +10003,7 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
     
         # Only respond to signals from the last 30 minutes
         # (needs to be generous because kiosks may take 5-10min to restart after code update)
+        age_seconds = 0
         try:
             signal_time = datetime.fromisoformat(requested_at)
             age_seconds = (datetime.now() - signal_time).total_seconds()
