@@ -232,7 +232,7 @@ def _get_github_repo_info():
     return None, None
 
 def _configure_git_identity():
-    """Configure git user.name and user.email if not set (required for commits on Render)"""
+    """Configure git user.name, user.email, and fix broken credential helpers"""
     cwd = os.path.dirname(os.path.abspath(__file__))
     try:
         # Check if user.name is set
@@ -258,6 +258,29 @@ def _configure_git_identity():
                 cwd=cwd, capture_output=True, text=True, timeout=5
             )
             print("[GIT SYNC] Configured git user.email = 'bot@filtour.com'", flush=True)
+        
+        # Fix broken credential helpers (e.g. 'credential-abt' doesn't exist on Windows)
+        # Check repo-level credential helper
+        cred_result = subprocess.run(
+            ['git', 'config', '--local', 'credential.helper'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=cwd, timeout=5
+        )
+        local_helper = cred_result.stdout.strip()
+        if local_helper:
+            # Verify the credential helper actually exists
+            test_result = subprocess.run(
+                ['git', f'credential-{local_helper}', '--version'],
+                capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=cwd, timeout=5
+            )
+            if test_result.returncode != 0:
+                # Broken credential helper - replace with 'manager' (Windows) or 'store' (Linux)
+                import platform
+                replacement = 'manager' if platform.system() == 'Windows' else 'store'
+                subprocess.run(
+                    ['git', 'config', '--local', 'credential.helper', replacement],
+                    cwd=cwd, capture_output=True, text=True, timeout=5
+                )
+                print(f"[GIT SYNC] ⚠️ Fixed broken credential helper '{local_helper}' → '{replacement}'", flush=True)
     except Exception as e:
         print(f"[GIT SYNC] Warning: Could not configure git identity: {e}", flush=True)
 
@@ -9819,19 +9842,22 @@ def sync_analytics_to_git():
         
         print(f"[ANALYTICS SYNC] Committed analytics update", flush=True)
         
-        # Step 5: Push (with retry on rejection)
-        for attempt in range(3):
+        # Step 5: Push (with retry on rejection, short timeouts to not block update loop)
+        for attempt in range(2):
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             
             if push_result.returncode == 0:
                 print(f"[ANALYTICS SYNC] ✅ Pushed analytics to git", flush=True)
                 return
             
-            if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
-                print(f"[ANALYTICS SYNC] Push rejected (attempt {attempt+1}), pulling and retrying...", flush=True)
+            stderr = push_result.stderr or ''
+            print(f"[ANALYTICS SYNC] Push attempt {attempt+1} failed: {stderr[:200]}", flush=True)
+            
+            if attempt < 1 and ('rejected' in stderr or 'non-fast-forward' in stderr):
+                print(f"[ANALYTICS SYNC] Push rejected, pulling and retrying...", flush=True)
                 # Pull with rebase + autostash (the Flask app may write analytics between 
                 # our commit and this pull, causing unstaged changes that block rebase)
                 pull_result = subprocess.run(
@@ -9844,9 +9870,9 @@ def sync_analytics_to_git():
                                  capture_output=True, text=True, timeout=10)
                     print(f"[ANALYTICS SYNC] Rebase failed, aborting: {pull_result.stderr[:200]}", flush=True)
                     return
-            else:
-                print(f"[ANALYTICS SYNC] ❌ Push failed: {push_result.stderr[:200]}", flush=True)
-                return
+        
+        # If we get here, all attempts failed
+        print(f"[ANALYTICS SYNC] ❌ All push attempts failed", flush=True)
             
     except Exception as e:
         print(f"[ANALYTICS SYNC] Error: {e}", flush=True)
