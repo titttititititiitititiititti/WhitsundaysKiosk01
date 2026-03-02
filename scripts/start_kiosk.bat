@@ -1,35 +1,21 @@
 @echo off
-REM ============================================
-REM Filtour Kiosk Startup Script (Windows)
-REM ============================================
-REM This script starts the kiosk in auto-update mode.
-REM Add this to Windows Task Scheduler to run at startup.
-
-title Filtour Kiosk
-
-REM Set the path to your project folder
-cd /d "%~dp0.."
-
+title Filtour Kiosk (Compatibility Launcher)
 echo ============================================
-echo Starting Filtour Kiosk...
+echo Filtour Kiosk Launcher
 echo ============================================
 echo.
+echo Detected legacy scripts\start_kiosk.bat path.
+echo Redirecting to the main launcher...
+echo.
 
-REM Check for Python
-where python >nul 2>nul
-if %ERRORLEVEL% NEQ 0 (
-    echo ERROR: Python not found! Please install Python 3.9+
+cd /d "%~dp0.."
+
+if exist "start_kiosk.bat" (
+    call "start_kiosk.bat"
+) else (
+    echo ERROR: Main launcher not found at %CD%\start_kiosk.bat
+    echo Run: python run_kiosk.py
     pause
     exit /b 1
 )
-
-REM Install/update dependencies
-echo Installing dependencies...
-python -m pip install -r requirements.txt -q
-
-REM Start the auto-update daemon
-echo Starting kiosk with auto-updates...
-python scripts/auto_update.py --daemon
-
-pause
 
