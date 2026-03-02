@@ -172,9 +172,9 @@ if %errorLevel% equ 0 (
         git init >nul 2>&1
     )
     
-    :: Set remote for updates
+    :: Set remote for updates (must match the main kiosk repo)
     git remote remove origin >nul 2>&1
-    git remote add origin https://github.com/titttititititiitititiititti/tourismwhitsundaysfiltour.git >nul 2>&1
+    git remote add origin https://github.com/titttititititiitititiititti/WhitsundaysKiosk01.git >nul 2>&1
     
     echo [OK] Auto-updates configured
     echo      The kiosk will check for updates from GitHub
