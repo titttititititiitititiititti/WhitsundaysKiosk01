@@ -176,7 +176,8 @@ def pull_updates():
         
         # Backup local analytics files before reset (critical for multi-kiosk setups)
         analytics_backup = {}
-        for af in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
+        for af in [f for f in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json'))
+                   if '_backup' not in f and '_request' not in f]:
             try:
                 with open(af, 'r', encoding='utf-8-sig') as f:
                     analytics_backup[af] = f.read()

@@ -9465,7 +9465,8 @@ def pull_and_restart():
         
         # Save local analytics before reset (so we don't lose data)
         analytics_backup = {}
-        analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
+        analytics_files = [f for f in glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
+                          if '_backup' not in f and '_request' not in f]
         for af in analytics_files:
             try:
                 with open(af, 'r', encoding='utf-8-sig') as f:
@@ -9766,7 +9767,7 @@ def sync_analytics_to_git():
         
         # Step 2: For each analytics file, merge remote sessions into local
         analytics_files = [f for f in glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
-                          if '_backup' not in f]
+                          if '_backup' not in f and '_request' not in f]
         
         for af in analytics_files:
             rel_path = os.path.relpath(af, repo_path).replace('\\', '/')
