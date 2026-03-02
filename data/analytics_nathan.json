@@ -40952,6 +40952,162 @@
       "duration_seconds": 367
     },
     {
+      "session_id": "session_26ff13ab6d25_1772420622",
+      "account": "nathan",
+      "started_at": "2026-03-02T13:06:32.269859",
+      "events": [
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-02T13:06:32.269859",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:06:33.899213",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:06:35.957964",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:06:38.654767",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-02T13:15:04.068006",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-02T13:15:04.068006",
+      "duration_seconds": 511.798147
+    },
+    {
+      "session_id": "session_1ea55e3e74bf_1772421998",
+      "account": "nathan",
+      "started_at": "2026-03-02T13:26:38.957578",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-02T13:26:38.957578",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-02T13:26:41.942959",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-02T13:26:44.425625",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:26:46.148262",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:26:48.712566",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-02T13:26:51.834287",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-02T13:27:05.676136",
+          "data": {
+            "tour_name": "Whitsunday Islands Sail, SUP & Snorkel Day Tour",
+            "company": "wings",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-02T13:27:05.975358",
+          "data": {
+            "tour_name": "Whitsunday Islands Sail, SUP & Snorkel Day Tour",
+            "company": "wings",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-02T13:27:56.343714",
+          "data": {
+            "tour_name": "Atlantic Clipper Overnight Tour",
+            "company": "True Blue Sailing",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-02T13:28:02.928949",
+          "data": {
+            "tour_name": "Atlantic Clipper Overnight Tour",
+            "company": "True Blue Sailing",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-02T13:35:52.372976",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Atlantic Clipper Overnight Tour"
+      ],
+      "tours_booked": [
+        "Whitsunday Islands Sail, SUP & Snorkel Day Tour",
+        "Atlantic Clipper Overnight Tour"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-02T13:35:52.372976",
+      "duration_seconds": 553.415398
+    },
+    {
       "session_id": "session_b11925612534_1772446781",
       "account": "nathan",
       "started_at": "2026-03-02T20:19:41.489670",
@@ -40963,20 +41119,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://127.0.0.1:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-02T20:24:44.595492",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-02T20:24:44.595492",
-      "duration_seconds": 303.105822
+      "chat_messages": []
     },
     {
       "session_id": "session_f430f3eb7d28_1772450188",
@@ -41008,5 +41157,5 @@
   ],
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-02T21:16:30.178329"
+  "last_updated": "2026-03-02T13:35:52.372976"
 }
