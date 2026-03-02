@@ -8274,6 +8274,513 @@
       "chat_messages": []
     },
     {
+      "session_id": "session_033ef7092313_1770766143",
+      "account": "bailey",
+      "started_at": "2026-02-11T09:29:03.946301",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T09:29:03.946301",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPad; CPU OS 17_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/145.0.6422.70 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T09:29:11.484654",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T09:29:13.536416",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-11T09:29:15.988738",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-11T09:29:20.497844",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "reef"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-11T09:29:23.389210",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "jet_ski"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-11T09:29:27.685825",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T09:29:51.960200",
+          "data": {
+            "tour_name": "Providence V Sunset Sail",
+            "company": "Providence Sailing",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-11T09:29:59.707888",
+          "data": {
+            "tour_name": "Providence V Sunset Sail",
+            "company": "Providence Sailing",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T09:30:17.574972",
+          "data": {
+            "tour_name": "Matador Whitsundays 2D/1N",
+            "company": "Matador Whitsundays",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T09:30:36.362032",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T09:33:18.470800",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Providence V Sunset Sail",
+        "Matador Whitsundays 2D/1N",
+        "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "tours_booked": [
+        "Providence V Sunset Sail"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T09:33:18.470800",
+      "duration_seconds": 254.524499
+    },
+    {
+      "session_id": "session_3cff4e650d12_1770787986",
+      "account": "bailey",
+      "started_at": "2026-02-11T15:33:06.081322",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-11T15:33:06.081322",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-11T15:33:13.676776",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-11T15:33:18.283766",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T15:33:38.586269",
+          "data": {
+            "tour_name": "British Defender 3D2N",
+            "company": "Sailing Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T15:34:10.336646",
+          "data": {
+            "tour_name": "Lady Enid Adults Only Sailing Day Trip",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T15:34:47.380134",
+          "data": {
+            "tour_name": "Eureka II",
+            "company": "Sailing Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-11T15:35:15.117660",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-11T15:38:43.920465",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "British Defender 3D2N",
+        "Lady Enid Adults Only Sailing Day Trip",
+        "Eureka II",
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-11T15:38:43.920465",
+      "duration_seconds": 337.839143
+    },
+    {
+      "session_id": "session_07292a0a08de_1770948575",
+      "account": "bailey",
+      "started_at": "2026-02-13T12:09:35.482129",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T12:09:35.482129",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-13T12:09:39.457652",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-13T12:09:43.928878",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-13T12:09:46.492205",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-13T12:09:48.522648",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "family_friendly"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-13T12:09:51.336129",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-13T12:09:56.567610",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-13T12:10:13.958729",
+          "data": {
+            "tour_name": "Providence V",
+            "company": "Sailing Whitsundays",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T12:14:28.315190",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Providence V"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T12:14:28.315190",
+      "duration_seconds": 292.833061
+    },
+    {
+      "session_id": "session_7b867940cbdb_1770950832",
+      "account": "bailey",
+      "started_at": "2026-02-13T12:47:12.999293",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-13T12:47:12.999293",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-13T12:47:21.359662",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-13T12:47:25.066383",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-13T12:47:49.297260",
+          "data": {
+            "tour_name": "Atlantic Clipper Overnight Tour",
+            "company": "True Blue Sailing",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-13T12:48:10.450284",
+          "data": {
+            "tour_name": "Whitsunday Getaway 3D/3N",
+            "company": "Sailing Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-13T12:52:43.500183",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Atlantic Clipper Overnight Tour",
+        "Whitsunday Getaway 3D/3N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-13T12:52:43.500183",
+      "duration_seconds": 330.50089
+    },
+    {
+      "session_id": "session_5f6a0f11e624_1771116877",
+      "account": "bailey",
+      "started_at": "2026-02-15T10:54:37.741758",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-15T10:54:37.741758",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/145.0.6422.60 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-15T10:54:46.113464",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-15T10:54:48.246296",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T10:55:29.413799",
+          "data": {
+            "tour_name": "Whitsunday Islands Sail, SUP & Snorkel Day Tour",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T10:56:02.589605",
+          "data": {
+            "tour_name": "Whitsunday Whirl 20 Minute Helicopter Tour",
+            "company": "Airlie Beach Helicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T10:56:34.786446",
+          "data": {
+            "tour_name": "Whitsunday Getaway 3D/3N",
+            "company": "Sailing Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-15T10:59:22.586350",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitsunday Islands Sail, SUP & Snorkel Day Tour",
+        "Whitsunday Whirl 20 Minute Helicopter Tour",
+        "Whitsunday Getaway 3D/3N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-15T10:59:22.586350",
+      "duration_seconds": 284.844592
+    },
+    {
+      "session_id": "session_4de5cc5df793_1771122232",
+      "account": "bailey",
+      "started_at": "2026-02-15T12:23:52.069071",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-15T12:23:52.069071",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPad; CPU OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-15T12:23:57.727650",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-15T12:24:00.375821",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T12:24:38.507390",
+          "data": {
+            "tour_name": "Matador Whitsundays 2D/1N",
+            "company": "Matador Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T12:25:03.467936",
+          "data": {
+            "tour_name": "Habibi Whitsundays 2 Day 1 Night Sailing Tour",
+            "company": "Magic Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T12:25:23.717733",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T12:26:06.662240",
+          "data": {
+            "tour_name": "Let The Sea Set You Free",
+            "company": "Whitsunday Bullet",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-15T12:26:51.509026",
+          "data": {
+            "tour_name": "Reef and Whitehaven Spectacular 60 Minute Helicopter Tour",
+            "company": "Airlie Beach Helicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-15T12:27:25.363562",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Matador Whitsundays 2D/1N",
+        "Habibi Whitsundays 2 Day 1 Night Sailing Tour",
+        "Thundercat Whitsundays - All Inclusive Day Tour",
+        "Let The Sea Set You Free",
+        "Reef and Whitehaven Spectacular 60 Minute Helicopter Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-15T12:27:25.363562",
+      "duration_seconds": 213.294491
+    },
+    {
       "session_id": "session_55d2ef35378a_1771668552",
       "account": "bailey",
       "started_at": "2026-02-21T20:09:12.735014",
@@ -8492,6 +8999,279 @@
       "chat_messages": [],
       "ended_at": "2026-02-21T20:15:01.357643",
       "duration_seconds": 101.175679
+    },
+    {
+      "session_id": "session_d0887669f1eb_1771810628",
+      "account": "bailey",
+      "started_at": "2026-02-23T11:37:08.124996",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-23T11:37:08.124996",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Mobile Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-23T11:37:19.887482",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-23T11:37:24.479826",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:38:14.559142",
+          "data": {
+            "tour_name": "Reef and Whitehaven Spectacular 60 Minute Helicopter Tour",
+            "company": "Airlie Beach Helicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:38:36.435400",
+          "data": {
+            "tour_name": "Full Day Tropical Island Kayak and Snorkel Adventure",
+            "company": "Salty Dog Sea Kayaking",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:39:00.289630",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:39:16.302080",
+          "data": {
+            "tour_name": "Whitehaven From Above Tour 30 Minute Helicopter Tour",
+            "company": "Airlie Beach Helicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:39:41.235466",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hill Inlet Chill & Grill",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-23T11:42:06.035454",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Reef and Whitehaven Spectacular 60 Minute Helicopter Tour",
+        "Full Day Tropical Island Kayak and Snorkel Adventure",
+        "Whitsunday 60 Minute Scenic Flight",
+        "Whitehaven From Above Tour 30 Minute Helicopter Tour",
+        "Whitehaven Beach & Hill Inlet Chill & Grill"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-23T11:42:06.035454",
+      "duration_seconds": 297.910458
+    },
+    {
+      "session_id": "session_7b576f60d355_1771811408",
+      "account": "bailey",
+      "started_at": "2026-02-23T11:50:08.337209",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-23T11:50:08.337209",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/145.0.6422.60 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-23T11:50:16.393264",
+          "data": {
+            "language": "de"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-23T11:50:20.535291",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T11:50:24.157567",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T11:50:30.074320",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_flight"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T11:50:35.239372",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T11:50:38.541767",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T11:50:55.180497",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-23T11:55:28.648304",
+          "data": {}
+        }
+      ],
+      "language": "de",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-23T11:55:28.648304",
+      "duration_seconds": 320.311095
+    },
+    {
+      "session_id": "session_1cbcc00b1a3b_1771827583",
+      "account": "bailey",
+      "started_at": "2026-02-23T16:19:43.319563",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-23T16:19:43.319563",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-23T16:19:53.267059",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-23T16:19:58.171960",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T16:20:02.639682",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "kayaking"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T16:20:07.217901",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-23T16:20:13.181995",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "fishing"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T16:20:40.494194",
+          "data": {
+            "tour_name": "Kiana 3D2N",
+            "company": "Sailing Whitsundays",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-23T16:21:19.844371",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "quick-decision"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-02-23T16:21:26.995340",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-23T16:23:55.156547",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Kiana 3D2N",
+        "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "tours_booked": [
+        "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-02-23T16:23:55.156547",
+      "duration_seconds": 251.836984
     },
     {
       "session_id": "session_d4f8ea294c84_1771890683",
@@ -8748,9 +9528,574 @@
       "chat_messages": [],
       "ended_at": "2026-02-25T19:33:11.743969",
       "duration_seconds": 247.193964
+    },
+    {
+      "session_id": "session_1a7abeb6d350_1772076991",
+      "account": "bailey",
+      "started_at": "2026-02-26T13:36:31.291237",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-26T13:36:31.291237",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-26T13:36:34.647880",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-26T13:36:36.192200",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:36:59.989456",
+          "data": {
+            "tour_name": "Skydive Over Airlie Beach And the Whitsundays!",
+            "company": "Skydive",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:37:53.305935",
+          "data": {
+            "tour_name": "Whitehaven From Above Tour 30 Minute Helicopter Tour",
+            "company": "Airlie Beach Helicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:38:34.846827",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:38:59.844706",
+          "data": {
+            "tour_name": "Half Day Sea Kayak Turtle Tour",
+            "company": "Whitsunday Stand Up Paddle",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:39:33.425805",
+          "data": {
+            "tour_name": "Big Fury Whitsundays Day Tour",
+            "company": "Magic Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-26T13:40:07.679436",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "Prosail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-26T13:42:12.925317",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Skydive Over Airlie Beach And the Whitsundays!",
+        "Whitehaven From Above Tour 30 Minute Helicopter Tour",
+        "Airlie Beach Sunset Sail in Style Cruise",
+        "Half Day Sea Kayak Turtle Tour",
+        "Big Fury Whitsundays Day Tour",
+        "Hammer Whitsundays Sailing Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-26T13:42:12.925317",
+      "duration_seconds": 341.63408
+    },
+    {
+      "session_id": "session_f693fce37836_1772148367",
+      "account": "bailey",
+      "started_at": "2026-02-27T09:26:07.515675",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T09:26:07.515675",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T09:26:09.792770",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T09:26:14.610594",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T09:27:25.807754",
+          "data": {
+            "tour_name": "Excursi\u00f3n a la Gran Barrera de Coral Exterior Viper",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T09:27:38.983477",
+          "data": {}
+        }
+      ],
+      "language": "ja",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Excursi\u00f3n a la Gran Barrera de Coral Exterior Viper"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-27T09:27:38.984475",
+      "duration_seconds": 91.4688
+    },
+    {
+      "session_id": "session_2be3f9a1665a_1772148719",
+      "account": "bailey",
+      "started_at": "2026-02-27T09:31:59.072899",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T09:31:59.072899",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T09:32:00.825424",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T09:32:03.066382",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T09:34:00.485154",
+          "data": {
+            "tour_name": "Sundowner Cruises - Sunset Cruise & Dine",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-02-27T09:34:13.719676",
+          "data": {
+            "tour_name": "Sundowner Cruises - Sunset Cruise & Dine",
+            "company": "Sundowner Cruises",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T09:39:00.388890",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T09:39:05.440249",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T09:39:06.278651",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T09:39:07.701469",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T09:39:56.144179",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Sundowner Cruises - Sunset Cruise & Dine"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-27T09:39:56.144179",
+      "duration_seconds": 477.07128
+    },
+    {
+      "session_id": "session_031d8d2e2e9b_1772149197",
+      "account": "bailey",
+      "started_at": "2026-02-27T09:39:57.692522",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T09:39:57.692522",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T09:40:00.170313",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T09:40:02.641183",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T09:41:37.663037",
+          "data": {
+            "role": "user",
+            "message": "I want a full day beach tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T09:42:00.749280",
+          "data": {
+            "role": "assistant",
+            "message": "A full day beach tour is a fantastic way to immerse yourself in the beauty of the Whitsundays! \ud83c\udfdd\ufe0f Here are some amazing options for you:\n\n1. **Viper Outer Great Barrier Reef Tour** - This tour is perfect for thrill-seekers wanting to explore the iconic Outer Great Barrier Reef. You'll experience high-speed travel aboard Viper, the fastest vessel in the Whitsundays, with stops at Whitehaven Beach and Hill Inlet. Snorkel vibrant coral gardens with a marine biologist and enjoy a buffet lunch on bo"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T09:44:31.845614",
+          "data": {
+            "role": "user",
+            "message": "\ud83d\udd04 Show me other options"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T09:44:45.380590",
+          "data": {
+            "role": "assistant",
+            "message": "Absolutely, here are some more fantastic full-day beach tour options for you! \ud83c\udfd6\ufe0f\n\n1. **Purely Whitehaven Day Tour** - Experience the Whitsundays in style aboard a modern, air-conditioned catamaran with Sealink. This full-day tour combines adventure and relaxation as you cruise through the stunning Whitsunday Islands. You'll visit the famous Whitehaven Beach, enjoy panoramic views from the rooftop deck, and indulge in a buffet lunch and afternoon tea. With capped guest numbers, it's a comfortabl"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T09:45:23.999852",
+          "data": {
+            "tour_name": "Whitehaven Beach All Day",
+            "company": "Zigzag Whitsundays",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T09:45:38.177403",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Whitehaven Beach All Day"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day beach tour",
+          "timestamp": "2026-02-27T09:41:37.663037"
+        },
+        {
+          "role": "assistant",
+          "message": "A full day beach tour is a fantastic way to immerse yourself in the beauty of the Whitsundays! \ud83c\udfdd\ufe0f Here are some amazing options for you:\n\n1. **Viper Outer Great Barrier Reef Tour** - This tour is perfect for thrill-seekers wanting to explore the iconic Outer Great Barrier Reef. You'll experience high-speed travel aboard Viper, the fastest vessel in the Whitsundays, with stops at Whitehaven Beach and Hill Inlet. Snorkel vibrant coral gardens with a marine biologist and enjoy a buffet lunch on bo",
+          "timestamp": "2026-02-27T09:42:00.749280"
+        },
+        {
+          "role": "user",
+          "message": "\ud83d\udd04 Show me other options",
+          "timestamp": "2026-02-27T09:44:31.845614"
+        },
+        {
+          "role": "assistant",
+          "message": "Absolutely, here are some more fantastic full-day beach tour options for you! \ud83c\udfd6\ufe0f\n\n1. **Purely Whitehaven Day Tour** - Experience the Whitsundays in style aboard a modern, air-conditioned catamaran with Sealink. This full-day tour combines adventure and relaxation as you cruise through the stunning Whitsunday Islands. You'll visit the famous Whitehaven Beach, enjoy panoramic views from the rooftop deck, and indulge in a buffet lunch and afternoon tea. With capped guest numbers, it's a comfortabl",
+          "timestamp": "2026-02-27T09:44:45.380590"
+        }
+      ],
+      "ended_at": "2026-02-27T09:45:38.177403",
+      "duration_seconds": 340.484881
+    },
+    {
+      "session_id": "session_723ed0922a67_1772149799",
+      "account": "bailey",
+      "started_at": "2026-02-27T09:49:59.627327",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T09:49:59.627327",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T09:50:00.647700",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T09:50:01.670790",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T09:50:06.110174",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-27T09:50:06.110174",
+      "duration_seconds": 6.482847
+    },
+    {
+      "session_id": "session_f22b8f66f881_1772153788",
+      "account": "bailey",
+      "started_at": "2026-02-27T10:56:28.759125",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T10:56:28.759125",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T10:56:30.615732",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T10:56:40.197967",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T10:57:26.969515",
+          "data": {
+            "role": "user",
+            "message": "sunset cruise"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-02-27T10:57:46.970216",
+          "data": {
+            "role": "assistant",
+            "message": "Sunset cruises are a fantastic way to unwind and take in the breathtaking beauty of the Whitsundays! Let me show you some incredible options. \ud83c\udf05\n\n1. **Airlie Beach Sunset Cruise on Sundowner** - This is a top pick for a reason! Enjoy a relaxing two-hour sunset cruise aboard the Sundowner, a catamaran designed for socializing and comfort. As you glide through the waters, sip on a complimentary glass of sparkling wine or soft drink, and snack on a delicious nibbles platter. Keep your eyes peeled f"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T10:59:11.385302",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T11:01:44.019556",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives",
+            "company": "Whitsundaydiveadventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-02-27T11:01:46.292037",
+          "data": {
+            "tour_name": "\uc5d0\uc5b4\ub9ac \ube44\uce58 \ub370\uc774 \ud22c\uc5b4(\ub2e4\uc774\ube59 2\ud68c \ud3ec\ud568)",
+            "company": "Whitsundaydiveadventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T11:01:56.424812",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Viper Outer Great Barrier Reef Tour",
+        "Airlie Beach Day Tour With 2 Dives",
+        "\uc5d0\uc5b4\ub9ac \ube44\uce58 \ub370\uc774 \ud22c\uc5b4(\ub2e4\uc774\ube59 2\ud68c \ud3ec\ud568)"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "sunset cruise",
+          "timestamp": "2026-02-27T10:57:26.969515"
+        },
+        {
+          "role": "assistant",
+          "message": "Sunset cruises are a fantastic way to unwind and take in the breathtaking beauty of the Whitsundays! Let me show you some incredible options. \ud83c\udf05\n\n1. **Airlie Beach Sunset Cruise on Sundowner** - This is a top pick for a reason! Enjoy a relaxing two-hour sunset cruise aboard the Sundowner, a catamaran designed for socializing and comfort. As you glide through the waters, sip on a complimentary glass of sparkling wine or soft drink, and snack on a delicious nibbles platter. Keep your eyes peeled f",
+          "timestamp": "2026-02-27T10:57:46.970216"
+        }
+      ],
+      "ended_at": "2026-02-27T11:01:56.424812",
+      "duration_seconds": 327.665687
+    },
+    {
+      "session_id": "session_da319b63c2c3_1772154118",
+      "account": "bailey",
+      "started_at": "2026-02-27T11:01:58.476111",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-02-27T11:01:58.476111",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-02-27T11:02:00.047607",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-02-27T11:02:03.649420",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T11:02:05.831114",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T11:02:10.115696",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-02-27T11:02:11.658218",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-02-27T11:02:36.097772",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
+            "company": "sundownercruises",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-02-27T11:03:02.574855",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-02-27T11:03:02.574855",
+      "duration_seconds": 64.098744
     }
   ],
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-02-10T21:13:21.288807"
+  "last_updated": "2026-02-27T11:03:02.574855"
 }
