@@ -1,54 +1,49 @@
 @echo off
-title Filtour Kiosk (Auto-Updating)
-color 0A
-cd /d C:\filtour
-
-echo ===============================================================================
-echo                    FILTOUR KIOSK - AUTO-UPDATING MODE
-echo ===============================================================================
-echo.
-echo The kiosk will automatically check for updates every 60 seconds.
-echo When changes are pushed from the main computer, this kiosk will restart.
-echo.
-echo Press Ctrl+C to stop the kiosk.
-echo.
-echo ===============================================================================
+title Filtour Kiosk
+echo ================================================
+echo           FILTOUR KIOSK STARTING
+echo ================================================
 echo.
 
-:: Check if Python auto-updater exists
-if exist "scripts\auto_update.py" (
-    echo Starting auto-update daemon...
-    echo.
-    python scripts\auto_update.py --daemon
+cd /d "%~dp0"
+
+REM Check if Python is available (support both python and py launcher)
+set PYCMD=
+python --version >nul 2>&1
+if not errorlevel 1 (
+    set PYCMD=python
 ) else (
-    echo Auto-updater not found - using simple mode
-    echo.
-    goto simple_loop
+    py --version >nul 2>&1
+    if not errorlevel 1 (
+        set PYCMD=py
+    )
 )
 
-goto end
+if "%PYCMD%"=="" (
+    echo ERROR: Python is not installed or not in PATH
+    echo Please install Python from python.org
+    pause
+    exit /b 1
+)
 
-:simple_loop
-:: Simple loop that checks for updates on each restart
-echo Checking for updates...
-git fetch origin main >nul 2>&1
-git diff --quiet HEAD origin/main 2>nul
+REM Install dependencies (self-heal if setup was incomplete)
+echo Checking dependencies...
+"%PYCMD%" -m pip install --upgrade pip -q
+"%PYCMD%" -m pip install -r requirements.txt -q
 if errorlevel 1 (
-    echo Updates found! Pulling changes...
-    git pull origin main
     echo.
+    echo WARNING: Could not fully install dependencies from requirements.txt
+    echo Trying minimal fallback install...
+    "%PYCMD%" -m pip install waitress flask -q
 )
 
-echo Starting kiosk...
-python app.py
+echo.
+echo Starting Kiosk Runner...
+echo (This window will keep the app running. Don't close it!)
+echo.
+
+"%PYCMD%" run_kiosk.py
 
 echo.
-echo Kiosk stopped. Restarting in 5 seconds...
-echo (Press Ctrl+C now to exit)
-timeout /t 5 >nul
-goto simple_loop
-
-:end
-echo.
-echo Kiosk shutdown complete.
+echo Kiosk has stopped.
 pause
