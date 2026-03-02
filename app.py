@@ -9239,8 +9239,39 @@ _update_available = False
 _last_update_check = 0
 _update_thread = None
 
+def _classify_remote_changes(repo_path):
+    """Check what kind of files changed between HEAD and origin/main.
+    Returns 'code' if any non-data files changed, 'data_only' if only data/ files changed."""
+    try:
+        diff_result = subprocess.run(
+            ['git', 'diff', '--name-only', 'HEAD', 'origin/main'],
+            cwd=repo_path, capture_output=True, text=True,
+            encoding='utf-8', errors='replace', timeout=10
+        )
+        if diff_result.returncode != 0 or not diff_result.stdout.strip():
+            return 'code'  # Default to code if we can't determine
+        
+        changed_files = [f.strip() for f in diff_result.stdout.strip().split('\n') if f.strip()]
+        if not changed_files:
+            return 'code'
+        
+        # Check if ALL changed files are in data/ directory
+        all_data = all(f.startswith('data/') for f in changed_files)
+        if all_data:
+            print(f"[AUTO-UPDATE] Changed files are data-only: {changed_files[:5]}", flush=True)
+            return 'data_only'
+        else:
+            code_files = [f for f in changed_files if not f.startswith('data/')]
+            print(f"[AUTO-UPDATE] Code files changed: {code_files[:5]}", flush=True)
+            return 'code'
+    except Exception as e:
+        print(f"[AUTO-UPDATE] Could not classify changes: {e}", flush=True)
+        return 'code'
+
 def check_git_updates():
-    """Check if there are updates available on GitHub"""
+    """Check if there are updates available on GitHub.
+    Returns: False (no updates), 'code' (code changes - restart needed), 
+             'data_only' (only data/ files - pull silently, no restart)"""
     global _update_available, _last_update_check
     import sys
     
@@ -9320,11 +9351,17 @@ def check_git_updates():
             commits_ahead = 0
         
         if commits_behind > 0 and commits_ahead == 0:
-            # We're strictly behind - safe to fast-forward
-            print(f"[AUTO-UPDATE] ✅ {commits_behind} new commit(s) available!", flush=True)
-            _update_available = True
-            api_check_update._notified = False  # Reset so frontend gets notified
-            return True
+            # We're strictly behind - classify what changed
+            change_type = _classify_remote_changes(repo_path)
+            
+            if change_type == 'data_only':
+                print(f"[AUTO-UPDATE] {commits_behind} new commit(s) - data files only (no restart needed)", flush=True)
+                return 'data_only'
+            else:
+                print(f"[AUTO-UPDATE] ✅ {commits_behind} new commit(s) with code changes!", flush=True)
+                _update_available = True
+                api_check_update._notified = False  # Reset so frontend gets notified
+                return 'code'
         elif commits_behind > 0 and commits_ahead > 0:
             # Diverged history - try to push local commits first, then reset
             print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind.", flush=True)
@@ -9343,18 +9380,22 @@ def check_git_updates():
                 )
                 if push_result.returncode == 0:
                     print(f"[AUTO-UPDATE] ✅ Pushed {commits_ahead} local commit(s) to origin", flush=True)
-                    # After pushing, we might still be behind, so check again
-                    # But for now, proceed with update
                 else:
                     print(f"[AUTO-UPDATE] ⚠️ Could not push local commits: {push_result.stderr[:200]}", flush=True)
                     print(f"[AUTO-UPDATE] Will reset to origin (local commits will be lost)", flush=True)
             except Exception as e:
                 print(f"[AUTO-UPDATE] ⚠️ Error pushing local commits: {e}. Will reset to origin.", flush=True)
             
+            # Re-classify after attempting push
+            change_type = _classify_remote_changes(repo_path)
+            if change_type == 'data_only':
+                print(f"[AUTO-UPDATE] After push, remaining changes are data-only", flush=True)
+                return 'data_only'
+            
             print(f"[AUTO-UPDATE] Will reset to origin to get latest updates.", flush=True)
             _update_available = True
             api_check_update._notified = False  # Reset so frontend gets notified
-            return True
+            return 'code'
         else:
             print("[AUTO-UPDATE] No new updates", flush=True)
             _update_available = False
@@ -9575,15 +9616,39 @@ def auto_update_loop():
             if AUTO_UPDATE_ENABLED:
                 print(f"[AUTO-UPDATE] Check #{check_count}...", flush=True)
                 
-                # Every 5th check (~5 min), push analytics to git
-                # so the admin dashboard can see store sessions
-                if check_count % 5 == 0:
-                    try:
-                        sync_analytics_to_git()
-                    except Exception as e:
-                        print(f"[ANALYTICS] Periodic push failed: {e}", flush=True)
+                update_type = check_git_updates()
+                # update_type: False=no updates, 'code'=code changes, 'data_only'=only data/ files changed
                 
-                if check_git_updates():
+                if update_type == 'data_only':
+                    # Only analytics/signal files changed - pull silently, no restart needed
+                    print("[AUTO-UPDATE] Only data files changed - pulling silently (no restart)", flush=True)
+                    _repo = os.path.dirname(os.path.abspath(__file__))
+                    try:
+                        subprocess.run(
+                            ['git', 'pull', '--rebase', 'origin', 'main'],
+                            cwd=_repo, capture_output=True, text=True,
+                            encoding='utf-8', errors='replace', timeout=30
+                        )
+                        print("[AUTO-UPDATE] ✅ Data files pulled", flush=True)
+                    except Exception as e:
+                        print(f"[AUTO-UPDATE] Data pull failed: {e}", flush=True)
+                    
+                    # Now check if there's an analytics push signal we should respond to
+                    try:
+                        _check_and_respond_to_analytics_signal(repo_path=_repo)
+                    except Exception as e:
+                        print(f"[ANALYTICS] Signal response failed: {e}", flush=True)
+                
+                elif update_type == 'code':
+                    # Real code changes - restart needed
+                    # But first respond to any analytics signal (push our data before restart)
+                    try:
+                        _check_and_respond_to_analytics_signal(
+                            repo_path=os.path.dirname(os.path.abspath(__file__))
+                        )
+                    except Exception:
+                        pass
+                    
                     # Check if there's an active customer session
                     if not is_safe_to_update():
                         print("[AUTO-UPDATE] ⏳ Updates found but customer is active - waiting...", flush=True)
@@ -9603,6 +9668,16 @@ def auto_update_loop():
                     else:
                         print("[AUTO-UPDATE] ⚠️ Customer still active after 3 min - will try again next cycle", flush=True)
                         _update_available = True  # Keep flag set for next cycle
+                
+                else:
+                    # No updates at all - still check for analytics signals
+                    # (signal may have been pushed and already pulled in a previous cycle)
+                    try:
+                        _check_and_respond_to_analytics_signal(
+                            repo_path=os.path.dirname(os.path.abspath(__file__))
+                        )
+                    except Exception:
+                        pass
             
             time.sleep(AUTO_UPDATE_INTERVAL)
             
@@ -9877,6 +9952,71 @@ def pull_analytics_only(account=None):
         return False
 
 ANALYTICS_REQUEST_FILE = 'data/analytics_request.json'
+_last_responded_signal = None  # Track which signal we already responded to
+
+def _check_and_respond_to_analytics_signal(repo_path=None):
+    """Check if there's an analytics push signal and respond by pushing our analytics.
+    
+    Flow: Admin clicks "Refresh Data" → signal file pushed to git → 
+    kiosks detect it here (within ~60s) → push their analytics → 
+    admin clicks "Refresh Data" again → gets all data.
+    """
+    global _last_responded_signal
+    
+    if not repo_path:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+    
+    signal_data = None
+    
+    # Try reading from local file first (after git pull it'll be on disk)
+    local_signal = os.path.join(repo_path, ANALYTICS_REQUEST_FILE)
+    if os.path.exists(local_signal):
+        try:
+            with open(local_signal, 'r', encoding='utf-8') as f:
+                signal_data = json.load(f)
+        except:
+            pass
+    
+    # Fallback: read from origin/main (if fetch already happened)
+    if not signal_data:
+        try:
+            show_result = subprocess.run(
+                ['git', 'show', f'origin/main:{ANALYTICS_REQUEST_FILE}'],
+                cwd=repo_path, capture_output=True, text=True,
+                encoding='utf-8', errors='replace', timeout=10
+            )
+            if show_result.returncode == 0 and show_result.stdout.strip():
+                signal_data = json.loads(show_result.stdout)
+        except:
+            pass
+    
+    if not signal_data:
+        return
+    
+    requested_at = signal_data.get('requested_at', '')
+    if not requested_at:
+        return
+    
+    # Skip if we already responded to this exact signal
+    if _last_responded_signal == requested_at:
+        return
+    
+    # Only respond to signals from the last 10 minutes
+    try:
+        signal_time = datetime.fromisoformat(requested_at)
+        age_seconds = (datetime.now() - signal_time).total_seconds()
+        if age_seconds > 600:  # Older than 10 minutes
+            _last_responded_signal = requested_at  # Mark as seen
+            return
+    except:
+        return
+    
+    # New signal detected! Push our analytics
+    print(f"[ANALYTICS] 📡 Push signal detected (from {signal_data.get('requested_by', '?')}, {int(age_seconds)}s ago)", flush=True)
+    _last_responded_signal = requested_at
+    
+    sync_analytics_to_git()
+    print("[ANALYTICS] ✅ Responded to push signal - analytics pushed to git", flush=True)
 
 def send_analytics_push_signal():
     """Create a signal file and push it to git, telling all kiosks to push their analytics."""
@@ -10020,9 +10160,10 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # Analytics: auto-push every ~5 minutes + before any auto-update reset
-    # Also pushed on demand when admin clicks "Refresh Data" on dashboard
-    print("[ANALYTICS] Analytics auto-push enabled (every ~5 min + before updates)")
+    # Analytics: signal-based sync - when admin clicks "Refresh Data", a signal is pushed to git.
+    # Kiosks detect it on their next update check (~60s) and push their analytics in response.
+    # Also pushed before any auto-update reset (to prevent data loss).
+    print("[ANALYTICS] Signal-based analytics sync enabled (responds within ~60s of Refresh Data)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()
