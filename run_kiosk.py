@@ -388,11 +388,11 @@ def check_analytics_push_request():
             subprocess.run(['git', 'reset', 'HEAD'], cwd=script_dir, capture_output=True, timeout=10)
             return
         
-        # Push with retry
-        for attempt in range(3):
+        # Push with retry (conflict-free: reset to origin then re-commit)
+        for attempt in range(2):
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
-                cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+                cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             
             if push_result.returncode == 0:
@@ -400,19 +400,62 @@ def check_analytics_push_request():
                 _last_analytics_push_time = request_time.timestamp()
                 return
             
-            if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
-                log(f"[ANALYTICS] Push rejected (attempt {attempt+1}), pulling and retrying...")
-                pull_result = subprocess.run(
-                    ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
-                    cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+            stderr = push_result.stderr or ''
+            if attempt == 0 and ('rejected' in stderr or 'non-fast-forward' in stderr):
+                log(f"[ANALYTICS] Push rejected, resetting to origin and re-merging...")
+                # Read local analytics into memory before reset
+                import json as _json
+                local_sessions = {}
+                for af in glob.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
+                    if '_backup' in af or '_request' in af:
+                        continue
+                    try:
+                        with open(af, 'r', encoding='utf-8-sig') as f:
+                            data = _json.load(f)
+                        local_sessions[af] = data
+                    except:
+                        pass
+                
+                # Reset to origin
+                subprocess.run(['git', 'fetch', 'origin', 'main'], cwd=script_dir,
+                             capture_output=True, text=True, timeout=30)
+                subprocess.run(['git', 'reset', '--hard', 'origin/main'], cwd=script_dir,
+                             capture_output=True, text=True, timeout=15)
+                
+                # Re-merge local sessions into remote files
+                for af, local_data in local_sessions.items():
+                    try:
+                        remote_data = {'sessions': []}
+                        if os.path.exists(af):
+                            with open(af, 'r', encoding='utf-8-sig') as f:
+                                remote_data = _json.load(f)
+                        
+                        remote_by_id = {s.get('session_id'): s for s in remote_data.get('sessions', []) if s.get('session_id')}
+                        local_by_id = {s.get('session_id'): s for s in local_data.get('sessions', []) if s.get('session_id')}
+                        
+                        merged = {}
+                        merged.update(remote_by_id)
+                        merged.update(local_by_id)
+                        
+                        out = {k: v for k, v in local_data.items() if k != 'sessions'}
+                        out['sessions'] = sorted(merged.values(), key=lambda s: s.get('started_at', ''))
+                        
+                        with open(af, 'w', encoding='utf-8') as f:
+                            _json.dump(out, f, indent=2)
+                    except Exception as e:
+                        log(f"[ANALYTICS] Merge error for {os.path.basename(af)}: {e}")
+                
+                # Re-stage and re-commit
+                for af in local_sessions:
+                    rel = os.path.relpath(af, script_dir).replace('\\', '/')
+                    subprocess.run(['git', 'add', rel], cwd=script_dir, capture_output=True, timeout=10)
+                
+                subprocess.run(
+                    ['git', 'commit', '-m', f'Analytics sync {time.strftime("%Y-%m-%d %H:%M")}'],
+                    cwd=script_dir, capture_output=True, text=True, timeout=30
                 )
-                if pull_result.returncode != 0:
-                    subprocess.run(['git', 'rebase', '--abort'], cwd=script_dir,
-                                 capture_output=True, text=True, timeout=10)
-                    log(f"[ANALYTICS] Rebase failed, aborting")
-                    return
             else:
-                log(f"[ANALYTICS] Push failed: {push_result.stderr[:200]}")
+                log(f"[ANALYTICS] Push failed: {stderr[:200]}")
                 return
         
     except Exception as e:

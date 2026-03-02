@@ -9644,18 +9644,27 @@ def auto_update_loop():
                 # update_type: False=no updates, 'code'=code changes, 'data_only'=only data/ files changed
                 
                 if update_type == 'data_only':
-                    # Only analytics/signal files changed - pull silently, no restart needed
-                    print("[AUTO-UPDATE] Only data files changed - pulling silently (no restart)", flush=True)
+                    # Only analytics/signal files changed - merge remote sessions
+                    # without rebase (rebase can corrupt JSON files with conflict markers)
+                    print("[AUTO-UPDATE] Only data files changed - merging analytics silently", flush=True)
                     _repo = os.path.dirname(os.path.abspath(__file__))
                     try:
+                        # Merge remote analytics into local using git show (no conflicts possible)
+                        for af in glob.glob(os.path.join(_repo, 'data', 'analytics_*.json')):
+                            if '_backup' in af or '_request' in af:
+                                continue
+                            acct = os.path.basename(af).replace('analytics_', '').replace('.json', '')
+                            pull_analytics_only(acct)
+                        
+                        # Fast-forward HEAD to match origin (move ref only, keep working tree)
                         subprocess.run(
-                            ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
+                            ['git', 'reset', '--mixed', 'origin/main'],
                             cwd=_repo, capture_output=True, text=True,
-                            encoding='utf-8', errors='replace', timeout=30
+                            encoding='utf-8', errors='replace', timeout=15
                         )
-                        print("[AUTO-UPDATE] ✅ Data files pulled", flush=True)
+                        print("[AUTO-UPDATE] ✅ Analytics merged from remote", flush=True)
                     except Exception as e:
-                        print(f"[AUTO-UPDATE] Data pull failed: {e}", flush=True)
+                        print(f"[AUTO-UPDATE] Data merge failed: {e}", flush=True)
                     
                     # Now check if there's an analytics push signal we should respond to
                     try:
@@ -9788,22 +9797,13 @@ def sync_analytics_to_git():
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             
-            # Stash any unstaged changes (the Flask app might be writing analytics concurrently)
-            subprocess.run(
-                ['git', 'stash', '--include-untracked'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-            )
-            
             # Reset to match origin exactly — our commit will be on top of this
+            # No stash needed: we already have all local data in memory from Step 1
+            # Any concurrent writes from Flask during this brief window will be
+            # captured on the next sync cycle (the window is <100ms)
             subprocess.run(
                 ['git', 'reset', '--hard', 'origin/main'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=15
-            )
-            
-            # Pop stash (restore any concurrent writes from Flask app)
-            subprocess.run(
-                ['git', 'stash', 'pop'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
             )
             
             # Step 3: Merge local sessions into the reset files (which now match remote)
@@ -10105,14 +10105,31 @@ def send_analytics_push_signal():
             for attempt in range(2):
                 push_result = subprocess.run(
                     ['git', 'push', 'origin', 'main'],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=60
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                 )
                 if push_result.returncode == 0:
                     print("[ANALYTICS] Signal pushed to git - kiosks will respond on next update check", flush=True)
                     return True
                 if attempt == 0:
+                    # Push rejected — reset to origin and re-apply signal commit
+                    # (never use rebase/autostash — it can corrupt JSON files with conflict markers)
                     subprocess.run(
-                        ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
+                        ['git', 'fetch', 'origin', 'main'],
+                        cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                    )
+                    subprocess.run(
+                        ['git', 'reset', '--hard', 'origin/main'],
+                        cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=15
+                    )
+                    # Re-write and re-commit the signal file
+                    with open(signal_file, 'w', encoding='utf-8') as f:
+                        json.dump(signal_data, f, indent=2)
+                    subprocess.run(
+                        ['git', 'add', ANALYTICS_REQUEST_FILE],
+                        cwd=repo_path, capture_output=True, text=True, timeout=10
+                    )
+                    subprocess.run(
+                        ['git', 'commit', '-m', 'Analytics push request'],
                         cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                     )
             print(f"[ANALYTICS] Failed to push signal: {push_result.stderr[:200]}", flush=True)
