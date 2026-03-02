@@ -10001,15 +10001,16 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
     if _last_responded_signal == requested_at:
         return
     
-    # Only respond to signals from the last 10 minutes
-    try:
-        signal_time = datetime.fromisoformat(requested_at)
-        age_seconds = (datetime.now() - signal_time).total_seconds()
-        if age_seconds > 600:  # Older than 10 minutes
-            _last_responded_signal = requested_at  # Mark as seen
+        # Only respond to signals from the last 30 minutes
+        # (needs to be generous because kiosks may take 5-10min to restart after code update)
+        try:
+            signal_time = datetime.fromisoformat(requested_at)
+            age_seconds = (datetime.now() - signal_time).total_seconds()
+            if age_seconds > 1800:  # Older than 30 minutes
+                _last_responded_signal = requested_at  # Mark as seen
+                return
+        except:
             return
-    except:
-        return
     
     # New signal detected! Push our analytics
     print(f"[ANALYTICS] 📡 Push signal detected (from {signal_data.get('requested_by', '?')}, {int(age_seconds)}s ago)", flush=True)

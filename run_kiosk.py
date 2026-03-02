@@ -20,6 +20,7 @@ import sys
 import os
 import time
 import json
+import hashlib
 from datetime import datetime
 
 # Configuration
@@ -283,7 +284,8 @@ _last_analytics_push_time = 0  # Timestamp of last analytics push
 
 def check_analytics_push_request():
     """Check if admin has requested analytics push via signal file.
-    If the signal is recent (within last 5 minutes), push local analytics to git.
+    Checks both local file AND origin/main (after fetch) for the signal.
+    If the signal is recent (within last 30 minutes), push local analytics to git.
     """
     global _last_analytics_push_time
     import json
@@ -291,16 +293,31 @@ def check_analytics_push_request():
     
     try:
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        signal = None
+        
+        # Try local file first
         signal_file = os.path.join(script_dir, 'data', 'analytics_request.json')
+        if os.path.exists(signal_file):
+            try:
+                with open(signal_file, 'r', encoding='utf-8') as f:
+                    signal = json.load(f)
+            except:
+                pass
         
-        if not os.path.exists(signal_file):
-            return
+        # Fallback: read from origin/main (fetch already happened in check_for_updates)
+        if not signal:
+            try:
+                show_result = subprocess.run(
+                    ['git', 'show', 'origin/main:data/analytics_request.json'],
+                    cwd=script_dir, capture_output=True, text=True,
+                    encoding='utf-8', errors='replace', timeout=10
+                )
+                if show_result.returncode == 0 and show_result.stdout.strip():
+                    signal = json.loads(show_result.stdout)
+            except:
+                pass
         
-        # Read the request signal
-        try:
-            with open(signal_file, 'r', encoding='utf-8') as f:
-                signal = json.load(f)
-        except:
+        if not signal:
             return
         
         requested_at = signal.get('requested_at', '')
@@ -311,9 +328,9 @@ def check_analytics_push_request():
         from datetime import datetime
         try:
             request_time = datetime.fromisoformat(requested_at)
-            # Only respond to requests from the last 5 minutes
+            # Respond to requests from the last 30 minutes (generous for restart delays)
             age_seconds = (datetime.now() - request_time).total_seconds()
-            if age_seconds > 300:
+            if age_seconds > 1800:
                 return  # Signal is old, ignore
         except:
             return
@@ -322,7 +339,7 @@ def check_analytics_push_request():
         if _last_analytics_push_time >= request_time.timestamp():
             return  # Already responded to this request
         
-        log(f"[ANALYTICS] Push request received (from {signal.get('requested_by', '?')}, {int(age_seconds)}s ago)")
+        log(f"[ANALYTICS] 📡 Push request detected (from {signal.get('requested_by', '?')}, {int(age_seconds)}s ago)")
         
         # Push local analytics files to git
         analytics_files = [f for f in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json'))
@@ -366,6 +383,8 @@ def check_analytics_push_request():
                 _last_analytics_push_time = request_time.timestamp()
                 return
             log(f"[ANALYTICS] Commit failed: {commit_result.stderr[:200]}")
+            # Reset staged changes to avoid blocking future git operations
+            subprocess.run(['git', 'reset', 'HEAD'], cwd=script_dir, capture_output=True, timeout=10)
             return
         
         # Push with retry
