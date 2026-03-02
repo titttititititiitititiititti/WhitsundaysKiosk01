@@ -9625,7 +9625,7 @@ def auto_update_loop():
                     _repo = os.path.dirname(os.path.abspath(__file__))
                     try:
                         subprocess.run(
-                            ['git', 'pull', '--rebase', 'origin', 'main'],
+                            ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
                             cwd=_repo, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=30
                         )
@@ -9832,9 +9832,10 @@ def sync_analytics_to_git():
             
             if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
                 print(f"[ANALYTICS SYNC] Push rejected (attempt {attempt+1}), pulling and retrying...", flush=True)
-                # Pull with rebase
+                # Pull with rebase + autostash (the Flask app may write analytics between 
+                # our commit and this pull, causing unstaged changes that block rebase)
                 pull_result = subprocess.run(
-                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                    ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
                     cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                 )
                 if pull_result.returncode != 0:
@@ -10055,7 +10056,7 @@ def send_analytics_push_signal():
                     return True
                 if attempt == 0:
                     subprocess.run(
-                        ['git', 'pull', '--rebase', 'origin', 'main'],
+                        ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
                         cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                     )
             print(f"[ANALYTICS] Failed to push signal: {push_result.stderr[:200]}", flush=True)

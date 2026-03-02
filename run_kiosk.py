@@ -402,7 +402,7 @@ def check_analytics_push_request():
             if attempt < 2 and ('rejected' in (push_result.stderr or '') or 'non-fast-forward' in (push_result.stderr or '')):
                 log(f"[ANALYTICS] Push rejected (attempt {attempt+1}), pulling and retrying...")
                 pull_result = subprocess.run(
-                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                    ['git', 'pull', '--rebase', '--autostash', 'origin', 'main'],
                     cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
                 )
                 if pull_result.returncode != 0:
