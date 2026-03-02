@@ -9391,6 +9391,14 @@ def pull_and_restart():
             cwd=repo_path, capture_output=True, timeout=10
         )
         
+        # PUSH analytics to git BEFORE reset (so remote can see store sessions)
+        try:
+            print("[AUTO-UPDATE] Pushing local analytics to git before reset...", flush=True)
+            sync_analytics_to_git()
+            print("[AUTO-UPDATE] ✅ Analytics pushed successfully", flush=True)
+        except Exception as e:
+            print(f"[AUTO-UPDATE] ⚠️ Analytics push failed (will backup locally): {e}", flush=True)
+        
         # Save local analytics before reset (so we don't lose data)
         analytics_backup = {}
         analytics_files = glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json'))
@@ -9566,6 +9574,15 @@ def auto_update_loop():
             check_count += 1
             if AUTO_UPDATE_ENABLED:
                 print(f"[AUTO-UPDATE] Check #{check_count}...", flush=True)
+                
+                # Every 5th check (~5 min), push analytics to git
+                # so the admin dashboard can see store sessions
+                if check_count % 5 == 0:
+                    try:
+                        sync_analytics_to_git()
+                    except Exception as e:
+                        print(f"[ANALYTICS] Periodic push failed: {e}", flush=True)
+                
                 if check_git_updates():
                     # Check if there's an active customer session
                     if not is_safe_to_update():
@@ -10003,9 +10020,9 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # Analytics: NO auto-push. Kiosks push ONLY when admin clicks "Refresh Data",
-    # which sends a signal file via git. Kiosks see it on next update check (~60s).
-    print("[ANALYTICS] Analytics stored locally (kiosks push on demand via Refresh Data signal)")
+    # Analytics: auto-push every ~5 minutes + before any auto-update reset
+    # Also pushed on demand when admin clicks "Refresh Data" on dashboard
+    print("[ANALYTICS] Analytics auto-push enabled (every ~5 min + before updates)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()
