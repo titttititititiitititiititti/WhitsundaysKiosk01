@@ -16,8 +16,6 @@
   <!-- Leaflet CSS and JS for maps -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Google Maps JavaScript API (for interactive map with rotation) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&v=weekly" async defer></script>
   
   <!-- QR Code Generator -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -32628,8 +32626,7 @@
       }
     };
     
-    // Map View Mode - Interactive Google Maps with rotation via JS API
-    var _googleMapInstance = null;
+    // Map View Mode - Fullscreen Google Maps for drawing
     window.openMapView = function() {
       console.log('🗺️ Opening Map View mode...');
       
@@ -32638,10 +32635,11 @@
         Analytics.modeSelected('map-view');
       }
       
+      // Use Google Maps overlay instead of Leaflet
       const overlay = document.getElementById('fullscreen-google-map-overlay');
-      const mapDiv = document.getElementById('fullscreen-google-map-div');
+      const iframe = document.getElementById('fullscreen-google-map-iframe');
       
-      if (!overlay || !mapDiv) {
+      if (!overlay || !iframe) {
         console.error('Fullscreen Google Maps overlay not found');
         return;
       }
@@ -32649,41 +32647,71 @@
       // Bring this overlay to the top (above tides if open)
       bringOverlayToTop(overlay);
       
+      // Remove any existing error messages
+      const existingError = overlay.querySelector('.map-load-error');
+      if (existingError) existingError.remove();
+      
+      // Add loading indicator
+      let loadingIndicator = overlay.querySelector('.map-loading');
+      if (!loadingIndicator) {
+        loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'map-loading';
+        loadingIndicator.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10001;background:rgba(0,0,0,0.9);color:#fff;padding:20px 40px;border-radius:12px;font-size:18px;text-align:center;';
+        loadingIndicator.innerHTML = '🗺️ Loading map...';
+        overlay.querySelector('.fullscreen-content').appendChild(loadingIndicator);
+      }
+      loadingIndicator.style.display = 'block';
+      
+      // Set up error handling for iframe
+      const handleIframeError = function() {
+        console.error('🗺️ Google Maps iframe failed to load');
+        loadingIndicator.style.display = 'none';
+        
+        // Show error message with retry option
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'map-load-error';
+        errorDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10001;background:rgba(200,50,50,0.95);color:#fff;padding:30px 50px;border-radius:12px;font-size:18px;text-align:center;max-width:500px;box-shadow:0 4px 20px rgba(0,0,0,0.5);';
+        errorDiv.innerHTML = `
+          <div style="font-size:48px;margin-bottom:15px;">⚠️</div>
+          <div style="font-weight:600;margin-bottom:10px;">Map failed to load</div>
+          <div style="font-size:14px;opacity:0.9;margin-bottom:20px;">This may be a temporary connection issue.</div>
+          <button onclick="retryMapLoad()" style="padding:12px 24px;background:#fff;color:#333;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.3);">🔄 Retry</button>
+        `;
+        overlay.querySelector('.fullscreen-content').appendChild(errorDiv);
+      };
+      
+      // Use Google Maps Embed API - this is the most reliable format
+      // Center: Airlie Beach (-20.27, 148.72), Zoom: 13
+      const mapUrl = `https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=-20.27,148.72&zoom=13&maptype=roadmap`;
+      
+      // Set timeout to detect if iframe doesn't load
+      const loadTimeout = setTimeout(function() {
+        // Check if iframe has loaded content (this is approximate)
+        if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+          loadingIndicator.style.display = 'none';
+        } else {
+          // Give it a bit more time, then show error if still not loaded
+          setTimeout(function() {
+            if (loadingIndicator.style.display !== 'none') {
+              handleIframeError();
+            }
+          }, 3000);
+        }
+      }, 5000);
+      
+      // Remove timeout when iframe loads successfully
+      iframe.onload = function() {
+        clearTimeout(loadTimeout);
+        loadingIndicator.style.display = 'none';
+        console.log('🗺️ Google Maps iframe loaded successfully');
+      };
+      
+      iframe.onerror = handleIframeError;
+      
+      // Load the map
+      iframe.src = mapUrl;
       overlay.classList.add('active');
       document.body.style.overflow = 'hidden';
-      
-      // Initialize or re-use the Google Maps JS API map
-      if (typeof google !== 'undefined' && google.maps) {
-        if (!_googleMapInstance) {
-          _googleMapInstance = new google.maps.Map(mapDiv, {
-            center: { lat: -20.27, lng: 148.72 },
-            zoom: 13,
-            mapTypeId: 'roadmap',
-            gestureHandling: 'greedy',       // allow all touch gestures
-            rotateControl: true,              // show rotation control
-            tiltControl: true,                // show tilt control
-            fullscreenControl: false,
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-              position: google.maps.ControlPosition.TOP_RIGHT,
-              style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-              mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain']
-            },
-            zoomControl: true,
-            streetViewControl: false
-          });
-          console.log('🗺️ Google Maps JS API map initialized with rotation support');
-        } else {
-          // Map already exists, just trigger a resize
-          google.maps.event.trigger(_googleMapInstance, 'resize');
-          _googleMapInstance.setCenter({ lat: -20.27, lng: 148.72 });
-          _googleMapInstance.setZoom(13);
-        }
-      } else {
-        // JS API not loaded yet — show error
-        mapDiv.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#0a1628;color:#fff;font-size:1.2em;text-align:center;padding:40px;"><div><div style="font-size:48px;margin-bottom:15px;">⚠️</div><div style="font-weight:600;margin-bottom:10px;">Map is loading…</div><div style="font-size:14px;opacity:0.8;">Please wait a moment and try again.</div><br><button onclick="retryMapLoad()" style="padding:12px 24px;background:#0077b6;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">🔄 Retry</button></div></div>';
-        console.warn('🗺️ Google Maps JS API not yet loaded');
-      }
       
       // Reset drawing state
       googleMapDrawingEnabled = false;
@@ -32884,66 +32912,23 @@
     // Fullscreen Google Map functions (for embedded Google Maps iframes)
     window.openFullscreenGoogleMap = function(mapUrl) {
       const overlay = document.getElementById('fullscreen-google-map-overlay');
-      const mapDiv = document.getElementById('fullscreen-google-map-div');
-      if (!overlay || !mapDiv) return;
-      
-      // Bring map overlay to top
-      bringOverlayToTop(overlay);
-      
-      overlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      
-      // Extract lat/lng from the URL if possible, or default to Airlie Beach
-      let lat = -20.27, lng = 148.72;
-      const qMatch = mapUrl.match(/[?&]q=([^&]+)/);
-      const centerMatch = mapUrl.match(/[?&]center=([^&]+)/);
-      if (centerMatch) {
-        const parts = decodeURIComponent(centerMatch[1]).split(',');
-        if (parts.length === 2) { lat = parseFloat(parts[0]); lng = parseFloat(parts[1]); }
-      }
-      
-      if (typeof google !== 'undefined' && google.maps) {
-        if (!_googleMapInstance) {
-          _googleMapInstance = new google.maps.Map(mapDiv, {
-            center: { lat: lat, lng: lng },
-            zoom: 14,
-            gestureHandling: 'greedy',
-            rotateControl: true,
-            tiltControl: true,
-            fullscreenControl: false,
-            mapTypeControl: true,
-            zoomControl: true,
-            streetViewControl: false
-          });
-        } else {
-          google.maps.event.trigger(_googleMapInstance, 'resize');
-          _googleMapInstance.setCenter({ lat: lat, lng: lng });
-          _googleMapInstance.setZoom(14);
-        }
-        
-        // If there was a search query, place a marker
-        if (qMatch) {
-          var placeName = decodeURIComponent(qMatch[1]);
-          var geocoder = new google.maps.Geocoder();
-          geocoder.geocode({ address: placeName }, function(results, status) {
-            if (status === 'OK' && results[0]) {
-              _googleMapInstance.setCenter(results[0].geometry.location);
-              new google.maps.Marker({
-                map: _googleMapInstance,
-                position: results[0].geometry.location,
-                title: placeName
-              });
-            }
-          });
-        }
+      const iframe = document.getElementById('fullscreen-google-map-iframe');
+      if (overlay && iframe) {
+        // Bring map overlay to top
+        bringOverlayToTop(overlay);
+        iframe.src = mapUrl;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
       }
     };
     
     window.closeFullscreenGoogleMap = function() {
       const overlay = document.getElementById('fullscreen-google-map-overlay');
+      const iframe = document.getElementById('fullscreen-google-map-iframe');
       if (overlay) {
         overlay.classList.remove('active');
         document.body.style.overflow = '';
+        if (iframe) iframe.src = ''; // Unload to save resources
         // Reset drawing state
         googleMapDrawingEnabled = false;
         clearGoogleMapDrawing();
@@ -34356,7 +34341,7 @@
       
       // Exclusion selector — rotation ONLY triggers from plain background/empty area taps
       // Includes img to prevent logo clicks from accidentally rotating the screen
-      var ROTATION_IGNORE = 'button, a, input, select, textarea, img, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card, .logo-image, .kiosk-logo, .language-selector, .language-dropdown, .newcomer-faq-item, .on-screen-keyboard, .gallery-thumb, .map-placed-img-wrapper, .fullscreen-overlay';
+      var ROTATION_IGNORE = 'button, a, input, select, textarea, img, .weather-widget, .tour-card, .ai-input-container, .swipe-btn, .swipe-actions, .chip, .btn-primary, .btn-secondary, .btn-tertiary, .qr-card, .logo-image, .kiosk-logo, .language-selector, .language-dropdown, .newcomer-faq-item, .on-screen-keyboard, .gallery-thumb, .map-placed-img-wrapper';
       
       // Touch events
       document.addEventListener('touchend', function(e) {
@@ -35009,8 +34994,7 @@
   <div id="fullscreen-google-map-overlay" class="fullscreen-overlay">
     <div class="fullscreen-content" onclick="event.stopPropagation()" style="overflow:visible;position:relative;">
       <button class="fullscreen-close-btn" onclick="closeFullscreenGoogleMap()">&times;</button>
-      <!-- Interactive Google Map (JS API with rotation support) -->
-      <div id="fullscreen-google-map-div" style="width:100%;height:100%;border-radius:16px;"></div>
+      <iframe id="fullscreen-google-map-iframe" src="" style="width:100%;height:100%;border:none;border-radius:16px;" allowfullscreen></iframe>
       <!-- Drawing canvas overlay for Google Maps -->
       <canvas id="google-map-drawing-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1000;pointer-events:none;border-radius:16px;"></canvas>
       <!-- Placed images container (images dragged onto the map) -->
