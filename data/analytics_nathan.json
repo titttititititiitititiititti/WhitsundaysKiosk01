@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-03T17:08:48.263143",
+  "last_updated": "2026-03-03T17:19:30.503621",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -44879,13 +44879,55 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:42:37.086517",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:44:07.901563",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:46.930003",
+          "data": {
+            "tour_name": "Hamilton Island Freestyle",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:50.855133",
+          "data": {
+            "tour_name": "Estilo libre de la isla de Hamilton",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-03T09:49:25.563317",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Hamilton Island Freestyle",
+        "Estilo libre de la isla de Hamilton"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-03T09:49:25.563317",
+      "duration_seconds": 2751.144249
     },
     {
       "session_id": "session_a135e9845520_1772495409",
@@ -44910,6 +44952,101 @@
       ],
       "language": "es",
       "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_eba57a71dc27_1772513080",
+      "account": "nathan",
+      "started_at": "2026-03-03T14:44:40.591594",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-03T14:44:40.591594",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-03T14:52:51.645590",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-03T14:52:51.645590",
+      "duration_seconds": 491.053996
+    },
+    {
+      "session_id": "session_f06c37392c7e_1772513601",
+      "account": "nathan",
+      "started_at": "2026-03-03T14:53:21.280749",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-03T14:53:21.280749",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-03T15:01:37.767844",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-03T15:01:37.767844",
+      "duration_seconds": 496.487095
+    },
+    {
+      "session_id": "session_c58189140e75_1772514673",
+      "account": "nathan",
+      "started_at": "2026-03-03T15:11:13.921182",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-03T15:11:13.921182",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-03T15:13:41.427534",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T15:13:43.588875",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T15:13:43.765968",
+          "data": {
+            "mode": "map-view"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
