@@ -14994,17 +14994,17 @@
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
-          <div class="language-dropdown">
+          <div class="language-selector" style="position:relative;">
             <button class="chip" id="newcomer-language-btn" onclick="event.stopPropagation(); var m=document.getElementById('newcomer-language-menu'); m.style.display=m.style.display==='block'?'none':'block';">EN</button>
             <div id="newcomer-language-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:200px;z-index:99999;padding:10px;overflow:hidden;">
-              <div class="language-option" data-lang="en" onclick="switchLanguage('en'); applyNewcomerTranslations('en'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/gb.png" class="flag-icon">English</div>
-              <div class="language-option" data-lang="zh" onclick="switchLanguage('zh'); applyNewcomerTranslations('zh'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/cn.png" class="flag-icon">中文</div>
-              <div class="language-option" data-lang="ja" onclick="switchLanguage('ja'); applyNewcomerTranslations('ja'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/jp.png" class="flag-icon">日本語</div>
-              <div class="language-option" data-lang="ko" onclick="switchLanguage('ko'); applyNewcomerTranslations('ko'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/kr.png" class="flag-icon">한국어</div>
-              <div class="language-option" data-lang="de" onclick="switchLanguage('de'); applyNewcomerTranslations('de'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/de.png" class="flag-icon">Deutsch</div>
-              <div class="language-option" data-lang="fr" onclick="switchLanguage('fr'); applyNewcomerTranslations('fr'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/fr.png" class="flag-icon">Français</div>
-              <div class="language-option" data-lang="hi" onclick="switchLanguage('hi'); applyNewcomerTranslations('hi'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/in.png" class="flag-icon">हिन्दी</div>
-              <div class="language-option" data-lang="es" onclick="switchLanguage('es'); applyNewcomerTranslations('es'); document.getElementById('newcomer-language-menu').style.display='none';"><img src="https://flagcdn.com/w40/es.png" class="flag-icon">Español</div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('en')"><img src="https://flagcdn.com/w40/gb.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">English</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('zh')"><img src="https://flagcdn.com/w40/cn.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">中文</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('ja')"><img src="https://flagcdn.com/w40/jp.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">日本語</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('ko')"><img src="https://flagcdn.com/w40/kr.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">한국어</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('de')"><img src="https://flagcdn.com/w40/de.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">Deutsch</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('fr')"><img src="https://flagcdn.com/w40/fr.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">Français</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectNewcomerLanguage('hi')"><img src="https://flagcdn.com/w40/in.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">हिन्दी</span></div>
+              <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectNewcomerLanguage('es')"><img src="https://flagcdn.com/w40/es.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">Español</span></div>
             </div>
           </div>
         </div>
@@ -30394,10 +30394,12 @@
       const headerLangBtn = document.getElementById('header-language-btn');
       const vqLangBtn = document.getElementById('vq-language-btn');
       const globalLangBtn = document.getElementById('global-language-btn');
+      const newcomerLangBtn = document.getElementById('newcomer-language-btn');
       
       if (headerLangBtn) headerLangBtn.textContent = langCode.toUpperCase();
       if (vqLangBtn) vqLangBtn.textContent = langCode.toUpperCase();
       if (globalLangBtn) globalLangBtn.textContent = langCode.toUpperCase();
+      if (newcomerLangBtn) newcomerLangBtn.textContent = langCode.toUpperCase();
       
       // Close any open language menus
       document.querySelectorAll('.language-menu, [id*="language-menu"]').forEach(menu => {
@@ -30477,6 +30479,16 @@
         const menu = document.getElementById(id);
         if (menu) menu.style.display = 'none';
       });
+    }
+
+    function selectNewcomerLanguage(langCode) {
+      console.log('🌐 selectNewcomerLanguage called:', langCode);
+      switchLanguage(langCode);
+      if (typeof applyNewcomerTranslations === 'function') {
+        applyNewcomerTranslations(langCode);
+      }
+      const menu = document.getElementById('newcomer-language-menu');
+      if (menu) menu.style.display = 'none';
     }
 
     // selectHomeCurrency - called from header currency dropdowns in both modes
