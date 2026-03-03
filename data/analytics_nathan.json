@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-03T17:36:42.824550",
+  "last_updated": "2026-03-03T17:37:22.572464",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -44879,13 +44879,55 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:42:37.086517",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:44:07.901563",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:46.930003",
+          "data": {
+            "tour_name": "Hamilton Island Freestyle",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:50.855133",
+          "data": {
+            "tour_name": "Estilo libre de la isla de Hamilton",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-03T09:49:25.563317",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Hamilton Island Freestyle",
+        "Estilo libre de la isla de Hamilton"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-03T09:49:25.563317",
+      "duration_seconds": 2751.144249
     },
     {
       "session_id": "session_a135e9845520_1772495409",
