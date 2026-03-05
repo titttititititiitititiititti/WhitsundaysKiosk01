@@ -2260,48 +2260,62 @@
       box-shadow: 0 3px 10px rgba(6, 182, 212, 0.3);
     }
     
-    /* Cruise Ship Friendly Notice (animated, under Browse All Tours) */
-    .cruise-ship-notice {
+    /* Browse All wrapper to position cruise notice beside button */
+    .browse-all-wrapper {
+      position: relative;
+      width: 85%;
+      max-width: 400px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 10px 24px;
-      font-size: 1em;
+    }
+    .browse-all-wrapper .browse-all-tours-btn {
+      width: 100%;
+    }
+    .cruise-ship-notice {
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      transform: translateX(100%) translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      animation: cruisePulse 2.5s ease-in-out infinite;
+    }
+    .cruise-notice-text {
+      font-size: 0.8em;
       font-weight: 600;
-      color: rgba(255, 255, 255, 0.95);
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.25) 0%, rgba(6, 116, 145, 0.35) 100%);
-      border: 1.5px solid rgba(8, 145, 178, 0.5);
-      border-radius: 30px;
-      cursor: pointer;
-      position: relative;
-      z-index: 1000;
-      width: auto;
-      max-width: 400px;
-      margin-top: 8px;
-      animation: cruiseNoticeGlow 3s ease-in-out infinite;
-      transition: all 0.3s ease;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
-    .cruise-ship-notice:hover {
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.4) 0%, rgba(6, 116, 145, 0.5) 100%);
-      border-color: rgba(8, 145, 178, 0.8);
-      transform: scale(1.03);
+    .cruise-notice-ship {
+      font-size: 1.2em;
     }
-    .cruise-ship-notice-icon {
-      font-size: 1.3em;
-      animation: cruiseShipBob 2s ease-in-out infinite;
+    @keyframes cruisePulse {
+      0%, 100% { transform: translateX(100%) translateY(-50%) scale(1); }
+      50% { transform: translateX(100%) translateY(-50%) scale(1.1); }
     }
-    .cruise-ship-notice-text {
-      font-size: 0.95em;
-      letter-spacing: 0.3px;
-    }
-    @keyframes cruiseNoticeGlow {
-      0%, 100% { box-shadow: 0 0 8px rgba(8, 145, 178, 0.3), 0 0 20px rgba(8, 145, 178, 0.1); }
-      50% { box-shadow: 0 0 15px rgba(8, 145, 178, 0.5), 0 0 30px rgba(8, 145, 178, 0.2); }
-    }
-    @keyframes cruiseShipBob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
+    /* On narrower screens, put it below instead */
+    @media (max-width: 900px) {
+      .cruise-ship-notice {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        justify-content: center;
+        margin-top: 4px;
+        animation: cruisePulseMobile 2.5s ease-in-out infinite;
+      }
+      .browse-all-wrapper {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      @keyframes cruisePulseMobile {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
     }
 
     /* Cruise Ship Filter Toggle (inside Browse All Tours mode) */
@@ -14977,12 +14991,13 @@
         <button class="quick-decision-btn-start" id="quick-decision-btn" onclick="event.stopPropagation(); startModeWithAnimation('quick-decision')">
           <span id="quick-decision-text">⚡ Quick Match</span>
         </button>
-        <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
-          <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
-        </button>
-        <div class="cruise-ship-notice" id="cruise-ship-notice" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
-          <span class="cruise-ship-notice-icon">🚢</span>
-          <span class="cruise-ship-notice-text" id="cruise-ship-notice-text">Cruise Ship Friendly tours available!</span>
+        <div class="browse-all-wrapper">
+          <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
+            <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
+          </button>
+          <div class="cruise-ship-notice" id="cruise-ship-notice">
+            <span class="cruise-notice-text" id="cruise-ship-notice-text">Cruise Ship Friendly tours here!</span> <span class="cruise-notice-ship">🚢</span>
+          </div>
         </div>
         <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); startModeWithAnimation('newcomer-info')">
           <span id="newcomer-info-text">ℹ️ Newcomer Important Information</span>
