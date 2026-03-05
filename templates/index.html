@@ -2260,39 +2260,91 @@
       box-shadow: 0 3px 10px rgba(6, 182, 212, 0.3);
     }
     
-    /* Newcomer Important Info Button (Blue) */
-    /* Cruise Ship Friendly Button */
-    .cruise-ship-btn {
-      padding: 18px 35px;
-      font-size: 1.3em;
-      font-weight: 700;
-      color: white;
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.85) 0%, rgba(6, 116, 145, 0.95) 50%, rgba(14, 116, 144, 0.9) 100%);
-      border: 3px solid rgba(255, 255, 255, 0.6);
-      border-radius: 60px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 30px rgba(8, 145, 178, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
-      position: relative;
-      z-index: 1000;
-      width: 85%;
-      max-width: 400px;
-      min-height: 65px;
+    /* Cruise Ship Friendly Notice (animated, under Browse All Tours) */
+    .cruise-ship-notice {
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      margin-top: 10px;
+      gap: 8px;
+      padding: 10px 24px;
+      font-size: 1em;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.95);
+      background: linear-gradient(135deg, rgba(8, 145, 178, 0.25) 0%, rgba(6, 116, 145, 0.35) 100%);
+      border: 1.5px solid rgba(8, 145, 178, 0.5);
+      border-radius: 30px;
+      cursor: pointer;
+      position: relative;
+      z-index: 1000;
+      width: auto;
+      max-width: 400px;
+      margin-top: 8px;
+      animation: cruiseNoticeGlow 3s ease-in-out infinite;
+      transition: all 0.3s ease;
     }
-    .cruise-ship-btn:hover {
-      background: linear-gradient(135deg, rgba(28, 165, 198, 0.9) 0%, rgba(26, 136, 165, 1) 50%, rgba(34, 136, 164, 0.95) 100%);
-      border-color: rgba(255, 255, 255, 0.8);
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 12px 40px rgba(8, 145, 178, 0.6), 0 6px 20px rgba(0, 0, 0, 0.4);
+    .cruise-ship-notice:hover {
+      background: linear-gradient(135deg, rgba(8, 145, 178, 0.4) 0%, rgba(6, 116, 145, 0.5) 100%);
+      border-color: rgba(8, 145, 178, 0.8);
+      transform: scale(1.03);
     }
-    .cruise-ship-btn:active {
-      transform: translateY(-1px) scale(1.02);
-      box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
+    .cruise-ship-notice-icon {
+      font-size: 1.3em;
+      animation: cruiseShipBob 2s ease-in-out infinite;
+    }
+    .cruise-ship-notice-text {
+      font-size: 0.95em;
+      letter-spacing: 0.3px;
+    }
+    @keyframes cruiseNoticeGlow {
+      0%, 100% { box-shadow: 0 0 8px rgba(8, 145, 178, 0.3), 0 0 20px rgba(8, 145, 178, 0.1); }
+      50% { box-shadow: 0 0 15px rgba(8, 145, 178, 0.5), 0 0 30px rgba(8, 145, 178, 0.2); }
+    }
+    @keyframes cruiseShipBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    /* Cruise Ship Filter Toggle (inside Browse All Tours mode) */
+    .cruise-ship-filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      font-size: 0.95em;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(8, 145, 178, 0.15);
+      border: 1.5px solid rgba(8, 145, 178, 0.4);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+    }
+    .cruise-ship-filter-toggle:hover {
+      background: rgba(8, 145, 178, 0.25);
+      border-color: rgba(8, 145, 178, 0.7);
+    }
+    .cruise-ship-filter-toggle.active {
+      background: rgba(8, 145, 178, 0.35);
+      border-color: #0891b2;
+      color: white;
+      box-shadow: 0 0 12px rgba(8, 145, 178, 0.4);
+    }
+    .cruise-ship-filter-toggle .toggle-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7em;
+    }
+    .cruise-ship-filter-toggle.active .toggle-dot {
+      background: #0891b2;
+      border-color: white;
     }
 
     .newcomer-info-btn {
@@ -14928,9 +14980,10 @@
         <button class="browse-all-tours-btn" id="browse-all-tours-btn" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
           <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
         </button>
-        <button class="cruise-ship-btn" id="cruise-ship-btn" onclick="event.stopPropagation(); startModeWithAnimation('cruise-ship')">
-          <span id="cruise-ship-text">🚢 Cruise Ship Friendly</span>
-        </button>
+        <div class="cruise-ship-notice" id="cruise-ship-notice" onclick="event.stopPropagation(); startModeWithAnimation('browse-all')">
+          <span class="cruise-ship-notice-icon">🚢</span>
+          <span class="cruise-ship-notice-text" id="cruise-ship-notice-text">Cruise Ship Friendly tours available!</span>
+        </div>
         <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); startModeWithAnimation('newcomer-info')">
           <span id="newcomer-info-text">ℹ️ Newcomer Important Information</span>
         </button>
@@ -15619,6 +15672,15 @@
           <h2 id="home-tours-title" style="color: white;"></h2>
           <p class="section-subtitle" id="home-tours-subtitle" style="color: rgba(255,255,255,0.9);">
           </p>
+          
+          <!-- Cruise Ship Friendly Filter Toggle -->
+          <div id="cruise-ship-filter-container" style="text-align: center; display: none;">
+            <button class="cruise-ship-filter-toggle" id="cruise-ship-filter-btn" onclick="toggleCruiseShipFilter()">
+              <span class="toggle-dot" id="cruise-filter-dot">✓</span>
+              <span>🚢</span>
+              <span id="cruise-filter-label">Cruise Ship Friendly Only</span>
+            </button>
+          </div>
 
           <div class="featured-grid" id="featured-grid">
             <!-- Featured tours will be populated here -->
@@ -16675,7 +16737,10 @@
         "ai_assistant_btn": "Talk To Our AI Assistant",
         "quick_decision_btn": "Quick Match",
         "browse_all_tours_btn": "Browse All Tours",
-        "cruise_ship_btn": "Cruise Ship Friendly",
+        "cruise_ship_notice": "Cruise Ship Friendly tours available!",
+        "cruise_ship_filter": "Cruise Ship Friendly Only",
+        "cruise_ship_friendly_title": "Cruise Ship Friendly Tours",
+        "showing_cruise_ship_tours": "Showing tours suitable for cruise ship visitors",
         "find_perfect_tour": "Find Your Perfect Tour",
         "search_tours_placeholder": "Search tours by name or company...",
         "map_view": "🗺️ Map View", "grid_view": "Grid View",
@@ -16758,7 +16823,10 @@
         "ai_assistant_btn": "AIアシスタントに相談",
         "quick_decision_btn": "クイックマッチ",
         "browse_all_tours_btn": "すべてのツアーを閲覧",
-        "cruise_ship_btn": "クルーズ船対応",
+        "cruise_ship_notice": "クルーズ船対応ツアーあり！",
+        "cruise_ship_filter": "クルーズ船対応のみ",
+        "cruise_ship_friendly_title": "クルーズ船対応ツアー",
+        "showing_cruise_ship_tours": "クルーズ船のお客様向けツアーを表示中",
         "find_perfect_tour": "完璧なツアーを見つける",
         "search_tours_placeholder": "ツアー名や会社名で検索...",
         "map_view": "🗺️ マップ表示", "grid_view": "グリッド表示",
@@ -16841,7 +16909,10 @@
         "ai_assistant_btn": "与AI助手交谈",
         "quick_decision_btn": "快速匹配",
         "browse_all_tours_btn": "浏览所有旅程",
-        "cruise_ship_btn": "邮轮友好",
+        "cruise_ship_notice": "邮轮友好旅程在这里！",
+        "cruise_ship_filter": "仅显示邮轮友好旅程",
+        "cruise_ship_friendly_title": "邮轮友好旅程",
+        "showing_cruise_ship_tours": "显示适合邮轮游客的旅程",
         "find_perfect_tour": "找到完美之旅",
         "search_tours_placeholder": "按名称或公司搜索旅程...",
         "map_view": "🗺️ 地图视图", "grid_view": "网格视图",
@@ -16924,7 +16995,10 @@
         "ai_assistant_btn": "AI 어시스턴트와 대화하기",
         "quick_decision_btn": "빠른 매칭",
         "browse_all_tours_btn": "모든 투어 둘러보기",
-        "cruise_ship_btn": "크루즈선 이용 가능",
+        "cruise_ship_notice": "크루즈선 이용 가능 투어 있음!",
+        "cruise_ship_filter": "크루즈선 이용 가능만",
+        "cruise_ship_friendly_title": "크루즈선 이용 가능 투어",
+        "showing_cruise_ship_tours": "크루즈선 방문객에게 적합한 투어 표시 중",
         "find_perfect_tour": "완벽한 투어 찾기",
         "search_tours_placeholder": "투어 이름이나 회사로 검색...",
         "map_view": "🗺️ 지도 보기", "grid_view": "그리드 보기",
@@ -17007,7 +17081,10 @@
         "ai_assistant_btn": "Mit KI-Assistent sprechen",
         "quick_decision_btn": "Schnelles Match",
         "browse_all_tours_btn": "Alle Touren durchsuchen",
-        "cruise_ship_btn": "Kreuzfahrtschiff-freundlich",
+        "cruise_ship_notice": "Kreuzfahrt-freundliche Touren verfügbar!",
+        "cruise_ship_filter": "Nur kreuzfahrt-freundliche",
+        "cruise_ship_friendly_title": "Kreuzfahrt-freundliche Touren",
+        "showing_cruise_ship_tours": "Touren für Kreuzfahrtgäste werden angezeigt",
         "find_perfect_tour": "Finden Sie Ihre perfekte Tour",
         "search_tours_placeholder": "Touren nach Name oder Anbieter suchen...",
         "map_view": "🗺️ Kartenansicht", "grid_view": "Rasteransicht",
@@ -17090,7 +17167,10 @@
         "ai_assistant_btn": "Parler à l'assistant IA",
         "quick_decision_btn": "Match Rapide",
         "browse_all_tours_btn": "Parcourir toutes les excursions",
-        "cruise_ship_btn": "Adapté aux croisiéristes",
+        "cruise_ship_notice": "Excursions adaptées aux croisiéristes !",
+        "cruise_ship_filter": "Croisiéristes uniquement",
+        "cruise_ship_friendly_title": "Excursions pour croisiéristes",
+        "showing_cruise_ship_tours": "Affichage des excursions adaptées aux croisiéristes",
         "find_perfect_tour": "Trouvez votre excursion parfaite",
         "search_tours_placeholder": "Rechercher par nom ou compagnie...",
         "map_view": "🗺️ Vue carte", "grid_view": "Vue grille",
@@ -17173,7 +17253,10 @@
         "ai_assistant_btn": "AI सहायक से बात करें",
         "quick_decision_btn": "क्विक मैच",
         "browse_all_tours_btn": "सभी टूर ब्राउज़ करें",
-        "cruise_ship_btn": "क्रूज़ शिप अनुकूल",
+        "cruise_ship_notice": "क्रूज़ शिप अनुकूल टूर उपलब्ध!",
+        "cruise_ship_filter": "केवल क्रूज़ शिप अनुकूल",
+        "cruise_ship_friendly_title": "क्रूज़ शिप अनुकूल टूर",
+        "showing_cruise_ship_tours": "क्रूज़ शिप यात्रियों के लिए उपयुक्त टूर दिखा रहे हैं",
         "find_perfect_tour": "अपना परफेक्ट टूर खोजें",
         "search_tours_placeholder": "नाम या कंपनी द्वारा खोजें...",
         "map_view": "🗺️ मानचित्र दृश्य", "grid_view": "ग्रिड दृश्य",
@@ -17256,7 +17339,10 @@
         "ai_assistant_btn": "Hablar con el asistente de IA",
         "quick_decision_btn": "Match Rápido",
         "browse_all_tours_btn": "Explorar todos los tours",
-        "cruise_ship_btn": "Apto para cruceros",
+        "cruise_ship_notice": "¡Tours aptos para cruceros disponibles!",
+        "cruise_ship_filter": "Solo aptos para cruceros",
+        "cruise_ship_friendly_title": "Tours aptos para cruceros",
+        "showing_cruise_ship_tours": "Mostrando tours aptos para visitantes de cruceros",
         "find_perfect_tour": "Encuentra tu tour perfecto",
         "search_tours_placeholder": "Buscar tours por nombre o empresa...",
         "map_view": "🗺️ Vista de mapa", "grid_view": "Vista de cuadrícula",
@@ -18099,10 +18185,14 @@
         browseAllToursText.innerHTML = '🗂️ ' + dualText(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       }
       
-      // Update Cruise Ship Friendly button
-      const cruiseShipText = document.getElementById('cruise-ship-text');
-      if (cruiseShipText && lang.cruise_ship_btn) {
-        cruiseShipText.innerHTML = '🚢 ' + dualText(lang.cruise_ship_btn, 'cruise_ship_btn');
+      // Update Cruise Ship Friendly notice and filter
+      const cruiseNoticeText = document.getElementById('cruise-ship-notice-text');
+      if (cruiseNoticeText && lang.cruise_ship_notice) {
+        cruiseNoticeText.textContent = lang.cruise_ship_notice;
+      }
+      const cruiseFilterLabel = document.getElementById('cruise-filter-label');
+      if (cruiseFilterLabel && lang.cruise_ship_filter) {
+        cruiseFilterLabel.textContent = lang.cruise_ship_filter;
       }
       
       // Update Newcomer Info button
@@ -20548,6 +20638,10 @@
       activeFilters = {};
       isInVideoFlow = false; // Exit video flow
       
+      // Reset cruise ship filter UI
+      const cruiseFilterBtn = document.getElementById('cruise-ship-filter-btn');
+      if (cruiseFilterBtn) cruiseFilterBtn.classList.remove('active');
+      
       // Add to navigation history
       addToNavigationHistory('home');
       
@@ -20607,75 +20701,31 @@
       console.log('✅ Home page active, video flow exited');
     }
     
-    // ========== CRUISE SHIP FRIENDLY MODE ==========
+    // ========== CRUISE SHIP FRIENDLY FILTER ==========
     window._cruiseShipMode = false;
     
-    window.goToCruiseShipPage = function() {
-      console.log('🚢 Going to Cruise Ship Friendly page');
+    function toggleCruiseShipFilter() {
+      window._cruiseShipMode = !window._cruiseShipMode;
+      const btn = document.getElementById('cruise-ship-filter-btn');
       
-      window._cruiseShipMode = true;
-      activeFilters = {};
-      isInVideoFlow = false;
-      
-      // Add to navigation history
-      addToNavigationHistory('cruise-ship');
-      
-      // Update URL hash
-      window.location.hash = 'cruise-ship';
-      
-      // Hide video background and remove language selection state
-      document.body.classList.remove('video-bg-active');
-      document.body.classList.remove('showing-language-selection');
-      
-      const videoPage = document.querySelector('.video-question-page');
-      if (videoPage) {
-        videoPage.classList.remove('active');
-        videoPage.style.display = 'none';
+      if (window._cruiseShipMode) {
+        btn.classList.add('active');
+        console.log('🚢 Cruise Ship filter ON');
+        // Filter to only cruise-ship-friendly tours
+        loadCruiseShipFilteredTours();
+      } else {
+        btn.classList.remove('active');
+        console.log('🚢 Cruise Ship filter OFF');
+        // Reload all tours
+        loadInitialFeaturedTours();
       }
-      
-      const swipeOverlay = document.getElementById('swipe-results-overlay');
-      if (swipeOverlay) {
-        swipeOverlay.classList.remove('active');
-        swipeOverlay.style.display = 'none';
-      }
-      
-      const homePage = document.querySelector('.home-page');
-      if (homePage) {
-        homePage.classList.add('active');
-        homePage.style.display = 'flex';
-        
-        // Show hero section
-        const heroSection = document.getElementById('hero-section');
-        if (heroSection) heroSection.style.display = 'block';
-        
-        // Hide company filter nav
-        const companyFilterNav = document.getElementById('company-filter-nav');
-        if (companyFilterNav) companyFilterNav.style.display = 'none';
-        
-        // Load only cruise ship friendly tours
-        loadCruiseShipFriendlyTours();
-      }
-      
-      // Scroll to top
-      scrollPageToTop(false);
-      
-      // Reapply translations after page switch
-      if (typeof applyLanguage === 'function' && typeof currentLanguage !== 'undefined') {
-        setTimeout(() => applyLanguage(currentLanguage), 100);
-        setTimeout(() => applyLanguage(currentLanguage), 500);
-      }
-      
-      resetVideoQuestionFlow();
-      
-      console.log('✅ Cruise Ship Friendly page active');
     }
     
-    function loadCruiseShipFriendlyTours() {
+    function loadCruiseShipFilteredTours() {
       homePageOffset = 0;
       homePageLoadedKeys = [];
-      homePageHasMore = false; // No pagination for filtered view
+      homePageHasMore = false;
       
-      // Fetch ALL tours, then filter client-side for cruise_ship_friendly
       fetch(`/api/tours?lang=${currentLanguage}`)
         .then(response => response.json())
         .then(data => {
@@ -20687,16 +20737,15 @@
           homePageLoadedKeys = cruiseTours.map(t => t.key);
           displayFeaturedTours(cruiseTours, false);
           
-          // Update subtitle
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            subtitle.innerHTML = `🚢 Showing ${cruiseTours.length} Cruise Ship Friendly tour${cruiseTours.length !== 1 ? 's' : ''}`;
+            const lang = uiTranslations[currentLanguage] || uiTranslations['en'];
+            subtitle.innerHTML = '🚢 ' + tDual('showing_cruise_ship_tours');
           }
           
-          // Update hero title
           const title = document.getElementById('home-tours-title');
           if (title) {
-            title.innerHTML = '🚢 Cruise Ship Friendly Tours';
+            title.innerHTML = '🚢 ' + tDual('cruise_ship_friendly_title');
           }
         })
         .catch(error => {
@@ -21052,8 +21101,6 @@
           window.startVideoQuestions && window.startVideoQuestions();
         } else if (mode === 'browse-all') {
           window.goToHomePage && window.goToHomePage();
-        } else if (mode === 'cruise-ship') {
-          window.goToCruiseShipPage && window.goToCruiseShipPage();
         } else if (mode === 'newcomer-info') {
           window.openNewcomerInfo && window.openNewcomerInfo();
         } else if (mode === 'map-view') {
@@ -21089,12 +21136,10 @@
       }
       
       // Filter disabled modes from animation
-      const cruiseBtn = document.getElementById('cruise-ship-btn');
       const allModeButtons = [
         { element: aiBtn, type: 'ai-assistant', text: '🤖 AI Assistant', enabled: KIOSK_MODES.ai_enabled },
         { element: quickBtn, type: 'quick-decision', text: '⚡ Quick Match', enabled: KIOSK_MODES.quick_enabled },
         { element: browseBtn, type: 'browse-all', text: '🗂️ Browse All Tours', enabled: KIOSK_MODES.browse_enabled },
-        { element: cruiseBtn, type: 'cruise-ship', text: '🚢 Cruise Ship Friendly', enabled: true },
         { element: mapBtn, type: 'map-view', text: '🗺️ Map View', enabled: true },
         { element: newcomerBtn, type: 'newcomer-info', text: 'ℹ️ Important Info', enabled: true }
       ];
@@ -25144,6 +25189,10 @@
       homePageLoadedKeys = [];
       homePageHasMore = true;
       
+      // Show cruise ship filter toggle
+      const cruiseFilterContainer = document.getElementById('cruise-ship-filter-container');
+      if (cruiseFilterContainer) cruiseFilterContainer.style.display = 'block';
+      
       fetch(`/more-tours?offset=0&count=12&exclude=&lang=${currentLanguage}`)
         .then(response => response.json())
         .then(tours => {
@@ -25154,7 +25203,11 @@
           // Enable infinite scroll if we got a full page
           homePageHasMore = tours.length >= 12;
           
-          // Update subtitle with total count
+          // Update title and subtitle
+          const title = document.getElementById('home-tours-title');
+          if (title) {
+            title.innerHTML = tDual('find_perfect_tour');
+          }
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
             subtitle.innerHTML = tDual('showing_all_tours');
@@ -30718,8 +30771,10 @@
       if (quickDecisionText) quickDecisionText.innerHTML = '⚡ ' + dualAL(lang.quick_decision_btn, 'quick_decision_btn');
       if (browseAllToursText) browseAllToursText.innerHTML = '🗂️ ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       
-      const cruiseShipTextAL = document.getElementById('cruise-ship-text');
-      if (cruiseShipTextAL && lang.cruise_ship_btn) cruiseShipTextAL.innerHTML = '🚢 ' + dualAL(lang.cruise_ship_btn, 'cruise_ship_btn');
+      const cruiseNoticeTextAL = document.getElementById('cruise-ship-notice-text');
+      if (cruiseNoticeTextAL && lang.cruise_ship_notice) cruiseNoticeTextAL.textContent = lang.cruise_ship_notice;
+      const cruiseFilterLabelAL = document.getElementById('cruise-filter-label');
+      if (cruiseFilterLabelAL && lang.cruise_ship_filter) cruiseFilterLabelAL.textContent = lang.cruise_ship_filter;
       
       // Update home page filter questions (with dual-language)
       const homeDurationQuestion = document.getElementById('home-duration-question');
@@ -34002,12 +34057,6 @@
             console.log('🎯 Navigating to home page');
             if (typeof window.goToHomePage === 'function') {
               window.goToHomePage();
-            }
-          } else if (hash === '#cruise-ship') {
-            // Cruise Ship Friendly page
-            console.log('🎯 Navigating to cruise ship friendly page');
-            if (typeof window.goToCruiseShipPage === 'function') {
-              window.goToCruiseShipPage();
             }
           } else if (hash === '#newcomer-info') {
             // Newcomer info page
