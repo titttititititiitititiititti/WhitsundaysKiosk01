@@ -2094,11 +2094,11 @@
     }
     
     .language-select-btn .flag-img {
-      width: 36px;
-      height: 27px;
-      border-radius: 4px;
+      width: 72px;
+      height: 54px;
+      border-radius: 6px;
       object-fit: cover;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.4);
     }
     
     .video-start-screen {
@@ -2274,18 +2274,18 @@
     }
     .cruise-ship-notice {
       position: absolute;
-      right: -8px;
-      top: 50%;
-      transform: translateX(100%) translateY(-50%) rotate(28deg);
+      right: -6px;
+      top: -8px;
+      transform: translateX(50%) rotate(28deg);
       display: flex;
       align-items: center;
       gap: 5px;
       padding: 6px 12px;
-      background: rgba(8, 145, 178, 0.85);
+      background: rgba(8, 145, 178, 0.9);
       border-radius: 10px;
       pointer-events: none;
       animation: cruisePulse 2.5s ease-in-out infinite;
-      box-shadow: 0 3px 12px rgba(8, 145, 178, 0.4);
+      box-shadow: 0 3px 12px rgba(8, 145, 178, 0.5);
     }
     .cruise-notice-text {
       font-size: 0.95em;
@@ -2298,26 +2298,13 @@
       font-size: 1.5em;
     }
     @keyframes cruisePulse {
-      0%, 100% { transform: translateX(100%) translateY(-50%) rotate(28deg) scale(1); }
-      50% { transform: translateX(100%) translateY(-50%) rotate(28deg) scale(1.12); }
+      0%, 100% { transform: translateX(50%) rotate(28deg) scale(1); }
+      50% { transform: translateX(50%) rotate(28deg) scale(1.15); }
     }
-    /* On narrower screens, put it below instead */
     @media (max-width: 900px) {
       .cruise-ship-notice {
-        position: relative;
-        right: auto;
-        top: auto;
-        transform: rotate(28deg);
-        margin-top: 8px;
-        animation: cruisePulseMobile 2.5s ease-in-out infinite;
-      }
-      .browse-all-wrapper {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      @keyframes cruisePulseMobile {
-        0%, 100% { transform: rotate(28deg) scale(1); }
-        50% { transform: rotate(28deg) scale(1.12); }
+        right: -4px;
+        top: -10px;
       }
     }
 
@@ -2325,39 +2312,42 @@
     .cruise-ship-filter-toggle {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      font-size: 0.95em;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.85);
-      background: rgba(8, 145, 178, 0.15);
-      border: 1.5px solid rgba(8, 145, 178, 0.4);
-      border-radius: 25px;
+      gap: 12px;
+      padding: 16px 32px;
+      font-size: 1.3em;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      background: linear-gradient(135deg, rgba(8, 145, 178, 0.25) 0%, rgba(6, 116, 145, 0.3) 100%);
+      border: 2.5px solid rgba(8, 145, 178, 0.5);
+      border-radius: 40px;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-bottom: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(8, 145, 178, 0.2);
     }
     .cruise-ship-filter-toggle:hover {
-      background: rgba(8, 145, 178, 0.25);
-      border-color: rgba(8, 145, 178, 0.7);
+      background: linear-gradient(135deg, rgba(8, 145, 178, 0.35) 0%, rgba(6, 116, 145, 0.4) 100%);
+      border-color: rgba(8, 145, 178, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(8, 145, 178, 0.35);
     }
     .cruise-ship-filter-toggle.active {
-      background: rgba(8, 145, 178, 0.35);
+      background: linear-gradient(135deg, rgba(8, 145, 178, 0.5) 0%, rgba(6, 116, 145, 0.6) 100%);
       border-color: #0891b2;
       color: white;
-      box-shadow: 0 0 12px rgba(8, 145, 178, 0.4);
+      box-shadow: 0 4px 20px rgba(8, 145, 178, 0.5), 0 0 30px rgba(8, 145, 178, 0.2);
     }
     .cruise-ship-filter-toggle .toggle-dot {
-      width: 18px;
-      height: 18px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.2);
+      border: 2.5px solid rgba(255, 255, 255, 0.4);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7em;
+      font-size: 0.75em;
     }
     .cruise-ship-filter-toggle.active .toggle-dot {
       background: #0891b2;
@@ -8318,6 +8308,26 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
       letter-spacing: 0.3px;
     }
+    .tour-cruise-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 700;
+      color: white;
+      background: rgba(8, 145, 178, 0.9);
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      letter-spacing: 0.3px;
+    }
+    /* If both badges exist, promotion stays top-left, cruise stays top-right */
+    .tour-promotion-badge + .tour-cruise-badge {
+      /* Already positioned correctly via left/right */
+    }
+    /* If only cruise badge (no promotion), still top-right */
     
     .tour-image {
       width: 100%;
@@ -14949,35 +14959,35 @@
         <div class="language-selection-title">Select Your Language to Begin</div>
         <div class="language-selection-buttons">
           <button class="language-select-btn" onclick="selectInitialLanguage('en')">
-            <img class="flag-img" src="https://flagcdn.com/w40/gb.png" alt="EN">
+            <img class="flag-img" src="https://flagcdn.com/w80/gb.png" alt="EN">
             <span>English</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('zh')">
-            <img class="flag-img" src="https://flagcdn.com/w40/cn.png" alt="ZH">
+            <img class="flag-img" src="https://flagcdn.com/w80/cn.png" alt="ZH">
             <span>中文</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('ja')">
-            <img class="flag-img" src="https://flagcdn.com/w40/jp.png" alt="JA">
+            <img class="flag-img" src="https://flagcdn.com/w80/jp.png" alt="JA">
             <span>日本語</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('hi')">
-            <img class="flag-img" src="https://flagcdn.com/w40/in.png" alt="HI">
+            <img class="flag-img" src="https://flagcdn.com/w80/in.png" alt="HI">
             <span>हिन्दी</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('de')">
-            <img class="flag-img" src="https://flagcdn.com/w40/de.png" alt="DE">
+            <img class="flag-img" src="https://flagcdn.com/w80/de.png" alt="DE">
             <span>Deutsch</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('fr')">
-            <img class="flag-img" src="https://flagcdn.com/w40/fr.png" alt="FR">
+            <img class="flag-img" src="https://flagcdn.com/w80/fr.png" alt="FR">
             <span>Français</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('es')">
-            <img class="flag-img" src="https://flagcdn.com/w40/es.png" alt="ES">
+            <img class="flag-img" src="https://flagcdn.com/w80/es.png" alt="ES">
             <span>Español</span>
           </button>
           <button class="language-select-btn" onclick="selectInitialLanguage('ko')">
-            <img class="flag-img" src="https://flagcdn.com/w40/kr.png" alt="KO">
+            <img class="flag-img" src="https://flagcdn.com/w80/kr.png" alt="KO">
             <span>한국어</span>
           </button>
         </div>
@@ -15011,15 +15021,15 @@
         </button>
         
         <!-- Language Flags on Mode Selection Page -->
-        <div class="mode-selection-flags" style="display:flex;gap:12px;margin-top:30px;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/gb.png" alt="English" onclick="event.stopPropagation(); changeModeLanguage('en')" title="English" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/cn.png" alt="中文" onclick="event.stopPropagation(); changeModeLanguage('zh')" title="中文" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/jp.png" alt="日本語" onclick="event.stopPropagation(); changeModeLanguage('ja')" title="日本語" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/in.png" alt="हिन्दी" onclick="event.stopPropagation(); changeModeLanguage('hi')" title="हिन्दी" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/de.png" alt="Deutsch" onclick="event.stopPropagation(); changeModeLanguage('de')" title="Deutsch" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/fr.png" alt="Français" onclick="event.stopPropagation(); changeModeLanguage('fr')" title="Français" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/es.png" alt="Español" onclick="event.stopPropagation(); changeModeLanguage('es')" title="Español" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
-          <img class="mode-flag" src="https://flagcdn.com/w80/kr.png" alt="한국어" onclick="event.stopPropagation(); changeModeLanguage('ko')" title="한국어" style="width:50px;height:38px;border-radius:6px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.3);transition:transform 0.2s;">
+        <div class="mode-selection-flags" style="display:flex;flex-wrap:wrap;gap:20px;margin-top:30px;justify-content:center;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/gb.png" alt="English" onclick="event.stopPropagation(); changeModeLanguage('en')" title="English" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/cn.png" alt="中文" onclick="event.stopPropagation(); changeModeLanguage('zh')" title="中文" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/jp.png" alt="日本語" onclick="event.stopPropagation(); changeModeLanguage('ja')" title="日本語" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/in.png" alt="हिन्दी" onclick="event.stopPropagation(); changeModeLanguage('hi')" title="हिन्दी" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/de.png" alt="Deutsch" onclick="event.stopPropagation(); changeModeLanguage('de')" title="Deutsch" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/fr.png" alt="Français" onclick="event.stopPropagation(); changeModeLanguage('fr')" title="Français" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/es.png" alt="Español" onclick="event.stopPropagation(); changeModeLanguage('es')" title="Español" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
+          <img class="mode-flag" src="https://flagcdn.com/w160/kr.png" alt="한국어" onclick="event.stopPropagation(); changeModeLanguage('ko')" title="한국어" style="width:100px;height:75px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.5);border:3px solid rgba(255,255,255,0.4);transition:transform 0.2s;object-fit:cover;">
         </div>
       </div>
       
@@ -24748,12 +24758,14 @@
         const hasBooking = hasWorkingBooking(tour);
         const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
+        const cruiseBadge = getCruiseBadgeHtml(tour);
         
         // Use tour-card-large format (matches template)
         card.innerHTML = `
           <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}'); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center;"></div>
           ${starHtml}
           ${promotionBadge}
+          ${cruiseBadge}
           <div class="tour-card-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 35px 30px; background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 70%, transparent 100%); color: white;">
             <span class="operator-chip" style="display: inline-block; padding: 8px 16px; background: rgba(255,255,255,0.25); border-radius: 20px; font-size: 0.9em; margin-bottom: 12px;">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</span>
             <h2 class="tour-name" style="font-size: 1.8em; font-weight: 700; margin: 0 0 15px 0;">${tour.name}</h2>
@@ -26274,7 +26286,13 @@
       const badge = badges[promotion];
       if (!badge) return '';
       
-      return `<div class="tour-promotion-badge" style="background: ${badge.color}; position: absolute; top: 12px; left: 12px; padding: 6px 14px; border-radius: 20px; font-size: 0.85em; font-weight: 700; color: white; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${badge.icon} ${badge.label}</div>`;
+      return `<div class="tour-promotion-badge" style="background: ${badge.color};">${badge.icon} ${badge.label}</div>`;
+    }
+    
+    // Helper: generate cruise ship friendly badge HTML
+    function getCruiseBadgeHtml(tour) {
+      if (!tour.cruise_ship_friendly) return '';
+      return `<div class="tour-cruise-badge">🚢 Cruise Friendly</div>`;
     }
     
     // Display tours in the 2-column grid
@@ -26308,11 +26326,13 @@
         
         const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
+        const cruiseBadge = getCruiseBadgeHtml(tour);
         const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
           <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
           ${starHtml}
           ${promotionBadge}
+          ${cruiseBadge}
           <div class="tour-card-overlay">
             <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
             <h2 class="tour-name">${tour.name}</h2>
@@ -26361,11 +26381,13 @@
             
             const starHtml = ''; // Booking star removed - no longer needed for reseller model
             const promotionBadge = getPromotionBadgeHtml(tour);
+            const cruiseBadge = getCruiseBadgeHtml(tour);
             const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
             card.innerHTML = `
               <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
               ${starHtml}
               ${promotionBadge}
+              ${cruiseBadge}
               <div class="tour-card-overlay">
                 <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
                 <h2 class="tour-name">${tour.name}</h2>
@@ -26553,11 +26575,13 @@
         
         const starHtml = ''; // Booking star removed - no longer needed for reseller model
         const promotionBadge = getPromotionBadgeHtml(tour);
+        const cruiseBadge = getCruiseBadgeHtml(tour);
         const placeholderBadge = tour.uses_placeholder_images ? '<div class="placeholder-badge">Placeholder Images</div>' : '';
         card.innerHTML = `
           <div class="tour-card-image" style="background-image: url('${tour.thumbnail || '/static/placeholder.jpg'}');">${placeholderBadge}</div>
           ${starHtml}
           ${promotionBadge}
+          ${cruiseBadge}
           <div class="tour-card-overlay">
             <span class="operator-chip">${(tour.company_name || 'Tour Operator').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
             <h3 class="tour-name">${tour.name}</h3>
@@ -32310,6 +32334,11 @@
           `;
         }
       }
+      // Build cruise ship badge
+      let cruiseBadgeHtml = '';
+      if (tour.cruise_ship_friendly) {
+        cruiseBadgeHtml = `<div class="tour-cruise-badge">🚢 Cruise Friendly</div>`;
+      }
       
       // Build star rating if available
       let ratingHtml = '';
@@ -32335,6 +32364,7 @@
         // Mobile: Set innerHTML FIRST
         card.innerHTML = `
           ${promotionBadgeHtml}
+          ${cruiseBadgeHtml}
           <div>
             <div class="tour-company">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
             <h3>${tour.name}</h3>
@@ -32358,6 +32388,7 @@
         // Desktop layout
         card.innerHTML = `
           ${promotionBadgeHtml}
+          ${cruiseBadgeHtml}
           <img src="${tour.thumbnail}" alt="${tour.name}" class="tour-image">
           <div class="tour-overlay">
             <div class="tour-type">${tour.company_name ? tour.company_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : ''}</div>
