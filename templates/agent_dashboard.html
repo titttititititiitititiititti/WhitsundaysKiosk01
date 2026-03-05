@@ -647,6 +647,25 @@
             color: #00a8e8;
         }
         
+        .cruise-btn {
+            padding: 6px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 4px;
+        }
+        .cruise-btn:hover {
+            border-color: #0891b2;
+        }
+        .cruise-btn.active {
+            background: rgba(8, 145, 178, 0.2);
+            border-color: #0891b2;
+            color: #0891b2;
+        }
+        
         .tour-actions {
             display: flex;
             gap: 8px;
@@ -1242,6 +1261,11 @@
                                 💎
                             </button>
                         </div>
+                        <button class="cruise-btn {{ 'active' if tour.cruise_ship_friendly else '' }}" 
+                                onclick="toggleCruiseFriendly('{{ tour.key }}', this)"
+                                title="Cruise Ship Friendly - Shows in Cruise Ship Friendly mode">
+                            🚢
+                        </button>
                         <div class="tour-actions">
                             <button class="tour-action-btn edit-tour-btn" data-key="{{ tour.key }}" data-name="{{ tour.name | e }}">
                                 ✏️ Edit
@@ -2476,6 +2500,31 @@
             }
         }
         
+        async function toggleCruiseFriendly(key, buttonElement) {
+            const isCurrentlyActive = buttonElement.classList.contains('active');
+            const newState = !isCurrentlyActive;
+            
+            try {
+                const response = await fetch('/admin/agent/api/toggle-cruise-friendly', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tour_key: key, enabled: newState })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                if (newState) {
+                    buttonElement.classList.add('active');
+                } else {
+                    buttonElement.classList.remove('active');
+                }
+                
+                showToast(newState ? 'Marked as Cruise Ship Friendly' : 'Removed Cruise Ship Friendly tag', 'success');
+            } catch (err) {
+                showToast('Failed to update cruise ship friendly status', 'error');
+            }
+        }
+
         async function bulkAction(action) {
             if (!confirm(`Are you sure you want to ${action.replace('_', ' ')}?`)) return;
             

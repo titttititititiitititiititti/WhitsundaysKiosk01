@@ -1239,6 +1239,15 @@ def get_tour_promotion_status(tour_key, preview_account=None):
             return level
     return None
 
+def is_tour_cruise_ship_friendly(tour_key, preview_account=None):
+    """Check if a tour is tagged as cruise ship friendly"""
+    if preview_account:
+        settings = load_account_settings(preview_account)
+    else:
+        active_account = get_active_account()
+        settings = load_account_settings(active_account) if active_account else {}
+    return tour_key in settings.get('cruise_ship_friendly_tours', [])
+
 def is_tour_enabled(tour_key, preview_account=None):
     """Check if a tour is enabled for the active kiosk account or preview account"""
     # Use preview account if specified, otherwise get kiosk's active account
@@ -2345,6 +2354,9 @@ def load_all_tours(language='en', preview_account=None):
                         # Get promotion status (use preview account if specified)
                         promotion = get_tour_promotion_status(key, preview_account=preview_account)
                         
+                        # Check cruise ship friendly tag
+                        cruise_friendly = is_tour_cruise_ship_friendly(key, preview_account=preview_account)
+                        
                         # Get video_urls (fall back to English CSV if missing)
                         video_urls_raw = row.get('video_urls', '')
                         
@@ -2393,6 +2405,7 @@ def load_all_tours(language='en', preview_account=None):
                             # Promotion status (for AI recommendations and sorting)
                             'promotion': promotion,
                             'is_promoted': promotion is not None,
+                            'cruise_ship_friendly': cruise_friendly,
                         }
                         tours.append(tour_data)
         except (FileNotFoundError, IOError) as e:
@@ -3254,12 +3267,14 @@ def agent_dashboard():
         enabled_tours_for_account = account_settings.get('enabled_tours', [])
         account_tour_overrides = account_settings.get('tour_overrides', {})
         account_promotions = account_settings.get('promoted_tours', {})
+        account_cruise_friendly = account_settings.get('cruise_ship_friendly_tours', [])
         print(f"[DASHBOARD DEBUG] Loaded {len(enabled_tours_for_account)} enabled tours for '{username}'")
         print(f"[DASHBOARD DEBUG] Settings file: config/accounts/{username}/settings.json")
     else:
         enabled_tours_for_account = []
         account_tour_overrides = {}
         account_promotions = {}
+        account_cruise_friendly = []
         print(f"[DASHBOARD DEBUG] No user in session!")
     
     # Also load global settings for fallback
@@ -3315,7 +3330,8 @@ def agent_dashboard():
                             'price': row.get('price_adult', ''),
                             'enabled': is_enabled,
                             'promotion': promotion,
-                            'has_booking_link': has_booking_link
+                            'has_booking_link': has_booking_link,
+                            'cruise_ship_friendly': tour_key in account_cruise_friendly
                         })
         except Exception as e:
             print(f"Error loading {csvfile}: {e}")
@@ -3460,6 +3476,36 @@ def set_tour_promotion():
     git_sync_changes(f"Updated tour promotion: {tour_key}")
     
     return jsonify({'success': True, 'level': level})
+
+@app.route('/admin/agent/api/toggle-cruise-friendly', methods=['POST'])
+def toggle_cruise_friendly():
+    """Toggle a tour's cruise ship friendly status"""
+    data = request.get_json()
+    tour_key = data.get('tour_key')
+    enabled = data.get('enabled', False)
+    
+    if not tour_key:
+        return jsonify({'error': 'Tour key required'}), 400
+    
+    username = session.get('user')
+    if not username:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    account_settings = load_account_settings(username)
+    cruise_list = account_settings.get('cruise_ship_friendly_tours', [])
+    
+    if enabled and tour_key not in cruise_list:
+        cruise_list.append(tour_key)
+    elif not enabled and tour_key in cruise_list:
+        cruise_list.remove(tour_key)
+    
+    account_settings['cruise_ship_friendly_tours'] = cruise_list
+    save_account_settings(username, account_settings)
+    
+    # Sync to connected kiosks
+    git_sync_changes(f"Updated cruise ship friendly: {tour_key}")
+    
+    return jsonify({'success': True, 'enabled': enabled})
 
 @app.route('/admin/agent/api/bulk-update', methods=['POST'])
 # @agent_required  # Disabled for testing
@@ -4512,6 +4558,7 @@ def api_tours():
             'video_urls': video_urls,  # Video URLs for embedded playback
             'promotion': tour.get('promotion'),  # Include promotion status
             'is_promoted': tour.get('is_promoted', False),
+            'cruise_ship_friendly': tour.get('cruise_ship_friendly', False),
             'review_rating': tour.get('review_rating', 0),
             'review_count': tour.get('review_count', 0),
             'uses_placeholder_images': uses_placeholder,
