@@ -2274,28 +2274,32 @@
     }
     .cruise-ship-notice {
       position: absolute;
-      right: -12px;
+      right: -8px;
       top: 50%;
-      transform: translateX(100%) translateY(-50%);
+      transform: translateX(100%) translateY(-50%) rotate(28deg);
       display: flex;
       align-items: center;
-      gap: 4px;
-      white-space: nowrap;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(8, 145, 178, 0.85);
+      border-radius: 10px;
       pointer-events: none;
       animation: cruisePulse 2.5s ease-in-out infinite;
+      box-shadow: 0 3px 12px rgba(8, 145, 178, 0.4);
     }
     .cruise-notice-text {
-      font-size: 0.8em;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      font-size: 0.95em;
+      font-weight: 700;
+      color: white;
+      line-height: 1.15;
+      text-align: left;
     }
     .cruise-notice-ship {
-      font-size: 1.2em;
+      font-size: 1.5em;
     }
     @keyframes cruisePulse {
-      0%, 100% { transform: translateX(100%) translateY(-50%) scale(1); }
-      50% { transform: translateX(100%) translateY(-50%) scale(1.1); }
+      0%, 100% { transform: translateX(100%) translateY(-50%) rotate(28deg) scale(1); }
+      50% { transform: translateX(100%) translateY(-50%) rotate(28deg) scale(1.12); }
     }
     /* On narrower screens, put it below instead */
     @media (max-width: 900px) {
@@ -2303,9 +2307,8 @@
         position: relative;
         right: auto;
         top: auto;
-        transform: none;
-        justify-content: center;
-        margin-top: 4px;
+        transform: rotate(28deg);
+        margin-top: 8px;
         animation: cruisePulseMobile 2.5s ease-in-out infinite;
       }
       .browse-all-wrapper {
@@ -2313,8 +2316,8 @@
         justify-content: center;
       }
       @keyframes cruisePulseMobile {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
+        0%, 100% { transform: rotate(28deg) scale(1); }
+        50% { transform: rotate(28deg) scale(1.12); }
       }
     }
 
@@ -14996,7 +14999,8 @@
             <span id="browse-all-tours-text">🗂️ Browse All Tours</span>
           </button>
           <div class="cruise-ship-notice" id="cruise-ship-notice">
-            <span class="cruise-notice-text" id="cruise-ship-notice-text">Cruise Ship Friendly tours here!</span> <span class="cruise-notice-ship">🚢</span>
+            <span class="cruise-notice-ship">🚢</span>
+            <span class="cruise-notice-text" id="cruise-ship-notice-text">Cruise Ship<br>Friendly!</span>
           </div>
         </div>
         <button class="newcomer-info-btn" id="newcomer-info-btn" onclick="event.stopPropagation(); startModeWithAnimation('newcomer-info')">
@@ -16752,7 +16756,7 @@
         "ai_assistant_btn": "Talk To Our AI Assistant",
         "quick_decision_btn": "Quick Match",
         "browse_all_tours_btn": "Browse All Tours",
-        "cruise_ship_notice": "Cruise Ship Friendly tours available!",
+        "cruise_ship_notice": "Cruise Ship<br>Friendly!",
         "cruise_ship_filter": "Cruise Ship Friendly Only",
         "cruise_ship_friendly_title": "Cruise Ship Friendly Tours",
         "showing_cruise_ship_tours": "Showing tours suitable for cruise ship visitors",
@@ -16838,7 +16842,7 @@
         "ai_assistant_btn": "AIアシスタントに相談",
         "quick_decision_btn": "クイックマッチ",
         "browse_all_tours_btn": "すべてのツアーを閲覧",
-        "cruise_ship_notice": "クルーズ船対応ツアーあり！",
+        "cruise_ship_notice": "クルーズ船<br>対応！",
         "cruise_ship_filter": "クルーズ船対応のみ",
         "cruise_ship_friendly_title": "クルーズ船対応ツアー",
         "showing_cruise_ship_tours": "クルーズ船のお客様向けツアーを表示中",
@@ -16924,7 +16928,7 @@
         "ai_assistant_btn": "与AI助手交谈",
         "quick_decision_btn": "快速匹配",
         "browse_all_tours_btn": "浏览所有旅程",
-        "cruise_ship_notice": "邮轮友好旅程在这里！",
+        "cruise_ship_notice": "邮轮<br>友好！",
         "cruise_ship_filter": "仅显示邮轮友好旅程",
         "cruise_ship_friendly_title": "邮轮友好旅程",
         "showing_cruise_ship_tours": "显示适合邮轮游客的旅程",
@@ -17010,7 +17014,7 @@
         "ai_assistant_btn": "AI 어시스턴트와 대화하기",
         "quick_decision_btn": "빠른 매칭",
         "browse_all_tours_btn": "모든 투어 둘러보기",
-        "cruise_ship_notice": "크루즈선 이용 가능 투어 있음!",
+        "cruise_ship_notice": "크루즈선<br>이용 가능!",
         "cruise_ship_filter": "크루즈선 이용 가능만",
         "cruise_ship_friendly_title": "크루즈선 이용 가능 투어",
         "showing_cruise_ship_tours": "크루즈선 방문객에게 적합한 투어 표시 중",
@@ -17096,7 +17100,7 @@
         "ai_assistant_btn": "Mit KI-Assistent sprechen",
         "quick_decision_btn": "Schnelles Match",
         "browse_all_tours_btn": "Alle Touren durchsuchen",
-        "cruise_ship_notice": "Kreuzfahrt-freundliche Touren verfügbar!",
+        "cruise_ship_notice": "Kreuzfahrt-<br>freundlich!",
         "cruise_ship_filter": "Nur kreuzfahrt-freundliche",
         "cruise_ship_friendly_title": "Kreuzfahrt-freundliche Touren",
         "showing_cruise_ship_tours": "Touren für Kreuzfahrtgäste werden angezeigt",
@@ -17182,7 +17186,7 @@
         "ai_assistant_btn": "Parler à l'assistant IA",
         "quick_decision_btn": "Match Rapide",
         "browse_all_tours_btn": "Parcourir toutes les excursions",
-        "cruise_ship_notice": "Excursions adaptées aux croisiéristes !",
+        "cruise_ship_notice": "Croisiéristes<br>bienvenu !",
         "cruise_ship_filter": "Croisiéristes uniquement",
         "cruise_ship_friendly_title": "Excursions pour croisiéristes",
         "showing_cruise_ship_tours": "Affichage des excursions adaptées aux croisiéristes",
@@ -17268,7 +17272,7 @@
         "ai_assistant_btn": "AI सहायक से बात करें",
         "quick_decision_btn": "क्विक मैच",
         "browse_all_tours_btn": "सभी टूर ब्राउज़ करें",
-        "cruise_ship_notice": "क्रूज़ शिप अनुकूल टूर उपलब्ध!",
+        "cruise_ship_notice": "क्रूज़ शिप<br>अनुकूल!",
         "cruise_ship_filter": "केवल क्रूज़ शिप अनुकूल",
         "cruise_ship_friendly_title": "क्रूज़ शिप अनुकूल टूर",
         "showing_cruise_ship_tours": "क्रूज़ शिप यात्रियों के लिए उपयुक्त टूर दिखा रहे हैं",
@@ -17354,7 +17358,7 @@
         "ai_assistant_btn": "Hablar con el asistente de IA",
         "quick_decision_btn": "Match Rápido",
         "browse_all_tours_btn": "Explorar todos los tours",
-        "cruise_ship_notice": "¡Tours aptos para cruceros disponibles!",
+        "cruise_ship_notice": "Apto para<br>cruceros!",
         "cruise_ship_filter": "Solo aptos para cruceros",
         "cruise_ship_friendly_title": "Tours aptos para cruceros",
         "showing_cruise_ship_tours": "Mostrando tours aptos para visitantes de cruceros",
@@ -18203,7 +18207,7 @@
       // Update Cruise Ship Friendly notice and filter
       const cruiseNoticeText = document.getElementById('cruise-ship-notice-text');
       if (cruiseNoticeText && lang.cruise_ship_notice) {
-        cruiseNoticeText.textContent = lang.cruise_ship_notice;
+        cruiseNoticeText.innerHTML = lang.cruise_ship_notice;
       }
       const cruiseFilterLabel = document.getElementById('cruise-filter-label');
       if (cruiseFilterLabel && lang.cruise_ship_filter) {
@@ -30787,7 +30791,7 @@
       if (browseAllToursText) browseAllToursText.innerHTML = '🗂️ ' + dualAL(lang.browse_all_tours_btn, 'browse_all_tours_btn');
       
       const cruiseNoticeTextAL = document.getElementById('cruise-ship-notice-text');
-      if (cruiseNoticeTextAL && lang.cruise_ship_notice) cruiseNoticeTextAL.textContent = lang.cruise_ship_notice;
+      if (cruiseNoticeTextAL && lang.cruise_ship_notice) cruiseNoticeTextAL.innerHTML = lang.cruise_ship_notice;
       const cruiseFilterLabelAL = document.getElementById('cruise-filter-label');
       if (cruiseFilterLabelAL && lang.cruise_ship_filter) cruiseFilterLabelAL.textContent = lang.cruise_ship_filter;
       
