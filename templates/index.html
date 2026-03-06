@@ -20758,22 +20758,34 @@
     function loadCruiseShipFilteredTours() {
       homePageOffset = 0;
       homePageLoadedKeys = [];
-      homePageHasMore = false;
+      homePageHasMore = true;
       
-      fetch(`/api/tours?lang=${currentLanguage}`)
+      // Use the same lightweight /more-tours endpoint with cruise_ship_only filter
+      // This is much faster than /api/tours (1 image vs 5 per tour) and more reliable
+      const params = new URLSearchParams({
+        offset: 0,
+        count: 12,
+        exclude: '',
+        lang: currentLanguage,
+        cruise_ship_only: 'true'
+      });
+      
+      console.log('🚢 Loading cruise ship friendly tours via /more-tours...');
+      
+      fetch(`/more-tours?${params.toString()}`)
         .then(response => response.json())
-        .then(data => {
-          const allTours = data.tours || [];
-          const cruiseTours = allTours.filter(t => t.cruise_ship_friendly);
-          console.log(`🚢 Found ${cruiseTours.length} cruise ship friendly tours out of ${allTours.length}`);
+        .then(tours => {
+          console.log(`🚢 Loaded ${tours.length} cruise ship friendly tours`);
           
-          homePageOffset = cruiseTours.length;
-          homePageLoadedKeys = cruiseTours.map(t => t.key);
-          displayFeaturedTours(cruiseTours, false);
+          homePageOffset = tours.length;
+          // homePageLoadedKeys will be set by displayFeaturedTours
+          displayFeaturedTours(tours, false); // false = replace
+          
+          // Enable infinite scroll if we got a full page
+          homePageHasMore = tours.length >= 12;
           
           const subtitle = document.getElementById('home-tours-subtitle');
           if (subtitle) {
-            const lang = uiTranslations[currentLanguage] || uiTranslations['en'];
             subtitle.innerHTML = '🚢 ' + tDual('showing_cruise_ship_tours');
           }
           
@@ -20781,6 +20793,9 @@
           if (title) {
             title.innerHTML = '🚢 ' + tDual('cruise_ship_friendly_title');
           }
+          
+          // Auto-fill viewport if needed
+          scheduleViewportFillCheck();
         })
         .catch(error => {
           console.error('Error loading cruise ship friendly tours:', error);
@@ -26174,6 +26189,11 @@
       params.append('offset', homePageOffset);
       params.append('count', 12);
       params.append('exclude', homePageLoadedKeys.join(','));
+      
+      // Pass cruise ship filter if active
+      if (window._cruiseShipMode) {
+        params.append('cruise_ship_only', 'true');
+      }
       
       Object.entries(activeFilters).forEach(([key, value]) => {
         params.append(key, value);

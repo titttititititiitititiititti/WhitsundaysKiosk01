@@ -5053,7 +5053,10 @@ def filter_tours():
     equipment = request.args.get('equipment', '')
     company = request.args.get('company', '')
     
-    print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}")
+    # Cruise ship friendly filter
+    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true'
+    
+    print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}, cruise_ship_only={cruise_ship_only}")
     
     # Get referral account for filtering (if user came from QR code)
     referral_account = get_referral_account()
@@ -5061,6 +5064,11 @@ def filter_tours():
     
     # Load all tours in the specified language (filtered by account)
     tours = load_all_tours(language, preview_account=active_account)
+    
+    # Apply cruise ship friendly filter if requested
+    if cruise_ship_only:
+        tours = [t for t in tours if t.get('cruise_ship_friendly')]
+        print(f"[FILTER] Cruise ship filter applied: {len(tours)} friendly tours")
     
     # Build criteria dict
     criteria = {}
@@ -5120,12 +5128,21 @@ def more_tours():
     # Remove empty string from exclude set if present
     exclude_keys.discard('')
     
+    # Cruise ship friendly filter
+    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true'
+    
     # Get referral account for filtering (if user came from QR code)
     referral_account = get_referral_account()
     active_account = referral_account or get_active_account()
     
     tours = load_all_tours(language, preview_account=active_account)
-    total_count = len(tours)  # Total available tours
+    
+    # Apply cruise ship friendly filter if requested
+    if cruise_ship_only:
+        tours = [t for t in tours if t.get('cruise_ship_friendly')]
+        print(f"[MORE-TOURS] Cruise ship filter: {len(tours)} friendly tours")
+    
+    total_count = len(tours)  # Total available tours (after cruise filter)
     
     # Sort ALL tours first (before exclusion) for consistent ordering
     promotion_order = {'popular': 0, 'featured': 1, 'best_value': 2, None: 3}
@@ -5146,7 +5163,7 @@ def more_tours():
             break
         selected.append(tour)
     
-    print(f"[MORE-TOURS] Total: {total_count}, Excluded: {len(exclude_keys)}, Selected: {len(selected)}")
+    print(f"[MORE-TOURS] Total: {total_count}, Excluded: {len(exclude_keys)}, Selected: {len(selected)}, CruiseOnly: {cruise_ship_only}")
     
     # Load images for each selected tour (lazy loading, with account-specific hidden images filtered)
     for tour in selected:
