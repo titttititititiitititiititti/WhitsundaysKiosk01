@@ -1934,9 +1934,37 @@ def get_analytics_summary(account=None):
         acct_settings = load_account_settings(active_account)
         click_overrides = acct_settings.get('click_count_overrides', {})
         if 'book_now' in click_overrides:
-            book_now_clicks = click_overrides['book_now']
+            override_total = click_overrides['book_now']
+            raw_total = book_now_clicks
+            # Scale the by-source breakdown proportionally so it adds up to the override
+            if raw_total > 0 and raw_total != override_total:
+                scale = override_total / raw_total
+                scaled = {k: max(0, round(v * scale)) for k, v in book_now_by_source.items()}
+                # Adjust rounding so the sum matches exactly
+                diff = override_total - sum(scaled.values())
+                if diff != 0 and scaled:
+                    top_key = max(scaled, key=scaled.get)
+                    scaled[top_key] = max(0, scaled[top_key] + diff)
+                book_now_by_source = scaled
+            elif raw_total == 0 and override_total > 0:
+                book_now_by_source = {'unknown': override_total}
+            book_now_clicks = override_total
         if 'send_to_phone' in click_overrides:
-            send_to_phone_clicks = click_overrides['send_to_phone']
+            override_total = click_overrides['send_to_phone']
+            raw_total = send_to_phone_clicks
+            # Scale the by-source breakdown proportionally so it adds up to the override
+            if raw_total > 0 and raw_total != override_total:
+                scale = override_total / raw_total
+                scaled = {k: max(0, round(v * scale)) for k, v in send_to_phone_by_source.items()}
+                # Adjust rounding so the sum matches exactly
+                diff = override_total - sum(scaled.values())
+                if diff != 0 and scaled:
+                    top_key = max(scaled, key=scaled.get)
+                    scaled[top_key] = max(0, scaled[top_key] + diff)
+                send_to_phone_by_source = scaled
+            elif raw_total == 0 and override_total > 0:
+                send_to_phone_by_source = {'unknown': override_total}
+            send_to_phone_clicks = override_total
     
     # Calculate QR conversion rate
     qr_conversion_rate = 0
