@@ -2286,6 +2286,7 @@
       pointer-events: none;
       animation: cruisePulse 2.5s ease-in-out infinite;
       box-shadow: 0 3px 12px rgba(8, 145, 178, 0.5);
+      z-index: 9999;
     }
     .cruise-notice-text {
       font-size: 0.95em;
@@ -2308,50 +2309,51 @@
       }
     }
 
-    /* Cruise Ship Filter Toggle (inside Browse All Tours mode) */
+    /* Cruise Ship Filter Toggle (inside duration grid) */
     .cruise-ship-filter-toggle {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 32px;
-      font-size: 1.3em;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 28px;
+      font-size: 1.15em;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.9);
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.25) 0%, rgba(6, 116, 145, 0.3) 100%);
-      border: 2.5px solid rgba(8, 145, 178, 0.5);
-      border-radius: 40px;
+      color: white;
+      background: #e67e22;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(8, 145, 178, 0.2);
+      grid-column: 1 / -1;
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
     }
     .cruise-ship-filter-toggle:hover {
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.35) 0%, rgba(6, 116, 145, 0.4) 100%);
-      border-color: rgba(8, 145, 178, 0.8);
+      background: #d35400;
+      border-color: rgba(255, 255, 255, 0.8);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(8, 145, 178, 0.35);
+      box-shadow: 0 6px 20px rgba(230, 126, 34, 0.5);
     }
     .cruise-ship-filter-toggle.active {
-      background: linear-gradient(135deg, rgba(8, 145, 178, 0.5) 0%, rgba(6, 116, 145, 0.6) 100%);
-      border-color: #0891b2;
-      color: white;
-      box-shadow: 0 4px 20px rgba(8, 145, 178, 0.5), 0 0 30px rgba(8, 145, 178, 0.2);
+      background: #c0392b;
+      border-color: white;
+      box-shadow: 0 4px 20px rgba(192, 57, 43, 0.5);
     }
     .cruise-ship-filter-toggle .toggle-dot {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2.5px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.6);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75em;
+      font-size: 0.7em;
     }
     .cruise-ship-filter-toggle.active .toggle-dot {
-      background: #0891b2;
+      background: white;
       border-color: white;
+      color: #c0392b;
     }
 
     .newcomer-info-btn {
@@ -15607,6 +15609,11 @@
               <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')" id="home-no-pref-duration-btn">
                 🤷 <span id="home-no-pref-duration-text">No preference</span>
               </button>
+              <button class="cruise-ship-filter-toggle" id="cruise-ship-filter-btn" onclick="event.stopPropagation(); toggleCruiseShipFilter()">
+                <span class="toggle-dot" id="cruise-filter-dot">✓</span>
+                <span>🚢</span>
+                <span id="cruise-filter-label">Cruise Ship Friendly Only</span>
+              </button>
           </div>
           </div>
 
@@ -15702,14 +15709,6 @@
           <p class="section-subtitle" id="home-tours-subtitle" style="color: rgba(255,255,255,0.9);">
           </p>
           
-          <!-- Cruise Ship Friendly Filter Toggle -->
-          <div id="cruise-ship-filter-container" style="text-align: center; display: none;">
-            <button class="cruise-ship-filter-toggle" id="cruise-ship-filter-btn" onclick="toggleCruiseShipFilter()">
-              <span class="toggle-dot" id="cruise-filter-dot">✓</span>
-              <span>🚢</span>
-              <span id="cruise-filter-label">Cruise Ship Friendly Only</span>
-            </button>
-          </div>
 
           <div class="featured-grid" id="featured-grid">
             <!-- Featured tours will be populated here -->
@@ -25219,10 +25218,6 @@
       homePageOffset = 0;
       homePageLoadedKeys = [];
       homePageHasMore = true;
-      
-      // Show cruise ship filter toggle
-      const cruiseFilterContainer = document.getElementById('cruise-ship-filter-container');
-      if (cruiseFilterContainer) cruiseFilterContainer.style.display = 'block';
       
       fetch(`/more-tours?offset=0&count=12&exclude=&lang=${currentLanguage}`)
         .then(response => response.json())
