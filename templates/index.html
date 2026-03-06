@@ -2319,24 +2319,27 @@
       font-size: 1.15em;
       font-weight: 700;
       color: white;
-      background: #27ae60;
+      background: #e67e22;
       border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
       grid-column: 1 / -1;
-      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
     }
     .cruise-ship-filter-toggle:hover {
-      background: #219a52;
+      background: #d35400;
       border-color: rgba(255, 255, 255, 0.8);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+      box-shadow: 0 6px 20px rgba(230, 126, 34, 0.5);
     }
     .cruise-ship-filter-toggle.active {
       background: #27ae60;
       border-color: white;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(39, 174, 96, 0.4);
+    }
+    .cruise-ship-filter-toggle.active:hover {
+      background: #219a52;
     }
     .cruise-ship-filter-toggle .toggle-dot {
       width: 24px;
@@ -25213,7 +25216,72 @@
       // Listen to window scroll (for mobile and when home page fills viewport)
       window.addEventListener('scroll', checkScroll);
       
-      console.log('Infinite scroll setup complete (window + home page)');
+      // FALLBACK: IntersectionObserver on the loading indicator
+      // This catches cases where scroll events don't fire on certain screens/browsers
+      const loadingIndicator = document.getElementById('loading-indicator');
+      if (loadingIndicator && window.IntersectionObserver) {
+        const sentinel = document.createElement('div');
+        sentinel.id = 'infinite-scroll-sentinel';
+        sentinel.style.height = '1px';
+        sentinel.style.width = '100%';
+        // Insert sentinel after the featured grid
+        const grid = document.getElementById('featured-grid');
+        if (grid && grid.parentNode) {
+          grid.parentNode.insertBefore(sentinel, loadingIndicator);
+        }
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !isLoadingMoreTours && homePageHasMore) {
+              console.log('🔄 IntersectionObserver triggered - loading more tours');
+              loadMoreHomePageTours();
+            }
+          });
+        }, {
+          root: null, // viewport
+          rootMargin: '1200px 0px', // trigger 1200px before element is visible
+          threshold: 0
+        });
+        
+        observer.observe(sentinel);
+        console.log('IntersectionObserver sentinel set up');
+      }
+      
+      // FALLBACK 2: Periodic check every 3 seconds for stuck scroll situations
+      setInterval(() => {
+        if (isLoadingMoreTours || !homePageHasMore) return;
+        if (homePage.style.display === 'none' && !homePage.classList.contains('active')) return;
+        
+        // Check if we should load more (content doesn't fill viewport or user is near bottom)
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
+        
+        if (scrollPosition >= scrollHeight - 1500) {
+          console.log('🔄 Periodic check triggered - loading more tours (scrollPos:', scrollPosition, 'scrollHeight:', scrollHeight, ')');
+          loadMoreHomePageTours();
+        }
+      }, 3000);
+      
+      console.log('Infinite scroll setup complete (window + home page + IntersectionObserver + periodic)');
+    }
+    
+    // Auto-fill viewport check: if tours don't fill the screen, load more automatically
+    function scheduleViewportFillCheck() {
+      setTimeout(() => {
+        if (isLoadingMoreTours || !homePageHasMore) return;
+        const homePage = document.querySelector('.home-page');
+        if (!homePage || (homePage.style.display === 'none' && !homePage.classList.contains('active'))) return;
+        
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
+        
+        // If the page content barely extends beyond the viewport (or doesn't),
+        // the user can't scroll to trigger loading more tours
+        if (scrollPosition >= scrollHeight - 1500) {
+          console.log('🔄 Viewport not filled - auto-loading more tours (scrollPos:', scrollPosition, 'docHeight:', scrollHeight, ')');
+          loadMoreHomePageTours();
+        }
+      }, 500); // Small delay to let DOM render
     }
     
     // Load initial featured tours for home page
@@ -25241,6 +25309,9 @@
           if (subtitle) {
             subtitle.innerHTML = tDual('showing_all_tours');
           }
+          
+          // Auto-fill viewport: if page doesn't need scrolling yet, load more
+          scheduleViewportFillCheck();
           
           // Also fetch ALL tours for map view (with location data)
           console.log('📡 Also fetching all tours for map view');
@@ -26147,6 +26218,9 @@
           }
           
           isLoadingMoreTours = false;
+          
+          // Auto-fill viewport: if page still doesn't need scrolling, load more
+          scheduleViewportFillCheck();
         })
         .catch(error => {
           console.error('Error loading more tours:', error);
