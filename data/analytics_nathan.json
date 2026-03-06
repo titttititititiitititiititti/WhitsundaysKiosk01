@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-06T12:57:16.440282",
+  "last_updated": "2026-03-06T12:57:21.881421",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -46618,6 +46618,11 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-06T10:08:51.661516",
+          "data": {}
         }
       ],
       "language": "en",
@@ -46627,7 +46632,9 @@
         "Northern Exposure Eco Adventure"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-06T10:08:51.661654",
+      "duration_seconds": 3796.702635
     },
     {
       "session_id": "session_aa41540ea149_1772755893",
@@ -46712,6 +46719,154 @@
       "duration_seconds": 8.157583
     },
     {
+      "session_id": "session_60f8a57076e2_1772762859",
+      "account": "nathan",
+      "started_at": "2026-03-06T12:07:39.187695",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-06T12:07:39.187695",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-06T12:13:44.586537",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-06T12:13:44.586537",
+      "duration_seconds": 365.398842
+    },
+    {
+      "session_id": "session_2fb04f49a55e_1772763667",
+      "account": "nathan",
+      "started_at": "2026-03-06T12:21:07.919299",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-06T12:21:07.919299",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-06T12:21:19.051956",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:24.767470",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:28.426214",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:32.562974",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:40.015982",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:44.981035",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:21:50.182270",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:22:01.431566",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:22:01.975660",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-06T12:22:02.512094",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-06T12:22:24.483094",
+          "data": {
+            "tour_name": "Vuelo panor\u00e1mico de 60 minutos a las Whitsunday",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-06T12:23:50.865163",
+          "data": {
+            "tour_name": "Crucero por la ma\u00f1ana o por la tarde en Whitehaven Beach",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Crucero por la ma\u00f1ana o por la tarde en Whitehaven Beach"
+      ],
+      "tours_booked": [
+        "Vuelo panor\u00e1mico de 60 minutos a las Whitsunday"
+      ],
+      "chat_messages": []
+    },
+    {
       "session_id": "session_28fb1bb69688_1772764240",
       "account": "nathan",
       "started_at": "2026-03-06T12:30:41.025086",
@@ -46751,6 +46906,33 @@
       "chat_messages": [],
       "ended_at": "2026-03-06T12:32:02.862656",
       "duration_seconds": 81.83757
+    },
+    {
+      "session_id": "session_55301130508d_1772764490",
+      "account": "nathan",
+      "started_at": "2026-03-06T12:34:50.443951",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-06T12:34:50.443951",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-06T12:56:31.261289",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-06T12:56:31.261289",
+      "duration_seconds": 1300.817338
     },
     {
       "session_id": "session_becef6d0b28e_1772764517",
