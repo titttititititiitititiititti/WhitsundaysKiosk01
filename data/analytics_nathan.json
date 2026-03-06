@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-06T12:57:21.881421",
+  "last_updated": "2026-03-06T12:57:31.070758",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -44879,13 +44879,55 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:42:37.086517",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-03T09:44:07.901563",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:46.930003",
+          "data": {
+            "tour_name": "Hamilton Island Freestyle",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-03T09:44:50.855133",
+          "data": {
+            "tour_name": "Estilo libre de la isla de Hamilton",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-03T09:49:25.563317",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Hamilton Island Freestyle",
+        "Estilo libre de la isla de Hamilton"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-03T09:49:25.563317",
+      "duration_seconds": 2751.144249
     },
     {
       "session_id": "session_a135e9845520_1772495409",
@@ -46618,11 +46660,6 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-06T10:08:51.661516",
-          "data": {}
         }
       ],
       "language": "en",
@@ -46632,9 +46669,7 @@
         "Northern Exposure Eco Adventure"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-06T10:08:51.661654",
-      "duration_seconds": 3796.702635
+      "chat_messages": []
     },
     {
       "session_id": "session_aa41540ea149_1772755893",
@@ -46865,6 +46900,47 @@
         "Vuelo panor\u00e1mico de 60 minutos a las Whitsunday"
       ],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_5ecbeec8fa3f_1772764234",
+      "account": "nathan",
+      "started_at": "2026-03-06T12:30:34.767216",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-06T12:30:34.767216",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-06T12:30:37.875738",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-06T12:30:39.778198",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-06T12:36:01.858134",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-06T12:36:01.858134",
+      "duration_seconds": 327.090918
     },
     {
       "session_id": "session_28fb1bb69688_1772764240",
