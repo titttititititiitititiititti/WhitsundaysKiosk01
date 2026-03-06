@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-06T09:27:46.653246",
+  "last_updated": "2026-03-06T10:16:09.066005",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -46618,6 +46618,11 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-06T10:08:51.661516",
+          "data": {}
         }
       ],
       "language": "en",
@@ -46626,6 +46631,49 @@
         "Southern Lights",
         "Northern Exposure Eco Adventure"
       ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-06T10:08:51.661654",
+      "duration_seconds": 3796.702635
+    },
+    {
+      "session_id": "session_aa41540ea149_1772755893",
+      "account": "nathan",
+      "started_at": "2026-03-06T10:11:33.374078",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-06T10:11:33.374078",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-06T10:12:09.781719",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-06T10:12:10.860113",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-06T10:12:11.216031",
+          "data": {
+            "mode": "map-view"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
