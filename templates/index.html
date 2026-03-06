@@ -20758,48 +20758,51 @@
     function loadCruiseShipFilteredTours() {
       homePageOffset = 0;
       homePageLoadedKeys = [];
-      homePageHasMore = true;
+      homePageHasMore = false; // No infinite scroll for cruise - we load all at once
       
-      // Use the same lightweight /more-tours endpoint with cruise_ship_only filter
-      // This is much faster than /api/tours (1 image vs 5 per tour) and more reliable
-      const params = new URLSearchParams({
-        offset: 0,
-        count: 12,
-        exclude: '',
-        lang: currentLanguage,
-        cruise_ship_only: 'true'
+      console.log('🚢 Loading cruise ship friendly tours...');
+      
+      // Step 1: Fetch the list of cruise-ship-friendly tour keys from dedicated endpoint
+      // Step 2: Fetch all tours and filter client-side using those keys
+      // This is robust even if the main tour endpoints haven't been updated
+      Promise.all([
+        fetch(`/api/cruise-ship-friendly-keys`).then(r => r.json()).catch(() => ({ keys: [] })),
+        fetch(`/more-tours?offset=0&count=200&exclude=&lang=${currentLanguage}`).then(r => r.json()).catch(() => [])
+      ]).then(([keysData, allTours]) => {
+        const cruiseKeys = new Set(keysData.keys || []);
+        console.log(`🚢 Cruise-friendly keys from server: ${cruiseKeys.size}`);
+        console.log(`🚢 Total tours loaded: ${allTours.length}`);
+        
+        // Filter tours using the dedicated keys list (most reliable)
+        let cruiseTours = [];
+        if (cruiseKeys.size > 0) {
+          cruiseTours = allTours.filter(t => cruiseKeys.has(t.key));
+        }
+        
+        // Fallback: if keys endpoint didn't work, try the cruise_ship_friendly field
+        if (cruiseTours.length === 0) {
+          cruiseTours = allTours.filter(t => t.cruise_ship_friendly);
+          console.log(`🚢 Fallback to cruise_ship_friendly field: ${cruiseTours.length} tours`);
+        }
+        
+        console.log(`🚢 Displaying ${cruiseTours.length} cruise ship friendly tours`);
+        
+        homePageOffset = cruiseTours.length;
+        homePageLoadedKeys = cruiseTours.map(t => t.key);
+        displayFeaturedTours(cruiseTours, false); // false = replace
+        
+        const subtitle = document.getElementById('home-tours-subtitle');
+        if (subtitle) {
+          subtitle.innerHTML = '🚢 ' + tDual('showing_cruise_ship_tours');
+        }
+        
+        const title = document.getElementById('home-tours-title');
+        if (title) {
+          title.innerHTML = '🚢 ' + tDual('cruise_ship_friendly_title');
+        }
+      }).catch(error => {
+        console.error('Error loading cruise ship friendly tours:', error);
       });
-      
-      console.log('🚢 Loading cruise ship friendly tours via /more-tours...');
-      
-      fetch(`/more-tours?${params.toString()}`)
-        .then(response => response.json())
-        .then(tours => {
-          console.log(`🚢 Loaded ${tours.length} cruise ship friendly tours`);
-          
-          homePageOffset = tours.length;
-          // homePageLoadedKeys will be set by displayFeaturedTours
-          displayFeaturedTours(tours, false); // false = replace
-          
-          // Enable infinite scroll if we got a full page
-          homePageHasMore = tours.length >= 12;
-          
-          const subtitle = document.getElementById('home-tours-subtitle');
-          if (subtitle) {
-            subtitle.innerHTML = '🚢 ' + tDual('showing_cruise_ship_tours');
-          }
-          
-          const title = document.getElementById('home-tours-title');
-          if (title) {
-            title.innerHTML = '🚢 ' + tDual('cruise_ship_friendly_title');
-          }
-          
-          // Auto-fill viewport if needed
-          scheduleViewportFillCheck();
-        })
-        .catch(error => {
-          console.error('Error loading cruise ship friendly tours:', error);
-        });
     }
 
     // ========== NEWCOMER INFO PAGE FUNCTIONS ==========

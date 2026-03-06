@@ -3477,6 +3477,19 @@ def set_tour_promotion():
     
     return jsonify({'success': True, 'level': level})
 
+@app.route('/api/cruise-ship-friendly-keys')
+def api_cruise_ship_friendly_keys():
+    """Return list of cruise-ship-friendly tour keys for the active kiosk account.
+    This lightweight endpoint lets the frontend filter tours client-side even if
+    the main tour endpoints haven't been restarted yet."""
+    active_account = get_active_account()
+    if active_account:
+        settings = load_account_settings(active_account)
+        keys = settings.get('cruise_ship_friendly_tours', [])
+    else:
+        keys = []
+    return jsonify({'keys': keys})
+
 @app.route('/admin/agent/api/toggle-cruise-friendly', methods=['POST'])
 def toggle_cruise_friendly():
     """Toggle a tour's cruise ship friendly status"""
