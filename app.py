@@ -1927,11 +1927,16 @@ def get_analytics_summary(account=None):
         for conversion in s.get('qr_conversions', []):
             qr_conversions.append(conversion)
     
-    # One-time historical adjustment: 6 send-to-phone clicks before tracking was added
-    # 2 from Quick Match (swipe mode), 4 from Browse All Tours (tour-detail)
-    send_to_phone_clicks += 6
-    send_to_phone_by_source['swipe'] = send_to_phone_by_source.get('swipe', 0) + 2
-    send_to_phone_by_source['tour-detail'] = send_to_phone_by_source.get('tour-detail', 0) + 4
+    # Apply click count overrides from account settings
+    # These lock in known-correct totals that survive analytics data churn from git syncs
+    active_account = get_active_account()
+    if active_account:
+        acct_settings = load_account_settings(active_account)
+        click_overrides = acct_settings.get('click_count_overrides', {})
+        if 'book_now' in click_overrides:
+            book_now_clicks = click_overrides['book_now']
+        if 'send_to_phone' in click_overrides:
+            send_to_phone_clicks = click_overrides['send_to_phone']
     
     # Calculate QR conversion rate
     qr_conversion_rate = 0
