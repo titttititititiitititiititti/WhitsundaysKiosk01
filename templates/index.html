@@ -2319,24 +2319,24 @@
       font-size: 1.15em;
       font-weight: 700;
       color: white;
-      background: #e67e22;
+      background: #27ae60;
       border: 2px solid rgba(255, 255, 255, 0.5);
       border-radius: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
       grid-column: 1 / -1;
-      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
     }
     .cruise-ship-filter-toggle:hover {
-      background: #d35400;
+      background: #219a52;
       border-color: rgba(255, 255, 255, 0.8);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(230, 126, 34, 0.5);
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
     }
     .cruise-ship-filter-toggle.active {
-      background: #c0392b;
+      background: #27ae60;
       border-color: white;
-      box-shadow: 0 4px 20px rgba(192, 57, 43, 0.5);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(39, 174, 96, 0.4);
     }
     .cruise-ship-filter-toggle .toggle-dot {
       width: 24px;
@@ -2353,7 +2353,7 @@
     .cruise-ship-filter-toggle.active .toggle-dot {
       background: white;
       border-color: white;
-      color: #c0392b;
+      color: #27ae60;
     }
 
     .newcomer-info-btn {
@@ -15610,7 +15610,7 @@
                 🤷 <span id="home-no-pref-duration-text">No preference</span>
               </button>
               <button class="cruise-ship-filter-toggle" id="cruise-ship-filter-btn" onclick="event.stopPropagation(); toggleCruiseShipFilter()">
-                <span class="toggle-dot" id="cruise-filter-dot">✓</span>
+                <span class="toggle-dot" id="cruise-filter-dot">✕</span>
                 <span>🚢</span>
                 <span id="cruise-filter-label">Cruise Ship Friendly Only</span>
               </button>
@@ -20669,6 +20669,8 @@
       // Reset cruise ship filter UI
       const cruiseFilterBtn = document.getElementById('cruise-ship-filter-btn');
       if (cruiseFilterBtn) cruiseFilterBtn.classList.remove('active');
+      const cruiseFilterDot = document.getElementById('cruise-filter-dot');
+      if (cruiseFilterDot) cruiseFilterDot.textContent = '✕';
       
       // Add to navigation history
       addToNavigationHistory('home');
@@ -20735,16 +20737,17 @@
     function toggleCruiseShipFilter() {
       window._cruiseShipMode = !window._cruiseShipMode;
       const btn = document.getElementById('cruise-ship-filter-btn');
+      const dot = document.getElementById('cruise-filter-dot');
       
       if (window._cruiseShipMode) {
         btn.classList.add('active');
+        if (dot) dot.textContent = '✓';
         console.log('🚢 Cruise Ship filter ON');
-        // Filter to only cruise-ship-friendly tours
         loadCruiseShipFilteredTours();
       } else {
         btn.classList.remove('active');
+        if (dot) dot.textContent = '✕';
         console.log('🚢 Cruise Ship filter OFF');
-        // Reload all tours
         loadInitialFeaturedTours();
       }
     }
