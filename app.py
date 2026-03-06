@@ -672,25 +672,52 @@ def get_account_config_dir(username):
     return f'config/accounts/{username}'
 
 def load_account_settings(username):
-    """Load settings for a specific account"""
+    """Load settings for a specific account.
+    
+    Merges git-synced defaults UNDER local settings so that:
+    - Local settings take precedence for keys that exist in both
+    - New keys added to defaults (e.g. cruise_ship_friendly_tours) propagate
+      automatically to kiosks that have an older local copy
+    """
     config_dir = get_account_config_dir(username)
     settings_file = os.path.join(config_dir, 'settings.json')
+    defaults_file = f'config/defaults/{username}/settings.json'
     
-    # First, check if account-specific settings exist
+    local_settings = None
+    default_settings = None
+    
+    # Load local (gitignored) settings if they exist
     if os.path.exists(settings_file):
         with open(settings_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            local_settings = json.load(f)
     
-    # Second, check for default settings (for demo accounts on Render/cloud)
-    defaults_file = f'config/defaults/{username}/settings.json'
+    # Load git-synced default settings if they exist
     if os.path.exists(defaults_file):
-        # Only log once per session to reduce spam
+        with open(defaults_file, 'r', encoding='utf-8') as f:
+            default_settings = json.load(f)
+    
+    # Merge: defaults as base, local overrides on top
+    if local_settings and default_settings:
+        # Start with defaults, then overlay local settings
+        # This ensures new keys from defaults (like cruise_ship_friendly_tours)
+        # are available even if the local file is stale
+        merged = {**default_settings, **local_settings}
+        
+        # Special merge for keys that might only exist in defaults
+        # (local file was created before these keys were added)
+        for key in default_settings:
+            if key not in local_settings:
+                merged[key] = default_settings[key]
+        
+        return merged
+    elif local_settings:
+        return local_settings
+    elif default_settings:
         log_key = f'_logged_settings_{username}'
         if not getattr(load_account_settings, log_key, False):
             print(f"[CONFIG] Using default settings for '{username}'")
             setattr(load_account_settings, log_key, True)
-        with open(defaults_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        return default_settings
     
     # Return default settings for new accounts
     return {
