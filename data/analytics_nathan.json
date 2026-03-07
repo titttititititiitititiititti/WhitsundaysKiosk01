@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-08T09:01:47.365403",
+  "last_updated": "2026-03-08T09:02:10.647018",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -47658,20 +47658,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-06T15:26:01.277656",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-06T15:26:01.277656",
-      "duration_seconds": 4582.001438
+      "chat_messages": []
     },
     {
       "session_id": "session_fbd30f18a552_1772775115",
@@ -48422,6 +48415,232 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_25920282116f_1772919319",
+      "account": "nathan",
+      "started_at": "2026-03-08T07:35:19.452038",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-08T07:35:19.452038",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-08T07:35:20.932124",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-08T07:35:25.673627",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T07:36:38.667997",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-08T07:41:56.346190",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-08T07:41:56.346190",
+      "duration_seconds": 396.894152
+    },
+    {
+      "session_id": "session_8d6913b053c8_1772920529",
+      "account": "nathan",
+      "started_at": "2026-03-08T07:55:29.724179",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-08T07:55:29.724179",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-08T07:55:30.946031",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-08T07:55:31.846760",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T07:55:34.593310",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T07:55:47.671538",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-08T07:56:30.729079",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-08T07:56:30.729079",
+      "duration_seconds": 61.0049
+    },
+    {
+      "session_id": "session_e29ef4f64f2c_1772924008",
+      "account": "nathan",
+      "started_at": "2026-03-08T08:53:28.691243",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-08T08:53:28.691243",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-08T08:53:29.936012",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-08T08:53:39.025994",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T08:55:19.693107",
+          "data": {
+            "tour_name": "Eureka II",
+            "company": "Airlie Beach Tourism",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-08T08:55:25.191523",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Eureka II"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-08T08:55:25.192680",
+      "duration_seconds": 116.501437
+    },
+    {
+      "session_id": "session_4238f6ebc537_1772924128",
+      "account": "nathan",
+      "started_at": "2026-03-08T08:55:28.505388",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-08T08:55:28.505388",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-08T08:55:29.712000",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-08T08:55:31.769195",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T08:59:10.566052",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-08T09:00:52.091904",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-08T09:01:01.139351",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-08T09:01:01.139351",
+      "duration_seconds": 332.633963
     }
   ]
 }
