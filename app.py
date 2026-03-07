@@ -1438,28 +1438,32 @@ def load_tour_images(tour, max_images=5, account_username=None):
         # Parse comma-separated image URLs from CSV
         image_list = [img.strip() for img in csv_images.split(',') if img.strip()]
         if image_list:
-            # Normalize URLs - handles both local paths AND remote URLs (http/https)
-            gallery = []
-            for img in image_list[:max_images]:
+            # Normalize ALL URLs first (don't limit yet - filter hidden first)
+            all_normalized = []
+            for img in image_list:
                 normalized = normalize_image_url(img)
                 if normalized:
-                    gallery.append(normalized)
+                    all_normalized.append(normalized)
+            
+            # Filter out hidden images BEFORE applying max_images limit
+            if account_username:
+                all_normalized = filter_hidden_images(all_normalized, key, account_username)
+            
+            # NOW apply max_images limit on the visible images
+            gallery = all_normalized[:max_images]
             
             # Get thumbnail from image_url field or first gallery image
             thumb_path = normalize_image_url(tour.get('image_url', ''))
+            # Check if thumbnail is hidden
+            if thumb_path and account_username:
+                thumb_visible = filter_hidden_images([thumb_path], key, account_username)
+                if not thumb_visible:
+                    thumb_path = None  # Thumbnail was hidden
             if not thumb_path and gallery:
                 thumb_path = gallery[0]
             
-            # Filter out hidden images for this account
+            # Add account-specific extra images
             if account_username:
-                gallery = filter_hidden_images(gallery, key, account_username)
-                # Update thumbnail if it was filtered out
-                if thumb_path and thumb_path not in gallery and gallery:
-                    thumb_path = gallery[0]
-                elif thumb_path and thumb_path not in gallery:
-                    thumb_path = None
-                
-                # Add account-specific extra images
                 settings = load_account_settings(account_username)
                 extra = settings.get('extra_images', {}).get(key, [])
                 for img_path in extra:
@@ -1472,7 +1476,11 @@ def load_tour_images(tour, max_images=5, account_username=None):
     
     # Fallback: find images by scanning folder
     thumb_path = find_thumbnail(company, tid, name)
-    gallery = [thumb_path] if thumb_path else []
+    
+    # Collect ALL images from folder first (don't limit yet)
+    all_folder_images = []
+    if thumb_path:
+        all_folder_images.append(thumb_path)
     
     # Look for more images in the tour's image folder
     image_folder = f"static/tour_images/{company}/{tid}"
@@ -1480,40 +1488,39 @@ def load_tour_images(tour, max_images=5, account_username=None):
         extensions = ['.jpg', '.jpeg', '.png', '.webp', '.JPG', '.JPEG', '.PNG', '.WEBP']
         try:
             for filename in sorted(os.listdir(image_folder)):  # Sort for consistent order
-                if len(gallery) >= max_images:
-                    break
                 # Skip thumbnail since we already have it
                 if 'thumbnail' in filename.lower():
                     continue
                 # Check if it's an image file
                 if any(filename.endswith(ext) for ext in extensions):
                     img_url = '/' + os.path.join(image_folder, filename).replace('\\', '/')
-                    if img_url not in gallery:
-                        gallery.append(img_url)
+                    if img_url not in all_folder_images:
+                        all_folder_images.append(img_url)
         except Exception as e:
-            # print(f"[LAZY-IMAGES] Error reading {image_folder}: {e}")  # Disabled for cleaner logs
             pass  # Silently ignore errors reading image folder
     
-    # If we still don't have enough images, just use what we have
-    if not gallery and thumb_path:
-        gallery = [thumb_path]
-    
-    # Filter out hidden images for this account
+    # Filter out hidden images BEFORE applying max_images limit
     if account_username:
-        gallery = filter_hidden_images(gallery, key, account_username)
-        # Update thumbnail if it was filtered out
-        if thumb_path and thumb_path not in gallery and gallery:
-            thumb_path = gallery[0]
-        elif thumb_path and thumb_path not in gallery:
-            thumb_path = None
+        all_folder_images = filter_hidden_images(all_folder_images, key, account_username)
+        # Check if thumbnail was hidden
+        if thumb_path and thumb_path not in all_folder_images:
+            thumb_path = all_folder_images[0] if all_folder_images else None
         
         # Add account-specific extra images
         settings = load_account_settings(account_username)
         extra = settings.get('extra_images', {}).get(key, [])
         for img_path in extra:
             full_path = '/' + img_path.replace('\\', '/')
-            if full_path not in gallery:
-                gallery.append(full_path)
+            if full_path not in all_folder_images:
+                all_folder_images.append(full_path)
+    
+    # NOW apply max_images limit on visible images
+    gallery = all_folder_images[:max_images]
+    
+    if not gallery and thumb_path:
+        gallery = [thumb_path]
+    if not thumb_path and gallery:
+        thumb_path = gallery[0]
     
     # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} real images from folder {image_folder}")  # Disabled for cleaner logs
     return thumb_path, gallery, False  # False = uses real images
@@ -5295,6 +5302,20 @@ def tour_detail(key):
                                             # Remote URL - include without checking
                                             image_urls.append(img_url)
                                 gallery = [thumb] + image_urls if thumb else image_urls
+                                
+                                # Filter out hidden images for this account
+                                if active_account:
+                                    gallery = filter_hidden_images(gallery, key, active_account)
+                                    # Update thumbnail if it was hidden
+                                    if thumb and thumb not in gallery:
+                                        thumb = gallery[0] if gallery else None
+                                    # Add account-specific extra images
+                                    acct_settings = load_account_settings(active_account)
+                                    extra = acct_settings.get('extra_images', {}).get(key, [])
+                                    for img_path in extra:
+                                        full_path = '/' + img_path.replace('\\', '/')
+                                        if full_path not in gallery:
+                                            gallery.append(full_path)
                             else:
                                 # Images disabled - use random placeholders
                                 gallery = get_random_placeholder_gallery(5)
@@ -8507,12 +8528,17 @@ def set_tour_thumbnail(key):
         'thumbnail': f"/{thumb_path}".replace("\\", "/")
     })
 
-def sync_tour_images_to_csv(company, tid):
-    """Sync images from folder to CSV images field"""
+def sync_tour_images_to_csv(company, tid, username=None):
+    """Sync images from folder to CSV images field.
+    
+    If username is provided, filters out hidden images for that account
+    so only visible images are synced to the CSV.
+    """
     folder = f"static/tour_images/{company}/{tid}"
     if not os.path.isdir(folder):
         return []
     
+    tour_key = f"{company}__{tid}"
     extensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.JPG', '.JPEG', '.PNG', '.WEBP', '.GIF']
     image_paths = []
     
@@ -8524,9 +8550,56 @@ def sync_tour_images_to_csv(company, tid):
                 continue
             image_paths.append(f"static/tour_images/{company}/{tid}/{filename}")
     
-    # Update CSV with new images
-    csv_file = find_company_csv(company)
-    if csv_file and os.path.exists(csv_file):
+    all_count = len(image_paths)
+    
+    # Filter out hidden images if we know the account
+    if username:
+        settings = load_account_settings(username)
+        hidden_images = settings.get('hidden_images', {}).get(tour_key, [])
+        if hidden_images:
+            visible_paths = []
+            for img_path in image_paths:
+                # Check both with and without leading slash
+                normalized = img_path.lstrip('/')
+                with_slash = '/' + normalized
+                if normalized not in hidden_images and with_slash not in hidden_images:
+                    visible_paths.append(img_path)
+            print(f"[Sync] Filtered {all_count} -> {len(visible_paths)} images (hidden {all_count - len(visible_paths)} for {username})")
+            image_paths = visible_paths
+        
+        # Add account-specific extra images
+        extra = settings.get('extra_images', {}).get(tour_key, [])
+        for img_path in extra:
+            if img_path not in image_paths:
+                image_paths.append(img_path)
+    
+    # Collect ALL CSV files for this company (all languages + root)
+    csv_files_to_update = []
+    
+    # English CSV (primary)
+    en_csv = find_company_csv(company)
+    if en_csv and os.path.exists(en_csv):
+        csv_files_to_update.append(en_csv)
+    
+    # All language-specific CSVs
+    company_data_dir = f'data/{company}'
+    if os.path.isdir(company_data_dir):
+        for lang_dir in os.listdir(company_data_dir):
+            lang_path = os.path.join(company_data_dir, lang_dir)
+            if os.path.isdir(lang_path):
+                for csv_name in os.listdir(lang_path):
+                    if csv_name.endswith('_with_media.csv'):
+                        csv_path = os.path.join(lang_path, csv_name)
+                        if csv_path not in csv_files_to_update:
+                            csv_files_to_update.append(csv_path)
+    
+    # Get hidden images list (for thumbnail check)
+    hidden_images_list = []
+    if username:
+        hidden_images_list = settings.get('hidden_images', {}).get(tour_key, [])
+    
+    # Update ALL CSV files with visible images
+    for csv_file in csv_files_to_update:
         try:
             rows = []
             fieldnames = None
@@ -8544,7 +8617,20 @@ def sync_tour_images_to_csv(company, tid):
                             # Add 'images' field if neither exists
                             fieldnames.append('images')
                             row['images'] = ','.join(image_paths)
-                        print(f"[Sync] Updated images for {tid}: {len(image_paths)} images")
+                        
+                        # Also update the thumbnail (image_url) if it's hidden
+                        if username and 'image_url' in fieldnames and hidden_images_list:
+                            current_thumb = row.get('image_url', '')
+                            if current_thumb:
+                                thumb_normalized = current_thumb.lstrip('/')
+                                thumb_with_slash = '/' + thumb_normalized
+                                if thumb_normalized in hidden_images_list or thumb_with_slash in hidden_images_list:
+                                    # Current thumbnail is hidden - use first visible image
+                                    if image_paths:
+                                        row['image_url'] = image_paths[0]
+                                        print(f"[Sync] Updated hidden thumbnail for {tid} in {csv_file} -> {image_paths[0]}")
+                        
+                        print(f"[Sync] Updated images for {tid} in {csv_file}: {len(image_paths)} images")
                     rows.append(row)
             
             # Write back
@@ -8553,13 +8639,14 @@ def sync_tour_images_to_csv(company, tid):
                 writer.writeheader()
                 writer.writerows(rows)
             print(f"[Sync] Successfully wrote CSV: {csv_file}")
-            
-            # Sync image updates to connected kiosks
-            git_sync_changes(f"Synced images for tour {tid}")
         except Exception as e:
-            print(f"[Sync] Error updating CSV: {e}")
+            print(f"[Sync] Error updating CSV {csv_file}: {e}")
             import traceback
             traceback.print_exc()
+    
+    # Sync image updates to connected kiosks
+    if csv_files_to_update:
+        git_sync_changes(f"Synced images for tour {tid} ({len(csv_files_to_update)} CSVs)")
     
     return image_paths
 
@@ -8701,13 +8788,15 @@ def delete_tour_image(key):
 
 @app.route('/admin/api/tour/<key>/sync-images', methods=['POST'])
 def sync_images_endpoint(key):
-    """API endpoint to sync folder images to CSV"""
+    """API endpoint to sync folder images to CSV (respects hidden images for logged-in user)"""
     try:
         company, tid = key.split('__', 1)
     except ValueError:
         return jsonify({'error': 'Invalid tour key'}), 400
     
-    image_paths = sync_tour_images_to_csv(company, tid)
+    # Pass username so hidden images are filtered out of the sync
+    username = session.get('user')
+    image_paths = sync_tour_images_to_csv(company, tid, username=username)
     
     # Sync CSV changes to git
     git_sync_changes(f"Synced images for {company}/{tid}")
