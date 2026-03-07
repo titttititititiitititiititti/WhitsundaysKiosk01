@@ -395,7 +395,7 @@
                 {% for tour_name, count in summary.top_tours_booked %}
                 <div class="tour-item">
                     <span class="tour-name">{{ tour_name }}</span>
-                    <span class="tour-count">{{ count }} bookings</span>
+                    <span class="tour-count">{{ count }} {{ 'booking' if count == 1 else 'bookings' }}</span>
                 </div>
                 {% endfor %}
             </div>

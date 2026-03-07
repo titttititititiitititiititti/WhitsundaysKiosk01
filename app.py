@@ -1953,6 +1953,20 @@ def get_analytics_summary(account=None):
                     top_key = max(scaled, key=scaled.get)
                     scaled[top_key] = max(0, scaled[top_key] + diff)
                 book_now_by_source = scaled
+                # Scale the top_tours_booked list to match the override total
+                raw_bookings_total = sum(c for _, c in top_tours_booked)
+                if raw_bookings_total > 0:
+                    scaled_bookings = [(name, max(1, round(count * scale))) for name, count in top_tours_booked]
+                    # Trim to match override total exactly
+                    while sum(c for _, c in scaled_bookings) > override_total and len(scaled_bookings) > 1:
+                        scaled_bookings.pop()  # Remove lowest-ranked tours
+                    # Adjust the last remaining entry so total matches exactly
+                    if scaled_bookings:
+                        current_sum = sum(c for _, c in scaled_bookings[:-1])
+                        last_name, _ = scaled_bookings[-1]
+                        remainder = max(1, override_total - current_sum)
+                        scaled_bookings[-1] = (last_name, remainder)
+                    top_tours_booked = scaled_bookings
             elif raw_total == 0 and override_total > 0:
                 book_now_by_source = {'unknown': override_total}
             book_now_clicks = override_total
@@ -10284,17 +10298,17 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
     if _last_responded_signal == requested_at:
         return
     
-        # Only respond to signals from the last 30 minutes
-        # (needs to be generous because kiosks may take 5-10min to restart after code update)
-        age_seconds = 0
-        try:
-            signal_time = datetime.fromisoformat(requested_at)
-            age_seconds = (datetime.now() - signal_time).total_seconds()
-            if age_seconds > 1800:  # Older than 30 minutes
-                _last_responded_signal = requested_at  # Mark as seen
-                return
-        except:
+    # Only respond to signals from the last 30 minutes
+    # (needs to be generous because kiosks may take 5-10min to restart after code update)
+    age_seconds = 0
+    try:
+        signal_time = datetime.fromisoformat(requested_at)
+        age_seconds = (datetime.now() - signal_time).total_seconds()
+        if age_seconds > 1800:  # Older than 30 minutes
+            _last_responded_signal = requested_at  # Mark as seen
             return
+    except:
+        return
     
     # New signal detected! Push our analytics
     print(f"[ANALYTICS] 📡 Push signal detected (from {signal_data.get('requested_by', '?')}, {int(age_seconds)}s ago)", flush=True)
