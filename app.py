@@ -10008,7 +10008,15 @@ def sync_analytics_to_git():
     """
     repo_path = os.path.dirname(os.path.abspath(__file__))
     
-    for attempt in range(2):
+    import random
+    max_attempts = 5
+    for attempt in range(max_attempts):
+        # Stagger retries with random delay to avoid thundering herd (all kiosks pushing at once)
+        if attempt > 0:
+            delay = random.uniform(2, 8) * attempt  # 2-8s first retry, 4-16s second, etc.
+            print(f"[ANALYTICS SYNC] Waiting {delay:.1f}s before retry {attempt+1}...", flush=True)
+            time.sleep(delay)
+        
         try:
             # Step 1: Read ALL local analytics into memory before any git operations
             local_analytics = {}  # {rel_path: {session_id: session_dict}}
@@ -10133,21 +10141,21 @@ def sync_analytics_to_git():
                 return
             
             stderr = push_result.stderr or ''
-            print(f"[ANALYTICS SYNC] Push failed (attempt {attempt+1}): {stderr[:200]}", flush=True)
+            print(f"[ANALYTICS SYNC] Push failed (attempt {attempt+1}/{max_attempts}): {stderr[:200]}", flush=True)
             
             if 'rejected' in stderr or 'non-fast-forward' in stderr:
                 print(f"[ANALYTICS SYNC] Remote advanced during push — retrying whole sync...", flush=True)
-                continue  # Retry the whole flow
+                continue  # Retry the whole flow with random delay
             else:
                 print(f"[ANALYTICS SYNC] ❌ Push error (not a conflict)", flush=True)
                 return
                 
         except Exception as e:
-            print(f"[ANALYTICS SYNC] Error (attempt {attempt+1}): {e}", flush=True)
+            print(f"[ANALYTICS SYNC] Error (attempt {attempt+1}/{max_attempts}): {e}", flush=True)
             import traceback
             traceback.print_exc()
     
-    print(f"[ANALYTICS SYNC] ❌ All sync attempts failed", flush=True)
+    print(f"[ANALYTICS SYNC] ❌ All {max_attempts} sync attempts failed", flush=True)
 
 def pull_analytics_only(account=None):
     """Pull only the analytics file for a specific account from remote"""
@@ -10383,7 +10391,7 @@ def send_analytics_push_signal():
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Send signal to all kiosks to push their analytics, then pull & merge from git."""
+    """Send signal to all kiosks to push their analytics, then poll for their responses."""
     try:
         username = session.get('user')
         if not username:
@@ -10403,17 +10411,51 @@ def refresh_analytics():
         if HAS_GIT_REPO:
             signal_sent = send_analytics_push_signal()
         
-        # Step 3: Pull & merge remote analytics (gets whatever kiosks have pushed so far)
-        pulled = pull_analytics_only(username)
+        # Step 3: Wait and poll for kiosk responses (up to 45 seconds)
+        # Kiosks check every ~60s, so we might need to wait a full cycle
+        if signal_sent:
+            print("[ANALYTICS] Waiting for kiosks to respond to signal...", flush=True)
+            
+            # Get current origin/main hash to detect when kiosks push
+            repo_path = os.path.dirname(os.path.abspath(__file__))
+            initial_hash = subprocess.run(
+                ['git', 'rev-parse', 'origin/main'],
+                cwd=repo_path, capture_output=True, text=True, 
+                encoding='utf-8', errors='replace', timeout=10
+            ).stdout.strip()
+            
+            # Poll every 5 seconds for up to 45 seconds
+            for poll in range(9):  # 9 * 5 = 45 seconds max
+                time.sleep(5)
+                
+                # Fetch and check if origin/main advanced
+                subprocess.run(
+                    ['git', 'fetch', 'origin', 'main'],
+                    cwd=repo_path, capture_output=True, text=True,
+                    encoding='utf-8', errors='replace', timeout=15
+                )
+                current_hash = subprocess.run(
+                    ['git', 'rev-parse', 'origin/main'],
+                    cwd=repo_path, capture_output=True, text=True,
+                    encoding='utf-8', errors='replace', timeout=10
+                ).stdout.strip()
+                
+                if current_hash != initial_hash:
+                    print(f"[ANALYTICS] New data detected on poll #{poll+1} (after {(poll+1)*5}s)", flush=True)
+                    pulled = pull_analytics_only(username)
+                    initial_hash = current_hash  # Track further changes
+                    # Keep polling for more kiosks to respond
         
-        if signal_sent and pulled:
-            message = 'Signal sent to all devices. Pulled latest data. Click again in ~1 minute for complete data from all kiosks.'
+        # Final pull to get anything that arrived
+        if not pulled:
+            pulled = pull_analytics_only(username)
+        
+        if pulled:
+            message = 'Pulled latest analytics from kiosks.'
         elif signal_sent:
-            message = 'Signal sent to all devices. No new remote data yet. Click again in ~1 minute.'
-        elif pulled:
-            message = 'Pulled new sessions from other kiosks.'
+            message = 'Signal sent. Some kiosks may still be responding — try refreshing the page in 30 seconds.'
         else:
-            message = 'Analytics up to date. If devices have new data, click again in ~1 minute.'
+            message = 'Analytics up to date.'
         
         return jsonify({
             'success': True, 

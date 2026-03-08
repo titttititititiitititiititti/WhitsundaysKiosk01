@@ -388,8 +388,15 @@ def check_analytics_push_request():
             subprocess.run(['git', 'reset', 'HEAD'], cwd=script_dir, capture_output=True, timeout=10)
             return
         
-        # Push with retry (conflict-free: reset to origin then re-commit)
-        for attempt in range(2):
+        # Push with retry and random backoff (avoids thundering herd when all kiosks push at once)
+        import random as _random
+        max_push_attempts = 5
+        for attempt in range(max_push_attempts):
+            if attempt > 0:
+                delay = _random.uniform(2, 8) * attempt
+                log(f"[ANALYTICS] Waiting {delay:.1f}s before retry {attempt+1}/{max_push_attempts}...")
+                time.sleep(delay)
+            
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
                 cwd=script_dir, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
@@ -401,8 +408,8 @@ def check_analytics_push_request():
                 return
             
             stderr = push_result.stderr or ''
-            if attempt == 0 and ('rejected' in stderr or 'non-fast-forward' in stderr):
-                log(f"[ANALYTICS] Push rejected, resetting to origin and re-merging...")
+            if 'rejected' in stderr or 'non-fast-forward' in stderr:
+                log(f"[ANALYTICS] Push rejected (attempt {attempt+1}/{max_push_attempts}), resetting to origin and re-merging...")
                 # Read local analytics into memory before reset
                 import json as _json
                 local_sessions = {}
@@ -454,10 +461,12 @@ def check_analytics_push_request():
                     ['git', 'commit', '-m', f'Analytics sync {time.strftime("%Y-%m-%d %H:%M")}'],
                     cwd=script_dir, capture_output=True, text=True, timeout=30
                 )
+                # Continue to retry the push at the top of the loop
             else:
-                log(f"[ANALYTICS] Push failed: {stderr[:200]}")
+                log(f"[ANALYTICS] Push failed (non-conflict): {stderr[:200]}")
                 return
         
+        log(f"[ANALYTICS] ❌ All {max_push_attempts} push attempts failed")
     except Exception as e:
         log(f"[ANALYTICS] Error checking push request: {e}")
 

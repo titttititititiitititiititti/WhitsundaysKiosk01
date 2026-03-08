@@ -580,32 +580,40 @@
     <script>
         async function refreshAnalytics() {
             const btn = document.getElementById('refresh-btn');
+            const headerBtn = document.querySelector('.header-actions .btn-primary');
             const originalText = btn.textContent;
-            btn.textContent = '⏳ Pulling latest data...';
+            btn.textContent = '⏳ Signalling kiosks... (up to 45s)';
             btn.disabled = true;
+            if (headerBtn) {
+                headerBtn.textContent = '⏳ Waiting for kiosks...';
+                headerBtn.disabled = true;
+            }
             
             try {
                 const response = await fetch('/api/analytics/refresh', { method: 'POST' });
                 const data = await response.json();
                 
                 if (data.success) {
-                    let msg = data.pulled ? '✅ New sessions pulled!' : '✅ Already up to date';
+                    let msg = data.pulled ? '✅ New data pulled! Reloading...' : '✅ Up to date';
                     btn.textContent = msg;
+                    if (headerBtn) headerBtn.textContent = msg;
                     setTimeout(() => location.reload(), 800);
                 } else {
                     btn.textContent = '❌ ' + (data.error || 'Failed');
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.disabled = false;
+                        if (headerBtn) { headerBtn.textContent = '🔄 Refresh Data'; headerBtn.disabled = false; }
                     }, 2000);
                 }
             } catch (error) {
                 console.error('Refresh error:', error);
-                btn.textContent = '❌ Network error';
+                btn.textContent = '❌ Network error (request may still be processing)';
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.disabled = false;
-                }, 2000);
+                    if (headerBtn) { headerBtn.textContent = '🔄 Refresh Data'; headerBtn.disabled = false; }
+                }, 3000);
             }
         }
         
