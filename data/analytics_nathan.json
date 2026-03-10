@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-10T12:14:15.813406",
+  "last_updated": "2026-03-10T12:49:05.959162",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -49634,6 +49634,33 @@
       "duration_seconds": 554.486444
     },
     {
+      "session_id": "session_1fcfd118991a_1773022402",
+      "account": "nathan",
+      "started_at": "2026-03-09T12:13:22.384141",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-09T12:13:22.384141",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-09T12:19:28.170905",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-09T12:19:28.170905",
+      "duration_seconds": 365.786764
+    },
+    {
       "session_id": "session_e33a3384389a_1773022595",
       "account": "nathan",
       "started_at": "2026-03-09T12:16:35.509551",
@@ -49659,6 +49686,118 @@
       "chat_messages": [],
       "ended_at": "2026-03-09T12:34:25.413073",
       "duration_seconds": 1069.903522
+    },
+    {
+      "session_id": "session_0280d53ee566_1773026592",
+      "account": "nathan",
+      "started_at": "2026-03-09T13:23:12.929208",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-09T13:23:12.929208",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-09T13:31:21.653989",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-09T13:31:21.653989",
+      "duration_seconds": 488.724781
+    },
+    {
+      "session_id": "session_f2f724016b34_1773029469",
+      "account": "nathan",
+      "started_at": "2026-03-09T14:11:09.426030",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-09T14:11:09.426030",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-09T14:11:11.357263",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-09T14:11:17.256013",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-09T14:11:21.424116",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-09T14:11:25.134737",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-09T14:11:33.465257",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-09T14:14:42.499447",
+          "data": {
+            "tour_name": "Eungella Wild Platypus Encounter \u2013 Eco-Certified Day Tour from Airlie Beach (Whitsundays)",
+            "company": "airlieadventuretours",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-09T14:14:42.801944",
+          "data": {
+            "tour_name": "Eungella Wild Platypus Encounter \u2013 Eco-Certified Day Tour from Airlie Beach (Whitsundays)",
+            "company": "airlieadventuretours",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-09T14:21:40.081113",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "Eungella Wild Platypus Encounter \u2013 Eco-Certified Day Tour from Airlie Beach (Whitsundays)"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-09T14:21:40.081113",
+      "duration_seconds": 630.655083
     },
     {
       "session_id": "session_c5d61ed7927d_1773029705",
@@ -49967,6 +50106,183 @@
       "chat_messages": [],
       "ended_at": "2026-03-10T11:25:56.107327",
       "duration_seconds": 300.604123
+    },
+    {
+      "session_id": "session_75abd90dde3a_1773107502",
+      "account": "nathan",
+      "started_at": "2026-03-10T11:51:42.145412",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-10T11:51:42.145412",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-10T11:52:06.695825",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-10T11:52:08.401968",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-10T11:52:09.956440",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-10T11:52:11.747930",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-10T11:52:13.460899",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-10T11:52:14.300039",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-10T11:52:38.323717",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-10T11:52:38.323717",
+      "duration_seconds": 56.178305
+    },
+    {
+      "session_id": "session_4722f17fd73b_1773110130",
+      "account": "nathan",
+      "started_at": "2026-03-10T12:35:30.756318",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-10T12:35:30.756318",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-10T12:35:32.386382",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-10T12:35:33.387349",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:35:49.929758",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-10T12:35:55.685063",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-10T12:35:55.685063",
+      "duration_seconds": 24.928745
+    },
+    {
+      "session_id": "session_a373a3d666ef_1773110156",
+      "account": "nathan",
+      "started_at": "2026-03-10T12:35:56.992149",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-10T12:35:56.992149",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-10T12:35:58.147485",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-10T12:35:59.123923",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:36:12.172963",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-10T12:37:22.698522",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-10T12:37:22.698522",
+      "duration_seconds": 85.706373
     }
   ]
 }
