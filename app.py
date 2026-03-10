@@ -1483,6 +1483,11 @@ def _load_tour_images_inner(tour, max_images=5, account_username=None):
                 thumb_visible = filter_hidden_images([thumb_path], key, account_username)
                 if not thumb_visible:
                     thumb_path = None  # Thumbnail was hidden
+            # If CSV thumbnail is broken, check for admin-set thumbnail.{ext} in local folder
+            if not thumb_path:
+                local_thumb = find_thumbnail(company, tid, name)
+                if local_thumb and local_thumb != '/static/placeholder.jpg':
+                    thumb_path = local_thumb
             if not thumb_path and gallery:
                 thumb_path = gallery[0]
             
@@ -10028,20 +10033,24 @@ def auto_update_loop():
                         print(f"[AUTO-UPDATE] Data merge failed: {e}", flush=True)
                     
                     # Now check if there's an analytics push signal we should respond to
-                    try:
-                        _check_and_respond_to_analytics_signal(repo_path=_repo)
-                    except Exception as e:
-                        print(f"[ANALYTICS] Signal response failed: {e}", flush=True)
+                    # (Skip if run_kiosk.py handles analytics push to avoid git conflicts)
+                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
+                        try:
+                            _check_and_respond_to_analytics_signal(repo_path=_repo)
+                        except Exception as e:
+                            print(f"[ANALYTICS] Signal response failed: {e}", flush=True)
                 
                 elif update_type == 'code':
                     # Real code changes - restart needed
                     # But first respond to any analytics signal (push our data before restart)
-                    try:
-                        _check_and_respond_to_analytics_signal(
-                            repo_path=os.path.dirname(os.path.abspath(__file__))
-                        )
-                    except Exception:
-                        pass
+                    # (Skip if run_kiosk.py handles analytics push to avoid git conflicts)
+                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
+                        try:
+                            _check_and_respond_to_analytics_signal(
+                                repo_path=os.path.dirname(os.path.abspath(__file__))
+                            )
+                        except Exception:
+                            pass
                     
                     # Check if there's an active customer session
                     if not is_safe_to_update():
@@ -10066,12 +10075,14 @@ def auto_update_loop():
                 else:
                     # No updates at all - still check for analytics signals
                     # (signal may have been pushed and already pulled in a previous cycle)
-                    try:
-                        _check_and_respond_to_analytics_signal(
-                            repo_path=os.path.dirname(os.path.abspath(__file__))
-                        )
-                    except Exception:
-                        pass
+                    # Skip if run_kiosk.py handles analytics push to avoid git conflicts
+                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
+                        try:
+                            _check_and_respond_to_analytics_signal(
+                                repo_path=os.path.dirname(os.path.abspath(__file__))
+                            )
+                        except Exception:
+                            pass
             
             time.sleep(AUTO_UPDATE_INTERVAL)
             
@@ -10630,7 +10641,11 @@ def start_background_services():
             print("[GIT SYNC] No RENDER_GIT_REPO_SLUG or GITHUB_REPO env var found")
     
     # Start auto-update thread (only on local kiosks with git, not Render)
-    if AUTO_UPDATE_ENABLED:
+    # Skip when run_kiosk.py is managing updates — it handles git fetch, pull, and analytics push.
+    # Running both causes git conflicts (two processes competing for the same repo).
+    if os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
+        print("[AUTO-UPDATE] Disabled (run_kiosk.py handles updates and analytics push)")
+    elif AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()
         print("[AUTO-UPDATE] Auto-update system enabled (checking every 60s)")

@@ -413,7 +413,7 @@ def check_analytics_push_request():
                 # Read local analytics into memory before reset
                 import json as _json
                 local_sessions = {}
-                for af in glob.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
+                for af in globmod.glob(os.path.join(script_dir, 'data', 'analytics_*.json')):
                     if '_backup' in af or '_request' in af:
                         continue
                     try:
@@ -600,6 +600,7 @@ def run_flask_app():
     env = os.environ.copy()
     env['PYTHONUNBUFFERED'] = '1'
     env['FLASK_ENV'] = 'production'
+    env['RUNNING_UNDER_KIOSK_RUNNER'] = '1'  # Tell app.py to skip analytics push (run_kiosk handles it)
     
     # Start Flask - read as bytes and decode manually for bulletproof encoding handling
     process = None
