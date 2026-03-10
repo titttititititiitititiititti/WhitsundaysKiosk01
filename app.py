@@ -1451,11 +1451,18 @@ def _load_tour_images_inner(tour, max_images=5, account_username=None):
         image_list = [img.strip() for img in csv_images.split(',') if img.strip()]
         if image_list:
             # Normalize ALL URLs first (don't limit yet - filter hidden first)
+            # Also verify local files actually exist on disk
             all_normalized = []
             for img in image_list:
                 normalized = normalize_image_url(img)
-                if normalized:
-                    all_normalized.append(normalized)
+                if not normalized:
+                    continue
+                # For local paths, verify the file exists
+                if not normalized.startswith('http'):
+                    local_path = normalized.lstrip('/')
+                    if not os.path.exists(local_path):
+                        continue  # Skip non-existent local files
+                all_normalized.append(normalized)
             
             # Filter out hidden images BEFORE applying max_images limit
             if account_username:
@@ -1466,6 +1473,11 @@ def _load_tour_images_inner(tour, max_images=5, account_username=None):
             
             # Get thumbnail from image_url field or first gallery image
             thumb_path = normalize_image_url(tour.get('image_url', ''))
+            # Verify thumbnail actually exists (local paths only)
+            if thumb_path and not thumb_path.startswith('http'):
+                local_path = thumb_path.lstrip('/')
+                if not os.path.exists(local_path):
+                    thumb_path = None  # File doesn't exist on disk
             # Check if thumbnail is hidden
             if thumb_path and account_username:
                 thumb_visible = filter_hidden_images([thumb_path], key, account_username)
@@ -1483,8 +1495,11 @@ def _load_tour_images_inner(tour, max_images=5, account_username=None):
                     if full_path not in gallery:
                         gallery.append(full_path)
             
-            # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")  # Disabled for cleaner logs
-            return thumb_path, gallery, False
+            # If we have valid images from CSV, return them
+            if gallery or thumb_path:
+                # print(f"[LAZY-IMAGES] {name}: loaded {len(gallery)} images from CSV image_urls")
+                return thumb_path, gallery, False
+            # If ALL CSV images were non-existent, fall through to folder scanning
     
     # Fallback: find images by scanning folder
     thumb_path = find_thumbnail(company, tid, name)
@@ -9643,6 +9658,17 @@ def check_git_updates():
         
         print("[AUTO-UPDATE] Fetching from origin...", flush=True)
         sys.stdout.flush()
+        
+        # Clean up stale git lock files that can block fetch/pull
+        git_lock = os.path.join(repo_path, '.git', 'index.lock')
+        if os.path.exists(git_lock):
+            try:
+                lock_age = time.time() - os.path.getmtime(git_lock)
+                if lock_age > 60:  # If lock is older than 60 seconds, it's stale
+                    os.remove(git_lock)
+                    print(f"[AUTO-UPDATE] Removed stale git lock file (age: {lock_age:.0f}s)", flush=True)
+            except Exception:
+                pass
         
         # Get current HEAD hash BEFORE fetch
         head_before = subprocess.run(
