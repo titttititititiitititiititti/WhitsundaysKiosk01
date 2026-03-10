@@ -3952,6 +3952,69 @@ def health_check():
     """Simple health check endpoint for monitoring and update restart detection"""
     return jsonify({'status': 'ok', 'version': APP_VERSION})
 
+@app.route('/debug/images')
+def debug_images():
+    """Diagnostic endpoint to check image loading on kiosks"""
+    active_account = get_active_account()
+    language = request.args.get('lang', 'en')
+    
+    results = {
+        'active_account': active_account,
+        'cwd': os.getcwd(),
+        'static_dir_exists': os.path.isdir('static'),
+        'tour_images_dir_exists': os.path.isdir('static/tour_images'),
+        'placeholder_exists': os.path.exists('static/placeholder.jpg'),
+    }
+    
+    # Count image files
+    if os.path.isdir('static/tour_images'):
+        company_dirs = [d for d in os.listdir('static/tour_images') if os.path.isdir(f'static/tour_images/{d}')]
+        results['company_count'] = len(company_dirs)
+        total_images = 0
+        for cd in company_dirs:
+            for root, dirs, files in os.walk(f'static/tour_images/{cd}'):
+                total_images += len([f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))])
+        results['total_image_files'] = total_images
+    
+    # Test loading first few tours with images
+    tours = load_all_tours(language, preview_account=active_account)
+    results['total_tours'] = len(tours)
+    
+    tour_tests = []
+    for tour in tours[:10]:
+        try:
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
+            thumb_exists = False
+            if thumb:
+                local_path = thumb.lstrip('/')
+                thumb_exists = os.path.exists(local_path)
+            tour_tests.append({
+                'key': tour['key'],
+                'name': tour['name'][:40],
+                'thumbnail': thumb,
+                'thumb_exists_on_disk': thumb_exists,
+                'gallery_count': len(gallery),
+                'uses_placeholder': uses_placeholder,
+            })
+        except Exception as e:
+            tour_tests.append({
+                'key': tour['key'],
+                'name': tour['name'][:40],
+                'ERROR': str(e),
+            })
+    
+    results['tour_image_tests'] = tour_tests
+    
+    # Check git status
+    try:
+        head = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=5)
+        results['git_head'] = head.stdout.strip()
+    except:
+        results['git_head'] = 'unknown'
+    
+    return jsonify(results)
+
 @app.route('/admin/agent/api/git-sync-status')
 def git_sync_status():
     """Diagnostic endpoint to check git sync health (for debugging push issues)"""
