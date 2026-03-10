@@ -6667,6 +6667,7 @@
       height: 100%;
       background-size: cover;
       background-position: center;
+      background-color: #1a2332; /* Fallback dark blue if image fails to load */
       transition: transform 0.5s ease;
     }
 
@@ -19451,15 +19452,35 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseErr) {
+          console.error('[SWIPE] Failed to parse API response:', parseErr);
+          window.goToHomePage();
+          return;
+        }
         swipeCards = data.tours || [];
         console.log('[SWIPE] API returned', swipeCards.length, 'tours');
         
         if (swipeCards.length === 0) {
-          console.warn('[WARNING] No matching tours found - redirecting to Browse All Tours');
-          console.warn('[WARNING] This may indicate filters are too restrictive or API returned empty');
-          window.goToHomePage();
-          return;
+          console.warn('[WARNING] No matching tours found - trying without filters');
+          // Retry without filters as fallback
+          try {
+            const fallbackResp = await fetch(`/api/tours?lang=${currentLanguage}`);
+            if (fallbackResp.ok) {
+              const fallbackData = await fallbackResp.json();
+              swipeCards = fallbackData.tours || [];
+              console.log('[SWIPE] Fallback returned', swipeCards.length, 'tours');
+            }
+          } catch (fbErr) {
+            console.error('[SWIPE] Fallback also failed:', fbErr);
+          }
+          if (swipeCards.length === 0) {
+            console.warn('[WARNING] Still no tours - redirecting to Browse All Tours');
+            window.goToHomePage();
+            return;
+          }
         }
         
         swipeOverlay.style.display = ''; // Clear any inline display:none
@@ -19913,6 +19934,9 @@
       tapHint.textContent = 'Tap image for full view';
       hintWrapper.appendChild(tapHint);
       stack.appendChild(hintWrapper);
+
+      // Add fallback handlers for broken images in the gallery
+      addImgErrorFallbacks(stack);
     }
     
     // Swipe gesture handler for galleries
@@ -26367,6 +26391,48 @@
       });
     }
     
+    // Helper: validate background images on tour cards, swap broken ones to placeholder
+    function validateTourCardImages(container) {
+      if (!container) return;
+      const cards = container.querySelectorAll('.tour-card-image');
+      cards.forEach(card => {
+        const style = card.style.backgroundImage;
+        const match = style && style.match(/url\(['"]?(.*?)['"]?\)/);
+        if (!match || !match[1] || match[1] === 'undefined' || match[1] === 'null' || match[1] === '') {
+          // No valid URL at all – set placeholder immediately
+          card.style.backgroundImage = "url('/static/placeholder.jpg')";
+          return;
+        }
+        const url = match[1];
+        // Skip if already a placeholder
+        if (url.includes('placeholder')) return;
+        // Preload test
+        const img = new Image();
+        img.onload = function() { /* image OK */ };
+        img.onerror = function() {
+          console.warn('[IMG-FALLBACK] Broken image, swapping to placeholder:', url);
+          card.style.backgroundImage = "url('/static/placeholder.jpg')";
+        };
+        img.src = url;
+      });
+    }
+
+    // Helper: add onerror fallback to <img> tags inside a container
+    function addImgErrorFallbacks(container) {
+      if (!container) return;
+      const imgs = container.querySelectorAll('img');
+      imgs.forEach(img => {
+        if (!img.dataset.fallbackSet) {
+          img.dataset.fallbackSet = '1';
+          img.onerror = function() {
+            console.warn('[IMG-FALLBACK] Broken <img>, swapping to placeholder:', this.src);
+            this.src = '/static/placeholder.jpg';
+            this.onerror = null; // prevent infinite loop
+          };
+        }
+      });
+    }
+
     // Helper: generate promotion badge HTML
     function getPromotionBadgeHtml(tour) {
       const promotion = tour.promotion;
@@ -26497,6 +26563,9 @@
           });
         }
       }
+
+      // Validate all tour card images - swap broken ones to placeholder
+      validateTourCardImages(grid);
     }
     
     // Clear filters and go back to home page
@@ -26689,6 +26758,9 @@
         
         grid.appendChild(card);
       });
+
+      // Validate all tour card images - swap broken ones to placeholder
+      validateTourCardImages(grid);
     }
 
     /* Chat logic - Commented out for now

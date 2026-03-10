@@ -1415,6 +1415,18 @@ def load_tour_images(tour, max_images=5, account_username=None):
     - Local paths: static/tour_images/company/id/image.jpg
     - Remote URLs: https://example.com/image.jpg (Cloudflare R2, etc.)
     """
+    try:
+        return _load_tour_images_inner(tour, max_images, account_username)
+    except Exception as e:
+        # Never let image loading crash the request - fall back to placeholder
+        print(f"[IMAGES] ERROR loading images for {tour.get('key', '?')}: {e}")
+        import traceback
+        traceback.print_exc()
+        placeholder = get_random_placeholder_image()
+        return placeholder, [placeholder], True
+
+def _load_tour_images_inner(tour, max_images=5, account_username=None):
+    """Inner image loading logic (wrapped in try/except by caller)"""
     company = tour.get('company', '')
     key = tour.get('key', '')
     name = tour.get('name', '')
@@ -2448,6 +2460,8 @@ def load_all_tours(language='en', preview_account=None):
                             'key': key,
                             'company': company,
                             'company_name': account_display_names.get(company, company.title()),
+                            'image_url': row.get('image_url', ''),  # CSV thumbnail path (for load_tour_images)
+                            'image_urls': row.get('image_urls', ''),  # CSV gallery paths (for load_tour_images)
                             'price_adult': row.get('price_adult', ''),
                             'price_child': row.get('price_child', ''),
                             'price_tiers': row.get('price_tiers', ''),
@@ -4687,8 +4701,14 @@ def api_tours():
     result_tours = []
     print(f"[API] Loading images for {len(filtered_tours)} filtered tours...")
     for tour in filtered_tours:
-        # Load images lazily for this tour
-        thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
+        try:
+            # Load images lazily for this tour
+            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=5, account_username=active_account)
+        except Exception as e:
+            print(f"[API-TOURS] ⚠️ Error loading images for tour {tour.get('key', 'UNKNOWN')}: {e}")
+            thumb = get_random_placeholder_image()
+            gallery = get_random_placeholder_gallery(5)
+            uses_placeholder = True
         
         # Parse video URLs if present
         video_urls = tour.get('video_urls', '')
@@ -5264,7 +5284,13 @@ def filter_tours():
     # Load images for each tour (lazy loading, with account-specific hidden images filtered)
     for tour in limited_tours:
         if not tour.get('thumbnail'):
-            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
+            try:
+                thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
+            except Exception as e:
+                print(f"[FILTER-TOURS] ⚠️ Error loading images for tour {tour.get('key', 'UNKNOWN')}: {e}")
+                thumb = get_random_placeholder_image()
+                gallery = get_random_placeholder_gallery(1)
+                uses_placeholder = True
             tour['thumbnail'] = thumb
             tour['gallery'] = gallery
             tour['uses_placeholder_images'] = uses_placeholder
@@ -5325,7 +5351,13 @@ def more_tours():
     # Load images for each selected tour (lazy loading, with account-specific hidden images filtered)
     for tour in selected:
         if not tour.get('thumbnail'):
-            thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
+            try:
+                thumb, gallery, uses_placeholder = load_tour_images(tour, max_images=1, account_username=active_account)
+            except Exception as e:
+                print(f"[MORE-TOURS] ⚠️ Error loading images for tour {tour.get('key', 'UNKNOWN')}: {e}")
+                thumb = get_random_placeholder_image()
+                gallery = get_random_placeholder_gallery(1)
+                uses_placeholder = True
             tour['thumbnail'] = thumb
             tour['gallery'] = gallery
             tour['uses_placeholder_images'] = uses_placeholder
