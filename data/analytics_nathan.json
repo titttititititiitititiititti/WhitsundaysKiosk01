@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-10T13:46:16.432393",
+  "last_updated": "2026-03-10T13:46:59.412898",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -50317,6 +50317,89 @@
       "chat_messages": [],
       "ended_at": "2026-03-10T12:57:34.829779",
       "duration_seconds": 485.686531
+    },
+    {
+      "session_id": "session_a4ec7e4e510f_1773111197",
+      "account": "nathan",
+      "started_at": "2026-03-10T12:53:17.054413",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-10T12:53:17.054413",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-10T12:53:21.974156",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:54:32.965619",
+          "data": {
+            "tour_name": "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+            "company": "Explore Group",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:54:49.572627",
+          "data": {
+            "tour_name": "\u5357\u65b9\u4e4b\u5149",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:55:09.022911",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:55:22.159114",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-10T12:55:35.655845",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-10T13:00:39.463971",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+        "\u5357\u65b9\u4e4b\u5149",
+        "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-10T13:00:39.463971",
+      "duration_seconds": 442.409558
     },
     {
       "session_id": "session_811a8ff666a0_1773113568",
