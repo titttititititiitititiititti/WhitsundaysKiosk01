@@ -9350,7 +9350,59 @@ def agent_analytics_page():
     # Get analytics for logged-in user's account
     account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
     summary = get_analytics_summary(account)
-    return render_template('agent_analytics.html', summary=summary, account=account)
+    
+    # Add last session time and total raw session count for the page
+    analytics = load_analytics(account)
+    all_sessions = analytics.get('sessions', [])
+    last_session_time = all_sessions[-1].get('started_at', '') if all_sessions else None
+    
+    # Get last git push times from remote kiosks (exclude signal-only commits)
+    kiosk_status = []
+    try:
+        repo_path = os.path.dirname(os.path.abspath(__file__))
+        log_result = subprocess.run(
+            ['git', 'log', '--oneline', '-30', '--format=%s (%cr)', 'origin/main', '--', 'data/analytics_*.json'],
+            cwd=repo_path, capture_output=True, text=True,
+            encoding='utf-8', errors='replace', timeout=10
+        )
+        if log_result.returncode == 0:
+            for line in log_result.stdout.strip().split('\n'):
+                line = line.strip()
+                # Skip signal-only entries ("Analytics push request") — we want actual data syncs
+                if line and 'push request' not in line.lower():
+                    kiosk_status.append(line)
+                    if len(kiosk_status) >= 5:
+                        break
+    except:
+        pass
+    
+    return render_template('agent_analytics.html', 
+                          summary=summary, 
+                          account=account,
+                          last_session_time=last_session_time,
+                          total_raw_sessions=len(all_sessions),
+                          kiosk_push_history=kiosk_status)
+
+@app.route('/api/analytics/check-new', methods=['GET'])
+@agent_required
+def check_analytics_new():
+    """Lightweight endpoint for auto-refresh polling - checks if data changed since given timestamp."""
+    account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+    known_count = request.args.get('known_count', 0, type=int)
+    
+    analytics = load_analytics(account)
+    all_sessions = analytics.get('sessions', [])
+    meaningful = [s for s in all_sessions if is_meaningful_session(s)]
+    
+    current_count = len(meaningful)
+    last_session_time = all_sessions[-1].get('started_at', '') if all_sessions else None
+    
+    return jsonify({
+        'total_sessions': current_count,
+        'total_raw': len(all_sessions),
+        'last_session_time': last_session_time,
+        'has_new_data': current_count != known_count
+    })
 
 # ============================================================================
 # TIDE DATA - Shute Harbour / Whitsundays
@@ -10033,24 +10085,21 @@ def auto_update_loop():
                         print(f"[AUTO-UPDATE] Data merge failed: {e}", flush=True)
                     
                     # Now check if there's an analytics push signal we should respond to
-                    # (Skip if run_kiosk.py handles analytics push to avoid git conflicts)
-                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
-                        try:
-                            _check_and_respond_to_analytics_signal(repo_path=_repo)
-                        except Exception as e:
-                            print(f"[ANALYTICS] Signal response failed: {e}", flush=True)
+                    # (app.py handles this even under run_kiosk.py — run_kiosk is blocked reading stdout)
+                    try:
+                        _check_and_respond_to_analytics_signal(repo_path=_repo)
+                    except Exception as e:
+                        print(f"[ANALYTICS] Signal response failed: {e}", flush=True)
                 
                 elif update_type == 'code':
                     # Real code changes - restart needed
                     # But first respond to any analytics signal (push our data before restart)
-                    # (Skip if run_kiosk.py handles analytics push to avoid git conflicts)
-                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
-                        try:
-                            _check_and_respond_to_analytics_signal(
-                                repo_path=os.path.dirname(os.path.abspath(__file__))
-                            )
-                        except Exception:
-                            pass
+                    try:
+                        _check_and_respond_to_analytics_signal(
+                            repo_path=os.path.dirname(os.path.abspath(__file__))
+                        )
+                    except Exception:
+                        pass
                     
                     # Check if there's an active customer session
                     if not is_safe_to_update():
@@ -10075,14 +10124,12 @@ def auto_update_loop():
                 else:
                     # No updates at all - still check for analytics signals
                     # (signal may have been pushed and already pulled in a previous cycle)
-                    # Skip if run_kiosk.py handles analytics push to avoid git conflicts
-                    if not os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
-                        try:
-                            _check_and_respond_to_analytics_signal(
-                                repo_path=os.path.dirname(os.path.abspath(__file__))
-                            )
-                        except Exception:
-                            pass
+                    try:
+                        _check_and_respond_to_analytics_signal(
+                            repo_path=os.path.dirname(os.path.abspath(__file__))
+                        )
+                    except Exception:
+                        pass
             
             time.sleep(AUTO_UPDATE_INTERVAL)
             
@@ -10289,8 +10336,12 @@ def sync_analytics_to_git():
     
     print(f"[ANALYTICS SYNC] ❌ All {max_attempts} sync attempts failed", flush=True)
 
-def pull_analytics_only(account=None):
-    """Pull only the analytics file for a specific account from remote"""
+def pull_analytics_only(account=None, skip_fetch=False):
+    """Pull only the analytics file for a specific account from remote.
+    
+    Merges remote sessions into local, including UPDATING existing sessions
+    with newer remote data (more events, ended_at, etc).
+    """
     try:
         repo_path = os.path.dirname(os.path.abspath(__file__))
         account = account or DEFAULT_ANALYTICS_ACCOUNT
@@ -10298,23 +10349,23 @@ def pull_analytics_only(account=None):
         analytics_file = f'data/analytics_{account}.json' if account != 'default' else 'data/analytics.json'
         analytics_path = os.path.join(repo_path, analytics_file)
         
-        # Fetch latest from remote
-        fetch_result = subprocess.run(
-            ['git', 'fetch', 'origin', 'main'], 
-            cwd=repo_path, 
-            capture_output=True, 
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            timeout=30
-        )
-        
-        if fetch_result.returncode != 0:
-            print(f"[ANALYTICS] Fetch failed: {fetch_result.stderr}")
-            return False
+        # Fetch latest from remote (skip if caller already fetched)
+        if not skip_fetch:
+            fetch_result = subprocess.run(
+                ['git', 'fetch', 'origin', 'main'], 
+                cwd=repo_path, 
+                capture_output=True, 
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=30
+            )
+            
+            if fetch_result.returncode != 0:
+                print(f"[ANALYTICS] Fetch failed: {fetch_result.stderr}")
+                return False
         
         # Use git show to get the file content from origin/main
-        # This is more reliable than checkout for getting remote file content
         show_result = subprocess.run(
             ['git', 'show', f'origin/main:{analytics_file}'],
             cwd=repo_path,
@@ -10346,27 +10397,57 @@ def pull_analytics_only(account=None):
             else:
                 local_analytics = {'sessions': [], 'summary': {}, 'account': account}
             
-            # Merge sessions - combine both, removing duplicates by session_id
-            local_session_ids = {s['session_id'] for s in local_analytics.get('sessions', [])}
-            remote_sessions = remote_analytics.get('sessions', [])
+            # Build local sessions lookup by session_id
+            local_by_id = {}
+            for s in local_analytics.get('sessions', []):
+                sid = s.get('session_id')
+                if sid:
+                    local_by_id[sid] = s
             
-            merged_sessions = local_analytics.get('sessions', [])[:]
+            remote_sessions = remote_analytics.get('sessions', [])
             new_sessions_count = 0
+            updated_sessions_count = 0
             
             for remote_session in remote_sessions:
-                if remote_session.get('session_id') not in local_session_ids:
-                    merged_sessions.append(remote_session)
+                sid = remote_session.get('session_id')
+                if not sid:
+                    continue
+                    
+                if sid not in local_by_id:
+                    # Brand new session from remote
+                    local_by_id[sid] = remote_session
                     new_sessions_count += 1
+                else:
+                    # Session exists locally - check if remote has MORE data
+                    local_sess = local_by_id[sid]
+                    local_events = len(local_sess.get('events', []))
+                    remote_events = len(remote_session.get('events', []))
+                    local_ended = local_sess.get('ended_at')
+                    remote_ended = remote_session.get('ended_at')
+                    
+                    # Use remote version if it has more events, or has ended_at when local doesn't
+                    if remote_events > local_events or (remote_ended and not local_ended):
+                        local_by_id[sid] = remote_session
+                        updated_sessions_count += 1
             
-            # Update analytics with merged sessions - keep ALL sessions forever
+            # Rebuild sessions list sorted by started_at
+            merged_sessions = sorted(local_by_id.values(), key=lambda s: s.get('started_at', ''))
+            
+            # Update analytics with merged sessions
             local_analytics['sessions'] = merged_sessions
             local_analytics['account'] = account
             
             # Save merged analytics
             save_analytics(local_analytics, account)
             
-            if new_sessions_count > 0:
-                print(f"[ANALYTICS] Merged {new_sessions_count} new session(s) from remote into {analytics_file}")
+            changes = new_sessions_count + updated_sessions_count
+            if changes > 0:
+                parts = []
+                if new_sessions_count > 0:
+                    parts.append(f"{new_sessions_count} new")
+                if updated_sessions_count > 0:
+                    parts.append(f"{updated_sessions_count} updated")
+                print(f"[ANALYTICS] Merged {' + '.join(parts)} session(s) from remote into {analytics_file}")
                 return True
             else:
                 print(f"[ANALYTICS] {analytics_file} already up to date (no new sessions)")
@@ -10459,18 +10540,24 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
 
 def send_analytics_push_signal():
     """Create a signal file and push it to git, telling all kiosks to push their analytics."""
+    global _last_responded_signal
     try:
         repo_path = os.path.dirname(os.path.abspath(__file__))
         signal_file = os.path.join(repo_path, ANALYTICS_REQUEST_FILE)
         
         os.makedirs(os.path.dirname(signal_file), exist_ok=True)
+        signal_timestamp = datetime.now().isoformat()
         signal_data = {
-            'requested_at': datetime.now().isoformat(),
+            'requested_at': signal_timestamp,
             'requested_by': session.get('user', 'unknown'),
+            'source_device': os.environ.get('COMPUTERNAME', os.environ.get('HOSTNAME', 'unknown')),
             'message': 'Push your analytics now'
         }
         with open(signal_file, 'w', encoding='utf-8') as f:
             json.dump(signal_data, f, indent=2)
+        
+        # Pre-mark this signal as responded-to so THIS device doesn't respond to its own signal
+        _last_responded_signal = signal_timestamp
         
         # Commit and push ONLY the signal file
         subprocess.run(
@@ -10520,17 +10607,78 @@ def send_analytics_push_signal():
         print(f"[ANALYTICS] Error sending push signal: {e}", flush=True)
         return False
 
+def _pull_all_analytics_from_remote(target_account=None):
+    """Pull ALL analytics files from remote, merging into local.
+    
+    If target_account is specified, also returns whether that specific file changed.
+    Returns (any_pulled, target_pulled) tuple.
+    """
+    repo_path = os.path.dirname(os.path.abspath(__file__))
+    any_pulled = False
+    target_pulled = False
+    
+    # Single fetch for all files
+    subprocess.run(
+        ['git', 'fetch', 'origin', 'main'],
+        cwd=repo_path, capture_output=True, text=True,
+        encoding='utf-8', errors='replace', timeout=30
+    )
+    
+    # List all analytics files on remote
+    ls_result = subprocess.run(
+        ['git', 'ls-tree', '--name-only', 'origin/main', 'data/'],
+        cwd=repo_path, capture_output=True, text=True,
+        encoding='utf-8', errors='replace', timeout=10
+    )
+    
+    remote_analytics_files = []
+    if ls_result.returncode == 0:
+        for line in ls_result.stdout.strip().split('\n'):
+            line = line.strip()
+            if line.startswith('data/analytics_') and line.endswith('.json') and '_backup' not in line and '_request' not in line:
+                # Extract account name from filename
+                acct = line.replace('data/analytics_', '').replace('.json', '')
+                remote_analytics_files.append(acct)
+    
+    # Also check local analytics files (in case they exist locally but not on remote)
+    for af in glob.glob(os.path.join(repo_path, 'data', 'analytics_*.json')):
+        if '_backup' not in af and '_request' not in af:
+            acct = os.path.basename(af).replace('analytics_', '').replace('.json', '')
+            if acct not in remote_analytics_files:
+                remote_analytics_files.append(acct)
+    
+    if not remote_analytics_files:
+        # Fallback: at least pull the target account
+        if target_account:
+            remote_analytics_files = [target_account]
+        else:
+            return False, False
+    
+    print(f"[ANALYTICS] Pulling analytics for accounts: {remote_analytics_files}", flush=True)
+    
+    for acct in remote_analytics_files:
+        result = pull_analytics_only(acct, skip_fetch=True)
+        if result:
+            any_pulled = True
+            if target_account and acct == target_account:
+                target_pulled = True
+    
+    return any_pulled, target_pulled
+
+
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Send signal to all kiosks to push their analytics, then poll for their responses."""
+    """Pull latest analytics from all kiosks via git, send signal for kiosks to push new data."""
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
+        repo_path = os.path.dirname(os.path.abspath(__file__))
         signal_sent = False
         pulled = False
+        kiosks_responded = 0
         
         # Step 1: Push THIS device's local analytics to git (if running locally)
         if HAS_GIT_REPO and not IS_RENDER:
@@ -10539,25 +10687,27 @@ def refresh_analytics():
             except Exception as e:
                 print(f"[ANALYTICS] Local push during refresh failed: {e}")
         
-        # Step 2: Send signal to all kiosks to push their analytics
+        # Step 2: Immediately pull ALL analytics from remote (get what's already there)
+        any_pulled, target_pulled = _pull_all_analytics_from_remote(username)
+        if target_pulled:
+            pulled = True
+        
+        # Step 3: Send signal to all kiosks to push their analytics
         if HAS_GIT_REPO:
             signal_sent = send_analytics_push_signal()
         
-        # Step 3: Wait and poll for kiosk responses (up to 45 seconds)
-        # Kiosks check every ~60s, so we might need to wait a full cycle
+        # Step 4: Poll for kiosk responses (up to 75 seconds - covers full 60s update cycle)
         if signal_sent:
             print("[ANALYTICS] Waiting for kiosks to respond to signal...", flush=True)
             
-            # Get current origin/main hash to detect when kiosks push
-            repo_path = os.path.dirname(os.path.abspath(__file__))
             initial_hash = subprocess.run(
                 ['git', 'rev-parse', 'origin/main'],
                 cwd=repo_path, capture_output=True, text=True, 
                 encoding='utf-8', errors='replace', timeout=10
             ).stdout.strip()
             
-            # Poll every 5 seconds for up to 45 seconds
-            for poll in range(9):  # 9 * 5 = 45 seconds max
+            # Poll every 5 seconds for up to 75 seconds (covers a full 60s kiosk update cycle)
+            for poll in range(15):  # 15 * 5 = 75 seconds max
                 time.sleep(5)
                 
                 # Fetch and check if origin/main advanced
@@ -10573,30 +10723,51 @@ def refresh_analytics():
                 ).stdout.strip()
                 
                 if current_hash != initial_hash:
-                    print(f"[ANALYTICS] New data detected on poll #{poll+1} (after {(poll+1)*5}s)", flush=True)
-                    pulled = pull_analytics_only(username)
-                    initial_hash = current_hash  # Track further changes
+                    kiosks_responded += 1
+                    print(f"[ANALYTICS] Kiosk response #{kiosks_responded} detected on poll #{poll+1} (after {(poll+1)*5}s)", flush=True)
+                    # Pull ALL analytics files (kiosks may write to any account)
+                    any_new, target_new = _pull_all_analytics_from_remote(username)
+                    if target_new:
+                        pulled = True
+                    initial_hash = current_hash
                     # Keep polling for more kiosks to respond
         
-        # Final pull to get anything that arrived
+        # Final pull to catch anything we missed
         if not pulled:
-            pulled = pull_analytics_only(username)
+            any_final, target_final = _pull_all_analytics_from_remote(username)
+            if target_final:
+                pulled = True
         
+        # Build informative response
         if pulled:
-            message = 'Pulled latest analytics from kiosks.'
+            message = f'Pulled latest analytics from kiosks ({kiosks_responded} responded).'
+        elif kiosks_responded > 0:
+            message = f'{kiosks_responded} kiosk(s) responded but had no new data for your account.'
         elif signal_sent:
-            message = 'Signal sent. Some kiosks may still be responding — try refreshing the page in 30 seconds.'
+            message = 'Signal sent but no kiosks responded yet. Data will auto-refresh when they do.'
         else:
-            message = 'Analytics up to date.'
+            message = 'Analytics up to date (loaded from local data).'
+        
+        # Get last session time for context
+        analytics = load_analytics(username)
+        all_sessions = analytics.get('sessions', [])
+        last_session_time = None
+        if all_sessions:
+            last_session_time = all_sessions[-1].get('started_at', '')
         
         return jsonify({
             'success': True, 
             'message': message,
             'signal_sent': signal_sent,
-            'pulled': pulled
+            'pulled': pulled,
+            'kiosks_responded': kiosks_responded,
+            'total_sessions': len(all_sessions),
+            'last_session_time': last_session_time
         })
             
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ============================================================================
@@ -10641,10 +10812,43 @@ def start_background_services():
             print("[GIT SYNC] No RENDER_GIT_REPO_SLUG or GITHUB_REPO env var found")
     
     # Start auto-update thread (only on local kiosks with git, not Render)
-    # Skip when run_kiosk.py is managing updates — it handles git fetch, pull, and analytics push.
-    # Running both causes git conflicts (two processes competing for the same repo).
     if os.environ.get('RUNNING_UNDER_KIOSK_RUNNER'):
-        print("[AUTO-UPDATE] Disabled (run_kiosk.py handles updates and analytics push)")
+        # run_kiosk.py handles code updates (pull, reset, restart) at startup.
+        # But it can't check for analytics signals while the app is running (it's blocked reading stdout).
+        # So we start a lightweight analytics-only loop here.
+        def _analytics_signal_loop():
+            """Lightweight loop: just fetch + check analytics signals. No code update handling."""
+            import time as _time
+            _time.sleep(15)  # Wait for app to fully start
+            _check_count = 0
+            while True:
+                _check_count += 1
+                try:
+                    _repo = os.path.dirname(os.path.abspath(__file__))
+                    
+                    # Fetch to get latest signal file from origin
+                    _fetch = subprocess.run(
+                        ['git', 'fetch', 'origin', 'main'],
+                        cwd=_repo, capture_output=True, text=True,
+                        encoding='utf-8', errors='replace', timeout=30
+                    )
+                    
+                    if _fetch.returncode == 0:
+                        # Check for analytics push signal on origin/main
+                        try:
+                            _check_and_respond_to_analytics_signal(repo_path=_repo)
+                        except Exception as _e:
+                            print(f"[ANALYTICS] Signal check error: {_e}", flush=True)
+                    
+                except Exception as _e:
+                    print(f"[ANALYTICS] Signal loop error: {_e}", flush=True)
+                
+                _time.sleep(AUTO_UPDATE_INTERVAL)  # Same interval as normal update checks (60s)
+        
+        _analytics_thread = threading.Thread(target=_analytics_signal_loop, daemon=True)
+        _analytics_thread.start()
+        print("[AUTO-UPDATE] Code updates handled by run_kiosk.py")
+        print("[ANALYTICS] Analytics signal checker started (checking every 60s)")
     elif AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()
