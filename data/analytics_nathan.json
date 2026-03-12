@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-12T13:53:03.223053",
+  "last_updated": "2026-03-12T13:53:10.622269",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -50857,6 +50857,78 @@
       "duration_seconds": 420.101169
     },
     {
+      "session_id": "session_1f11bf9bd5d6_1773186920",
+      "account": "nathan",
+      "started_at": "2026-03-11T09:55:20.379114",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-11T09:55:20.379114",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-11T09:55:22.668966",
+          "data": {
+            "language": "es"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-11T09:55:27.415675",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-11T09:59:11.425182",
+          "data": {
+            "tour_name": "Crucero Airlie Beach Sunset Sail in Style",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-11T10:03:08.808588",
+          "data": {
+            "tour_name": "Crucero Airlie Beach Sunset Sail in Style",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-11T10:03:18.702698",
+          "data": {
+            "tour_name": "Crucero Airlie Beach Sunset Sail in Style",
+            "company": "Wings",
+            "source": "embedded-booking"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-11T10:08:37.995479",
+          "data": {}
+        }
+      ],
+      "language": "es",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Crucero Airlie Beach Sunset Sail in Style"
+      ],
+      "tours_booked": [
+        "Crucero Airlie Beach Sunset Sail in Style"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-11T10:08:37.995479",
+      "duration_seconds": 797.616365
+    },
+    {
       "session_id": "session_476696853aaf_1773187545",
       "account": "nathan",
       "started_at": "2026-03-11T10:05:45.810225",
@@ -50986,6 +51058,58 @@
       "chat_messages": [],
       "ended_at": "2026-03-11T10:33:02.503083",
       "duration_seconds": 553.858082
+    },
+    {
+      "session_id": "session_0614b2dbf8ef_1773188657",
+      "account": "nathan",
+      "started_at": "2026-03-11T10:24:17.091588",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-11T10:24:17.091588",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-11T10:24:19.690933",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-11T10:24:26.902743",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-11T10:27:23.940463",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-11T10:34:34.521637",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-11T10:34:34.521637",
+      "duration_seconds": 617.430049
     },
     {
       "session_id": "session_7e30e3a558d2_1773189522",
@@ -51308,6 +51432,62 @@
       "duration_seconds": 554.857373
     },
     {
+      "session_id": "session_6908a3a40127_1773195492",
+      "account": "nathan",
+      "started_at": "2026-03-11T12:18:12.556773",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-11T12:18:12.556773",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-11T12:18:58.884241",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-11T12:20:17.121538",
+          "data": {
+            "tour_name": "Super Flyer Whitehaven Beach Plus Schnorchel",
+            "company": "Zigzag Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-11T12:20:22.488556",
+          "data": {
+            "tour_name": "Super Flyer Whitehaven Beach Plus Schnorchel",
+            "company": "Zigzag Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-11T12:26:28.293203",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Super Flyer Whitehaven Beach Plus Schnorchel"
+      ],
+      "tours_booked": [
+        "Super Flyer Whitehaven Beach Plus Schnorchel"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-11T12:26:28.293203",
+      "duration_seconds": 495.73643
+    },
+    {
       "session_id": "session_a0b9870fc5c1_1773197647",
       "account": "nathan",
       "started_at": "2026-03-11T12:54:07.791283",
@@ -51424,6 +51604,47 @@
       "duration_seconds": 556.09158
     },
     {
+      "session_id": "session_d75d045c498a_1773272330",
+      "account": "nathan",
+      "started_at": "2026-03-12T09:38:51.053455",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-12T09:38:51.053455",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-12T09:38:55.422981",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-12T09:39:13.389730",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-12T09:47:02.203854",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-12T09:47:02.203854",
+      "duration_seconds": 491.150399
+    },
+    {
       "session_id": "session_1c576082d868_1773277239",
       "account": "nathan",
       "started_at": "2026-03-12T11:00:39.372431",
@@ -51456,6 +51677,60 @@
       "chat_messages": [],
       "ended_at": "2026-03-12T11:06:42.345334",
       "duration_seconds": 362.972903
+    },
+    {
+      "session_id": "session_664cd4344a6d_1773277267",
+      "account": "nathan",
+      "started_at": "2026-03-12T11:01:07.497529",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-12T11:01:07.497529",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-12T11:01:13.948255",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-12T11:01:50.426940",
+          "data": {
+            "tour_name": "Reine Whitehaven-Tagestour",
+            "company": "sealink",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-03-12T11:01:54.671876",
+          "data": {
+            "tour_name": "Reine Whitehaven-Tagestour",
+            "company": "sealink",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-12T11:09:21.414372",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "Reine Whitehaven-Tagestour"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-12T11:09:21.414372",
+      "duration_seconds": 493.916843
     },
     {
       "session_id": "session_a2411accc292_1773277750",
