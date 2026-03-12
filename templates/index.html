@@ -4872,11 +4872,10 @@
     .ai-suggestions-wrapper {
       display: flex;
       justify-content: center;
+      align-items: center;
       padding: 0 10px;
       box-sizing: border-box;
       pointer-events: none;
-      max-width: 100%;
-      width: 100%;
       order: -1; /* Always first in the flex column */
     }
     
@@ -4890,18 +4889,6 @@
       justify-content: center !important;
     }
     
-    .ai-suggestions {
-      display: inline-flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      pointer-events: auto;
-      white-space: nowrap;
-    }
-    
-    /* Ensure buttons themselves are fully clickable */
     .ai-suggestion-bubble {
       pointer-events: auto;
       cursor: pointer;
@@ -4928,9 +4915,10 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      max-width: 500px;
+      max-width: 600px;
       padding: 0 15px;
-      margin: 0 auto 8px auto;
+      margin: 0 auto;
+      pointer-events: auto;
     }
     
     .ai-suggestion-btn {
