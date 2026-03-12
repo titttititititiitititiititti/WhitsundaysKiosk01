@@ -26681,17 +26681,13 @@
       // Remove unwanted tours
       const filteredTours = tours.filter(tour => !shouldHideTour(tour));
       
-      // Prioritize tours with working booking buttons
-      const prioritized = [];
-      const regular = [];
-      filteredTours.forEach(tour => {
-        if (hasWorkingBooking(tour)) {
-          prioritized.push(tour);
-        } else {
-          regular.push(tour);
-        }
-      });
-      const orderedTours = [...prioritized, ...regular];
+      // Keep promoted tours first (server already sorted them), then
+      // within non-promoted tours, prioritize those with working booking buttons
+      const promoted = filteredTours.filter(tour => tour.promotion || tour.is_promoted);
+      const nonPromoted = filteredTours.filter(tour => !tour.promotion && !tour.is_promoted);
+      const nonPromotedWithBooking = nonPromoted.filter(tour => hasWorkingBooking(tour));
+      const nonPromotedWithout = nonPromoted.filter(tour => !hasWorkingBooking(tour));
+      const orderedTours = [...promoted, ...nonPromotedWithBooking, ...nonPromotedWithout];
       
       console.log('Displaying featured tours:', orderedTours.length, 'append:', append);
       
