@@ -2007,7 +2007,7 @@ def get_analytics_summary(account=None):
         'top_tours_viewed': top_tours_viewed,
         'top_tours_booked': top_tours_booked,
         'total_chats': total_chats,
-        'recent_sessions': sessions[-50:][::-1],  # Last 50 meaningful sessions, newest first
+        'recent_sessions': sessions[-100:][::-1],  # Last 100 meaningful sessions, newest first
         'account': account,
         'qr_stats': {
             'codes_generated': qr_codes_generated,
