@@ -1471,19 +1471,32 @@ def _load_tour_images_inner(tour, max_images=5, account_username=None):
             # NOW apply max_images limit on the visible images
             gallery = all_normalized[:max_images]
             
-            # Get thumbnail from image_url field or first gallery image
-            thumb_path = normalize_image_url(tour.get('image_url', ''))
-            # Verify thumbnail actually exists (local paths only)
-            if thumb_path and not thumb_path.startswith('http'):
-                local_path = thumb_path.lstrip('/')
-                if not os.path.exists(local_path):
-                    thumb_path = None  # File doesn't exist on disk
+            # Check for admin-set thumbnail FIRST (explicit thumbnail.{ext} in folder)
+            # This takes priority over CSV image_url because it's a deliberate override
+            thumb_path = None
+            thumb_folder = f"static/tour_images/{company}/{tid}"
+            for _ext in ['.jpg', '.jpeg', '.png', '.webp', '.JPG', '.JPEG', '.PNG', '.WEBP']:
+                _candidate = os.path.join(thumb_folder, f"thumbnail{_ext}")
+                if os.path.exists(_candidate):
+                    thumb_path = '/' + _candidate.replace('\\', '/')
+                    break
+            
+            # Fall back to CSV image_url if no admin-set thumbnail
+            if not thumb_path:
+                thumb_path = normalize_image_url(tour.get('image_url', ''))
+                # Verify thumbnail actually exists (local paths only)
+                if thumb_path and not thumb_path.startswith('http'):
+                    local_path = thumb_path.lstrip('/')
+                    if not os.path.exists(local_path):
+                        thumb_path = None  # File doesn't exist on disk
+            
             # Check if thumbnail is hidden
             if thumb_path and account_username:
                 thumb_visible = filter_hidden_images([thumb_path], key, account_username)
                 if not thumb_visible:
                     thumb_path = None  # Thumbnail was hidden
-            # If CSV thumbnail is broken, check for admin-set thumbnail.{ext} in local folder
+            
+            # If still no thumbnail, try find_thumbnail (legacy name-based folders)
             if not thumb_path:
                 local_thumb = find_thumbnail(company, tid, name)
                 if local_thumb and local_thumb != '/static/placeholder.jpg':
