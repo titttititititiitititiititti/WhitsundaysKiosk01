@@ -218,6 +218,12 @@
         .badge-ai { background: #9b59b6; }
         .badge-quick { background: #27ae60; }
         .badge-browse { background: #e67e22; }
+        .badge-book { background: #e74c3c; font-weight: 700; animation: pulse-badge 2s ease-in-out infinite; }
+        .badge-phone { background: #2980b9; font-weight: 700; animation: pulse-badge 2s ease-in-out infinite; }
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
         .badge-unknown { background: #7f8c8d; }
         
         .lang-badge {
@@ -322,9 +328,14 @@
                 <div class="stat-sub">Messages exchanged</div>
             </div>
             <div class="stat-card">
-                <h3>Tours Booked</h3>
+                <h3>🎟️ Book Now Clicks</h3>
                 <div class="stat-value">{{ summary.book_now_clicks }}</div>
-                <div class="stat-sub">Total bookings</div>
+                <div class="stat-sub">{{ summary.sessions_with_book_now }} session{{ 's' if summary.sessions_with_book_now != 1 }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>📱 Send to Phone</h3>
+                <div class="stat-value">{{ summary.send_to_phone_clicks }}</div>
+                <div class="stat-sub">{{ summary.sessions_with_send_to_phone }} session{{ 's' if summary.sessions_with_send_to_phone != 1 }}</div>
             </div>
         </div>
         
@@ -505,11 +516,12 @@
                             <th>Duration</th>
                             <th>Tours Viewed</th>
                             <th>Chats</th>
+                            <th>Conversions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for session in summary.recent_sessions %}
-                        <tr onclick="viewSessionDetails('{{ session.session_id }}')" style="cursor: pointer;">
+                        <tr onclick="viewSessionDetails('{{ session.session_id }}')" style="cursor: pointer;{% if session._has_book_now or session._has_send_to_phone %} background: rgba(231, 76, 60, 0.12); border-left: 3px solid #e74c3c;{% endif %}">
                             <td>{{ session.started_at[:16].replace('T', ' ') if session.started_at else 'N/A' }}</td>
                             <td>
                                 <span class="lang-badge">
@@ -551,6 +563,17 @@
                             </td>
                             <td>{{ session.tours_viewed | length }}</td>
                             <td>{{ session.chat_messages | length }}</td>
+                            <td>
+                                {% if session._has_book_now %}
+                                <span class="badge badge-book" title="Book Now: {{ session._book_now_tours | join(', ') }}">🎟️ Booked</span>
+                                {% endif %}
+                                {% if session._has_send_to_phone %}
+                                <span class="badge badge-phone" title="Sent to Phone: {{ session._send_to_phone_tours | join(', ') }}">📱 Sent</span>
+                                {% endif %}
+                                {% if not session._has_book_now and not session._has_send_to_phone %}
+                                <span style="color: rgba(255,255,255,0.3);">—</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -783,6 +806,26 @@
             
             html += '</ul>';
             
+            // Check for conversions
+            const bookNowEvents = events.filter(e => e.type === 'book_now_clicked');
+            const sendToPhoneEvents = events.filter(e => e.type === 'send_to_phone_clicked');
+            const hasConversions = bookNowEvents.length > 0 || sendToPhoneEvents.length > 0;
+            
+            let conversionHtml = '';
+            if (hasConversions) {
+                conversionHtml = '<div style="margin-top: 10px; padding: 10px; background: rgba(231,76,60,0.2); border: 1px solid rgba(231,76,60,0.4); border-radius: 8px;">';
+                conversionHtml += '<strong style="color: #e74c3c;">🎯 CONVERSIONS IN THIS SESSION:</strong><br>';
+                for (const e of bookNowEvents) {
+                    const tour = (e.data || {}).tour_name || 'Unknown';
+                    conversionHtml += `<span style="display:inline-block; margin: 4px 4px 0 0; padding: 3px 8px; background: #e74c3c; border-radius: 4px; font-size: 0.85em;">🎟️ Book Now: ${tour}</span>`;
+                }
+                for (const e of sendToPhoneEvents) {
+                    const tour = (e.data || {}).tour_name || 'Unknown';
+                    conversionHtml += `<span style="display:inline-block; margin: 4px 4px 0 0; padding: 3px 8px; background: #2980b9; border-radius: 4px; font-size: 0.85em;">📱 Send to Phone: ${tour}</span>`;
+                }
+                conversionHtml += '</div>';
+            }
+            
             // Add summary at top
             const summaryHtml = `
                 <div style="margin-bottom: 20px; padding: 15px; background: rgba(0,119,182,0.2); border-radius: 10px;">
@@ -792,6 +835,7 @@
                     <strong>Mode:</strong> ${session.mode || 'Not set'}<br>
                     <strong>Tours viewed:</strong> ${(session.tours_viewed || []).length}<br>
                     <strong>Total events:</strong> ${events.length}
+                    ${conversionHtml}
                 </div>
             `;
             

@@ -1966,58 +1966,32 @@ def get_analytics_summary(account=None):
         for conversion in s.get('qr_conversions', []):
             qr_conversions.append(conversion)
     
-    # Apply click count overrides from account settings
-    # These lock in known-correct totals that survive analytics data churn from git syncs
-    active_account = get_active_account()
-    if active_account:
-        acct_settings = load_account_settings(active_account)
-        click_overrides = acct_settings.get('click_count_overrides', {})
-        if 'book_now' in click_overrides:
-            override_total = click_overrides['book_now']
-            raw_total = book_now_clicks
-            # Scale the by-source breakdown proportionally so it adds up to the override
-            if raw_total > 0 and raw_total != override_total:
-                scale = override_total / raw_total
-                scaled = {k: max(0, round(v * scale)) for k, v in book_now_by_source.items()}
-                # Adjust rounding so the sum matches exactly
-                diff = override_total - sum(scaled.values())
-                if diff != 0 and scaled:
-                    top_key = max(scaled, key=scaled.get)
-                    scaled[top_key] = max(0, scaled[top_key] + diff)
-                book_now_by_source = scaled
-                # Scale the top_tours_booked list to match the override total
-                raw_bookings_total = sum(c for _, c in top_tours_booked)
-                if raw_bookings_total > 0:
-                    scaled_bookings = [(name, max(1, round(count * scale))) for name, count in top_tours_booked]
-                    # Trim to match override total exactly
-                    while sum(c for _, c in scaled_bookings) > override_total and len(scaled_bookings) > 1:
-                        scaled_bookings.pop()  # Remove lowest-ranked tours
-                    # Adjust the last remaining entry so total matches exactly
-                    if scaled_bookings:
-                        current_sum = sum(c for _, c in scaled_bookings[:-1])
-                        last_name, _ = scaled_bookings[-1]
-                        remainder = max(1, override_total - current_sum)
-                        scaled_bookings[-1] = (last_name, remainder)
-                    top_tours_booked = scaled_bookings
-            elif raw_total == 0 and override_total > 0:
-                book_now_by_source = {'unknown': override_total}
-            book_now_clicks = override_total
-        if 'send_to_phone' in click_overrides:
-            override_total = click_overrides['send_to_phone']
-            raw_total = send_to_phone_clicks
-            # Scale the by-source breakdown proportionally so it adds up to the override
-            if raw_total > 0 and raw_total != override_total:
-                scale = override_total / raw_total
-                scaled = {k: max(0, round(v * scale)) for k, v in send_to_phone_by_source.items()}
-                # Adjust rounding so the sum matches exactly
-                diff = override_total - sum(scaled.values())
-                if diff != 0 and scaled:
-                    top_key = max(scaled, key=scaled.get)
-                    scaled[top_key] = max(0, scaled[top_key] + diff)
-                send_to_phone_by_source = scaled
-            elif raw_total == 0 and override_total > 0:
-                send_to_phone_by_source = {'unknown': override_total}
-            send_to_phone_clicks = override_total
+    # Note: click_count_overrides were removed — they hardcoded stale numbers
+    # and prevented real event counts from showing. Always use live data now.
+    
+    # Annotate each session with conversion flags (for badges in the session list)
+    for s in sessions:
+        s['_has_book_now'] = False
+        s['_has_send_to_phone'] = False
+        s['_book_now_tours'] = []
+        s['_send_to_phone_tours'] = []
+        for event in s.get('events', []):
+            etype = event.get('type', '')
+            if etype == 'book_now_clicked':
+                s['_has_book_now'] = True
+                tour = event.get('data', {}).get('tour_name', 'Unknown')
+                if tour not in s['_book_now_tours']:
+                    s['_book_now_tours'].append(tour)
+            elif etype == 'send_to_phone_clicked':
+                s['_has_send_to_phone'] = True
+                tour = event.get('data', {}).get('tour_name', 'Unknown')
+                if tour not in s['_send_to_phone_tours']:
+                    s['_send_to_phone_tours'].append(tour)
+    
+    # Count sessions with conversions
+    sessions_with_book_now = sum(1 for s in sessions if s.get('_has_book_now'))
+    sessions_with_send_to_phone = sum(1 for s in sessions if s.get('_has_send_to_phone'))
+    sessions_with_any_conversion = sum(1 for s in sessions if s.get('_has_book_now') or s.get('_has_send_to_phone'))
     
     # Calculate QR conversion rate
     qr_conversion_rate = 0
@@ -2046,7 +2020,10 @@ def get_analytics_summary(account=None):
         'send_to_phone_clicks': send_to_phone_clicks,
         'send_to_phone_by_source': send_to_phone_by_source,
         'book_now_clicks': book_now_clicks,
-        'book_now_by_source': book_now_by_source
+        'book_now_by_source': book_now_by_source,
+        'sessions_with_book_now': sessions_with_book_now,
+        'sessions_with_send_to_phone': sessions_with_send_to_phone,
+        'sessions_with_any_conversion': sessions_with_any_conversion
     }
 
 # Company name mapping for prettier display - load from config or use defaults
