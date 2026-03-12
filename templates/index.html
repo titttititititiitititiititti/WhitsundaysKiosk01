@@ -29081,6 +29081,10 @@
       const fallbackKey = companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '') : '';
       const finalKey = companyKey || fallbackKey;
       
+      // CRITICAL: Immediately disable infinite scroll to prevent it from
+      // appending non-company tours before our "Other Tours" divider is inserted
+      homePageHasMore = false;
+      
       // Store the tour we came from
       previousTourKey = fromTourKey;
       

@@ -2377,6 +2377,7 @@ def load_all_tours(language='en', preview_account=None):
     csv_files = []
     loaded_companies = set()
     loaded_tour_keys = set()  # Track loaded tours to prevent duplicates
+    loaded_tour_names_by_company = {}  # Track name+company to catch same tour with different IDs
     
     # First, load from organized data/{company}/{language}/ structure
     company_dirs = glob.glob('data/*/')
@@ -2421,10 +2422,17 @@ def load_all_tours(language='en', preview_account=None):
                         company = row['company_name']
                         key = f"{company}__{tid}"
                         
-                        # Skip if already loaded (prevent duplicates)
+                        # Skip if already loaded (prevent duplicates by key)
                         if key in loaded_tour_keys:
                             continue
                         loaded_tour_keys.add(key)
+                        
+                        # Also skip if same tour name already loaded for this company
+                        # (catches duplicate CSV rows with different IDs)
+                        name_company_key = f"{company}::{name}"
+                        if name_company_key in loaded_tour_names_by_company:
+                            continue
+                        loaded_tour_names_by_company[name_company_key] = key
                         
                         # Check if images are enabled for this company (legal toggle)
                         images_enabled = are_company_images_enabled(company)
