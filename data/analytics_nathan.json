@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-14T09:09:43.472239",
+  "last_updated": "2026-03-14T09:29:35.351352",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -53226,12 +53226,90 @@
             "company": "Wings",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-14T09:17:14.014210",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [
         "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-14T09:17:14.014210",
+      "duration_seconds": 604.320802
+    },
+    {
+      "session_id": "session_97baccc69b8b_1773444300",
+      "account": "nathan",
+      "started_at": "2026-03-14T09:25:00.308981",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-14T09:25:00.308981",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-14T09:25:02.565869",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-14T09:25:12.351443",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-14T09:25:17.333345",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-14T09:25:20.293463",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-14T09:25:46.049903",
+          "data": {
+            "tour_name": "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
+            "company": "Airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-14T09:25:56.216916",
+          "data": {
+            "tour_name": "Half-Day Fishing Trips in the Whitsundays",
+            "company": "Whitsundayfishingcharters",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
+        "Half-Day Fishing Trips in the Whitsundays"
       ],
       "tours_booked": [],
       "chat_messages": []
