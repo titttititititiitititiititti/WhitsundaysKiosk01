@@ -10668,16 +10668,19 @@ def _pull_all_analytics_from_remote(target_account=None):
 @app.route('/api/analytics/refresh', methods=['POST'])
 @agent_required
 def refresh_analytics():
-    """Pull latest analytics from all kiosks via git, send signal for kiosks to push new data."""
+    """Pull latest analytics from all kiosks via git.
+    
+    Kiosks auto-push their analytics every 5 minutes, so data is at most 5 min old.
+    This endpoint just fetches and merges whatever is on the remote.
+    Also sends a signal for any kiosk to push immediately if they see it.
+    """
     try:
         username = session.get('user')
         if not username:
             return jsonify({'success': False, 'error': 'Not logged in'}), 401
         
         repo_path = os.path.dirname(os.path.abspath(__file__))
-        signal_sent = False
         pulled = False
-        kiosks_responded = 0
         
         # Step 1: Push THIS device's local analytics to git (if running locally)
         if HAS_GIT_REPO and not IS_RENDER:
@@ -10686,80 +10689,45 @@ def refresh_analytics():
             except Exception as e:
                 print(f"[ANALYTICS] Local push during refresh failed: {e}")
         
-        # Step 2: Immediately pull ALL analytics from remote (get what's already there)
+        # Step 2: Pull ALL analytics from remote (kiosks auto-push every 5 min)
         any_pulled, target_pulled = _pull_all_analytics_from_remote(username)
-        if target_pulled:
+        if any_pulled:
             pulled = True
         
-        # Step 3: Send signal to all kiosks to push their analytics
+        # Step 3: Send signal for kiosks to push immediately (in addition to auto-push)
+        signal_sent = False
         if HAS_GIT_REPO:
             signal_sent = send_analytics_push_signal()
         
-        # Step 4: Poll for kiosk responses (up to 75 seconds - covers full 60s update cycle)
+        # Step 4: Quick second pull after a short wait (catch any kiosk that responds fast)
         if signal_sent:
-            print("[ANALYTICS] Waiting for kiosks to respond to signal...", flush=True)
-            
-            initial_hash = subprocess.run(
-                ['git', 'rev-parse', 'origin/main'],
-                cwd=repo_path, capture_output=True, text=True, 
-                encoding='utf-8', errors='replace', timeout=10
-            ).stdout.strip()
-            
-            # Poll every 5 seconds for up to 75 seconds (covers a full 60s kiosk update cycle)
-            for poll in range(15):  # 15 * 5 = 75 seconds max
-                time.sleep(5)
-                
-                # Fetch and check if origin/main advanced
-                subprocess.run(
-                    ['git', 'fetch', 'origin', 'main'],
-                    cwd=repo_path, capture_output=True, text=True,
-                    encoding='utf-8', errors='replace', timeout=15
-                )
-                current_hash = subprocess.run(
-                    ['git', 'rev-parse', 'origin/main'],
-                    cwd=repo_path, capture_output=True, text=True,
-                    encoding='utf-8', errors='replace', timeout=10
-                ).stdout.strip()
-                
-                if current_hash != initial_hash:
-                    kiosks_responded += 1
-                    print(f"[ANALYTICS] Kiosk response #{kiosks_responded} detected on poll #{poll+1} (after {(poll+1)*5}s)", flush=True)
-                    # Pull ALL analytics files (kiosks may write to any account)
-                    any_new, target_new = _pull_all_analytics_from_remote(username)
-                    if target_new:
-                        pulled = True
-                    initial_hash = current_hash
-                    # Keep polling for more kiosks to respond
-        
-        # Final pull to catch anything we missed
-        if not pulled:
-            any_final, target_final = _pull_all_analytics_from_remote(username)
-            if target_final:
+            time.sleep(8)  # Brief wait for fast-responding kiosks
+            subprocess.run(
+                ['git', 'fetch', 'origin', 'main'],
+                cwd=repo_path, capture_output=True, text=True,
+                encoding='utf-8', errors='replace', timeout=15
+            )
+            any_new, target_new = _pull_all_analytics_from_remote(username)
+            if any_new:
                 pulled = True
         
-        # Build informative response
-        if pulled:
-            message = f'Pulled latest analytics from kiosks ({kiosks_responded} responded).'
-        elif kiosks_responded > 0:
-            message = f'{kiosks_responded} kiosk(s) responded but had no new data for your account.'
-        elif signal_sent:
-            message = 'Signal sent but no kiosks responded yet. Data will auto-refresh when they do.'
-        else:
-            message = 'Analytics up to date (loaded from local data).'
-        
-        # Get last session time for context
+        # Build response
         analytics = load_analytics(username)
         all_sessions = analytics.get('sessions', [])
         last_session_time = None
         if all_sessions:
             last_session_time = all_sessions[-1].get('started_at', '')
         
+        if pulled:
+            message = 'Analytics refreshed with latest data from kiosks.'
+        else:
+            message = 'Analytics up to date. Kiosks auto-push every 5 minutes.'
+        
         return jsonify({
             'success': True, 
             'message': message,
             'signal_sent': signal_sent,
             'pulled': pulled,
-            'kiosks_responded': kiosks_responded,
             'total_sessions': len(all_sessions),
             'last_session_time': last_session_time
         })
@@ -10816,43 +10784,104 @@ def start_background_services():
         # But it can't check for analytics signals while the app is running (it's blocked reading stdout).
         # So we start a lightweight analytics-only loop here.
         def _analytics_signal_loop():
-            """Lightweight loop: just fetch + check analytics signals. No code update handling."""
+            """Background loop for kiosks running under run_kiosk.py.
+            
+            Does THREE things:
+            1. Auto-pushes analytics to git every 5 minutes (no signal needed)
+            2. Checks for code updates and exits Flask so run_kiosk.py can restart
+            3. Responds to immediate push signals from admin
+            """
             import time as _time
             _time.sleep(15)  # Wait for app to fully start
             _check_count = 0
-            print("[ANALYTICS] Signal loop started, first check in 15s...", flush=True)
+            _last_auto_push = _time.time()
+            _AUTO_PUSH_INTERVAL = 300  # Push analytics every 5 minutes
+            print("[KIOSK BG] Background loop started (auto-push every 5min, update check every 30s)", flush=True)
             while True:
                 _check_count += 1
                 try:
                     _repo = os.path.dirname(os.path.abspath(__file__))
                     
-                    # Fetch to get latest signal file from origin
+                    # Fetch to get latest from origin
                     _fetch = subprocess.run(
                         ['git', 'fetch', 'origin', 'main'],
                         cwd=_repo, capture_output=True, text=True,
                         encoding='utf-8', errors='replace', timeout=30
                     )
                     
-                    if _fetch.returncode == 0:
-                        if _check_count % 10 == 1:  # Log every ~5min so we know the loop is alive
-                            print(f"[ANALYTICS] Signal check #{_check_count} (fetch OK)", flush=True)
-                        # Check for analytics push signal on origin/main
+                    if _fetch.returncode != 0:
+                        print(f"[KIOSK BG] Fetch failed (check #{_check_count}): {(_fetch.stderr or '')[:100]}", flush=True)
+                        _time.sleep(30)
+                        continue
+                    
+                    # --- 1. CHECK FOR CODE UPDATES ---
+                    # If origin/main has new commits, exit so run_kiosk.py can pull and restart
+                    try:
+                        _local = subprocess.run(
+                            ['git', 'rev-parse', 'HEAD'],
+                            cwd=_repo, capture_output=True, text=True,
+                            encoding='utf-8', errors='replace', timeout=5
+                        ).stdout.strip()
+                        _remote = subprocess.run(
+                            ['git', 'rev-parse', 'origin/main'],
+                            cwd=_repo, capture_output=True, text=True,
+                            encoding='utf-8', errors='replace', timeout=5
+                        ).stdout.strip()
+                        
+                        if _local and _remote and _local != _remote:
+                            # Check what changed — only restart for code changes, not just data files
+                            _diff = subprocess.run(
+                                ['git', 'diff', '--name-only', 'HEAD', 'origin/main'],
+                                cwd=_repo, capture_output=True, text=True,
+                                encoding='utf-8', errors='replace', timeout=10
+                            )
+                            _changed_files = [f.strip() for f in (_diff.stdout or '').strip().split('\n') if f.strip()]
+                            _code_changes = [f for f in _changed_files 
+                                           if not f.startswith('data/analytics_') and f != 'data/analytics_request.json']
+                            
+                            if _code_changes:
+                                print(f"[KIOSK BG] 🔄 Code update detected ({len(_code_changes)} files changed)", flush=True)
+                                print(f"[KIOSK BG] Changed: {', '.join(_code_changes[:5])}", flush=True)
+                                # Push our analytics before restarting (so data isn't lost)
+                                try:
+                                    sync_analytics_to_git()
+                                except Exception as _e:
+                                    print(f"[KIOSK BG] Analytics push before restart failed: {_e}", flush=True)
+                                print("[KIOSK BG] Exiting for code update (run_kiosk.py will restart us)...", flush=True)
+                                os._exit(0)
+                    except Exception as _e:
+                        print(f"[KIOSK BG] Update check error: {_e}", flush=True)
+                    
+                    # --- 2. AUTO-PUSH ANALYTICS (every 5 minutes) ---
+                    _now = _time.time()
+                    if _now - _last_auto_push >= _AUTO_PUSH_INTERVAL:
                         try:
-                            _check_and_respond_to_analytics_signal(repo_path=_repo)
+                            print(f"[KIOSK BG] Auto-pushing analytics (every {_AUTO_PUSH_INTERVAL//60}min)...", flush=True)
+                            sync_analytics_to_git()
+                            _last_auto_push = _now
+                            print("[KIOSK BG] ✅ Auto-push complete", flush=True)
                         except Exception as _e:
-                            print(f"[ANALYTICS] Signal check error: {_e}", flush=True)
-                    else:
-                        print(f"[ANALYTICS] Signal check #{_check_count} - fetch FAILED: {_fetch.stderr[:100] if _fetch.stderr else 'no output'}", flush=True)
+                            print(f"[KIOSK BG] Auto-push error: {_e}", flush=True)
+                            _last_auto_push = _now  # Don't retry immediately on failure
+                    
+                    # --- 3. CHECK FOR IMMEDIATE PUSH SIGNAL ---
+                    try:
+                        _check_and_respond_to_analytics_signal(repo_path=_repo)
+                    except Exception as _e:
+                        print(f"[KIOSK BG] Signal check error: {_e}", flush=True)
+                    
+                    # Heartbeat log every ~5min
+                    if _check_count % 10 == 1:
+                        print(f"[KIOSK BG] Alive (check #{_check_count}, last push {int(_now - _last_auto_push)}s ago)", flush=True)
                     
                 except Exception as _e:
-                    print(f"[ANALYTICS] Signal loop error: {_e}", flush=True)
+                    print(f"[KIOSK BG] Loop error: {_e}", flush=True)
                 
-                _time.sleep(30)  # Check every 30s (faster response to analytics signals)
+                _time.sleep(30)  # Check every 30s
         
         _analytics_thread = threading.Thread(target=_analytics_signal_loop, daemon=True)
         _analytics_thread.start()
-        print("[AUTO-UPDATE] Code updates handled by run_kiosk.py")
-        print("[ANALYTICS] Analytics signal checker started (checking every 30s)")
+        print("[KIOSK BG] Background loop started: auto-push analytics every 5min, code updates every 30s")
     elif AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()
@@ -10862,10 +10891,9 @@ def start_background_services():
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
     
-    # Analytics: signal-based sync - when admin clicks "Refresh Data", a signal is pushed to git.
-    # Kiosks detect it on their next update check (~60s) and push their analytics in response.
-    # Also pushed before any auto-update reset (to prevent data loss).
-    print("[ANALYTICS] Signal-based analytics sync enabled (responds within ~60s of Refresh Data)")
+    # Analytics: Kiosks auto-push analytics every 5 minutes via _analytics_signal_loop.
+    # Admin "Refresh Data" just fetches from remote. Signal is also sent for immediate push.
+    print("[ANALYTICS] Auto-push analytics enabled (kiosks push every 5min)")
 
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()

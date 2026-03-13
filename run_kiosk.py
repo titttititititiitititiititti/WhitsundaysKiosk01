@@ -296,27 +296,28 @@ def check_analytics_push_request():
         script_dir = os.path.dirname(os.path.abspath(__file__))
         signal = None
         
-        # Try local file first
-        signal_file = os.path.join(script_dir, 'data', 'analytics_request.json')
-        if os.path.exists(signal_file):
-            try:
-                with open(signal_file, 'r', encoding='utf-8') as f:
-                    signal = json.load(f)
-            except:
-                pass
+        # Read from origin/main first (authoritative after fetch)
+        # Local file may be stale if we only fetched, not pulled/reset
+        try:
+            show_result = subprocess.run(
+                ['git', 'show', 'origin/main:data/analytics_request.json'],
+                cwd=script_dir, capture_output=True, text=True,
+                encoding='utf-8', errors='replace', timeout=10
+            )
+            if show_result.returncode == 0 and show_result.stdout.strip():
+                signal = json.loads(show_result.stdout)
+        except:
+            pass
         
-        # Fallback: read from origin/main (fetch already happened in check_for_updates)
+        # Fallback: try local file
         if not signal:
-            try:
-                show_result = subprocess.run(
-                    ['git', 'show', 'origin/main:data/analytics_request.json'],
-                    cwd=script_dir, capture_output=True, text=True,
-                    encoding='utf-8', errors='replace', timeout=10
-                )
-                if show_result.returncode == 0 and show_result.stdout.strip():
-                    signal = json.loads(show_result.stdout)
-            except:
-                pass
+            signal_file = os.path.join(script_dir, 'data', 'analytics_request.json')
+            if os.path.exists(signal_file):
+                try:
+                    with open(signal_file, 'r', encoding='utf-8') as f:
+                        signal = json.load(f)
+                except:
+                    pass
         
         if not signal:
             return
