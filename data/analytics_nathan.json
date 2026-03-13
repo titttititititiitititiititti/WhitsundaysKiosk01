@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-13T16:37:48.396590",
+  "last_updated": "2026-03-14T09:08:13.893750",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -53190,6 +53190,51 @@
       "chat_messages": [],
       "ended_at": "2026-03-13T11:52:49.716204",
       "duration_seconds": 300.324412
+    },
+    {
+      "session_id": "session_caf4952bad8f_1773443229",
+      "account": "nathan",
+      "started_at": "2026-03-14T09:07:09.693408",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-14T09:07:09.693408",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-14T09:07:11.608312",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-14T09:07:16.074997",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-14T09:07:51.000273",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
+            "company": "Wings",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Airlie Beach Sunset Sail in Style Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
