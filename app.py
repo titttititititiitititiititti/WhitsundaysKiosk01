@@ -10474,8 +10474,8 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
     """Check if there's an analytics push signal and respond by pushing our analytics.
     
     Flow: Admin clicks "Refresh Data" → signal file pushed to git → 
-    kiosks detect it here (within ~60s) → push their analytics → 
-    admin clicks "Refresh Data" again → gets all data.
+    kiosks detect it here (within ~30s) → push their analytics → 
+    admin's polling loop detects the push and pulls the data.
     """
     global _last_responded_signal
     
@@ -10484,27 +10484,28 @@ def _check_and_respond_to_analytics_signal(repo_path=None):
     
     signal_data = None
     
-    # Try reading from local file first (after git pull it'll be on disk)
-    local_signal = os.path.join(repo_path, ANALYTICS_REQUEST_FILE)
-    if os.path.exists(local_signal):
-        try:
-            with open(local_signal, 'r', encoding='utf-8') as f:
-                signal_data = json.load(f)
-        except:
-            pass
+    # ALWAYS read from origin/main first (the authoritative source after git fetch).
+    # The local file on disk may be stale if we only fetched (not pulled/reset).
+    try:
+        show_result = subprocess.run(
+            ['git', 'show', f'origin/main:{ANALYTICS_REQUEST_FILE}'],
+            cwd=repo_path, capture_output=True, text=True,
+            encoding='utf-8', errors='replace', timeout=10
+        )
+        if show_result.returncode == 0 and show_result.stdout.strip():
+            signal_data = json.loads(show_result.stdout)
+    except:
+        pass
     
-    # Fallback: read from origin/main (if fetch already happened)
+    # Fallback: read from local file (in case git show failed)
     if not signal_data:
-        try:
-            show_result = subprocess.run(
-                ['git', 'show', f'origin/main:{ANALYTICS_REQUEST_FILE}'],
-                cwd=repo_path, capture_output=True, text=True,
-                encoding='utf-8', errors='replace', timeout=10
-            )
-            if show_result.returncode == 0 and show_result.stdout.strip():
-                signal_data = json.loads(show_result.stdout)
-        except:
-            pass
+        local_signal = os.path.join(repo_path, ANALYTICS_REQUEST_FILE)
+        if os.path.exists(local_signal):
+            try:
+                with open(local_signal, 'r', encoding='utf-8') as f:
+                    signal_data = json.load(f)
+            except:
+                pass
     
     if not signal_data:
         return
@@ -10819,6 +10820,7 @@ def start_background_services():
             import time as _time
             _time.sleep(15)  # Wait for app to fully start
             _check_count = 0
+            print("[ANALYTICS] Signal loop started, first check in 15s...", flush=True)
             while True:
                 _check_count += 1
                 try:
@@ -10832,21 +10834,25 @@ def start_background_services():
                     )
                     
                     if _fetch.returncode == 0:
+                        if _check_count % 10 == 1:  # Log every ~5min so we know the loop is alive
+                            print(f"[ANALYTICS] Signal check #{_check_count} (fetch OK)", flush=True)
                         # Check for analytics push signal on origin/main
                         try:
                             _check_and_respond_to_analytics_signal(repo_path=_repo)
                         except Exception as _e:
                             print(f"[ANALYTICS] Signal check error: {_e}", flush=True)
+                    else:
+                        print(f"[ANALYTICS] Signal check #{_check_count} - fetch FAILED: {_fetch.stderr[:100] if _fetch.stderr else 'no output'}", flush=True)
                     
                 except Exception as _e:
                     print(f"[ANALYTICS] Signal loop error: {_e}", flush=True)
                 
-                _time.sleep(AUTO_UPDATE_INTERVAL)  # Same interval as normal update checks (60s)
+                _time.sleep(30)  # Check every 30s (faster response to analytics signals)
         
         _analytics_thread = threading.Thread(target=_analytics_signal_loop, daemon=True)
         _analytics_thread.start()
         print("[AUTO-UPDATE] Code updates handled by run_kiosk.py")
-        print("[ANALYTICS] Analytics signal checker started (checking every 60s)")
+        print("[ANALYTICS] Analytics signal checker started (checking every 30s)")
     elif AUTO_UPDATE_ENABLED:
         _update_thread = threading.Thread(target=auto_update_loop, daemon=True)
         _update_thread.start()

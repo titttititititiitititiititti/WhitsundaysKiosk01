@@ -600,7 +600,7 @@ def run_flask_app():
     env = os.environ.copy()
     env['PYTHONUNBUFFERED'] = '1'
     env['FLASK_ENV'] = 'production'
-    env['RUNNING_UNDER_KIOSK_RUNNER'] = '1'  # Tell app.py to skip analytics push (run_kiosk handles it)
+    env['RUNNING_UNDER_KIOSK_RUNNER'] = '1'  # Tell app.py to skip full auto_update_loop; use lightweight analytics signal loop instead
     
     # Start Flask - read as bytes and decode manually for bulletproof encoding handling
     process = None
