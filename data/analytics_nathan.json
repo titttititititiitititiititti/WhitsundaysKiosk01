@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-14T09:59:00.008759",
+  "last_updated": "2026-03-14T10:01:42.537761",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -53226,6 +53226,11 @@
             "company": "Wings",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-14T09:17:14.014210",
+          "data": {}
         }
       ],
       "language": "en",
@@ -53234,7 +53239,9 @@
         "Airlie Beach Sunset Sail in Style Cruise"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-14T09:17:14.014210",
+      "duration_seconds": 604.320802
     },
     {
       "session_id": "session_97baccc69b8b_1773444300",
@@ -53296,6 +53303,11 @@
             "company": "Whitsundayfishingcharters",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-14T09:31:58.093826",
+          "data": {}
         }
       ],
       "language": "en",
@@ -53305,7 +53317,9 @@
         "Half-Day Fishing Trips in the Whitsundays"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-14T09:31:58.093826",
+      "duration_seconds": 417.784845
     },
     {
       "session_id": "session_ec4bac1a6fdf_1773444894",
@@ -53319,20 +53333,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-14T09:57:29.184002",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-14T09:57:29.184002",
-      "duration_seconds": 1354.354687
+      "chat_messages": []
     },
     {
       "session_id": "session_d645d34eef69_1773446210",
@@ -53357,6 +53364,40 @@
         {
           "type": "mode_selected",
           "timestamp": "2026-03-14T09:56:58.138961",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_40e02632f90f_1773446292",
+      "account": "nathan",
+      "started_at": "2026-03-14T09:58:12.147768",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-14T09:58:12.147768",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-14T09:58:13.937374",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-14T09:58:16.326204",
           "data": {
             "mode": "browse-all"
           }
