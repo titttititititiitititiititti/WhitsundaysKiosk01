@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-14T12:09:51.262143",
+  "last_updated": "2026-03-14T12:10:14.255390",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -53319,20 +53319,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-14T09:57:29.184002",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-14T09:57:29.184002",
-      "duration_seconds": 1354.354687
+      "chat_messages": []
     },
     {
       "session_id": "session_d645d34eef69_1773446210",
@@ -53360,13 +53353,51 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-14T09:57:36.553043",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-14T09:57:39.901072",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-03-14T09:57:59.553433",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-14T10:03:57.713198",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
+      "tours_viewed": [
+        "Whitehaven Beach & Hamilton Island Tour"
+      ],
+      "tours_booked": [
+        "Whitehaven Beach & Hamilton Island Tour"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-14T10:03:57.713198",
+      "duration_seconds": 427.001677
     },
     {
       "session_id": "session_40e02632f90f_1773446292",
@@ -53414,20 +53445,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-14T10:17:48.083004",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-14T10:17:48.083004",
-      "duration_seconds": 299.68483
+      "chat_messages": []
     },
     {
       "session_id": "session_ed3635fe10a2_1773450042",
@@ -53441,20 +53465,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-14T11:13:36.071525",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-14T11:13:36.071525",
-      "duration_seconds": 773.256359
+      "chat_messages": []
     },
     {
       "session_id": "session_685fd144fc6e_1773453511",
@@ -53475,20 +53492,13 @@
           "data": {
             "language": "es"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-03-14T12:05:41.261954",
-          "data": {}
         }
       ],
       "language": "es",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-03-14T12:05:41.261954",
-      "duration_seconds": 429.584041
+      "chat_messages": []
     },
     {
       "session_id": "session_96ff2dbaa3dc_1773454074",
