@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-03-14T14:44:13.906340",
+  "last_updated": "2026-03-15T14:53:58.681382",
   "sessions": [
     {
       "session_id": "session_f5a167a4fa38_1770427065",
@@ -10415,6 +10415,139 @@
       ],
       "ended_at": "2026-03-12T23:31:05.489132",
       "duration_seconds": 1298.58839
+    },
+    {
+      "session_id": "session_e1d95aa79776_1773369236",
+      "account": "bailey",
+      "started_at": "2026-03-13T12:33:56.956927",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-13T12:33:56.956927",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-13T12:33:58.346811",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-13T12:34:22.946068",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-13T12:35:06.679873",
+          "data": {
+            "role": "user",
+            "message": "I want a full day beach tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-13T12:35:24.430040",
+          "data": {
+            "role": "assistant",
+            "message": "Exploring the stunning Whitsundays on a full-day beach tour is a fantastic choice! \ud83c\udf34 Let me show you some amazing options:\n\n1. **Viper Outer Great Barrier Reef Tour** - This popular tour aboard the Viper, the fastest vessel in the Whitsundays, offers an exhilarating day filled with adventure. You'll explore the iconic Outer Great Barrier Reef and Whitehaven Beach, with opportunities to snorkel vibrant coral gardens alongside a marine biologist. Plus, enjoy a guided walk to Hill Inlet lookout an"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-13T12:36:26.448840",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-03-13T12:36:30.242999",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-13T12:36:36.918706",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day beach tour",
+          "timestamp": "2026-03-13T12:35:06.679873"
+        },
+        {
+          "role": "assistant",
+          "message": "Exploring the stunning Whitsundays on a full-day beach tour is a fantastic choice! \ud83c\udf34 Let me show you some amazing options:\n\n1. **Viper Outer Great Barrier Reef Tour** - This popular tour aboard the Viper, the fastest vessel in the Whitsundays, offers an exhilarating day filled with adventure. You'll explore the iconic Outer Great Barrier Reef and Whitehaven Beach, with opportunities to snorkel vibrant coral gardens alongside a marine biologist. Plus, enjoy a guided walk to Hill Inlet lookout an",
+          "timestamp": "2026-03-13T12:35:24.430040"
+        }
+      ]
+    },
+    {
+      "session_id": "session_de665ce7ea4b_1773381895",
+      "account": "bailey",
+      "started_at": "2026-03-13T16:04:55.448795",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-13T16:04:55.448795",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-13T16:04:57.783291",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-13T16:05:01.986927",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-13T16:05:08.448519",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-13T16:05:08.448519",
+      "duration_seconds": 12.999724
     }
   ]
 }
