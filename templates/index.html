@@ -19361,6 +19361,8 @@
     let isDragging = false;
     let startX = 0;
     let currentX = 0;
+    let isCardTransitioning = false;  // Lock to prevent concurrent card changes
+    let prefetchedTourData = {};      // Cache for preloaded tour details
     let isInVideoFlow = false; // Track if we're in the video question flow
     window.cameFromAIAssistant = false; // Track if tour detail was opened from AI assistant
     window.cameFromQuickDecision = false; // Track if tour detail was opened from Quick Match
@@ -19475,10 +19477,10 @@
           if (firstCard) firstCard.classList.add('entering');
           if (actions) actions.classList.add('entering');
           
-          // Show swipe hint overlay on first view
-          if (!sessionStorage.getItem('swipeHintShown')) {
+          // Show swipe hint overlay only on very first use (persists across sessions via localStorage)
+          if (!localStorage.getItem('swipeHintShown')) {
             showSwipeHintOverlay();
-            sessionStorage.setItem('swipeHintShown', 'true');
+            localStorage.setItem('swipeHintShown', 'true');
           }
         }, 50);
         
@@ -19667,26 +19669,49 @@
         if (!isSwiping) return;
         isSwiping = false;
         
+        // Don't process swipes if a card transition is already in progress
+        if (isCardTransitioning) {
+          const elements = getSwipeElements();
+          setTransition(elements, 'transform 0.3s ease-out');
+          setTransform(elements, 0);
+          hideGlows();
+          currentTranslateX = 0;
+          isHorizontalSwipe = false;
+          return;
+        }
+        
         const elements = getSwipeElements();
         const screenWidth = window.innerWidth;
-        const threshold = screenWidth * 0.08; // 8% of screen width — sensitive for large kiosk screens
+        const threshold = screenWidth * 0.15; // 15% of screen width — less sensitive to prevent accidental triggers
         const elapsed = Date.now() - touchStartTime;
         const velocity = Math.abs(currentTranslateX) / Math.max(elapsed, 1); // px per ms
-        const isFlick = velocity > 0.4 && Math.abs(currentTranslateX) > 30; // fast flick with minimal distance
+        const isFlick = velocity > 0.6 && Math.abs(currentTranslateX) > 80; // need faster + further flick to trigger
         
         // Add transition for smooth snap/fling
         setTransition(elements, 'transform 0.3s ease-out');
         
-        if (Math.abs(currentTranslateX) > threshold || isFlick) {
+        if (isHorizontalSwipe && (Math.abs(currentTranslateX) > threshold || isFlick)) {
           if (currentTranslateX > 0) {
             // Swipe right past threshold = Book
             console.log('👉 Swipe right - Book');
             setTransform(elements, screenWidth); // Fling off screen
             hideGlows();
             setTimeout(() => {
+              // Hide content before resetting position (prevents snap-back to old card)
+              [elements.fixedTop, elements.scrollableContent].forEach(el => {
+                if (el) el.style.opacity = '0';
+              });
               setTransform(elements, 0);
               setTransition(elements, 'none');
               acceptCard();
+              // Fade in new content
+              requestAnimationFrame(() => {
+                setTimeout(() => {
+                  [elements.fixedTop, elements.scrollableContent].forEach(el => {
+                    if (el) { el.style.transition = 'opacity 0.2s ease-in'; el.style.opacity = '1'; }
+                  });
+                }, 50);
+              });
             }, 300);
           } else {
             // Swipe left past threshold = Next
@@ -19694,9 +19719,21 @@
             setTransform(elements, -screenWidth); // Fling off screen
             hideGlows();
             setTimeout(() => {
+              // Hide content before resetting position (prevents snap-back to old card)
+              [elements.fixedTop, elements.scrollableContent].forEach(el => {
+                if (el) el.style.opacity = '0';
+              });
               setTransform(elements, 0);
               setTransition(elements, 'none');
               rejectCard();
+              // Fade in new content
+              requestAnimationFrame(() => {
+                setTimeout(() => {
+                  [elements.fixedTop, elements.scrollableContent].forEach(el => {
+                    if (el) { el.style.transition = 'opacity 0.2s ease-in'; el.style.opacity = '1'; }
+                  });
+                }, 50);
+              });
             }, 300);
           }
         } else {
@@ -19753,14 +19790,38 @@
       
       // Automatically expand all details
       await expandTourDetails(tour);
+      
+      // Preload next card in the background for instant transitions
+      prefetchNextCard();
+    }
+    
+    function prefetchNextCard() {
+      const nextIdx = currentCardIndex + 1;
+      if (nextIdx < swipeCards.length) {
+        const nextTour = swipeCards[nextIdx];
+        if (!prefetchedTourData[nextTour.key]) {
+          console.log('[SWIPE] Preloading next tour:', nextTour.name);
+          fetchTourDetails(nextTour.key).then(data => {
+            prefetchedTourData[nextTour.key] = data;
+          }).catch(() => {}); // Silently fail - will fetch on demand
+        }
+      }
     }
     
     async function fetchTourDetails(tourKey) {
+      // Return cached data if available
+      if (prefetchedTourData[tourKey]) {
+        console.log('[FETCH] Using prefetched tour data for:', tourKey);
+        const data = prefetchedTourData[tourKey];
+        return data;
+      }
+      
       try {
         const response = await fetch(`/tour-detail/${tourKey}?lang=${currentLanguage}`);
         if (!response.ok) throw new Error('Failed to fetch tour details');
         const data = await response.json();
         console.log('[FETCH] Tour details received:', data);
+        prefetchedTourData[tourKey] = data;
         return data;
       } catch (error) {
         console.error('[ERROR] Failed to fetch tour details:', error);
@@ -20074,19 +20135,37 @@
       }
     }
     
+    // Cleaned-up drag handler — uses named functions so listeners can be removed
+    let _dragMoveHandler = null;
+    let _dragEndHandler = null;
+    
     function setupSwipeHandlers(card) {
       if (!card) return;
       
-      card.addEventListener('mousedown', startDrag);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', endDrag);
+      // Remove old document-level listeners to prevent accumulation
+      if (_dragMoveHandler) {
+        document.removeEventListener('mousemove', _dragMoveHandler);
+        document.removeEventListener('touchmove', _dragMoveHandler);
+      }
+      if (_dragEndHandler) {
+        document.removeEventListener('mouseup', _dragEndHandler);
+        document.removeEventListener('touchend', _dragEndHandler);
+      }
       
-      card.addEventListener('touchstart', startDrag);
-      document.addEventListener('touchmove', drag);
-      document.addEventListener('touchend', endDrag);
+      _dragMoveHandler = drag;
+      _dragEndHandler = endDrag;
+      
+      card.addEventListener('mousedown', startDrag);
+      document.addEventListener('mousemove', _dragMoveHandler);
+      document.addEventListener('mouseup', _dragEndHandler);
+      
+      card.addEventListener('touchstart', startDrag, { passive: true });
+      document.addEventListener('touchmove', _dragMoveHandler, { passive: false });
+      document.addEventListener('touchend', _dragEndHandler, { passive: true });
     }
     
     function startDrag(e) {
+      if (isCardTransitioning) return;  // Don't start drag during card transition
       isDragging = true;
       startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
       e.currentTarget.classList.add('grabbing');
@@ -20130,6 +20209,7 @@
     
     // Animation wrapper for button clicks
     function rejectCardWithAnimation() {
+      if (isCardTransitioning) return;
       console.log('[ACTION] Reject button clicked - animating left');
       
       const fixedTop = document.getElementById('swipe-fixed-top');
@@ -20145,18 +20225,31 @@
       });
       
       setTimeout(() => {
-        // Reset transform and call rejectCard
+        // Hide content while loading next card (prevents snap-back to old card)
         [fixedTop, scrollableContent].forEach(el => {
           if (el) {
+            el.style.opacity = '0';
             el.style.transition = 'none';
             el.style.transform = 'translateX(0)';
           }
         });
         rejectCard();
+        // Fade in once new card is ready
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            [fixedTop, scrollableContent].forEach(el => {
+              if (el) {
+                el.style.transition = 'opacity 0.2s ease-in';
+                el.style.opacity = '1';
+              }
+            });
+          }, 50);
+        });
       }, 300);
     }
     
     function acceptCardWithAnimation() {
+      if (isCardTransitioning) return;
       console.log('[ACTION] Accept button clicked - animating right');
       
       const fixedTop = document.getElementById('swipe-fixed-top');
@@ -20172,18 +20265,36 @@
       });
       
       setTimeout(() => {
-        // Reset transform and call acceptCard
+        // Hide content while processing (prevents snap-back)
         [fixedTop, scrollableContent].forEach(el => {
           if (el) {
+            el.style.opacity = '0';
             el.style.transition = 'none';
             el.style.transform = 'translateX(0)';
           }
         });
         acceptCard();
+        // Fade in once ready
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            [fixedTop, scrollableContent].forEach(el => {
+              if (el) {
+                el.style.transition = 'opacity 0.2s ease-in';
+                el.style.opacity = '1';
+              }
+            });
+          }, 50);
+        });
       }, 300);
     }
     
     function rejectCard() {
+      // Prevent double-triggers from competing swipe handlers
+      if (isCardTransitioning) {
+        console.log('[ACTION] Reject blocked - card is transitioning');
+        return;
+      }
+      isCardTransitioning = true;
       console.log('[ACTION] Rejecting tour - Next');
       
       currentCardIndex++;
@@ -20191,15 +20302,25 @@
       // Check if there are more cards
       if (currentCardIndex >= swipeCards.length) {
         console.log('[SWIPE] No more tours to show');
+        isCardTransitioning = false;
         window.goToHomePage();
         return;
       }
       
-      // Display next card
-      displayCurrentCard();
+      // Display next card, then unlock
+      displayCurrentCard().then(() => {
+        isCardTransitioning = false;
+      }).catch(() => {
+        isCardTransitioning = false;
+      });
     }
 
     function acceptCard() {
+      // Prevent double-triggers from competing swipe handlers
+      if (isCardTransitioning) {
+        console.log('[ACTION] Accept blocked - card is transitioning');
+        return;
+      }
       console.log('[ACTION] Booking tour');
       console.log('   currentCardIndex:', currentCardIndex, 'swipeCards.length:', swipeCards.length);
       
@@ -21087,6 +21208,12 @@
       // Reset swipe-related state
       swipeCards = [];
       currentCardIndex = 0;
+      isCardTransitioning = false;
+      prefetchedTourData = {};  // Clear prefetch cache for fresh session
+      
+      // Reset swipe gesture initialization so it re-attaches cleanly
+      const swipeOv = document.getElementById('swipe-results-overlay');
+      if (swipeOv) swipeOv.removeAttribute('data-swipe-initialized');
       
       // Add to navigation history
       addToNavigationHistory('quick-decision');
