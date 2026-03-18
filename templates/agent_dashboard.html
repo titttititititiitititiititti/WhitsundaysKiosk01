@@ -2777,13 +2777,12 @@
         // Also check immediately on page load
         pollForNotifications();
         
-        // Event delegation for Edit buttons - avoids inline onclick escaping issues
+        // Event delegation for Edit buttons - navigate to tour editor with tour pre-selected
         document.addEventListener('click', function(e) {
             const editBtn = e.target.closest('.edit-tour-btn');
             if (editBtn) {
                 const tourKey = editBtn.dataset.key;
-                const tourName = editBtn.dataset.name;
-                openTourSettings(tourKey, tourName);
+                window.location.href = '{{ url_for("tour_editor") }}?select=' + encodeURIComponent(tourKey);
             }
         });
         

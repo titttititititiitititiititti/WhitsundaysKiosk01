@@ -1960,6 +1960,7 @@
         let selectedSectionType = null;
         let currentImages = [];
         let previewVisible = false;
+        let currentTourSettings = { booking_button_url: '', hero_widget_html: '', notes: '', button_overlay: null };
         
         // Undo stack for formatting operations
         const undoStack = [];
@@ -2081,6 +2082,8 @@
             extended: { icon: '📖', name: 'Extended Details' },
             links: { icon: '🔗', name: 'Links & Contact' },
             images: { icon: '🖼️', name: 'Images & Thumbnail' },
+            booking: { icon: '🔗', name: 'Booking Integration' },
+            notes: { icon: '📝', name: 'Notes' },
         };
         
         function toggleCompany(header) {
@@ -2160,11 +2163,12 @@
                 
                 currentTour = await response.json();
                 
-                // Also load images, videos, and reviews
+                // Also load images, videos, reviews, and account settings
                 await Promise.all([
                     loadTourImages(key),
                     loadVideoUrls(key),
-                    loadReviews()
+                    loadReviews(),
+                    loadTourSettings(key)
                 ]);
                 
                 renderTourForm();
@@ -2199,6 +2203,75 @@
                 console.error('Failed to load images:', err);
                 currentImages = [];
             }
+        }
+        
+        async function loadTourSettings(key) {
+            try {
+                const response = await fetch(`/admin/agent/api/tour-settings/${key}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    currentTourSettings = data.settings || { booking_button_url: '', hero_widget_html: '', notes: '', button_overlay: null };
+                } else {
+                    currentTourSettings = { booking_button_url: '', hero_widget_html: '', notes: '', button_overlay: null };
+                }
+            } catch (err) {
+                console.error('Failed to load tour settings:', err);
+                currentTourSettings = { booking_button_url: '', hero_widget_html: '', notes: '', button_overlay: null };
+            }
+        }
+        
+        function renderBookingSection() {
+            const s = currentTourSettings;
+            const hasWidget = s.hero_widget_html && s.hero_widget_html.trim().length > 0;
+            const overlay = s.button_overlay;
+            const overlayStr = overlay ? `${parseFloat(overlay.left || 0).toFixed(1)}%, ${parseFloat(overlay.top || 0).toFixed(1)}% — ${parseFloat(overlay.width || 0).toFixed(1)}% × ${parseFloat(overlay.height || 0).toFixed(1)}%` : 'Not configured';
+            
+            return `
+                <div class="form-section" id="section-booking">
+                    <div class="section-header" onclick="toggleSection('booking')">
+                        <h3>🔗 Booking Integration</h3>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        ${hasWidget ? '<div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; color: #10b981; font-size: 0.9em;">💎 Prices handled by booking widget<br><span style="opacity:0.7;">Remove the Hero widget below if you want to set prices manually.</span></div>' : ''}
+                        <div class="form-group">
+                            <label>Booking Button URL</label>
+                            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom: 6px;">Direct link to booking page (opens in new tab when "Book Now" is clicked)</p>
+                            <input type="url" id="settings-booking-url" value="${(s.booking_button_url || '').replace(/"/g, '&quot;')}" placeholder="https://example.com/book/tour-name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Widget HTML / Embed Code</label>
+                            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom: 6px;">Paste the full HTML embed code from Hero. This replaces the pricing section with an interactive booking widget.</p>
+                            <textarea id="settings-hero-widget" rows="4" placeholder="<iframe src=&quot;https://widget.hero.travel/...&quot;></iframe>">${(s.hero_widget_html || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>🎯 Kiosk Button Overlay</label>
+                            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom: 6px;">Configure where the "Book Now" button should be blocked on the kiosk. This prevents users from clicking the widget's booking button directly.</p>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                                <span style="font-size: 0.85em; opacity: 0.8;">📐 ${overlayStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderNotesSection() {
+            return `
+                <div class="form-section" id="section-notes">
+                    <div class="section-header" onclick="toggleSection('notes')">
+                        <h3>📝 Notes</h3>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>Internal Notes</label>
+                            <p style="font-size: 0.8em; opacity: 0.6; margin-bottom: 6px;">For your reference only - not shown to customers</p>
+                            <textarea id="settings-notes" rows="4" placeholder="Any notes about this tour...">${(currentTourSettings.notes || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
         function renderTourForm() {
@@ -2283,6 +2356,12 @@
                     </div>
                 </div>
             `;
+            
+            // Add Booking Integration section (per-account settings)
+            html += renderBookingSection();
+            
+            // Add Notes section (per-account settings)
+            html += renderNotesSection();
             
             // Add custom sections from the data
             const customFields = ['custom_section_1', 'custom_section_2', 'custom_section_3'];
@@ -2774,9 +2853,12 @@
                     return;
                 }
                 
-                // Also save reviews
-                await saveReviews();
-                
+                // Also save reviews and account-specific settings (booking, overlay, notes)
+                await Promise.all([
+                    saveReviews(),
+                    saveTourSettings()
+                ]);
+
                 currentTour = { ...formData };
                 hasUnsavedChanges = false;
                 updateSaveStatus('saved');
@@ -2784,6 +2866,32 @@
             } catch (err) {
                 updateSaveStatus('unsaved');
                 showToast('Failed to save: ' + err.message, 'error');
+            }
+        }
+        
+        async function saveTourSettings() {
+            if (!currentTour) return;
+            const key = `${currentTour.company_name}__${currentTour.id}`;
+            const bookingUrl = document.getElementById('settings-booking-url');
+            const heroWidget = document.getElementById('settings-hero-widget');
+            const notes = document.getElementById('settings-notes');
+            
+            if (!bookingUrl && !heroWidget && !notes) return;
+            
+            const settingsData = {};
+            if (bookingUrl) settingsData.booking_button_url = bookingUrl.value;
+            if (heroWidget) settingsData.hero_widget_html = heroWidget.value;
+            if (notes) settingsData.notes = notes.value;
+            if (currentTourSettings.button_overlay) settingsData.button_overlay = currentTourSettings.button_overlay;
+            
+            try {
+                await fetch(`/admin/agent/api/tour-settings/${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settingsData)
+                });
+            } catch (err) {
+                console.error('Failed to save tour settings:', err);
             }
         }
         
@@ -3988,9 +4096,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             const firstCompany = document.querySelector('.company-group');
             if (firstCompany) firstCompany.classList.add('expanded');
-            
+
             // Set up preview updates on form changes
             setupPreviewUpdates();
+            
+            // Auto-select tour from URL ?select= parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectKey = urlParams.get('select');
+            if (selectKey) {
+                loadTour(selectKey);
+            }
         });
         
         // Re-initialize drag and drop after form renders

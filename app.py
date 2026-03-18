@@ -944,60 +944,29 @@ def apply_approved_changes(request):
             save_account_settings(username, settings)
         
         elif change_type == 'tour_content_edit':
-            # Apply tour content changes (name, description, images, etc.) to CSV
-            # This edits the actual tour data, not just account overrides
+            # Apply tour content changes as per-account overrides
+            # This stores changes in the requesting user's account settings
+            # so they only appear for that company's kiosk, not globally
             new_data = changes.get('new_data', {})
             
             if not tour_key or not new_data:
                 print("[CHANGE REQUEST] Missing tour_key or new_data")
                 return False
             
-            try:
-                company, tid = tour_key.split('__', 1)
-            except ValueError:
-                print(f"[CHANGE REQUEST] Invalid tour key: {tour_key}")
-                return False
+            # Store as per-account tour_overrides
+            settings = load_account_settings(username)
+            if 'tour_overrides' not in settings:
+                settings['tour_overrides'] = {}
+            if tour_key not in settings['tour_overrides']:
+                settings['tour_overrides'][tour_key] = {}
             
-            csv_file = find_company_csv(company)
-            if not csv_file:
-                print(f"[CHANGE REQUEST] Company CSV not found: {company}")
-                return False
+            for field, value in new_data.items():
+                settings['tour_overrides'][tour_key][field] = value
             
-            # Read, update, and write back to CSV
-            rows = []
-            fieldnames = None
+            settings['tour_overrides'][tour_key]['_content_approved_at'] = datetime.now().isoformat()
+            save_account_settings(username, settings)
             
-            with open(csv_file, newline='', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                fieldnames = reader.fieldnames
-                rows = list(reader)
-            
-            # Add any new fields
-            new_fields = [f for f in new_data.keys() if f not in fieldnames]
-            if new_fields:
-                fieldnames = list(fieldnames) + new_fields
-            
-            # Find and update the tour
-            tour_found = False
-            for i, row in enumerate(rows):
-                if row.get('id') == tid:
-                    for field, value in new_data.items():
-                        row[field] = value
-                    rows[i] = row
-                    tour_found = True
-                    break
-            
-            if not tour_found:
-                print(f"[CHANGE REQUEST] Tour not found: {tour_key}")
-                return False
-            
-            # Write back
-            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(rows)
-            
-            print(f"[CHANGE REQUEST] Applied tour content edit for {tour_key}")
+            print(f"[CHANGE REQUEST] Applied tour content edit for {tour_key} to {username}'s account overrides")
         
         elif change_type == 'company_name_edit':
             # Update company display name (per-account)
@@ -8322,9 +8291,19 @@ def get_tour_for_editor(key):
             reader = csv.DictReader(f)
             for row in reader:
                 if row.get('id') == tid:
-                    # Add the CSV file path so we know where to save
                     result = dict(row)
                     result['_csv_file'] = csv_file
+                    
+                    # For non-admin users, merge their account overrides
+                    # so they see their customized version of the tour
+                    username = session.get('user')
+                    if username and not is_admin_user(username):
+                        settings = load_account_settings(username)
+                        overrides = settings.get('tour_overrides', {}).get(key, {})
+                        for field, value in overrides.items():
+                            if not field.startswith('_'):
+                                result[field] = value
+                    
                     return jsonify(result)
         
         return jsonify({'error': 'Tour not found'}), 404
