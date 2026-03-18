@@ -16765,6 +16765,7 @@
         "half_day": "Half Day", "half_day_hours": "(2-4 hours)",
         "full_day": "Full Day", "full_day_hours": "(5-8 hours)",
         "multi_day": "Multi-day", "multi_day_adventure": "Adventure",
+        "cruise_ship_label": "Cruise Ship", "cruise_ship_day_tour": "Day Tour",
         "no_preference": "No preference",
         "show_me_everything": "Show me everything",
         "similar_tours_title": "Similar Tours You Might Like",
@@ -16851,6 +16852,7 @@
         "half_day": "半日", "half_day_hours": "(2-4時間)",
         "full_day": "終日", "full_day_hours": "(5-8時間)",
         "multi_day": "複数日", "multi_day_adventure": "アドベンチャー",
+        "cruise_ship_label": "クルーズ船対応", "cruise_ship_day_tour": "日帰りツアー",
         "no_preference": "特になし",
         "show_me_everything": "すべて見る",
         "similar_tours_title": "おすすめの類似ツアー",
@@ -16937,6 +16939,7 @@
         "half_day": "半天", "half_day_hours": "(2-4小时)",
         "full_day": "全天", "full_day_hours": "(5-8小时)",
         "multi_day": "多日", "multi_day_adventure": "探险",
+        "cruise_ship_label": "邮轮友好", "cruise_ship_day_tour": "一日游",
         "no_preference": "无偏好",
         "show_me_everything": "显示全部",
         "similar_tours_title": "您可能喜欢的类似旅程",
@@ -17023,6 +17026,7 @@
         "half_day": "반나절", "half_day_hours": "(2-4시간)",
         "full_day": "하루종일", "full_day_hours": "(5-8시간)",
         "multi_day": "여러 날", "multi_day_adventure": "어드벤처",
+        "cruise_ship_label": "크루즈선", "cruise_ship_day_tour": "당일 투어",
         "no_preference": "상관없음",
         "show_me_everything": "모두 보기",
         "similar_tours_title": "좋아하실 만한 유사 투어",
@@ -17109,6 +17113,7 @@
         "half_day": "Halber Tag", "half_day_hours": "(2-4 Stunden)",
         "full_day": "Ganzer Tag", "full_day_hours": "(5-8 Stunden)",
         "multi_day": "Mehrtägig", "multi_day_adventure": "Abenteuer",
+        "cruise_ship_label": "Kreuzfahrt", "cruise_ship_day_tour": "Tagestour",
         "no_preference": "Keine Präferenz",
         "show_me_everything": "Alles anzeigen",
         "similar_tours_title": "Ähnliche Touren, die Ihnen gefallen könnten",
@@ -17195,6 +17200,7 @@
         "half_day": "Demi-journée", "half_day_hours": "(2-4 heures)",
         "full_day": "Journée complète", "full_day_hours": "(5-8 heures)",
         "multi_day": "Plusieurs jours", "multi_day_adventure": "Aventure",
+        "cruise_ship_label": "Croisière", "cruise_ship_day_tour": "Excursion",
         "no_preference": "Pas de préférence",
         "show_me_everything": "Tout afficher",
         "similar_tours_title": "Excursions similaires qui pourraient vous plaire",
@@ -17281,6 +17287,7 @@
         "half_day": "आधा दिन", "half_day_hours": "(2-4 घंटे)",
         "full_day": "पूरा दिन", "full_day_hours": "(5-8 घंटे)",
         "multi_day": "कई दिन", "multi_day_adventure": "साहसिक",
+        "cruise_ship_label": "क्रूज़ शिप", "cruise_ship_day_tour": "दिन का दौरा",
         "no_preference": "कोई प्राथमिकता नहीं",
         "show_me_everything": "सब कुछ दिखाएं",
         "similar_tours_title": "आपको पसंद आने वाले समान टूर",
@@ -17367,6 +17374,7 @@
         "half_day": "Medio día", "half_day_hours": "(2-4 horas)",
         "full_day": "Día completo", "full_day_hours": "(5-8 horas)",
         "multi_day": "Varios días", "multi_day_adventure": "Aventura",
+        "cruise_ship_label": "Crucero", "cruise_ship_day_tour": "Tour de un día",
         "no_preference": "Sin preferencia",
         "show_me_everything": "Mostrar todo",
         "similar_tours_title": "Tours similares que te pueden gustar",
@@ -18208,8 +18216,12 @@
         cruiseNoticeText.innerHTML = lang.cruise_ship_notice;
       }
       const cruiseFilterLabel = document.getElementById('home-cruise-ship-text');
-      if (cruiseFilterLabel && lang.cruise_ship_filter) {
-        cruiseFilterLabel.textContent = lang.cruise_ship_filter;
+      if (cruiseFilterLabel && lang.cruise_ship_label) {
+        cruiseFilterLabel.textContent = lang.cruise_ship_label;
+      }
+      const cruiseFilterHours = document.getElementById('home-cruise-ship-hours');
+      if (cruiseFilterHours && lang.cruise_ship_day_tour) {
+        cruiseFilterHours.textContent = lang.cruise_ship_day_tour;
       }
       
       // Update Newcomer Info button
@@ -25488,16 +25500,18 @@
       console.log('🔄 Restoring selections for question', questionNum);
       
       if (questionNum === 1) {
-        // Duration - highlight selected button
+        // Duration - highlight selected button or clear all
         const duration = activeFilters.duration;
+        const cruiseActive = activeFilters.cruise_ship_friendly;
+        document.querySelectorAll('.filter-question-card[data-question="1"] .duration-pill').forEach(btn => {
+          btn.classList.remove('selected');
+        });
         if (duration) {
-          document.querySelectorAll('[data-value]').forEach(btn => {
-            if (btn.getAttribute('data-value') === duration) {
-              btn.classList.add('selected');
-            } else {
-              btn.classList.remove('selected');
-            }
-          });
+          const btn = document.querySelector(`.filter-question-card[data-question="1"] .duration-pill[data-value="${duration}"]`);
+          if (btn) btn.classList.add('selected');
+        } else if (cruiseActive) {
+          const btn = document.getElementById('home-cruise-ship-btn');
+          if (btn) btn.classList.add('selected');
         }
       } else if (questionNum === 2) {
         // Family - no special restoration needed, single-select
@@ -26006,7 +26020,7 @@
       if (currentQuestion > 1) {
         // FIRST: Remove the filters for the CURRENT question (the one we're leaving)
         const questionFilterMap = {
-          1: ['duration'],
+          1: ['duration', 'cruise_ship_friendly'],
           2: ['family'],
           3: ['activity'],
           4: ['meals', 'equipment'],
@@ -26018,6 +26032,10 @@
           delete activeFilters[filter];
         });
         
+        // Clear cruise ship mode when going back from question 1
+        if (currentQuestion === 1) {
+          window._cruiseShipMode = false;
+        }
         // Clear multi-select states for the question we're leaving
         if (currentQuestion === 3) {
           selectedActivities.clear();
@@ -26046,6 +26064,9 @@
         homePageOffset = 0;
         homePageLoadedKeys = [];
         homePageHasMore = true;
+        isLoadingMoreTours = false;
+        const endInd = document.getElementById('end-of-tours-indicator');
+        if (endInd) endInd.remove();
         
         // Update the summary display
         updateFilterSummaryDisplay();
@@ -26103,6 +26124,9 @@
       homePageOffset = 0;
       homePageLoadedKeys = [];
       homePageHasMore = true;
+      isLoadingMoreTours = false;
+      window._cruiseShipMode = false;
+      homePageTotalCount = 0;
       
       // Clear location filter too
       selectedLocation = null;
@@ -26118,6 +26142,13 @@
       document.querySelectorAll('[data-extra]').forEach(btn => {
         btn.classList.remove('duration-pill--selected');
       });
+      document.querySelectorAll('.duration-pill').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Remove end-of-tours indicator if present
+      const endIndicator = document.getElementById('end-of-tours-indicator');
+      if (endIndicator) endIndicator.remove();
       
       // Hide all question cards
       document.querySelectorAll('.filter-question-card').forEach(card => {
@@ -31101,7 +31132,9 @@
       const cruiseNoticeTextAL = document.getElementById('cruise-ship-notice-text');
       if (cruiseNoticeTextAL && lang.cruise_ship_notice) cruiseNoticeTextAL.innerHTML = lang.cruise_ship_notice;
       const cruiseFilterLabelAL = document.getElementById('home-cruise-ship-text');
-      if (cruiseFilterLabelAL && lang.cruise_ship_filter) cruiseFilterLabelAL.textContent = lang.cruise_ship_filter;
+      if (cruiseFilterLabelAL && lang.cruise_ship_label) cruiseFilterLabelAL.textContent = lang.cruise_ship_label;
+      const cruiseFilterHoursAL = document.getElementById('home-cruise-ship-hours');
+      if (cruiseFilterHoursAL && lang.cruise_ship_day_tour) cruiseFilterHoursAL.textContent = lang.cruise_ship_day_tour;
       
       // Update home page filter questions (with dual-language)
       const homeDurationQuestion = document.getElementById('home-duration-question');
@@ -31127,7 +31160,9 @@
       if (homeMultiDayHours) homeMultiDayHours.textContent = lang.multi_day_adventure;
       if (homeNoPrefDurationText) homeNoPrefDurationText.innerHTML = dualAL(lang.no_preference, 'no_preference');
       const homeCruiseShipTextEl = document.getElementById('home-cruise-ship-text');
-      if (homeCruiseShipTextEl && lang.cruise_ship_filter) homeCruiseShipTextEl.innerHTML = dualAL(lang.cruise_ship_filter, 'cruise_ship_filter');
+      if (homeCruiseShipTextEl && lang.cruise_ship_label) homeCruiseShipTextEl.innerHTML = dualAL(lang.cruise_ship_label, 'cruise_ship_label');
+      const homeCruiseShipHoursEl = document.getElementById('home-cruise-ship-hours');
+      if (homeCruiseShipHoursEl && lang.cruise_ship_day_tour) homeCruiseShipHoursEl.textContent = lang.cruise_ship_day_tour;
       if (homeFamilyKidsText) homeFamilyKidsText.innerHTML = '👨‍👩‍👧‍👦 ' + dualAL(lang.family_with_kids, 'family_with_kids');
       if (homeAdultsOnlyText) homeAdultsOnlyText.innerHTML = '👥 ' + dualAL(lang.adults_only, 'adults_only');
       if (homeNoPrefFamilyText) homeNoPrefFamilyText.innerHTML = dualAL(lang.no_preference, 'no_preference');
