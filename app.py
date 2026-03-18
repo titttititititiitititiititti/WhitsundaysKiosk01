@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 
 # Fix Windows console encoding for non-ASCII characters (Japanese, Chinese, Hindi, etc.)
@@ -1873,6 +1873,7 @@ def is_meaningful_session(session):
         'qr_code_generated', 'qr_tour_visit',
         'book_now_clicked', 'booking_click', 'send_to_phone', 'send_to_phone_clicked',
         'language_select', 'language_selected',
+        'filter_selected', 'filter_applied', 'duration_selected', 'activity_selected',
         'swipe', 'card_swipe', 'like', 'dislike',
         'weather_opened'
     }
@@ -5227,9 +5228,12 @@ def apply_filters(tours, criteria, user_message_context=None, conversation_histo
         filtered_tours = [t for t in filtered_tours if t['family_friendly']]
     # Note: When family=False or 'adults_only', we don't filter - adults can go on any tour
     
+    if criteria.get('cruise_ship_friendly'):
+        filtered_tours = [t for t in filtered_tours if t.get('cruise_ship_friendly', False)]
+    
     if criteria.get('meals') == True:
         filtered_tours = [t for t in filtered_tours if t['meals_included']]
-    
+
     if criteria.get('equipment') == True:
         filtered_tours = [t for t in filtered_tours if t['equipment_included']]
     
@@ -5248,8 +5252,8 @@ def filter_tours():
     equipment = request.args.get('equipment', '')
     company = request.args.get('company', '')
     
-    # Cruise ship friendly filter
-    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true'
+    # Cruise ship friendly filter (accept both parameter names)
+    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true' or request.args.get('cruise_ship_friendly', '') == 'true'
     
     print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}, cruise_ship_only={cruise_ship_only}")
     
@@ -5329,8 +5333,8 @@ def more_tours():
     # Remove empty string from exclude set if present
     exclude_keys.discard('')
     
-    # Cruise ship friendly filter
-    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true'
+    # Cruise ship friendly filter (accept both parameter names)
+    cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true' or request.args.get('cruise_ship_friendly', '') == 'true'
     
     # Get referral account for filtering (if user came from QR code)
     referral_account = get_referral_account()
@@ -5856,11 +5860,17 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
     user_wants_oceanrafting = 'ocean rafting' in user_text or 'oceanrafting' in user_text
     wants_helicopter = any(kw in user_text for kw in ['helicopter', 'heli', 'scenic flight', 'aerial', 'fly over', 'seaplane'])
     
+    # CRUISE SHIP REQUEST - user needs tours that fit cruise ship schedules
+    cruise_keywords = ['cruise ship', 'cruise friendly', 'cruise-ship', 'cruiseship', 'cruise port', 
+                       'cruise passenger', 'cruise schedule', 'cruise stop', 'port day', 'port of call',
+                       'ship docked', 'docked at', 'coming off cruise', 'on a cruise', 'cruise liner']
+    user_wants_cruise_ship = any(kw in user_text for kw in cruise_keywords)
+    
     # POPULAR TOURS REQUEST - user wants to see our most popular/recommended tours
     popular_keywords = ['popular', 'best tours', 'top tours', 'recommended', 'favorites', 'what\'s popular', 'show popular']
     user_wants_popular = any(kw in user_text for kw in popular_keywords)
     
-    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}, oceanrafting={user_wants_oceanrafting}, helicopter={wants_helicopter}, popular={user_wants_popular}")
+    print(f"[LLM] User intent: whitehaven={user_wants_whitehaven}, reef={user_wants_reef}, sailing={user_wants_sailing}, jetski={user_wants_jetski}, oceanrafting={user_wants_oceanrafting}, helicopter={wants_helicopter}, popular={user_wants_popular}, cruise_ship={user_wants_cruise_ship}")
     
     # SPECIAL HANDLING: Only add GBR if user EXPLICITLY wants reef (not Whitehaven/sailing/etc)
     wants_coral_reef_only = 'coral reef' in user_text or 'fringing reef' in user_text
@@ -6016,6 +6026,11 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
                 pass
             if price_num > 1000:
                 continue  # Skip tours over $1000 for budget travelers
+        
+        # CRUISE SHIP FRIENDLY: Only return cruise-ship-friendly tours
+        if user_wants_cruise_ship:
+            if not t.get('cruise_ship_friendly', False):
+                continue
         
         if not active_keywords:
             relevant_tours.append(t)  # No keywords = include all
@@ -6198,6 +6213,10 @@ def find_matching_tours_with_llm(user_message, conversation_history, all_tours, 
         if 'rainforest' in name_lower or 'rainforest' in desc_lower:
             tags.append('nature')
         
+        # Cruise ship friendly (dynamically tagged by admin)
+        if t.get('cruise_ship_friendly'):
+            tags.append('cruise-ship-friendly')
+        
         # Check family-friendly from CSV tags or audience field
         csv_tags = (t.get('tags', '') or '').lower()
         audience = (t.get('audience', '') or '').lower()
@@ -6290,6 +6309,7 @@ IMPORTANT MATCHING RULES:
   * DO NOT return 2-day tours for "full day" requests!
 - USE THE TAGS FIELD to find related tours (e.g., "reef" tag means it's a reef tour)
 - For family requests: ALWAYS include tours with "family-friendly" tag
+- For cruise ship requests: ONLY return tours with "cruise-ship-friendly" tag
 - PRIORITIZE PROMOTED TOURS when they match!
 - If no tours match, return empty and set needs_alternative=true
 - Return 10-15 tours if available (we need variety for "show other" requests)
@@ -6628,7 +6648,8 @@ def chat_preflight():
             'skydiv', 'ocean rafting', 'popular', 'best tours', 'top tours',
             'recommended', 'other options', 'alternatives', 'different tours',
             'something else', 'more options', 'show me', 'what tours',
-            'do you have', 'any tours', 'find me', 'search for', 'looking for tours'
+            'do you have', 'any tours', 'find me', 'search for', 'looking for tours',
+            'cruise ship', 'cruise friendly', 'cruise port', 'cruise passenger'
         ]
         if any(trigger in msg_lower for trigger in instant_triggers):
             print(f"[PREFLIGHT] INSTANT trigger found in message")
@@ -7143,6 +7164,11 @@ Reply ONLY: SEARCH or ASK"""
         else:
             print(f"[i] No tours matched (user wants: {user_wants})")
         
+        # Count cruise-ship-friendly tours dynamically (admin-tagged)
+        cruise_ship_tours = [t for t in all_tours if t.get('cruise_ship_friendly')]
+        cruise_ship_count = len(cruise_ship_tours)
+        cruise_ship_names = [t['name'] for t in cruise_ship_tours[:10]]
+        
         # Build tour context
         tour_context = build_tour_context(language)
         
@@ -7247,11 +7273,12 @@ DO NOT substitute different tours. DO NOT change the order. DO NOT make up tour 
                 highlights = tour.get('highlights', '')[:400] if tour.get('highlights') else 'Amazing experience'
                 includes = tour.get('includes', '')[:250] if tour.get('includes') else ''
                 description = tour.get('description', '')[:300] if tour.get('description') else ''
+                cruise_badge = ' 🚢 CRUISE SHIP FRIENDLY' if tour.get('cruise_ship_friendly') else ''
                 
                 specific_tours_section += f"""
 â”â”â” TOUR #{i} (describe this as number {i}) â”â”â”
 NAME: "{tour['name']}" â† USE THIS EXACT NAME
-{promo_badge}
+{promo_badge}{cruise_badge}
 Company: {tour.get('company_name', tour.get('company', ''))}
 Price: {tour.get('price_adult', 'Contact for price')}
 Duration: {tour.get('duration', 'Full Day')}
@@ -7348,6 +7375,13 @@ Our tour categories:
 - Diving & Snorkeling: {len(tour_context['categories']['diving'])} tours (beginners to advanced)
 - Scenic Tours: {len(tour_context['categories']['scenic'])} tours (helicopter, seaplane, scenic flights)
 
+**CRUISE SHIP FRIENDLY TOURS** ({cruise_ship_count} tours tagged by admin):
+These tours work with cruise ship schedules. The admin dynamically tags which tours qualify.
+{chr(10).join('- ' + n for n in cruise_ship_names) if cruise_ship_names else '- No tours currently tagged'}
+When a user mentions cruise ship, port day, or limited time from a cruise:
+- ONLY recommend tours tagged as cruise ship friendly
+- Mention these tours fit cruise ship schedules
+
 **FEATURED & POPULAR TOURS** (PRIORITIZE THESE! When these match user preferences, recommend them FIRST and be EXTRA enthusiastic!):
 {build_promoted_tours_section(tour_context)}
 
@@ -7401,6 +7435,9 @@ Keep responses SHORT but ALWAYS include tour recommendations once you have 2 pre
 
 **EXAMPLE - CORRECT:**
 "Speed boat tours are thrilling! ðŸš¤ [FILTER:{{"duration":"full_day","activity":"scenic_adventure"}}]"
+
+**EXAMPLE - CRUISE SHIP:**
+"Since you're on a cruise, let me find tours that fit your schedule! [FILTER:{{"cruise_ship_friendly":true,"activity":"great_barrier_reef"}}]"
 
 **EXAMPLE - WRONG (NO TOURS WILL SHOW!):**
 "Speed boat tours sound exciting! Let me find some for you. Hang tight!" (MISSING [FILTER:...] = NOTHING HAPPENS!)
@@ -10222,14 +10259,14 @@ def sync_analytics_to_git():
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             
-            # Reset to match origin exactly — our commit will be on top of this
-            # No stash needed: we already have all local data in memory from Step 1
-            # Any concurrent writes from Flask during this brief window will be
-            # captured on the next sync cycle (the window is <100ms)
-            subprocess.run(
-                ['git', 'reset', '--hard', 'origin/main'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=15
-            )
+            # Reset ONLY analytics files to match origin (not the whole repo!)
+            # git reset --hard would wipe all local code changes, so we only
+            # checkout the specific analytics files from origin/main instead.
+            for rel_path in local_analytics.keys():
+                subprocess.run(
+                    ['git', 'checkout', 'origin/main', '--', rel_path],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+                )
             
             # Step 3: Merge local sessions into the reset files (which now match remote)
             files_changed = False
@@ -10307,7 +10344,21 @@ def sync_analytics_to_git():
                 print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr[:200]}", flush=True)
                 return
             
-            # Step 5: Push (should be fast-forward since we reset to origin/main first)
+            # Step 5: Pull (rebase) then push to handle any remote changes
+            # Since we no longer reset HEAD, we need to rebase on top of origin/main
+            pull_result = subprocess.run(
+                ['git', 'pull', '--rebase', 'origin', 'main'],
+                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+            )
+            
+            if pull_result.returncode != 0:
+                pull_stderr = pull_result.stderr or ''
+                if 'conflict' in pull_stderr.lower():
+                    # Abort rebase and retry
+                    subprocess.run(['git', 'rebase', '--abort'], cwd=repo_path, capture_output=True, timeout=10)
+                    print(f"[ANALYTICS SYNC] Rebase conflict — retrying...", flush=True)
+                    continue
+            
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
@@ -10322,7 +10373,7 @@ def sync_analytics_to_git():
             
             if 'rejected' in stderr or 'non-fast-forward' in stderr:
                 print(f"[ANALYTICS SYNC] Remote advanced during push — retrying whole sync...", flush=True)
-                continue  # Retry the whole flow with random delay
+                continue
             else:
                 print(f"[ANALYTICS SYNC] ❌ Push error (not a conflict)", flush=True)
                 return
@@ -10683,15 +10734,25 @@ def refresh_analytics():
         pulled = False
         
         # Step 1: Push THIS device's local analytics to git (if running locally)
+        # sync_analytics_to_git also PULLS remote data and merges it into local
         if HAS_GIT_REPO and not IS_RENDER:
             try:
+                pre_sync = load_analytics(username)
+                pre_count = len(pre_sync.get('sessions', []))
+                
                 sync_analytics_to_git()
+                
+                post_sync = load_analytics(username)
+                post_count = len(post_sync.get('sessions', []))
+                if post_count != pre_count:
+                    pulled = True
+                    print(f"[ANALYTICS] Sync brought {post_count - pre_count} new sessions for {username}")
             except Exception as e:
                 print(f"[ANALYTICS] Local push during refresh failed: {e}")
         
         # Step 2: Pull ALL analytics from remote (kiosks auto-push every 5 min)
         any_pulled, target_pulled = _pull_all_analytics_from_remote(username)
-        if any_pulled:
+        if target_pulled or any_pulled:
             pulled = True
         
         # Step 3: Send signal for kiosks to push immediately (in addition to auto-push)
@@ -10708,7 +10769,7 @@ def refresh_analytics():
                 encoding='utf-8', errors='replace', timeout=15
             )
             any_new, target_new = _pull_all_analytics_from_remote(username)
-            if any_new:
+            if target_new or any_new:
                 pulled = True
         
         # Build response

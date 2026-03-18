@@ -617,18 +617,11 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    let msg = data.pulled ? '✅ New data found! Reloading...' : '✅ Up to date (kiosks auto-push every 5min)';
+                    let msg = data.pulled ? '✅ New data found! Reloading...' : '✅ Data synced. Reloading...';
                     btn.textContent = msg;
                     if (headerBtn) headerBtn.textContent = msg;
-                    if (data.pulled) {
-                        setTimeout(() => location.reload(), 800);
-                    } else {
-                        setTimeout(() => {
-                            btn.textContent = originalText;
-                            btn.disabled = false;
-                            if (headerBtn) { headerBtn.textContent = '🔄 Refresh Data'; headerBtn.disabled = false; }
-                        }, 3000);
-                    }
+                    // Always reload after refresh to show latest data from disk
+                    setTimeout(() => location.reload(), 800);
                 } else {
                     btn.textContent = '❌ ' + (data.error || 'Failed');
                     setTimeout(() => {

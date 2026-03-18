@@ -6575,6 +6575,21 @@
       box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
     }
     
+    .duration-pill--cruise {
+      background: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important;
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+    }
+    .duration-pill--cruise:hover {
+      background: linear-gradient(135deg, #d35400 0%, #c0392b 100%) !important;
+      box-shadow: 0 12px 30px rgba(230, 126, 34, 0.5);
+    }
+    .duration-pill--cruise.selected {
+      background: linear-gradient(135deg, #e67e22 0%, #d35400 100%) !important;
+      border: 6px solid white !important;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 12px 30px rgba(230, 126, 34, 0.4) !important;
+      transform: scale(1.05);
+    }
+    
     /* Featured Tours Section */
     .featured-tours {
       width: 100%;
@@ -15587,13 +15602,11 @@
               <button class="duration-pill" data-value="multi_day" onclick="selectDuration('multi_day')" id="home-multi-day-btn">
                 🌅 <span id="home-multi-day-text">Multi-day</span> <span id="home-multi-day-hours">Adventure</span>
               </button>
+              <button class="duration-pill duration-pill--cruise" data-value="cruise_ship" onclick="selectCruiseShipDuration()" id="home-cruise-ship-btn">
+                🚢 <span id="home-cruise-ship-text">Cruise Ship Day</span>
+              </button>
               <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')" id="home-no-pref-duration-btn">
                 🤷 <span id="home-no-pref-duration-text">No preference</span>
-              </button>
-              <button class="cruise-ship-filter-toggle" id="cruise-ship-filter-btn" onclick="event.stopPropagation(); toggleCruiseShipFilter()">
-                <span class="toggle-dot" id="cruise-filter-dot">✕</span>
-                <span>🚢</span>
-                <span id="cruise-filter-label">Cruise Ship Friendly Only</span>
               </button>
           </div>
           </div>
@@ -18199,7 +18212,7 @@
       if (cruiseNoticeText && lang.cruise_ship_notice) {
         cruiseNoticeText.innerHTML = lang.cruise_ship_notice;
       }
-      const cruiseFilterLabel = document.getElementById('cruise-filter-label');
+      const cruiseFilterLabel = document.getElementById('home-cruise-ship-text');
       if (cruiseFilterLabel && lang.cruise_ship_filter) {
         cruiseFilterLabel.textContent = lang.cruise_ship_filter;
       }
@@ -20792,10 +20805,8 @@
       isInVideoFlow = false; // Exit video flow
       
       // Reset cruise ship filter UI
-      const cruiseFilterBtn = document.getElementById('cruise-ship-filter-btn');
-      if (cruiseFilterBtn) cruiseFilterBtn.classList.remove('active');
-      const cruiseFilterDot = document.getElementById('cruise-filter-dot');
-      if (cruiseFilterDot) cruiseFilterDot.textContent = '✕';
+      const cruiseFilterBtn = document.getElementById('home-cruise-ship-btn');
+      if (cruiseFilterBtn) cruiseFilterBtn.classList.remove('selected');
       
       // Add to navigation history
       addToNavigationHistory('home');
@@ -25540,6 +25551,8 @@
     
     function selectDuration(value) {
       console.log('⏱️ Duration selected:', value);
+      delete activeFilters.cruise_ship_friendly;
+      window._cruiseShipMode = false;
       if (value) {
         activeFilters.duration = value;
       } else {
@@ -25549,6 +25562,15 @@
       updateToursAndAdvance();
     }
     
+    function selectCruiseShipDuration() {
+      console.log('🚢 Cruise Ship Day selected');
+      delete activeFilters.duration;
+      activeFilters.cruise_ship_friendly = 'true';
+      window._cruiseShipMode = true;
+      console.log('   activeFilters after:', JSON.stringify(activeFilters));
+      updateToursAndAdvance();
+    }
+
     function selectFamily(value) {
       console.log('👨‍👩‍👧 Family selected:', value);
       if (value) {
@@ -25930,6 +25952,7 @@
       // Add filter tags
       const filterLabels = {
         duration: { half_day: 'Half Day', full_day: 'Full Day', multi_day: 'Multi-day' },
+        cruise_ship_friendly: { 'true': '🚢 Cruise Ship Day' },
         family: { 'true': 'Family with Kids', 'false': 'Adults Only' },
         family_friendly: { 'true': 'Family with Kids', 'false': 'Adults Only' },
         price: { 
@@ -31082,7 +31105,7 @@
       
       const cruiseNoticeTextAL = document.getElementById('cruise-ship-notice-text');
       if (cruiseNoticeTextAL && lang.cruise_ship_notice) cruiseNoticeTextAL.innerHTML = lang.cruise_ship_notice;
-      const cruiseFilterLabelAL = document.getElementById('cruise-filter-label');
+      const cruiseFilterLabelAL = document.getElementById('home-cruise-ship-text');
       if (cruiseFilterLabelAL && lang.cruise_ship_filter) cruiseFilterLabelAL.textContent = lang.cruise_ship_filter;
       
       // Update home page filter questions (with dual-language)
@@ -31108,6 +31131,8 @@
       if (homeMultiDayText) homeMultiDayText.innerHTML = dualAL(lang.multi_day, 'multi_day');
       if (homeMultiDayHours) homeMultiDayHours.textContent = lang.multi_day_adventure;
       if (homeNoPrefDurationText) homeNoPrefDurationText.innerHTML = dualAL(lang.no_preference, 'no_preference');
+      const homeCruiseShipTextEl = document.getElementById('home-cruise-ship-text');
+      if (homeCruiseShipTextEl && lang.cruise_ship_filter) homeCruiseShipTextEl.innerHTML = '🚢 ' + dualAL(lang.cruise_ship_filter, 'cruise_ship_filter');
       if (homeFamilyKidsText) homeFamilyKidsText.innerHTML = '👨‍👩‍👧‍👦 ' + dualAL(lang.family_with_kids, 'family_with_kids');
       if (homeAdultsOnlyText) homeAdultsOnlyText.innerHTML = '👥 ' + dualAL(lang.adults_only, 'adults_only');
       if (homeNoPrefFamilyText) homeNoPrefFamilyText.innerHTML = dualAL(lang.no_preference, 'no_preference');
