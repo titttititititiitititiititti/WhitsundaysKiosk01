@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-18T16:46:07.239696",
+  "last_updated": "2026-03-19T08:27:00.915021",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -55378,12 +55378,199 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-18T16:47:25.866825",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-18T16:47:25.866825",
+      "duration_seconds": 301.132173
+    },
+    {
+      "session_id": "session_3cb9cc3c34f3_1773872510",
+      "account": "nathan",
+      "started_at": "2026-03-19T08:21:50.811043",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-19T08:21:50.811043",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-19T08:21:55.964342",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T08:22:02.806099",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:22:04.347317",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:22:05.873246",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:22:08.815755",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-19T08:24:16.666010",
+          "data": {
+            "tour_name": "Just Tuk'n Around - Progressive Dinner",
+            "company": "justtuknaround",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-19T08:24:28.911125",
+          "data": {
+            "tour_name": "Ultimate Jet Boat Experience",
+            "company": "pioneeradventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:25:38.912085",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:25:45.327802",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:25:50.786285",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:25:57.797303",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:26:03.449447",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:26:09.203471",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:26:19.785505",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:26:27.848725",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:26:32.309906",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:26:33.870014",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:26:35.413937",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Fly Raft \u2013 Northern Exposure",
+        "Fly Raft \u2013 Southern Lights",
+        "Southern Lights",
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [
+        "Just Tuk'n Around - Progressive Dinner",
+        "Ultimate Jet Boat Experience"
+      ],
       "chat_messages": []
     }
   ]
