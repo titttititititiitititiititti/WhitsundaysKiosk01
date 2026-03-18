@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-19T08:42:46.463966",
+  "last_updated": "2026-03-19T08:48:04.236912",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -55658,6 +55658,67 @@
       "chat_messages": [],
       "ended_at": "2026-03-19T08:42:43.287347",
       "duration_seconds": 266.588188
+    },
+    {
+      "session_id": "session_b33887fa29d8_1773873805",
+      "account": "nathan",
+      "started_at": "2026-03-19T08:43:25.445120",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-19T08:43:25.445120",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-19T08:43:27.302699",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T08:43:31.706428",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T08:43:59.634962",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-03-19T08:44:49.676747",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-19T08:46:31.677478",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-19T08:46:31.677478",
+      "duration_seconds": 186.232358
     }
   ]
 }
