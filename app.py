@@ -761,9 +761,26 @@ def save_account_settings(username, settings, sync_to_git=True):
         defaults_dir = f'config/defaults/{username}'
         os.makedirs(defaults_dir, exist_ok=True)
         defaults_file = os.path.join(defaults_dir, 'settings.json')
+        content = json.dumps(settings, indent=2, ensure_ascii=False)
         with open(defaults_file, 'w', encoding='utf-8') as f:
-            json.dump(settings, f, indent=2, ensure_ascii=False)
+            f.write(content)
         print(f"[CONFIG SYNC] Saved {username} settings to git-tracked location")
+        
+        # On Render/cloud, push directly via GitHub API so changes survive restarts
+        IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+        if IS_CLOUD and GITHUB_TOKEN:
+            try:
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                success, msg = _github_api_push(
+                    {defaults_file.replace('\\', '/'): content},
+                    f"Sync {username} settings [{timestamp}]"
+                )
+                if success:
+                    print(f"[CONFIG SYNC] Pushed {username} settings to GitHub: {msg}", flush=True)
+                else:
+                    print(f"[CONFIG SYNC] GitHub push failed: {msg}", flush=True)
+            except Exception as e:
+                print(f"[CONFIG SYNC] GitHub push error: {e}", flush=True)
 
 # ============================================================================
 # CHANGE REQUEST SYSTEM - Agents request changes, admin approves/denies
@@ -773,20 +790,63 @@ PENDING_CHANGES_FILE = 'config/pending_changes.json'
 ADMIN_USERS = ['bailey']  # Users who can approve/deny requests
 
 def load_pending_changes():
-    """Load all pending change requests"""
+    """Load all pending change requests, pulling from GitHub if local file is missing"""
     if os.path.exists(PENDING_CHANGES_FILE):
         try:
             with open(PENDING_CHANGES_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except:
             return {'requests': []}
+    
+    # File doesn't exist locally - try to pull from GitHub (important for Render restarts)
+    if GITHUB_TOKEN:
+        try:
+            owner, repo = _get_github_repo_info()
+            if owner and repo and http_requests:
+                headers = {
+                    'Authorization': f'token {GITHUB_TOKEN}',
+                    'Accept': 'application/vnd.github.v3.raw'
+                }
+                resp = http_requests.get(
+                    f'https://api.github.com/repos/{owner}/{repo}/contents/{PENDING_CHANGES_FILE}',
+                    headers=headers, timeout=10
+                )
+                if resp.status_code == 200:
+                    data = resp.json() if isinstance(resp.content, bytes) else resp.text
+                    if isinstance(data, str):
+                        data = json.loads(data)
+                    os.makedirs(os.path.dirname(PENDING_CHANGES_FILE), exist_ok=True)
+                    with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(data, f, indent=2, ensure_ascii=False)
+                    print(f"[PENDING CHANGES] Recovered {len(data.get('requests', []))} requests from GitHub", flush=True)
+                    return data
+        except Exception as e:
+            print(f"[PENDING CHANGES] Failed to pull from GitHub: {e}", flush=True)
+    
     return {'requests': []}
 
 def save_pending_changes(data):
-    """Save pending change requests"""
+    """Save pending change requests to disk and push to GitHub immediately"""
     os.makedirs(os.path.dirname(PENDING_CHANGES_FILE), exist_ok=True)
+    content = json.dumps(data, indent=2, ensure_ascii=False)
     with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write(content)
+    
+    # On Render/cloud, push directly via GitHub API so changes survive restarts
+    IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if IS_CLOUD and GITHUB_TOKEN:
+        try:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            success, msg = _github_api_push(
+                {PENDING_CHANGES_FILE: content},
+                f"Sync pending changes [{timestamp}]"
+            )
+            if success:
+                print(f"[PENDING CHANGES] Pushed to GitHub: {msg}", flush=True)
+            else:
+                print(f"[PENDING CHANGES] GitHub push failed: {msg}", flush=True)
+        except Exception as e:
+            print(f"[PENDING CHANGES] GitHub push error: {e}", flush=True)
 
 def create_change_request(requested_by, change_type, description, changes_data, tour_key=None):
     """Create a new change request for admin approval"""
@@ -798,11 +858,11 @@ def create_change_request(requested_by, change_type, description, changes_data, 
         'id': request_id,
         'requested_by': requested_by,
         'requested_at': datetime.now().isoformat(),
-        'type': change_type,  # 'tour_update', 'tour_toggle', 'settings_change', etc.
+        'type': change_type,
         'description': description,
         'tour_key': tour_key,
-        'changes': changes_data,  # The actual changes to apply
-        'status': 'pending',  # pending, approved, denied
+        'changes': changes_data,
+        'status': 'pending',
         'reviewed_by': None,
         'reviewed_at': None,
         'review_note': None
@@ -810,6 +870,9 @@ def create_change_request(requested_by, change_type, description, changes_data, 
     
     data['requests'].append(new_request)
     save_pending_changes(data)
+    
+    # Critical: sync to git immediately so pending changes survive Render restarts
+    git_sync_changes(f"Change request from {requested_by}: {description}")
     
     print(f"[CHANGE REQUEST] New request {request_id} from {requested_by}: {description}")
     return request_id
