@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-03-18T11:43:58.977036",
+  "last_updated": "2026-03-18T12:07:02.584144",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -25637,6 +25637,424 @@
       "chat_messages": [],
       "ended_at": "2026-03-13T16:05:08.448519",
       "duration_seconds": 12.999724
+    },
+    {
+      "session_id": "session_9710e1e9fe51_1773629365",
+      "account": "bailey",
+      "started_at": "2026-03-16T12:49:25.725788",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-16T12:49:25.725788",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-16T12:49:27.105810",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T12:49:28.171104",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-16T12:50:00.438871",
+          "data": {
+            "role": "user",
+            "message": "I want a full day reef snorkeling tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-16T12:50:17.287891",
+          "data": {
+            "role": "assistant",
+            "message": "Exploring the Great Barrier Reef on a full-day snorkeling tour is an incredible choice! \ud83c\udf0a Let me show you some fantastic options:\n\n1. **Viper Outer Great Barrier Reef Tour** - Get ready for an unforgettable adventure aboard the Viper, the fastest vessel in the Whitsundays! \ud83c\udfce\ufe0f This popular tour takes you to the Outer Great Barrier Reef and Whitehaven Beach, perfect for thrill-seekers. You'll enjoy a guided snorkel safari with a marine biologist, explore vibrant coral gardens, and relax on the w"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-16T12:51:09.558514",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T12:51:21.923749",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day reef snorkeling tour",
+          "timestamp": "2026-03-16T12:50:00.438871"
+        },
+        {
+          "role": "assistant",
+          "message": "Exploring the Great Barrier Reef on a full-day snorkeling tour is an incredible choice! \ud83c\udf0a Let me show you some fantastic options:\n\n1. **Viper Outer Great Barrier Reef Tour** - Get ready for an unforgettable adventure aboard the Viper, the fastest vessel in the Whitsundays! \ud83c\udfce\ufe0f This popular tour takes you to the Outer Great Barrier Reef and Whitehaven Beach, perfect for thrill-seekers. You'll enjoy a guided snorkel safari with a marine biologist, explore vibrant coral gardens, and relax on the w",
+          "timestamp": "2026-03-16T12:50:17.287891"
+        }
+      ],
+      "ended_at": "2026-03-16T12:51:21.923749",
+      "duration_seconds": 116.197961
+    },
+    {
+      "session_id": "session_9d14968b9dab_1773629484",
+      "account": "bailey",
+      "started_at": "2026-03-16T12:51:24.310735",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-16T12:51:24.310735",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T12:51:25.906189",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T12:51:47.031770",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-16T12:51:47.031770",
+      "duration_seconds": 22.721035
+    },
+    {
+      "session_id": "session_a37e9cc28237_1773722345",
+      "account": "bailey",
+      "started_at": "2026-03-17T14:39:05.976346",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-17T14:39:05.976346",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T14:39:07.430317",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T14:39:09.106680",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-17T14:39:56.012923",
+          "data": {
+            "role": "user",
+            "message": "I want a full day sailing tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-17T14:40:11.035474",
+          "data": {
+            "role": "assistant",
+            "message": "\ud6cc\ub96d\ud55c \uc120\ud0dd\uc774\uc138\uc694! \u26f5 \ud718\ud2b8\uc120\ub370\uc774\uc988\uc5d0\uc11c\uc758 \uc138\uc77c\ub9c1 \ud22c\uc5b4\ub294 \uba4b\uc9c4 \uacbd\ud5d8\uc744 \uc120\uc0ac\ud569\ub2c8\ub2e4. \ubc14\ub85c \uba87 \uac00\uc9c0 \uba4b\uc9c4 \ud22c\uc5b4\ub97c \uc18c\uac1c\ud574\ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4!\n\n1. **\uc2a4\ud33d\ud06c \ubbf8 \ud718\ud2b8\uc120\ub370\uc774 \uc138\uc77c\ub9c1** - \uc774 \ud22c\uc5b4\ub294 \uc720\uc11c \uae4a\uc740 \ub808\uc774\uc2f1 \uc694\ud2b8\uc778 '\uc2a4\ud33d\ud06c \ubbf8'\ub97c \ud0c0\uace0 2\ubc15 2\uc77c \ub3d9\uc548 \ud718\ud2b8\uc120\ub370\uc774 \uc544\uc77c\ub79c\ub4dc\uc640 \uadf8\ub808\uc774\ud2b8 \ubc30\ub9ac\uc5b4 \ub9ac\ud504 \ud574\uc591\uacf5\uc6d0\uc744 \ud0d0\ud5d8\ud569\ub2c8\ub2e4. \ud65c\uae30\ucc2c \uc2b9\ubb34\uc6d0\ub4e4\uacfc \ud568\uaed8 \uc0b0\ud638 \uc815\uc6d0\uc5d0\uc11c \uc2a4\ub178\ud074\ub9c1\uc744 \uc990\uae30\uace0, \ubcc4\ube5b \uc544\ub798\uc5d0\uc11c \uac13 \uc900\ube44\ud55c \uc2dd\uc0ac\ub97c \uc990\uae30\uba70 \uc78a\uc744 \uc218 \uc5c6\ub294 \ubc24\uc744 \ubcf4\ub0b4\uc138\uc694. \ubaa8\ud5d8\uacfc \ud734\uc2dd\uc744 \ub3d9\uc2dc\uc5d0 \uc990\uae30\uace0 \uc2f6\uc740 \ubd84\ub4e4\uaed8 \uc644\ubcbd\ud55c \uc120\ud0dd\uc785\ub2c8\ub2e4.\n\n2. **\ud718\ud2b8\uc120\ub370\uc774 \uc5b4\ub4dc\ubca4\ucc98\ub7ec \ud504\ub77c\uc774\ube57 \uc804\uc138** - \ud504\ub77c\uc774\ube57 \uc804\uc138 \uc5ec\ud589\uc73c\ub85c, \uc5ec\ub7ec\ubd84\uc758 \ubaa8\ub4e0 \ubc14\ub78c\uc744 \ucda9\uc871\uc2dc\ucf1c \ub4dc\ub9ac\ub294 \ub9de\ucda4\ud615 \ud22c\uc5b4\ub97c \uacbd\ud5d8\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc804\ubb38 \uc120\uc7a5\uacfc \ud568\uaed8 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc81c\ub3c4\uc758 \ubaa8\ub4e0 \ud56b\uc2a4\ud31f\uc73c\ub85c \uc548\ub0b4\ubc1b\uc73c\uba70 \uc644\ubcbd\ud55c \ud734\uc2dd\uc744 \ub204\ub9ac\uc138\uc694. \uac1c\uc778\uc801\uc774\uace0 \uce5c\ubc00\ud55c \ubaa8\ud5d8\uc744 \uc6d0\ud558\ub294 \ubd84\ub4e4\uaed8 \uc774\uc0c1\uc801\uc785\ub2c8\ub2e4.\n\n3. **\ud1b5\uac00\ub77c \ub370\uc774 \uc138\uc77c\ub9c1 \ud22c\uc5b4** - \ud1b5\uac00\ub77c\ub97c \ud0c0\uace0 \ud558\ub8e8 \uc885\uc77c \uc2a4\ub9b4 \ub118\uce58\ub294 \ud56d\ud574\uc640 \ubaa8\ud5d8\uc744 \uc990"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day sailing tour",
+          "timestamp": "2026-03-17T14:39:56.012923"
+        },
+        {
+          "role": "assistant",
+          "message": "\ud6cc\ub96d\ud55c \uc120\ud0dd\uc774\uc138\uc694! \u26f5 \ud718\ud2b8\uc120\ub370\uc774\uc988\uc5d0\uc11c\uc758 \uc138\uc77c\ub9c1 \ud22c\uc5b4\ub294 \uba4b\uc9c4 \uacbd\ud5d8\uc744 \uc120\uc0ac\ud569\ub2c8\ub2e4. \ubc14\ub85c \uba87 \uac00\uc9c0 \uba4b\uc9c4 \ud22c\uc5b4\ub97c \uc18c\uac1c\ud574\ub4dc\ub9ac\uaca0\uc2b5\ub2c8\ub2e4!\n\n1. **\uc2a4\ud33d\ud06c \ubbf8 \ud718\ud2b8\uc120\ub370\uc774 \uc138\uc77c\ub9c1** - \uc774 \ud22c\uc5b4\ub294 \uc720\uc11c \uae4a\uc740 \ub808\uc774\uc2f1 \uc694\ud2b8\uc778 '\uc2a4\ud33d\ud06c \ubbf8'\ub97c \ud0c0\uace0 2\ubc15 2\uc77c \ub3d9\uc548 \ud718\ud2b8\uc120\ub370\uc774 \uc544\uc77c\ub79c\ub4dc\uc640 \uadf8\ub808\uc774\ud2b8 \ubc30\ub9ac\uc5b4 \ub9ac\ud504 \ud574\uc591\uacf5\uc6d0\uc744 \ud0d0\ud5d8\ud569\ub2c8\ub2e4. \ud65c\uae30\ucc2c \uc2b9\ubb34\uc6d0\ub4e4\uacfc \ud568\uaed8 \uc0b0\ud638 \uc815\uc6d0\uc5d0\uc11c \uc2a4\ub178\ud074\ub9c1\uc744 \uc990\uae30\uace0, \ubcc4\ube5b \uc544\ub798\uc5d0\uc11c \uac13 \uc900\ube44\ud55c \uc2dd\uc0ac\ub97c \uc990\uae30\uba70 \uc78a\uc744 \uc218 \uc5c6\ub294 \ubc24\uc744 \ubcf4\ub0b4\uc138\uc694. \ubaa8\ud5d8\uacfc \ud734\uc2dd\uc744 \ub3d9\uc2dc\uc5d0 \uc990\uae30\uace0 \uc2f6\uc740 \ubd84\ub4e4\uaed8 \uc644\ubcbd\ud55c \uc120\ud0dd\uc785\ub2c8\ub2e4.\n\n2. **\ud718\ud2b8\uc120\ub370\uc774 \uc5b4\ub4dc\ubca4\ucc98\ub7ec \ud504\ub77c\uc774\ube57 \uc804\uc138** - \ud504\ub77c\uc774\ube57 \uc804\uc138 \uc5ec\ud589\uc73c\ub85c, \uc5ec\ub7ec\ubd84\uc758 \ubaa8\ub4e0 \ubc14\ub78c\uc744 \ucda9\uc871\uc2dc\ucf1c \ub4dc\ub9ac\ub294 \ub9de\ucda4\ud615 \ud22c\uc5b4\ub97c \uacbd\ud5d8\ud558\uc2e4 \uc218 \uc788\uc2b5\ub2c8\ub2e4. \uc804\ubb38 \uc120\uc7a5\uacfc \ud568\uaed8 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc81c\ub3c4\uc758 \ubaa8\ub4e0 \ud56b\uc2a4\ud31f\uc73c\ub85c \uc548\ub0b4\ubc1b\uc73c\uba70 \uc644\ubcbd\ud55c \ud734\uc2dd\uc744 \ub204\ub9ac\uc138\uc694. \uac1c\uc778\uc801\uc774\uace0 \uce5c\ubc00\ud55c \ubaa8\ud5d8\uc744 \uc6d0\ud558\ub294 \ubd84\ub4e4\uaed8 \uc774\uc0c1\uc801\uc785\ub2c8\ub2e4.\n\n3. **\ud1b5\uac00\ub77c \ub370\uc774 \uc138\uc77c\ub9c1 \ud22c\uc5b4** - \ud1b5\uac00\ub77c\ub97c \ud0c0\uace0 \ud558\ub8e8 \uc885\uc77c \uc2a4\ub9b4 \ub118\uce58\ub294 \ud56d\ud574\uc640 \ubaa8\ud5d8\uc744 \uc990",
+          "timestamp": "2026-03-17T14:40:11.035474"
+        }
+      ]
+    },
+    {
+      "session_id": "session_30e0d913eaba_1773726317",
+      "account": "bailey",
+      "started_at": "2026-03-17T15:45:17.652182",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-17T15:45:17.652182",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T15:45:20.337391",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T15:45:24.778970",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-17T15:45:25.495778",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-17T15:45:27.913200",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-17T15:45:30.008181",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-17T15:45:30.609837",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-17T15:46:02.900404",
+          "data": {
+            "role": "user",
+            "message": "I want a full day reef snorkeling tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-17T15:46:13.703457",
+          "data": {
+            "role": "assistant",
+            "message": "Fantastisch, das Great Barrier Reef ist eines der sieben Naturwunder der Welt! \ud83d\udc20 Hier sind einige unglaubliche Optionen f\u00fcr einen ganzt\u00e4gigen Schnorchelausflug:\n\n1. **Viper \u00c4u\u00dferes Great Barrier Reef Tour** - Diese Tour ist ein absoluter Publikumsliebling und bietet Ihnen die M\u00f6glichkeit, das \u00c4u\u00dfere Great Barrier Reef an Bord der Viper zu erkunden, dem schnellsten Schiff der Whitsundays! Freuen Sie sich auf Schnorcheln in lebendigen Koralleng\u00e4rten, eine gef\u00fchrte Wanderung zum Hill Inlet Aussich"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T15:46:32.135346",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day reef snorkeling tour",
+          "timestamp": "2026-03-17T15:46:02.900404"
+        },
+        {
+          "role": "assistant",
+          "message": "Fantastisch, das Great Barrier Reef ist eines der sieben Naturwunder der Welt! \ud83d\udc20 Hier sind einige unglaubliche Optionen f\u00fcr einen ganzt\u00e4gigen Schnorchelausflug:\n\n1. **Viper \u00c4u\u00dferes Great Barrier Reef Tour** - Diese Tour ist ein absoluter Publikumsliebling und bietet Ihnen die M\u00f6glichkeit, das \u00c4u\u00dfere Great Barrier Reef an Bord der Viper zu erkunden, dem schnellsten Schiff der Whitsundays! Freuen Sie sich auf Schnorcheln in lebendigen Koralleng\u00e4rten, eine gef\u00fchrte Wanderung zum Hill Inlet Aussich",
+          "timestamp": "2026-03-17T15:46:13.703457"
+        }
+      ],
+      "ended_at": "2026-03-17T15:46:32.135346",
+      "duration_seconds": 74.483164
+    },
+    {
+      "session_id": "session_0207bcb5656c_1773726394",
+      "account": "bailey",
+      "started_at": "2026-03-17T15:46:34.685077",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-17T15:46:34.685077",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T15:46:35.795134",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T15:48:45.975913",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_72353242f21f_1773733879",
+      "account": "bailey",
+      "started_at": "2026-03-17T17:51:19.913004",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-17T17:51:19.913004",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T17:51:21.035564",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T17:51:21.767373",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T18:02:09.997891",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T18:02:11.071892",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T18:04:36.012199",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T18:04:37.422434",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T18:04:55.700532",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T18:18:03.290484",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-17T18:18:03.290484",
+      "duration_seconds": 1603.37748
+    },
+    {
+      "session_id": "session_5e4d14da1e2d_1773740203",
+      "account": "bailey",
+      "started_at": "2026-03-17T19:36:43.046484",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-17T19:36:43.046484",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-17T19:36:44.275897",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-17T19:36:45.742188",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
