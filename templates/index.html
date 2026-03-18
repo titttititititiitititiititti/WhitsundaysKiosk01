@@ -6539,12 +6539,7 @@
       transform: scale(0.97);
     }
     
-    /* Center single button on its own row when there's an odd number */
-    .filter-question-card[data-question="1"] .duration-pill:nth-child(3):not(.duration-pill--ghost) {
-      grid-column: 1 / -1;
-      max-width: calc(50% - 12.5px);
-      margin: 0 auto;
-    }
+    /* Duration grid: 4 buttons in a 2x2 grid, no special centering needed */
     
     .duration-pill--ghost {
       background: transparent;
@@ -15603,7 +15598,7 @@
                 🌅 <span id="home-multi-day-text">Multi-day</span> <span id="home-multi-day-hours">Adventure</span>
               </button>
               <button class="duration-pill duration-pill--cruise" data-value="cruise_ship" onclick="selectCruiseShipDuration()" id="home-cruise-ship-btn">
-                🚢 <span id="home-cruise-ship-text">Cruise Ship Day</span>
+                🚢 <span id="home-cruise-ship-text">Cruise Ship</span> <span id="home-cruise-ship-hours" style="opacity:0.8;">Day Tour</span>
               </button>
               <button class="duration-pill duration-pill--ghost" data-value="" onclick="selectDuration('')" id="home-no-pref-duration-btn">
                 🤷 <span id="home-no-pref-duration-text">No preference</span>
@@ -31132,7 +31127,7 @@
       if (homeMultiDayHours) homeMultiDayHours.textContent = lang.multi_day_adventure;
       if (homeNoPrefDurationText) homeNoPrefDurationText.innerHTML = dualAL(lang.no_preference, 'no_preference');
       const homeCruiseShipTextEl = document.getElementById('home-cruise-ship-text');
-      if (homeCruiseShipTextEl && lang.cruise_ship_filter) homeCruiseShipTextEl.innerHTML = '🚢 ' + dualAL(lang.cruise_ship_filter, 'cruise_ship_filter');
+      if (homeCruiseShipTextEl && lang.cruise_ship_filter) homeCruiseShipTextEl.innerHTML = dualAL(lang.cruise_ship_filter, 'cruise_ship_filter');
       if (homeFamilyKidsText) homeFamilyKidsText.innerHTML = '👨‍👩‍👧‍👦 ' + dualAL(lang.family_with_kids, 'family_with_kids');
       if (homeAdultsOnlyText) homeAdultsOnlyText.innerHTML = '👥 ' + dualAL(lang.adults_only, 'adults_only');
       if (homeNoPrefFamilyText) homeNoPrefFamilyText.innerHTML = dualAL(lang.no_preference, 'no_preference');
