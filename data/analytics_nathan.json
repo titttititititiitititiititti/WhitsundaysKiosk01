@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-19T08:27:00.915021",
+  "last_updated": "2026-03-19T08:42:46.463966",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -55557,6 +55557,11 @@
             "filter_type": "activities",
             "filter_value": "whitehaven_beach"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-19T08:32:21.685699",
+          "data": {}
         }
       ],
       "language": "en",
@@ -55571,7 +55576,88 @@
         "Just Tuk'n Around - Progressive Dinner",
         "Ultimate Jet Boat Experience"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-19T08:32:21.685699",
+      "duration_seconds": 630.874656
+    },
+    {
+      "session_id": "session_84a907e622d0_1773873496",
+      "account": "nathan",
+      "started_at": "2026-03-19T08:38:16.699159",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-19T08:38:16.699159",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-19T08:39:36.330989",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T08:40:11.451063",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T08:40:11.795695",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T08:41:20.563966",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:41:33.113445",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:41:34.098029",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-19T08:41:35.526198",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-19T08:42:43.287347",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-19T08:42:43.287347",
+      "duration_seconds": 266.588188
     }
   ]
 }
