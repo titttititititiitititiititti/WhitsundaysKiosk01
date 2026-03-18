@@ -3483,6 +3483,7 @@
     .vq-history-content {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 12px;
       background: rgba(0, 0, 0, 0.35);
       backdrop-filter: blur(12px);
@@ -3490,10 +3491,14 @@
       border-radius: 20px;
       padding: 12px 20px;
       border: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
     }
     
     .vq-history-back,
     .vq-history-restart {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
       background: rgba(255, 255, 255, 0.15);
       border: 2px solid rgba(255, 255, 255, 0.3);
       color: white;
@@ -3504,31 +3509,38 @@
       cursor: pointer;
       transition: all 0.2s ease;
       white-space: nowrap;
-      flex-shrink: 0;
+      z-index: 2;
+    }
+    .vq-history-back {
+      left: 15px;
+    }
+    .vq-history-restart {
+      right: 15px;
     }
     
     .vq-history-back:hover,
     .vq-history-restart:hover {
       background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
+      transform: translateY(calc(-50% - 1px));
     }
     
     .vq-history-restart {
-      background: rgba(231, 76, 60, 0.3);
-      border-color: rgba(231, 76, 60, 0.5);
+      background: rgba(231, 76, 60, 0.3) !important;
+      border-color: rgba(231, 76, 60, 0.5) !important;
     }
     .vq-history-restart:hover {
-      background: rgba(231, 76, 60, 0.5);
+      background: rgba(231, 76, 60, 0.5) !important;
     }
     
     .vq-history-tags {
-      flex: 1;
+      width: 100%;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
       align-items: center;
       min-height: 28px;
+      padding: 0 100px;
     }
     
     .vq-history-tag {
@@ -3614,6 +3626,11 @@
     .vq-answer-btn.vq-cruise-btn {
       background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
       box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+    }
+    .vq-answer-btn.vq-cruise-btn span {
+      display: block;
+      margin-left: 0;
+      margin-top: 2px;
     }
     .vq-answer-btn.vq-cruise-btn:hover {
       background: linear-gradient(135deg, #d35400 0%, #c0392b 100%);
@@ -19274,16 +19291,30 @@
     
     function goBackVideoQuestion() {
       if (currentVideoQuestion > 0) {
-        const q = videoQuestions[currentVideoQuestion];
-        if (q && q.answers && q.answers[0]) {
-          const filterType = q.answers[0].filter;
-          if (q.multiple) {
+        // Clear the answer for the question we're leaving
+        const currentQ = videoQuestions[currentVideoQuestion];
+        if (currentQ && currentQ.answers && currentQ.answers[0]) {
+          const filterType = currentQ.answers[0].filter;
+          if (currentQ.multiple) {
             videoAnswers[filterType] = [];
           } else {
             videoAnswers[filterType] = '';
           }
         }
         currentVideoQuestion--;
+        // Also clear the answer for the question we're going back to
+        const prevQ = videoQuestions[currentVideoQuestion];
+        if (prevQ && prevQ.answers && prevQ.answers[0]) {
+          const filterType = prevQ.answers[0].filter;
+          if (prevQ.multiple) {
+            videoAnswers[filterType] = [];
+          } else {
+            videoAnswers[filterType] = '';
+          }
+        }
+        if (currentVideoQuestion === 0) {
+          videoAnswers.cruise_ship_friendly = '';
+        }
         renderVideoQuestion(currentVideoQuestion);
         updateProgressIndicator();
         updateVQAnswerHistory();
@@ -21671,7 +21702,7 @@
       `;
       document.head.appendChild(hideHeaderBtnsStyle);
       
-      const animationDuration = 600; // ms
+      const animationDuration = 400; // ms
       
       // Create clones from original start screen buttons
       const clones = [];
@@ -21714,27 +21745,50 @@
         btn.element.style.opacity = '0';
       });
       
-      // Fade out the title text and selected button
+      // Fade out the entire start screen content immediately
       const titleText = document.getElementById('video-start-title');
+      const startScreenEl = document.getElementById('video-start-screen');
+      if (startScreenEl) {
+        startScreenEl.style.transition = 'opacity 0.2s ease';
+        startScreenEl.style.opacity = '0';
+      }
       if (titleText) {
-        titleText.style.transition = 'opacity 0.3s ease';
+        titleText.style.transition = 'opacity 0.2s ease';
         titleText.style.opacity = '0';
       }
       
       const clickedBtn = allModeButtons.find(b => b.type === selectedMode);
       if (clickedBtn && clickedBtn.element) {
-        clickedBtn.element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        clickedBtn.element.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
         clickedBtn.element.style.opacity = '0';
         clickedBtn.element.style.transform = 'scale(1.1)';
       }
       
-      // After a tiny delay (to let page begin transitioning), execute callback
-      // and then measure where the header buttons land
-      setTimeout(() => {
+      // Hide the incoming page content during animation
+      const hideContentStyle = document.createElement('style');
+      hideContentStyle.id = 'hide-content-during-animation';
+      hideContentStyle.textContent = `
+        .page.active .video-question-container,
+        .page.active .vq-progress-container,
+        .page.active .vq-answer-history,
+        .page.active .vq-tour-counter,
+        .page.active .vq-back-btn,
+        .page.active .browse-all-tours-btn-questions,
+        .page.home-page.active .home-hero-section,
+        .page.home-page.active #featured-tours-section,
+        .ai-assistant-page.active .ai-chat-container {
+          opacity: 0 !important;
+          transition: none !important;
+        }
+      `;
+      document.head.appendChild(hideContentStyle);
+      
+      // Execute callback to switch page (needed to measure header positions)
+      // Use requestAnimationFrame for immediate next-frame execution
+      requestAnimationFrame(() => {
         if (callback) callback();
         
-        // Now measure where the real header buttons are
-        // Give a moment for the DOM to update
+        // Measure where the real header buttons are
         requestAnimationFrame(() => {
           // Find header buttons in the now-active page
           const headerLeft = document.querySelector('.page.active .kiosk-header .header-left') ||
@@ -21809,17 +21863,19 @@
                 setTimeout(() => clone.remove(), 100);
               });
               
-              // Remove the hiding style to reveal real header buttons
+              // Remove the hiding styles to reveal real header buttons and page content
               setTimeout(() => {
                 const hideStyle = document.getElementById('hide-header-during-animation');
                 if (hideStyle) hideStyle.remove();
+                const hideContent = document.getElementById('hide-content-during-animation');
+                if (hideContent) hideContent.remove();
               }, 100);
             }
           }
           
           requestAnimationFrame(animateClones);
         });
-      }, 50);
+      });
       
       // Safety: reset original start screen buttons and clean up after animation
       setTimeout(() => {
@@ -21834,9 +21890,15 @@
           titleText.style.opacity = '';
           titleText.style.transition = '';
         }
-        // Safety: ensure hiding style is removed
+        if (startScreenEl) {
+          startScreenEl.style.opacity = '';
+          startScreenEl.style.transition = '';
+        }
+        // Safety: ensure hiding styles are removed
         const hideStyle = document.getElementById('hide-header-during-animation');
         if (hideStyle) hideStyle.remove();
+        const hideContent = document.getElementById('hide-content-during-animation');
+        if (hideContent) hideContent.remove();
         // Safety: remove any leftover clones
         document.querySelectorAll('.mode-button-clone').forEach(c => c.remove());
       }, animationDuration + 300);
