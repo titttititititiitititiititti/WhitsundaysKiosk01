@@ -4674,9 +4674,10 @@
       transform: translateX(-50%) !important;
     }
     
-    /* Show both header buttons - SAME SIZE */
     .ai-assistant-page .quick-decision-btn-header,
-    .ai-assistant-page .browse-all-btn-header {
+    .ai-assistant-page .browse-all-btn-header,
+    .ai-assistant-page .map-view-btn-header,
+    .ai-assistant-page .newcomer-info-btn-header {
       display: inline-flex !important;
       visibility: visible !important;
       position: relative !important;
@@ -4689,7 +4690,7 @@
       font-weight: 600 !important;
       cursor: pointer !important;
       border: 2px solid rgba(255, 255, 255, 0.3) !important;
-      min-width: 170px !important;
+      min-width: 140px !important;
       justify-content: center !important;
       transition: all 0.2s ease !important;
     }
@@ -6612,37 +6613,39 @@
     /* Duration Grid (2x2) */
     .duration-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 25px;
     }
     
     .duration-pill {
-      padding: 32px 45px;
+      padding: 28px 15px;
       background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
       border: none;
       border-radius: 18px;
-      font-size: 1.9em !important;
+      font-size: 1.6em !important;
       font-weight: 600 !important;
       font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
       color: white;
       cursor: pointer;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
       transition: all 0.3s ease;
       height: auto;
-      min-height: 110px;
+      min-height: 100px;
       width: 100%;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       line-height: 1.3;
       user-select: none;
       letter-spacing: 0.3px;
+      overflow: hidden;
     }
     
     .duration-pill span {
-      font-size: 0.9em;
+      font-size: 0.85em;
       font-weight: 500;
       line-height: 1.3;
       font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
@@ -12168,9 +12171,10 @@
       
       .duration-pill {
         font-size: 1.1em !important;
-        padding: 20px 15px !important;
+        padding: 20px 10px !important;
         min-height: 80px !important;
         width: 100% !important;
+        white-space: nowrap !important;
       }
       
       .duration-pill span {
@@ -13107,13 +13111,13 @@
         padding: 0 15px !important;
       }
       
-      /* Button adjustments - use more horizontal space */
       .duration-pill {
-        font-size: 2.2em !important;
-        padding: 20px 30px !important;
+        font-size: 1.6em !important;
+        padding: 20px 15px !important;
         min-height: 70px !important;
         width: 100% !important;
         max-width: 100% !important;
+        white-space: nowrap !important;
       }
       
       .duration-grid {
@@ -13304,10 +13308,11 @@
       }
       
       .duration-pill {
-        font-size: 2.0em !important;
-        padding: 18px 20px !important;
+        font-size: 1.4em !important;
+        padding: 18px 10px !important;
         min-height: 65px !important;
         width: 100% !important;
+        white-space: nowrap !important;
       }
       
       .video-question-card {
@@ -13948,7 +13953,9 @@
       
       /* Hide text buttons, show mobile emoji buttons */
       .ai-assistant-page .quick-decision-btn-header,
-      .ai-assistant-page .browse-all-btn-header {
+      .ai-assistant-page .browse-all-btn-header,
+      .ai-assistant-page .map-view-btn-header,
+      .ai-assistant-page .newcomer-info-btn-header {
         display: none !important;
       }
       
@@ -16598,6 +16605,7 @@
         <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
         <button class="quick-decision-btn-header" id="ai-quick-decision-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Match</button>
         <button class="browse-all-btn-header" id="ai-browse-all-btn" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
+        <button class="map-view-btn-header" id="ai-map-view-btn" onclick="hideAIAssistant(); openMapView();" data-translate="map_view">🗺️ Map View</button>
         <button class="newcomer-info-btn-header" id="ai-newcomer-info-btn" onclick="hideAIAssistant(); openNewcomerInfo();">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
@@ -21641,8 +21649,6 @@
     }
     
     function animateModeButtonsToHeader(selectedMode, callback) {
-      console.log('🎬 Animating mode transition for:', selectedMode);
-      
       const startScreen = document.getElementById('video-start-screen');
       const isOnStartScreen = startScreen && startScreen.style.display !== 'none' && startScreen.offsetParent !== null;
       
@@ -21651,16 +21657,133 @@
         return;
       }
       
-      // Fade out the entire start screen quickly
-      startScreen.style.transition = 'opacity 0.25s ease';
-      startScreen.style.opacity = '0';
+      const headerClassMap = {
+        'ai-assistant': { startId: 'ai-assistant-btn', headerClass: 'ai-assistant-btn-header' },
+        'quick-decision': { startId: 'quick-decision-btn', headerClass: 'quick-decision-btn-header' },
+        'browse-all': { startId: 'browse-all-tours-btn', headerClass: 'browse-all-btn-header' },
+        'newcomer-info': { startId: 'newcomer-info-btn', headerClass: 'newcomer-info-btn-header' },
+        'map-view': { startId: 'map-view-btn', headerClass: 'map-view-btn-header' }
+      };
       
-      // After fade-out completes, switch to the new mode
-      setTimeout(() => {
-        startScreen.style.transition = '';
-        startScreen.style.opacity = '';
-        if (callback) callback();
-      }, 260);
+      // Capture source positions before anything changes
+      const sourceData = [];
+      Object.entries(headerClassMap).forEach(([mode, info]) => {
+        if (mode === selectedMode) return;
+        const el = document.getElementById(info.startId);
+        if (!el || el.style.display === 'none') return;
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0) return;
+        sourceData.push({
+          mode, 
+          headerClass: info.headerClass,
+          rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+          bg: window.getComputedStyle(el).backgroundImage || window.getComputedStyle(el).background,
+          text: el.textContent.trim(),
+          borderRadius: window.getComputedStyle(el).borderRadius
+        });
+      });
+      
+      // Create fixed clones at source positions
+      const clones = [];
+      sourceData.forEach(data => {
+        const clone = document.createElement('div');
+        clone.className = 'mode-anim-clone';
+        clone.textContent = data.text;
+        clone.style.cssText = `
+          position: fixed; z-index: 999999; pointer-events: none;
+          display: flex; align-items: center; justify-content: center;
+          white-space: nowrap; font-weight: 700; color: white;
+          left: ${data.rect.left}px; top: ${data.rect.top}px;
+          width: ${data.rect.width}px; height: ${data.rect.height}px;
+          font-size: 16px; border-radius: ${data.borderRadius};
+          background: ${data.bg}; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        `;
+        document.body.appendChild(clone);
+        clones.push({ clone, data });
+      });
+      
+      // Fade out selected button and start screen non-button content immediately
+      const selectedBtn = headerClassMap[selectedMode] && document.getElementById(headerClassMap[selectedMode].startId);
+      if (selectedBtn) {
+        selectedBtn.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        selectedBtn.style.opacity = '0';
+        selectedBtn.style.transform = 'scale(1.15)';
+      }
+      // Hide all start screen buttons behind clones
+      Object.values(headerClassMap).forEach(info => {
+        const el = document.getElementById(info.startId);
+        if (el) el.style.opacity = '0';
+      });
+      // Fade out the title/subtitle
+      startScreen.querySelectorAll('h1, h2, p, .video-start-title').forEach(el => {
+        el.style.transition = 'opacity 0.15s ease';
+        el.style.opacity = '0';
+      });
+      
+      // Hide header buttons in target page during animation
+      const hideStyle = document.createElement('style');
+      hideStyle.id = 'hide-header-during-anim';
+      hideStyle.textContent = `
+        .kiosk-header .header-left .quick-decision-btn-header,
+        .kiosk-header .header-left .ai-assistant-btn-header,
+        .kiosk-header .header-left .browse-all-btn-header,
+        .kiosk-header .header-left .map-view-btn-header,
+        .kiosk-header .header-left .newcomer-info-btn-header {
+          opacity: 0 !important; pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(hideStyle);
+      
+      // Execute callback to switch page
+      if (callback) callback();
+      
+      // Wait for layout, then measure targets and animate
+      requestAnimationFrame(() => { requestAnimationFrame(() => {
+        const activePage = document.querySelector('.page.active') || document.querySelector('.page:not([style*="display: none"])');
+        const headerLeft = activePage && activePage.querySelector('.kiosk-header .header-left');
+        
+        clones.forEach(({ clone, data }) => {
+          let targetRect = null;
+          if (headerLeft) {
+            const headerBtn = headerLeft.querySelector('.' + data.headerClass);
+            if (headerBtn) {
+              const r = headerBtn.getBoundingClientRect();
+              if (r.width > 0 && r.height > 0) targetRect = r;
+            }
+          }
+          if (!targetRect) {
+            // Button is hidden in this mode's header - just fade out
+            clone.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            clone.style.opacity = '0';
+            clone.style.transform = 'scale(0.5)';
+          } else {
+            clone.style.transition = 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
+            clone.style.left = targetRect.left + 'px';
+            clone.style.top = targetRect.top + 'px';
+            clone.style.width = targetRect.width + 'px';
+            clone.style.height = targetRect.height + 'px';
+            clone.style.fontSize = '14px';
+            clone.style.borderRadius = '25px';
+          }
+        });
+        
+        // Clean up after animation
+        setTimeout(() => {
+          clones.forEach(({ clone }) => clone.remove());
+          const hs = document.getElementById('hide-header-during-anim');
+          if (hs) hs.remove();
+          // Reset start screen elements
+          Object.values(headerClassMap).forEach(info => {
+            const el = document.getElementById(info.startId);
+            if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }
+          });
+          if (startScreen) {
+            startScreen.querySelectorAll('h1, h2, p, .video-start-title').forEach(el => {
+              el.style.opacity = ''; el.style.transition = '';
+            });
+          }
+        }, 500);
+      }); });
     }
     
     // ===================================================================
