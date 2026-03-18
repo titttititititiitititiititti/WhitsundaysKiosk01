@@ -8401,31 +8401,26 @@ def save_tour_from_editor(key):
             return jsonify({'success': True, 'message': 'Tour saved successfully'})
         
         # For non-admin users:
-        # 1. Apply changes that don't need approval directly
-        # 2. Create a change request for content changes
+        # 1. Store non-approval changes as per-account overrides (not global CSV)
+        # 2. Create a change request for content changes that need approval
         
         applied_changes = []
         
-        # Apply non-approval changes directly
+        # Apply non-approval changes to per-account overrides (not the global CSV)
         if changes_not_needing_approval:
-            for i, row in enumerate(rows):
-                if row.get('id') == tid:
-                    for field, value in changes_not_needing_approval.items():
-                        row[field] = value
-                    rows[i] = row
-                    break
+            account_settings = load_account_settings(username)
+            if 'tour_overrides' not in account_settings:
+                account_settings['tour_overrides'] = {}
+            if key not in account_settings['tour_overrides']:
+                account_settings['tour_overrides'][key] = {}
             
-            new_fields = [f for f in changes_not_needing_approval.keys() if f not in fieldnames]
-            if new_fields:
-                fieldnames = list(fieldnames) + new_fields
+            for field, value in changes_not_needing_approval.items():
+                account_settings['tour_overrides'][key][field] = value
             
-            with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(rows)
+            save_account_settings(username, account_settings)
             
             applied_changes = list(changes_not_needing_approval.keys())
-            git_sync_changes(f"Updated tour technical fields: {key}")
+            git_sync_changes(f"Updated tour settings for {username}: {key}")
         
         # Create change request for content changes
         if changes_needing_approval:
