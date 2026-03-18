@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-03-18T13:34:30.142964",
+  "last_updated": "2026-03-18T13:36:23.048998",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -25437,13 +25437,73 @@
             "filter_type": "activities",
             "filter_value": "swimming"
           }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-12T23:29:53.210590",
+          "data": {
+            "role": "user",
+            "message": "has autism and I want to go to Whitehaven Beach"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-12T23:30:00.735033",
+          "data": {
+            "role": "assistant",
+            "message": "That's fantastic! Whitehaven Beach is a stunning destination, known for its world-famous white silica sand and crystal-clear waters. \ud83c\udf0a\u2728 It\u2019s perfect for relaxing and enjoying the beautiful scenery!\n\nTo tailor your experience, how long can you be away? Are you looking for a half-day, full-day, or maybe a multi-day trip?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-12T23:30:29.721036",
+          "data": {
+            "role": "user",
+            "message": "full day"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-03-12T23:30:45.515046",
+          "data": {
+            "role": "assistant",
+            "message": "Exploring Whitehaven Beach on a full-day tour is an excellent choice! \ud83c\udfdd\ufe0f Let me show you some amazing options:\n\n1. **Lady Enid Adults Only Sailing Day Trip** - This popular tour offers a refined adventure aboard the traditional Lady Enid timber yacht. With a small group size and personalized attention, you'll sail in elegance, visit Whitehaven Beach, and snorkel vibrant coral gardens. Enjoy gourmet meals and sparkling wine as you soak in the stunning surroundings. Perfect for those seeking a re"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-12T23:31:05.489132",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "has autism and I want to go to Whitehaven Beach",
+          "timestamp": "2026-03-12T23:29:53.210590"
+        },
+        {
+          "role": "assistant",
+          "message": "That's fantastic! Whitehaven Beach is a stunning destination, known for its world-famous white silica sand and crystal-clear waters. \ud83c\udf0a\u2728 It\u2019s perfect for relaxing and enjoying the beautiful scenery!\n\nTo tailor your experience, how long can you be away? Are you looking for a half-day, full-day, or maybe a multi-day trip?",
+          "timestamp": "2026-03-12T23:30:00.735033"
+        },
+        {
+          "role": "user",
+          "message": "full day",
+          "timestamp": "2026-03-12T23:30:29.721036"
+        },
+        {
+          "role": "assistant",
+          "message": "Exploring Whitehaven Beach on a full-day tour is an excellent choice! \ud83c\udfdd\ufe0f Let me show you some amazing options:\n\n1. **Lady Enid Adults Only Sailing Day Trip** - This popular tour offers a refined adventure aboard the traditional Lady Enid timber yacht. With a small group size and personalized attention, you'll sail in elegance, visit Whitehaven Beach, and snorkel vibrant coral gardens. Enjoy gourmet meals and sparkling wine as you soak in the stunning surroundings. Perfect for those seeking a re",
+          "timestamp": "2026-03-12T23:30:45.515046"
+        }
+      ],
+      "ended_at": "2026-03-12T23:31:05.489132",
+      "duration_seconds": 1298.58839
     },
     {
       "session_id": "session_e1d95aa79776_1773369236",
