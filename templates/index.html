@@ -3254,9 +3254,26 @@
     /* Hide Map view button on Quick Match / Video Question page - not needed there */
     #vq-map-toggle-btn {
       display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+      overflow: hidden !important;
     }
     .page.video-question-page.showing-questions #home-map-toggle-btn {
       display: none !important;
+    }
+    /* Hide back-button and mobile-browse-btn in QD header to prevent phantom rendering */
+    .page.video-question-page .kiosk-header .back-button,
+    .page.video-question-page .kiosk-header .mobile-browse-btn {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
     }
     
     /* Video Question Header - REMOVED, using kiosk-header instead */
@@ -3293,7 +3310,7 @@
       display: none !important;
     }
     
-    /* Progress Indicator */
+    /* Progress Indicator - positioned below answer history bar */
     .vq-progress-container {
       position: fixed;
       top: 85px;
@@ -3304,6 +3321,7 @@
       align-items: center;
       gap: 6px;
       z-index: 1000;
+      transition: top 0.3s ease;
     }
     
     .vq-progress-text {
@@ -3442,24 +3460,98 @@
     }
     
     .vq-back-btn {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      color: white;
-      font-size: 1.1em;
-      font-weight: 600;
-      padding: 10px 20px;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 15;
+      display: none !important;
     }
     
-    .vq-back-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateX(-5px);
+    /* Quick Decision Answer History Bar */
+    .vq-answer-history {
+      position: fixed;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      width: 90%;
+      max-width: 900px;
+      animation: fadeSlideDown 0.3s ease;
+    }
+    
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    
+    .vq-history-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 12px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .vq-history-back,
+    .vq-history-restart {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    
+    .vq-history-back:hover,
+    .vq-history-restart:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+    
+    .vq-history-restart {
+      background: rgba(231, 76, 60, 0.3);
+      border-color: rgba(231, 76, 60, 0.5);
+    }
+    .vq-history-restart:hover {
+      background: rgba(231, 76, 60, 0.5);
+    }
+    
+    .vq-history-tags {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-height: 28px;
+    }
+    
+    .vq-history-tag {
+      background: rgba(255, 255, 255, 0.9);
+      color: #0077b6;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    
+    .vq-history-tag:hover {
+      background: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .vq-history-tag.cruise-tag {
+      background: rgba(230, 126, 34, 0.9);
+      color: white;
     }
     
     .vq-answers {
@@ -3517,6 +3609,16 @@
     .vq-answer-btn.selected {
       border: 6px solid #ffffff !important;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 8px 25px rgba(0, 119, 182, 0.4) !important;
+    }
+    
+    .vq-answer-btn.vq-cruise-btn {
+      background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+    }
+    .vq-answer-btn.vq-cruise-btn:hover {
+      background: linear-gradient(135deg, #d35400 0%, #c0392b 100%);
+      box-shadow: 0 8px 25px rgba(230, 126, 34, 0.5);
+      transform: translateY(-3px);
     }
     
     .vq-continue-btn {
@@ -15037,8 +15139,14 @@
         </div>
       </div>
       
-      <!-- Back Button -->
-      <button class="vq-back-btn" id="vq-back-btn" style="display: none;">← Back</button>
+      <!-- Answer History Bar -->
+      <div class="vq-answer-history" id="vq-answer-history" style="display: none;">
+        <div class="vq-history-content">
+          <button class="vq-history-back" id="vq-history-back" onclick="goBackVideoQuestion()">← Back</button>
+          <div class="vq-history-tags" id="vq-history-tags"></div>
+          <button class="vq-history-restart" id="vq-history-restart" onclick="restartQuickDecision()">Start Over</button>
+        </div>
+      </div>
       
       <!-- Question Container -->
       <div class="video-question-container" id="video-question-container" style="display: none;">
@@ -18975,6 +19083,7 @@
           { get text() { return "⏰ " + tDual('half_day') + " <span>" + t('half_day_hours') + "</span>"; }, value: "half_day", filter: "duration" },
           { get text() { return "☀️ " + tDual('full_day') + " <span>" + t('full_day_hours') + "</span>"; }, value: "full_day", filter: "duration" },
           { get text() { return "🌅 " + tDual('multi_day') + " " + t('multi_day_adventure'); }, value: "multi_day", filter: "duration" },
+          { get text() { return "🚢 " + tDual('cruise_ship_label') + " <span>" + t('cruise_ship_day_tour') + "</span>"; }, value: "cruise_ship", filter: "duration", isCruiseShip: true },
           { get text() { return "🤷 " + tDual('no_preference'); }, value: "", filter: "duration" }
         ]
       },
@@ -19006,6 +19115,7 @@
     let videoAnswers = {
       duration: "",
       family_friendly: "",
+      cruise_ship_friendly: "",
       activities: []
     };
     let hasStarted = false;
@@ -19101,6 +19211,7 @@
       }
       
       renderVideoQuestion(0);
+      updateVQAnswerHistory();
       resetInactivityTimer();
     }
     
@@ -19113,7 +19224,8 @@
         params.append('lang', currentLanguage);
         if (videoAnswers.duration) params.append('duration', videoAnswers.duration);
         if (videoAnswers.family_friendly) params.append('family_friendly', videoAnswers.family_friendly);
-        
+        if (videoAnswers.cruise_ship_friendly) params.append('cruise_ship_only', 'true');
+
         if (videoAnswers.activities && videoAnswers.activities.length > 0) {
           videoAnswers.activities.forEach(act => {
             if (act) params.append('activities', act);
@@ -19151,6 +19263,7 @@
       videoAnswers = {
         duration: "",
         family_friendly: "",
+        cruise_ship_friendly: "",
         activities: []
       };
       document.getElementById('video-start-screen').style.display = 'flex';
@@ -19159,12 +19272,171 @@
       document.getElementById('vq-tour-counter').style.display = 'none';
     }
     
-    async function goBackVideoQuestion() {
+    function goBackVideoQuestion() {
       if (currentVideoQuestion > 0) {
+        const q = videoQuestions[currentVideoQuestion];
+        if (q && q.answers && q.answers[0]) {
+          const filterType = q.answers[0].filter;
+          if (q.multiple) {
+            videoAnswers[filterType] = [];
+          } else {
+            videoAnswers[filterType] = '';
+          }
+        }
         currentVideoQuestion--;
         renderVideoQuestion(currentVideoQuestion);
         updateProgressIndicator();
-        await updateTourCounter();
+        updateVQAnswerHistory();
+        updateTourCounter();
+        resetInactivityTimer();
+      }
+    }
+    
+    function restartQuickDecision() {
+      currentVideoQuestion = 0;
+      videoAnswers = {
+        duration: "",
+        family_friendly: "",
+        cruise_ship_friendly: "",
+        activities: []
+      };
+      
+      const questionContainer = document.getElementById('video-question-container');
+      const questionCard = document.getElementById('vq-card');
+      const progressContainer = document.getElementById('vq-progress-container');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
+      
+      if (questionContainer) {
+        questionContainer.style.display = 'flex';
+      }
+      if (questionCard) {
+        questionCard.style.display = '';
+        questionCard.classList.remove('exit-animation');
+        questionCard.style.opacity = '1';
+      }
+      if (progressContainer) {
+        progressContainer.style.display = 'flex';
+      }
+      if (swipeOverlay) {
+        swipeOverlay.style.display = 'none';
+        swipeOverlay.classList.remove('active');
+      }
+      
+      renderVideoQuestion(0);
+      updateProgressIndicator();
+      updateVQAnswerHistory();
+      updateTourCounter();
+      resetInactivityTimer();
+    }
+    
+    function updateVQAnswerHistory() {
+      const historyBar = document.getElementById('vq-answer-history');
+      const tagsContainer = document.getElementById('vq-history-tags');
+      const backBtn = document.getElementById('vq-history-back');
+      if (!historyBar || !tagsContainer) return;
+      
+      tagsContainer.innerHTML = '';
+      let hasAnswers = false;
+      
+      const answerLabels = {
+        duration: {
+          half_day: '⏰ ' + t('half_day'),
+          full_day: '☀️ ' + t('full_day'),
+          multi_day: '🌅 ' + t('multi_day')
+        },
+        family_friendly: {
+          'true': '👨‍👩‍👧‍👦 ' + t('family_with_kids'),
+          adults_only: '👥 ' + t('adults_only')
+        },
+        cruise_ship_friendly: {
+          'true': '🚢 ' + t('cruise_ship_label')
+        }
+      };
+      
+      const activityLabels = {
+        great_barrier_reef: '🐠 ' + t('activity_gbr'),
+        whitehaven_beach: '🏖️ ' + t('activity_whitehaven'),
+        island_tours: '🏝️ ' + t('activity_island'),
+        sailing: '⛵ ' + t('activity_sailing'),
+        snorkeling: '🤿 ' + t('activity_snorkeling'),
+        swimming: '🏊 ' + t('activity_swimming'),
+        scenic_views: '🌅 ' + t('activity_scenic_views')
+      };
+      
+      const questionOrder = ['duration', 'family_friendly', 'activities'];
+      const questionIndexMap = { duration: 0, family_friendly: 1, activities: 2 };
+      
+      if (videoAnswers.cruise_ship_friendly === 'true') {
+        const tag = document.createElement('div');
+        tag.className = 'vq-history-tag cruise-tag';
+        tag.textContent = '🚢 ' + t('cruise_ship_label');
+        tag.onclick = () => jumpToVQQuestion(0);
+        tagsContainer.appendChild(tag);
+        hasAnswers = true;
+      }
+      
+      questionOrder.forEach(filterKey => {
+        if (filterKey === 'activities') {
+          const acts = videoAnswers.activities;
+          if (acts && acts.length > 0) {
+            acts.forEach(act => {
+              const label = activityLabels[act] || act;
+              const tag = document.createElement('div');
+              tag.className = 'vq-history-tag';
+              tag.textContent = label;
+              tag.onclick = () => jumpToVQQuestion(questionIndexMap[filterKey]);
+              tagsContainer.appendChild(tag);
+              hasAnswers = true;
+            });
+          }
+        } else {
+          const value = videoAnswers[filterKey];
+          if (value && value !== '' && answerLabels[filterKey] && answerLabels[filterKey][value]) {
+            const tag = document.createElement('div');
+            tag.className = 'vq-history-tag';
+            tag.textContent = answerLabels[filterKey][value];
+            tag.onclick = () => jumpToVQQuestion(questionIndexMap[filterKey]);
+            tagsContainer.appendChild(tag);
+            hasAnswers = true;
+          }
+        }
+      });
+      
+      const progressContainer = document.getElementById('vq-progress-container');
+      if (currentVideoQuestion > 0 || hasAnswers) {
+        historyBar.style.display = 'block';
+        if (progressContainer) progressContainer.style.top = '150px';
+      } else {
+        historyBar.style.display = 'none';
+        if (progressContainer) progressContainer.style.top = '85px';
+      }
+      
+      if (backBtn) {
+        backBtn.style.display = currentVideoQuestion > 0 ? 'inline-block' : 'none';
+      }
+    }
+    
+    function jumpToVQQuestion(questionIndex) {
+      if (questionIndex >= 0 && questionIndex < videoQuestions.length) {
+        for (let i = currentVideoQuestion; i > questionIndex; i--) {
+          const q = videoQuestions[i];
+          if (q && q.answers && q.answers[0]) {
+            const filterType = q.answers[0].filter;
+            if (q.multiple) {
+              videoAnswers[filterType] = [];
+            } else {
+              videoAnswers[filterType] = '';
+            }
+          }
+        }
+        if (videoAnswers.cruise_ship_friendly && questionIndex === 0) {
+          videoAnswers.cruise_ship_friendly = '';
+        }
+        currentVideoQuestion = questionIndex;
+        renderVideoQuestion(currentVideoQuestion);
+        updateProgressIndicator();
+        updateVQAnswerHistory();
+        updateTourCounter();
         resetInactivityTimer();
       }
     }
@@ -19242,6 +19514,7 @@
       question.answers.forEach((answer, idx) => {
         const btn = document.createElement('button');
         btn.className = 'vq-answer-btn';
+        if (answer.isCruiseShip) btn.classList.add('vq-cruise-btn');
         btn.innerHTML = answer.text;
         btn.dataset.index = idx;
         btn.dataset.value = answer.value;
@@ -19326,6 +19599,7 @@
             btn.classList.remove('selected');
           });
           await updateTourCounter();
+          updateVQAnswerHistory();
           nextVideoQuestion();
         } else {
           const index = videoAnswers[filterType].indexOf(answer.value);
@@ -19336,9 +19610,10 @@
             videoAnswers[filterType].push(answer.value);
             btnElement.classList.add('selected');
           }
-          
+
           await updateTourCounter();
-          
+          updateVQAnswerHistory();
+
           const continueBtn = document.getElementById('vq-continue-btn');
           if (videoAnswers[filterType].length > 0) {
             if (!continueBtn) addContinueButton();
@@ -19347,9 +19622,25 @@
           }
         }
       } else {
-        videoAnswers[filterType] = answer.value;
-        await updateTourCounter();
-        nextVideoQuestion();
+        if (answer.isCruiseShip) {
+          videoAnswers.duration = '';
+          videoAnswers.cruise_ship_friendly = 'true';
+          videoAnswers.family_friendly = '';
+          videoAnswers.activities = [];
+          updateTourCounter();
+          updateVQAnswerHistory();
+          currentVideoQuestion = videoQuestions.length;
+          clearTimeout(inactivityTimer);
+          const progressContainer = document.getElementById('vq-progress-container');
+          if (progressContainer) progressContainer.style.display = 'none';
+          showSwipeResults();
+        } else {
+          videoAnswers[filterType] = answer.value;
+          delete videoAnswers.cruise_ship_friendly;
+          updateTourCounter();
+          updateVQAnswerHistory();
+          nextVideoQuestion();
+        }
       }
     }
     
@@ -19359,6 +19650,7 @@
       if (currentVideoQuestion < videoQuestions.length) {
         renderVideoQuestion(currentVideoQuestion);
         updateProgressIndicator();
+        updateVQAnswerHistory();
       } else {
         clearTimeout(inactivityTimer);
         
@@ -19410,11 +19702,15 @@
         }
       }
       
-      // Hide questionnaire container
+      // Hide questionnaire container and answer history
       if (questionContainer) {
         questionContainer.style.display = 'none';
       }
-      
+      const answerHistory = document.getElementById('vq-answer-history');
+      if (answerHistory) answerHistory.style.display = 'none';
+      const progressContainer = document.getElementById('vq-progress-container');
+      if (progressContainer) progressContainer.style.display = 'none';
+
       if (questionCard) questionCard.classList.add('exit-animation');
       if (backBtn) backBtn.style.opacity = '0';
       if (tourCounter) tourCounter.style.opacity = '0';
@@ -19433,6 +19729,9 @@
         }
         if (videoAnswers.family_friendly && videoAnswers.family_friendly !== '') {
           params.append('family_friendly', videoAnswers.family_friendly);
+        }
+        if (videoAnswers.cruise_ship_friendly) {
+          params.append('cruise_ship_only', 'true');
         }
         
         if (videoAnswers.activities && Array.isArray(videoAnswers.activities) && videoAnswers.activities.length > 0) {
@@ -21217,6 +21516,7 @@
       videoAnswers = {
         duration: "",
         family_friendly: "",
+        cruise_ship_friendly: "",
         activities: []
       };
       activeFilters = {}; // Clear any filters from home page
@@ -33142,6 +33442,7 @@
         // Fullscreen Windy with all controls: no menu param = full layer picker, calendar=now for timeline
         iframe.src = 'https://embed.windy.com/embed2.html?lat=-20.27&lon=148.72&detailLat=-20.27&detailLon=148.72&width=1920&height=1080&zoom=8&level=surface&overlay=wind&product=ecmwf&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1';
         overlay.classList.add('active');
+        bringOverlayToTop(overlay);
         document.body.style.overflow = 'hidden';
       }
     };
