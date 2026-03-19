@@ -877,24 +877,44 @@ def save_pending_changes(data):
     with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
         f.write(content)
     
+    num_requests = len(data.get('requests', []))
+    num_pending = len([r for r in data.get('requests', []) if r.get('status') == 'pending'])
+    print(f"[PENDING CHANGES] Saved locally: {num_requests} total, {num_pending} pending", flush=True)
+    
     # On Render/cloud, push directly via GitHub API so changes survive restarts
     IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    print(f"[PENDING CHANGES] IS_CLOUD={bool(IS_CLOUD)}, GITHUB_TOKEN={'set ('+str(len(GITHUB_TOKEN))+'chars)' if GITHUB_TOKEN else 'NOT SET'}", flush=True)
+    
     if IS_CLOUD and GITHUB_TOKEN:
         try:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            file_path = PENDING_CHANGES_FILE.replace('\\', '/')
+            print(f"[PENDING CHANGES] Pushing to GitHub: {file_path}", flush=True)
             success, msg = _github_api_push(
-                {PENDING_CHANGES_FILE: content},
+                {file_path: content},
                 f"Sync pending changes [{timestamp}]"
             )
             if success:
-                print(f"[PENDING CHANGES] Pushed to GitHub: {msg}", flush=True)
+                print(f"[PENDING CHANGES] ✅ Pushed to GitHub: {msg}", flush=True)
             else:
-                print(f"[PENDING CHANGES] GitHub push failed: {msg}", flush=True)
+                print(f"[PENDING CHANGES] ❌ GitHub push FAILED: {msg}", flush=True)
         except Exception as e:
-            print(f"[PENDING CHANGES] GitHub push error: {e}", flush=True)
+            import traceback
+            print(f"[PENDING CHANGES] ❌ GitHub push error: {e}", flush=True)
+            traceback.print_exc()
+    elif IS_CLOUD and not GITHUB_TOKEN:
+        print(f"[PENDING CHANGES] ⚠️ WARNING: Running on Render but GITHUB_TOKEN is NOT set! Pending changes will be LOST on restart!", flush=True)
+    else:
+        print(f"[PENDING CHANGES] Local environment - relying on git_sync_changes()", flush=True)
 
 def create_change_request(requested_by, change_type, description, changes_data, tour_key=None):
     """Create a new change request for admin approval"""
+    print(f"\n{'='*60}", flush=True)
+    print(f"[CHANGE REQUEST] === CREATING NEW REQUEST ===", flush=True)
+    print(f"[CHANGE REQUEST] From: {requested_by}, Type: {change_type}", flush=True)
+    print(f"[CHANGE REQUEST] Description: {description}", flush=True)
+    print(f"[CHANGE REQUEST] Tour: {tour_key}", flush=True)
+    
     data = load_pending_changes()
     
     request_id = f"req_{uuid.uuid4().hex[:8]}_{int(time.time())}"
@@ -914,12 +934,15 @@ def create_change_request(requested_by, change_type, description, changes_data, 
     }
     
     data['requests'].append(new_request)
+    print(f"[CHANGE REQUEST] Total requests now: {len(data['requests'])}", flush=True)
+    
     save_pending_changes(data)
     
-    # Critical: sync to git immediately so pending changes survive Render restarts
+    # Also sync via git (background thread) as a backup
     git_sync_changes(f"Change request from {requested_by}: {description}")
     
-    print(f"[CHANGE REQUEST] New request {request_id} from {requested_by}: {description}")
+    print(f"[CHANGE REQUEST] ✅ Created {request_id}", flush=True)
+    print(f"{'='*60}\n", flush=True)
     return request_id
 
 def get_pending_requests(status='pending'):
@@ -3247,6 +3270,50 @@ def api_pending_count():
     pending = get_pending_requests('pending')
     return jsonify({'count': len(pending)})
 
+@app.route('/admin/api/change-requests/debug')
+@login_required
+def api_change_requests_debug():
+    """Debug endpoint to diagnose change request sync issues"""
+    username = session.get('user')
+    if not is_admin_user(username):
+        return jsonify({'error': 'Admin only'}), 403
+    
+    IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    
+    # Load local data
+    local_data = {'requests': []}
+    if os.path.exists(PENDING_CHANGES_FILE):
+        try:
+            with open(PENDING_CHANGES_FILE, 'r', encoding='utf-8') as f:
+                local_data = json.load(f)
+        except Exception as e:
+            local_data = {'error': str(e)}
+    
+    # Pull from GitHub
+    remote_data = _pull_pending_from_github()
+    
+    # Check GitHub API access
+    owner, repo = _get_github_repo_info()
+    
+    local_requests = local_data.get('requests', [])
+    remote_requests = remote_data.get('requests', []) if remote_data else []
+    
+    return jsonify({
+        'is_render': bool(IS_CLOUD),
+        'github_token_set': bool(GITHUB_TOKEN),
+        'github_repo': f'{owner}/{repo}' if owner else '(unknown)',
+        'local_file_exists': os.path.exists(PENDING_CHANGES_FILE),
+        'local_request_count': len(local_requests),
+        'local_pending': len([r for r in local_requests if r.get('status') == 'pending']),
+        'local_approved': len([r for r in local_requests if r.get('status') == 'approved']),
+        'remote_pull_success': remote_data is not None,
+        'remote_request_count': len(remote_requests),
+        'remote_pending': len([r for r in remote_requests if r.get('status') == 'pending']),
+        'remote_approved': len([r for r in remote_requests if r.get('status') == 'approved']),
+        'local_request_ids': [r.get('id') for r in local_requests],
+        'remote_request_ids': [r.get('id') for r in remote_requests] if remote_data else [],
+    })
+
 # Store password reset tokens in memory (with expiration)
 password_reset_tokens = {}  # {username: {'code': '123456', 'expires': datetime}}
 
@@ -4073,7 +4140,28 @@ import subprocess
 @app.route('/health')
 def health_check():
     """Simple health check endpoint for monitoring and update restart detection"""
-    return jsonify({'status': 'ok', 'version': APP_VERSION})
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    git_head = 'unknown'
+    try:
+        result = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'],
+            capture_output=True, text=True, encoding='utf-8', errors='replace',
+            cwd=cwd, timeout=5)
+        if result.returncode == 0:
+            git_head = result.stdout.strip()
+    except:
+        pass
+    
+    IS_CLOUD = bool(os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID'))
+    
+    return jsonify({
+        'status': 'ok',
+        'version': APP_VERSION,
+        'git_head': git_head,
+        'is_render': IS_CLOUD,
+        'github_token_set': bool(GITHUB_TOKEN),
+        'github_token_length': len(GITHUB_TOKEN) if GITHUB_TOKEN else 0,
+        'pending_changes_file_exists': os.path.exists(PENDING_CHANGES_FILE),
+    })
 
 @app.route('/debug/images')
 def debug_images():
@@ -8524,6 +8612,10 @@ def save_tour_from_editor(key):
         # For non-admin users:
         # 1. Store non-approval changes as per-account overrides (not global CSV)
         # 2. Create a change request for content changes that need approval
+        
+        print(f"\n[SAVE TOUR] Non-admin user '{username}' saving tour '{key}'", flush=True)
+        print(f"[SAVE TOUR] Fields needing approval: {list(changes_needing_approval.keys())}", flush=True)
+        print(f"[SAVE TOUR] Fields NOT needing approval: {list(changes_not_needing_approval.keys())}", flush=True)
         
         applied_changes = []
         
