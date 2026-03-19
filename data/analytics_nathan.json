@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-19T10:39:28.161189",
+  "last_updated": "2026-03-19T11:00:50.464972",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -55508,11 +55508,91 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T10:40:37.400977",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T10:40:48.978736",
+          "data": {
+            "tour_name": "Cedar Creek Express Tour from Airlie Beach",
+            "company": "Airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-19T10:41:12.495219",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Cedar Creek Express Tour from Airlie Beach"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-19T10:41:12.495219",
+      "duration_seconds": 122.563926
+    },
+    {
+      "session_id": "session_5fca43f486fb_1773881982",
+      "account": "nathan",
+      "started_at": "2026-03-19T10:59:42.371613",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-19T10:59:42.371613",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-19T10:59:43.793795",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T10:59:47.049014",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T11:00:10.734381",
+          "data": {
+            "tour_name": "Kangaroos on the Beach at Sunrise",
+            "company": "Airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T11:00:47.555630",
+          "data": {
+            "tour_name": "Airlie Adventure Tour",
+            "company": "Jetskitour",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Kangaroos on the Beach at Sunrise",
+        "Airlie Adventure Tour"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
