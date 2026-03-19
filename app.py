@@ -789,41 +789,86 @@ def save_account_settings(username, settings, sync_to_git=True):
 PENDING_CHANGES_FILE = 'config/pending_changes.json'
 ADMIN_USERS = ['bailey']  # Users who can approve/deny requests
 
-def load_pending_changes():
-    """Load all pending change requests, pulling from GitHub if local file is missing"""
+def _pull_pending_from_github():
+    """Pull pending changes from GitHub and merge with local data"""
+    if not GITHUB_TOKEN or not http_requests:
+        return None
+    try:
+        owner, repo = _get_github_repo_info()
+        if not owner or not repo:
+            return None
+        headers = {
+            'Authorization': f'token {GITHUB_TOKEN}',
+            'Accept': 'application/vnd.github.v3.raw'
+        }
+        resp = http_requests.get(
+            f'https://api.github.com/repos/{owner}/{repo}/contents/{PENDING_CHANGES_FILE}',
+            headers=headers, timeout=10
+        )
+        if resp.status_code == 200:
+            text = resp.text
+            return json.loads(text)
+    except Exception as e:
+        print(f"[PENDING CHANGES] Failed to pull from GitHub: {e}", flush=True)
+    return None
+
+def _merge_pending_changes(local_data, remote_data):
+    """Merge local and remote pending changes, deduplicating by request ID"""
+    if not remote_data:
+        return local_data
+    
+    local_requests = {r['id']: r for r in local_data.get('requests', [])}
+    remote_requests = {r['id']: r for r in remote_data.get('requests', [])}
+    
+    # Merge: for each request, use the one with the latest status update
+    merged = {}
+    all_ids = set(local_requests.keys()) | set(remote_requests.keys())
+    for rid in all_ids:
+        local_r = local_requests.get(rid)
+        remote_r = remote_requests.get(rid)
+        if local_r and remote_r:
+            # Prefer the one that's been reviewed (approved/denied) over pending
+            if local_r.get('status') != 'pending' and remote_r.get('status') == 'pending':
+                merged[rid] = local_r
+            elif remote_r.get('status') != 'pending' and local_r.get('status') == 'pending':
+                merged[rid] = remote_r
+            else:
+                # Both same status - prefer whichever was updated more recently
+                local_time = local_r.get('reviewed_at') or local_r.get('requested_at', '')
+                remote_time = remote_r.get('reviewed_at') or remote_r.get('requested_at', '')
+                merged[rid] = remote_r if remote_time >= local_time else local_r
+        else:
+            merged[rid] = local_r or remote_r
+    
+    return {'requests': list(merged.values())}
+
+def load_pending_changes(sync_from_remote=False):
+    """Load all pending change requests, optionally syncing from GitHub"""
+    local_data = {'requests': []}
     if os.path.exists(PENDING_CHANGES_FILE):
         try:
             with open(PENDING_CHANGES_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                local_data = json.load(f)
         except:
-            return {'requests': []}
+            pass
     
-    # File doesn't exist locally - try to pull from GitHub (important for Render restarts)
-    if GITHUB_TOKEN:
-        try:
-            owner, repo = _get_github_repo_info()
-            if owner and repo and http_requests:
-                headers = {
-                    'Authorization': f'token {GITHUB_TOKEN}',
-                    'Accept': 'application/vnd.github.v3.raw'
-                }
-                resp = http_requests.get(
-                    f'https://api.github.com/repos/{owner}/{repo}/contents/{PENDING_CHANGES_FILE}',
-                    headers=headers, timeout=10
-                )
-                if resp.status_code == 200:
-                    data = resp.json() if isinstance(resp.content, bytes) else resp.text
-                    if isinstance(data, str):
-                        data = json.loads(data)
-                    os.makedirs(os.path.dirname(PENDING_CHANGES_FILE), exist_ok=True)
-                    with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
-                        json.dump(data, f, indent=2, ensure_ascii=False)
-                    print(f"[PENDING CHANGES] Recovered {len(data.get('requests', []))} requests from GitHub", flush=True)
-                    return data
-        except Exception as e:
-            print(f"[PENDING CHANGES] Failed to pull from GitHub: {e}", flush=True)
+    # Sync from GitHub: on Render (always, file may be gone) or when explicitly requested
+    IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if IS_CLOUD or sync_from_remote:
+        remote_data = _pull_pending_from_github()
+        if remote_data:
+            merged = _merge_pending_changes(local_data, remote_data)
+            # Save merged data locally
+            os.makedirs(os.path.dirname(PENDING_CHANGES_FILE), exist_ok=True)
+            with open(PENDING_CHANGES_FILE, 'w', encoding='utf-8') as f:
+                json.dump(merged, f, indent=2, ensure_ascii=False)
+            local_count = len(local_data.get('requests', []))
+            merged_count = len(merged.get('requests', []))
+            if merged_count > local_count:
+                print(f"[PENDING CHANGES] Merged {merged_count - local_count} new request(s) from GitHub", flush=True)
+            return merged
     
-    return {'requests': []}
+    return local_data
 
 def save_pending_changes(data):
     """Save pending change requests to disk and push to GitHub immediately"""
@@ -3108,6 +3153,9 @@ def change_requests_page():
     if not is_admin_user(username):
         return "Access denied - admin only", 403
     
+    # Always sync from GitHub to get requests from other instances (e.g. web version)
+    load_pending_changes(sync_from_remote=True)
+    
     pending = get_pending_requests('pending')
     recent_reviewed = [r for r in get_pending_requests('all') 
                        if r['status'] in ['approved', 'denied']][-20:]  # Last 20
@@ -3177,14 +3225,24 @@ def api_deny_request(request_id):
         'message': message
     })
 
+_last_remote_sync = 0
+_REMOTE_SYNC_INTERVAL = 30  # Check GitHub every 30 seconds max
+
 @app.route('/admin/api/change-requests/pending-count')
 @login_required  
 def api_pending_count():
     """Get count of pending requests (for notification badge)"""
+    global _last_remote_sync
     username = session.get('user')
     
     if not is_admin_user(username):
         return jsonify({'count': 0})
+    
+    # Sync from GitHub periodically (not every poll) to catch web requests
+    now = time.time()
+    if now - _last_remote_sync > _REMOTE_SYNC_INTERVAL:
+        _last_remote_sync = now
+        load_pending_changes(sync_from_remote=True)
     
     pending = get_pending_requests('pending')
     return jsonify({'count': len(pending)})
