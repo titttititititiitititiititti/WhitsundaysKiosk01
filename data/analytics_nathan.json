@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-20T15:34:08.620775",
+  "last_updated": "2026-03-20T15:46:23.033315",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -53753,13 +53753,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T07:37:36.783108",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T07:37:36.783108",
+      "duration_seconds": 315.747073
     },
     {
       "session_id": "session_8892c4c71815_1773616599",
@@ -53787,13 +53794,49 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T09:21:47.927471",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-16T09:21:55.746699",
+          "data": {
+            "tour_name": "Cedar Creek Express Tour from Airlie Beach",
+            "company": "Airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-03-16T09:22:13.575073",
+          "data": {
+            "tour_name": "Cedar Creek Express Tour from Airlie Beach",
+            "company": "Airlieadventuretours",
+            "source": "embedded-booking"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T09:22:47.816374",
+          "data": {}
         }
       ],
       "language": null,
-      "mode": "map-view",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Cedar Creek Express Tour from Airlie Beach"
+      ],
+      "tours_booked": [
+        "Cedar Creek Express Tour from Airlie Beach"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-03-16T09:22:47.816374",
+      "duration_seconds": 368.424469
     },
     {
       "session_id": "session_070a14309626_1773616970",
@@ -53832,6 +53875,11 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T09:32:41.883343",
+          "data": {}
         }
       ],
       "language": null,
@@ -53840,7 +53888,9 @@
         "Fly Raft \u2013 Southern Lights"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T09:32:41.883343",
+      "duration_seconds": 591.360553
     },
     {
       "session_id": "session_aaf2f47302cb_1773617766",
@@ -53854,13 +53904,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T09:46:14.769516",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T09:46:14.769516",
+      "duration_seconds": 608.725639
     },
     {
       "session_id": "session_3584a41a8666_1773619127",
@@ -53874,13 +53931,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T10:03:47.419030",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T10:03:47.419030",
+      "duration_seconds": 300.030645
     },
     {
       "session_id": "session_53047b58f677_1773620674",
@@ -53894,13 +53958,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T10:29:34.655314",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T10:29:34.655314",
+      "duration_seconds": 300.031981
     },
     {
       "session_id": "session_14bc0b25c78b_1773622679",
@@ -53914,13 +53985,52 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-16T10:59:59.117301",
+          "data": {
+            "language": "ja"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T11:00:30.571873",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-16T11:01:15.817919",
+          "data": {
+            "tour_name": "Let The Sea Set You Free",
+            "company": "Whitsundaybullet",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T11:01:53.913921",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T11:13:40.746793",
+          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
+      "language": "ja",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Let The Sea Set You Free"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T11:13:40.746793",
+      "duration_seconds": 941.610153
     },
     {
       "session_id": "session_0388f2433931_1773623291",
@@ -54016,13 +54126,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T11:35:17.583121",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T11:35:17.583121",
+      "duration_seconds": 728.710143
     },
     {
       "session_id": "session_a9fa167bf03e_1773627446",
@@ -54036,13 +54153,41 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-16T12:17:37.782082",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T12:17:38.779287",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-16T12:17:39.174548",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T12:22:39.094225",
+          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
+      "language": "en",
+      "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T12:22:39.094225",
+      "duration_seconds": 312.707101
     },
     {
       "session_id": "session_48d293760f10_1773628631",
@@ -54056,13 +54201,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-16T12:45:17.012943",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-16T12:45:17.012943",
+      "duration_seconds": 485.755298
     },
     {
       "session_id": "session_aafb76686c47_1773629174",
@@ -54270,13 +54422,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T09:11:48.592369",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T09:11:48.592369",
+      "duration_seconds": 367.54351
     },
     {
       "session_id": "session_426b3600541d_1773703405",
@@ -54459,13 +54618,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T12:47:48.093902",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T12:47:48.093902",
+      "duration_seconds": 412.94476
     },
     {
       "session_id": "session_17be1d3e6670_1773715579",
@@ -54534,13 +54700,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T13:01:43.426854",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T13:01:43.426854",
+      "duration_seconds": 706.817808
     },
     {
       "session_id": "session_06ff56b72cd4_1773719666",
@@ -54575,13 +54748,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T14:01:32.067605",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T14:01:32.067605",
+      "duration_seconds": 425.63427
     },
     {
       "session_id": "session_495a9fa4ed03_1773720881",
@@ -54643,13 +54823,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T15:11:43.601366",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T15:11:43.601366",
+      "duration_seconds": 620.001591
     },
     {
       "session_id": "session_88a92cad0495_1773724132",
@@ -54704,6 +54891,11 @@
             "company": "Red Cat Adventures",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-17T15:15:33.118370",
+          "data": {}
         }
       ],
       "language": "zh",
@@ -54714,7 +54906,9 @@
         "\u6c64\u52a0\u62c9\u5e06\u8239\u4e00\u65e5\u6e38"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-17T15:15:33.118370",
+      "duration_seconds": 400.229131
     },
     {
       "session_id": "session_c730602d7fa0_1773724225",
@@ -55943,13 +56137,38 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-19T10:40:37.400977",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-19T10:40:48.978736",
+          "data": {
+            "tour_name": "Cedar Creek Express Tour from Airlie Beach",
+            "company": "Airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-19T10:41:12.495219",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Cedar Creek Express Tour from Airlie Beach"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-19T10:41:12.495219",
+      "duration_seconds": 122.563926
     },
     {
       "session_id": "session_ba25b6058671_1773881499",
@@ -56998,6 +57217,100 @@
       "chat_messages": [],
       "ended_at": "2026-03-20T14:20:46.867961",
       "duration_seconds": 1847.645764
+    },
+    {
+      "session_id": "session_b423c8608c2e_1773979434",
+      "account": "nathan",
+      "started_at": "2026-03-20T14:03:54.765785",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-20T14:03:54.765785",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-20T14:03:55.931969",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-20T14:03:56.860427",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-20T14:04:10.885247",
+          "data": {
+            "tour_name": "2 Hour Helicopter and Resort Visit Packages",
+            "company": "Airliebeachhelicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-20T14:04:26.236916",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-20T14:04:49.925063",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-20T14:04:51.302620",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-20T14:04:52.390828",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-20T14:04:53.084949",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-20T14:52:42.610587",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "2 Hour Helicopter and Resort Visit Packages",
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-20T14:52:42.610587",
+      "duration_seconds": 2927.844802
     },
     {
       "session_id": "session_c98bd4f5d5ff_1773984736",
