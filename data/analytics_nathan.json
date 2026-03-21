@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-21T11:00:21.619710",
+  "last_updated": "2026-03-21T11:26:30.380875",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -57268,9 +57268,64 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-21T11:04:48.432571",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-21T11:04:56.373479",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-21T11:04:56.618008",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-21T11:18:48.443034",
+          "data": {}
         }
       ],
-      "language": null,
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-21T11:18:48.443034",
+      "duration_seconds": 1155.096222
+    },
+    {
+      "session_id": "session_4f2c8d793a09_1774056274",
+      "account": "nathan",
+      "started_at": "2026-03-21T11:24:34.415945",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-21T11:24:34.415945",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-21T11:26:23.919497",
+          "data": {
+            "language": "en"
+          }
+        }
+      ],
+      "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
