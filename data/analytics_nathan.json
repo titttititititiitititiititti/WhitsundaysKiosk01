@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-23T14:11:28.938091",
+  "last_updated": "2026-03-23T14:32:23.604244",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -58388,9 +58388,75 @@
           "data": {
             "language": "hi"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-23T14:12:31.287517",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T14:12:35.132861",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T14:12:42.769530",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T14:14:07.301837",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T14:14:25.783742",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_views"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-23T14:22:27.098706",
+          "data": {}
         }
       ],
       "language": "hi",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-23T14:22:27.098706",
+      "duration_seconds": 867.964357
+    },
+    {
+      "session_id": "session_e96dd9e51665_1774240249",
+      "account": "nathan",
+      "started_at": "2026-03-23T14:30:49.266809",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-23T14:30:49.266809",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
