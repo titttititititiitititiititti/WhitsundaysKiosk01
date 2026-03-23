@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-23T09:53:59.743045",
+  "last_updated": "2026-03-23T10:16:05.554649",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -57906,11 +57906,119 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-23T10:03:50.415101",
+          "data": {
+            "language": "de"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-23T10:07:57.350769",
+          "data": {
+            "mode": "newcomer-info"
+          }
         }
       ],
-      "language": null,
-      "mode": null,
+      "language": "de",
+      "mode": "newcomer-info",
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_43d814804011_1774224642",
+      "account": "nathan",
+      "started_at": "2026-03-23T10:10:42.304868",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-23T10:10:42.304868",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-23T10:11:18.242457",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-23T10:11:22.699772",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-23T10:11:34.034470",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T10:11:45.968553",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T10:11:47.729020",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T10:11:51.071893",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-23T10:11:56.555861",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-23T10:12:08.845579",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-23T10:13:13.570210",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Camira Sailing Adventure",
+        "Fly Raft \u2013 Southern Lights"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
