@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-23T10:16:05.554649",
+  "last_updated": "2026-03-23T10:47:27.871222",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -58011,6 +58011,11 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-23T10:24:31.832567",
+          "data": {}
         }
       ],
       "language": "en",
@@ -58020,7 +58025,36 @@
         "Fly Raft \u2013 Southern Lights"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-03-23T10:24:31.832567",
+      "duration_seconds": 829.527699
+    },
+    {
+      "session_id": "session_1e885931bfe1_1774226538",
+      "account": "nathan",
+      "started_at": "2026-03-23T10:42:18.445978",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-23T10:42:18.446977",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-23T10:47:24.557258",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-23T10:47:24.557258",
+      "duration_seconds": 306.11128
     }
   ]
 }
