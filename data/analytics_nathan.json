@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-25T17:09:31.524587",
+  "last_updated": "2026-03-25T17:51:20.736835",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -59534,10 +59534,94 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-25T17:15:13.236277",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-25T17:19:30.300356",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-25T17:21:59.770782",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-03-25T17:31:37.766092",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-25T17:42:44.096450",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-25T17:42:44.096450",
+      "duration_seconds": 2210.445515
+    },
+    {
+      "session_id": "session_3ae5dae90f69_1774424774",
+      "account": "nathan",
+      "started_at": "2026-03-25T17:46:14.737047",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-25T17:46:14.737047",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-25T17:47:34.877870",
+          "data": {
+            "language": "fr"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-25T17:47:35.051039",
+          "data": {
+            "language": "fr"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-25T17:48:12.010471",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        }
+      ],
+      "language": "fr",
+      "mode": "newcomer-info",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
