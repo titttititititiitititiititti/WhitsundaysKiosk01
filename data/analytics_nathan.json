@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-29T16:04:31.372189",
+  "last_updated": "2026-03-29T16:20:14.644952",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -60923,10 +60923,44 @@
             "filter_type": "activities",
             "filter_value": "swimming"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-29T16:08:01.960807",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-29T16:15:10.000501",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": "quick-decision",
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-29T16:15:10.000501",
+      "duration_seconds": 773.785889
+    },
+    {
+      "session_id": "session_05a1a4661073_1774765213",
+      "account": "nathan",
+      "started_at": "2026-03-29T16:20:13.211503",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-29T16:20:13.211503",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
