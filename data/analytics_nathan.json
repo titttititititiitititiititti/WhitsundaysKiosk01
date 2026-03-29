@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-29T15:54:01.506075",
+  "last_updated": "2026-03-29T16:04:31.372189",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -60858,10 +60858,75 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-29T15:58:00.302145",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-29T15:58:00.302145",
+      "duration_seconds": 468.6725
+    },
+    {
+      "session_id": "session_02031f7585d1_1774764136",
+      "account": "nathan",
+      "started_at": "2026-03-29T16:02:16.214612",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-29T16:02:16.214612",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-29T16:02:22.094973",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-03-29T16:02:42.329082",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-29T16:02:46.963174",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-29T16:02:48.783590",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-29T16:02:56.531339",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
