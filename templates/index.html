@@ -13726,11 +13726,11 @@
       });
       
       // Remote fallback URLs for when local file isn't available (Render/cloud hosting)
+      // Primary URL is fetched server-side from Streamable API (signed, auto-refreshed hourly)
       const REMOTE_VIDEO_URLS = [
-        'https://cdn-cf-east.streamable.com/video/mp4/fsdp2x.mp4',
-        'https://cdn-cf-west.streamable.com/video/mp4/fsdp2x.mp4',
+        '{{ bg_video_url }}',
         'https://videos.pexels.com/video-files/1918465/1918465-uhd_2560_1440_24fps.mp4'
-      ];
+      ].filter(u => u);
       let fallbackIndex = 0;
       
       // Check if we're on a cloud host (not localhost)
@@ -13755,15 +13755,13 @@
       
       // Try to play, if it fails (no local file), use remote fallback
       video.play().catch(() => {
-        if (isCloudHost) {
-          console.log('📺 Local video failed, trying remote fallbacks');
-          tryNextFallback();
-        }
+        console.log('📺 Local video failed, trying remote fallbacks');
+        tryNextFallback();
       });
       
       // Also check if video has no duration after a short delay (means source failed to load)
       setTimeout(() => {
-        if (isCloudHost && (video.readyState === 0 || isNaN(video.duration))) {
+        if (video.readyState === 0 || isNaN(video.duration)) {
           console.log('📺 Video source not loaded, trying fallbacks');
           tryNextFallback();
         }
@@ -13771,9 +13769,7 @@
       
       // Handle video error event
       video.addEventListener('error', () => {
-        if (isCloudHost) {
-          tryNextFallback();
-        }
+        tryNextFallback();
       });
       
       // Only restart if user returns to tab
@@ -16219,7 +16215,7 @@
       landscape_id: 'qvf8eh',   // Landscape video
       portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/0124.mp4') }}",
-      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/fsdp2x.mp4',
+      remote_fallback: '{{ bg_video_url }}',
       use_local: !['localhost', '127.0.0.1'].includes(window.location.hostname) ? false : true // Use remote on cloud hosts
     };
     

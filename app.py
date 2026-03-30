@@ -52,6 +52,32 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tour-kiosk-secret-key-2024'
 APP_VERSION = "1.0.0"
 
 # ============================================================================
+# BACKGROUND VIDEO URL - Fetch signed Streamable URL with caching
+# ============================================================================
+
+STREAMABLE_VIDEO_ID = 'fsdp2x'
+_bg_video_cache = {'url': '', 'fetched_at': 0}
+
+def get_bg_video_url():
+    """Fetch a fresh signed MP4 URL from Streamable's API, cached for 1 hour."""
+    now = time.time()
+    if _bg_video_cache['url'] and now - _bg_video_cache['fetched_at'] < 3600:
+        return _bg_video_cache['url']
+    try:
+        import requests as _req
+        resp = _req.get(f'https://api.streamable.com/videos/{STREAMABLE_VIDEO_ID}', timeout=5)
+        data = resp.json()
+        url = data.get('files', {}).get('mp4', {}).get('url', '')
+        if url:
+            _bg_video_cache['url'] = url
+            _bg_video_cache['fetched_at'] = now
+            print(f"[VIDEO] Fetched fresh Streamable URL (expires in ~3 days)")
+            return url
+    except Exception as e:
+        print(f"[VIDEO] Failed to fetch Streamable URL: {e}")
+    return _bg_video_cache['url']
+
+# ============================================================================
 # REFERRAL TRACKING - Track which kiosk/shop referred users
 # ============================================================================
 
@@ -4741,7 +4767,8 @@ def index():
                            active_account=active_account,
                            is_web_visitor=is_web_visitor,
                            is_demo_mode=is_demo_mode,
-                           newcomer_images=get_newcomer_images(active_account))
+                           newcomer_images=get_newcomer_images(active_account),
+                           bg_video_url=get_bg_video_url())
 
 @app.route('/api/semantic-search')
 def api_semantic_search():
