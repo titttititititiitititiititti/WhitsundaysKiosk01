@@ -79,7 +79,144 @@
         -webkit-user-select: none;
         user-select: none;
       }
+
+      /* Hide ALL desktop text buttons and small emoji buttons — hamburger replaces them */
+      .kiosk-header .quick-decision-btn-header,
+      .kiosk-header .ai-assistant-btn-header,
+      .kiosk-header .map-view-btn-header,
+      .kiosk-header .newcomer-info-btn-header,
+      .kiosk-header .browse-all-btn-header,
+      .kiosk-header #home-map-toggle-btn,
+      .kiosk-header #vq-map-toggle-btn,
+      .kiosk-header #map-toggle-btn,
+      .kiosk-header .mobile-quick-btn,
+      .kiosk-header .mobile-ai-btn,
+      .kiosk-header .mobile-browse-btn {
+        display: none !important;
+      }
+
+      /* Show hamburger button */
+      .hamburger-menu-btn {
+        display: flex !important;
+      }
     }
+
+    /* ===== HAMBURGER MENU (hidden on desktop, shown on touch devices via query above) ===== */
+    .hamburger-menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .hamburger-dropdown {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 320px;
+      max-width: 85vw;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100000;
+      padding: 24px 20px;
+      box-shadow: -8px 0 30px rgba(0,0,0,0.5);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      pointer-events: none;
+    }
+    .hamburger-dropdown.open {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .hamburger-dropdown-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .hamburger-dropdown-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .hamburger-dropdown .hb-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hamburger-dropdown .hb-title {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 0 0 14px 4px;
+      padding-top: 8px;
+    }
+    .hamburger-dropdown .hb-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px 16px;
+      margin-bottom: 6px;
+      border: none;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.07);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-align: left;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .hamburger-dropdown .hb-item:active {
+      background: rgba(255,255,255,0.15);
+    }
+    .hamburger-dropdown .hb-item .hb-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .hamburger-dropdown .hb-item .hb-icon.green  { background: linear-gradient(135deg, #10b981, #059669); }
+    .hamburger-dropdown .hb-item .hb-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .hamburger-dropdown .hb-item .hb-icon.teal   { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .hamburger-dropdown .hb-item .hb-icon.blue   { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .hamburger-dropdown .hb-item .hb-icon.orange  { background: linear-gradient(135deg, #f97316, #ea580c); }
     
     /* Force all page containers to be transparent so video shows through */
     .page, .page.active, .video-question-page, .home-page, .ai-assistant-page, .tour-detail-page {
@@ -15092,6 +15229,7 @@
             </div>
             </div>
           <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
       
@@ -15273,6 +15411,7 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectNewcomerLanguage('es')"><img src="https://flagcdn.com/w40/es.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">Español</span></div>
             </div>
           </div>
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
       
@@ -15661,6 +15800,8 @@
               </div>
           <!-- Map View Button -->
           <button class="chip chip-outline" id="home-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
+          <!-- Hamburger (touch devices only, hidden on desktop via CSS) -->
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
 
@@ -15995,6 +16136,7 @@
           <button class="chip" id="list-language-btn" onclick="toggleLanguageMenu()">EN</button>
           <button class="chip" id="list-currency-btn" onclick="toggleCurrencyMenu()">AUD</button>
           <button class="chip chip-outline" id="map-toggle-btn" onclick="toggleMapView()">Map view</button>
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
 
@@ -16111,6 +16253,7 @@
             </div>
         </div>
       </div>
+      <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
     </header>
 
     <!-- Main Content -->
@@ -16655,6 +16798,7 @@
           </div>
         </div>
       </div>
+      <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
     </header>
     
     <!-- AI Particle Visualizer - Audio Reactive -->
@@ -36880,6 +37024,44 @@
       
       console.log('🔒 Kiosk lockdown active - right-click, keyboard shortcuts, and zoom disabled');
     })();
+  </script>
+
+  <!-- Hamburger Menu (touch devices only) -->
+  <div class="hamburger-dropdown-backdrop" id="hamburger-backdrop" onclick="toggleHamburgerMenu()"></div>
+  <div class="hamburger-dropdown" id="hamburger-dropdown">
+    <button class="hb-close" onclick="toggleHamburgerMenu()">✕</button>
+    <div class="hb-title">Navigate</div>
+    <button class="hb-item" onclick="toggleHamburgerMenu(); startQuickDecision();">
+      <span class="hb-icon green">⚡</span> Quick Match
+    </button>
+    <button class="hb-item" onclick="toggleHamburgerMenu(); openAIAssistant();">
+      <span class="hb-icon purple">🤖</span> AI Assistant
+    </button>
+    <button class="hb-item" onclick="toggleHamburgerMenu(); goToHomePage();">
+      <span class="hb-icon orange">📁</span> Browse All Tours
+    </button>
+    <button class="hb-item" onclick="toggleHamburgerMenu(); openMapView();">
+      <span class="hb-icon teal">🗺️</span> Map View
+    </button>
+    <button class="hb-item" onclick="toggleHamburgerMenu(); openNewcomerInfo();">
+      <span class="hb-icon blue">ℹ️</span> Important Info
+    </button>
+  </div>
+  <script>
+    function toggleHamburgerMenu() {
+      var dd = document.getElementById('hamburger-dropdown');
+      var bd = document.getElementById('hamburger-backdrop');
+      var isOpen = dd.classList.contains('open');
+      if (isOpen) {
+        dd.classList.remove('open');
+        bd.classList.remove('open');
+      } else {
+        dd.classList.add('open');
+        bd.classList.add('open');
+        // Force reflow so the transform transition plays on open
+        dd.offsetHeight;
+      }
+    }
   </script>
 </body>
 </html>
