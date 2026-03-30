@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Tour Chat Assistant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=1400, initial-scale=0.5, maximum-scale=3.0, user-scalable=yes">
   
+  <!-- Fullscreen when added to iPad/iPhone home screen (no Safari chrome) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Filtour">
+
   <!-- Cache busting -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
@@ -28,6 +33,10 @@
        GLOBAL RESPONSIVE FOUNDATIONS
        =================================================================== */
     
+    :root {
+      --vh-full: 100dvh;
+    }
+
     *, *::before, *::after {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -57,6 +66,19 @@
     
     body {
       background: transparent !important;
+    }
+
+    /* ===== TOUCH DEVICE ONLY (iPad, phones) — no effect on desktop ===== */
+    @media (hover: none) and (pointer: coarse) {
+      html, body {
+        overscroll-behavior: none;
+      }
+      body {
+        -webkit-overflow-scrolling: touch;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
     }
     
     /* Force all page containers to be transparent so video shows through */
@@ -1748,7 +1770,7 @@
       display: block !important; /* Changed from flex to block */
       position: relative;
       width: 100%;
-      height: 100vh;
+      height: var(--vh-full, 100vh);
       overflow-y: auto !important; /* Allow scrolling */
       overflow-x: hidden !important; /* Prevent horizontal scrolling */
       z-index: 10; /* Above video background */
@@ -1760,7 +1782,7 @@
       top: 0 !important;
       left: 0 !important;
       width: 100vw !important;
-      height: 100vh !important;
+      height: var(--vh-full, 100vh) !important;
       z-index: -1 !important;
       object-fit: cover !important;
       display: block !important;
@@ -1802,7 +1824,7 @@
     /* Prevent scrolling when video page is active */
     body.video-bg-active {
       overflow: hidden !important;
-      height: 100vh !important;
+      height: var(--vh-full, 100vh) !important;
     }
     
     /* Hide ALL non-active pages and widgets when video question page is active */
@@ -13683,18 +13705,31 @@
     <!-- Primary: local file for kiosk, Fallback: remote URL for Render/cloud hosting -->
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
+  <!-- Invisible overlay to block all touch interaction with the video on iPad/mobile -->
+  <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
+  <style>
+    @media (hover: none) and (pointer: coarse) {
+      #video-touch-blocker { pointer-events: auto !important; }
+    }
+  </style>
   <script>
     // Simple video setup - with remote fallback for cloud hosting (Render)
     (function() {
       const video = document.getElementById('bg-video');
       if (!video) return;
+
+      // Prevent anything from pausing the background video (e.g. iOS touch events leaking through)
+      video.addEventListener('pause', function() {
+        if (!document.hidden) {
+          video.play().catch(function() {});
+        }
+      });
       
       // Remote fallback URLs for when local file isn't available (Render/cloud hosting)
-      // Streamable embed URL (more reliable than direct CDN link)
+      // >>> PASTE YOUR NEW STREAMABLE URL AS THE FIRST ENTRY BELOW <<<
       const REMOTE_VIDEO_URLS = [
         'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4?Expires=1896393600',
         'https://cdn-cf-west.streamable.com/video/mp4/pwhf60.mp4',
-        // Fallback to a beautiful ocean video from Pexels (public domain)
         'https://videos.pexels.com/video-files/1918465/1918465-uhd_2560_1440_24fps.mp4'
       ];
       let fallbackIndex = 0;
@@ -16185,7 +16220,8 @@
       landscape_id: 'qvf8eh',   // Landscape video
       portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/0124.mp4') }}",
-      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4', // For cloud hosting (Render)
+      // >>> UPDATE THIS URL TO MATCH THE FIRST ENTRY IN REMOTE_VIDEO_URLS ABOVE <<<
+      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4',
       use_local: !['localhost', '127.0.0.1'].includes(window.location.hostname) ? false : true // Use remote on cloud hosts
     };
     
