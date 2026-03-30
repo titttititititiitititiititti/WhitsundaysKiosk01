@@ -13728,7 +13728,7 @@
       // Remote fallback URLs for when local file isn't available (Render/cloud hosting)
       // Primary URL is fetched server-side from Streamable API (signed, auto-refreshed hourly)
       const REMOTE_VIDEO_URLS = [
-        '{{ bg_video_url }}',
+        {{ bg_video_url | tojson }},
         'https://videos.pexels.com/video-files/1918465/1918465-uhd_2560_1440_24fps.mp4'
       ].filter(u => u);
       let fallbackIndex = 0;
@@ -16215,7 +16215,7 @@
       landscape_id: 'qvf8eh',   // Landscape video
       portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/0124.mp4') }}",
-      remote_fallback: '{{ bg_video_url }}',
+      remote_fallback: {{ bg_video_url | tojson }},
       use_local: !['localhost', '127.0.0.1'].includes(window.location.hostname) ? false : true // Use remote on cloud hosts
     };
     
