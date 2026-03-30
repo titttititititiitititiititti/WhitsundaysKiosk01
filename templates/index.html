@@ -158,7 +158,7 @@
       background: rgba(15, 23, 42, 0.97);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      z-index: 100000;
+      z-index: 99999999;
       padding: 24px 20px;
       box-shadow: 8px 0 30px rgba(0,0,0,0.5);
       overflow-y: auto;
@@ -174,7 +174,7 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.4);
-      z-index: 99999;
+      z-index: 99999998;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
@@ -20439,50 +20439,50 @@
       spreadContainer.className = 'swipe-gallery-spread';
       spreadContainer.id = 'swipe-gallery-spread';
       
+      window.swipeGalleryImages = currentTourGallery.length > 0 ? currentTourGallery : images;
+      window.swipeGalleryIndex = currentGalleryIndex;
+      
+      function makeGalleryImgClickable(imgDiv, indexOffset) {
+        imgDiv.style.cursor = 'pointer';
+        var _tsx = 0, _tsy = 0, _tmv = false;
+        imgDiv.addEventListener('touchstart', function(e) {
+          _tsx = e.touches[0].clientX; _tsy = e.touches[0].clientY; _tmv = false;
+        }, {passive: true});
+        imgDiv.addEventListener('touchmove', function(e) {
+          if (Math.abs(e.touches[0].clientX - _tsx) > 10 || Math.abs(e.touches[0].clientY - _tsy) > 10) _tmv = true;
+        }, {passive: true});
+        imgDiv.addEventListener('touchend', function(e) {
+          if (!_tmv) {
+            e.preventDefault(); e.stopPropagation();
+            var idx = ((window.swipeGalleryIndex || 0) + indexOffset + window.swipeGalleryImages.length) % window.swipeGalleryImages.length;
+            window.openLightbox(window.swipeGalleryImages, idx);
+          }
+        }, {passive: false});
+        imgDiv.onclick = function(e) {
+          e.stopPropagation();
+          var idx = ((window.swipeGalleryIndex || 0) + indexOffset + window.swipeGalleryImages.length) % window.swipeGalleryImages.length;
+          window.openLightbox(window.swipeGalleryImages, idx);
+        };
+      }
+      
       const leftImg = document.createElement('div');
       leftImg.className = 'swipe-gallery-image left';
       leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+      makeGalleryImgClickable(leftImg, -1);
       spreadContainer.appendChild(leftImg);
       
       const centerCard = document.createElement('div');
       centerCard.className = 'swipe-gallery-image center';
       centerCard.dataset.tourId = tour.key;
-      centerCard.style.cursor = 'pointer';
       centerCard.style.zIndex = '100';
-      // Store images globally for lightbox
-      window.swipeGalleryImages = currentTourGallery.length > 0 ? currentTourGallery : images;
-      window.swipeGalleryIndex = currentGalleryIndex;
       centerCard.innerHTML = `<img src="${images[1]}" alt="${tour.name}">`;
-      // Track touch to distinguish tap vs scroll
-      let qTouchStartX = 0, qTouchStartY = 0, qTouchMoved = false;
-      centerCard.addEventListener('touchstart', function(e) {
-        qTouchStartX = e.touches[0].clientX;
-        qTouchStartY = e.touches[0].clientY;
-        qTouchMoved = false;
-      }, {passive: true});
-      centerCard.addEventListener('touchmove', function(e) {
-        const dx = Math.abs(e.touches[0].clientX - qTouchStartX);
-        const dy = Math.abs(e.touches[0].clientY - qTouchStartY);
-        if (dx > 10 || dy > 10) qTouchMoved = true;
-      }, {passive: true});
-      centerCard.addEventListener('touchend', function(e) {
-        if (!qTouchMoved) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Lightbox opening...');
-          window.openLightbox(window.swipeGalleryImages, window.swipeGalleryIndex || 0);
-        }
-      }, {passive: false});
-      centerCard.onclick = function(e) { // Keep for non-touch devices
-        e.stopPropagation();
-        console.log('Lightbox opening...');
-        window.openLightbox(window.swipeGalleryImages, window.swipeGalleryIndex || 0);
-      };
+      makeGalleryImgClickable(centerCard, 0);
       spreadContainer.appendChild(centerCard);
       
       const rightImg = document.createElement('div');
       rightImg.className = 'swipe-gallery-image right';
       rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+      makeGalleryImgClickable(rightImg, 1);
       spreadContainer.appendChild(rightImg);
       
       galleryWrapper.appendChild(spreadContainer);
@@ -29309,88 +29309,49 @@
             spread.className = 'swipe-gallery-spread';
             spread.id = 'detail-gallery-spread';
             
+            const galleryImages = [...gallery];
+            
+            function openGalleryLightboxAt(offset) {
+              var currentIdx = ((window.detailGalleryIndex || 0) + offset + galleryImages.length) % galleryImages.length;
+              window.openLightbox(galleryImages, currentIdx);
+            }
+            
+            function makeDetailImgClickable(imgDiv, offset) {
+              imgDiv.style.cursor = 'pointer';
+              imgDiv.style.pointerEvents = 'auto';
+              var _tsx = 0, _tsy = 0, _tmv = false;
+              imgDiv.addEventListener('touchstart', function(e) {
+                _tsx = e.touches[0].clientX; _tsy = e.touches[0].clientY; _tmv = false;
+              }, {passive: true});
+              imgDiv.addEventListener('touchmove', function(e) {
+                if (Math.abs(e.touches[0].clientX - _tsx) > 10 || Math.abs(e.touches[0].clientY - _tsy) > 10) _tmv = true;
+              }, {passive: true});
+              imgDiv.addEventListener('touchend', function(e) {
+                if (!_tmv) { e.preventDefault(); e.stopPropagation(); openGalleryLightboxAt(offset); }
+              }, {passive: false});
+              imgDiv.onclick = function(e) { e.stopPropagation(); openGalleryLightboxAt(offset); };
+            }
+            
             // Left image
             const leftImg = document.createElement('div');
             leftImg.className = 'swipe-gallery-image left';
-            leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1">`;
+            leftImg.innerHTML = `<img src="${images[0]}" alt="Gallery 1" style="pointer-events:none;">`;
+            makeDetailImgClickable(leftImg, -1);
             spread.appendChild(leftImg);
             
-            // Center image - CLICKABLE - use direct function assignment
+            // Center image
             const centerImg = document.createElement('div');
             centerImg.className = 'swipe-gallery-image center';
-            centerImg.style.cssText = 'cursor:pointer !important; pointer-events:auto !important; z-index:9999 !important;';
+            centerImg.style.zIndex = '100';
             centerImg.innerHTML = `<img src="${images[1]}" alt="${data.name}" style="pointer-events:none;">`;
-            // Capture gallery array in closure
-            const galleryImages = [...gallery];
-            const startIdx = detailGalleryIndex;
-            // Use both click and touchend for maximum compatibility
-            function openGalleryLightbox(e) {
-              if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-              }
-              console.log('=== GALLERY TAP/CLICK ===');
-              console.log('Gallery images count:', galleryImages.length);
-              
-              var currentIdx = window.detailGalleryIndex || 0;
-              
-              // Directly manipulate the lightbox without going through openLightbox
-              var lightbox = document.getElementById('image-lightbox');
-              var img = document.getElementById('lightbox-img');
-              var counter = document.getElementById('lightbox-counter');
-              
-              if (!lightbox) {
-                console.error('Lightbox element not found!');
-                alert('ERROR: Lightbox element not found');
-                return;
-              }
-              
-              if (galleryImages.length === 0) {
-                alert('No images in gallery!');
-                return;
-              }
-              
-              console.log('Setting image to:', galleryImages[currentIdx]);
-              img.src = galleryImages[currentIdx];
-              counter.textContent = (currentIdx + 1) + ' / ' + galleryImages.length;
-              
-              // Force display
-              lightbox.style.display = 'flex';
-              lightbox.classList.add('active');
-              document.body.style.overflow = 'hidden';
-              
-              // Store images globally for nav
-              window.lightboxImages = galleryImages;
-              window.lightboxIndex = currentIdx;
-              
-              console.log('Lightbox should now be visible');
-            }
-            
-            // Track touch to distinguish tap vs scroll
-            let touchStartX = 0, touchStartY = 0, touchMoved = false;
-            centerImg.addEventListener('touchstart', function(e) {
-              touchStartX = e.touches[0].clientX;
-              touchStartY = e.touches[0].clientY;
-              touchMoved = false;
-            }, {passive: true});
-            centerImg.addEventListener('touchmove', function(e) {
-              const dx = Math.abs(e.touches[0].clientX - touchStartX);
-              const dy = Math.abs(e.touches[0].clientY - touchStartY);
-              if (dx > 10 || dy > 10) touchMoved = true; // User is scrolling
-            }, {passive: true});
-            centerImg.addEventListener('touchend', function(e) {
-              if (!touchMoved) { // Only open if it was a tap, not a scroll
-                e.preventDefault();
-                openGalleryLightbox(e);
-              }
-            }, {passive: false});
-            centerImg.onclick = openGalleryLightbox; // Keep for non-touch devices
+            makeDetailImgClickable(centerImg, 0);
             spread.appendChild(centerImg);
             
             // Right image
             const rightImg = document.createElement('div');
             rightImg.className = 'swipe-gallery-image right';
-            rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3">`;
+            rightImg.innerHTML = `<img src="${images[2]}" alt="Gallery 3" style="pointer-events:none;">`;
+            makeDetailImgClickable(rightImg, 1);
             spread.appendChild(rightImg);
             
             wrapper.appendChild(spread);
