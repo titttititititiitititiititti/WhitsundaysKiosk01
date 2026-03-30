@@ -99,6 +99,26 @@
       .hamburger-menu-btn {
         display: flex !important;
       }
+
+      /* Taller header on touch devices for better tap targets */
+      .kiosk-header {
+        padding: 14px 20px !important;
+        min-height: 64px !important;
+      }
+      .kiosk-header .logo-image {
+        height: 48px !important;
+      }
+      .kiosk-header .chip {
+        min-height: 38px !important;
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+      }
+      .kiosk-header .back-button {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        font-size: 22px !important;
+      }
     }
 
     /* ===== HAMBURGER MENU (hidden on desktop, shown on touch devices via query above) ===== */
@@ -124,7 +144,7 @@
     .hamburger-dropdown {
       position: fixed;
       top: 0;
-      right: 0;
+      left: 0;
       width: 320px;
       max-width: 85vw;
       height: 100%;
@@ -133,9 +153,9 @@
       -webkit-backdrop-filter: blur(20px);
       z-index: 100000;
       padding: 24px 20px;
-      box-shadow: -8px 0 30px rgba(0,0,0,0.5);
+      box-shadow: 8px 0 30px rgba(0,0,0,0.5);
       overflow-y: auto;
-      transform: translateX(100%);
+      transform: translateX(-100%);
       transition: transform 0.25s ease;
       pointer-events: none;
     }
@@ -159,7 +179,7 @@
     .hamburger-dropdown .hb-close {
       position: absolute;
       top: 16px;
-      right: 16px;
+      left: 16px;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -15198,6 +15218,7 @@
           <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
           <button class="map-view-btn-header" id="vq-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="vq-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -15229,7 +15250,6 @@
             </div>
             </div>
           <button class="chip chip-outline" id="vq-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
-          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
       
@@ -15394,6 +15414,7 @@
     <div class="page newcomer-info-page" id="newcomer-info-page">
       <header class="kiosk-header newcomer-header">
         <div class="header-left">
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
           <button class="back-button newcomer-back-btn" onclick="closeNewcomerInfo()" style="width:60px;height:60px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;font-size:28px;">←</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
@@ -15411,7 +15432,6 @@
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);" onclick="selectNewcomerLanguage('es')"><img src="https://flagcdn.com/w40/es.png" style="width:28px;height:21px;border-radius:3px;"><span style="font-weight:600;color:#0a2540;">Español</span></div>
             </div>
           </div>
-          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
       
@@ -15767,6 +15787,7 @@
           <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
           <button class="map-view-btn-header" id="home-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
           <button class="newcomer-info-btn-header" id="home-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -15800,8 +15821,6 @@
               </div>
           <!-- Map View Button -->
           <button class="chip chip-outline" id="home-map-toggle-btn" onclick="showMapFromHome()">Map view</button>
-          <!-- Hamburger (touch devices only, hidden on desktop via CSS) -->
-          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
 
@@ -16130,13 +16149,13 @@
       <!-- Kiosk Header (same as home) -->
       <header class="kiosk-header">
         <div class="header-left">
+          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
           <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         </div>
         <div class="header-right">
           <button class="chip" id="list-language-btn" onclick="toggleLanguageMenu()">EN</button>
           <button class="chip" id="list-currency-btn" onclick="toggleCurrencyMenu()">AUD</button>
           <button class="chip chip-outline" id="map-toggle-btn" onclick="toggleMapView()">Map view</button>
-          <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         </div>
       </header>
 
@@ -16212,6 +16231,7 @@
     <!-- Kiosk Header -->
     <header class="kiosk-header">
       <div class="header-left">
+        <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         <button class="back-button" id="back-arrow">←</button>
         <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
         <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
@@ -16253,7 +16273,6 @@
             </div>
         </div>
       </div>
-      <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
     </header>
 
     <!-- Main Content -->
@@ -16764,6 +16783,7 @@
     <!-- Header - same as other pages -->
     <header class="kiosk-header ai-header">
       <div class="header-left">
+        <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         <button class="mobile-quick-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡</button>
         <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
         <button class="quick-decision-btn-header" id="ai-quick-decision-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Match</button>
@@ -16798,7 +16818,6 @@
           </div>
         </div>
       </div>
-      <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
     </header>
     
     <!-- AI Particle Visualizer - Audio Reactive -->
@@ -37032,19 +37051,19 @@
     <button class="hb-close" onclick="toggleHamburgerMenu()">✕</button>
     <div class="hb-title">Navigate</div>
     <button class="hb-item" onclick="toggleHamburgerMenu(); startQuickDecision();">
-      <span class="hb-icon green">⚡</span> Quick Match
+      <span class="hb-icon green">⚡</span> <span data-translate="quick_decision_btn">Quick Match</span>
     </button>
     <button class="hb-item" onclick="toggleHamburgerMenu(); openAIAssistant();">
-      <span class="hb-icon purple">🤖</span> AI Assistant
+      <span class="hb-icon purple">🤖</span> <span data-translate="ai_assistant_btn">AI Assistant</span>
     </button>
     <button class="hb-item" onclick="toggleHamburgerMenu(); goToHomePage();">
-      <span class="hb-icon orange">📁</span> Browse All Tours
+      <span class="hb-icon orange">📁</span> <span data-translate="browse_all_tours_btn">Browse All Tours</span>
     </button>
     <button class="hb-item" onclick="toggleHamburgerMenu(); openMapView();">
-      <span class="hb-icon teal">🗺️</span> Map View
+      <span class="hb-icon teal">🗺️</span> <span data-translate="map_view">Map View</span>
     </button>
     <button class="hb-item" onclick="toggleHamburgerMenu(); openNewcomerInfo();">
-      <span class="hb-icon blue">ℹ️</span> Important Info
+      <span class="hb-icon blue">ℹ️</span> <span data-translate="important_information">Important Info</span>
     </button>
   </div>
   <script>
