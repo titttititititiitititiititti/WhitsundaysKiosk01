@@ -15214,16 +15214,8 @@
       <!-- Kiosk Header - EXACT COPY FROM HOME PAGE -->
       <header class="kiosk-header">
         <div class="header-left">
-          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
-          <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
-          <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
-          <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
-          <button class="quick-decision-btn-header" id="vq-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Match</button>
-          <button class="browse-all-btn-header" id="vq-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
-          <button class="ai-assistant-btn-header" id="vq-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-          <button class="map-view-btn-header" id="vq-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
-          <button class="newcomer-info-btn-header" id="vq-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
           <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
+          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -15783,16 +15775,8 @@
       <!-- Kiosk Header -->
       <header class="kiosk-header">
         <div class="header-left">
-          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
-          <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
-          <button class="mobile-browse-btn" onclick="goToHomePage()" style="display: none;">📁</button>
-          <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
-          <button class="quick-decision-btn-header" id="home-quick-decision-btn" onclick="startQuickDecision()">⚡ Quick Match</button>
-          <button class="browse-all-btn-header" id="home-browse-all-btn" onclick="goToHomePage()" style="display: none;">🏠 Browse All Tours</button>
-          <button class="ai-assistant-btn-header" id="home-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-          <button class="map-view-btn-header" id="home-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
-          <button class="newcomer-info-btn-header" id="home-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
           <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
+          <button class="back-button" onclick="goToStartPage()" style="display: none;">←</button>
         </div>
         <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
         <div class="header-right">
@@ -16238,14 +16222,6 @@
       <div class="header-left">
         <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
         <button class="back-button" id="back-arrow">←</button>
-        <button class="mobile-quick-btn" onclick="startQuickDecision()">⚡</button>
-        <button class="mobile-ai-btn" onclick="openAIAssistant()">🤖</button>
-        <button class="mobile-browse-btn" onclick="goToHomePage()">📁</button>
-        <button class="quick-decision-btn-header" id="detail-quick-decision-btn" onclick="startQuickDecision()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">⚡ Quick Match</button>
-        <button class="ai-assistant-btn-header" id="detail-ai-assistant-btn" onclick="openAIAssistant()">🤖 Talk To Our AI Assistant</button>
-        <button class="browse-all-btn-header" id="detail-browse-all-btn" onclick="goToHomePage()" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📁 Browse All Tours</button>
-        <button class="map-view-btn-header" id="detail-map-view-btn" onclick="openMapView()" data-translate="map_view">🗺️ Map View</button>
-        <button class="newcomer-info-btn-header" id="detail-newcomer-info-btn" onclick="openNewcomerInfo()">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="goToLanguageSelection()" style="cursor:pointer;">
       <div class="header-right">
@@ -16789,12 +16765,6 @@
     <header class="kiosk-header ai-header">
       <div class="header-left">
         <button class="hamburger-menu-btn" onclick="toggleHamburgerMenu()">☰</button>
-        <button class="mobile-quick-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡</button>
-        <button class="mobile-browse-btn" onclick="hideAIAssistant(); goToHomePage();">📁</button>
-        <button class="quick-decision-btn-header" id="ai-quick-decision-btn" onclick="hideAIAssistant(); startQuickDecision();">⚡ Quick Match</button>
-        <button class="browse-all-btn-header" id="ai-browse-all-btn" onclick="hideAIAssistant(); goToHomePage();">🏠 Browse All Tours</button>
-        <button class="map-view-btn-header" id="ai-map-view-btn" onclick="hideAIAssistant(); openMapView();" data-translate="map_view">🗺️ Map View</button>
-        <button class="newcomer-info-btn-header" id="ai-newcomer-info-btn" onclick="hideAIAssistant(); openNewcomerInfo();">ℹ️ Important Info</button>
       </div>
       <img src="{{ custom_logo if custom_logo else url_for('static', filename='Filtour_logo.png.png') }}" alt="FilTour" class="logo-image kiosk-logo" onclick="closeAIAssistant(); goToLanguageSelection();" style="cursor:pointer;">
       <div class="header-right">
@@ -21861,25 +21831,29 @@
         return;
       }
       
-      const headerClassMap = {
-        'ai-assistant': { startId: 'ai-assistant-btn', headerClass: 'ai-assistant-btn-header' },
-        'quick-decision': { startId: 'quick-decision-btn', headerClass: 'quick-decision-btn-header' },
-        'browse-all': { startId: 'browse-all-tours-btn', headerClass: 'browse-all-btn-header' },
-        'newcomer-info': { startId: 'newcomer-info-btn', headerClass: 'newcomer-info-btn-header' },
-        'map-view': { startId: 'map-view-btn', headerClass: 'map-view-btn-header' }
+      const modeMap = {
+        'ai-assistant': 'ai-assistant-btn',
+        'quick-decision': 'quick-decision-btn',
+        'browse-all': 'browse-all-tours-btn',
+        'newcomer-info': 'newcomer-info-btn',
+        'map-view': 'map-view-btn'
       };
       
-      // Capture source positions before anything changes
-      const sourceData = [];
-      Object.entries(headerClassMap).forEach(([mode, info]) => {
+      // Find the hamburger button target
+      var hamburgerBtn = document.querySelector('.kiosk-header .hamburger-menu-btn');
+      var hamburgerRect = hamburgerBtn ? hamburgerBtn.getBoundingClientRect() : { left: 20, top: 20, width: 44, height: 44 };
+      
+      // Capture positions of non-selected buttons
+      var otherButtons = [];
+      Object.entries(modeMap).forEach(function(entry) {
+        var mode = entry[0], startId = entry[1];
         if (mode === selectedMode) return;
-        const el = document.getElementById(info.startId);
+        var el = document.getElementById(startId);
         if (!el || el.style.display === 'none') return;
-        const rect = el.getBoundingClientRect();
+        var rect = el.getBoundingClientRect();
         if (rect.width === 0) return;
-        sourceData.push({
-          mode, 
-          headerClass: info.headerClass,
+        otherButtons.push({
+          el: el,
           rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
           bg: window.getComputedStyle(el).backgroundImage || window.getComputedStyle(el).background,
           text: el.textContent.trim(),
@@ -21887,107 +21861,83 @@
         });
       });
       
-      // Create fixed clones at source positions
-      const clones = [];
-      sourceData.forEach(data => {
-        const clone = document.createElement('div');
-        clone.className = 'mode-anim-clone';
+      // Create clones at original positions
+      var clones = [];
+      otherButtons.forEach(function(data) {
+        var clone = document.createElement('div');
         clone.textContent = data.text;
-        clone.style.cssText = `
-          position: fixed; z-index: 999999; pointer-events: none;
-          display: flex; align-items: center; justify-content: center;
-          white-space: nowrap; font-weight: 700; color: white;
-          left: ${data.rect.left}px; top: ${data.rect.top}px;
-          width: ${data.rect.width}px; height: ${data.rect.height}px;
-          font-size: 16px; border-radius: ${data.borderRadius};
-          background: ${data.bg}; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        `;
+        clone.style.cssText = 'position:fixed;z-index:999999;pointer-events:none;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-weight:700;color:white;overflow:hidden;'
+          + 'left:' + data.rect.left + 'px;top:' + data.rect.top + 'px;'
+          + 'width:' + data.rect.width + 'px;height:' + data.rect.height + 'px;'
+          + 'font-size:16px;border-radius:' + data.borderRadius + ';'
+          + 'background:' + data.bg + ';box-shadow:0 4px 15px rgba(0,0,0,0.3);';
         document.body.appendChild(clone);
-        clones.push({ clone, data });
+        clones.push(clone);
       });
       
-      // Fade out selected button and start screen non-button content immediately
-      const selectedBtn = headerClassMap[selectedMode] && document.getElementById(headerClassMap[selectedMode].startId);
-      if (selectedBtn) {
-        selectedBtn.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-        selectedBtn.style.opacity = '0';
-        selectedBtn.style.transform = 'scale(1.15)';
+      // Fade out selected button with a pop effect
+      var selectedEl = modeMap[selectedMode] && document.getElementById(modeMap[selectedMode]);
+      if (selectedEl) {
+        selectedEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        selectedEl.style.opacity = '0';
+        selectedEl.style.transform = 'scale(1.2)';
       }
-      // Hide all start screen buttons behind clones
-      Object.values(headerClassMap).forEach(info => {
-        const el = document.getElementById(info.startId);
+      // Hide originals behind clones
+      Object.values(modeMap).forEach(function(id) {
+        var el = document.getElementById(id);
         if (el) el.style.opacity = '0';
       });
-      // Fade out the title/subtitle
-      startScreen.querySelectorAll('h1, h2, p, .video-start-title').forEach(el => {
+      // Fade out title/subtitle/flags
+      startScreen.querySelectorAll('h1, h2, p, .video-start-title, .mode-selection-flags').forEach(function(el) {
         el.style.transition = 'opacity 0.15s ease';
         el.style.opacity = '0';
       });
       
-      // Hide header buttons in target page during animation
-      const hideStyle = document.createElement('style');
-      hideStyle.id = 'hide-header-during-anim';
-      hideStyle.textContent = `
-        .kiosk-header .header-left .quick-decision-btn-header,
-        .kiosk-header .header-left .ai-assistant-btn-header,
-        .kiosk-header .header-left .browse-all-btn-header,
-        .kiosk-header .header-left .map-view-btn-header,
-        .kiosk-header .header-left .newcomer-info-btn-header {
-          opacity: 0 !important; pointer-events: none !important;
-        }
-      `;
-      document.head.appendChild(hideStyle);
-      
       // Execute callback to switch page
       if (callback) callback();
       
-      // Wait for layout, then measure targets and animate
-      requestAnimationFrame(() => { requestAnimationFrame(() => {
-        const activePage = document.querySelector('.page.active') || document.querySelector('.page:not([style*="display: none"])');
-        const headerLeft = activePage && activePage.querySelector('.kiosk-header .header-left');
-        
-        clones.forEach(({ clone, data }) => {
-          let targetRect = null;
-          if (headerLeft) {
-            const headerBtn = headerLeft.querySelector('.' + data.headerClass);
-            if (headerBtn) {
-              const r = headerBtn.getBoundingClientRect();
-              if (r.width > 0 && r.height > 0) targetRect = r;
+      // Animate each clone into the hamburger one by one, quickly
+      var stagger = 80;
+      clones.forEach(function(clone, i) {
+        setTimeout(function() {
+          // Fly to hamburger position and shrink
+          clone.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+          clone.style.left = hamburgerRect.left + 'px';
+          clone.style.top = hamburgerRect.top + 'px';
+          clone.style.width = hamburgerRect.width + 'px';
+          clone.style.height = hamburgerRect.height + 'px';
+          clone.style.fontSize = '0px';
+          clone.style.opacity = '0.6';
+          clone.style.borderRadius = '12px';
+          
+          // "Eat" effect: hamburger enlarges then shrinks when clone arrives
+          setTimeout(function() {
+            if (hamburgerBtn) {
+              hamburgerBtn.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              hamburgerBtn.style.transform = 'scale(1.35)';
+              setTimeout(function() {
+                hamburgerBtn.style.transform = 'scale(1)';
+              }, 150);
             }
-          }
-          if (!targetRect) {
-            // Button is hidden in this mode's header - just fade out
-            clone.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
             clone.style.opacity = '0';
-            clone.style.transform = 'scale(0.5)';
-          } else {
-            clone.style.transition = 'all 0.45s cubic-bezier(0.4, 0, 0.2, 1)';
-            clone.style.left = targetRect.left + 'px';
-            clone.style.top = targetRect.top + 'px';
-            clone.style.width = targetRect.width + 'px';
-            clone.style.height = targetRect.height + 'px';
-            clone.style.fontSize = '14px';
-            clone.style.borderRadius = '25px';
-          }
+          }, 280);
+        }, i * stagger);
+      });
+      
+      // Clean up after all animations
+      setTimeout(function() {
+        clones.forEach(function(c) { c.remove(); });
+        if (hamburgerBtn) { hamburgerBtn.style.transition = ''; hamburgerBtn.style.transform = ''; }
+        Object.values(modeMap).forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }
         });
-        
-        // Clean up after animation
-        setTimeout(() => {
-          clones.forEach(({ clone }) => clone.remove());
-          const hs = document.getElementById('hide-header-during-anim');
-          if (hs) hs.remove();
-          // Reset start screen elements
-          Object.values(headerClassMap).forEach(info => {
-            const el = document.getElementById(info.startId);
-            if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }
+        if (startScreen) {
+          startScreen.querySelectorAll('h1, h2, p, .video-start-title, .mode-selection-flags').forEach(function(el) {
+            el.style.opacity = ''; el.style.transition = '';
           });
-          if (startScreen) {
-            startScreen.querySelectorAll('h1, h2, p, .video-start-title').forEach(el => {
-              el.style.opacity = ''; el.style.transition = '';
-            });
-          }
-        }, 500);
-      }); });
+        }
+      }, clones.length * stagger + 500);
     }
     
     // ===================================================================
@@ -29566,119 +29516,8 @@
               // Update header buttons based on where we came from
               // Rule: Show available buttons, hide the one for the mode we came from
               // IMPORTANT: Never show a button whose mode is disabled
-              const quickDecisionBtn = document.getElementById('detail-quick-decision-btn');
-              const aiAssistantBtn = document.getElementById('detail-ai-assistant-btn');
-              const browseAllBtn = document.getElementById('detail-browse-all-btn');
-              const mapViewBtn = document.getElementById('detail-map-view-btn');
-              const newcomerInfoBtn = document.getElementById('detail-newcomer-info-btn');
-              
-              console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
-              
-              // Helper: only show button if its mode is enabled
-              var isTouchDevice = document.documentElement.classList.contains('touch-device');
-              function showIfEnabled(btn, disabledClass) {
-                if (!btn) return;
-                if (isTouchDevice || (disabledClass && document.body.classList.contains(disabledClass))) {
-                  btn.style.cssText = 'display:none!important;width:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;';
-                } else {
-                  btn.style.cssText = 'display: inline-flex !important;';
-                }
-              }
-              function hideBtn(btn) {
-                if (!btn) return;
-                btn.style.cssText = 'display:none!important;width:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;';
-              }
-              
-              // Clear all mode classes first
-              document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
-              
-              // Always show Map View and Newcomer Info (if they exist) — except on touch devices
-              if (!isTouchDevice) {
-                if (mapViewBtn) mapViewBtn.style.cssText = 'display: inline-flex !important;';
-                if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display: inline-flex !important;';
-              } else {
-                if (mapViewBtn) mapViewBtn.style.cssText = 'display:none!important;';
-                if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display:none!important;';
-              }
-              
-              if (window.cameFromAIAssistant) {
-                console.log('🤖 Came from AI Assistant - show Quick Match + Browse All, hide AI');
-                document.body.classList.add('came-from-ai');
-                showIfEnabled(quickDecisionBtn, 'quick-mode-disabled');
-                if (quickDecisionBtn) {
-                  quickDecisionBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
-                    if (tourDetailPage) {
-                      tourDetailPage.classList.remove('active');
-                      tourDetailPage.style.display = 'none';
-                    }
-                    window.cameFromAIAssistant = false;
-                    startQuickDecision();
-                  };
-                }
-                hideBtn(aiAssistantBtn);
-                showIfEnabled(browseAllBtn, 'browse-mode-disabled');
-                if (browseAllBtn) {
-                  browseAllBtn.classList.add('show-btn');
-                  browseAllBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    window.cameFromAIAssistant = false;
-                    closeAIAssistant();
-                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
-                    if (tourDetailPage) {
-                      tourDetailPage.classList.remove('active');
-                      tourDetailPage.style.display = 'none';
-                    }
-                    goToHomePage();
-                  };
-                }
-              } else if (window.cameFromQuickDecision) {
-                console.log('⚡ Came from Quick Match - show AI + Browse All, hide Quick Match');
-                document.body.classList.add('came-from-quick-decision');
-                hideBtn(quickDecisionBtn);
-                showIfEnabled(aiAssistantBtn, 'ai-mode-disabled');
-                if (aiAssistantBtn) {
-                  aiAssistantBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
-                    if (tourDetailPage) {
-                      tourDetailPage.classList.remove('active');
-                      tourDetailPage.style.display = 'none';
-                    }
-                    window.cameFromQuickDecision = false;
-                    openAIAssistant();
-                  };
-                }
-                showIfEnabled(browseAllBtn, 'browse-mode-disabled');
-                if (browseAllBtn) {
-                  browseAllBtn.classList.add('show-btn');
-                  browseAllBtn.onclick = function(e) {
-                    e.stopPropagation();
-                    window.cameFromQuickDecision = false;
-                    const tourDetailPage = document.querySelector('.page.tour-detail-page');
-                    if (tourDetailPage) {
-                      tourDetailPage.classList.remove('active');
-                      tourDetailPage.style.display = 'none';
-                    }
-                    goToHomePage();
-                  };
-                }
-              } else {
-                // Default: from Browse All Tours - show Quick Match + AI, hide Browse All
-                console.log('📁 Came from Browse All Tours - show Quick Match + AI, hide Browse All');
-                document.body.classList.add('came-from-browse-all');
-                showIfEnabled(quickDecisionBtn, 'quick-mode-disabled');
-                if (quickDecisionBtn) {
-                  quickDecisionBtn.onclick = function() { startQuickDecision(); };
-                }
-                showIfEnabled(aiAssistantBtn, 'ai-mode-disabled');
-                if (aiAssistantBtn) {
-                  aiAssistantBtn.onclick = function() { openAIAssistant(); };
-                }
-                hideBtn(browseAllBtn);
-                if (browseAllBtn) browseAllBtn.classList.remove('show-btn');
-              }
+              // Mode buttons removed from header — navigation is via hamburger menu
+              console.log('📍 Tour detail opened, navigation available via hamburger menu');
             }, 50);
             
           tourDetailPage.setAttribute('data-current-tour-key', key);

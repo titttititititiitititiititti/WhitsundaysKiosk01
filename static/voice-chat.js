@@ -63,10 +63,12 @@ class VoiceChat {
     
     console.log('🎤 SpeechRecognition API:', SpeechRecognition.name || 'webkitSpeechRecognition');
     
-    // Configure recognition
-    this.recognition.continuous = false; // Stop after one utterance
-    this.recognition.interimResults = true; // Show results as user speaks
+    // Configure recognition — continuous=true on iOS/iPad to prevent instant-stop bug
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    this.recognition.continuous = isIOS ? true : false;
+    this.recognition.interimResults = true;
     this.recognition.maxAlternatives = 1;
+    this._isIOS = isIOS;
     
     // Set up event handlers
     this.setupRecognitionHandlers();
@@ -129,9 +131,19 @@ class VoiceChat {
     
     // When speech recognition ends
     this.recognition.onend = () => {
-      console.log('🎤 Speech recognition ENDED');
+      console.log('🎤 Speech recognition ENDED, wasListening:', this.isListening, 'hasFinal:', this.hasFinalResult);
       
-      // IMPORTANT: If we have a transcript but never got a "final" result,
+      // On iOS, recognition can end prematurely without any results.
+      // If we were listening and got no transcript at all, auto-restart once.
+      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && this._isIOS && !this._restarted) {
+        console.log('🎤 iOS: recognition ended without results — auto-restarting');
+        this._restarted = true;
+        try { this.recognition.start(); } catch(e) { console.error('🎤 Restart failed:', e); }
+        return;
+      }
+      this._restarted = false;
+      
+      // If we have a transcript but never got a "final" result,
       // send the last transcript anyway (fallback for when recognition ends abruptly)
       if (this.lastTranscript && !this.hasFinalResult) {
         console.log('🎤 No final result received - using last transcript as fallback');
@@ -253,10 +265,12 @@ class VoiceChat {
     // Set language for recognition
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
+    this._restarted = false;
     console.log(`🎤 Starting speech recognition...`);
     console.log(`   Language: ${this.recognition.lang}`);
     console.log(`   Continuous: ${this.recognition.continuous}`);
     console.log(`   Interim results: ${this.recognition.interimResults}`);
+    console.log(`   iOS mode: ${this._isIOS}`);
     
     // NOTE: Audio monitoring disabled - it keeps mic open and causes audio quality issues
     // this.startAudioMonitoring();
