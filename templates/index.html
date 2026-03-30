@@ -13726,10 +13726,9 @@
       });
       
       // Remote fallback URLs for when local file isn't available (Render/cloud hosting)
-      // >>> PASTE YOUR NEW STREAMABLE URL AS THE FIRST ENTRY BELOW <<<
       const REMOTE_VIDEO_URLS = [
-        'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4?Expires=1896393600',
-        'https://cdn-cf-west.streamable.com/video/mp4/pwhf60.mp4',
+        'https://cdn-cf-east.streamable.com/video/mp4/fsdp2x.mp4',
+        'https://cdn-cf-west.streamable.com/video/mp4/fsdp2x.mp4',
         'https://videos.pexels.com/video-files/1918465/1918465-uhd_2560_1440_24fps.mp4'
       ];
       let fallbackIndex = 0;
@@ -16220,8 +16219,7 @@
       landscape_id: 'qvf8eh',   // Landscape video
       portrait_id: 'sy3v4r',    // Portrait video
       local_fallback: "{{ url_for('static', filename='b_roll/0124.mp4') }}",
-      // >>> UPDATE THIS URL TO MATCH THE FIRST ENTRY IN REMOTE_VIDEO_URLS ABOVE <<<
-      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/pwhf60.mp4',
+      remote_fallback: 'https://cdn-cf-east.streamable.com/video/mp4/fsdp2x.mp4',
       use_local: !['localhost', '127.0.0.1'].includes(window.location.hostname) ? false : true // Use remote on cloud hosts
     };
     
