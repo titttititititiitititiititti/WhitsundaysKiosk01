@@ -6,7 +6,20 @@
   <meta name="viewport" content="width=1400, initial-scale=0.5, maximum-scale=3.0, user-scalable=yes">
   
   <!-- Detect touch devices early so CSS can use .touch-device class -->
-  <script>if('ontouchstart' in window||navigator.maxTouchPoints>0)document.documentElement.classList.add('touch-device');</script>
+  <script>
+  (function(){
+    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (/iPad|iPhone|iPod|Android/i.test(navigator.userAgent));
+    if (isTouch) document.documentElement.classList.add('touch-device');
+    // Temporary debug: show detection result in corner
+    window.addEventListener('DOMContentLoaded', function(){
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;bottom:5px;left:5px;background:rgba(0,0,0,0.8);color:lime;padding:6px 10px;font-size:11px;z-index:999999;border-radius:6px;font-family:monospace;';
+      d.textContent = 'Touch:' + isTouch + ' ontouchstart:' + ('ontouchstart' in window) + ' maxTP:' + navigator.maxTouchPoints + ' UA:' + ((/iPad|iPhone|Android/i.test(navigator.userAgent)) ? 'mobile' : 'desktop');
+      document.body.appendChild(d);
+      setTimeout(function(){ d.remove(); }, 15000);
+    });
+  })();
+  </script>
 
   <!-- Fullscreen when added to iPad/iPhone home screen (no Safari chrome) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
