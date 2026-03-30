@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-31T09:13:04.819541",
+  "last_updated": "2026-03-31T09:28:07.930015",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -61567,9 +61567,50 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-31T09:13:16.981821",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-31T09:18:27.583128",
+          "data": {}
         }
       ],
-      "language": null,
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-31T09:18:27.583128",
+      "duration_seconds": 631.330272
+    },
+    {
+      "session_id": "session_02f50d89ce3f_1774912983",
+      "account": "nathan",
+      "started_at": "2026-03-31T09:23:03.111049",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-31T09:23:03.111049",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-03-31T09:26:10.560999",
+          "data": {
+            "language": "en"
+          }
+        }
+      ],
+      "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
