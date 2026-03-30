@@ -10,14 +10,6 @@
   (function(){
     var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) || (/iPad|iPhone|iPod|Android/i.test(navigator.userAgent));
     if (isTouch) document.documentElement.classList.add('touch-device');
-    // Temporary debug: show detection result in corner
-    window.addEventListener('DOMContentLoaded', function(){
-      var d = document.createElement('div');
-      d.style.cssText = 'position:fixed;bottom:5px;left:5px;background:rgba(0,0,0,0.8);color:lime;padding:6px 10px;font-size:11px;z-index:999999;border-radius:6px;font-family:monospace;';
-      d.textContent = 'Touch:' + isTouch + ' ontouchstart:' + ('ontouchstart' in window) + ' maxTP:' + navigator.maxTouchPoints + ' UA:' + ((/iPad|iPhone|Android/i.test(navigator.userAgent)) ? 'mobile' : 'desktop');
-      document.body.appendChild(d);
-      setTimeout(function(){ d.remove(); }, 15000);
-    });
   })();
   </script>
 
@@ -29583,9 +29575,10 @@
               console.log('📍 Mode detection: AI=' + window.cameFromAIAssistant + ', QD=' + window.cameFromQuickDecision);
               
               // Helper: only show button if its mode is enabled
+              var isTouchDevice = document.documentElement.classList.contains('touch-device');
               function showIfEnabled(btn, disabledClass) {
                 if (!btn) return;
-                if (disabledClass && document.body.classList.contains(disabledClass)) {
+                if (isTouchDevice || (disabledClass && document.body.classList.contains(disabledClass))) {
                   btn.style.cssText = 'display:none!important;width:0!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important;';
                 } else {
                   btn.style.cssText = 'display: inline-flex !important;';
@@ -29599,9 +29592,14 @@
               // Clear all mode classes first
               document.body.classList.remove('came-from-ai', 'came-from-quick-decision', 'came-from-browse-all');
               
-              // Always show Map View and Newcomer Info (if they exist)
-              if (mapViewBtn) mapViewBtn.style.cssText = 'display: inline-flex !important;';
-              if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display: inline-flex !important;';
+              // Always show Map View and Newcomer Info (if they exist) — except on touch devices
+              if (!isTouchDevice) {
+                if (mapViewBtn) mapViewBtn.style.cssText = 'display: inline-flex !important;';
+                if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display: inline-flex !important;';
+              } else {
+                if (mapViewBtn) mapViewBtn.style.cssText = 'display:none!important;';
+                if (newcomerInfoBtn) newcomerInfoBtn.style.cssText = 'display:none!important;';
+              }
               
               if (window.cameFromAIAssistant) {
                 console.log('🤖 Came from AI Assistant - show Quick Match + Browse All, hide AI');
