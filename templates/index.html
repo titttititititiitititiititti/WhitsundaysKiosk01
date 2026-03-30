@@ -5,6 +5,9 @@
   <title>Tour Chat Assistant</title>
   <meta name="viewport" content="width=1400, initial-scale=0.5, maximum-scale=3.0, user-scalable=yes">
   
+  <!-- Detect touch devices early so CSS can use .touch-device class -->
+  <script>if('ontouchstart' in window||navigator.maxTouchPoints>0)document.documentElement.classList.add('touch-device');</script>
+
   <!-- Fullscreen when added to iPad/iPhone home screen (no Safari chrome) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -69,56 +72,55 @@
     }
 
     /* ===== TOUCH DEVICE ONLY (iPad, phones) — no effect on desktop ===== */
-    @media (hover: none) and (pointer: coarse) {
-      html, body {
-        overscroll-behavior: none;
-      }
-      body {
-        -webkit-overflow-scrolling: touch;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
-      }
+    /* Uses .touch-device class added by JS (more reliable than media queries on iPad) */
+    html.touch-device, html.touch-device body {
+      overscroll-behavior: none;
+    }
+    html.touch-device body {
+      -webkit-overflow-scrolling: touch;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
 
-      /* Hide ALL desktop text buttons and small emoji buttons — hamburger replaces them */
-      .kiosk-header .quick-decision-btn-header,
-      .kiosk-header .ai-assistant-btn-header,
-      .kiosk-header .map-view-btn-header,
-      .kiosk-header .newcomer-info-btn-header,
-      .kiosk-header .browse-all-btn-header,
-      .kiosk-header #home-map-toggle-btn,
-      .kiosk-header #vq-map-toggle-btn,
-      .kiosk-header #map-toggle-btn,
-      .kiosk-header .mobile-quick-btn,
-      .kiosk-header .mobile-ai-btn,
-      .kiosk-header .mobile-browse-btn {
-        display: none !important;
-      }
+    /* Hide ALL desktop text buttons and small emoji buttons — hamburger replaces them */
+    .touch-device .kiosk-header .quick-decision-btn-header,
+    .touch-device .kiosk-header .ai-assistant-btn-header,
+    .touch-device .kiosk-header .map-view-btn-header,
+    .touch-device .kiosk-header .newcomer-info-btn-header,
+    .touch-device .kiosk-header .browse-all-btn-header,
+    .touch-device .kiosk-header #home-map-toggle-btn,
+    .touch-device .kiosk-header #vq-map-toggle-btn,
+    .touch-device .kiosk-header #map-toggle-btn,
+    .touch-device .kiosk-header .mobile-quick-btn,
+    .touch-device .kiosk-header .mobile-ai-btn,
+    .touch-device .kiosk-header .mobile-browse-btn {
+      display: none !important;
+    }
 
-      /* Show hamburger button */
-      .hamburger-menu-btn {
-        display: flex !important;
-      }
+    /* Show hamburger button on touch devices */
+    .touch-device .hamburger-menu-btn {
+      display: flex !important;
+    }
 
-      /* Taller header on touch devices for better tap targets */
-      .kiosk-header {
-        padding: 14px 20px !important;
-        min-height: 64px !important;
-      }
-      .kiosk-header .logo-image {
-        height: 48px !important;
-      }
-      .kiosk-header .chip {
-        min-height: 38px !important;
-        padding: 6px 12px !important;
-        font-size: 0.85rem !important;
-      }
-      .kiosk-header .back-button {
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        font-size: 22px !important;
-      }
+    /* Taller header + bigger logo on touch devices */
+    .touch-device .kiosk-header {
+      padding: 16px 20px !important;
+      min-height: 80px !important;
+    }
+    .touch-device .kiosk-header .logo-image {
+      height: 56px !important;
+    }
+    .touch-device .kiosk-header .chip {
+      min-height: 40px !important;
+      padding: 8px 14px !important;
+      font-size: 0.9rem !important;
+    }
+    .touch-device .kiosk-header .back-button {
+      width: 48px !important;
+      height: 48px !important;
+      min-width: 48px !important;
+      font-size: 24px !important;
     }
 
     /* ===== HAMBURGER MENU (hidden on desktop, shown on touch devices via query above) ===== */
@@ -13865,9 +13867,7 @@
   <!-- Invisible overlay to block all touch interaction with the video on iPad/mobile -->
   <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
   <style>
-    @media (hover: none) and (pointer: coarse) {
-      #video-touch-blocker { pointer-events: auto !important; }
-    }
+    .touch-device #video-touch-blocker { pointer-events: auto !important; }
   </style>
   <script>
     // Background video setup — local file first, then Streamable fallback
@@ -16872,10 +16872,26 @@
       <!-- Microphone button - Only shown if microphone is enabled in kiosk settings -->
       {% if kiosk_settings and kiosk_settings.get('ai_microphone_enabled', true) %}
       <span class="ai-mic-hint">Tap before speaking</span>
-      <button class="ai-mic-btn" id="ai-mic-btn" onclick="toggleAIMicrophone()">🎤</button>
+      <button class="ai-mic-btn" id="ai-mic-btn">🎤</button>
       {% endif %}
     </div>
   </div>
+  <script>
+    // Mic button: use touchend on touch devices to prevent ghost double-clicks
+    (function() {
+      var btn = document.getElementById('ai-mic-btn');
+      if (!btn) return;
+      var handled = false;
+      btn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        if (!handled) { handled = true; toggleAIMicrophone(); setTimeout(function(){ handled = false; }, 600); }
+      }, {passive: false});
+      btn.addEventListener('click', function(e) {
+        if (handled) { e.preventDefault(); return; }
+        toggleAIMicrophone();
+      });
+    })();
+  </script>
   
   <!-- On-Screen Keyboard Overlay -->
   <div id="onscreen-keyboard-overlay" class="keyboard-overlay" style="display: none;">
@@ -24682,7 +24698,12 @@
       console.log('📨 Message tray toggled:', document.body.classList.contains('ai-tray-open') ? 'open' : 'closed');
     };
     
+    window._micToggleLock = false;
     window.toggleAIMicrophone = function() {
+      if (window._micToggleLock) return;
+      window._micToggleLock = true;
+      setTimeout(function() { window._micToggleLock = false; }, 600);
+      
       const micBtn = document.getElementById('ai-mic-btn');
       if (!micBtn) return;
       
