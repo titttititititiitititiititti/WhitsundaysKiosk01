@@ -1263,6 +1263,12 @@ def get_active_account():
             return config.get('active_account')
     return None
 
+def get_effective_account():
+    """Get the best available account for the current request.
+    Priority: referral cookie/param -> kiosk instance.json -> None
+    Use this in API endpoints that need to know which account's tours to serve."""
+    return get_referral_account() or get_active_account()
+
 def get_kiosk_enabled_tours():
     """Get the list of enabled tours for this kiosk instance"""
     active_account = get_active_account()
@@ -3753,7 +3759,7 @@ def api_cruise_ship_friendly_keys():
     """Return list of cruise-ship-friendly tour keys for the active kiosk account.
     This lightweight endpoint lets the frontend filter tours client-side even if
     the main tour endpoints haven't been restarted yet."""
-    active_account = get_active_account()
+    active_account = get_effective_account()
     if active_account:
         settings = load_account_settings(active_account)
         keys = settings.get('cruise_ship_friendly_tours', [])
@@ -4632,6 +4638,23 @@ def operator_edit_tour(tour_key):
     # Redirect to the existing tour editor with this tour pre-selected
     return redirect(url_for('tour_editor') + f'?select={tour_key}')
 
+@app.route('/s/<account_slug>')
+@app.route('/s/<account_slug>/<lang>')
+def shop_entry(account_slug, lang=None):
+    """Clean entry URL for shop profiles. Sets referral cookie and redirects to home.
+    Usage: filtour.com/s/iconic  or  filtour.com/s/iconic/en"""
+    settings_file = f'config/accounts/{account_slug}/settings.json'
+    defaults_file = f'config/defaults/{account_slug}/settings.json'
+    if not os.path.exists(settings_file) and not os.path.exists(defaults_file):
+        return redirect('/')
+    
+    params = f'?ref={account_slug}'
+    if lang:
+        params += f'&lang={lang}'
+    resp = redirect('/' + params)
+    resp.set_cookie('filtour_ref', account_slug, max_age=60*60*24*30, samesite='Lax')
+    return resp
+
 @app.route('/')
 def index():
     # Check for referral from QR code scan (allows public access)
@@ -4782,8 +4805,8 @@ def api_tours():
     """API endpoint to fetch filtered tours for video question flow"""
     language = request.args.get('lang', 'en')
     
-    # Get the active account for filtering hidden images
-    active_account = get_active_account()
+    # Get the effective account (referral cookie > instance.json) for filtering
+    active_account = get_effective_account()
     
     # Get filter parameters
     duration = request.args.get('duration', '')
@@ -5570,7 +5593,7 @@ def tour_detail(key):
     language = request.args.get('lang', 'en')
     company, tid = key.split('__', 1)
     # Get account-specific display names
-    active_account = get_active_account()
+    active_account = get_effective_account()
     account_display_names = get_company_display_names_for_account(active_account)
     # Load from language-specific CSV
     csv_pattern = f'data/{company}/{language}/*_with_media.csv'
@@ -5711,7 +5734,7 @@ def get_similar_tours(key):
     """Get similar tours based on RAG embeddings"""
     language = request.args.get('lang', 'en')
     n_results = int(request.args.get('n', 3))
-    active_account = get_active_account()
+    active_account = get_effective_account()
     
     print(f"[SIMILAR] Finding similar tours for: {key}")
     
@@ -5874,7 +5897,7 @@ def send_booking_email(booking_data):
                 <div class="content">
                     <div class="section">
                         <p><span class="label">Tour:</span> <span class="value">{booking_data.get('tour_name', 'N/A')}</span></p>
-                        <p><span class="label">Company:</span> <span class="value">{get_company_display_name(company, get_active_account())}</span></p>
+                        <p><span class="label">Company:</span> <span class="value">{get_company_display_name(company, get_effective_account())}</span></p>
                         <p><span class="label">Selected Pricing:</span> <span class="value">{booking_data.get('selected_pricing', 'Not specified')}</span></p>
                     </div>
                     
@@ -7044,8 +7067,8 @@ def chat():
         # Import price conversion for display
         from elevenlabs_tts import convert_price_for_display
         
-        # Get active account for filtering hidden images
-        active_account = get_active_account()
+        # Get effective account (referral cookie > instance.json) for filtering
+        active_account = get_effective_account()
         
         data = request.get_json()
         user_message = data.get('message', '')
