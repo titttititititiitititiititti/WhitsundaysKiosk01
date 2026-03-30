@@ -15809,8 +15809,8 @@
               </div>
           <!-- Currency Button with Dropdown -->
           <div class="currency-selector" style="position:relative;">
-            <button class="chip" id="header-currency-btn" onclick="event.stopPropagation(); var m=document.getElementById('home-currency-menu'); m.style.display=m.style.display==='block'?'none':'block';">AUD</button>
-            <div id="home-currency-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:180px;z-index:99999;padding:10px;overflow:hidden;">
+            <button class="chip" id="header-currency-btn" onclick="event.stopPropagation(); event.preventDefault(); var m=document.getElementById('home-currency-menu'); if(m.style.display==='block'){m.style.display='none';}else{m.style.display='block';} console.log('Currency menu toggled:', m.style.display);">AUD</button>
+            <div id="home-currency-menu" onclick="event.stopPropagation();" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:white;border-radius:16px;box-shadow:0 15px 50px rgba(0,0,0,0.25);min-width:180px;z-index:99999999;padding:10px;overflow:hidden;">
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('AUD')"><span style="font-weight:700;color:#0077b6;">A$</span><span style="font-weight:600;color:#0a2540;">AUD</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('USD')"><span style="font-weight:700;color:#0077b6;">$</span><span style="font-weight:600;color:#0a2540;">USD</span></div>
               <div onmouseover="this.style.background='rgba(0,119,182,0.2)'" onmouseout="this.style.background='rgba(0,119,182,0.06)'" style="padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;border-radius:10px;transition:background 0.2s;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(0,119,182,0.06);margin-bottom:4px;" onclick="selectHomeCurrency('EUR')"><span style="font-weight:700;color:#0077b6;">€</span><span style="font-weight:600;color:#0a2540;">EUR</span></div>
@@ -21881,12 +21881,23 @@
         if (!el || el.style.display === 'none') return;
         var rect = el.getBoundingClientRect();
         if (rect.width === 0) return;
+        // For browse-all, use the wrapper (includes cruise ship notice)
+        var cloneSource = el;
+        if (item.mode === 'browse-all') {
+          var wrapper = el.closest('.browse-all-wrapper');
+          if (wrapper) {
+            cloneSource = wrapper;
+            rect = wrapper.getBoundingClientRect();
+          }
+        }
         toAnimate.push({
           el: el,
+          cloneSource: cloneSource,
           rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
           bg: window.getComputedStyle(el).backgroundImage || window.getComputedStyle(el).background,
           text: el.textContent.trim(),
-          borderRadius: window.getComputedStyle(el).borderRadius
+          borderRadius: window.getComputedStyle(el).borderRadius,
+          isBrowseAll: item.mode === 'browse-all'
         });
       });
       toAnimate.sort(function(a, b) { return a.rect.top - b.rect.top; });
@@ -21894,16 +21905,25 @@
       // Create clones at original positions
       var clones = [];
       toAnimate.forEach(function(data) {
-        var clone = document.createElement('div');
-        clone.textContent = data.text;
-        clone.style.cssText = 'position:fixed;z-index:9999998;pointer-events:none;'
-          + 'display:flex;align-items:center;justify-content:center;'
-          + 'white-space:nowrap;font-weight:700;color:white;overflow:hidden;'
-          + 'left:' + data.rect.left + 'px;top:' + data.rect.top + 'px;'
-          + 'width:' + data.rect.width + 'px;height:' + data.rect.height + 'px;'
-          + 'font-size:16px;border-radius:' + data.borderRadius + ';'
-          + 'background:' + data.bg + ';'
-          + 'box-shadow:0 4px 15px rgba(0,0,0,0.3);opacity:1;';
+        var clone;
+        if (data.isBrowseAll) {
+          clone = data.cloneSource.cloneNode(true);
+          clone.style.cssText = 'position:fixed;z-index:9999998;pointer-events:none;'
+            + 'left:' + data.rect.left + 'px;top:' + data.rect.top + 'px;'
+            + 'width:' + data.rect.width + 'px;height:' + data.rect.height + 'px;'
+            + 'opacity:1;transition:none;';
+        } else {
+          clone = document.createElement('div');
+          clone.textContent = data.text;
+          clone.style.cssText = 'position:fixed;z-index:9999998;pointer-events:none;'
+            + 'display:flex;align-items:center;justify-content:center;'
+            + 'white-space:nowrap;font-weight:700;color:white;overflow:hidden;'
+            + 'left:' + data.rect.left + 'px;top:' + data.rect.top + 'px;'
+            + 'width:' + data.rect.width + 'px;height:' + data.rect.height + 'px;'
+            + 'font-size:16px;border-radius:' + data.borderRadius + ';'
+            + 'background:' + data.bg + ';'
+            + 'box-shadow:0 4px 15px rgba(0,0,0,0.3);opacity:1;';
+        }
         document.body.appendChild(clone);
         clones.push(clone);
       });
@@ -21922,6 +21942,9 @@
         var el = document.getElementById(item.id);
         if (el) el.style.opacity = '0';
       });
+      // Hide cruise ship notice (it's now in the clone)
+      var cruiseNotice = document.getElementById('cruise-ship-notice');
+      if (cruiseNotice) cruiseNotice.style.opacity = '0';
       // Fade out title/subtitle/flags
       startScreen.querySelectorAll('h1, h2, p, .video-start-title, .mode-selection-flags').forEach(function(el) {
         el.style.transition = 'opacity 0.3s ease';
@@ -21936,13 +21959,13 @@
         });
       });
       
-      // Animation timing
-      var hamburgerAppearTime = 500;
-      var flightTime = 600;
-      var growLeadTime = 200;
-      var growDuration = 180;
-      var shrinkDuration = 220;
-      var pauseBetween = 250;
+      // Animation timing (slightly faster)
+      var hamburgerAppearTime = 400;
+      var flightTime = 450;
+      var growLeadTime = 160;
+      var growDuration = 140;
+      var shrinkDuration = 170;
+      var pauseBetween = 150;
       var perButton = flightTime + pauseBetween;
       
       // Sequentially animate each clone into the floating hamburger
@@ -22001,13 +22024,15 @@
             var el = document.getElementById(item.id);
             if (el) { el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; }
           });
+          var cn = document.getElementById('cruise-ship-notice');
+          if (cn) cn.style.opacity = '';
           if (startScreen) {
             startScreen.querySelectorAll('h1, h2, p, .video-start-title, .mode-selection-flags').forEach(function(el) {
               el.style.opacity = ''; el.style.transition = '';
             });
           }
-        }, 350);
-      }, lastButtonDone + 300);
+        }, 300);
+      }, lastButtonDone + 200);
     }
     
     // ===================================================================
