@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-03-30T09:27:52.908811",
+  "last_updated": "2026-03-30T11:12:22.555544",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -61142,10 +61142,61 @@
             "filter_type": "duration",
             "filter_value": "half_day"
           }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-30T09:31:15.851911",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-30T09:31:16.391288",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-03-30T09:31:16.957160",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-03-30T09:36:53.872892",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-03-30T09:36:53.872892",
+      "duration_seconds": 575.602356
+    },
+    {
+      "session_id": "session_9abf692023fd_1774832847",
+      "account": "nathan",
+      "started_at": "2026-03-30T11:07:27.745381",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-03-30T11:07:27.745381",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
