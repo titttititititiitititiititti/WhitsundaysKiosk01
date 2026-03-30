@@ -293,6 +293,7 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      touch-action: none;
     }
     
     .lightbox-image-container img {
@@ -300,6 +301,10 @@
       max-height: 95%;
       object-fit: contain;
       border-radius: 8px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: transform 0.05s linear;
     }
     
     .lightbox-counter {
@@ -21896,31 +21901,32 @@
       // Execute callback to switch page
       if (callback) callback();
       
-      // Animate each clone into the hamburger one by one, quickly
-      var stagger = 80;
+      // Animate each clone into the hamburger one by one
+      var stagger = 150;
+      var flightDuration = 550;
       clones.forEach(function(clone, i) {
         setTimeout(function() {
-          // Fly to hamburger position and shrink
-          clone.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+          clone.style.transition = 'all ' + (flightDuration / 1000) + 's cubic-bezier(0.25, 0.46, 0.45, 0.94)';
           clone.style.left = hamburgerRect.left + 'px';
           clone.style.top = hamburgerRect.top + 'px';
           clone.style.width = hamburgerRect.width + 'px';
           clone.style.height = hamburgerRect.height + 'px';
           clone.style.fontSize = '0px';
-          clone.style.opacity = '0.6';
+          clone.style.opacity = '0.5';
           clone.style.borderRadius = '12px';
           
           // "Eat" effect: hamburger enlarges then shrinks when clone arrives
           setTimeout(function() {
             if (hamburgerBtn) {
-              hamburgerBtn.style.transition = 'transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)';
-              hamburgerBtn.style.transform = 'scale(1.35)';
+              hamburgerBtn.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+              hamburgerBtn.style.transform = 'scale(1.4)';
               setTimeout(function() {
+                hamburgerBtn.style.transition = 'transform 0.25s ease-out';
                 hamburgerBtn.style.transform = 'scale(1)';
-              }, 150);
+              }, 200);
             }
             clone.style.opacity = '0';
-          }, 280);
+          }, flightDuration - 80);
         }, i * stagger);
       });
       
@@ -21937,7 +21943,7 @@
             el.style.opacity = ''; el.style.transition = '';
           });
         }
-      }, clones.length * stagger + 500);
+      }, clones.length * stagger + flightDuration + 300);
     }
     
     // ===================================================================
@@ -35986,13 +35992,19 @@
       }
     };
     
-    // Lightbox functionality with pinch-to-zoom
+    // Lightbox functionality with pinch-to-zoom and pan
     let lightboxImages = [];
     let lightboxIndex = 0;
     let lightboxTouchStartX = 0;
+    let lightboxTouchStartY = 0;
     let lightboxScale = 1;
     let lightboxInitialPinchDistance = 0;
     let lightboxIsPinching = false;
+    let lightboxTranslateX = 0;
+    let lightboxTranslateY = 0;
+    let lightboxPanStartX = 0;
+    let lightboxPanStartY = 0;
+    let lightboxIsPanning = false;
     
     window.openLightbox = function(images, startIndex) {
       console.log('openLightbox called with:', images, startIndex);
@@ -36010,15 +36022,20 @@
       // Reset zoom on open
       lightboxScale = 1;
       img.style.transform = 'scale(1)';
-      
-      console.log('Lightbox element:', lightbox);
-      console.log('Setting image src to:', lightboxImages[lightboxIndex]);
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
       
       img.src = lightboxImages[lightboxIndex];
       counter.textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+      
+      // Clear any inline display:none from previous close, then activate
+      lightbox.style.display = '';
       lightbox.classList.add('active');
-      console.log('Lightbox classes after adding active:', lightbox.className);
       document.body.style.overflow = 'hidden';
+      
+      // Store global refs for nav functions
+      window.lightboxImages = lightboxImages;
+      window.lightboxIndex = lightboxIndex;
       
       // Add touch event listeners
       lightbox.addEventListener('touchstart', lightboxTouchStart, { passive: false });
@@ -36043,8 +36060,9 @@
     };
     
     window.lightboxNext = function() {
-      // Reset zoom when changing images
       lightboxScale = 1;
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
       const img = document.getElementById('lightbox-img');
       if (img) img.style.transform = 'scale(1)';
       
@@ -36057,8 +36075,9 @@
     };
     
     window.lightboxPrev = function() {
-      // Reset zoom when changing images
       lightboxScale = 1;
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
       const img = document.getElementById('lightbox-img');
       if (img) img.style.transform = 'scale(1)';
       
@@ -36085,13 +36104,21 @@
     
     function lightboxTouchStart(e) {
       if (e.touches.length === 2) {
-        // Pinch start
         e.preventDefault();
         lightboxIsPinching = true;
+        lightboxIsPanning = false;
         lightboxInitialPinchDistance = getPinchDistance(e.touches);
       } else if (e.touches.length === 1) {
         lightboxTouchStartX = e.touches[0].clientX;
+        lightboxTouchStartY = e.touches[0].clientY;
         lightboxIsPinching = false;
+        // Start pan if zoomed in
+        if (lightboxScale > 1.2) {
+          e.preventDefault();
+          lightboxIsPanning = true;
+          lightboxPanStartX = e.touches[0].clientX;
+          lightboxPanStartY = e.touches[0].clientY;
+        }
       }
     }
     
@@ -36101,32 +36128,53 @@
         const currentDistance = getPinchDistance(e.touches);
         const delta = currentDistance / lightboxInitialPinchDistance;
         
-        // Calculate new scale (between 1 and 5)
         let newScale = lightboxScale * delta;
         newScale = Math.max(1, Math.min(5, newScale));
         
         const img = document.getElementById('lightbox-img');
         if (img) {
-          img.style.transform = `scale(${newScale})`;
+          img.style.transform = 'scale(' + newScale + ') translate(' + lightboxTranslateX + 'px, ' + lightboxTranslateY + 'px)';
         }
         
-        // Update for next move
         lightboxInitialPinchDistance = currentDistance;
         lightboxScale = newScale;
+      } else if (e.touches.length === 1 && lightboxIsPanning && lightboxScale > 1.2) {
+        e.preventDefault();
+        var dx = e.touches[0].clientX - lightboxPanStartX;
+        var dy = e.touches[0].clientY - lightboxPanStartY;
+        lightboxPanStartX = e.touches[0].clientX;
+        lightboxPanStartY = e.touches[0].clientY;
+        lightboxTranslateX += dx / lightboxScale;
+        lightboxTranslateY += dy / lightboxScale;
+        
+        var img = document.getElementById('lightbox-img');
+        if (img) {
+          img.style.transform = 'scale(' + lightboxScale + ') translate(' + lightboxTranslateX + 'px, ' + lightboxTranslateY + 'px)';
+        }
       }
     }
     
     function lightboxTouchEnd(e) {
       if (lightboxIsPinching) {
         lightboxIsPinching = false;
+        // Snap back to 1x if barely zoomed
+        if (lightboxScale < 1.1) {
+          lightboxScale = 1;
+          lightboxTranslateX = 0;
+          lightboxTranslateY = 0;
+          var img = document.getElementById('lightbox-img');
+          if (img) img.style.transform = 'scale(1)';
+        }
         return;
       }
       
-      // Only handle swipe if not zoomed in
+      lightboxIsPanning = false;
+      
+      // Only handle swipe navigation if not zoomed in
       if (lightboxScale > 1.2) return;
       
       if (e.changedTouches && e.changedTouches.length > 0) {
-        const diff = e.changedTouches[0].clientX - lightboxTouchStartX;
+        var diff = e.changedTouches[0].clientX - lightboxTouchStartX;
         if (Math.abs(diff) > 50) {
           if (diff > 0) {
             lightboxPrev();
@@ -36144,16 +36192,18 @@
       const img = document.getElementById('lightbox-img');
       if (!lightbox || !lightbox.classList.contains('active')) return;
       
-      // Check if clicking on the image itself
       if (e.target === img) {
         const now = Date.now();
         if (now - lastTap < 300) {
-          // Double tap - toggle zoom
           if (lightboxScale > 1) {
             lightboxScale = 1;
+            lightboxTranslateX = 0;
+            lightboxTranslateY = 0;
             img.style.transform = 'scale(1)';
           } else {
             lightboxScale = 2.5;
+            lightboxTranslateX = 0;
+            lightboxTranslateY = 0;
             img.style.transform = 'scale(2.5)';
           }
         }
