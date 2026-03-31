@@ -30341,8 +30341,13 @@
       const menu = document.getElementById('currency-menu');
       if (menu) menu.classList.remove('active');
       
-      // Re-render tour cards with new currency
-      applyFilters();
+      // Re-render tour cards with new currency using the correct renderer
+      var featuredGrid = document.getElementById('featured-grid');
+      if (featuredGrid && featuredGrid.children.length > 0 && typeof applyFiltersModern === 'function') {
+        applyFiltersModern();
+      } else {
+        applyFilters();
+      }
     }
     
     // Close mobile menu if clicking outside
@@ -36050,6 +36055,7 @@
     let lightboxScale = 1;
     let lightboxInitialPinchDistance = 0;
     let lightboxIsPinching = false;
+    let lightboxWasPinching = false;
     
     window.openLightbox = function(images, startIndex) {
       console.log('openLightbox called with:', images, startIndex);
@@ -36145,9 +36151,12 @@
       if (e.touches.length === 2) {
         e.preventDefault();
         lightboxIsPinching = true;
+        lightboxWasPinching = true;
         lightboxInitialPinchDistance = getPinchDistance(e.touches);
       } else if (e.touches.length === 1) {
-        lightboxTouchStartX = e.touches[0].clientX;
+        if (!lightboxWasPinching) {
+          lightboxTouchStartX = e.touches[0].clientX;
+        }
         lightboxIsPinching = false;
       }
     }
@@ -36172,17 +36181,20 @@
     }
     
     function lightboxTouchEnd(e) {
-      if (lightboxIsPinching) {
+      if (lightboxIsPinching || lightboxWasPinching) {
         lightboxIsPinching = false;
-        if (lightboxScale < 1.1) {
-          lightboxScale = 1;
-          var img = document.getElementById('lightbox-img');
-          if (img) img.style.transform = 'scale(1)';
+        if (e.touches.length === 0) {
+          lightboxWasPinching = false;
+          if (lightboxScale < 1.1) {
+            lightboxScale = 1;
+            var img = document.getElementById('lightbox-img');
+            if (img) img.style.transform = 'scale(1)';
+          }
         }
         return;
       }
       
-      // Single finger swipe always navigates, even when zoomed
+      // Single finger swipe only — no pinch was involved
       if (e.changedTouches && e.changedTouches.length > 0) {
         var diff = e.changedTouches[0].clientX - lightboxTouchStartX;
         if (Math.abs(diff) > 50) {
