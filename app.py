@@ -735,6 +735,19 @@ def load_account_settings(username):
             if key not in local_settings:
                 merged[key] = default_settings[key]
         
+        # Deep-merge dict-valued keys so that per-tour overrides from
+        # defaults propagate even when the local file has a stale/empty copy
+        for dict_key in ('tour_overrides', 'promoted_tours', 'kiosk_settings'):
+            default_val = default_settings.get(dict_key)
+            local_val = local_settings.get(dict_key)
+            if isinstance(default_val, dict) and isinstance(local_val, dict):
+                deep = {**default_val, **local_val}
+                if dict_key == 'tour_overrides':
+                    for tk in default_val:
+                        if tk in local_val and isinstance(default_val[tk], dict) and isinstance(local_val[tk], dict):
+                            deep[tk] = {**default_val[tk], **local_val[tk]}
+                merged[dict_key] = deep
+        
         return merged
     elif local_settings:
         return local_settings
