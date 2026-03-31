@@ -16369,7 +16369,7 @@
     const SHOP_CONFIG = {{ shop_config | tojson | safe }};
     
     // Hero Booking Platform settings (for unified booking widgets)
-    const HERO_BOOKING = {{ hero_booking | tojson | safe if hero_booking else '{"enabled": false, "availability_widget_url": "", "pricing_widget_url": ""}' | safe }};
+    const HERO_BOOKING = {{ hero_booking | tojson | replace("</", "<\\/") | safe if hero_booking else '{"enabled": false, "availability_widget_url": "", "pricing_widget_url": ""}' | safe }};
     
     // Kiosk mode settings (which modes are enabled/disabled)
     const KIOSK_MODES = {
