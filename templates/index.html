@@ -18649,19 +18649,53 @@
       return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
     }
     
-    // Activate <script> tags inside a container (innerHTML doesn't execute them)
+    // Activate <script> tags inside a container by rendering them in an
+    // iframe. Third-party embed scripts (FareHarbor, etc.) rely on
+    // document.currentScript / document.write which only work in a fresh
+    // document context, not when a script is dynamically createElement'd.
     function activateScripts(container) {
       var scripts = container.querySelectorAll('script');
-      scripts.forEach(function(oldScript) {
-        var newScript = document.createElement('script');
-        Array.from(oldScript.attributes).forEach(function(attr) {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-        if (!oldScript.src) {
-          newScript.textContent = oldScript.textContent;
-        }
-        oldScript.parentNode.replaceChild(newScript, oldScript);
+      if (scripts.length === 0) return;
+
+      var scriptSrcs = [];
+      var inlineScripts = [];
+      scripts.forEach(function(s) {
+        if (s.src) scriptSrcs.push(s.src);
+        else if (s.textContent.trim()) inlineScripts.push(s.textContent);
       });
+
+      if (scriptSrcs.length === 0 && inlineScripts.length === 0) return;
+
+      var widget = container.querySelector('.hero-booking-widget') || container;
+      widget.innerHTML = '';
+      widget.style.minHeight = '700px';
+
+      var iframe = document.createElement('iframe');
+      iframe.style.cssText = 'width:100%;border:none;min-height:650px;border-radius:12px;background:white;';
+      iframe.setAttribute('scrolling', 'no');
+      widget.appendChild(iframe);
+
+      var tags = scriptSrcs.map(function(src) {
+        return '<script src="' + src + '"><\/script>';
+      }).join('\n');
+      tags += inlineScripts.map(function(code) {
+        return '<script>' + code + '<\/script>';
+      }).join('\n');
+
+      var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:8px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}</style></head><body>' + tags + '</body></html>';
+      iframe.srcdoc = html;
+
+      // Auto-resize iframe to match content height
+      iframe.onload = function() {
+        function resize() {
+          try {
+            var h = iframe.contentDocument.documentElement.scrollHeight;
+            if (h > 100) iframe.style.height = h + 'px';
+          } catch(e) {}
+        }
+        resize();
+        setInterval(resize, 1000);
+      };
     }
 
     // Enhance widget HTML with proper iframe attributes for checkout flow
