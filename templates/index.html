@@ -18605,7 +18605,9 @@
     
     // Detect if user is on web (from QR code) vs physical kiosk
     const isWebVisitor = {{ 'true' if is_web_visitor else 'false' }};
-    const isKiosk = !isWebVisitor && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const isTouchDevice = document.documentElement.classList.contains('touch-device');
+    // Kiosk = local server OR touch device with a shop referral account (iPad in store)
+    const isKiosk = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') || (isTouchDevice && isWebVisitor);
     
     // Demo mode - no booking buttons, just browsing (for public website access without referral)
     const isDemoMode = {{ 'true' if is_demo_mode else 'false' }};
