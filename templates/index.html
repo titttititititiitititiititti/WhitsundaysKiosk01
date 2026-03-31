@@ -18649,6 +18649,21 @@
       return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
     }
     
+    // Activate <script> tags inside a container (innerHTML doesn't execute them)
+    function activateScripts(container) {
+      var scripts = container.querySelectorAll('script');
+      scripts.forEach(function(oldScript) {
+        var newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach(function(attr) {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        if (!oldScript.src) {
+          newScript.textContent = oldScript.textContent;
+        }
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
     // Enhance widget HTML with proper iframe attributes for checkout flow
     function enhanceWidgetHtml(html) {
       if (!html) return html;
@@ -21265,6 +21280,7 @@
       detailsHtml += '</div>';
       
       scrollableContent.innerHTML = detailsHtml;
+      activateScripts(scrollableContent);
       scrollableContent.style.display = 'flex';
       
       // Protect any Hero booking widgets in kiosk mode - ensure key is passed
@@ -28886,6 +28902,7 @@
                 </div>
               `;
               pricingContainer.innerHTML = pricingHTML;
+              activateScripts(pricingContainer);
               // Protect widget in kiosk mode - pass key with data
               setTimeout(() => protectBookingWidgets({...data, key: key}), 100);
             } else if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.enabled && HERO_BOOKING.pricing_widget_url) {
