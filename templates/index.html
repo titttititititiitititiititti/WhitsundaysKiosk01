@@ -18672,10 +18672,19 @@
       widget.innerHTML = '';
       widget.style.minHeight = '700px';
 
+      widget.style.position = 'relative';
+
       var iframe = document.createElement('iframe');
       iframe.style.cssText = 'width:100%;border:none;min-height:650px;border-radius:12px;background:white;';
       iframe.setAttribute('scrolling', 'no');
       widget.appendChild(iframe);
+
+      // On kiosk, block interaction so calendar is view-only
+      if (typeof isKiosk !== 'undefined' && isKiosk) {
+        var shield = document.createElement('div');
+        shield.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;cursor:default;';
+        widget.appendChild(shield);
+      }
 
       var tags = scriptSrcs.map(function(src) {
         return '<script src="' + src + '"><\/script>';
