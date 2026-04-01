@@ -194,6 +194,115 @@
             opacity: 1 !important;
         }
         
+        /* Company Manager Modal */
+        .cm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9000;
+            backdrop-filter: blur(4px);
+        }
+        .cm-overlay.active { display: flex; align-items: center; justify-content: center; }
+        .cm-modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 90vw;
+            max-width: 900px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .cm-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .cm-header h2 { font-size: 1.1rem; }
+        .cm-header-actions { display: flex; gap: 8px; }
+        .cm-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-content: flex-start;
+        }
+        .cm-company {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            width: calc(50% - 8px);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s;
+        }
+        .cm-company.drag-over {
+            border-color: var(--accent-blue);
+            background: rgba(88,166,255,0.08);
+        }
+        .cm-company-header {
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            cursor: default;
+        }
+        .cm-company-header .cm-count {
+            font-weight: 400;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .cm-company-tours {
+            padding: 8px;
+            flex: 1;
+            min-height: 50px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-content: flex-start;
+        }
+        .cm-tour {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: grab;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            user-select: none;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .cm-tour:active { cursor: grabbing; }
+        .cm-tour.dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+        .cm-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
         .tour-count {
             background: var(--bg-primary);
             padding: 2px 8px;
@@ -1836,6 +1945,9 @@
             <button class="btn btn-secondary preview-toggle-btn" onclick="togglePreview()">
                 <span id="previewIcon">👁️</span> <span id="previewText">Preview</span>
             </button>
+            <button class="btn btn-secondary" onclick="openCompanyManager()" title="Drag-and-drop tours between companies">
+                📁 Manage Companies
+            </button>
             <button class="btn btn-secondary" onclick="location.href='/admin/agent'">
                 ← Back to Dashboard
             </button>
@@ -2095,13 +2207,16 @@
             const newName = prompt('Enter new display name for this company:', currentName);
             if (!newName || newName.trim() === currentName) return;
             
+            const applyGlobally = confirm('Apply this name change to ALL accounts?\n\nOK = All accounts see this name\nCancel = Only your account');
+            
             try {
                 const response = await fetch('/admin/api/company-name', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         company_key: companyKey,
-                        display_name: newName.trim()
+                        display_name: newName.trim(),
+                        update_globally: applyGlobally
                     })
                 });
                 
@@ -2110,12 +2225,12 @@
                 if (result.pending_approval) {
                     showToast('📋 Company name change submitted for approval', 'info');
                 } else if (result.success) {
-                    // Update the UI
                     const companySpan = document.querySelector(`.company-name[data-company="${companyKey}"]`);
                     if (companySpan) {
                         companySpan.textContent = newName.trim();
                     }
-                    showToast('✅ Company name updated!', 'success');
+                    const scope = result.account_specific ? 'your account' : 'all accounts';
+                    showToast('✅ Company name updated for ' + scope + '!', 'success');
                 } else {
                     showToast('❌ ' + (result.error || 'Failed to update'), 'error');
                 }
@@ -4115,6 +4230,188 @@
                 initImagesDragAndDrop(); // Also init image drag and drop
             }, 100);
         }
+    </script>
+
+    <!-- Company Manager Modal -->
+    <div class="cm-overlay" id="cmOverlay" onclick="if(event.target===this)closeCompanyManager()">
+        <div class="cm-modal">
+            <div class="cm-header">
+                <h2>📁 Manage Companies</h2>
+                <div class="cm-header-actions">
+                    <button class="btn btn-secondary" onclick="cmCreateCompany()" style="font-size:0.8rem;padding:6px 14px;">+ New Company</button>
+                    <button class="btn btn-secondary" onclick="closeCompanyManager()" style="font-size:0.8rem;padding:6px 10px;">✕</button>
+                </div>
+            </div>
+            <div class="cm-body" id="cmBody"></div>
+            <div class="cm-footer">
+                <span id="cmStatus" style="flex:1;font-size:0.8rem;color:var(--text-secondary);"></span>
+                <button class="btn btn-secondary" onclick="closeCompanyManager()">Cancel</button>
+                <button class="btn btn-primary" onclick="cmSave()" style="font-size:0.85rem;">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        let cmData = {};       // { companySlug: { display: "Name", tours: [{key, name}] } }
+        let cmDirty = false;
+        let cmDragTour = null;
+
+        window.openCompanyManager = async function() {
+            cmDirty = false;
+            document.getElementById('cmStatus').textContent = '';
+            // Build data from the sidebar (which already has assignments applied)
+            cmData = {};
+            const companyNames = {{ company_names | tojson | safe }};
+            document.querySelectorAll('.company-group').forEach(g => {
+                const slug = g.dataset.company;
+                const display = companyNames[slug] || slug;
+                cmData[slug] = { display: display, tours: [] };
+                g.querySelectorAll('.tour-item').forEach(t => {
+                    cmData[slug].tours.push({
+                        key: t.dataset.key,
+                        name: t.textContent.trim()
+                    });
+                });
+            });
+            cmRender();
+            document.getElementById('cmOverlay').classList.add('active');
+        };
+
+        window.closeCompanyManager = function() {
+            if (cmDirty && !confirm('Discard unsaved changes?')) return;
+            document.getElementById('cmOverlay').classList.remove('active');
+        };
+
+        window.cmCreateCompany = function() {
+            const display = prompt('New company display name:');
+            if (!display || !display.trim()) return;
+            const slug = display.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+            if (cmData[slug]) {
+                alert('A company with that name already exists.');
+                return;
+            }
+            cmData[slug] = { display: display.trim(), tours: [] };
+            cmDirty = true;
+            cmRender();
+        };
+
+        function cmRender() {
+            const body = document.getElementById('cmBody');
+            body.innerHTML = '';
+            const sorted = Object.keys(cmData).sort((a, b) =>
+                cmData[a].display.localeCompare(cmData[b].display));
+
+            sorted.forEach(slug => {
+                const co = cmData[slug];
+                const div = document.createElement('div');
+                div.className = 'cm-company';
+                div.dataset.slug = slug;
+                div.innerHTML = `
+                    <div class="cm-company-header">
+                        <span>${co.display}</span>
+                        <span class="cm-count">${co.tours.length}</span>
+                    </div>
+                    <div class="cm-company-tours"></div>
+                `;
+                const toursDiv = div.querySelector('.cm-company-tours');
+
+                co.tours.forEach(t => {
+                    const chip = document.createElement('div');
+                    chip.className = 'cm-tour';
+                    chip.textContent = t.name;
+                    chip.draggable = true;
+                    chip.dataset.key = t.key;
+                    chip.addEventListener('dragstart', e => {
+                        cmDragTour = { key: t.key, name: t.name, fromSlug: slug };
+                        chip.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+                    chip.addEventListener('dragend', () => {
+                        chip.classList.remove('dragging');
+                        cmDragTour = null;
+                        document.querySelectorAll('.cm-company.drag-over').forEach(
+                            el => el.classList.remove('drag-over'));
+                    });
+                    toursDiv.appendChild(chip);
+                });
+
+                // Drop zone
+                toursDiv.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    div.classList.add('drag-over');
+                });
+                toursDiv.addEventListener('dragleave', e => {
+                    if (!div.contains(e.relatedTarget)) div.classList.remove('drag-over');
+                });
+                toursDiv.addEventListener('drop', e => {
+                    e.preventDefault();
+                    div.classList.remove('drag-over');
+                    if (!cmDragTour || cmDragTour.fromSlug === slug) return;
+                    // Move tour
+                    const from = cmData[cmDragTour.fromSlug];
+                    from.tours = from.tours.filter(t => t.key !== cmDragTour.key);
+                    co.tours.push({ key: cmDragTour.key, name: cmDragTour.name });
+                    cmDirty = true;
+                    cmDragTour = null;
+                    cmRender();
+                });
+
+                body.appendChild(div);
+            });
+        }
+
+        window.cmSave = async function() {
+            const status = document.getElementById('cmStatus');
+            status.textContent = 'Saving...';
+            // Build assignments: tour_key -> company_slug (only for reassigned tours)
+            const assignments = {};
+            for (const [slug, co] of Object.entries(cmData)) {
+                for (const t of co.tours) {
+                    const original = t.key.split('__')[0];
+                    if (slug !== original) {
+                        assignments[t.key] = slug;
+                    }
+                }
+            }
+            // Also collect new company display names
+            const newNames = {};
+            for (const [slug, co] of Object.entries(cmData)) {
+                newNames[slug] = co.display;
+            }
+            try {
+                // Save assignments
+                const resp = await fetch('/admin/api/tour-assignments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assignments: assignments })
+                });
+                const result = await resp.json();
+                if (!result.success) throw new Error(result.error || 'Save failed');
+
+                // Save all company display names globally
+                for (const [slug, display] of Object.entries(newNames)) {
+                    await fetch('/admin/api/company-name', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            company_key: slug,
+                            display_name: display,
+                            update_globally: true
+                        })
+                    });
+                }
+
+                cmDirty = false;
+                status.textContent = 'Saved! Reloading...';
+                setTimeout(() => location.reload(), 800);
+            } catch (err) {
+                status.textContent = 'Error: ' + err.message;
+                status.style.color = 'var(--accent-red)';
+            }
+        };
+    })();
     </script>
 </body>
 </html>

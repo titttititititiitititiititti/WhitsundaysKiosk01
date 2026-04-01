@@ -275,7 +275,7 @@ def main(csv_path):
     if '_with_media.csv' in csv_path:
         out_csv = csv_path  # Overwrite the same file
     else:
-    out_csv = csv_path.replace('.csv', '_with_media.csv')
+        out_csv = csv_path.replace('.csv', '_with_media.csv')
     df.to_csv(out_csv, index=False)
     print(f"Done. Updated CSV saved as {out_csv}")
 

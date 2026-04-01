@@ -436,6 +436,78 @@ def _github_api_push(changed_files_dict, commit_message):
     except Exception as e:
         return False, f"GitHub API error: {e}"
 
+
+def _github_api_pull_analytics():
+    """Pull analytics JSON files from GitHub via REST API and merge into local.
+    Used on Render where there is no .git directory.
+    Returns number of sessions merged."""
+    if not http_requests or not GITHUB_TOKEN:
+        return 0
+
+    owner, repo = _get_github_repo_info()
+    if not owner or not repo:
+        return 0
+
+    headers = {
+        'Authorization': f'token {GITHUB_TOKEN}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    api_base = f'https://api.github.com/repos/{owner}/{repo}'
+    merged_count = 0
+
+    try:
+        # List files in data/ directory on main branch
+        tree_resp = http_requests.get(
+            f'{api_base}/contents/data?ref=main', headers=headers, timeout=15
+        )
+        if tree_resp.status_code != 200:
+            print(f"[RENDER ANALYTICS] Could not list data/ on GitHub: {tree_resp.status_code}")
+            return 0
+
+        for item in tree_resp.json():
+            name = item.get('name', '')
+            if not name.startswith('analytics_') or not name.endswith('.json'):
+                continue
+            if '_backup' in name or '_request' in name:
+                continue
+
+            account = name.replace('analytics_', '').replace('.json', '')
+
+            # Download the file content
+            file_resp = http_requests.get(
+                f'{api_base}/contents/data/{name}?ref=main', headers=headers, timeout=15
+            )
+            if file_resp.status_code != 200:
+                continue
+
+            import base64
+            content = base64.b64decode(file_resp.json()['content']).decode('utf-8')
+            try:
+                remote_data = json.loads(content)
+            except json.JSONDecodeError:
+                continue
+
+            remote_sessions = remote_data.get('sessions', [])
+            if not remote_sessions:
+                continue
+
+            # Merge with local (local wins on duplicate session_id)
+            local_data = load_analytics(account)
+            local_ids = {s.get('session_id') for s in local_data.get('sessions', [])}
+            new_sessions = [s for s in remote_sessions if s.get('session_id') not in local_ids]
+
+            if new_sessions:
+                local_data['sessions'].extend(new_sessions)
+                save_analytics(local_data, account)
+                merged_count += len(new_sessions)
+                print(f"[RENDER ANALYTICS] Merged {len(new_sessions)} remote session(s) for '{account}'")
+
+    except Exception as e:
+        print(f"[RENDER ANALYTICS] Pull error: {e}")
+
+    return merged_count
+
+
 def git_sync_changes(commit_message="Update tour data"):
     """
     Commit and push changes to git repository.
@@ -2232,8 +2304,8 @@ def save_company_display_names(names):
 
 def get_company_display_names_for_account(username=None):
     """Get company display names with account-specific overrides applied"""
-    # Start with global names
-    names = dict(COMPANY_DISPLAY_NAMES)
+    # Start with global names (reload from disk to pick up cross-instance changes)
+    names = dict(load_company_display_names())
     
     # Apply account-specific overrides if username provided
     if username:
@@ -2250,6 +2322,31 @@ def get_company_display_name(company_key, username=None):
 
 # Load on startup (base defaults — account-specific overrides are applied at request time)
 COMPANY_DISPLAY_NAMES = load_company_display_names()
+
+# --- Tour-to-company reassignment (virtual folders) ---
+_TOUR_ASSIGNMENTS_FILE = 'config/tour_company_assignments.json'
+
+def load_tour_company_assignments():
+    """Load the global tour->company mapping.
+    Returns dict: { tour_key: virtual_company_slug }"""
+    if os.path.exists(_TOUR_ASSIGNMENTS_FILE):
+        try:
+            with open(_TOUR_ASSIGNMENTS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading tour company assignments: {e}")
+    return {}
+
+def save_tour_company_assignments(assignments):
+    """Save the global tour->company mapping."""
+    os.makedirs('config', exist_ok=True)
+    with open(_TOUR_ASSIGNMENTS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(assignments, f, indent=2, ensure_ascii=False)
+
+def get_tour_display_company(tour_key, original_company):
+    """Get the display company for a tour, checking assignments first."""
+    assignments = load_tour_company_assignments()
+    return assignments.get(tour_key, original_company)
 
 def get_english_tour_name(company, tid):
     """Get the English tour name for a tour (for image matching purposes)"""
@@ -2569,6 +2666,8 @@ def load_all_tours(language='en', preview_account=None):
                 csv_files.append(root_csv)
                 loaded_companies.add(company_name)  # Prevent loading same company twice
     
+    tour_assignments = load_tour_company_assignments()
+    
     for csvfile in csv_files:
         try:
             # Check if file still exists before trying to open it
@@ -2578,8 +2677,11 @@ def load_all_tours(language='en', preview_account=None):
                     for row in reader:
                         tid = row['id']
                         name = row['name']
-                        company = row['company_name']
-                        key = f"{company}__{tid}"
+                        csv_company = row['company_name']
+                        key = f"{csv_company}__{tid}"
+                        
+                        # Apply virtual company reassignment if set
+                        company = tour_assignments.get(key, csv_company)
                         
                         # Skip if already loaded (prevent duplicates by key)
                         if key in loaded_tour_keys:
@@ -2587,14 +2689,13 @@ def load_all_tours(language='en', preview_account=None):
                         loaded_tour_keys.add(key)
                         
                         # Also skip if same tour name already loaded for this company
-                        # (catches duplicate CSV rows with different IDs)
                         name_company_key = f"{company}::{name}"
                         if name_company_key in loaded_tour_names_by_company:
                             continue
                         loaded_tour_names_by_company[name_company_key] = key
                         
-                        # Check if images are enabled for this company (legal toggle)
-                        images_enabled = are_company_images_enabled(company)
+                        # Check if images are enabled for this company (use original for image lookup)
+                        images_enabled = are_company_images_enabled(csv_company)
                         
                         # DON'T load images here - they'll be loaded lazily when tours are displayed
                         # Just mark whether this tour uses placeholders or real images
@@ -2622,7 +2723,8 @@ def load_all_tours(language='en', preview_account=None):
                             'name': name, 
                             'thumbnail': thumb_path, 
                             'key': key,
-                            'company': company,
+                            'company': csv_company,
+                            'display_company': company,
                             'company_name': account_display_names.get(company, company.title()),
                             'image_url': row.get('image_url', ''),  # CSV thumbnail path (for load_tour_images)
                             'image_urls': row.get('image_urls', ''),  # CSV gallery paths (for load_tour_images)
@@ -8475,21 +8577,27 @@ def tour_editor():
     csv_files = get_all_tour_csvs()
     print(f"[Editor] Found {len(csv_files)} CSV files")
     
+    tour_assignments = load_tour_company_assignments()
+    
     for csvfile in csv_files:
         try:
             if os.path.exists(csvfile):
                 with open(csvfile, newline='', encoding='utf-8') as f:
                     reader = csv.DictReader(f)
                     for row in reader:
-                        # Support both 'company_name' and 'company' columns
-                        company = row.get('company_name') or row.get('company') or 'unknown'
+                        csv_company = row.get('company_name') or row.get('company') or 'unknown'
+                        tour_id = row.get('id', '')
+                        tour_key = f"{csv_company}__{tour_id}"
+                        # Use virtual company if reassigned, otherwise original
+                        company = tour_assignments.get(tour_key, csv_company)
                         if company not in companies:
                             companies[company] = []
                         companies[company].append({
-                            'id': row.get('id', ''),
+                            'id': tour_id,
                             'name': row.get('name', 'Unnamed Tour'),
-                            'company': company,
-                            'csv_file': csvfile  # Track which file it came from
+                            'company': csv_company,
+                            'display_company': company,
+                            'csv_file': csvfile
                         })
         except Exception as e:
             print(f"Error loading {csvfile}: {e}")
@@ -8527,7 +8635,16 @@ def update_company_display_name():
     if not company_key or not display_name:
         return jsonify({'error': 'Company key and display name required'}), 400
     
-    # ALL company name changes are per-account (never modify the global file)
+    applied_globally = False
+    
+    if update_globally:
+        # Write to global config so ALL accounts see this name
+        global COMPANY_DISPLAY_NAMES
+        COMPANY_DISPLAY_NAMES[company_key] = display_name
+        save_company_display_names(COMPANY_DISPLAY_NAMES)
+        applied_globally = True
+    
+    # Also save to this account's overrides
     settings = load_account_settings(username)
     if 'company_name_overrides' not in settings:
         settings['company_name_overrides'] = {}
@@ -8536,13 +8653,68 @@ def update_company_display_name():
     save_account_settings(username, settings)
     
     # Sync to connected kiosks
-    git_sync_changes(f"Updated company name override: {company_key}")
+    git_sync_changes(f"Updated company name {'globally' if applied_globally else 'for account'}: {company_key} -> {display_name}")
+    
+    if applied_globally:
+        return jsonify({
+            'success': True,
+            'account_specific': False,
+            'message': f'Company name updated globally for all accounts'
+        })
     
     return jsonify({
         'success': True,
         'account_specific': True,
         'message': 'Company name updated for your account'
     })
+
+@app.route('/admin/api/tour-assignments', methods=['GET'])
+@agent_required
+def get_tour_assignments():
+    """Get all tour->company assignments"""
+    return jsonify(load_tour_company_assignments())
+
+@app.route('/admin/api/tour-assignments', methods=['POST'])
+@agent_required
+def update_tour_assignments():
+    """Bulk update tour->company assignments.
+    Body: { "assignments": { "company__id": "new-company-slug", ... } }
+    Or move a single tour: { "tour_key": "...", "new_company": "..." }
+    """
+    data = request.get_json()
+    assignments = load_tour_company_assignments()
+
+    if 'assignments' in data:
+        for key, company in data['assignments'].items():
+            if company:
+                assignments[key] = company
+            else:
+                assignments.pop(key, None)
+    elif 'tour_key' in data and 'new_company' in data:
+        tour_key = data['tour_key']
+        new_company = data['new_company'].strip()
+        if new_company:
+            # If moving back to original company, remove the override
+            original = tour_key.split('__')[0] if '__' in tour_key else ''
+            if new_company == original:
+                assignments.pop(tour_key, None)
+            else:
+                assignments[tour_key] = new_company
+        else:
+            assignments.pop(tour_key, None)
+
+    save_tour_company_assignments(assignments)
+
+    # Auto-register display name for new companies
+    new_company = data.get('new_company', '').strip()
+    new_display = data.get('new_display_name', '').strip()
+    if new_company and new_display:
+        global COMPANY_DISPLAY_NAMES
+        COMPANY_DISPLAY_NAMES[new_company] = new_display
+        save_company_display_names(COMPANY_DISPLAY_NAMES)
+
+    git_sync_changes("Updated tour company assignments")
+    return jsonify({'success': True, 'total_assignments': len(assignments)})
 
 @app.route('/admin/api/tour/<key>')
 def get_tour_for_editor(key):
@@ -10982,45 +11154,72 @@ def refresh_analytics():
         
         repo_path = os.path.dirname(os.path.abspath(__file__))
         pulled = False
-        
-        # Step 1: Push THIS device's local analytics to git (if running locally)
-        # sync_analytics_to_git also PULLS remote data and merges it into local
-        if HAS_GIT_REPO and not IS_RENDER:
-            try:
-                pre_sync = load_analytics(username)
-                pre_count = len(pre_sync.get('sessions', []))
-                
-                sync_analytics_to_git()
-                
-                post_sync = load_analytics(username)
-                post_count = len(post_sync.get('sessions', []))
-                if post_count != pre_count:
-                    pulled = True
-                    print(f"[ANALYTICS] Sync brought {post_count - pre_count} new sessions for {username}")
-            except Exception as e:
-                print(f"[ANALYTICS] Local push during refresh failed: {e}")
-        
-        # Step 2: Pull ALL analytics from remote (kiosks auto-push every 5 min)
-        any_pulled, target_pulled = _pull_all_analytics_from_remote(username)
-        if target_pulled or any_pulled:
-            pulled = True
-        
-        # Step 3: Send signal for kiosks to push immediately (in addition to auto-push)
         signal_sent = False
-        if HAS_GIT_REPO:
-            signal_sent = send_analytics_push_signal()
         
-        # Step 4: Quick second pull after a short wait (catch any kiosk that responds fast)
-        if signal_sent:
-            time.sleep(8)  # Brief wait for fast-responding kiosks
-            subprocess.run(
-                ['git', 'fetch', 'origin', 'main'],
-                cwd=repo_path, capture_output=True, text=True,
-                encoding='utf-8', errors='replace', timeout=15
-            )
-            any_new, target_new = _pull_all_analytics_from_remote(username)
-            if target_new or any_new:
+        # On Render: push current analytics then pull kiosk data via GitHub API
+        if IS_RENDER and GITHUB_TOKEN:
+            # First push what we have locally so it's safe on GitHub
+            try:
+                import glob as _glob
+                files_to_push = {}
+                for af in _glob.glob('data/analytics_*.json'):
+                    if '_backup' in af or '_request' in af:
+                        continue
+                    fpath = af.replace('\\', '/')
+                    with open(af, 'r', encoding='utf-8') as f:
+                        files_to_push[fpath] = f.read()
+                if files_to_push:
+                    _github_api_push(files_to_push, f"Analytics sync from Render (refresh)")
+            except Exception as e:
+                print(f"[RENDER ANALYTICS] Push on refresh failed: {e}")
+            
+            # Now pull any kiosk-pushed data from GitHub
+            try:
+                count = _github_api_pull_analytics()
+                if count > 0:
+                    pulled = True
+                    print(f"[RENDER ANALYTICS] Refresh pulled {count} session(s) from GitHub")
+            except Exception as e:
+                print(f"[RENDER ANALYTICS] Pull on refresh failed: {e}")
+        else:
+            # Local mode: use git CLI
+            # Step 1: Push THIS device's local analytics to git (if running locally)
+            if HAS_GIT_REPO and not IS_RENDER:
+                try:
+                    pre_sync = load_analytics(username)
+                    pre_count = len(pre_sync.get('sessions', []))
+                    
+                    sync_analytics_to_git()
+                    
+                    post_sync = load_analytics(username)
+                    post_count = len(post_sync.get('sessions', []))
+                    if post_count != pre_count:
+                        pulled = True
+                        print(f"[ANALYTICS] Sync brought {post_count - pre_count} new sessions for {username}")
+                except Exception as e:
+                    print(f"[ANALYTICS] Local push during refresh failed: {e}")
+            
+            # Step 2: Pull ALL analytics from remote (kiosks auto-push every 5 min)
+            any_pulled, target_pulled = _pull_all_analytics_from_remote(username)
+            if target_pulled or any_pulled:
                 pulled = True
+            
+            # Step 3: Send signal for kiosks to push immediately
+            signal_sent = False
+            if HAS_GIT_REPO:
+                signal_sent = send_analytics_push_signal()
+            
+            # Step 4: Quick second pull after a short wait
+            if signal_sent:
+                time.sleep(8)
+                subprocess.run(
+                    ['git', 'fetch', 'origin', 'main'],
+                    cwd=repo_path, capture_output=True, text=True,
+                    encoding='utf-8', errors='replace', timeout=15
+                )
+                any_new, target_new = _pull_all_analytics_from_remote(username)
+                if target_new or any_new:
+                    pulled = True
         
         # Build response
         analytics = load_analytics(username)
@@ -11063,6 +11262,17 @@ def start_background_services():
     _startup_done = True
     
     print("[STARTUP] Initializing background services...")
+    
+    # On Render: pull previously-persisted analytics from GitHub so data survives deploys
+    if IS_RENDER and GITHUB_TOKEN:
+        try:
+            count = _github_api_pull_analytics()
+            if count:
+                print(f"[RENDER ANALYTICS] Restored {count} session(s) from GitHub on startup")
+            else:
+                print("[RENDER ANALYTICS] No prior analytics to restore (or already up to date)")
+        except Exception as e:
+            print(f"[RENDER ANALYTICS] Startup pull failed: {e}")
     
     # Configure git identity and remote early (critical for Render where these are missing)
     if HAS_GIT_REPO:
@@ -11201,6 +11411,46 @@ def start_background_services():
         print("[AUTO-UPDATE] Disabled (no .git folder - running on cloud deployment)")
     else:
         print("[AUTO-UPDATE] Disabled (RENDER environment detected)")
+    
+    # On Render: push analytics to GitHub via API periodically so they survive deploys
+    IS_CLOUD = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if IS_CLOUD and GITHUB_TOKEN:
+        def _render_analytics_push_loop():
+            """Background loop that periodically pushes analytics JSON to GitHub
+            so web-collected session data survives Render's ephemeral filesystem."""
+            import time as _time
+            _PUSH_INTERVAL = 300  # every 5 minutes
+            _time.sleep(30)  # let app start and collect some data first
+            print("[RENDER ANALYTICS] Background push loop started (every 5min)", flush=True)
+            while True:
+                try:
+                    import glob as _glob
+                    files_to_push = {}
+                    for af in _glob.glob('data/analytics_*.json'):
+                        if '_backup' in af or '_request' in af:
+                            continue
+                        fpath = af.replace('\\', '/')
+                        with open(af, 'r', encoding='utf-8') as f:
+                            files_to_push[fpath] = f.read()
+                    if files_to_push:
+                        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        success, msg = _github_api_push(
+                            files_to_push,
+                            f"Analytics sync from Render [{timestamp}]"
+                        )
+                        if success:
+                            print(f"[RENDER ANALYTICS] Pushed {len(files_to_push)} file(s): {msg}", flush=True)
+                        else:
+                            print(f"[RENDER ANALYTICS] Push failed: {msg}", flush=True)
+                except Exception as e:
+                    print(f"[RENDER ANALYTICS] Error: {e}", flush=True)
+                _time.sleep(_PUSH_INTERVAL)
+
+        _render_analytics_thread = threading.Thread(target=_render_analytics_push_loop, daemon=True)
+        _render_analytics_thread.start()
+        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 5 minutes")
+    elif IS_CLOUD:
+        print("[RENDER ANALYTICS] GITHUB_TOKEN not set - web analytics will NOT persist across deploys")
     
     # Analytics: Kiosks auto-push analytics every 5 minutes via _analytics_signal_loop.
     # Admin "Refresh Data" just fetches from remote. Signal is also sent for immediate push.
