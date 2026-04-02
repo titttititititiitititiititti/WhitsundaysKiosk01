@@ -622,18 +622,34 @@ def git_sync_changes(commit_message="Update tour data"):
         """Try to push using git CLI. Returns True on success."""
         auth_url = get_authenticated_remote_url()
         
-        # Pull --rebase first to handle diverged history
         pull_target = auth_url if auth_url else 'origin'
         try:
+            # Stash dirty working-tree files (e.g. analytics written by other threads)
+            # so git pull --rebase doesn't fail with "unstaged changes"
+            _stash = subprocess.run(
+                ['git', 'stash', '--include-untracked'],
+                cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+            )
+            _did_stash = _stash.returncode == 0 and 'No local changes' not in (_stash.stdout or '')
+            if _did_stash:
+                print("[GIT SYNC] Stashed dirty files before rebase", flush=True)
+            
             pull_result = subprocess.run(
                 ['git', 'pull', '--rebase', pull_target, 'main'],
                 cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             if pull_result.returncode != 0:
                 print(f"[GIT SYNC] Pull --rebase failed: {pull_result.stderr[:200]}", flush=True)
-                # Try to abort rebase if it got stuck
                 subprocess.run(['git', 'rebase', '--abort'], cwd=cwd,
                              capture_output=True, text=True, timeout=10)
+            
+            # Restore stashed files
+            if _did_stash:
+                subprocess.run(
+                    ['git', 'stash', 'pop'],
+                    cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+                )
+                print("[GIT SYNC] Restored stashed files", flush=True)
         except subprocess.TimeoutExpired:
             print("[GIT SYNC] Pull --rebase timed out", flush=True)
         except Exception as e:
@@ -820,15 +836,34 @@ def load_account_settings(username):
                             deep[tk] = {**default_val[tk], **local_val[tk]}
                 merged[dict_key] = deep
         
-        return merged
+        result = merged
     elif local_settings:
-        return local_settings
+        result = local_settings
     elif default_settings:
         log_key = f'_logged_settings_{username}'
         if not getattr(load_account_settings, log_key, False):
             print(f"[CONFIG] Using default settings for '{username}'")
             setattr(load_account_settings, log_key, True)
-        return default_settings
+        result = default_settings
+    else:
+        result = None
+    
+    if result and 'extra_images' in result:
+        migrated = False
+        for tour_key, paths in result['extra_images'].items():
+            fixed = []
+            for p in paths:
+                if p.startswith('tour_images/') and not p.startswith('static/'):
+                    fixed.append('static/' + p)
+                    migrated = True
+                else:
+                    fixed.append(p)
+            result['extra_images'][tour_key] = fixed
+        if migrated:
+            save_account_settings(username, result, sync_to_git=False)
+    
+    if result:
+        return result
     
     # Return default settings for new accounts
     return {
@@ -9278,7 +9313,7 @@ def upload_tour_images(key):
             
             filepath = os.path.join(folder, filename)
             file.save(filepath)
-            new_paths.append(f"tour_images/{username}/{company}/{tid}/{filename}")
+            new_paths.append(f"static/tour_images/{username}/{company}/{tid}/{filename}")
             uploaded += 1
     
     # Track account-specific images in settings
@@ -10142,13 +10177,13 @@ def _classify_remote_changes(repo_path):
         if not changed_files:
             return 'code'
         
-        # Check if ALL changed files are in data/ directory
-        all_data = all(f.startswith('data/') for f in changed_files)
+        data_prefixes = ('data/', 'config/', 'static/tour_images/')
+        all_data = all(any(f.startswith(p) for p in data_prefixes) for f in changed_files)
         if all_data:
             print(f"[AUTO-UPDATE] Changed files are data-only: {changed_files[:5]}", flush=True)
             return 'data_only'
         else:
-            code_files = [f for f in changed_files if not f.startswith('data/')]
+            code_files = [f for f in changed_files if not any(f.startswith(p) for p in data_prefixes)]
             print(f"[AUTO-UPDATE] Code files changed: {code_files[:5]}", flush=True)
             return 'code'
     except Exception as e:
@@ -10261,39 +10296,46 @@ def check_git_updates():
                 api_check_update._notified = False  # Reset so frontend gets notified
                 return 'code'
         elif commits_behind > 0 and commits_ahead > 0:
-            # Diverged history - try to push local commits first, then reset
-            print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind.", flush=True)
+            # Diverged: local has unpushed commits (e.g. image uploads) AND remote has new commits.
+            # Try stash + rebase + push to preserve local work instead of wiping it.
+            print(f"[AUTO-UPDATE] ⚠️ Diverged: {commits_ahead} ahead, {commits_behind} behind. Trying rebase...", flush=True)
             
-            # Try to push local commits (like analytics) before resetting
-            # This preserves shop's local work
             try:
-                push_result = subprocess.run(
-                    ['git', 'push', 'origin', 'main'],
-                    cwd=repo_path,
-                    capture_output=True,
-                    text=True,
-                    encoding='utf-8',
-                    errors='replace',
-                    timeout=30
+                # Stash any dirty working-tree files first
+                subprocess.run(['git', 'stash', '--include-untracked'],
+                    cwd=repo_path, capture_output=True, text=True, timeout=10)
+                
+                # Rebase local commits on top of remote
+                rebase_result = subprocess.run(
+                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                    cwd=repo_path, capture_output=True, text=True,
+                    encoding='utf-8', errors='replace', timeout=30
                 )
-                if push_result.returncode == 0:
-                    print(f"[AUTO-UPDATE] ✅ Pushed {commits_ahead} local commit(s) to origin", flush=True)
+                
+                # Restore stashed files
+                subprocess.run(['git', 'stash', 'pop'],
+                    cwd=repo_path, capture_output=True, text=True, timeout=10)
+                
+                if rebase_result.returncode == 0:
+                    # Rebase succeeded — now push our commits
+                    push_result = subprocess.run(
+                        ['git', 'push', 'origin', 'main'],
+                        cwd=repo_path, capture_output=True, text=True,
+                        encoding='utf-8', errors='replace', timeout=30
+                    )
+                    if push_result.returncode == 0:
+                        print(f"[AUTO-UPDATE] ✅ Rebased and pushed {commits_ahead} local commit(s)", flush=True)
+                    else:
+                        print(f"[AUTO-UPDATE] Rebase OK but push failed — will retry next cycle", flush=True)
                 else:
-                    print(f"[AUTO-UPDATE] ⚠️ Could not push local commits: {push_result.stderr[:200]}", flush=True)
-                    print(f"[AUTO-UPDATE] Will reset to origin (local commits will be lost)", flush=True)
+                    print(f"[AUTO-UPDATE] Rebase failed — aborting, will retry next cycle", flush=True)
+                    subprocess.run(['git', 'rebase', '--abort'],
+                        cwd=repo_path, capture_output=True, text=True, timeout=10)
             except Exception as e:
-                print(f"[AUTO-UPDATE] ⚠️ Error pushing local commits: {e}. Will reset to origin.", flush=True)
+                print(f"[AUTO-UPDATE] Diverged resolution error: {e}", flush=True)
             
-            # Re-classify after attempting push
-            change_type = _classify_remote_changes(repo_path)
-            if change_type == 'data_only':
-                print(f"[AUTO-UPDATE] After push, remaining changes are data-only", flush=True)
-                return 'data_only'
-            
-            print(f"[AUTO-UPDATE] Will reset to origin to get latest updates.", flush=True)
-            _update_available = True
-            api_check_update._notified = False  # Reset so frontend gets notified
-            return 'code'
+            # Don't return 'code' here — never wipe local commits with git reset
+            return False
         else:
             print("[AUTO-UPDATE] No new updates", flush=True)
             _update_available = False
@@ -11336,40 +11378,57 @@ def start_background_services():
                         continue
                     
                     # --- 1. CHECK FOR CODE UPDATES ---
-                    # If origin/main has new commits, exit so run_kiosk.py can pull and restart
+                    # Only restart when remote is STRICTLY ahead and we have NO local unpushed work.
                     try:
-                        _local = subprocess.run(
-                            ['git', 'rev-parse', 'HEAD'],
+                        _behind = int(subprocess.run(
+                            ['git', 'rev-list', '--count', 'HEAD..origin/main'],
                             cwd=_repo, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=5
-                        ).stdout.strip()
-                        _remote = subprocess.run(
-                            ['git', 'rev-parse', 'origin/main'],
+                        ).stdout.strip() or '0')
+                        _ahead = int(subprocess.run(
+                            ['git', 'rev-list', '--count', 'origin/main..HEAD'],
                             cwd=_repo, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=5
-                        ).stdout.strip()
+                        ).stdout.strip() or '0')
                         
-                        if _local and _remote and _local != _remote:
-                            # Check what changed — only restart for code changes, not just data files
+                        if _ahead > 0:
+                            if _check_count % 5 == 0:
+                                print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
+                            try:
+                                subprocess.run(
+                                    ['git', 'push', 'origin', 'main'],
+                                    cwd=_repo, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', timeout=30
+                                )
+                            except Exception:
+                                pass
+                        elif _behind > 0:
                             _diff = subprocess.run(
                                 ['git', 'diff', '--name-only', 'HEAD', 'origin/main'],
                                 cwd=_repo, capture_output=True, text=True,
                                 encoding='utf-8', errors='replace', timeout=10
                             )
                             _changed_files = [f.strip() for f in (_diff.stdout or '').strip().split('\n') if f.strip()]
+                            _data_prefixes = ('data/', 'config/', 'static/tour_images/')
                             _code_changes = [f for f in _changed_files 
-                                           if not f.startswith('data/analytics_') and f != 'data/analytics_request.json']
+                                           if not any(f.startswith(p) for p in _data_prefixes)]
                             
                             if _code_changes:
                                 print(f"[KIOSK BG] 🔄 Code update detected ({len(_code_changes)} files changed)", flush=True)
                                 print(f"[KIOSK BG] Changed: {', '.join(_code_changes[:5])}", flush=True)
-                                # Push our analytics before restarting (so data isn't lost)
                                 try:
                                     sync_analytics_to_git()
                                 except Exception as _e:
                                     print(f"[KIOSK BG] Analytics push before restart failed: {_e}", flush=True)
                                 print("[KIOSK BG] Exiting for code update (run_kiosk.py will restart us)...", flush=True)
                                 os._exit(0)
+                            else:
+                                print(f"[KIOSK BG] Data-only update ({_behind} commits) — pulling silently", flush=True)
+                                subprocess.run(
+                                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                                    cwd=_repo, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', timeout=30
+                                )
                     except Exception as _e:
                         print(f"[KIOSK BG] Update check error: {_e}", flush=True)
                     
