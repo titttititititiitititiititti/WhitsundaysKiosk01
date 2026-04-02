@@ -10174,12 +10174,14 @@ def _classify_remote_changes(repo_path):
             cwd=repo_path, capture_output=True, text=True,
             encoding='utf-8', errors='replace', timeout=10
         )
-        if diff_result.returncode != 0 or not diff_result.stdout.strip():
-            return 'code'  # Default to code if we can't determine
+        if diff_result.returncode != 0:
+            return 'code'  # Default to code if git command failed
         
         changed_files = [f.strip() for f in diff_result.stdout.strip().split('\n') if f.strip()]
         if not changed_files:
-            return 'code'
+            # No actual file changes (empty commit) — treat as data-only to avoid unnecessary restart
+            print("[AUTO-UPDATE] No file differences detected (empty/no-op commit)", flush=True)
+            return 'data_only'
         
         data_prefixes = ('data/', 'config/', 'static/tour_images/')
         all_data = all(any(f.startswith(p) for p in data_prefixes) for f in changed_files)
