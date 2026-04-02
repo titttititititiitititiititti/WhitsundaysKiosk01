@@ -2006,6 +2006,48 @@ def get_tours_by_semantic_search(query, all_tours, max_results=8, min_similarity
 # Default account for analytics (can be overridden per kiosk)
 DEFAULT_ANALYTICS_ACCOUNT = 'bailey'
 
+# Debounced analytics push for Render - pushes at most once every 10 seconds
+_render_push_timer = None
+_render_push_lock = threading.Lock()
+
+def _schedule_render_analytics_push():
+    """Schedule an analytics push to GitHub within 10 seconds (debounced).
+    Multiple calls within the window are coalesced into a single push."""
+    global _render_push_timer
+    with _render_push_lock:
+        if _render_push_timer is not None:
+            _render_push_timer.cancel()
+        _render_push_timer = threading.Timer(10.0, _do_render_analytics_push)
+        _render_push_timer.daemon = True
+        _render_push_timer.start()
+
+def _do_render_analytics_push():
+    """Actually push analytics files to GitHub via API."""
+    global _render_push_timer
+    try:
+        import glob as _glob
+        files_to_push = {}
+        for af in _glob.glob('data/analytics_*.json'):
+            if '_backup' in af or '_request' in af:
+                continue
+            fpath = af.replace('\\', '/')
+            with open(af, 'r', encoding='utf-8') as f:
+                files_to_push[fpath] = f.read()
+        if files_to_push:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            success, msg = _github_api_push(
+                files_to_push,
+                f"Analytics sync from Render [{timestamp}]"
+            )
+            if success:
+                print(f"[RENDER ANALYTICS] Immediate push OK: {msg}", flush=True)
+            else:
+                print(f"[RENDER ANALYTICS] Immediate push failed: {msg}", flush=True)
+    except Exception as e:
+        print(f"[RENDER ANALYTICS] Immediate push error: {e}", flush=True)
+    with _render_push_lock:
+        _render_push_timer = None
+
 def get_analytics_file(account=None):
     """Get the analytics file path for an account"""
     account = account or DEFAULT_ANALYTICS_ACCOUNT
@@ -2110,8 +2152,13 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
     # No session cap - keep ALL sessions forever for historical tracking
     save_analytics(analytics, account)
     
-    # Analytics are stored locally and only pushed when manually requested
-    # from the agent dashboard analytics page (no more auto-push commits)
+    # On Render: trigger an immediate push for meaningful events so they survive restarts
+    _cloud = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if _cloud and GITHUB_TOKEN and event_type in (
+        'session_end', 'book_now_clicked', 'tour_clicked', 'send_to_phone_clicked',
+        'qr_code_generated', 'qr_tour_visit'
+    ):
+        _schedule_render_analytics_push()
     
     return session
 
@@ -11506,9 +11553,9 @@ def start_background_services():
             """Background loop that periodically pushes analytics JSON to GitHub
             so web-collected session data survives Render's ephemeral filesystem."""
             import time as _time
-            _PUSH_INTERVAL = 300  # every 5 minutes
-            _time.sleep(30)  # let app start and collect some data first
-            print("[RENDER ANALYTICS] Background push loop started (every 5min)", flush=True)
+            _PUSH_INTERVAL = 60  # every 60 seconds
+            _time.sleep(15)  # let app start and collect some data first
+            print("[RENDER ANALYTICS] Background push loop started (every 60s)", flush=True)
             while True:
                 try:
                     import glob as _glob
@@ -11535,7 +11582,13 @@ def start_background_services():
 
         _render_analytics_thread = threading.Thread(target=_render_analytics_push_loop, daemon=True)
         _render_analytics_thread.start()
-        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 5 minutes")
+        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 60s + on meaningful events")
+        # Also register an atexit handler so analytics are pushed before process dies
+        import atexit
+        def _push_analytics_on_exit():
+            print("[RENDER ANALYTICS] Pushing analytics before shutdown...", flush=True)
+            _do_render_analytics_push()
+        atexit.register(_push_analytics_on_exit)
     elif IS_CLOUD:
         print("[RENDER ANALYTICS] GITHUB_TOKEN not set - web analytics will NOT persist across deploys")
     
