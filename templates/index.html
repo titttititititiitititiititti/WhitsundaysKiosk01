@@ -22633,7 +22633,7 @@
           </div>
           <div class="ai-tour-card-info">
             <p class="ai-tour-card-name">${tour.name}</p>
-            <p class="ai-tour-card-company">${tour.company || ''}</p>
+            <p class="ai-tour-card-company">${tour.company_name || tour.company || ''}</p>
             <p class="ai-tour-card-price" data-original-price="${price}">${formattedPrice}</p>
             ${duration ? `<p class="ai-tour-card-duration">⏱️ ${duration}</p>` : ''}
             <div class="ai-tour-card-details">
@@ -22992,7 +22992,7 @@
         </div>
         <div class="ai-tour-card-info">
           <p class="ai-tour-card-name">${tour.name}</p>
-          <p class="ai-tour-card-company">${tour.company || ''}</p>
+          <p class="ai-tour-card-company">${tour.company_name || tour.company || ''}</p>
           <p class="ai-tour-card-price">${price}</p>
           ${duration ? `<p class="ai-tour-card-duration">⏱️ ${duration}</p>` : ''}
           <div class="ai-tour-card-details">
@@ -28845,8 +28845,7 @@
           
           // Make company name clickable to filter by company
           const companyElement = document.getElementById('detail-company');
-          const slugFromCompany = (data.company || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
-          const derivedCompanyKey = data.company_key || data.company_slug || key.split('__')[0] || slugFromCompany;
+          const derivedCompanyKey = data.display_company || data.company_key || data.company_slug || key.split('__')[0];
           const formattedCompanyName = (data.company || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
           companyElement.textContent = '🏢 ' + formattedCompanyName + ' ›';
           companyElement.style.color = '#ffffff'; // Force white text color
@@ -30244,7 +30243,7 @@
           popupContent += `
             <div class="map-tour-item" onclick="openTourFromMap('${tour.key}')">
               <div class="map-tour-name">${tour.name}</div>
-              <div class="map-tour-company">${tour.company}</div>
+              <div class="map-tour-company">${tour.company_name || tour.company}</div>
             </div>
           `;
         });

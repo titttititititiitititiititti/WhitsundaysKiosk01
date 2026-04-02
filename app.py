@@ -5117,8 +5117,9 @@ def api_tours():
         tour_data = {
             'key': tour['key'],
             'name': tour['name'],
-            'company': tour.get('company', ''),
+            'company': tour.get('display_company', tour.get('company', '')),
             'company_name': tour.get('company_name', tour.get('company', '')),
+            'display_company': tour.get('display_company', tour.get('company', '')),
             'image': tour.get('image', ''),
             'thumbnail_url': thumb or '',
             'thumbnail': thumb or '',
@@ -5474,7 +5475,8 @@ def apply_filters(tours, criteria, user_message_context=None, conversation_histo
     
     # Apply filters based on criteria dict
     if criteria.get('company'):
-        filtered_tours = [t for t in filtered_tours if t['company'] == criteria['company']]
+        co = criteria['company']
+        filtered_tours = [t for t in filtered_tours if t.get('display_company', t['company']) == co or t['company'] == co]
     
     if criteria.get('duration'):
         filtered_tours = [t for t in filtered_tours if t['duration_category'] == criteria['duration']]
@@ -5860,10 +5862,12 @@ def tour_detail(key):
                             review_data = load_reviews(company, tid, username=active_account)
                             
                             # Return all info needed for the detail page
+                            display_co = get_tour_display_company(key, company)
                             return jsonify({
                                 'key': key,  # Include the tour key for widget protection
                                 'name': row.get('name', ''),
-                                'company': account_display_names.get(row.get('company_name', ''), row.get('company_name', '').title()),
+                                'company': account_display_names.get(display_co, display_co.replace('-', ' ').title()),
+                                'display_company': display_co,
                                 'summary': row.get('summary', ''),
                                 'description': row.get('description', ''),
                                 'price_adult': row.get('price_adult', ''),
@@ -10328,13 +10332,35 @@ def check_git_updates():
                     else:
                         print(f"[AUTO-UPDATE] Rebase OK but push failed — will retry next cycle", flush=True)
                 else:
-                    print(f"[AUTO-UPDATE] Rebase failed — aborting, will retry next cycle", flush=True)
+                    print(f"[AUTO-UPDATE] Rebase failed — aborting", flush=True)
                     subprocess.run(['git', 'rebase', '--abort'],
                         cwd=repo_path, capture_output=True, text=True, timeout=10)
+                    
+                    # Check if local commits are data-only; if so, safe to drop them and reset
+                    local_diff = subprocess.run(
+                        ['git', 'diff', '--name-only', 'origin/main...HEAD'],
+                        cwd=repo_path, capture_output=True, text=True,
+                        encoding='utf-8', errors='replace', timeout=10
+                    )
+                    local_files = [f.strip() for f in (local_diff.stdout or '').strip().split('\n') if f.strip()]
+                    data_prefixes = ('data/', 'config/', 'static/tour_images/')
+                    local_is_data_only = local_files and all(
+                        any(f.startswith(p) for p in data_prefixes) for f in local_files
+                    )
+                    
+                    if local_is_data_only:
+                        print(f"[AUTO-UPDATE] Local commit(s) are data-only ({local_files[:3]}) — dropping and resetting to origin", flush=True)
+                        subprocess.run(['git', 'reset', '--hard', 'origin/main'],
+                            cwd=repo_path, capture_output=True, text=True, timeout=15)
+                        change_type = _classify_remote_changes(repo_path)
+                        if change_type == 'code':
+                            return 'code'
+                        return 'data_only'
+                    else:
+                        print(f"[AUTO-UPDATE] Local commits touch code files ({local_files[:3]}) — will retry next cycle", flush=True)
             except Exception as e:
                 print(f"[AUTO-UPDATE] Diverged resolution error: {e}", flush=True)
             
-            # Don't return 'code' here — never wipe local commits with git reset
             return False
         else:
             print("[AUTO-UPDATE] No new updates", flush=True)
