@@ -19002,13 +19002,8 @@
           return;
         }
         
-        // Last resort: more info URL
-        const moreInfoUrl = currentProtectedTourData.link_more_info || currentProtectedTourData.more_info_url;
-        if (moreInfoUrl) {
-          console.log('🔗 Using more info URL as last resort:', moreInfoUrl);
-          showQRPaymentModal(moreInfoUrl, currentProtectedTourData.name || 'Book This Tour');
-          return;
-        }
+        // Do NOT fall back to link_more_info — it points to the source page
+        // which doesn't benefit the shop. Only use explicitly configured booking URLs.
       }
       
       console.error('❌ No booking URL available!');
@@ -20955,25 +20950,7 @@
         // Track Send to Phone click from swipe mode
         Analytics.logEvent('send_to_phone_clicked', { tour_name: tour.name, company: tour.company, source: 'swipe' });
         
-        // Use the SAME booking URL as Book Now button
-        // Priority 1: Check HERO_BOOKING overrides for booking URL
-        if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[tour.key]) {
-          const bookingUrl = HERO_BOOKING.tour_overrides[tour.key].booking_button_url;
-          if (bookingUrl) {
-            console.log('📱 Using booking URL from tour overrides:', bookingUrl);
-            showQRPaymentModal(bookingUrl, tour.name || 'Book This Tour');
-            return;
-          }
-        }
-        
-        // Priority 2: Check tour.link_booking
-        if (tour.link_booking) {
-          console.log('📱 Using link_booking:', tour.link_booking);
-          showQRPaymentModal(tour.link_booking, tour.name);
-          return;
-        }
-        
-        // Fallback: Generate QR for tour page
+        // Always generate QR for the tour page on filtour.com with current profile
         generateQRCodeForTour(tour.key, tour);
       } else {
         console.warn('⚠️ currentCardIndex out of bounds:', currentCardIndex, '>=', swipeCards.length);
@@ -28201,30 +28178,11 @@
       
       if (continuePhoneBtn) {
         continuePhoneBtn.onclick = () => {
-          console.log('📱 Continue on Phone button clicked!');
-          // Track send to phone click with analytics
+          console.log('📱 Send to My Phone button clicked!');
           Analytics.logEvent('send_to_phone_clicked', { tour_name: data.name, company: data.company, source: 'tour-detail' });
           
-          // Use the SAME booking URL as the Book Now button
-          // Priority 1: Check HERO_BOOKING overrides for booking URL
-          if (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides && HERO_BOOKING.tour_overrides[key]) {
-            const bookingUrl = HERO_BOOKING.tour_overrides[key].booking_button_url;
-            if (bookingUrl) {
-              console.log('📱 Using booking URL from tour overrides:', bookingUrl);
-              showQRPaymentModal(bookingUrl, data.name || 'Book This Tour');
-              return;
-            }
-          }
-          
-          // Priority 2: Check data.link_booking
-          if (data.link_booking) {
-            console.log('📱 Using link_booking:', data.link_booking);
-            showQRPaymentModal(data.link_booking, data.name);
-            return;
-          }
-          
-          // Fallback: Generate QR for tour page
-          console.log('📱 Falling back to tour page QR');
+          // Always generate QR for the tour page on filtour.com with the current profile
+          // This lets the user view the full listing on their phone from the same account
           generateQRCodeForTour(key, data);
         };
         console.log('   ✓ Continue Phone button click handler attached');
@@ -29481,14 +29439,12 @@
             hintWrapper.appendChild(hint);
             galleryContainer.appendChild(hintWrapper);
             
+            // Always remove any existing video section when loading a new tour
+            const existingVideoSection = document.querySelector('.tour-videos-section');
+            if (existingVideoSection) existingVideoSection.remove();
+            
             // Add videos section if tour has video URLs - INSERT BEFORE PRICING SECTION
-            console.log('🎬 Video URLs check:', data.video_urls, 'Type:', typeof data.video_urls, 'Length:', data.video_urls ? data.video_urls.length : 0);
             if (data.video_urls && data.video_urls.length > 0) {
-              console.log('🎬 Creating video section...');
-              
-              // Remove any existing video section first
-              const existingVideoSection = document.querySelector('.tour-videos-section');
-              if (existingVideoSection) existingVideoSection.remove();
               
               const videoSection = document.createElement('section');
               videoSection.className = 'tour-videos-section';
