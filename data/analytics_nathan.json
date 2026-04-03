@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-02T10:36:07.695438",
+  "last_updated": "2026-04-04T08:18:15.048265",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -62601,6 +62601,61 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_74c14e25d033_1775254458",
+      "account": "nathan",
+      "started_at": "2026-04-04T08:14:18.238756",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-04T08:14:18.238756",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-04T08:14:26.518204",
+          "data": {
+            "language": "es"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-04T08:14:26.974369",
+          "data": {
+            "language": "es"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-04T08:14:49.839131",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-04T08:14:50.323435",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-04T08:14:54.265152",
+          "data": {}
+        }
+      ],
+      "language": "es",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-04T08:14:54.265152",
+      "duration_seconds": 36.026396
     }
   ]
 }
