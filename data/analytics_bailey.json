@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-04-02T10:36:07.622484",
+  "last_updated": "2026-04-05T01:59:44.049888",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -27673,6 +27673,45 @@
       "chat_messages": [],
       "ended_at": "2026-03-20T14:03:29.120999",
       "duration_seconds": 249.097326
+    },
+    {
+      "session_id": "session_5c6062d51703_1775354383",
+      "account": "bailey",
+      "started_at": "2026-04-05T01:59:43.556926",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-05T01:59:43.556941",
+          "data": {
+            "user_agent": "Python-urllib/3.10",
+            "referrer": "direct"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "test_session_check_123",
+      "account": "bailey",
+      "started_at": "2026-04-05T01:59:44.049829",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-05T01:59:44.049841",
+          "data": {
+            "user_agent": "test_from_script"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
