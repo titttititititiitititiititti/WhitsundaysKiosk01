@@ -1401,7 +1401,11 @@ def update_instance_config(kiosk_settings, username=None):
     print(f"[INSTANCE] Updated instance config for account '{username}': logo={config.get('custom_logo', 'none')}")
 
 def get_active_account():
-    """Get the active account for this kiosk instance"""
+    """Get the active account for this kiosk instance.
+    Checks: KIOSK_ACCOUNT env var (for Render) -> config/instance.json -> None"""
+    env_account = os.environ.get('KIOSK_ACCOUNT')
+    if env_account:
+        return env_account
     instance_config_file = 'config/instance.json'
     if os.path.exists(instance_config_file):
         with open(instance_config_file, 'r', encoding='utf-8') as f:
@@ -2003,8 +2007,8 @@ def get_tours_by_semantic_search(query, all_tours, max_results=8, min_similarity
 # ANALYTICS SYSTEM - Local logging for kiosk usage tracking (per-account)
 # ============================================================================
 
-# Default account for analytics (can be overridden per kiosk)
-DEFAULT_ANALYTICS_ACCOUNT = 'bailey'
+# Default account for analytics - uses KIOSK_ACCOUNT env var if set (for Render)
+DEFAULT_ANALYTICS_ACCOUNT = os.environ.get('KIOSK_ACCOUNT') or 'bailey'
 
 # Debounced analytics push for Render - pushes at most once every 10 seconds
 _render_push_timer = None
@@ -4988,7 +4992,7 @@ def index():
     # Pass mode indicators to template
     preview_mode = preview_account is not None
     
-    return render_template('index.html', 
+    response = make_response(render_template('index.html', 
                            tours=initial_tours, 
                            shown_keys=shown_keys, 
                            current_language=language,
@@ -5003,7 +5007,12 @@ def index():
                            is_web_visitor=is_web_visitor,
                            is_demo_mode=is_demo_mode,
                            newcomer_images=get_newcomer_images(active_account),
-                           bg_video_url=get_bg_video_url())
+                           bg_video_url=get_bg_video_url()))
+    
+    if active_account and not is_demo_mode:
+        response.set_cookie('filtour_ref', active_account, max_age=30*24*60*60, httponly=False, samesite='Lax')
+    
+    return response
 
 @app.route('/api/semantic-search')
 def api_semantic_search():
