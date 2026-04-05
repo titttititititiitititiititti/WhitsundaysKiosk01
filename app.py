@@ -3758,6 +3758,15 @@ def account_settings():
 # @agent_required  # Disabled for testing
 def agent_dashboard():
     """Agent dashboard - manage tour visibility and promotions"""
+    try:
+        return _agent_dashboard_inner()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"[DASHBOARD ERROR] {e}", flush=True)
+        return f"<h1>Dashboard Error</h1><pre>{e}</pre><p><a href='/admin/login'>Back to Login</a></p>", 500
+
+def _agent_dashboard_inner():
     # Use account-specific settings if user is logged in
     username = session.get('user')
     print(f"[DASHBOARD DEBUG] Session user: {username}")
@@ -9890,41 +9899,43 @@ def analytics_summary():
 @agent_required
 def agent_analytics_page():
     """Analytics dashboard for agents - shows logged-in user's analytics"""
-    # Get analytics for logged-in user's account
-    account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
-    summary = get_analytics_summary(account)
-    
-    # Add last session time and total raw session count for the page
-    analytics = load_analytics(account)
-    all_sessions = analytics.get('sessions', [])
-    last_session_time = all_sessions[-1].get('started_at', '') if all_sessions else None
-    
-    # Get last git push times from remote kiosks (exclude signal-only commits)
-    kiosk_status = []
     try:
-        repo_path = os.path.dirname(os.path.abspath(__file__))
-        log_result = subprocess.run(
-            ['git', 'log', '--oneline', '-30', '--format=%s (%cr)', 'origin/main', '--', 'data/analytics_*.json'],
-            cwd=repo_path, capture_output=True, text=True,
-            encoding='utf-8', errors='replace', timeout=10
-        )
-        if log_result.returncode == 0:
-            for line in log_result.stdout.strip().split('\n'):
-                line = line.strip()
-                # Skip signal-only entries ("Analytics push request") — we want actual data syncs
-                if line and 'push request' not in line.lower():
-                    kiosk_status.append(line)
-                    if len(kiosk_status) >= 5:
-                        break
-    except:
-        pass
-    
-    return render_template('agent_analytics.html', 
-                          summary=summary, 
-                          account=account,
-                          last_session_time=last_session_time,
-                          total_raw_sessions=len(all_sessions),
-                          kiosk_push_history=kiosk_status)
+        account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+        summary = get_analytics_summary(account)
+        
+        analytics = load_analytics(account)
+        all_sessions = analytics.get('sessions', [])
+        last_session_time = all_sessions[-1].get('started_at', '') if all_sessions else None
+        
+        kiosk_status = []
+        try:
+            repo_path = os.path.dirname(os.path.abspath(__file__))
+            log_result = subprocess.run(
+                ['git', 'log', '--oneline', '-30', '--format=%s (%cr)', 'origin/main', '--', 'data/analytics_*.json'],
+                cwd=repo_path, capture_output=True, text=True,
+                encoding='utf-8', errors='replace', timeout=10
+            )
+            if log_result.returncode == 0:
+                for line in log_result.stdout.strip().split('\n'):
+                    line = line.strip()
+                    if line and 'push request' not in line.lower():
+                        kiosk_status.append(line)
+                        if len(kiosk_status) >= 5:
+                            break
+        except:
+            pass
+        
+        return render_template('agent_analytics.html', 
+                              summary=summary, 
+                              account=account,
+                              last_session_time=last_session_time,
+                              total_raw_sessions=len(all_sessions),
+                              kiosk_push_history=kiosk_status)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"[ANALYTICS PAGE ERROR] {e}", flush=True)
+        return f"<h1>Analytics Error</h1><pre>{e}</pre><p><a href='/admin/agent'>Back to Dashboard</a></p>", 500
 
 @app.route('/api/analytics/check-new', methods=['GET'])
 @agent_required
