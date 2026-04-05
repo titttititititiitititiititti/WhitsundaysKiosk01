@@ -4401,6 +4401,35 @@ def health_check():
         'pending_changes_file_exists': os.path.exists(PENDING_CHANGES_FILE),
     })
 
+@app.route('/debug/analytics-disk')
+def debug_analytics_disk():
+    """Diagnostic: show what's actually on disk for analytics files"""
+    import glob as _g
+    result = {
+        'cwd': os.getcwd(),
+        'files': {}
+    }
+    for af in _g.glob('data/analytics_*.json'):
+        try:
+            with open(af, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            sessions = data.get('sessions', [])
+            result['files'][af] = {
+                'session_count': len(sessions),
+                'last_updated': data.get('last_updated'),
+                'last_3_sessions': [
+                    {
+                        'id': s.get('session_id', '?')[:40],
+                        'started': s.get('started_at', '?')[:19],
+                        'events': len(s.get('events', []))
+                    }
+                    for s in sessions[-3:]
+                ]
+            }
+        except Exception as e:
+            result['files'][af] = {'error': str(e)}
+    return jsonify(result)
+
 @app.route('/debug/images')
 def debug_images():
     """Diagnostic endpoint to check image loading on kiosks"""
