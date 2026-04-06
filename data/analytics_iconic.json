@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "iconic",
-  "last_updated": "2026-04-05T01:19:47.971942",
+  "last_updated": "2026-04-06T02:15:04.078623",
   "sessions": [
     {
       "session_id": "session_776f2f097d65_1774868341",
@@ -799,6 +799,37 @@
       "chat_messages": [],
       "ended_at": "2026-04-05T01:19:47.971890",
       "duration_seconds": 6.482498
+    },
+    {
+      "session_id": "session_fdf64506c92d_1775441703",
+      "account": "iconic",
+      "started_at": "2026-04-06T02:15:03.758659",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-06T02:15:03.758668",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/?ref=iconic&lang=en"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-06T02:15:04.078582",
+          "data": {
+            "tour_name": "Airlie Beach Glass Bottom Boat Tour",
+            "company": "Pioneer Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Airlie Beach Glass Bottom Boat Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
