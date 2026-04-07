@@ -21,7 +21,6 @@ import os
 import time
 import json
 import hashlib
-import threading
 from datetime import datetime
 
 # Configuration
@@ -586,29 +585,6 @@ def should_launch_chrome():
             pass
     return True  # Default: yes, launch in kiosk mode
 
-def start_update_watcher(flask_process):
-    """Background thread that checks for updates while Flask is running.
-    If updates are found, pulls them and kills the Flask process so the main
-    loop restarts it with the new code."""
-    while flask_process.poll() is None:
-        time.sleep(UPDATE_CHECK_INTERVAL)
-        if flask_process.poll() is not None:
-            break
-        try:
-            if check_for_updates():
-                log("[UPDATE-WATCHER] Updates found while app is running!")
-                if pull_updates():
-                    log("[UPDATE-WATCHER] Code updated — killing Flask to restart with new code...")
-                    flask_process.terminate()
-                    try:
-                        flask_process.wait(timeout=10)
-                    except subprocess.TimeoutExpired:
-                        flask_process.kill()
-                    break
-        except Exception as e:
-            log(f"[UPDATE-WATCHER] Error: {e}")
-    log("[UPDATE-WATCHER] Watcher thread exiting")
-
 def run_flask_app():
     """Run the Flask app and return the exit code"""
     log("🚀 Starting Flask app...")
@@ -651,9 +627,9 @@ def run_flask_app():
         
         log(f"App started (PID: {process.pid})")
         
-        # Start background update watcher — checks for git updates every 60s
-        watcher = threading.Thread(target=start_update_watcher, args=(process,), daemon=True)
-        watcher.start()
+        # Note: app.py's _analytics_signal_loop handles both code update detection
+        # and analytics pushing while running. It calls os._exit(0) when code updates
+        # are found, which causes Flask to exit cleanly so we can restart it.
         
         # Wait a moment and check if process is still alive
         time.sleep(2)
