@@ -1937,6 +1937,7 @@
     .page.active {
       display: block !important;
       position: relative;
+      z-index: 1;
     }
     
     /* ===================================================================
@@ -13883,7 +13884,7 @@
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
   <!-- Invisible overlay to block all touch interaction with the video on iPad/mobile -->
-  <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
+  <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
   <style>
     .touch-device #video-touch-blocker { pointer-events: auto !important; }
   </style>
@@ -19421,6 +19422,10 @@
       hasStarted = true;
       isInVideoFlow = true; // Mark that we're in video flow
       
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
+      
       // Keep the main layout visible instead of forcing the video overlay
       disableVideoBg();
       
@@ -21313,6 +21318,10 @@
     window.goToStartPage = function() {
       console.log('⬅️ Going back to start screen');
       
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
+      
       // Remove language selection state
       document.body.classList.remove('showing-language-selection');
       
@@ -21374,6 +21383,10 @@
       // Update URL hash
       window.location.hash = 'home';
       console.log('🔗 Updated hash to home:', window.location.href);
+      
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
       
       // Hide video background and remove language selection state
       document.body.classList.remove('video-bg-active');
@@ -21501,6 +21514,10 @@
     // ========== NEWCOMER INFO PAGE FUNCTIONS ==========
     window.openNewcomerInfo = function() {
       console.log('ℹ️ Opening Newcomer Info page');
+      
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
       
       // Hide all other pages
       document.querySelectorAll('.page').forEach(p => {
@@ -22071,6 +22088,11 @@
     // Open AI Assistant - go straight to chat
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
+      
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
+      
       const aiPage = document.getElementById('ai-assistant-page');
       
       if (aiPage) {
@@ -33581,6 +33603,10 @@
     // Map View Mode - Fullscreen Google Maps for drawing
     window.openMapView = function() {
       console.log('🗺️ Opening Map View mode...');
+      
+      // Reset body scroll — modals/tour detail may have set overflow:hidden
+      document.body.style.overflow = '';
+      document.body.classList.remove('tour-detail-open');
       
       // Track mode selection
       if (typeof Analytics !== 'undefined' && Analytics.modeSelected) {
