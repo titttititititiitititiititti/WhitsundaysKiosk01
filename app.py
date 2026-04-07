@@ -11604,6 +11604,8 @@ def start_background_services():
             print("[RENDER ANALYTICS] Background push loop started (every 60s)", flush=True)
             while True:
                 try:
+                    _github_api_pull_analytics()
+
                     import glob as _glob
                     files_to_push = {}
                     for af in _glob.glob('data/analytics_*.json'):
