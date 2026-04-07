@@ -82,6 +82,7 @@
     
     body {
       background: transparent !important;
+      overflow-y: auto;
     }
 
     /* ===== TOUCH DEVICE ONLY (iPad, phones) — no effect on desktop ===== */
@@ -94,6 +95,7 @@
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
+      touch-action: pan-x pan-y;
     }
 
     /* Hide ALL desktop text buttons and small emoji buttons — hamburger replaces them */
@@ -1938,6 +1940,7 @@
       display: block !important;
       position: relative;
       z-index: 1;
+      touch-action: pan-x pan-y;
     }
     
     /* ===================================================================
@@ -13885,9 +13888,6 @@
   </video>
   <!-- Invisible overlay to block all touch interaction with the video on iPad/mobile -->
   <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
-  <style>
-    .touch-device #video-touch-blocker { pointer-events: auto !important; }
-  </style>
   <script>
     // Background video setup — local file first, then Streamable fallback
     (function() {
