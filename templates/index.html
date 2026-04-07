@@ -63,25 +63,26 @@
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none;  /* IE and Edge */
       font-size: 16px; /* Base for rem calculations */
-      overflow-x: hidden; /* Prevent horizontal scroll */
+      overflow: hidden;
+      height: 100vh;
       background: #1a3a4a !important; /* Dark blue-green fallback if video doesn't load */
     }
     
+    body {
+      background: transparent !important;
+      height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    body::-webkit-scrollbar { display: none; }
+
     /* ===== SCREEN ROTATION (180° flip for upside-down kiosk screens) ===== */
     /* Applied to html (not body) so position:fixed video stays viewport-pinned */
     html.screen-rotated {
       transform: rotate(180deg);
       transform-origin: 50vw 50vh;
-      overflow: hidden;   /* html doesn't scroll */
-      height: 100vh;
-    }
-    html.screen-rotated body {
-      height: 100vh;
-      overflow-y: auto;   /* body becomes the scroll container */
-    }
-    
-    body {
-      background: transparent !important;
     }
 
     /* ===== TOUCH DEVICE ONLY (iPad, phones) — no effect on desktop ===== */
