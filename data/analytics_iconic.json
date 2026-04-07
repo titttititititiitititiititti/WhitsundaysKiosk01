@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "iconic",
-  "last_updated": "2026-04-06T02:15:04.078623",
+  "last_updated": "2026-04-07T15:31:43.859533",
   "sessions": [
     {
       "session_id": "session_776f2f097d65_1774868341",
@@ -540,6 +540,79 @@
       "duration_seconds": 751.135547
     },
     {
+      "session_id": "session_da4b423b9a72_1775119302",
+      "account": "iconic",
+      "started_at": "2026-04-02T08:41:42.265224",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-02T08:41:42.265241",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-02T08:41:42.849381",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-02T08:41:43.600653",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-02T08:41:50.053080",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives",
+            "company": "whitsundaydiveadventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-02T08:41:52.262769",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives",
+            "company": "whitsundaydiveadventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-04-02T08:41:52.291143",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-02T08:42:05.754450",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Apollo Sailing",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Airlie Beach Day Tour With 2 Dives",
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [
+        "Airlie Beach Day Tour With 2 Dives"
+      ],
+      "chat_messages": []
+    },
+    {
       "session_id": "session_ec6625b83586_1775090202",
       "account": "iconic",
       "started_at": "2026-04-02T10:36:42.752663",
@@ -611,79 +684,6 @@
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_da4b423b9a72_1775119302",
-      "account": "iconic",
-      "started_at": "2026-04-02T08:41:42.265224",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-04-02T08:41:42.265241",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-            "referrer": "https://www.filtour.com/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-04-02T08:41:42.849381",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-04-02T08:41:43.600653",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-04-02T08:41:50.053080",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives",
-            "company": "whitsundaydiveadventures",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-04-02T08:41:52.262769",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives",
-            "company": "whitsundaydiveadventures",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "counter_booking_requested",
-          "timestamp": "2026-04-02T08:41:52.291143",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-04-02T08:42:05.754450",
-          "data": {
-            "tour_name": "Apollo 3D2N",
-            "company": "Apollo Sailing",
-            "source": "browse-all"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Airlie Beach Day Tour With 2 Dives",
-        "Apollo 3D2N"
-      ],
-      "tours_booked": [
-        "Airlie Beach Day Tour With 2 Dives"
-      ],
       "chat_messages": []
     },
     {
@@ -828,6 +828,279 @@
       "tours_viewed": [
         "Airlie Beach Glass Bottom Boat Tour"
       ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_308604e36f8f_1775538003",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:00:03.596460",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:00:03.596460",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:00:04.790526",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:00:05.528714",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:00:33.645094",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:00:33.645094",
+      "duration_seconds": 30.048634
+    },
+    {
+      "session_id": "session_d0ebfe1f77c2_1775538050",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:00:50.415958",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:00:50.415958",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:00:51.529779",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:00:52.517001",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:01:02.656717",
+          "data": {}
+        }
+      ],
+      "language": "zh",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:01:02.656717",
+      "duration_seconds": 12.240759
+    },
+    {
+      "session_id": "session_eb4d64720b9e_1775538065",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:01:05.387483",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:01:05.387483",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:01:06.763472",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:01:14.509673",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:01:18.453181",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:01:18.453181",
+      "duration_seconds": 13.065698
+    },
+    {
+      "session_id": "session_721c942237e2_1775538094",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:01:34.148054",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:01:34.148054",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:01:35.247910",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:01:36.054590",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:01:42.849664",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:01:42.849664",
+      "duration_seconds": 8.70161
+    },
+    {
+      "session_id": "session_37aa9fd6f7d4_1775538115",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:01:55.189034",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:01:55.189034",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:01:56.378892",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:07:45.466175",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:07:45.466175",
+      "duration_seconds": 350.277141
+    },
+    {
+      "session_id": "session_bb4e35eb3410_1775539347",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:22:27.189602",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:22:27.189602",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:22:29.089333",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:22:29.808583",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-07T15:22:33.718624",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-07T15:22:33.718624",
+      "duration_seconds": 6.529022
+    },
+    {
+      "session_id": "session_54f56b04f106_1775539364",
+      "account": "iconic",
+      "started_at": "2026-04-07T15:22:44.467288",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-07T15:22:44.467288",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "http://127.0.0.1:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-07T15:22:46.283065",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-07T15:22:47.292414",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
