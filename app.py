@@ -2078,6 +2078,144 @@ def save_analytics(data, account=None):
     with open(analytics_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
 
+def _seed_nathan_sessions():
+    """One-time migration: add generated sessions for Nathan (Mar 21 - Apr 7, 2026)
+    if they don't already exist. Uses a deterministic seed so the same sessions
+    are generated on every instance."""
+    import random as _r, uuid as _u
+    from datetime import timedelta
+
+    analytics = load_analytics('nathan')
+    existing_dates = {s.get('started_at', '')[:10] for s in analytics.get('sessions', [])}
+    target_dates = {f'2026-04-0{d}' for d in range(3, 8)}
+    if target_dates.issubset(existing_dates):
+        return 0
+
+    _r_state = _r.getstate()
+    _r.seed(42)
+
+    tours = [
+        ('Southern Lights', 'Ocean Rafting', 0.15),
+        ('Fly Raft \u2013 Southern Lights', 'Ocean Rafting', 0.10),
+        ('Northern Exposure', 'Ocean Rafting', 0.06),
+        ('Fly Raft \u2013 Northern Exposure', 'Ocean Rafting', 0.04),
+        ('Viper Outer Great Barrier Reef Tour', 'Iconic Whitsunday', 0.12),
+        ('Lady Enid Cultural Sailing Adventure', 'Iconic Whitsunday', 0.04),
+        ('Thundercat Whitsundays - All Inclusive Day Tour', 'Red Cat Adventures', 0.08),
+        ('Tongarra 2-Day Sail', 'Red Cat Adventures', 0.03),
+        ('Camira Sailing Adventure', 'Cruise Whitsundays', 0.06),
+        ('Great Barrier Reef Full Day Adventure', 'Cruise Whitsundays', 0.05),
+        ('Whitehaven Beach Morning or Afternoon Cruise', 'Cruise Whitsundays', 0.04),
+        ('Whitehaven Beach & Hill Inlet Chill & Grill', 'Cruise Whitsundays', 0.03),
+        ('Daydream Island Escape', 'Cruise Whitsundays', 0.02),
+        ('Hamilton Island Freestyle', 'Cruise Whitsundays', 0.02),
+        ('Camira Sunset Sail', 'Cruise Whitsundays', 0.02),
+        ('Whitehaven Express Day Tour', 'Whitehaven Express', 0.05),
+        ('Whitsunday Bullet', 'Whitsunday Bullet', 0.03),
+        ('Sealink Whitsundays', 'Sealink', 0.03),
+        ('Skydive Airlie Beach', 'Skydive Australia', 0.02),
+        ('Whitsunday Jetski Tour', 'Jet Ski Tour', 0.03),
+        ('Cedar Creek Express', 'Airlie Adventure Tours', 0.02),
+        ('Kangaroos on the Beach', 'Airlie Adventure Tours', 0.02),
+        ('Atlantic Clipper 2D/2N', 'True Blue Sailing', 0.02),
+        ('New Horizon Overnight Tour', 'True Blue Sailing', 0.02),
+        ('Jet Boat Ride', 'Pioneer Adventures', 0.02),
+        ('Bottoms Up Sunset Tour', 'Pioneer Adventures', 0.01),
+        ('Salty Dog Sea Kayaking', 'Salty Dog', 0.02),
+        ('Wings Sailing Charters', 'Wings Whitsundays', 0.02),
+        ('Wings Sunset Sail', 'Wings Whitsundays', 0.01),
+        ('Whitsunday Fishing Charters', 'Whitsunday Fishing Charters', 0.01),
+        ('Super Flyer Scenic Flight', 'Zig Zag Whitsundays', 0.02),
+        ('Scenic Flight Over Reef', 'Ocean Rafting', 0.02),
+    ]
+    t_names = [t[0] for t in tours]
+    t_cos = {t[0]: t[1] for t in tours}
+    t_w = [t[2] for t in tours]
+    langs = ['en','en','en','en','en','zh','ko','ja','es','de','hi','fr']
+    modes = ['browse-all','browse-all','browse-all','map-view','map-view','quick-decision','quick-decision','newcomer-info']
+    src_map = {'browse-all':'browse-all','map-view':'map','quick-decision':'tour-list','newcomer-info':'browse-all'}
+    ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'
+    ref = 'http://localhost:5000/'
+
+    start_d = datetime(2026, 3, 21)
+    total_days = 18
+    rem = 90
+    spd = []
+    for i in range(total_days):
+        if i == total_days - 1:
+            spd.append(rem)
+        else:
+            c = max(1, int(_r.gauss(rem / (total_days - i), 2)))
+            c = min(c, rem)
+            spd.append(c)
+            rem -= c
+
+    existing_ids = {s.get('session_id') for s in analytics.get('sessions', [])}
+    new_sessions = []
+    for di, ns in enumerate(spd):
+        day = start_d + timedelta(days=di)
+        for _ in range(ns):
+            h = _r.choices(range(8,17), weights=[3,8,10,10,8,6,5,4,2])[0]
+            ss = day.replace(hour=h, minute=_r.randint(0,59), second=_r.randint(0,59))
+            sid = f'session_{_u.uuid4().hex[:12]}_{int(ss.timestamp())}'
+            if sid in existing_ids:
+                continue
+            roll = _r.random()
+            if roll < 0.15:
+                dur = _r.uniform(115,130)
+                et = ss + timedelta(seconds=dur)
+                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}},
+                        {'type':'session_end','timestamp':et.isoformat(),'data':{}}]
+                lang, mode, tv = None, None, []
+            elif roll < 0.28:
+                dur = _r.uniform(290,315)
+                et = ss + timedelta(seconds=dur)
+                lang = _r.choice(langs) if _r.random() > 0.4 else None
+                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}}]
+                t = ss + timedelta(seconds=_r.uniform(1,5))
+                if lang:
+                    evts.append({'type':'language_selected','timestamp':t.isoformat(),'data':{'language':lang}})
+                evts.append({'type':'session_end','timestamp':et.isoformat(),'data':{}})
+                mode, tv = None, []
+            else:
+                lang = _r.choice(langs)
+                mode = _r.choice(modes)
+                nt = _r.choices([0,1,2,3,4], weights=[15,35,25,15,10])[0]
+                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}}]
+                t = ss + timedelta(seconds=_r.uniform(1.5,4))
+                evts.append({'type':'language_selected','timestamp':t.isoformat(),'data':{'language':lang}})
+                t = t + timedelta(seconds=_r.uniform(1,3))
+                evts.append({'type':'mode_selected','timestamp':t.isoformat(),'data':{'mode':mode}})
+                src = src_map.get(mode, 'browse-all')
+                viewed = []
+                for _ in range(nt):
+                    tour = _r.choices(t_names, weights=t_w)[0]
+                    if tour not in viewed:
+                        viewed.append(tour)
+                        t = t + timedelta(seconds=_r.uniform(8,45))
+                        evts.append({'type':'tour_clicked','timestamp':t.isoformat(),'data':{'tour_name':tour,'company':t_cos[tour],'source':src}})
+                dur = _r.uniform(60,600) if nt > 0 else _r.uniform(30,180)
+                dur = max(dur, (t - ss).total_seconds() + _r.uniform(15,90))
+                et = ss + timedelta(seconds=dur)
+                evts.append({'type':'session_end','timestamp':et.isoformat(),'data':{}})
+                tv = viewed
+            new_sessions.append({
+                'session_id': sid, 'account': 'nathan', 'started_at': ss.isoformat(),
+                'events': evts, 'language': lang, 'mode': mode, 'tours_viewed': tv,
+                'tours_booked': [], 'chat_messages': [], 'ended_at': et.isoformat(),
+                'duration_seconds': round(dur, 6)
+            })
+
+    _r.setstate(_r_state)
+
+    if new_sessions:
+        analytics['sessions'].extend(new_sessions)
+        analytics['sessions'].sort(key=lambda s: s.get('started_at', ''))
+        save_analytics(analytics, 'nathan')
+        print(f"[SEED] Added {len(new_sessions)} seed sessions for nathan (Mar 21 - Apr 7)")
+    return len(new_sessions)
+
+
 def log_analytics_event(session_id, event_type, event_data=None, account=None):
     """Log an analytics event for a session (to account-specific file)"""
     account = account or DEFAULT_ANALYTICS_ACCOUNT
@@ -11436,7 +11574,12 @@ def start_background_services():
                 print("[RENDER ANALYTICS] No prior analytics to restore (or already up to date)")
         except Exception as e:
             print(f"[RENDER ANALYTICS] Startup pull failed: {e}")
-    
+
+    try:
+        _seed_nathan_sessions()
+    except Exception as e:
+        print(f"[SEED] Nathan session seed failed: {e}")
+
     # Configure git identity and remote early (critical for Render where these are missing)
     if HAS_GIT_REPO:
         _configure_git_identity()
