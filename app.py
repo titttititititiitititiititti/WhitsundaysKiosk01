@@ -4932,21 +4932,19 @@ def index():
     kiosk_account = get_active_account()
     
     # Determine which account to use for filtering tours
-    # Priority: 1) preview mode, 2) referral from QR, 3) kiosk instance, 4) demo mode
+    # Priority: 1) preview mode, 2) kiosk instance (device config wins over stale cookies),
+    #           3) referral from QR (web visitors), 4) logged-in user, 5) demo mode
     is_demo_mode = False
     if preview_account:
         active_account = preview_account
+    elif kiosk_account:
+        active_account = kiosk_account
+        print(f"[INDEX] Using kiosk account: {kiosk_account}")
     elif referral_account:
         active_account = referral_account
-    elif kiosk_account:
-        # Kiosk has an account set in instance.json - use it!
-        active_account = kiosk_account
-        print(f"[INDEX] Using kiosk account from instance.json: {kiosk_account}")
     elif 'user' in session:
-        # Logged in user viewing the kiosk
         active_account = session.get('user')
     else:
-        # No account set anywhere - use demo mode for public visitors
         active_account = 'awda'
         is_demo_mode = True
         print(f"[INDEX] Demo mode - no kiosk account set, using 'awda' for public access")
