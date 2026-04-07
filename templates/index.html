@@ -13886,8 +13886,7 @@
     <!-- Primary: local file for kiosk, Fallback: remote URL for Render/cloud hosting -->
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
-  <!-- Invisible overlay to block all touch interaction with the video on iPad/mobile -->
-  <div id="video-touch-blocker" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;background:transparent;pointer-events:none;-webkit-user-select:none;user-select:none;"></div>
+  <!-- Video interaction is blocked by pointer-events:none on #bg-video itself -->
   <script>
     // Background video setup — local file first, then Streamable fallback
     (function() {
@@ -20755,7 +20754,7 @@
       document.addEventListener('mouseup', _dragEndHandler);
       
       card.addEventListener('touchstart', startDrag, { passive: true });
-      document.addEventListener('touchmove', _dragMoveHandler, { passive: false });
+      document.addEventListener('touchmove', _dragMoveHandler, { passive: true });
       document.addEventListener('touchend', _dragEndHandler, { passive: true });
     }
     
@@ -36978,6 +36977,26 @@
       });
       
       console.log('🔒 Kiosk lockdown active - right-click, keyboard shortcuts, and zoom disabled');
+    })();
+  </script>
+
+  <!-- Scroll safety net: periodically ensure body is scrollable (modals/overlays can leave overflow:hidden stuck) -->
+  <script>
+    (function() {
+      function ensureScrollable() {
+        if (!document.body.classList.contains('video-bg-active') &&
+            !document.querySelector('.modal.active') &&
+            !document.querySelector('.image-lightbox.active') &&
+            !document.querySelector('#rezdy-modal[style*="display: flex"]') &&
+            !document.querySelector('#rezdy-modal[style*="display:flex"]')) {
+          if (document.body.style.overflow === 'hidden') {
+            document.body.style.overflow = '';
+            console.log('🔧 Scroll fix: cleared stuck overflow:hidden on body');
+          }
+        }
+      }
+      setInterval(ensureScrollable, 2000);
+      document.addEventListener('touchstart', ensureScrollable, { passive: true });
     })();
   </script>
 
