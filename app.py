@@ -9883,8 +9883,8 @@ def log_analytics():
         if not session_id or not event_type:
             return jsonify({'error': 'session_id and event_type required'}), 400
         
-        # Use account from referral cookie, session, or default
-        analytics_account = request.cookies.get('filtour_ref') or get_active_account() or DEFAULT_ANALYTICS_ACCOUNT
+        # Kiosk instance config takes priority over stale referral cookies
+        analytics_account = get_active_account() or request.cookies.get('filtour_ref') or DEFAULT_ANALYTICS_ACCOUNT
         session = log_analytics_event(session_id, event_type, event_data, account=analytics_account)
         
         return jsonify({
@@ -9902,9 +9902,8 @@ def start_analytics_session():
     try:
         session_id = f"session_{uuid.uuid4().hex[:12]}_{int(time.time())}"
         
-        # Create initial session (use default account - kiosk doesn't know about users)
-        # Use account from referral cookie, session, or default
-        analytics_account = request.cookies.get('filtour_ref') or get_active_account() or DEFAULT_ANALYTICS_ACCOUNT
+        # Kiosk instance config takes priority over stale referral cookies
+        analytics_account = get_active_account() or request.cookies.get('filtour_ref') or DEFAULT_ANALYTICS_ACCOUNT
         log_analytics_event(session_id, 'session_start', {
             'user_agent': request.headers.get('User-Agent', 'unknown'),
             'referrer': request.headers.get('Referer', 'direct')
