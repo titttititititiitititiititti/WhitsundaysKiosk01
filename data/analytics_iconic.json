@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "iconic",
-  "last_updated": "2026-04-09T00:51:03.946982",
+  "last_updated": "2026-04-09T00:51:13.231409",
   "sessions": [
     {
       "session_id": "session_776f2f097d65_1774868341",
@@ -877,12 +877,55 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-09T00:51:05.112090",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-09T00:51:06.281083",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-09T00:51:11.424533",
+          "data": {
+            "tour_name": "6 Day Guided Whitsunday Kayak Tour",
+            "company": "saltydog",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-09T00:51:13.229033",
+          "data": {
+            "tour_name": "6 Day Guided Whitsunday Kayak Tour",
+            "company": "saltydog",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-04-09T00:51:13.231384",
+          "data": {
+            "tour_name": "6 Day Guided Whitsunday Kayak Tour"
+          }
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "6 Day Guided Whitsunday Kayak Tour"
+      ],
+      "tours_booked": [
+        "6 Day Guided Whitsunday Kayak Tour"
+      ],
       "chat_messages": []
     }
   ]
