@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "iconic",
-  "last_updated": "2026-04-12T02:17:45.349948",
+  "last_updated": "2026-04-12T02:18:20.631837",
   "sessions": [
     {
       "session_id": "session_776f2f097d65_1774868341",
@@ -1240,12 +1240,61 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-12T02:17:52.119312",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-12T02:17:55.461951",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-12T02:18:00.783293",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-12T02:18:03.836263",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-12T02:18:09.033109",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-12T02:18:20.631798",
+          "data": {
+            "tour_name": "Cedar Creek Express Tour from Airlie Beach",
+            "company": "airlieadventuretours",
+            "source": "swipe"
+          }
         }
       ],
-      "language": null,
-      "mode": null,
+      "language": "en",
+      "mode": "quick-decision",
       "tours_viewed": [],
-      "tours_booked": [],
+      "tours_booked": [
+        "Cedar Creek Express Tour from Airlie Beach"
+      ],
       "chat_messages": []
     }
   ]
