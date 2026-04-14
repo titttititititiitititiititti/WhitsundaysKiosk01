@@ -487,7 +487,7 @@ def _github_api_pull_analytics():
             except json.JSONDecodeError:
                 continue
 
-            remote_sessions = remote_data.get('sessions', [])
+            remote_sessions = _filter_fake_sessions(remote_data.get('sessions', []))
             if not remote_sessions:
                 continue
 
@@ -2057,45 +2057,33 @@ def get_analytics_file(account=None):
     account = account or DEFAULT_ANALYTICS_ACCOUNT
     return f'data/analytics_{account}.json'
 
+def _is_fake_session(s):
+    """Identify the 90 fake sessions injected via API on 2026-04-14 (all < 5s duration)."""
+    return (
+        s.get('started_at', '').startswith('2026-04-14')
+        and isinstance(s.get('duration_seconds'), (int, float))
+        and s['duration_seconds'] < 5
+    )
+
+
+def _filter_fake_sessions(sessions):
+    """Remove known fake sessions from a list. Safe to call repeatedly."""
+    return [s for s in sessions if not _is_fake_session(s)]
+
+
 def load_analytics(account=None):
     """Load analytics data from account-specific file"""
     analytics_file = get_analytics_file(account)
     if os.path.exists(analytics_file):
         try:
             with open(analytics_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+            data['sessions'] = _filter_fake_sessions(data.get('sessions', []))
+            return data
         except (json.JSONDecodeError, Exception) as e:
             print(f"Error loading analytics for {account}: {e}")
             return {'sessions': [], 'summary': {}, 'account': account}
     return {'sessions': [], 'summary': {}, 'account': account or DEFAULT_ANALYTICS_ACCOUNT}
-
-def _cleanup_injected_fake_sessions():
-    """One-time cleanup: remove 90 fake sessions that were accidentally injected via API
-    on 2026-04-14. They all have duration < 5s and started_at on that date.
-    Safe to run multiple times — no-ops if already clean."""
-    import glob as _g
-    for af in _g.glob('data/analytics_*.json'):
-        try:
-            with open(af, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            before = len(data.get('sessions', []))
-            data['sessions'] = [
-                s for s in data.get('sessions', [])
-                if not (
-                    s.get('started_at', '').startswith('2026-04-14')
-                    and isinstance(s.get('duration_seconds'), (int, float))
-                    and s['duration_seconds'] < 5
-                )
-            ]
-            removed = before - len(data['sessions'])
-            if removed > 0:
-                with open(af, 'w', encoding='utf-8') as f:
-                    json.dump(data, f, indent=2)
-                print(f"[CLEANUP] Removed {removed} fake sessions from {os.path.basename(af)}")
-        except Exception:
-            pass
-
-_cleanup_injected_fake_sessions()
 
 
 def save_analytics(data, account=None):
@@ -2104,6 +2092,7 @@ def save_analytics(data, account=None):
     analytics_file = get_analytics_file(account)
     data['account'] = account or DEFAULT_ANALYTICS_ACCOUNT
     data['last_updated'] = datetime.now().isoformat()
+    data['sessions'] = _filter_fake_sessions(data.get('sessions', []))
     with open(analytics_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
 
@@ -10869,7 +10858,7 @@ def sync_analytics_to_git():
                 try:
                     with open(af, 'r', encoding='utf-8-sig') as f:
                         data = json.load(f)
-                    sessions = data.get('sessions', [])
+                    sessions = _filter_fake_sessions(data.get('sessions', []))
                     local_analytics[rel_path] = {
                         'sessions': {s.get('session_id'): s for s in sessions if s.get('session_id')},
                         'meta': {k: v for k, v in data.items() if k != 'sessions'}
@@ -11691,7 +11680,9 @@ def start_background_services():
                             continue
                         fpath = af.replace('\\', '/')
                         with open(af, 'r', encoding='utf-8') as f:
-                            files_to_push[fpath] = f.read()
+                            _raw = json.load(f)
+                        _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
+                        files_to_push[fpath] = json.dumps(_raw, indent=2)
                     if files_to_push:
                         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         success, msg = _github_api_push(
