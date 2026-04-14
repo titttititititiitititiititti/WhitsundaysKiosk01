@@ -2079,20 +2079,23 @@ def save_analytics(data, account=None):
         json.dump(data, f, indent=2)
 
 def _seed_nathan_sessions():
-    """One-time migration: add generated sessions for Nathan (Mar 21 - Apr 7, 2026)
-    if they don't already exist. Uses a deterministic seed so the same sessions
-    are generated on every instance."""
+    """Startup migration: ensure Nathan has sessions for Apr 8-14, 2026.
+    Generates ~90 realistic sessions for any missing days in that range.
+    Uses a deterministic seed keyed per-day so results are stable across restarts."""
     import random as _r, uuid as _u
     from datetime import timedelta
 
+    SEED_MARKER = 'seed_nathan_v2'
     analytics = load_analytics('nathan')
-    existing_dates = {s.get('started_at', '')[:10] for s in analytics.get('sessions', [])}
-    target_dates = {f'2026-04-0{d}' for d in range(3, 8)}
-    if target_dates.issubset(existing_dates):
+    existing_ids = {s.get('session_id') for s in analytics.get('sessions', [])}
+    if any(SEED_MARKER in sid for sid in existing_ids):
         return 0
 
-    _r_state = _r.getstate()
-    _r.seed(42)
+    existing_dates = {s.get('started_at', '')[:10] for s in analytics.get('sessions', [])}
+
+    start_d = datetime(2026, 4, 8)
+    end_d = datetime(2026, 4, 14)
+    total_days = (end_d - start_d).days + 1
 
     tours = [
         ('Southern Lights', 'Ocean Rafting', 0.15),
@@ -2132,34 +2135,27 @@ def _seed_nathan_sessions():
     t_cos = {t[0]: t[1] for t in tours}
     t_w = [t[2] for t in tours]
     langs = ['en','en','en','en','en','zh','ko','ja','es','de','hi','fr']
-    modes = ['browse-all','browse-all','browse-all','map-view','map-view','quick-decision','quick-decision','newcomer-info']
+    modes_pool = ['browse-all','browse-all','browse-all','map-view','map-view','quick-decision','quick-decision','newcomer-info']
     src_map = {'browse-all':'browse-all','map-view':'map','quick-decision':'tour-list','newcomer-info':'browse-all'}
     ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'
     ref = 'http://localhost:5000/'
 
-    start_d = datetime(2026, 3, 21)
-    total_days = 18
-    rem = 90
-    spd = []
-    for i in range(total_days):
-        if i == total_days - 1:
-            spd.append(rem)
-        else:
-            c = max(1, int(_r.gauss(rem / (total_days - i), 2)))
-            c = min(c, rem)
-            spd.append(c)
-            rem -= c
+    _r_state = _r.getstate()
+    _r.seed(999)
 
-    existing_ids = {s.get('session_id') for s in analytics.get('sessions', [])}
+    sessions_per_day = [11, 14, 13, 12, 15, 13, 12]
     new_sessions = []
-    for di, ns in enumerate(spd):
+
+    for di in range(total_days):
         day = start_d + timedelta(days=di)
-        for _ in range(ns):
+        day_str = day.strftime('%Y-%m-%d')
+        if day_str in existing_dates:
+            continue
+        ns = sessions_per_day[di] if di < len(sessions_per_day) else 12
+        for si in range(ns):
             h = _r.choices(range(8,17), weights=[3,8,10,10,8,6,5,4,2])[0]
             ss = day.replace(hour=h, minute=_r.randint(0,59), second=_r.randint(0,59))
-            sid = f'session_{_u.uuid4().hex[:12]}_{int(ss.timestamp())}'
-            if sid in existing_ids:
-                continue
+            sid = f'{SEED_MARKER}_{day_str}_{si}'
             roll = _r.random()
             if roll < 0.15:
                 dur = _r.uniform(115,130)
@@ -2179,7 +2175,7 @@ def _seed_nathan_sessions():
                 mode, tv = None, []
             else:
                 lang = _r.choice(langs)
-                mode = _r.choice(modes)
+                mode = _r.choice(modes_pool)
                 nt = _r.choices([0,1,2,3,4], weights=[15,35,25,15,10])[0]
                 evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}}]
                 t = ss + timedelta(seconds=_r.uniform(1.5,4))
@@ -2212,7 +2208,7 @@ def _seed_nathan_sessions():
         analytics['sessions'].extend(new_sessions)
         analytics['sessions'].sort(key=lambda s: s.get('started_at', ''))
         save_analytics(analytics, 'nathan')
-        print(f"[SEED] Added {len(new_sessions)} seed sessions for nathan (Mar 21 - Apr 7)")
+        print(f"[SEED] Added {len(new_sessions)} seed sessions for nathan (Apr 8-14)")
     return len(new_sessions)
 
 
