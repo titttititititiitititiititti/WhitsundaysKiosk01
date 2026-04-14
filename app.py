@@ -2078,139 +2078,6 @@ def save_analytics(data, account=None):
     with open(analytics_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
 
-def _seed_nathan_sessions():
-    """Startup migration: ensure Nathan has sessions for Apr 8-14, 2026.
-    Generates ~90 realistic sessions for any missing days in that range.
-    Uses a deterministic seed keyed per-day so results are stable across restarts."""
-    import random as _r, uuid as _u
-    from datetime import timedelta
-
-    SEED_MARKER = 'seed_nathan_v2'
-    analytics = load_analytics('nathan')
-    existing_ids = {s.get('session_id') for s in analytics.get('sessions', [])}
-    if any(SEED_MARKER in sid for sid in existing_ids):
-        return 0
-
-    existing_dates = {s.get('started_at', '')[:10] for s in analytics.get('sessions', [])}
-
-    start_d = datetime(2026, 4, 8)
-    end_d = datetime(2026, 4, 14)
-    total_days = (end_d - start_d).days + 1
-
-    tours = [
-        ('Southern Lights', 'Ocean Rafting', 0.15),
-        ('Fly Raft \u2013 Southern Lights', 'Ocean Rafting', 0.10),
-        ('Northern Exposure', 'Ocean Rafting', 0.06),
-        ('Fly Raft \u2013 Northern Exposure', 'Ocean Rafting', 0.04),
-        ('Viper Outer Great Barrier Reef Tour', 'Iconic Whitsunday', 0.12),
-        ('Lady Enid Cultural Sailing Adventure', 'Iconic Whitsunday', 0.04),
-        ('Thundercat Whitsundays - All Inclusive Day Tour', 'Red Cat Adventures', 0.08),
-        ('Tongarra 2-Day Sail', 'Red Cat Adventures', 0.03),
-        ('Camira Sailing Adventure', 'Cruise Whitsundays', 0.06),
-        ('Great Barrier Reef Full Day Adventure', 'Cruise Whitsundays', 0.05),
-        ('Whitehaven Beach Morning or Afternoon Cruise', 'Cruise Whitsundays', 0.04),
-        ('Whitehaven Beach & Hill Inlet Chill & Grill', 'Cruise Whitsundays', 0.03),
-        ('Daydream Island Escape', 'Cruise Whitsundays', 0.02),
-        ('Hamilton Island Freestyle', 'Cruise Whitsundays', 0.02),
-        ('Camira Sunset Sail', 'Cruise Whitsundays', 0.02),
-        ('Whitehaven Express Day Tour', 'Whitehaven Express', 0.05),
-        ('Whitsunday Bullet', 'Whitsunday Bullet', 0.03),
-        ('Sealink Whitsundays', 'Sealink', 0.03),
-        ('Skydive Airlie Beach', 'Skydive Australia', 0.02),
-        ('Whitsunday Jetski Tour', 'Jet Ski Tour', 0.03),
-        ('Cedar Creek Express', 'Airlie Adventure Tours', 0.02),
-        ('Kangaroos on the Beach', 'Airlie Adventure Tours', 0.02),
-        ('Atlantic Clipper 2D/2N', 'True Blue Sailing', 0.02),
-        ('New Horizon Overnight Tour', 'True Blue Sailing', 0.02),
-        ('Jet Boat Ride', 'Pioneer Adventures', 0.02),
-        ('Bottoms Up Sunset Tour', 'Pioneer Adventures', 0.01),
-        ('Salty Dog Sea Kayaking', 'Salty Dog', 0.02),
-        ('Wings Sailing Charters', 'Wings Whitsundays', 0.02),
-        ('Wings Sunset Sail', 'Wings Whitsundays', 0.01),
-        ('Whitsunday Fishing Charters', 'Whitsunday Fishing Charters', 0.01),
-        ('Super Flyer Scenic Flight', 'Zig Zag Whitsundays', 0.02),
-        ('Scenic Flight Over Reef', 'Ocean Rafting', 0.02),
-    ]
-    t_names = [t[0] for t in tours]
-    t_cos = {t[0]: t[1] for t in tours}
-    t_w = [t[2] for t in tours]
-    langs = ['en','en','en','en','en','zh','ko','ja','es','de','hi','fr']
-    modes_pool = ['browse-all','browse-all','browse-all','map-view','map-view','quick-decision','quick-decision','newcomer-info']
-    src_map = {'browse-all':'browse-all','map-view':'map','quick-decision':'tour-list','newcomer-info':'browse-all'}
-    ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'
-    ref = 'http://localhost:5000/'
-
-    _r_state = _r.getstate()
-    _r.seed(999)
-
-    sessions_per_day = [11, 14, 13, 12, 15, 13, 12]
-    new_sessions = []
-
-    for di in range(total_days):
-        day = start_d + timedelta(days=di)
-        day_str = day.strftime('%Y-%m-%d')
-        if day_str in existing_dates:
-            continue
-        ns = sessions_per_day[di] if di < len(sessions_per_day) else 12
-        for si in range(ns):
-            h = _r.choices(range(8,17), weights=[3,8,10,10,8,6,5,4,2])[0]
-            ss = day.replace(hour=h, minute=_r.randint(0,59), second=_r.randint(0,59))
-            sid = f'{SEED_MARKER}_{day_str}_{si}'
-            roll = _r.random()
-            if roll < 0.15:
-                dur = _r.uniform(115,130)
-                et = ss + timedelta(seconds=dur)
-                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}},
-                        {'type':'session_end','timestamp':et.isoformat(),'data':{}}]
-                lang, mode, tv = None, None, []
-            elif roll < 0.28:
-                dur = _r.uniform(290,315)
-                et = ss + timedelta(seconds=dur)
-                lang = _r.choice(langs) if _r.random() > 0.4 else None
-                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}}]
-                t = ss + timedelta(seconds=_r.uniform(1,5))
-                if lang:
-                    evts.append({'type':'language_selected','timestamp':t.isoformat(),'data':{'language':lang}})
-                evts.append({'type':'session_end','timestamp':et.isoformat(),'data':{}})
-                mode, tv = None, []
-            else:
-                lang = _r.choice(langs)
-                mode = _r.choice(modes_pool)
-                nt = _r.choices([0,1,2,3,4], weights=[15,35,25,15,10])[0]
-                evts = [{'type':'session_start','timestamp':ss.isoformat(),'data':{'user_agent':ua,'referrer':ref}}]
-                t = ss + timedelta(seconds=_r.uniform(1.5,4))
-                evts.append({'type':'language_selected','timestamp':t.isoformat(),'data':{'language':lang}})
-                t = t + timedelta(seconds=_r.uniform(1,3))
-                evts.append({'type':'mode_selected','timestamp':t.isoformat(),'data':{'mode':mode}})
-                src = src_map.get(mode, 'browse-all')
-                viewed = []
-                for _ in range(nt):
-                    tour = _r.choices(t_names, weights=t_w)[0]
-                    if tour not in viewed:
-                        viewed.append(tour)
-                        t = t + timedelta(seconds=_r.uniform(8,45))
-                        evts.append({'type':'tour_clicked','timestamp':t.isoformat(),'data':{'tour_name':tour,'company':t_cos[tour],'source':src}})
-                dur = _r.uniform(60,600) if nt > 0 else _r.uniform(30,180)
-                dur = max(dur, (t - ss).total_seconds() + _r.uniform(15,90))
-                et = ss + timedelta(seconds=dur)
-                evts.append({'type':'session_end','timestamp':et.isoformat(),'data':{}})
-                tv = viewed
-            new_sessions.append({
-                'session_id': sid, 'account': 'nathan', 'started_at': ss.isoformat(),
-                'events': evts, 'language': lang, 'mode': mode, 'tours_viewed': tv,
-                'tours_booked': [], 'chat_messages': [], 'ended_at': et.isoformat(),
-                'duration_seconds': round(dur, 6)
-            })
-
-    _r.setstate(_r_state)
-
-    if new_sessions:
-        analytics['sessions'].extend(new_sessions)
-        analytics['sessions'].sort(key=lambda s: s.get('started_at', ''))
-        save_analytics(analytics, 'nathan')
-        print(f"[SEED] Added {len(new_sessions)} seed sessions for nathan (Apr 8-14)")
-    return len(new_sessions)
-
 
 def log_analytics_event(session_id, event_type, event_data=None, account=None):
     """Log an analytics event for a session (to account-specific file)"""
@@ -10057,11 +9924,6 @@ def analytics_summary():
     """Get analytics summary (agent only) - shows logged-in user's analytics"""
     try:
         account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
-        if account == 'nathan':
-            try:
-                _seed_nathan_sessions()
-            except Exception:
-                pass
         summary = get_analytics_summary(account)
         return jsonify(summary)
     except Exception as e:
@@ -10075,11 +9937,6 @@ def agent_analytics_page():
     try:
         account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
 
-        if account == 'nathan':
-            try:
-                _seed_nathan_sessions()
-            except Exception as e:
-                print(f"[SEED] Error during page-load seed: {e}", flush=True)
 
         summary = get_analytics_summary(account)
         
@@ -11582,10 +11439,6 @@ def start_background_services():
         except Exception as e:
             print(f"[RENDER ANALYTICS] Startup pull failed: {e}")
 
-    try:
-        _seed_nathan_sessions()
-    except Exception as e:
-        print(f"[SEED] Nathan session seed failed: {e}")
 
     # Configure git identity and remote early (critical for Render where these are missing)
     if HAS_GIT_REPO:
@@ -11663,7 +11516,17 @@ def start_background_services():
                         ).stdout.strip() or '0')
                         
                         if _ahead > 0:
-                            if _check_count % 5 == 0:
+                            if _behind > 0:
+                                print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — rebasing then pushing...", flush=True)
+                                try:
+                                    subprocess.run(
+                                        ['git', 'pull', '--rebase', 'origin', 'main'],
+                                        cwd=_repo, capture_output=True, text=True,
+                                        encoding='utf-8', errors='replace', timeout=30
+                                    )
+                                except Exception:
+                                    pass
+                            elif _check_count % 5 == 0:
                                 print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
                             try:
                                 subprocess.run(
@@ -11749,9 +11612,9 @@ def start_background_services():
             """Background loop that periodically pushes analytics JSON to GitHub
             so web-collected session data survives Render's ephemeral filesystem."""
             import time as _time
-            _PUSH_INTERVAL = 60  # every 60 seconds
+            _PUSH_INTERVAL = 600  # every 10 minutes (was 60s — too frequent, caused git conflicts for kiosks)
             _time.sleep(15)  # let app start and collect some data first
-            print("[RENDER ANALYTICS] Background push loop started (every 60s)", flush=True)
+            print("[RENDER ANALYTICS] Background push loop started (every 10min)", flush=True)
             while True:
                 try:
                     _github_api_pull_analytics()
@@ -11780,7 +11643,7 @@ def start_background_services():
 
         _render_analytics_thread = threading.Thread(target=_render_analytics_push_loop, daemon=True)
         _render_analytics_thread.start()
-        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 60s + on meaningful events")
+        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 10min + on meaningful events")
         # Also register an atexit handler so analytics are pushed before process dies
         import atexit
         def _push_analytics_on_exit():
