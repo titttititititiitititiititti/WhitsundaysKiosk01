@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "iconic",
-  "last_updated": "2026-04-12T04:28:13.488589",
+  "last_updated": "2026-04-14T17:07:24.501808",
   "sessions": [
     {
       "session_id": "session_776f2f097d65_1774868341",
@@ -540,6 +540,79 @@
       "duration_seconds": 751.135547
     },
     {
+      "session_id": "session_da4b423b9a72_1775119302",
+      "account": "iconic",
+      "started_at": "2026-04-02T08:41:42.265224",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-02T08:41:42.265241",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-02T08:41:42.849381",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-02T08:41:43.600653",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-02T08:41:50.053080",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives",
+            "company": "whitsundaydiveadventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-02T08:41:52.262769",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives",
+            "company": "whitsundaydiveadventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-04-02T08:41:52.291143",
+          "data": {
+            "tour_name": "Airlie Beach Day Tour With 2 Dives"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-02T08:42:05.754450",
+          "data": {
+            "tour_name": "Apollo 3D2N",
+            "company": "Apollo Sailing",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Airlie Beach Day Tour With 2 Dives",
+        "Apollo 3D2N"
+      ],
+      "tours_booked": [
+        "Airlie Beach Day Tour With 2 Dives"
+      ],
+      "chat_messages": []
+    },
+    {
       "session_id": "session_ec6625b83586_1775090202",
       "account": "iconic",
       "started_at": "2026-04-02T10:36:42.752663",
@@ -611,79 +684,6 @@
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_da4b423b9a72_1775119302",
-      "account": "iconic",
-      "started_at": "2026-04-02T08:41:42.265224",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-04-02T08:41:42.265241",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-            "referrer": "https://www.filtour.com/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-04-02T08:41:42.849381",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-04-02T08:41:43.600653",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-04-02T08:41:50.053080",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives",
-            "company": "whitsundaydiveadventures",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-04-02T08:41:52.262769",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives",
-            "company": "whitsundaydiveadventures",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "counter_booking_requested",
-          "timestamp": "2026-04-02T08:41:52.291143",
-          "data": {
-            "tour_name": "Airlie Beach Day Tour With 2 Dives"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-04-02T08:42:05.754450",
-          "data": {
-            "tour_name": "Apollo 3D2N",
-            "company": "Apollo Sailing",
-            "source": "browse-all"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Airlie Beach Day Tour With 2 Dives",
-        "Apollo 3D2N"
-      ],
-      "tours_booked": [
-        "Airlie Beach Day Tour With 2 Dives"
-      ],
       "chat_messages": []
     },
     {
