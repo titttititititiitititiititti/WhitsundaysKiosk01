@@ -2069,6 +2069,35 @@ def load_analytics(account=None):
             return {'sessions': [], 'summary': {}, 'account': account}
     return {'sessions': [], 'summary': {}, 'account': account or DEFAULT_ANALYTICS_ACCOUNT}
 
+def _cleanup_injected_fake_sessions():
+    """One-time cleanup: remove 90 fake sessions that were accidentally injected via API
+    on 2026-04-14. They all have duration < 5s and started_at on that date.
+    Safe to run multiple times — no-ops if already clean."""
+    import glob as _g
+    for af in _g.glob('data/analytics_*.json'):
+        try:
+            with open(af, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            before = len(data.get('sessions', []))
+            data['sessions'] = [
+                s for s in data.get('sessions', [])
+                if not (
+                    s.get('started_at', '').startswith('2026-04-14')
+                    and isinstance(s.get('duration_seconds'), (int, float))
+                    and s['duration_seconds'] < 5
+                )
+            ]
+            removed = before - len(data['sessions'])
+            if removed > 0:
+                with open(af, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2)
+                print(f"[CLEANUP] Removed {removed} fake sessions from {os.path.basename(af)}")
+        except Exception:
+            pass
+
+_cleanup_injected_fake_sessions()
+
+
 def save_analytics(data, account=None):
     """Save analytics data to account-specific file"""
     os.makedirs('data', exist_ok=True)
