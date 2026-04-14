@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-02T10:36:07.695438",
+  "last_updated": "2026-04-14T04:39:04.445009",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -62599,6 +62599,801 @@
       "language": null,
       "mode": null,
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_62b025c0820a_1776141511",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:31.976363",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:31.976375",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:32.292554",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:32.646391",
+          "data": {
+            "tour_name": "Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:32.961939",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:33.287778",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure",
+        "Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:33.287796",
+      "duration_seconds": 1.311433
+    },
+    {
+      "session_id": "session_0c01d78fe167_1776141513",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:33.986962",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:33.986975",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:34.278559",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:34.583712",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:34.873372",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "map"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:35.247341",
+          "data": {
+            "tour_name": "Viper Outer Great Barrier Reef Tour",
+            "company": "Iconic Whitsunday",
+            "source": "map"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:35.676059",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "map"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:35.976565",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Camira Sailing Adventure",
+        "Viper Outer Great Barrier Reef Tour",
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:35.976582",
+      "duration_seconds": 1.98962
+    },
+    {
+      "session_id": "session_3c3a18ffa938_1776141516",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:36.666398",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:36.666416",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:37.005307",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:37.345839",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:37.671204",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:38.040384",
+          "data": {
+            "tour_name": "Whitehaven Express Day Tour",
+            "company": "Whitehaven Express",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:38.455141",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour",
+        "Whitehaven Express Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:38.455157",
+      "duration_seconds": 1.788759
+    },
+    {
+      "session_id": "session_ef57119d9bbf_1776141519",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:39.129712",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:39.129726",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:39.469451",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:39.858313",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:39.858329",
+      "duration_seconds": 0.728617
+    },
+    {
+      "session_id": "session_483e00b755eb_1776141520",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:40.549904",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:40.549916",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:40.877339",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:41.224728",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:41.576393",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Camira Sailing Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:41.576412",
+      "duration_seconds": 1.026508
+    },
+    {
+      "session_id": "session_cc1d4cf2e8b1_1776141522",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:42.272615",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:42.272629",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:42.565907",
+          "data": {
+            "language": "de"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:42.897584",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:43.284724",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:43.612111",
+          "data": {}
+        }
+      ],
+      "language": "de",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:43.612125",
+      "duration_seconds": 1.33951
+    },
+    {
+      "session_id": "session_0e0991a70af2_1776141524",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:44.265194",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:44.265208",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:44.659881",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:45.029525",
+          "data": {
+            "tour_name": "Great Barrier Reef Full Day Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:45.394374",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Great Barrier Reef Full Day Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:45.394388",
+      "duration_seconds": 1.129194
+    },
+    {
+      "session_id": "session_c2a514a00bbf_1776141525",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:46.000315",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:46.000334",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:46.410776",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:46.916026",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:46.916064",
+      "duration_seconds": 0.915749
+    },
+    {
+      "session_id": "session_6f9081de816c_1776141528",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:48.104494",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:48.104512",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:48.627289",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:48.627307",
+      "duration_seconds": 0.522813
+    },
+    {
+      "session_id": "session_2ef1e79107b8_1776141529",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:49.531185",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:49.531205",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:50.065718",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:50.556892",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:50.556911",
+      "duration_seconds": 1.025726
+    },
+    {
+      "session_id": "session_e87c163c0d89_1776141531",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:51.258335",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:51.258347",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:51.581522",
+          "data": {
+            "language": "de"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:51.894334",
+          "data": {}
+        }
+      ],
+      "language": "de",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:51.894348",
+      "duration_seconds": 0.636013
+    },
+    {
+      "session_id": "session_b571ff60ec1a_1776141532",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:52.561677",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:52.561696",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:52.962575",
+          "data": {
+            "language": "es"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:53.352339",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:53.773295",
+          "data": {
+            "tour_name": "Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "map"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:54.143407",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "map"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:54.549581",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "map"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:54.946750",
+          "data": {}
+        }
+      ],
+      "language": "es",
+      "mode": "map-view",
+      "tours_viewed": [
+        "Northern Exposure",
+        "Fly Raft \u2013 Southern Lights",
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:54.946763",
+      "duration_seconds": 2.385086
+    },
+    {
+      "session_id": "session_822ae1fa225b_1776141535",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:55.671590",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:55.671608",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:56.034727",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:38:56.437460",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:56.826291",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:57.195821",
+          "data": {
+            "tour_name": "Northern Exposure",
+            "company": "Ocean Rafting",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:38:57.769142",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "tour-list"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:58.068747",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights",
+        "Northern Exposure",
+        "Camira Sailing Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:58.068761",
+      "duration_seconds": 2.397171
+    },
+    {
+      "session_id": "session_fce5ca6d3429_1776141538",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:38:58.790747",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:38:58.790758",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:38:59.085815",
+          "data": {
+            "language": "fr"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:38:59.455588",
+          "data": {}
+        }
+      ],
+      "language": "fr",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:38:59.455602",
+      "duration_seconds": 0.664855
+    },
+    {
+      "session_id": "session_4e65861c6d1e_1776141540",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:39:00.097653",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:39:00.097670",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:39:00.434470",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:39:00.832544",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:39:00.832558",
+      "duration_seconds": 0.734905
+    },
+    {
+      "session_id": "session_dd250919af7f_1776141541",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:39:01.524356",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:39:01.524396",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:39:01.868854",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-14T04:39:02.247723",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-14T04:39:02.247739",
+      "duration_seconds": 0.723383
+    },
+    {
+      "session_id": "session_1a26db97ef53_1776141542",
+      "account": "nathan",
+      "started_at": "2026-04-14T04:39:02.995760",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-14T04:39:02.995774",
+          "data": {
+            "user_agent": "python-requests/2.32.3",
+            "referrer": "direct"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-14T04:39:03.286543",
+          "data": {
+            "language": "fr"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-14T04:39:03.637674",
+          "data": {
+            "mode": "newcomer-info"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:39:04.057465",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-14T04:39:04.444952",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "fr",
+      "mode": "newcomer-info",
+      "tours_viewed": [
+        "Southern Lights",
+        "Fly Raft \u2013 Southern Lights"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
