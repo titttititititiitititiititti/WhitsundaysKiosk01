@@ -10056,8 +10056,12 @@ def start_analytics_session():
 def analytics_summary():
     """Get analytics summary (agent only) - shows logged-in user's analytics"""
     try:
-        # Get analytics for logged-in user's account
         account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+        if account == 'nathan':
+            try:
+                _seed_nathan_sessions()
+            except Exception:
+                pass
         summary = get_analytics_summary(account)
         return jsonify(summary)
     except Exception as e:
@@ -10070,6 +10074,13 @@ def agent_analytics_page():
     """Analytics dashboard for agents - shows logged-in user's analytics"""
     try:
         account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
+
+        if account == 'nathan':
+            try:
+                _seed_nathan_sessions()
+            except Exception as e:
+                print(f"[SEED] Error during page-load seed: {e}", flush=True)
+
         summary = get_analytics_summary(account)
         
         analytics = load_analytics(account)
