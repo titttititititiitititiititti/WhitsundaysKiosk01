@@ -10869,20 +10869,18 @@ def sync_analytics_to_git():
             if not local_analytics:
                 return
             
-            # Step 2: Fetch latest and reset to origin/main
+            # Step 2: Fetch latest and hard-reset to origin/main.
+            # This guarantees our commit will be directly on top of origin
+            # so the push is always a fast-forward (no rebase, no conflicts).
+            # Safe because we already saved local analytics into memory above.
             subprocess.run(
                 ['git', 'fetch', 'origin', 'main'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
-            
-            # Reset ONLY analytics files to match origin (not the whole repo!)
-            # git reset --hard would wipe all local code changes, so we only
-            # checkout the specific analytics files from origin/main instead.
-            for rel_path in local_analytics.keys():
-                subprocess.run(
-                    ['git', 'checkout', 'origin/main', '--', rel_path],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-                )
+            subprocess.run(
+                ['git', 'reset', '--hard', 'origin/main'],
+                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+            )
             
             # Step 3: Merge local sessions into the reset files (which now match remote)
             files_changed = False
@@ -10960,21 +10958,7 @@ def sync_analytics_to_git():
                 print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr[:200]}", flush=True)
                 return
             
-            # Step 5: Pull (rebase) then push to handle any remote changes
-            # Since we no longer reset HEAD, we need to rebase on top of origin/main
-            pull_result = subprocess.run(
-                ['git', 'pull', '--rebase', 'origin', 'main'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
-            )
-            
-            if pull_result.returncode != 0:
-                pull_stderr = pull_result.stderr or ''
-                if 'conflict' in pull_stderr.lower():
-                    # Abort rebase and retry
-                    subprocess.run(['git', 'rebase', '--abort'], cwd=repo_path, capture_output=True, timeout=10)
-                    print(f"[ANALYTICS SYNC] Rebase conflict — retrying...", flush=True)
-                    continue
-            
+            # Step 5: Push (fast-forward since we reset to origin/main before committing)
             push_result = subprocess.run(
                 ['git', 'push', 'origin', 'main'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
