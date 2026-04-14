@@ -10809,6 +10809,17 @@ def sync_analytics_to_git():
     """
     repo_path = os.path.dirname(os.path.abspath(__file__))
     
+    # Abort any stale rebase before starting — a leftover rebase blocks all git operations
+    _rebase_merge = os.path.join(repo_path, '.git', 'rebase-merge')
+    _rebase_apply = os.path.join(repo_path, '.git', 'rebase-apply')
+    if os.path.isdir(_rebase_merge) or os.path.isdir(_rebase_apply):
+        print("[ANALYTICS SYNC] ⚠️ Stale rebase detected — aborting before sync...", flush=True)
+        subprocess.run(
+            ['git', 'rebase', '--abort'],
+            cwd=repo_path, capture_output=True, text=True,
+            encoding='utf-8', errors='replace', timeout=10
+        )
+    
     import random
     max_attempts = 5
     for attempt in range(max_attempts):
@@ -11489,6 +11500,17 @@ def start_background_services():
                 try:
                     _repo = os.path.dirname(os.path.abspath(__file__))
                     
+                    # Safety: abort any stale rebase that would block all git operations
+                    _rebase_dir = os.path.join(_repo, '.git', 'rebase-merge')
+                    _rebase_dir2 = os.path.join(_repo, '.git', 'rebase-apply')
+                    if os.path.isdir(_rebase_dir) or os.path.isdir(_rebase_dir2):
+                        print("[KIOSK BG] ⚠️ Stale rebase detected — aborting to unblock git...", flush=True)
+                        subprocess.run(
+                            ['git', 'rebase', '--abort'],
+                            cwd=_repo, capture_output=True, text=True,
+                            encoding='utf-8', errors='replace', timeout=10
+                        )
+                    
                     # Fetch to get latest from origin
                     _fetch = subprocess.run(
                         ['git', 'fetch', 'origin', 'main'],
@@ -11518,14 +11540,21 @@ def start_background_services():
                         if _ahead > 0:
                             if _behind > 0:
                                 print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — rebasing then pushing...", flush=True)
-                                try:
-                                    subprocess.run(
-                                        ['git', 'pull', '--rebase', 'origin', 'main'],
-                                        cwd=_repo, capture_output=True, text=True,
-                                        encoding='utf-8', errors='replace', timeout=30
-                                    )
-                                except Exception:
-                                    pass
+                                _rebase_result = subprocess.run(
+                                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                                    cwd=_repo, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', timeout=30
+                                )
+                                if _rebase_result.returncode != 0:
+                                    _rb_err = (_rebase_result.stderr or '').lower()
+                                    if 'conflict' in _rb_err or 'could not apply' in _rb_err:
+                                        print("[KIOSK BG] Rebase conflict — aborting rebase", flush=True)
+                                        subprocess.run(
+                                            ['git', 'rebase', '--abort'],
+                                            cwd=_repo, capture_output=True, timeout=10
+                                        )
+                                    elif 'unstaged changes' in _rb_err or 'uncommitted' in _rb_err:
+                                        print("[KIOSK BG] Uncommitted local changes — skipping rebase (sync will handle)", flush=True)
                             elif _check_count % 5 == 0:
                                 print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
                             try:
@@ -11558,11 +11587,18 @@ def start_background_services():
                                 os._exit(0)
                             else:
                                 print(f"[KIOSK BG] Data-only update ({_behind} commits) — pulling silently", flush=True)
-                                subprocess.run(
+                                _pull_result = subprocess.run(
                                     ['git', 'pull', '--rebase', 'origin', 'main'],
                                     cwd=_repo, capture_output=True, text=True,
                                     encoding='utf-8', errors='replace', timeout=30
                                 )
+                                if _pull_result.returncode != 0:
+                                    _pull_err = (_pull_result.stderr or '').lower()
+                                    if 'conflict' in _pull_err or 'could not apply' in _pull_err:
+                                        subprocess.run(
+                                            ['git', 'rebase', '--abort'],
+                                            cwd=_repo, capture_output=True, timeout=10
+                                        )
                     except Exception as _e:
                         print(f"[KIOSK BG] Update check error: {_e}", flush=True)
                     
