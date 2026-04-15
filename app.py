@@ -11541,22 +11541,27 @@ def start_background_services():
                         
                         if _ahead > 0:
                             if _behind > 0:
-                                print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — rebasing then pushing...", flush=True)
-                                _rebase_result = subprocess.run(
-                                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                                # Diverged: local has failed sync commits, remote has new data.
+                                # Hard-reset to origin to get unstuck. Local analytics are safe
+                                # in the JSON file and will be re-pushed by sync_analytics_to_git.
+                                print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — resetting to origin...", flush=True)
+                                subprocess.run(
+                                    ['git', 'reset', '--hard', 'origin/main'],
                                     cwd=_repo, capture_output=True, text=True,
-                                    encoding='utf-8', errors='replace', timeout=30
+                                    encoding='utf-8', errors='replace', timeout=10
                                 )
-                                if _rebase_result.returncode != 0:
-                                    _rb_err = (_rebase_result.stderr or '').lower()
-                                    if 'conflict' in _rb_err or 'could not apply' in _rb_err:
-                                        print("[KIOSK BG] Rebase conflict — aborting rebase", flush=True)
-                                        subprocess.run(
-                                            ['git', 'rebase', '--abort'],
-                                            cwd=_repo, capture_output=True, timeout=10
-                                        )
-                                    elif 'unstaged changes' in _rb_err or 'uncommitted' in _rb_err:
-                                        print("[KIOSK BG] Uncommitted local changes — skipping rebase (sync will handle)", flush=True)
+                                # After reset we're in sync — check for code changes
+                                _diff2 = subprocess.run(
+                                    ['git', 'diff', '--name-only', f'HEAD~{_behind}', 'HEAD'],
+                                    cwd=_repo, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', timeout=10
+                                )
+                                _changed2 = [f.strip() for f in (_diff2.stdout or '').strip().split('\n') if f.strip()]
+                                _data_prefixes2 = ('data/', 'config/', 'static/tour_images/')
+                                _code2 = [f for f in _changed2 if not any(f.startswith(p) for p in _data_prefixes2)]
+                                if _code2:
+                                    print(f"[KIOSK BG] Code update detected after reset — restarting...", flush=True)
+                                    os._exit(0)
                             elif _check_count % 5 == 0:
                                 print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
                             try:
