@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-18T08:33:24.309564",
+  "last_updated": "2026-04-18T08:33:46.158474",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69196,6 +69196,51 @@
       "chat_messages": [],
       "ended_at": "2026-04-18T08:33:24.309479",
       "duration_seconds": 25.779287
+    },
+    {
+      "session_id": "session_22101f7c820b_1776501215",
+      "account": "nathan",
+      "started_at": "2026-04-18T08:33:35.928878",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-18T08:33:35.928889",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-18T08:33:37.471269",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T08:33:38.511664",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-18T08:33:46.158416",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
