@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-18T08:32:58.530281",
+  "last_updated": "2026-04-18T08:33:24.309564",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69157,13 +69157,45 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-18T08:33:00.278931",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T08:33:01.475024",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-18T08:33:16.450482",
+          "data": {
+            "tour_name": "2 Hour Helicopter and Resort Visit Packages",
+            "company": "airliebeachhelicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-18T08:33:24.309464",
+          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "2 Hour Helicopter and Resort Visit Packages"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-04-18T08:33:24.309479",
+      "duration_seconds": 25.779287
     }
   ]
 }
