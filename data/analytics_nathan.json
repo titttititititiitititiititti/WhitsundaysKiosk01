@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-18T08:34:20.032471",
+  "last_updated": "2026-04-18T08:34:41.934591",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69249,6 +69249,44 @@
             "filter_type": "duration",
             "filter_value": "full_day"
           }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-18T08:34:21.402385",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-18T08:34:22.562076",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-04-18T08:34:24.046557",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_views"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-18T08:34:36.765698",
+          "data": {
+            "tour_name": "\u30d6\u30ea\u30c6\u30a3\u30c3\u30b7\u30e5\u30fb\u30c7\u30a3\u30d5\u30a7\u30f3\u30c0\u30fc 3\u65e5\u95932\u6cca",
+            "company": "British Defender",
+            "source": "embedded-booking"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-18T08:34:41.934488",
+          "data": {}
         }
       ],
       "language": "en",
@@ -69257,8 +69295,12 @@
         "Northern Exposure Eco Adventure",
         "\u30ce\u30fc\u30b6\u30f3\u30fb\u30a8\u30af\u30b9\u30dd\u30fc\u30b8\u30e3\u30fc\u30fb\u30a8\u30b3\u30fb\u30a2\u30c9\u30d9\u30f3\u30c1\u30e3\u30fc"
       ],
-      "tours_booked": [],
-      "chat_messages": []
+      "tours_booked": [
+        "\u30d6\u30ea\u30c6\u30a3\u30c3\u30b7\u30e5\u30fb\u30c7\u30a3\u30d5\u30a7\u30f3\u30c0\u30fc 3\u65e5\u95932\u6cca"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-04-18T08:34:41.934503",
+      "duration_seconds": 66.005625
     }
   ]
 }
