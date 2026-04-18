@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-14T23:01:16.900015",
+  "last_updated": "2026-04-18T15:50:46.693876",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69110,6 +69110,151 @@
       "chat_messages": [],
       "ended_at": "2026-04-14T16:09:40.030277",
       "duration_seconds": 34.651963
+    },
+    {
+      "session_id": "session_be29b85d9b4d_1776487079",
+      "account": "nathan",
+      "started_at": "2026-04-18T14:37:59.541983",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-18T14:37:59.541983",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T14:38:13.071663",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T14:38:15.739173",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-18T14:46:16.741229",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-18T14:46:16.741229",
+      "duration_seconds": 497.199246
+    },
+    {
+      "session_id": "session_b2749d4ce4b6_1776489608",
+      "account": "nathan",
+      "started_at": "2026-04-18T15:20:08.654477",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-18T15:20:08.654477",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-18T15:20:11.076100",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T15:20:19.547745",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T15:20:21.962161",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-18T15:25:24.509738",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-18T15:25:24.509738",
+      "duration_seconds": 315.855261
+    },
+    {
+      "session_id": "session_b13d01782d19_1776490419",
+      "account": "nathan",
+      "started_at": "2026-04-18T15:33:39.778583",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-18T15:33:39.778583",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-18T15:33:47.136205",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-18T15:34:16.894664",
+          "data": {
+            "tour_name": "Croisi\u00e8re du matin ou de l'apr\u00e8s-midi \u00e0 Whitehaven Beach",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-04-18T15:34:45.033484",
+          "data": {
+            "tour_name": "Croisi\u00e8re du matin ou de l'apr\u00e8s-midi \u00e0 Whitehaven Beach",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-18T15:40:42.938210",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Croisi\u00e8re du matin ou de l'apr\u00e8s-midi \u00e0 Whitehaven Beach"
+      ],
+      "tours_booked": [
+        "Croisi\u00e8re du matin ou de l'apr\u00e8s-midi \u00e0 Whitehaven Beach"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-04-18T15:40:42.938210",
+      "duration_seconds": 423.159627
     }
   ]
 }
