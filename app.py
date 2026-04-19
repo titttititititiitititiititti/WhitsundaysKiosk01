@@ -9890,6 +9890,17 @@ def update_company_field(company):
 # ANALYTICS API ENDPOINTS
 # ============================================================================
 
+def _resolve_analytics_account():
+    """Determine which account to attribute this analytics event to.
+    Priority: kiosk instance config > referral cookie/URL param > default"""
+    acct = get_active_account()
+    if acct:
+        return acct
+    acct = get_referral_account()
+    if acct:
+        return acct
+    return DEFAULT_ANALYTICS_ACCOUNT
+
 @app.route('/api/analytics/event', methods=['POST'])
 def log_analytics():
     """Log an analytics event from the frontend"""
@@ -9898,14 +9909,13 @@ def log_analytics():
         session_id = data.get('session_id')
         event_type = data.get('event_type')
         event_data = data.get('event_data', {})
-        
+
         if not session_id or not event_type:
             return jsonify({'error': 'session_id and event_type required'}), 400
-        
-        # Kiosk instance config takes priority over stale referral cookies
-        analytics_account = get_active_account() or request.cookies.get('filtour_ref') or DEFAULT_ANALYTICS_ACCOUNT
+
+        analytics_account = _resolve_analytics_account()
         session = log_analytics_event(session_id, event_type, event_data, account=analytics_account)
-        
+
         return jsonify({
             'success': True,
             'session_id': session_id,
@@ -9920,14 +9930,14 @@ def start_analytics_session():
     """Start a new analytics session and return session ID"""
     try:
         session_id = f"session_{uuid.uuid4().hex[:12]}_{int(time.time())}"
-        
-        # Kiosk instance config takes priority over stale referral cookies
-        analytics_account = get_active_account() or request.cookies.get('filtour_ref') or DEFAULT_ANALYTICS_ACCOUNT
+
+        analytics_account = _resolve_analytics_account()
+        print(f"[ANALYTICS] New session {session_id[:20]}... -> account '{analytics_account}'", flush=True)
         log_analytics_event(session_id, 'session_start', {
             'user_agent': request.headers.get('User-Agent', 'unknown'),
             'referrer': request.headers.get('Referer', 'direct')
         }, account=analytics_account)
-        
+
         return jsonify({
             'success': True,
             'session_id': session_id
@@ -11485,11 +11495,17 @@ def start_background_services():
         # So we start a lightweight analytics-only loop here.
         def _analytics_signal_loop():
             """Background loop for kiosks running under run_kiosk.py.
-            
+
             Does THREE things:
             1. Auto-pushes analytics to git every 5 minutes (no signal needed)
             2. Checks for code updates and exits Flask so run_kiosk.py can restart
             3. Responds to immediate push signals from admin
+
+            CRITICAL DESIGN RULE: This loop must NEVER run git pull, git rebase,
+            or git reset --hard. Those operations overwrite the local analytics
+            JSON files, destroying any sessions recorded since the last push.
+            Instead, we use pull_analytics_only() which reads remote data via
+            'git show' (from git object store) and merges into local files safely.
             """
             import time as _time
             _time.sleep(15)  # Wait for app to fully start
@@ -11501,32 +11517,31 @@ def start_background_services():
                 _check_count += 1
                 try:
                     _repo = os.path.dirname(os.path.abspath(__file__))
-                    
+
                     # Safety: abort any stale rebase that would block all git operations
                     _rebase_dir = os.path.join(_repo, '.git', 'rebase-merge')
                     _rebase_dir2 = os.path.join(_repo, '.git', 'rebase-apply')
                     if os.path.isdir(_rebase_dir) or os.path.isdir(_rebase_dir2):
-                        print("[KIOSK BG] ⚠️ Stale rebase detected — aborting to unblock git...", flush=True)
+                        print("[KIOSK BG] Stale rebase detected — aborting to unblock git...", flush=True)
                         subprocess.run(
                             ['git', 'rebase', '--abort'],
                             cwd=_repo, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=10
                         )
-                    
+
                     # Fetch to get latest from origin
                     _fetch = subprocess.run(
                         ['git', 'fetch', 'origin', 'main'],
                         cwd=_repo, capture_output=True, text=True,
                         encoding='utf-8', errors='replace', timeout=30
                     )
-                    
+
                     if _fetch.returncode != 0:
                         print(f"[KIOSK BG] Fetch failed (check #{_check_count}): {(_fetch.stderr or '')[:100]}", flush=True)
                         _time.sleep(30)
                         continue
-                    
-                    # --- 1. CHECK FOR CODE UPDATES ---
-                    # Only restart when remote is STRICTLY ahead and we have NO local unpushed work.
+
+                    # --- 1. CHECK FOR UPDATES ---
                     try:
                         _behind = int(subprocess.run(
                             ['git', 'rev-list', '--count', 'HEAD..origin/main'],
@@ -11538,41 +11553,9 @@ def start_background_services():
                             cwd=_repo, capture_output=True, text=True,
                             encoding='utf-8', errors='replace', timeout=5
                         ).stdout.strip() or '0')
-                        
-                        if _ahead > 0:
-                            if _behind > 0:
-                                # Diverged: local has failed sync commits, remote has new data.
-                                # Hard-reset to origin to get unstuck. Local analytics are safe
-                                # in the JSON file and will be re-pushed by sync_analytics_to_git.
-                                print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — resetting to origin...", flush=True)
-                                subprocess.run(
-                                    ['git', 'reset', '--hard', 'origin/main'],
-                                    cwd=_repo, capture_output=True, text=True,
-                                    encoding='utf-8', errors='replace', timeout=10
-                                )
-                                # After reset we're in sync — check for code changes
-                                _diff2 = subprocess.run(
-                                    ['git', 'diff', '--name-only', f'HEAD~{_behind}', 'HEAD'],
-                                    cwd=_repo, capture_output=True, text=True,
-                                    encoding='utf-8', errors='replace', timeout=10
-                                )
-                                _changed2 = [f.strip() for f in (_diff2.stdout or '').strip().split('\n') if f.strip()]
-                                _data_prefixes2 = ('data/', 'config/', 'static/tour_images/')
-                                _code2 = [f for f in _changed2 if not any(f.startswith(p) for p in _data_prefixes2)]
-                                if _code2:
-                                    print(f"[KIOSK BG] Code update detected after reset — restarting...", flush=True)
-                                    os._exit(0)
-                            elif _check_count % 5 == 0:
-                                print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
-                            try:
-                                subprocess.run(
-                                    ['git', 'push', 'origin', 'main'],
-                                    cwd=_repo, capture_output=True, text=True,
-                                    encoding='utf-8', errors='replace', timeout=30
-                                )
-                            except Exception:
-                                pass
-                        elif _behind > 0:
+
+                        if _behind > 0:
+                            # Remote has new commits. Check if code changed.
                             _diff = subprocess.run(
                                 ['git', 'diff', '--name-only', 'HEAD', 'origin/main'],
                                 cwd=_repo, capture_output=True, text=True,
@@ -11580,12 +11563,12 @@ def start_background_services():
                             )
                             _changed_files = [f.strip() for f in (_diff.stdout or '').strip().split('\n') if f.strip()]
                             _data_prefixes = ('data/', 'config/', 'static/tour_images/')
-                            _code_changes = [f for f in _changed_files 
+                            _code_changes = [f for f in _changed_files
                                            if not any(f.startswith(p) for p in _data_prefixes)]
-                            
+
                             if _code_changes:
-                                print(f"[KIOSK BG] 🔄 Code update detected ({len(_code_changes)} files changed)", flush=True)
-                                print(f"[KIOSK BG] Changed: {', '.join(_code_changes[:5])}", flush=True)
+                                # Code update — push our analytics then restart
+                                print(f"[KIOSK BG] Code update detected ({len(_code_changes)} files changed): {', '.join(_code_changes[:5])}", flush=True)
                                 try:
                                     sync_analytics_to_git()
                                 except Exception as _e:
@@ -11593,22 +11576,47 @@ def start_background_services():
                                 print("[KIOSK BG] Exiting for code update (run_kiosk.py will restart us)...", flush=True)
                                 os._exit(0)
                             else:
-                                print(f"[KIOSK BG] Data-only update ({_behind} commits) — pulling silently", flush=True)
-                                _pull_result = subprocess.run(
-                                    ['git', 'pull', '--rebase', 'origin', 'main'],
+                                # Data-only update — safely merge remote sessions
+                                # into local files WITHOUT git pull/reset (preserves local data)
+                                if _check_count % 5 == 0 or _behind > 5:
+                                    print(f"[KIOSK BG] Data-only update ({_behind} commits) — merging safely", flush=True)
+                                for _acct_file in glob.glob(os.path.join(_repo, 'data', 'analytics_*.json')):
+                                    if '_backup' in _acct_file or '_request' in _acct_file:
+                                        continue
+                                    _acct = os.path.basename(_acct_file).replace('analytics_', '').replace('.json', '')
+                                    try:
+                                        pull_analytics_only(_acct, skip_fetch=True)
+                                    except Exception:
+                                        pass
+                                # Advance HEAD to match origin so we stop detecting these commits
+                                subprocess.run(
+                                    ['git', 'reset', '--soft', 'origin/main'],
+                                    cwd=_repo, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', timeout=10
+                                )
+
+                        if _ahead > 0:
+                            # We have local unpushed commits — try to push them
+                            if _check_count % 5 == 0:
+                                print(f"[KIOSK BG] {_ahead} unpushed local commit(s) — pushing...", flush=True)
+                            try:
+                                _push = subprocess.run(
+                                    ['git', 'push', 'origin', 'main'],
                                     cwd=_repo, capture_output=True, text=True,
                                     encoding='utf-8', errors='replace', timeout=30
                                 )
-                                if _pull_result.returncode != 0:
-                                    _pull_err = (_pull_result.stderr or '').lower()
-                                    if 'conflict' in _pull_err or 'could not apply' in _pull_err:
-                                        subprocess.run(
-                                            ['git', 'rebase', '--abort'],
-                                            cwd=_repo, capture_output=True, timeout=10
-                                        )
+                                if _push.returncode != 0 and _behind > 0:
+                                    # Push rejected because we're also behind.
+                                    # Run a full sync (reads local into memory, resets, merges, pushes)
+                                    # which is the ONLY safe way to handle diverged state.
+                                    print(f"[KIOSK BG] Diverged ({_ahead} ahead, {_behind} behind) — running full sync...", flush=True)
+                                    sync_analytics_to_git()
+                            except Exception:
+                                pass
+
                     except Exception as _e:
                         print(f"[KIOSK BG] Update check error: {_e}", flush=True)
-                    
+
                     # --- 2. AUTO-PUSH ANALYTICS (every 5 minutes) ---
                     _now = _time.time()
                     if _now - _last_auto_push >= _AUTO_PUSH_INTERVAL:
@@ -11616,24 +11624,24 @@ def start_background_services():
                             print(f"[KIOSK BG] Auto-pushing analytics (every {_AUTO_PUSH_INTERVAL//60}min)...", flush=True)
                             sync_analytics_to_git()
                             _last_auto_push = _now
-                            print("[KIOSK BG] ✅ Auto-push complete", flush=True)
+                            print("[KIOSK BG] Auto-push complete", flush=True)
                         except Exception as _e:
                             print(f"[KIOSK BG] Auto-push error: {_e}", flush=True)
-                            _last_auto_push = _now  # Don't retry immediately on failure
-                    
+                            _last_auto_push = _now
+
                     # --- 3. CHECK FOR IMMEDIATE PUSH SIGNAL ---
                     try:
                         _check_and_respond_to_analytics_signal(repo_path=_repo)
                     except Exception as _e:
                         print(f"[KIOSK BG] Signal check error: {_e}", flush=True)
-                    
+
                     # Heartbeat log every ~5min
                     if _check_count % 10 == 1:
                         print(f"[KIOSK BG] Alive (check #{_check_count}, last push {int(_now - _last_auto_push)}s ago)", flush=True)
-                    
+
                 except Exception as _e:
                     print(f"[KIOSK BG] Loop error: {_e}", flush=True)
-                
+
                 _time.sleep(30)  # Check every 30s
         
         _analytics_thread = threading.Thread(target=_analytics_signal_loop, daemon=True)
