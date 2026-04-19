@@ -2026,9 +2026,16 @@ def _schedule_render_analytics_push():
         _render_push_timer.start()
 
 def _do_render_analytics_push():
-    """Actually push analytics files to GitHub via API."""
+    """Actually push analytics files to GitHub via API.
+    MUST pull first to avoid overwriting kiosk-pushed sessions."""
     global _render_push_timer
     try:
+        # Pull remote sessions first so we don't overwrite kiosk data
+        try:
+            _github_api_pull_analytics()
+        except Exception as e:
+            print(f"[RENDER ANALYTICS] Pre-push pull failed (pushing anyway): {e}", flush=True)
+
         import glob as _glob
         files_to_push = {}
         for af in _glob.glob('data/analytics_*.json'):
@@ -2036,7 +2043,9 @@ def _do_render_analytics_push():
                 continue
             fpath = af.replace('\\', '/')
             with open(af, 'r', encoding='utf-8') as f:
-                files_to_push[fpath] = f.read()
+                _raw = json.load(f)
+            _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
+            files_to_push[fpath] = json.dumps(_raw, indent=2)
         if files_to_push:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             success, msg = _github_api_push(
@@ -11344,9 +11353,18 @@ def refresh_analytics():
         pulled = False
         signal_sent = False
         
-        # On Render: push current analytics then pull kiosk data via GitHub API
+        # On Render: pull kiosk data first, merge with local, then push everything
         if IS_RENDER and GITHUB_TOKEN:
-            # First push what we have locally so it's safe on GitHub
+            # Pull kiosk-pushed data from GitHub (merges into local without losing our sessions)
+            try:
+                count = _github_api_pull_analytics()
+                if count > 0:
+                    pulled = True
+                    print(f"[RENDER ANALYTICS] Refresh pulled {count} session(s) from GitHub")
+            except Exception as e:
+                print(f"[RENDER ANALYTICS] Pull on refresh failed: {e}")
+
+            # Now push merged data (local + remote) back to GitHub
             try:
                 import glob as _glob
                 files_to_push = {}
@@ -11355,20 +11373,13 @@ def refresh_analytics():
                         continue
                     fpath = af.replace('\\', '/')
                     with open(af, 'r', encoding='utf-8') as f:
-                        files_to_push[fpath] = f.read()
+                        _raw = json.load(f)
+                    _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
+                    files_to_push[fpath] = json.dumps(_raw, indent=2)
                 if files_to_push:
                     _github_api_push(files_to_push, f"Analytics sync from Render (refresh)")
             except Exception as e:
                 print(f"[RENDER ANALYTICS] Push on refresh failed: {e}")
-            
-            # Now pull any kiosk-pushed data from GitHub
-            try:
-                count = _github_api_pull_analytics()
-                if count > 0:
-                    pulled = True
-                    print(f"[RENDER ANALYTICS] Refresh pulled {count} session(s) from GitHub")
-            except Exception as e:
-                print(f"[RENDER ANALYTICS] Pull on refresh failed: {e}")
         else:
             # Local mode: use git CLI
             # Step 1: Push THIS device's local analytics to git (if running locally)
