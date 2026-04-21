@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-21T16:59:05.339587",
+  "last_updated": "2026-04-21T17:04:07.034878",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69550,6 +69550,58 @@
       "chat_messages": [],
       "ended_at": "2026-04-20T17:41:55.270125",
       "duration_seconds": 370.441905
+    },
+    {
+      "session_id": "session_dccbbf614693_1776754832",
+      "account": "nathan",
+      "started_at": "2026-04-21T17:00:32.534785",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-21T17:00:32.534785",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-21T17:00:36.252661",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-21T17:00:52.492507",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-21T17:02:06.035075",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-04-21T17:02:19.422296",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Purely Whitehaven Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-04-21T17:02:19.422296",
+      "duration_seconds": 106.887511
     }
   ]
 }
