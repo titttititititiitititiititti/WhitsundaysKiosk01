@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-22T15:42:29.935346",
+  "last_updated": "2026-04-22T15:46:24.481105",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69777,6 +69777,64 @@
       "chat_messages": [],
       "ended_at": "2026-04-22T13:33:28.756190",
       "duration_seconds": 526.044239
+    },
+    {
+      "session_id": "session_d32f88c4c92a_1776836604",
+      "account": "nathan",
+      "started_at": "2026-04-22T15:43:24.889290",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-22T15:43:24.889290",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-22T15:43:31.285838",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-22T15:44:23.134261",
+          "data": {
+            "tour_name": "Whitehaven \u6d77\u6ee9\u548c Hill Inlet Chill & Grill",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-22T15:44:55.418790",
+          "data": {
+            "tour_name": "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-22T15:45:24.586658",
+          "data": {
+            "tour_name": "\u4f0a\u59ae\u5fb7\u5973\u58eb\u53f7\u6210\u4eba\u5e06\u8239\u4e00\u65e5\u6e38",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitehaven \u6d77\u6ee9\u548c Hill Inlet Chill & Grill",
+        "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38",
+        "\u4f0a\u59ae\u5fb7\u5973\u58eb\u53f7\u6210\u4eba\u5e06\u8239\u4e00\u65e5\u6e38"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
