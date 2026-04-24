@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-04-24T10:28:49.239850",
+  "last_updated": "2026-04-24T10:29:04.141188",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -69918,6 +69918,51 @@
       "chat_messages": [],
       "ended_at": "2026-04-22T17:02:38.554010",
       "duration_seconds": 837.794978
+    },
+    {
+      "session_id": "session_8bf5a038e417_1776990324",
+      "account": "nathan",
+      "started_at": "2026-04-24T10:25:24.353147",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-04-24T10:25:24.353147",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-04-24T10:25:26.291230",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-04-24T10:25:30.150110",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-04-24T10:26:05.411899",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitehaven Beach & Hamilton Island Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
