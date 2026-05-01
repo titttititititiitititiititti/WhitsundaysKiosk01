@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-01T10:19:21.581600",
+  "last_updated": "2026-05-01T10:24:44.158273",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -70358,6 +70358,117 @@
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_559c7c2bb76a_1777594917",
+      "account": "nathan",
+      "started_at": "2026-05-01T10:21:57.943478",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-01T10:21:57.943478",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-01T10:22:00.496086",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-01T10:22:04.034026",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:22:09.027342",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:22:11.024657",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:22:17.730915",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:23:08.213980",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:23:10.112200",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T10:23:14.379235",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-01T10:23:26.451584",
+          "data": {
+            "tour_name": "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-01T10:23:34.939152",
+          "data": {
+            "tour_name": "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-01T10:23:35.207362",
+          "data": {
+            "tour_name": "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
+        }
+      ],
+      "language": "zh",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669"
+      ],
       "chat_messages": []
     }
   ]
