@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-01T16:54:56.068637",
+  "last_updated": "2026-05-01T17:00:17.729344",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -70714,6 +70714,83 @@
       "chat_messages": [],
       "ended_at": "2026-05-01T14:11:12.073296",
       "duration_seconds": 732.020089
+    },
+    {
+      "session_id": "session_bb1e3c323134_1777618622",
+      "account": "nathan",
+      "started_at": "2026-05-01T16:57:02.689588",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-01T16:57:02.689588",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-01T16:57:04.917520",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-01T16:57:08.815453",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T16:57:14.968346",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T16:57:16.109404",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T16:57:17.864599",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-01T16:57:28.530287",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_views"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-01T16:57:56.520143",
+          "data": {
+            "tour_name": "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "zh",
+      "mode": "quick-decision",
+      "tours_viewed": [
+        "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
