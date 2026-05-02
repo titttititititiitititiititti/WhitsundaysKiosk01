@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-02T10:36:23.970619",
+  "last_updated": "2026-05-02T10:42:04.687052",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -70896,6 +70896,72 @@
       ],
       "language": null,
       "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_69003c211622_1777682246",
+      "account": "nathan",
+      "started_at": "2026-05-02T10:37:26.313995",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-02T10:37:26.313995",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-02T10:37:29.863384",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-02T10:37:34.547077",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-02T10:37:41.079702",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-02T10:37:43.612595",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-02T10:37:49.246421",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-02T10:37:54.761621",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
