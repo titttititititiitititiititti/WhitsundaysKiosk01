@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-13T16:01:52.032058",
+  "last_updated": "2026-05-13T16:07:14.733428",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -79685,6 +79685,64 @@
       "chat_messages": [],
       "ended_at": "2026-05-13T14:04:39.782025",
       "duration_seconds": 359.383527
+    },
+    {
+      "session_id": "session_ef8df00b7dd6_1778652176",
+      "account": "nathan",
+      "started_at": "2026-05-13T16:02:57.051012",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-13T16:02:57.051012",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-13T16:02:59.489047",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-13T16:03:05.248707",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-13T16:03:10.544163",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-13T16:03:12.758656",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-13T16:03:14.957742",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
