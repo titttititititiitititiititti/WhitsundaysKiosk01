@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-15T10:47:40.254836",
+  "last_updated": "2026-05-15T10:53:03.023748",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -79784,6 +79784,51 @@
       "chat_messages": [],
       "ended_at": "2026-05-14T17:43:57.387001",
       "duration_seconds": 366.525059
+    },
+    {
+      "session_id": "session_ee2fc16d74fe_1778806122",
+      "account": "nathan",
+      "started_at": "2026-05-15T10:48:42.417002",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-15T10:48:42.417002",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-15T10:48:44.571930",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-15T10:48:47.820309",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-15T10:50:41.753063",
+          "data": {
+            "tour_name": "2 Hour Helicopter and Resort Visit Packages",
+            "company": "airliebeachhelicopters",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "2 Hour Helicopter and Resort Visit Packages"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
