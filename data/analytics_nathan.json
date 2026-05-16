@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-16T15:14:51.167795",
+  "last_updated": "2026-05-16T15:20:22.823126",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -79942,11 +79942,112 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-16T11:02:31.975679",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-16T11:02:31.975679",
+      "duration_seconds": 448.569565
+    },
+    {
+      "session_id": "session_5e8337065f9c_1778908529",
+      "account": "nathan",
+      "started_at": "2026-05-16T15:15:29.494497",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-16T15:15:29.494497",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-16T15:15:31.502255",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-16T15:15:35.563710",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:16:14.378869",
+          "data": {
+            "tour_name": "\u4f0a\u59ae\u5fb7\u5973\u58eb\u53f7\u6210\u4eba\u5e06\u8239\u4e00\u65e5\u6e38",
+            "company": "Iconic Whitsunday",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:16:46.558529",
+          "data": {
+            "tour_name": "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:17:49.301842",
+          "data": {
+            "tour_name": "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+            "company": "Explore Group",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:17:56.721015",
+          "data": {
+            "tour_name": "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+            "company": "Explore Group",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:18:12.443185",
+          "data": {
+            "tour_name": "\u8ba9\u5927\u6d77\u7ed9\u4f60\u81ea\u7531",
+            "company": "whitsundaybullet",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-16T15:18:38.970569",
+          "data": {
+            "tour_name": "\u8d85\u7ea7\u6469\u5929\u8f6e\u6000\u7279\u9ed1\u6587\u6d77\u6ee9\u52a0\u6d6e\u6f5c\u5668",
+            "company": "Zigzag Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "zh",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\u4f0a\u59ae\u5fb7\u5973\u58eb\u53f7\u6210\u4eba\u5e06\u8239\u4e00\u65e5\u6e38",
+        "\u96f7\u732b\u964d\u7075\u5c9b - \u5168\u5305\u4e00\u65e5\u6e38",
+        "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+        "\u8ba9\u5927\u6d77\u7ed9\u4f60\u81ea\u7531",
+        "\u8d85\u7ea7\u6469\u5929\u8f6e\u6000\u7279\u9ed1\u6587\u6d77\u6ee9\u52a0\u6d6e\u6f5c\u5668"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
