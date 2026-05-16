@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-16T10:58:00.512709",
+  "last_updated": "2026-05-16T10:58:13.403176",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -79899,6 +79899,11 @@
             "company": "skydive",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-16T10:29:45.921223",
+          "data": {}
         }
       ],
       "language": "en",
@@ -79906,6 +79911,42 @@
       "tours_viewed": [
         "Skydive Over Airlie Beach And the Whitsundays!"
       ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-16T10:29:45.921223",
+      "duration_seconds": 426.204064
+    },
+    {
+      "session_id": "session_3210b658948d_1778892903",
+      "account": "nathan",
+      "started_at": "2026-05-16T10:55:03.406114",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-16T10:55:03.406114",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-16T10:55:06.953019",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-16T10:55:20.232537",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
