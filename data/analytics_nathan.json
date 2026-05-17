@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-17T12:00:46.048752",
+  "last_updated": "2026-05-17T12:06:08.357139",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -80118,6 +80118,112 @@
       "chat_messages": [],
       "ended_at": "2026-05-16T15:27:03.428837",
       "duration_seconds": 370.180496
+    },
+    {
+      "session_id": "session_4121659f660a_1778983356",
+      "account": "nathan",
+      "started_at": "2026-05-17T12:02:36.374047",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-17T12:02:36.374047",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-17T12:02:38.124111",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-17T12:02:43.258691",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:02:49.217331",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:02:53.972774",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:02:55.300346",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:31.041485",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:35.367822",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:36.602662",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:38.458410",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:39.268581",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_views"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:04:40.395369",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
