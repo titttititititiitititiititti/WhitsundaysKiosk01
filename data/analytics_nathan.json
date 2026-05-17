@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-17T12:06:08.357139",
+  "last_updated": "2026-05-17T12:11:51.036628",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -80216,6 +80216,104 @@
           "data": {
             "filter_type": "activities",
             "filter_value": "sailing"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_43373f293db9_1778983859",
+      "account": "nathan",
+      "started_at": "2026-05-17T12:10:59.256841",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-17T12:10:59.256841",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-17T12:11:01.166850",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-17T12:11:04.501899",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:11.204370",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:12.738314",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:16.923316",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:18.307556",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "swimming"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:19.491993",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:20.558382",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:21.142282",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "island_tours"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:11:23.292881",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "scenic_views"
           }
         }
       ],
