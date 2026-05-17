@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-17T13:21:03.070735",
+  "last_updated": "2026-05-17T13:21:29.537466",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -80322,13 +80322,64 @@
             "filter_type": "activities",
             "filter_value": "scenic_views"
           }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:19:03.511809",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:19:06.513002",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T12:19:17.767989",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-17T12:20:46.254723",
+          "data": {
+            "tour_name": "Reefsleep",
+            "company": "cruisewhitsundays",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-17T12:20:46.555067",
+          "data": {
+            "tour_name": "Reefsleep",
+            "company": "cruisewhitsundays",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-17T12:26:12.800704",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
+      "tours_booked": [
+        "Reefsleep"
+      ],
+      "chat_messages": [],
+      "ended_at": "2026-05-17T12:26:12.800704",
+      "duration_seconds": 913.543863
     },
     {
       "session_id": "session_b13f769b356b_1778984843",
@@ -80363,6 +80414,56 @@
       "chat_messages": [],
       "ended_at": "2026-05-17T12:33:30.862661",
       "duration_seconds": 367.688325
+    },
+    {
+      "session_id": "session_9b621325919a_1778988036",
+      "account": "nathan",
+      "started_at": "2026-05-17T13:20:36.905048",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-17T13:20:36.905048",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-17T13:20:41.155949",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-17T13:20:47.225592",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T13:20:58.396375",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-17T13:21:02.932996",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
