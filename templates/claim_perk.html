@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Claim Your Perk | Filtour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/static/favicon/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0c4a6e 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+    .claim-container {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 40px 30px;
+      background: rgba(15, 25, 50, 0.85);
+      border-radius: 24px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .claim-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .claim-header h1 {
+      font-size: 1.6em;
+      background: linear-gradient(135deg, #38bdf8, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .claim-header p {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95em;
+    }
+    .perk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+      margin-top: 12px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85em;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(15, 23, 42, 0.8);
+      color: #fff;
+      font-size: 1em;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+    .form-group input[readonly] {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .form-group input[type="file"] {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      color: #fff;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+    .success-msg h2 {
+      color: #34d399;
+      font-size: 1.4em;
+      margin-bottom: 10px;
+    }
+    .success-msg p {
+      color: rgba(255,255,255,0.8);
+      line-height: 1.6;
+    }
+    .note {
+      font-size: 0.8em;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .claim-container { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="claim-container">
+    <div class="claim-header">
+      <h1>Claim Your Filtour Perk</h1>
+      <p>Upload your booking confirmation to unlock your reward</p>
+      <div class="perk-badge" id="perk-display">
+        <span id="perk-icon">☕</span>
+        <span id="perk-label">Free Coffee</span>
+      </div>
+    </div>
+
+    <form id="claim-form" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="customer_name" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="customer_phone">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="customer_email" required>
+      </div>
+
+      <div class="form-group">
+        <label>Tour</label>
+        <input type="text" name="tour_name" value="{{ tour_name }}" readonly>
+        <input type="hidden" name="tour_key" value="{{ tour_key }}">
+        <input type="hidden" name="booking_url" value="{{ booking_url }}">
+        <input type="hidden" name="selected_perk" value="{{ selected_perk }}">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Booking Date *</label>
+          <input type="date" name="booking_date" required>
+        </div>
+        <div class="form-group">
+          <label>Booking Reference *</label>
+          <input type="text" name="booking_reference" required placeholder="e.g. RZ-12345">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Booking Confirmation Screenshot *</label>
+        <input type="file" name="confirmation_screenshot" accept="image/*,.pdf" required>
+      </div>
+
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <textarea name="notes" placeholder="Any additional details..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">Submit Claim</button>
+      <p class="note">Perks are issued after booking proof is verified. One perk per confirmed booking.</p>
+    </form>
+
+    <div class="success-msg" id="success-msg">
+      <h2>Claim Submitted!</h2>
+      <p>We'll verify your booking confirmation and send your voucher code to your email. This usually takes less than 24 hours.</p>
+      <p style="margin-top: 16px; color: #38bdf8;">You can close this page now.</p>
+    </div>
+  </div>
+
+  <script>
+    const selectedPerk = '{{ selected_perk }}';
+    if (selectedPerk === 'free_moped_hour') {
+      document.getElementById('perk-icon').textContent = '🛵';
+      document.getElementById('perk-label').textContent = 'Free Moped Hour';
+    }
+
+    document.getElementById('claim-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const formData = new FormData(this);
+      try {
+        const resp = await fetch('/api/perk-claims', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.success) {
+          document.getElementById('claim-form').style.display = 'none';
+          document.getElementById('success-msg').style.display = 'block';
+        } else {
+          alert(data.error || 'Something went wrong. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Submit Claim';
+        }
+      } catch (err) {
+        alert('Network error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Claim';
+      }
+    });
+  </script>
+</body>
+</html>

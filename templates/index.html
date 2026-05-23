@@ -17,6 +17,10 @@
   <meta property="og:locale" content="en_AU">
 
   <!-- Twitter Card -->
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/static/favicon/favicon.png">
+  <link rel="apple-touch-icon" href="/static/favicon/favicon.png">
+
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cheapest Tour Prices in Airlie Beach Guaranteed | Filtour">
   <meta name="twitter:description" content="Compare 150+ Whitsundays tours at the lowest prices. Sailing, reef, islands, scenic flights from Airlie Beach.">
@@ -16995,37 +16999,66 @@
   <div class="qr-overlay" id="qr-payment-modal" style="display: none;">
     <div class="qr-backdrop" onclick="closeQRModal()"></div>
     
-    <div class="qr-card">
-      <button class="qr-modal-close" onclick="closeQRModal()">×</button>
-      <h2 id="qr-modal-title">Complete Your Booking</h2>
-      <p class="qr-subtitle" id="qr-modal-subtitle">
-        Scan this code to continue on your phone.
+    <div class="qr-card" style="max-width: 520px; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 32px 28px;">
+      <button class="qr-modal-close" onclick="closeQRModal()" style="color:#fff;">×</button>
+      
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.4em; text-align: center; margin-bottom: 4px;">Book your tour & unlock a Filtour perk</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.7); text-align: center; font-size: 0.9em; margin-bottom: 20px;">
+        Scan the QR code to book through the operator's secure page. After booking, upload your confirmation to claim your reward.
       </p>
       
-      <!-- Clear instructions for older users -->
-      <div style="background: linear-gradient(135deg, #e8f4fd 0%, #d1e9f9 100%); padding: 16px 24px; border-radius: 14px; margin-bottom: 20px; text-align: center; border: 2px solid rgba(0,119,182,0.15);">
-        <div style="font-size: 1.2em; color: #0077b6; font-weight: 600;">
-          📱 How to scan:
-        </div>
-        <div style="font-size: 1em; color: #333; margin-top: 8px; line-height: 1.5;">
-          Open your phone's <strong>Camera app</strong> and point it at the code below
+      <!-- Perk Selection -->
+      <div style="margin-bottom: 22px;">
+        <div style="font-size: 0.8em; font-weight: 600; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; text-align: center;">Choose your perk</div>
+        <div style="display: flex; gap: 12px;" id="perk-selection">
+          <div class="perk-option" data-perk="free_coffee" onclick="selectPerk('free_coffee')" style="flex:1; padding: 16px 12px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 2em; margin-bottom: 6px;">☕</div>
+            <div style="font-weight: 700; font-size: 1em; color: #fff;">Free Coffee</div>
+            <div style="font-size: 0.78em; color: rgba(255,255,255,0.6); margin-top: 4px;">Free regular coffee from a Filtour partner café</div>
+            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:#06b6d4; color:#fff; font-size:13px; line-height:22px; text-align:center;">✓</div>
+          </div>
+          <div class="perk-option" data-perk="free_moped_hour" onclick="selectPerk('free_moped_hour')" style="flex:1; padding: 16px 12px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 2em; margin-bottom: 6px;">🛵</div>
+            <div style="font-weight: 700; font-size: 1em; color: #fff;">Free Hour</div>
+            <div style="font-size: 0.78em; color: rgba(255,255,255,0.6); margin-top: 4px;">Free extra hour on a moped with Airlie Scooter Hire</div>
+            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:#06b6d4; color:#fff; font-size:13px; line-height:22px; text-align:center;">✓</div>
+          </div>
         </div>
       </div>
       
-      <div class="qr-code-wrapper" id="qr-code-container">
-        <!-- QR code will be generated here -->
+      <!-- QR Code -->
+      <div style="text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 0.8em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Scan to book</div>
+        <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 16px; display: inline-block;">
+          <!-- QR code will be generated here -->
+        </div>
       </div>
       
-      <!-- Debug: Show URL encoded in QR -->
-      <div id="qr-debug-url" style="font-size: 10px; color: #666; max-width: 280px; word-break: break-all; margin: 10px auto; padding: 5px; background: #f5f5f5; border-radius: 4px; display: none;"></div>
+      <div id="qr-debug-url" style="display:none;"></div>
       
-      <p class="qr-help-text" id="qr-modal-help">
-        Apple Pay, Google Pay and cards supported.
+      <!-- Steps -->
+      <div style="background: rgba(56,189,248,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; border: 1px solid rgba(56,189,248,0.15);">
+        <div style="font-size: 0.82em; line-height: 1.8; color: rgba(255,255,255,0.85);">
+          <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
+          <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code and complete your booking</div>
+          <div><strong style="color:#38bdf8;">3.</strong> Come back and upload your confirmation</div>
+          <div><strong style="color:#38bdf8;">4.</strong> We'll verify it and send your voucher</div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+        <button onclick="openClaimPerkPage()" style="width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; font-size: 1em; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(6,182,212,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          I've booked — claim my perk
+        </button>
+        <button onclick="openBookingLink()" style="width: 100%; padding: 12px; border: 1px solid rgba(56,189,248,0.4); border-radius: 12px; background: transparent; color: #38bdf8; font-size: 0.9em; font-weight: 600; cursor: pointer;">
+          Open booking link ↗
+        </button>
+      </div>
+      
+      <p style="font-size: 0.72em; color: rgba(255,255,255,0.4); text-align: center; margin-top: 14px; line-height: 1.5;">
+        Perks are only issued after a valid booking confirmation is submitted. One perk per confirmed booking.
       </p>
-      
-      <div class="qr-actions">
-        <button class="btn-ghost" id="qr-cancel-btn">Cancel</button>
-      </div>
     </div>
   </div>
   
@@ -28471,27 +28504,13 @@
         useQRServerAPI(checkoutUrl, qrContainer);
       }
       
-      // Store URL for reference
+      // Store URL and tour info for perk claim flow
       window.currentCheckoutUrl = checkoutUrl;
+      currentBookingTourName = tourName || '';
+      currentBookingTourKey = currentOpenTourKey || '';
       
-      // Hide "Continue on this screen" - never redirect away from the app
-      if (continueBtn) {
-        continueBtn.style.display = 'none';
-      }
-      
-      // Set up Cancel button
-      const cancelBtn = document.getElementById('qr-cancel-btn');
-      if (cancelBtn) {
-        cancelBtn.onclick = (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('🚫 Cancel button clicked');
-          closeQRModal();
-        };
-      }
-      
-      // Store checkout URL for reference
-      window.currentCheckoutUrl = checkoutUrl;
+      // Initialize perk selection UI
+      initPerkSelection();
       
       console.log('QR Payment Modal opened for:', checkoutUrl);
     }
@@ -28550,6 +28569,48 @@
       }
     }
     
+    // =====================================================================
+    // PERK SELECTION SYSTEM
+    // =====================================================================
+    
+    let selectedPerk = 'free_coffee'; // Default perk
+    let currentBookingTourName = '';
+    let currentBookingTourKey = '';
+    
+    function selectPerk(perk) {
+      selectedPerk = perk;
+      document.querySelectorAll('#perk-selection .perk-option').forEach(el => {
+        const isPicked = el.dataset.perk === perk;
+        el.style.borderColor = isPicked ? '#06b6d4' : 'rgba(56,189,248,0.3)';
+        el.style.background = isPicked ? 'rgba(6,182,212,0.12)' : 'rgba(15,23,42,0.8)';
+        el.style.boxShadow = isPicked ? '0 0 20px rgba(6,182,212,0.25)' : 'none';
+        const check = el.querySelector('.perk-check');
+        if (check) check.style.display = isPicked ? 'block' : 'none';
+      });
+    }
+    
+    function openClaimPerkPage() {
+      const url = window.currentCheckoutUrl || '';
+      const params = new URLSearchParams({
+        tour: currentBookingTourName,
+        key: currentBookingTourKey,
+        url: url,
+        perk: selectedPerk
+      });
+      window.open('/claim-perk?' + params.toString(), '_blank');
+    }
+    
+    function openBookingLink() {
+      const url = window.currentCheckoutUrl;
+      if (url) window.open(url, '_blank');
+    }
+
+    // Initialize default perk selection on modal open
+    function initPerkSelection() {
+      selectedPerk = 'free_coffee';
+      selectPerk('free_coffee');
+    }
+
     // =====================================================================
     // COUNTER BOOKING MODAL (No online booking available)
     // =====================================================================

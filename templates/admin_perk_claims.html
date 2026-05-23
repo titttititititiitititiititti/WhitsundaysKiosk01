@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Perk Claims Admin | Filtour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/static/favicon/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
+    h1 { font-size: 1.8em; margin-bottom: 20px; color: #38bdf8; }
+    .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-card { background: rgba(30, 58, 95, 0.8); padding: 14px 20px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); }
+    .stat-card .num { font-size: 1.8em; font-weight: 700; color: #38bdf8; }
+    .stat-card .label { font-size: 0.8em; color: rgba(255,255,255,0.6); }
+    .filters { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3); background: transparent; color: #94a3b8; cursor: pointer; font-size: 0.85em; }
+    .filter-btn.active { background: #0891b2; color: #fff; border-color: #0891b2; }
+    .claims-list { display: flex; flex-direction: column; gap: 12px; }
+    .claim-card { background: rgba(30, 58, 95, 0.6); border-radius: 14px; padding: 20px; border: 1px solid rgba(56, 189, 248, 0.15); transition: border-color 0.2s; }
+    .claim-card:hover { border-color: rgba(56, 189, 248, 0.4); }
+    .claim-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .claim-customer { font-weight: 600; font-size: 1.1em; }
+    .claim-status { padding: 4px 12px; border-radius: 20px; font-size: 0.75em; font-weight: 600; text-transform: uppercase; }
+    .status-pending { background: #f59e0b33; color: #fbbf24; }
+    .status-approved { background: #10b98133; color: #34d399; }
+    .status-rejected { background: #ef444433; color: #f87171; }
+    .status-redeemed { background: #8b5cf633; color: #a78bfa; }
+    .claim-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 12px; font-size: 0.85em; }
+    .claim-detail { color: rgba(255,255,255,0.6); }
+    .claim-detail strong { color: rgba(255,255,255,0.9); }
+    .claim-perk { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; font-size: 0.85em; font-weight: 600; }
+    .perk-coffee { background: #92400e33; color: #fbbf24; }
+    .perk-moped { background: #0891b233; color: #67e8f9; }
+    .claim-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .claim-actions button { padding: 8px 16px; border-radius: 8px; border: none; font-size: 0.85em; font-weight: 600; cursor: pointer; transition: transform 0.1s; }
+    .claim-actions button:hover { transform: translateY(-1px); }
+    .btn-approve { background: #10b981; color: #fff; }
+    .btn-reject { background: #ef4444; color: #fff; }
+    .btn-redeem { background: #8b5cf6; color: #fff; }
+    .voucher-code { font-family: monospace; font-size: 1.1em; background: #1e293b; padding: 6px 12px; border-radius: 6px; color: #34d399; font-weight: 700; }
+    .screenshot-link { color: #38bdf8; text-decoration: underline; cursor: pointer; font-size: 0.85em; }
+    .back-link { display: inline-block; margin-bottom: 20px; color: #38bdf8; text-decoration: none; font-size: 0.9em; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <a href="/agent/dashboard" class="back-link">&larr; Back to Dashboard</a>
+  <h1>Perk Claims</h1>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num" id="stat-pending">0</div>
+      <div class="label">Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-approved">0</div>
+      <div class="label">Approved</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-redeemed">0</div>
+      <div class="label">Redeemed</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-total">0</div>
+      <div class="label">Total</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterClaims('')">All</button>
+    <button class="filter-btn" onclick="filterClaims('pending')">Pending</button>
+    <button class="filter-btn" onclick="filterClaims('approved')">Approved</button>
+    <button class="filter-btn" onclick="filterClaims('rejected')">Rejected</button>
+    <button class="filter-btn" onclick="filterClaims('redeemed')">Redeemed</button>
+  </div>
+
+  <div class="claims-list" id="claims-list">
+    {% for claim in claims %}
+    <div class="claim-card" data-status="{{ claim.status }}" id="card-{{ claim.id }}">
+      <div class="claim-top">
+        <div>
+          <span class="claim-customer">{{ claim.customer_name }}</span>
+          <span class="claim-perk {{ 'perk-coffee' if claim.selected_perk == 'free_coffee' else 'perk-moped' }}">
+            {{ '☕' if claim.selected_perk == 'free_coffee' else '🛵' }}
+            {{ 'Free Coffee' if claim.selected_perk == 'free_coffee' else 'Free Moped Hour' }}
+          </span>
+        </div>
+        <span class="claim-status status-{{ claim.status }}">{{ claim.status }}</span>
+      </div>
+      <div class="claim-details">
+        <div class="claim-detail"><strong>Tour:</strong> {{ claim.tour_name or 'N/A' }}</div>
+        <div class="claim-detail"><strong>Ref:</strong> {{ claim.booking_reference }}</div>
+        <div class="claim-detail"><strong>Date:</strong> {{ claim.booking_date or 'N/A' }}</div>
+        <div class="claim-detail"><strong>Email:</strong> {{ claim.customer_email }}</div>
+        <div class="claim-detail"><strong>Phone:</strong> {{ claim.customer_phone or 'N/A' }}</div>
+        <div class="claim-detail"><strong>Submitted:</strong> {{ claim.created_at[:10] if claim.created_at else 'N/A' }}</div>
+        {% if claim.confirmation_screenshot %}
+        <div class="claim-detail"><a class="screenshot-link" href="/{{ claim.confirmation_screenshot }}" target="_blank">View Screenshot</a></div>
+        {% endif %}
+        {% if claim.voucher_code %}
+        <div class="claim-detail"><strong>Voucher:</strong> <span class="voucher-code">{{ claim.voucher_code }}</span></div>
+        {% endif %}
+      </div>
+      {% if claim.status == 'pending' %}
+      <div class="claim-actions">
+        <button class="btn-approve" onclick="actionClaim('{{ claim.id }}', 'approve')">Approve</button>
+        <button class="btn-reject" onclick="actionClaim('{{ claim.id }}', 'reject')">Reject</button>
+      </div>
+      {% elif claim.status == 'approved' %}
+      <div class="claim-actions">
+        <button class="btn-redeem" onclick="actionClaim('{{ claim.id }}', 'redeem')">Mark Redeemed</button>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% if not claims %}
+    <p style="color: rgba(255,255,255,0.5); text-align: center; padding: 40px;">No perk claims yet.</p>
+    {% endif %}
+  </div>
+
+  <script>
+    // Update stats
+    const cards = document.querySelectorAll('.claim-card');
+    let pending = 0, approved = 0, redeemed = 0;
+    cards.forEach(c => {
+      const s = c.dataset.status;
+      if (s === 'pending') pending++;
+      else if (s === 'approved') approved++;
+      else if (s === 'redeemed') redeemed++;
+    });
+    document.getElementById('stat-pending').textContent = pending;
+    document.getElementById('stat-approved').textContent = approved;
+    document.getElementById('stat-redeemed').textContent = redeemed;
+    document.getElementById('stat-total').textContent = cards.length;
+
+    function filterClaims(status) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      cards.forEach(c => {
+        c.style.display = (!status || c.dataset.status === status) ? 'block' : 'none';
+      });
+    }
+
+    async function actionClaim(id, action) {
+      if (!confirm(`Are you sure you want to ${action} this claim?`)) return;
+      const resp = await fetch(`/api/perk-claims/${id}/${action}`, { method: 'POST' });
+      const data = await resp.json();
+      if (data.success) {
+        if (data.voucher_code) alert(`Approved! Voucher: ${data.voucher_code}`);
+        location.reload();
+      } else {
+        alert(data.error || 'Action failed');
+      }
+    }
+  </script>
+</body>
+</html>

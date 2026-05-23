@@ -11748,6 +11748,176 @@ def start_background_services():
     # Admin "Refresh Data" just fetches from remote. Signal is also sent for immediate push.
     print("[ANALYTICS] Auto-push analytics enabled (kiosks push every 5min)")
 
+# =============================================================================
+# PERK CLAIMS SYSTEM
+# =============================================================================
+
+PERK_CLAIMS_FILE = 'data/perk_claims.json'
+
+def load_perk_claims():
+    if os.path.exists(PERK_CLAIMS_FILE):
+        with open(PERK_CLAIMS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
+
+def save_perk_claims(claims):
+    os.makedirs(os.path.dirname(PERK_CLAIMS_FILE), exist_ok=True)
+    with open(PERK_CLAIMS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(claims, f, indent=2, ensure_ascii=False)
+
+def generate_voucher_code(perk_type):
+    import random
+    prefix = 'FT-COF' if perk_type == 'free_coffee' else 'FT-MOP'
+    code = random.randint(1000, 9999)
+    return f'{prefix}-{code}'
+
+@app.route('/api/perk-claims', methods=['POST'])
+def submit_perk_claim():
+    """Submit a new perk claim after booking"""
+    from datetime import datetime, timedelta
+
+    name = request.form.get('customer_name', '').strip()
+    phone = request.form.get('customer_phone', '').strip()
+    email = request.form.get('customer_email', '').strip()
+    tour_name = request.form.get('tour_name', '').strip()
+    tour_key = request.form.get('tour_key', '').strip()
+    booking_url = request.form.get('booking_url', '').strip()
+    selected_perk = request.form.get('selected_perk', '').strip()
+    booking_date = request.form.get('booking_date', '').strip()
+    booking_reference = request.form.get('booking_reference', '').strip()
+    notes = request.form.get('notes', '').strip()
+
+    if not name or not email or not selected_perk or not booking_reference:
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
+    if selected_perk not in ('free_coffee', 'free_moped_hour'):
+        return jsonify({'success': False, 'error': 'Invalid perk selection'}), 400
+
+    screenshot_path = ''
+    if 'confirmation_screenshot' in request.files:
+        file = request.files['confirmation_screenshot']
+        if file and file.filename:
+            ext = os.path.splitext(file.filename)[1].lower()
+            if ext not in ('.jpg', '.jpeg', '.png', '.webp', '.pdf'):
+                return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+            upload_dir = 'static/perk_claims'
+            os.makedirs(upload_dir, exist_ok=True)
+            safe_name = f"claim_{int(datetime.now().timestamp())}_{booking_reference[:20].replace(' ', '_')}{ext}"
+            screenshot_path = os.path.join(upload_dir, safe_name)
+            file.save(screenshot_path)
+
+    now = datetime.now()
+    claim = {
+        'id': f"pc_{int(now.timestamp())}_{os.urandom(4).hex()}",
+        'tour_key': tour_key,
+        'tour_name': tour_name,
+        'external_booking_url': booking_url,
+        'selected_perk': selected_perk,
+        'customer_name': name,
+        'customer_phone': phone,
+        'customer_email': email,
+        'booking_date': booking_date,
+        'booking_reference': booking_reference,
+        'confirmation_screenshot': screenshot_path,
+        'notes': notes,
+        'status': 'pending',
+        'voucher_code': None,
+        'created_at': now.isoformat(),
+        'updated_at': now.isoformat(),
+        'approved_at': None,
+        'redeemed_at': None,
+        'expires_at': (now + timedelta(days=30)).isoformat(),
+    }
+
+    claims = load_perk_claims()
+    claims.append(claim)
+    save_perk_claims(claims)
+
+    return jsonify({'success': True, 'claim_id': claim['id'], 'message': 'Claim submitted! We will verify your booking and send your voucher.'})
+
+@app.route('/api/perk-claims', methods=['GET'])
+@agent_required
+def list_perk_claims():
+    """Admin: list all perk claims"""
+    claims = load_perk_claims()
+    status_filter = request.args.get('status', '')
+    if status_filter:
+        claims = [c for c in claims if c.get('status') == status_filter]
+    claims.sort(key=lambda c: c.get('created_at', ''), reverse=True)
+    return jsonify({'claims': claims})
+
+@app.route('/api/perk-claims/<claim_id>/approve', methods=['POST'])
+@agent_required
+def approve_perk_claim(claim_id):
+    """Admin: approve a perk claim and generate voucher"""
+    from datetime import datetime
+    claims = load_perk_claims()
+    for claim in claims:
+        if claim['id'] == claim_id:
+            if claim['status'] != 'pending':
+                return jsonify({'success': False, 'error': f"Claim is already {claim['status']}"}), 400
+            claim['status'] = 'approved'
+            claim['voucher_code'] = generate_voucher_code(claim['selected_perk'])
+            claim['approved_at'] = datetime.now().isoformat()
+            claim['updated_at'] = datetime.now().isoformat()
+            save_perk_claims(claims)
+            return jsonify({'success': True, 'voucher_code': claim['voucher_code']})
+    return jsonify({'success': False, 'error': 'Claim not found'}), 404
+
+@app.route('/api/perk-claims/<claim_id>/reject', methods=['POST'])
+@agent_required
+def reject_perk_claim(claim_id):
+    """Admin: reject a perk claim"""
+    from datetime import datetime
+    claims = load_perk_claims()
+    for claim in claims:
+        if claim['id'] == claim_id:
+            if claim['status'] != 'pending':
+                return jsonify({'success': False, 'error': f"Claim is already {claim['status']}"}), 400
+            claim['status'] = 'rejected'
+            claim['updated_at'] = datetime.now().isoformat()
+            save_perk_claims(claims)
+            return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Claim not found'}), 404
+
+@app.route('/api/perk-claims/<claim_id>/redeem', methods=['POST'])
+@agent_required
+def redeem_perk_claim(claim_id):
+    """Admin: mark a perk as redeemed"""
+    from datetime import datetime
+    claims = load_perk_claims()
+    for claim in claims:
+        if claim['id'] == claim_id:
+            if claim['status'] != 'approved':
+                return jsonify({'success': False, 'error': 'Claim must be approved before redeeming'}), 400
+            claim['status'] = 'redeemed'
+            claim['redeemed_at'] = datetime.now().isoformat()
+            claim['updated_at'] = datetime.now().isoformat()
+            save_perk_claims(claims)
+            return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Claim not found'}), 404
+
+@app.route('/claim-perk')
+def claim_perk_page():
+    """Public page for customers to submit perk claims"""
+    tour_name = request.args.get('tour', '')
+    tour_key = request.args.get('key', '')
+    booking_url = request.args.get('url', '')
+    selected_perk = request.args.get('perk', 'free_coffee')
+    return render_template('claim_perk.html',
+                           tour_name=tour_name,
+                           tour_key=tour_key,
+                           booking_url=booking_url,
+                           selected_perk=selected_perk)
+
+@app.route('/admin/perk-claims')
+@agent_required
+def admin_perk_claims():
+    """Admin page for managing perk claims"""
+    claims = load_perk_claims()
+    claims.sort(key=lambda c: c.get('created_at', ''), reverse=True)
+    return render_template('admin_perk_claims.html', claims=claims)
+
 # Start services when module loads (works with both direct run and Waitress)
 start_background_services()
 
