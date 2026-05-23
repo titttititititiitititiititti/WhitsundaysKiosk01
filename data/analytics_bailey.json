@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-23T11:13:39.159739",
+  "last_updated": "2026-05-23T11:42:21.228739",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28438,6 +28438,126 @@
       ],
       "language": null,
       "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_703f87670ac4_1779536431",
+      "account": "bailey",
+      "started_at": "2026-05-23T11:41:00.445616",
+      "events": [
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-23T11:41:00.445624",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-23T11:41:03.208118",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-23T11:41:12.781959",
+          "data": {
+            "role": "user",
+            "message": "I want a full day beach tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-23T11:41:27.367183",
+          "data": {
+            "role": "assistant",
+            "message": "Fantastic choice! \ud83c\udf1e Here are some amazing full-day beach tours that you'll absolutely love:\n\n1. **Viper Outer Great Barrier Reef Tour** - Experience the thrill aboard Viper, the fastest vessel in the Whitsundays! This award-winning tour takes you to the Outer Great Barrier Reef and Whitehaven Beach. Perfect for thrill-seekers, you'll snorkel vibrant coral gardens with a marine biologist, explore Hill Inlet's swirling sands, and relax on the pristine Whitehaven Beach. With a small group size and"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-23T11:41:57.708959",
+          "data": {
+            "role": "user",
+            "message": "\ud83c\udfd6\ufe0f Which has the most beach time?"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-23T11:42:05.255570",
+          "data": {
+            "role": "assistant",
+            "message": "For the most beach time, the **Whitehaven Beach All Day** tour is a fantastic choice! You'll have the opportunity to truly immerse yourself in the stunning surroundings of Whitehaven Beach. This tour allows for unlimited transfers between the boat and the beach, ensuring you can maximize your time on the powdery white sands. With a guided walk to South Whitehaven Lookout and a delightful buffet lunch onboard, it's perfect for those who want to relax and enjoy the beauty of the Whitsundays all da"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-23T11:42:14.545824",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day beach tour",
+          "timestamp": "2026-05-23T11:41:12.781974"
+        },
+        {
+          "role": "assistant",
+          "message": "Fantastic choice! \ud83c\udf1e Here are some amazing full-day beach tours that you'll absolutely love:\n\n1. **Viper Outer Great Barrier Reef Tour** - Experience the thrill aboard Viper, the fastest vessel in the Whitsundays! This award-winning tour takes you to the Outer Great Barrier Reef and Whitehaven Beach. Perfect for thrill-seekers, you'll snorkel vibrant coral gardens with a marine biologist, explore Hill Inlet's swirling sands, and relax on the pristine Whitehaven Beach. With a small group size and",
+          "timestamp": "2026-05-23T11:41:27.367203"
+        },
+        {
+          "role": "user",
+          "message": "\ud83c\udfd6\ufe0f Which has the most beach time?",
+          "timestamp": "2026-05-23T11:41:57.708972"
+        },
+        {
+          "role": "assistant",
+          "message": "For the most beach time, the **Whitehaven Beach All Day** tour is a fantastic choice! You'll have the opportunity to truly immerse yourself in the stunning surroundings of Whitehaven Beach. This tour allows for unlimited transfers between the boat and the beach, ensuring you can maximize your time on the powdery white sands. With a guided walk to South Whitehaven Lookout and a delightful buffet lunch onboard, it's perfect for those who want to relax and enjoy the beauty of the Whitsundays all da",
+          "timestamp": "2026-05-23T11:42:05.255589"
+        }
+      ],
+      "ended_at": "2026-05-23T11:42:14.545840",
+      "duration_seconds": 74.100224
+    },
+    {
+      "session_id": "session_af37e512745e_1779536536",
+      "account": "bailey",
+      "started_at": "2026-05-23T11:42:16.932263",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-23T11:42:16.932270",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-23T11:42:18.151970",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-23T11:42:21.228689",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
