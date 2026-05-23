@@ -95,12 +95,21 @@
         <div class="claim-detail"><strong>Date:</strong> {{ claim.booking_date or 'N/A' }}</div>
         <div class="claim-detail"><strong>Email:</strong> {{ claim.customer_email }}</div>
         <div class="claim-detail"><strong>Phone:</strong> {{ claim.customer_phone or 'N/A' }}</div>
+        <div class="claim-detail"><strong>People:</strong> {{ claim.people_count or 1 }}</div>
         <div class="claim-detail"><strong>Submitted:</strong> {{ claim.created_at[:10] if claim.created_at else 'N/A' }}</div>
         {% if claim.confirmation_screenshot %}
         <div class="claim-detail"><a class="screenshot-link" href="/{{ claim.confirmation_screenshot }}" target="_blank">View Screenshot</a></div>
         {% endif %}
         {% if claim.voucher_code %}
         <div class="claim-detail"><strong>Voucher:</strong> <span class="voucher-code">{{ claim.voucher_code }}</span></div>
+        {% endif %}
+        {% if claim.people %}
+        <div class="claim-detail" style="grid-column: 1/-1;">
+          <strong>Redeemers:</strong>
+          {% for person in claim.people %}
+            <span style="display:inline-block;margin:3px 4px;padding:3px 8px;border-radius:6px;background:rgba(56,189,248,0.1);font-size:0.85em;">{{ person.name }} ({{ '☕' if person.perk == 'free_coffee' else '🛵' }})</span>
+          {% endfor %}
+        </div>
         {% endif %}
       </div>
       {% if claim.status == 'pending' %}

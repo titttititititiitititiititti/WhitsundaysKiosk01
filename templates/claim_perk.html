@@ -10,212 +10,229 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #0c4a6e 100%);
+      background: linear-gradient(180deg, #0a1628 0%, #122a4a 50%, #0c4a6e 100%);
       min-height: 100vh;
       color: #fff;
       padding: 20px;
     }
-    .claim-container {
-      max-width: 560px;
+    .container {
+      max-width: 480px;
       margin: 0 auto;
-      padding: 40px 30px;
-      background: rgba(15, 25, 50, 0.85);
-      border-radius: 24px;
+    }
+    .logo { text-align: center; margin-bottom: 24px; font-size: 0.9em; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; }
+    .card {
+      background: rgba(15, 25, 50, 0.9);
+      border-radius: 20px;
       border: 1px solid rgba(56, 189, 248, 0.2);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      padding: 28px 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
-    .claim-header {
+    .card-title {
+      font-size: 1.4em;
+      font-weight: 700;
       text-align: center;
-      margin-bottom: 30px;
-    }
-    .claim-header h1 {
-      font-size: 1.6em;
+      margin-bottom: 6px;
       background: linear-gradient(135deg, #38bdf8, #06b6d4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
     }
-    .claim-header p {
-      color: rgba(255,255,255,0.7);
-      font-size: 0.95em;
+    .card-subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.88em;
+      margin-bottom: 24px;
     }
     .perk-badge {
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       background: linear-gradient(135deg, #f59e0b, #d97706);
       color: #fff;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 10px 18px;
+      border-radius: 12px;
       font-weight: 600;
-      font-size: 0.9em;
-      margin-top: 12px;
+      font-size: 0.95em;
+      margin-bottom: 24px;
     }
-    .form-group {
-      margin-bottom: 18px;
-    }
+    .form-group { margin-bottom: 16px; }
     .form-group label {
       display: block;
-      font-size: 0.85em;
-      font-weight: 500;
-      color: rgba(255,255,255,0.8);
+      font-size: 0.82em;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
       margin-bottom: 6px;
     }
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group input, .form-group textarea {
       width: 100%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      background: rgba(15, 23, 42, 0.8);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(10, 20, 40, 0.9);
       color: #fff;
-      font-size: 1em;
+      font-size: 0.95em;
       font-family: inherit;
-      transition: border-color 0.2s;
     }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    .form-group input:focus, .form-group textarea:focus {
       outline: none;
       border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
     }
-    .form-group input[readonly] {
-      opacity: 0.7;
-      cursor: not-allowed;
+    .form-group input[type="file"] { padding: 10px; cursor: pointer; }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .people-section { background: rgba(56,189,248,0.06); border-radius: 12px; padding: 16px; margin-bottom: 18px; border: 1px solid rgba(56,189,248,0.12); }
+    .people-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .people-header label { margin: 0; font-size: 0.85em; }
+    .people-count { display: flex; align-items: center; gap: 10px; }
+    .people-count button {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.4);
+      background: rgba(56,189,248,0.1); color: #38bdf8; font-size: 1.2em; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
-    .form-group input[type="file"] {
-      padding: 10px;
-      cursor: pointer;
+    .people-count span { font-size: 1.2em; font-weight: 700; min-width: 24px; text-align: center; }
+    .person-name-input {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid rgba(56,189,248,0.2); background: rgba(10,20,40,0.8);
+      color: #fff; font-size: 0.9em; font-family: inherit; margin-bottom: 8px;
     }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
+    .person-name-input:focus { outline: none; border-color: #38bdf8; }
+    .perk-choice { display: flex; gap: 8px; margin-top: 4px; }
+    .perk-choice button {
+      flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);
+      background: rgba(15,23,42,0.8); color: rgba(255,255,255,0.7); font-size: 0.8em;
+      cursor: pointer; transition: all 0.15s;
     }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .perk-choice button.selected { border-color: #06b6d4; background: rgba(6,182,212,0.15); color: #fff; font-weight: 600; }
     .submit-btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #06b6d4, #0891b2);
-      color: #fff;
-      font-size: 1.1em;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 10px;
+      width: 100%; padding: 15px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff;
+      font-size: 1.05em; font-weight: 700; cursor: pointer; margin-top: 8px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
-    }
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .success-msg {
-      display: none;
-      text-align: center;
-      padding: 30px;
-    }
-    .success-msg h2 {
-      color: #34d399;
-      font-size: 1.4em;
-      margin-bottom: 10px;
-    }
-    .success-msg p {
-      color: rgba(255,255,255,0.8);
-      line-height: 1.6;
-    }
-    .note {
-      font-size: 0.8em;
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      margin-top: 16px;
-      line-height: 1.5;
-    }
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-      .claim-container { padding: 24px 18px; }
-    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(6,182,212,0.4); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .note { font-size: 0.75em; color: rgba(255,255,255,0.4); text-align: center; margin-top: 14px; line-height: 1.5; }
+    .success-card { display: none; text-align: center; }
+    .success-card h2 { color: #34d399; font-size: 1.3em; margin-bottom: 10px; }
+    .success-card p { color: rgba(255,255,255,0.75); line-height: 1.6; font-size: 0.92em; }
+    .status-link { display: inline-block; margin-top: 16px; padding: 12px 24px; border-radius: 10px; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; text-decoration: none; font-weight: 600; font-size: 0.9em; }
+    .check-status-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; }
+    .check-status-section a { color: #38bdf8; font-size: 0.85em; }
   </style>
 </head>
 <body>
-  <div class="claim-container">
-    <div class="claim-header">
-      <h1>Claim Your Filtour Perk</h1>
-      <p>Upload your booking confirmation to unlock your reward</p>
+  <div class="container">
+    <div class="logo">FILTOUR</div>
+    <div class="card">
+      <div class="card-title">Claim Your Perk</div>
+      <div class="card-subtitle">Upload your booking confirmation to unlock rewards for your group</div>
+
       <div class="perk-badge" id="perk-display">
-        <span id="perk-icon">☕</span>
-        <span id="perk-label">Free Coffee</span>
-      </div>
-    </div>
-
-    <form id="claim-form" enctype="multipart/form-data">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Full Name *</label>
-          <input type="text" name="customer_name" required>
-        </div>
-        <div class="form-group">
-          <label>Phone</label>
-          <input type="tel" name="customer_phone">
-        </div>
+        <span id="perk-icon">{{ '☕' if selected_perk == 'free_coffee' else '🛵' }}</span>
+        <span id="perk-label">{{ 'Free Coffee' if selected_perk == 'free_coffee' else 'Free Moped Hour' }} — per person</span>
       </div>
 
-      <div class="form-group">
-        <label>Email *</label>
-        <input type="email" name="customer_email" required>
-      </div>
-
-      <div class="form-group">
-        <label>Tour</label>
-        <input type="text" name="tour_name" value="{{ tour_name }}" readonly>
+      <form id="claim-form" enctype="multipart/form-data">
         <input type="hidden" name="tour_key" value="{{ tour_key }}">
+        <input type="hidden" name="tour_name" value="{{ tour_name }}">
         <input type="hidden" name="booking_url" value="{{ booking_url }}">
-        <input type="hidden" name="selected_perk" value="{{ selected_perk }}">
-      </div>
 
-      <div class="form-row">
         <div class="form-group">
-          <label>Booking Date *</label>
-          <input type="date" name="booking_date" required>
+          <label>Booking Confirmation Screenshot *</label>
+          <input type="file" name="confirmation_screenshot" accept="image/*,.pdf" required>
         </div>
+
         <div class="form-group">
-          <label>Booking Reference *</label>
-          <input type="text" name="booking_reference" required placeholder="e.g. RZ-12345">
+          <label>Tour Booked</label>
+          <input type="text" value="{{ tour_name }}" readonly style="opacity:0.6;">
         </div>
+
+        <!-- People section -->
+        <div class="people-section">
+          <div class="people-header">
+            <label>How many people are redeeming?</label>
+            <div class="people-count">
+              <button type="button" onclick="changePeopleCount(-1)">−</button>
+              <span id="people-count-display">1</span>
+              <button type="button" onclick="changePeopleCount(1)">+</button>
+            </div>
+          </div>
+          <div id="people-list">
+            <div class="person-entry" data-index="0">
+              <input class="person-name-input" type="text" placeholder="Full name (person 1)" required>
+              <div class="perk-choice">
+                <button type="button" class="selected" onclick="setPersonPerk(0,'free_coffee',this)">☕ Coffee</button>
+                <button type="button" onclick="setPersonPerk(0,'free_moped_hour',this)">🛵 Moped Hour</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contact Email *</label>
+          <input type="email" name="customer_email" required placeholder="We'll send your voucher here">
+        </div>
+
+        <div class="form-group">
+          <label>Phone (optional)</label>
+          <input type="tel" name="customer_phone" placeholder="In case we need to reach you">
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Submit & Claim Perks</button>
+        <p class="note">One perk per person on the booking. We'll verify your confirmation and email your vouchers within 24 hours.</p>
+      </form>
+
+      <div class="success-card" id="success-card">
+        <h2>Claim Submitted!</h2>
+        <p>We're reviewing your booking confirmation. Once verified, we'll email your voucher(s).</p>
+        <a class="status-link" id="status-link" href="#">Check claim status →</a>
       </div>
 
-      <div class="form-group">
-        <label>Booking Confirmation Screenshot *</label>
-        <input type="file" name="confirmation_screenshot" accept="image/*,.pdf" required>
+      <div class="check-status-section">
+        <a href="#" onclick="promptStatusCheck(); return false;">Already submitted? Check your claim status</a>
       </div>
-
-      <div class="form-group">
-        <label>Notes (optional)</label>
-        <textarea name="notes" placeholder="Any additional details..."></textarea>
-      </div>
-
-      <button type="submit" class="submit-btn" id="submit-btn">Submit Claim</button>
-      <p class="note">Perks are issued after booking proof is verified. One perk per confirmed booking.</p>
-    </form>
-
-    <div class="success-msg" id="success-msg">
-      <h2>Claim Submitted!</h2>
-      <p>We'll verify your booking confirmation and send your voucher code to your email. This usually takes less than 24 hours.</p>
-      <p style="margin-top: 16px; color: #38bdf8;">You can close this page now.</p>
     </div>
   </div>
 
   <script>
-    const selectedPerk = '{{ selected_perk }}';
-    if (selectedPerk === 'free_moped_hour') {
-      document.getElementById('perk-icon').textContent = '🛵';
-      document.getElementById('perk-label').textContent = 'Free Moped Hour';
+    let peopleCount = 1;
+    const maxPeople = 12;
+    const defaultPerk = '{{ selected_perk }}' || 'free_coffee';
+    let peoplePerkChoices = [defaultPerk];
+
+    function changePeopleCount(delta) {
+      const newCount = Math.max(1, Math.min(maxPeople, peopleCount + delta));
+      if (newCount === peopleCount) return;
+      peopleCount = newCount;
+      document.getElementById('people-count-display').textContent = peopleCount;
+      renderPeopleList();
+    }
+
+    function renderPeopleList() {
+      while (peoplePerkChoices.length < peopleCount) peoplePerkChoices.push(defaultPerk);
+      const list = document.getElementById('people-list');
+      list.innerHTML = '';
+      for (let i = 0; i < peopleCount; i++) {
+        const perk = peoplePerkChoices[i] || defaultPerk;
+        const div = document.createElement('div');
+        div.className = 'person-entry';
+        div.dataset.index = i;
+        div.innerHTML = `
+          <input class="person-name-input" type="text" placeholder="Full name (person ${i+1})" required>
+          <div class="perk-choice">
+            <button type="button" class="${perk === 'free_coffee' ? 'selected' : ''}" onclick="setPersonPerk(${i},'free_coffee',this)">☕ Coffee</button>
+            <button type="button" class="${perk === 'free_moped_hour' ? 'selected' : ''}" onclick="setPersonPerk(${i},'free_moped_hour',this)">🛵 Moped Hour</button>
+          </div>
+        `;
+        list.appendChild(div);
+      }
+    }
+
+    function setPersonPerk(index, perk, btn) {
+      peoplePerkChoices[index] = perk;
+      const entry = btn.closest('.person-entry');
+      entry.querySelectorAll('.perk-choice button').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
     }
 
     document.getElementById('claim-form').addEventListener('submit', async function(e) {
@@ -224,24 +241,53 @@
       btn.disabled = true;
       btn.textContent = 'Submitting...';
 
-      const formData = new FormData(this);
+      const formData = new FormData();
+      formData.append('tour_key', '{{ tour_key }}');
+      formData.append('tour_name', '{{ tour_name }}');
+      formData.append('booking_url', '{{ booking_url }}');
+      formData.append('customer_email', this.querySelector('[name="customer_email"]').value);
+      formData.append('customer_phone', this.querySelector('[name="customer_phone"]').value || '');
+
+      const fileInput = this.querySelector('[name="confirmation_screenshot"]');
+      if (fileInput.files[0]) formData.append('confirmation_screenshot', fileInput.files[0]);
+
+      // Collect people data
+      const people = [];
+      document.querySelectorAll('.person-entry').forEach((entry, i) => {
+        const name = entry.querySelector('.person-name-input').value.trim();
+        const perk = peoplePerkChoices[i] || defaultPerk;
+        if (name) people.push({ name, perk });
+      });
+      formData.append('people', JSON.stringify(people));
+      formData.append('people_count', people.length.toString());
+      formData.append('selected_perk', defaultPerk);
+      formData.append('customer_name', people[0]?.name || '');
+      formData.append('booking_reference', 'uploaded_' + Date.now());
+      formData.append('booking_date', new Date().toISOString().split('T')[0]);
+
       try {
         const resp = await fetch('/api/perk-claims', { method: 'POST', body: formData });
         const data = await resp.json();
         if (data.success) {
           document.getElementById('claim-form').style.display = 'none';
-          document.getElementById('success-msg').style.display = 'block';
+          document.getElementById('success-card').style.display = 'block';
+          document.getElementById('status-link').href = '/claim-status?id=' + data.claim_id;
         } else {
-          alert(data.error || 'Something went wrong. Please try again.');
+          alert(data.error || 'Something went wrong.');
           btn.disabled = false;
-          btn.textContent = 'Submit Claim';
+          btn.textContent = 'Submit & Claim Perks';
         }
       } catch (err) {
         alert('Network error. Please try again.');
         btn.disabled = false;
-        btn.textContent = 'Submit Claim';
+        btn.textContent = 'Submit & Claim Perks';
       }
     });
+
+    function promptStatusCheck() {
+      const id = prompt('Enter your claim ID:');
+      if (id) window.location.href = '/claim-status?id=' + id.trim();
+    }
   </script>
 </body>
 </html>

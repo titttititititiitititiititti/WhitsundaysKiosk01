@@ -16999,8 +16999,8 @@
   <div class="qr-overlay" id="qr-payment-modal" style="display: none;">
     <div class="qr-backdrop" onclick="closeQRModal()"></div>
     
-    <div class="qr-card" style="max-width: 520px; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 32px 28px;">
-      <button class="qr-modal-close" onclick="closeQRModal()" style="color:#fff;">×</button>
+    <div class="qr-card" style="max-width: 780px; width: 92vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 32px 36px; max-height: 92vh; overflow-y: auto;">
+      <button onclick="closeQRModal()" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.4em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">×</button>
       
       <h2 id="qr-modal-title" style="color: #fff; font-size: 1.4em; text-align: center; margin-bottom: 4px;">Book your tour & unlock a Filtour perk</h2>
       <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.7); text-align: center; font-size: 0.9em; margin-bottom: 20px;">
@@ -17026,38 +17026,44 @@
         </div>
       </div>
       
-      <!-- QR Code -->
-      <div style="text-align: center; margin-bottom: 16px;">
-        <div style="font-size: 0.8em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Scan to book</div>
-        <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 16px; display: inline-block;">
-          <!-- QR code will be generated here -->
+      <!-- Two-column layout: QR left, steps+actions right -->
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; margin-top: 4px;">
+        <!-- Left: QR Code -->
+        <div style="text-align: center;">
+          <div style="font-size: 0.8em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Scan to book</div>
+          <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 14px; display: inline-block;">
+            <!-- QR code will be generated here -->
+          </div>
+          <div id="qr-debug-url" style="display:none;"></div>
+          <button onclick="openBookingLink()" style="margin-top: 10px; padding: 10px 20px; border: 1px solid rgba(56,189,248,0.4); border-radius: 10px; background: transparent; color: #38bdf8; font-size: 0.85em; font-weight: 600; cursor: pointer; width: 100%;">
+            Open link instead ↗
+          </button>
+        </div>
+        
+        <!-- Right: Steps + Claim QR -->
+        <div>
+          <div style="background: rgba(56,189,248,0.08); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.15);">
+            <div style="font-size: 0.85em; line-height: 2; color: rgba(255,255,255,0.85);">
+              <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
+              <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code and complete your booking</div>
+              <div><strong style="color:#38bdf8;">3.</strong> Scan the claim QR below to upload your confirmation</div>
+              <div><strong style="color:#38bdf8;">4.</strong> We'll verify it and send your voucher</div>
+            </div>
+          </div>
+          
+          <!-- Claim QR - links to upload proof page -->
+          <div style="text-align: center; background: rgba(6,182,212,0.08); border-radius: 14px; padding: 16px; border: 1px solid rgba(6,182,212,0.2);">
+            <div style="font-size: 0.8em; font-weight: 600; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">After booking — claim your perk</div>
+            <div id="claim-qr-container" style="background: #fff; border-radius: 12px; padding: 10px; display: inline-block;">
+              <!-- Claim QR generated dynamically -->
+            </div>
+            <div style="font-size: 0.75em; color: rgba(255,255,255,0.5); margin-top: 8px;">Scan this to upload your booking confirmation</div>
+          </div>
         </div>
       </div>
       
-      <div id="qr-debug-url" style="display:none;"></div>
-      
-      <!-- Steps -->
-      <div style="background: rgba(56,189,248,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; border: 1px solid rgba(56,189,248,0.15);">
-        <div style="font-size: 0.82em; line-height: 1.8; color: rgba(255,255,255,0.85);">
-          <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
-          <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code and complete your booking</div>
-          <div><strong style="color:#38bdf8;">3.</strong> Come back and upload your confirmation</div>
-          <div><strong style="color:#38bdf8;">4.</strong> We'll verify it and send your voucher</div>
-        </div>
-      </div>
-      
-      <!-- Action Buttons -->
-      <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
-        <button onclick="openClaimPerkPage()" style="width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; font-size: 1em; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(6,182,212,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-          I've booked — claim my perk
-        </button>
-        <button onclick="openBookingLink()" style="width: 100%; padding: 12px; border: 1px solid rgba(56,189,248,0.4); border-radius: 12px; background: transparent; color: #38bdf8; font-size: 0.9em; font-weight: 600; cursor: pointer;">
-          Open booking link ↗
-        </button>
-      </div>
-      
-      <p style="font-size: 0.72em; color: rgba(255,255,255,0.4); text-align: center; margin-top: 14px; line-height: 1.5;">
-        Perks are only issued after a valid booking confirmation is submitted. One perk per confirmed booking.
+      <p style="font-size: 0.72em; color: rgba(255,255,255,0.4); text-align: center; margin-top: 16px; line-height: 1.5;">
+        Perks are only issued after a valid booking confirmation is submitted. One perk per person on the booking.
       </p>
     </div>
   </div>
@@ -28587,17 +28593,7 @@
         const check = el.querySelector('.perk-check');
         if (check) check.style.display = isPicked ? 'block' : 'none';
       });
-    }
-    
-    function openClaimPerkPage() {
-      const url = window.currentCheckoutUrl || '';
-      const params = new URLSearchParams({
-        tour: currentBookingTourName,
-        key: currentBookingTourKey,
-        url: url,
-        perk: selectedPerk
-      });
-      window.open('/claim-perk?' + params.toString(), '_blank');
+      generateClaimQR();
     }
     
     function openBookingLink() {
@@ -28609,6 +28605,42 @@
     function initPerkSelection() {
       selectedPerk = 'free_coffee';
       selectPerk('free_coffee');
+      generateClaimQR();
+    }
+
+    function generateClaimQR() {
+      const container = document.getElementById('claim-qr-container');
+      if (!container) return;
+      const params = new URLSearchParams({
+        tour: currentBookingTourName,
+        key: currentBookingTourKey,
+        perk: selectedPerk
+      });
+      const claimUrl = window.location.origin + '/claim-perk?' + params.toString();
+      container.innerHTML = '';
+      if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
+        const canvas = document.createElement('canvas');
+        canvas.style.maxWidth = '180px';
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+        QRCode.toCanvas(canvas, claimUrl, {
+          width: 180, margin: 2,
+          color: { dark: '#0f766e', light: '#ffffff' },
+          errorCorrectionLevel: 'M'
+        }, function(error) {
+          if (error) {
+            container.innerHTML = '<p style="color:#999;font-size:0.8em;">QR unavailable</p>';
+          } else {
+            container.appendChild(canvas);
+          }
+        });
+      } else {
+        const encodedUrl = encodeURIComponent(claimUrl);
+        const img = document.createElement('img');
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodedUrl}&color=15-118-110&format=png`;
+        img.style.maxWidth = '180px';
+        container.appendChild(img);
+      }
     }
 
     // =====================================================================

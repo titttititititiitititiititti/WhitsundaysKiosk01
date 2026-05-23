@@ -11775,6 +11775,8 @@ def generate_voucher_code(perk_type):
 def submit_perk_claim():
     """Submit a new perk claim after booking"""
     from datetime import datetime, timedelta
+    import smtplib
+    from email.mime.text import MIMEText
 
     name = request.form.get('customer_name', '').strip()
     phone = request.form.get('customer_phone', '').strip()
@@ -11782,16 +11784,24 @@ def submit_perk_claim():
     tour_name = request.form.get('tour_name', '').strip()
     tour_key = request.form.get('tour_key', '').strip()
     booking_url = request.form.get('booking_url', '').strip()
-    selected_perk = request.form.get('selected_perk', '').strip()
+    selected_perk = request.form.get('selected_perk', 'free_coffee').strip()
     booking_date = request.form.get('booking_date', '').strip()
     booking_reference = request.form.get('booking_reference', '').strip()
     notes = request.form.get('notes', '').strip()
+    people_json = request.form.get('people', '[]')
 
-    if not name or not email or not selected_perk or not booking_reference:
-        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+    try:
+        people = json.loads(people_json) if people_json else []
+    except Exception:
+        people = []
 
-    if selected_perk not in ('free_coffee', 'free_moped_hour'):
-        return jsonify({'success': False, 'error': 'Invalid perk selection'}), 400
+    if not email:
+        return jsonify({'success': False, 'error': 'Email is required'}), 400
+    if not people and not name:
+        return jsonify({'success': False, 'error': 'At least one person name is required'}), 400
+
+    if not name and people:
+        name = people[0].get('name', '')
 
     screenshot_path = ''
     if 'confirmation_screenshot' in request.files:
@@ -11799,10 +11809,10 @@ def submit_perk_claim():
         if file and file.filename:
             ext = os.path.splitext(file.filename)[1].lower()
             if ext not in ('.jpg', '.jpeg', '.png', '.webp', '.pdf'):
-                return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+                return jsonify({'success': False, 'error': 'Invalid file type. Use JPG, PNG, or PDF.'}), 400
             upload_dir = 'static/perk_claims'
             os.makedirs(upload_dir, exist_ok=True)
-            safe_name = f"claim_{int(datetime.now().timestamp())}_{booking_reference[:20].replace(' ', '_')}{ext}"
+            safe_name = f"claim_{int(datetime.now().timestamp())}_{os.urandom(4).hex()}{ext}"
             screenshot_path = os.path.join(upload_dir, safe_name)
             file.save(screenshot_path)
 
@@ -11813,11 +11823,13 @@ def submit_perk_claim():
         'tour_name': tour_name,
         'external_booking_url': booking_url,
         'selected_perk': selected_perk,
+        'people': people,
+        'people_count': len(people) if people else 1,
         'customer_name': name,
         'customer_phone': phone,
         'customer_email': email,
         'booking_date': booking_date,
-        'booking_reference': booking_reference,
+        'booking_reference': booking_reference or f"upload_{int(now.timestamp())}",
         'confirmation_screenshot': screenshot_path,
         'notes': notes,
         'status': 'pending',
@@ -11832,6 +11844,39 @@ def submit_perk_claim():
     claims = load_perk_claims()
     claims.append(claim)
     save_perk_claims(claims)
+
+    # Send email notification
+    try:
+        people_summary = ', '.join([f"{p['name']} ({p.get('perk','coffee')})" for p in people]) if people else name
+        subject = f"[Filtour] New perk claim: {tour_name or 'Unknown tour'} ({len(people) if people else 1} people)"
+        body = f"""New perk claim submitted!
+
+Tour: {tour_name}
+People: {people_summary}
+Email: {email}
+Phone: {phone or 'N/A'}
+Claim ID: {claim['id']}
+
+Review it at: https://filtour.com/admin/perk-claims
+
+"""
+        msg = MIMEText(body)
+        msg['Subject'] = subject
+        msg['From'] = 'noreply@filtour.com'
+        msg['To'] = 'bailey.amouyal@gmail.com'
+        smtp_server = os.environ.get('SMTP_SERVER', '')
+        smtp_user = os.environ.get('SMTP_USER', '')
+        smtp_pass = os.environ.get('SMTP_PASS', '')
+        if smtp_server and smtp_user and smtp_pass:
+            with smtplib.SMTP(smtp_server, 587) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_pass)
+                server.send_message(msg)
+            print(f"[PERK] Email notification sent for claim {claim['id']}")
+        else:
+            print(f"[PERK] Email not configured - claim {claim['id']} submitted (check admin panel)")
+    except Exception as e:
+        print(f"[PERK] Email notification failed: {e}")
 
     return jsonify({'success': True, 'claim_id': claim['id'], 'message': 'Claim submitted! We will verify your booking and send your voucher.'})
 
@@ -11909,6 +11954,16 @@ def claim_perk_page():
                            tour_key=tour_key,
                            booking_url=booking_url,
                            selected_perk=selected_perk)
+
+@app.route('/claim-status')
+def claim_status_page():
+    """Public page for customers to check their claim status"""
+    claim_id = request.args.get('id', '')
+    claim = None
+    if claim_id:
+        claims = load_perk_claims()
+        claim = next((c for c in claims if c['id'] == claim_id), None)
+    return render_template('claim_status.html', claim=claim)
 
 @app.route('/admin/perk-claims')
 @agent_required
