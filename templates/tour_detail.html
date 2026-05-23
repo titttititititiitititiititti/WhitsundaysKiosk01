@@ -2,22 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>{{ tour.name }} - Tour Details</title>
+  <title>{{ tour.name }} | {{ tour.company_name }} - Book Cheap Whitsundays Tour | Filtour Airlie Beach</title>
+  <meta name="description" content="{{ tour.name }} by {{ tour.company_name }}. {{ tour.summary or tour.description[:160] }} Book at the cheapest guaranteed price from Airlie Beach.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ tour_url }}">
   <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700|Roboto:400,500,700|Open+Sans:400,600&display=swap" rel="stylesheet">
   
   <!-- Open Graph meta tags for sharing -->
-  <meta property="og:title" content="{{ tour.name }}" />
+  <meta property="og:title" content="{{ tour.name }} | Cheapest Price Guaranteed - Filtour" />
   <meta property="og:description" content="{{ tour.summary or tour.description[:200] }}" />
   <meta property="og:image" content="{{ request.url_root.rstrip('/') }}{{ tour.thumbnail }}" />
   <meta property="og:url" content="{{ tour_url }}" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="Filtour - Airlie Beach Tours" />
   
   <!-- Twitter Card meta tags -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{{ tour.name }}" />
+  <meta name="twitter:title" content="{{ tour.name }} | Filtour Airlie Beach" />
   <meta name="twitter:description" content="{{ tour.summary or tour.description[:200] }}" />
   <meta name="twitter:image" content="{{ request.url_root.rstrip('/') }}{{ tour.thumbnail }}" />
+
+  <!-- Structured Data - Tour/Product -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    "name": "{{ tour.name }}",
+    "description": "{{ (tour.summary or tour.description[:300])|replace('"', '\\"')|replace('\n', ' ') }}",
+    "touristType": "Adventure tourism",
+    "provider": {
+      "@type": "TourOperator",
+      "name": "{{ tour.company_name }}"
+    },
+    {% if tour.price_adult %}"offers": {
+      "@type": "Offer",
+      "price": "{{ tour.price_adult }}",
+      "priceCurrency": "AUD",
+      "availability": "https://schema.org/InStock"
+    },{% endif %}
+    "itinerary": {
+      "@type": "Place",
+      "name": "Whitsundays, Airlie Beach, Queensland"
+    }
+  }
+  </script>
   
   <style>
     * {

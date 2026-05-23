@@ -2,7 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tour Chat Assistant</title>
+  <title>Cheapest Tour Prices in Airlie Beach Guaranteed | Filtour - Whitsundays Tours & Activities</title>
+  <meta name="description" content="Find the cheapest tour prices in Airlie Beach, guaranteed. Compare 150+ Whitsundays tours, sailing trips, reef adventures, and island experiences. Book snorkelling, diving, scenic flights, and overnight sailing at the lowest prices. Airlie Beach's #1 tour comparison platform.">
+  <meta name="keywords" content="Airlie Beach tours, cheapest tours Airlie Beach, Whitsundays tours, Whitsunday Islands, Great Barrier Reef tours, Whitehaven Beach tours, sailing Whitsundays, snorkelling Airlie Beach, diving Whitsundays, island tours, reef trips, overnight sailing, scenic flights Whitsundays, book tours Airlie Beach, tour deals Airlie Beach, budget tours Whitsundays">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://filtour.com/">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://filtour.com/">
+  <meta property="og:title" content="Cheapest Tour Prices in Airlie Beach Guaranteed | Filtour">
+  <meta property="og:description" content="Compare 150+ Whitsundays tours and activities at guaranteed lowest prices. Sailing, reef trips, island tours, scenic flights and more from Airlie Beach.">
+  <meta property="og:site_name" content="Filtour">
+  <meta property="og:locale" content="en_AU">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Cheapest Tour Prices in Airlie Beach Guaranteed | Filtour">
+  <meta name="twitter:description" content="Compare 150+ Whitsundays tours at the lowest prices. Sailing, reef, islands, scenic flights from Airlie Beach.">
+
+  <!-- Geo targeting -->
+  <meta name="geo.region" content="AU-QLD">
+  <meta name="geo.placename" content="Airlie Beach">
+  <meta name="geo.position" content="-20.2686;148.7183">
+  <meta name="ICBM" content="-20.2686, 148.7183">
+
+  <!-- Structured Data - Local Business + Tour Provider -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "Filtour",
+    "url": "https://filtour.com",
+    "description": "Airlie Beach's tour comparison platform offering the cheapest guaranteed prices on 150+ Whitsundays tours and activities.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Airlie Beach",
+      "addressRegion": "QLD",
+      "addressCountry": "AU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -20.2686,
+      "longitude": 148.7183
+    },
+    "areaServed": {
+      "@type": "Place",
+      "name": "Whitsundays, Queensland, Australia"
+    },
+    "priceRange": "$",
+    "openingHours": "Mo-Su 00:00-23:59",
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Filtour",
+    "url": "https://filtour.com",
+    "description": "Compare and book the cheapest Airlie Beach and Whitsundays tours",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://filtour.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PJL89KK4EP"></script>
   <script>
@@ -26,10 +93,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Filtour">
 
-  <!-- Cache busting -->
+  {% if not is_demo_mode %}
+  <!-- Cache busting for kiosk mode only -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
+  {% endif %}
   
   <!-- Version indicator: v2.5px-margins -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -13877,6 +13946,25 @@
     /* Add top padding to body when in demo mode */
     body { padding-top: 40px !important; }
   </style>
+  <!-- SEO content for crawlers -->
+  <div style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;" aria-hidden="true">
+    <h1>Cheapest Tour Prices in Airlie Beach Guaranteed</h1>
+    <h2>Whitsundays Tours, Sailing & Reef Adventures from Airlie Beach</h2>
+    <p>Filtour offers the cheapest guaranteed prices on over 150 tours and activities departing from Airlie Beach in the Whitsundays, Queensland, Australia. Compare sailing tours, Great Barrier Reef day trips, Whitehaven Beach excursions, overnight sailing adventures, scenic flights, diving, snorkelling, jet ski tours, island hopping, and sunset cruises. Book directly at the lowest prices with local operators including Ocean Rafting, Cruise Whitsundays, Sailing Whitsundays, Red Cat Adventures, and many more. Whether you're looking for budget backpacker trips, luxury sailing experiences, or family-friendly island tours, Filtour helps you find and book the perfect Whitsundays adventure at prices lower than any other booking platform.</p>
+    <h3>Popular Airlie Beach Tour Categories</h3>
+    <ul>
+      <li>Whitsunday Islands Sailing Tours</li>
+      <li>Great Barrier Reef Snorkelling & Diving</li>
+      <li>Whitehaven Beach Day Trips</li>
+      <li>Overnight Sailing Adventures</li>
+      <li>Scenic Flights & Helicopter Tours</li>
+      <li>Jet Ski Tours Airlie Beach</li>
+      <li>Sunset Cruises Whitsundays</li>
+      <li>Island Hopping Tours</li>
+      <li>Fishing Charters Whitsundays</li>
+      <li>Stand Up Paddle Boarding</li>
+    </ul>
+  </div>
   {% endif %}
   
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->

@@ -4948,6 +4948,35 @@ def shop_entry(account_slug, lang=None):
     resp.set_cookie('filtour_ref', account_slug, max_age=60*60*24*30, samesite='Lax')
     return resp
 
+@app.route('/robots.txt')
+def robots_txt():
+    content = """User-agent: *
+Allow: /
+Allow: /tour/
+Disallow: /admin
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://filtour.com/sitemap.xml
+"""
+    return content, 200, {'Content-Type': 'text/plain'}
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    from datetime import datetime
+    tours = load_all_tours('en', preview_account='bailey')
+    urls = []
+    urls.append(f'  <url><loc>https://filtour.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>')
+    for tour in tours:
+        key = tour.get('key', '')
+        urls.append(f'  <url><loc>https://filtour.com/tour/{key}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>')
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{chr(10).join(urls)}
+</urlset>"""
+    return xml, 200, {'Content-Type': 'application/xml'}
+
 @app.route('/')
 def index():
     # Check for referral from QR code scan (allows public access)
