@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-23T11:39:23.403596",
+  "last_updated": "2026-05-23T11:40:02.670608",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81263,15 +81263,35 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-23T11:40:01.670362",
+          "data": {
+            "tour_name": "Coastal Beaches Adventure",
+            "company": "driftwoodtours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-23T11:40:02.670552",
+          "data": {
+            "tour_name": "Coastal Beaches Adventure",
+            "company": "driftwoodtours",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [
-        "Northern Exposure Eco Adventure"
+        "Northern Exposure Eco Adventure",
+        "Coastal Beaches Adventure"
       ],
       "tours_booked": [
-        "Northern Exposure Eco Adventure"
+        "Northern Exposure Eco Adventure",
+        "Coastal Beaches Adventure"
       ],
       "chat_messages": []
     }
