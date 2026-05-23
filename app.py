@@ -4973,9 +4973,9 @@ def index():
     elif 'user' in session:
         active_account = session.get('user')
     else:
-        active_account = 'awda'
+        active_account = 'bailey'
         is_demo_mode = True
-        print(f"[INDEX] Demo mode - no kiosk account set, using 'awda' for public access")
+        print(f"[INDEX] Demo mode - showing bailey tours for public demo")
     
     if preview_account:
         session['preview_account'] = preview_account
@@ -5276,12 +5276,12 @@ def tour_page(key):
     timestamp = request.args.get('t')
     
     # Determine which account to use for filtering tours
-    # Fall back to 'awda' demo account if nothing else works
-    active_account = referral_account or get_active_account() or 'awda'
+    # Fall back to 'bailey' if nothing else works
+    active_account = referral_account or get_active_account() or 'bailey'
     
-    # If ref was provided but account doesn't exist, still use it for tracking but load awda tours
+    # If ref was provided but account doesn't exist, still use it for tracking but load bailey tours
     if ref and not referral_account:
-        print(f"[TOUR] Referral '{ref}' not found, using 'awda' as fallback")
+        print(f"[TOUR] Referral '{ref}' not found, using 'bailey' as fallback")
     
     # Log QR code visit if tracking parameters are present
     if ref and ref != 'qr' and tracking_id:
