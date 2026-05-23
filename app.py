@@ -1415,9 +1415,9 @@ def get_active_account():
 
 def get_effective_account():
     """Get the best available account for the current request.
-    Priority: referral cookie/param -> kiosk instance.json -> None
+    Priority: referral cookie/param -> kiosk instance.json -> session user -> bailey (default)
     Use this in API endpoints that need to know which account's tours to serve."""
-    return get_referral_account() or get_active_account()
+    return get_referral_account() or get_active_account() or session.get('user') or 'bailey'
 
 def get_kiosk_enabled_tours():
     """Get the list of enabled tours for this kiosk instance"""
@@ -5786,9 +5786,8 @@ def filter_tours():
     
     print(f"Filter request: activities={activities}, duration={duration}, price={price}, family={family}, meals={meals}, equipment={equipment}, cruise_ship_only={cruise_ship_only}")
     
-    # Get referral account for filtering (if user came from QR code)
-    referral_account = get_referral_account()
-    active_account = referral_account or get_active_account()
+    # Get effective account for tour filtering
+    active_account = get_effective_account()
     
     # Load all tours in the specified language (filtered by account)
     tours = load_all_tours(language, preview_account=active_account)
@@ -5866,11 +5865,10 @@ def more_tours():
     cruise_ship_only = request.args.get('cruise_ship_only', '') == 'true' or request.args.get('cruise_ship_friendly', '') == 'true'
     
     # Get referral account for filtering (if user came from QR code)
-    referral_account = get_referral_account()
-    active_account = referral_account or get_active_account()
-    
+    active_account = get_effective_account()
+
     tours = load_all_tours(language, preview_account=active_account)
-    
+
     # Apply cruise ship friendly filter if requested
     if cruise_ship_only:
         tours = [t for t in tours if t.get('cruise_ship_friendly')]
