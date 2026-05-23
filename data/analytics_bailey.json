@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-23T12:12:10.130549",
+  "last_updated": "2026-05-23T13:45:20.409542",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28673,6 +28673,62 @@
       "chat_messages": [],
       "ended_at": "2026-05-23T12:12:10.130495",
       "duration_seconds": 647.95774
+    },
+    {
+      "session_id": "session_41d397346352_1779543913",
+      "account": "bailey",
+      "started_at": "2026-05-23T13:45:13.252022",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-23T13:45:13.252042",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-23T13:45:13.466151",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-23T13:45:13.558618",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-23T13:45:18.391818",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-23T13:45:20.409486",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Condor Whitsundays Sailing Tour"
+      ],
+      "tours_booked": [
+        "Condor Whitsundays Sailing Tour"
+      ],
+      "chat_messages": []
     }
   ]
 }
