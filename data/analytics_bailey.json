@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T03:45:46.739047",
+  "last_updated": "2026-05-24T04:04:51.593521",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -29228,6 +29228,11 @@
             "company": "ProSail",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-24T04:04:37.081582",
+          "data": {}
         }
       ],
       "language": "en",
@@ -29238,6 +29243,42 @@
       "tours_booked": [
         "Condor Whitsundays Sailing Tour"
       ],
+      "chat_messages": [],
+      "ended_at": "2026-05-24T04:04:37.081591",
+      "duration_seconds": 1151.224197
+    },
+    {
+      "session_id": "session_2a3d63c6f990_1779595487",
+      "account": "bailey",
+      "started_at": "2026-05-24T04:04:48.001809",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-24T04:04:48.001821",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-24T04:04:50.466378",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-24T04:04:51.593459",
+          "data": {
+            "mode": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
       "chat_messages": []
     }
   ]
