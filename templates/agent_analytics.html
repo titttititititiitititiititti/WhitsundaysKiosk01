@@ -641,6 +641,20 @@
             }
         }
         
+        // Auto-refresh: poll for new sessions every 60 seconds
+        let _knownCount = {{ summary.total_sessions or 0 }};
+        async function autoCheckForNewData() {
+            try {
+                const resp = await fetch('/api/analytics/check-new?known_count=' + _knownCount);
+                const data = await resp.json();
+                if (data.total_sessions > _knownCount) {
+                    _knownCount = data.total_sessions;
+                    location.reload();
+                }
+            } catch (e) { /* silent */ }
+        }
+        setInterval(autoCheckForNewData, 60000);
+
         // Check kiosk session status
         async function checkKioskStatus() {
             const statusEl = document.getElementById('kiosk-status');

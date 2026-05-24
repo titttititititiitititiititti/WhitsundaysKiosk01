@@ -344,12 +344,13 @@ def get_authenticated_remote_url():
     
     return None
 
-def _github_api_push(changed_files_dict, commit_message):
+def _github_api_push(changed_files_dict, commit_message, branch='main'):
     """
     Push file changes to GitHub using the REST API.
     This is the most reliable method for Render/cloud where git CLI push may fail.
     
     changed_files_dict: {filepath: content_bytes_or_str, ...}
+    branch: target branch (default 'main')
     Returns: (success: bool, message: str)
     """
     if not http_requests:
@@ -368,11 +369,25 @@ def _github_api_push(changed_files_dict, commit_message):
     api_base = f'https://api.github.com/repos/{owner}/{repo}'
     
     try:
-        # 1. Get the current commit SHA of the main branch
-        ref_resp = http_requests.get(f'{api_base}/git/ref/heads/main', headers=headers, timeout=15)
-        if ref_resp.status_code != 200:
+        # 1. Get the current commit SHA of the target branch
+        ref_resp = http_requests.get(f'{api_base}/git/ref/heads/{branch}', headers=headers, timeout=15)
+        if ref_resp.status_code == 404 and branch != 'main':
+            # Branch doesn't exist yet — create it from main
+            main_ref = http_requests.get(f'{api_base}/git/ref/heads/main', headers=headers, timeout=15)
+            if main_ref.status_code != 200:
+                return False, f"Failed to get main ref to create branch: {main_ref.status_code}"
+            main_sha = main_ref.json()['object']['sha']
+            create_resp = http_requests.post(f'{api_base}/git/refs', headers=headers, json={
+                'ref': f'refs/heads/{branch}',
+                'sha': main_sha
+            }, timeout=15)
+            if create_resp.status_code not in (200, 201):
+                return False, f"Failed to create branch '{branch}': {create_resp.status_code}"
+            current_sha = main_sha
+        elif ref_resp.status_code != 200:
             return False, f"Failed to get branch ref: {ref_resp.status_code} {ref_resp.text[:200]}"
-        current_sha = ref_resp.json()['object']['sha']
+        else:
+            current_sha = ref_resp.json()['object']['sha']
         
         # 2. Get the current tree SHA
         commit_resp = http_requests.get(f'{api_base}/git/commits/{current_sha}', headers=headers, timeout=15)
@@ -425,11 +440,11 @@ def _github_api_push(changed_files_dict, commit_message):
         new_commit_sha = new_commit_resp.json()['sha']
         
         # 6. Update the branch reference
-        update_resp = http_requests.patch(f'{api_base}/git/refs/heads/main', headers=headers, json={
+        update_resp = http_requests.patch(f'{api_base}/git/refs/heads/{branch}', headers=headers, json={
             'sha': new_commit_sha
         }, timeout=15)
         if update_resp.status_code == 200:
-            return True, f"Pushed {len(changed_files_dict)} file(s) via GitHub API"
+            return True, f"Pushed {len(changed_files_dict)} file(s) to '{branch}' via GitHub API"
         else:
             return False, f"Failed to update ref: {update_resp.status_code} {update_resp.text[:200]}"
     
@@ -437,9 +452,12 @@ def _github_api_push(changed_files_dict, commit_message):
         return False, f"GitHub API error: {e}"
 
 
+ANALYTICS_BRANCH = 'analytics-data'
+
 def _github_api_pull_analytics():
     """Pull analytics JSON files from GitHub via REST API and merge into local.
     Used on Render where there is no .git directory.
+    Reads from the 'analytics-data' branch first, falls back to 'main'.
     Returns number of sessions merged."""
     if not http_requests or not GITHUB_TOKEN:
         return 0
@@ -455,14 +473,21 @@ def _github_api_pull_analytics():
     api_base = f'https://api.github.com/repos/{owner}/{repo}'
     merged_count = 0
 
+    # Try analytics-data branch first, fall back to main
+    source_branch = ANALYTICS_BRANCH
     try:
-        # List files in data/ directory on main branch
         tree_resp = http_requests.get(
-            f'{api_base}/contents/data?ref=main', headers=headers, timeout=15
+            f'{api_base}/contents/data?ref={ANALYTICS_BRANCH}', headers=headers, timeout=15
         )
         if tree_resp.status_code != 200:
-            print(f"[RENDER ANALYTICS] Could not list data/ on GitHub: {tree_resp.status_code}")
-            return 0
+            # Branch may not exist yet — fall back to main
+            source_branch = 'main'
+            tree_resp = http_requests.get(
+                f'{api_base}/contents/data?ref=main', headers=headers, timeout=15
+            )
+            if tree_resp.status_code != 200:
+                print(f"[RENDER ANALYTICS] Could not list data/ on GitHub: {tree_resp.status_code}")
+                return 0
 
         for item in tree_resp.json():
             name = item.get('name', '')
@@ -473,9 +498,9 @@ def _github_api_pull_analytics():
 
             account = name.replace('analytics_', '').replace('.json', '')
 
-            # Download the file content
+            # Download the file content from whichever branch had data
             file_resp = http_requests.get(
-                f'{api_base}/contents/data/{name}?ref=main', headers=headers, timeout=15
+                f'{api_base}/contents/data/{name}?ref={source_branch}', headers=headers, timeout=15
             )
             if file_resp.status_code != 200:
                 continue
@@ -2021,7 +2046,7 @@ def _schedule_render_analytics_push():
     with _render_push_lock:
         if _render_push_timer is not None:
             _render_push_timer.cancel()
-        _render_push_timer = threading.Timer(10.0, _do_render_analytics_push)
+        _render_push_timer = threading.Timer(3.0, _do_render_analytics_push)
         _render_push_timer.daemon = True
         _render_push_timer.start()
 
@@ -2050,14 +2075,15 @@ def _do_render_analytics_push():
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             success, msg = _github_api_push(
                 files_to_push,
-                f"Analytics sync from Render [{timestamp}]"
+                f"Analytics sync from Render [{timestamp}]",
+                branch=ANALYTICS_BRANCH
             )
             if success:
-                print(f"[RENDER ANALYTICS] Immediate push OK: {msg}", flush=True)
+                print(f"[RENDER ANALYTICS] Push OK ({ANALYTICS_BRANCH}): {msg}", flush=True)
             else:
-                print(f"[RENDER ANALYTICS] Immediate push failed: {msg}", flush=True)
+                print(f"[RENDER ANALYTICS] Push failed: {msg}", flush=True)
     except Exception as e:
-        print(f"[RENDER ANALYTICS] Immediate push error: {e}", flush=True)
+        print(f"[RENDER ANALYTICS] Push error: {e}", flush=True)
     with _render_push_lock:
         _render_push_timer = None
 
@@ -2184,13 +2210,17 @@ def log_analytics_event(session_id, event_type, event_data=None, account=None):
     # No session cap - keep ALL sessions forever for historical tracking
     save_analytics(analytics, account)
     
-    # On Render: trigger an immediate push for meaningful events so they survive restarts
+    # On Render: push analytics to GitHub so they survive restarts
     _cloud = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
-    if _cloud and GITHUB_TOKEN and event_type in (
-        'session_end', 'book_now_clicked', 'tour_clicked', 'send_to_phone_clicked',
-        'qr_code_generated', 'qr_tour_visit'
-    ):
-        _schedule_render_analytics_push()
+    if _cloud and GITHUB_TOKEN:
+        if event_type == 'session_end':
+            # Session end = immediate synchronous push (most critical, data loss risk)
+            threading.Thread(target=_do_render_analytics_push, daemon=True).start()
+        elif event_type in (
+            'book_now_clicked', 'send_to_phone_clicked',
+            'qr_code_generated', 'qr_tour_visit'
+        ):
+            _schedule_render_analytics_push()
     
     return session
 
@@ -10001,6 +10031,13 @@ def agent_analytics_page():
     try:
         account = session.get('user', DEFAULT_ANALYTICS_ACCOUNT)
 
+        # On Render: pull latest from git so dashboard always shows fresh kiosk data
+        _cloud = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+        if _cloud and GITHUB_TOKEN:
+            try:
+                _github_api_pull_analytics()
+            except Exception as pull_err:
+                print(f"[ANALYTICS PAGE] Pull on load failed: {pull_err}", flush=True)
 
         summary = get_analytics_summary(account)
         
@@ -10915,16 +10952,34 @@ def sync_analytics_to_git():
             if not local_analytics:
                 return
             
-            # Step 2: Fetch latest and hard-reset to origin/main.
-            # This guarantees our commit will be directly on top of origin
-            # so the push is always a fast-forward (no rebase, no conflicts).
-            # Safe because we already saved local analytics into memory above.
+            # Step 2: Fetch the analytics-data branch (or create it from main).
+            # Push analytics to a separate branch so it doesn't trigger Render redeploys.
             subprocess.run(
-                ['git', 'fetch', 'origin', 'main'],
+                ['git', 'fetch', 'origin', ANALYTICS_BRANCH],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
+            # Check if the analytics branch exists on remote
+            branch_check = subprocess.run(
+                ['git', 'rev-parse', '--verify', f'origin/{ANALYTICS_BRANCH}'],
+                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+            )
+            if branch_check.returncode != 0:
+                # Branch doesn't exist yet — create it from main
+                subprocess.run(
+                    ['git', 'fetch', 'origin', 'main'],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                )
+                subprocess.run(
+                    ['git', 'branch', ANALYTICS_BRANCH, 'origin/main'],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
+                )
+                subprocess.run(
+                    ['git', 'push', 'origin', ANALYTICS_BRANCH],
+                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                )
+            # Reset to analytics branch HEAD for fast-forward push
             subprocess.run(
-                ['git', 'reset', '--hard', 'origin/main'],
+                ['git', 'reset', '--hard', f'origin/{ANALYTICS_BRANCH}'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
             )
             
@@ -11004,9 +11059,9 @@ def sync_analytics_to_git():
                 print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr[:200]}", flush=True)
                 return
             
-            # Step 5: Push (fast-forward since we reset to origin/main before committing)
+            # Step 5: Push to analytics-data branch (doesn't trigger Render redeploy)
             push_result = subprocess.run(
-                ['git', 'push', 'origin', 'main'],
+                ['git', 'push', 'origin', f'HEAD:{ANALYTICS_BRANCH}'],
                 cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
             )
             
@@ -11046,8 +11101,9 @@ def pull_analytics_only(account=None, skip_fetch=False):
         
         # Fetch latest from remote (skip if caller already fetched)
         if not skip_fetch:
+            # Fetch analytics branch first, fall back to main
             fetch_result = subprocess.run(
-                ['git', 'fetch', 'origin', 'main'], 
+                ['git', 'fetch', 'origin', ANALYTICS_BRANCH], 
                 cwd=repo_path, 
                 capture_output=True, 
                 text=True,
@@ -11055,14 +11111,24 @@ def pull_analytics_only(account=None, skip_fetch=False):
                 errors='replace',
                 timeout=30
             )
-            
             if fetch_result.returncode != 0:
-                print(f"[ANALYTICS] Fetch failed: {fetch_result.stderr}")
-                return False
+                # Analytics branch may not exist yet, try main
+                fetch_result = subprocess.run(
+                    ['git', 'fetch', 'origin', 'main'], 
+                    cwd=repo_path, 
+                    capture_output=True, 
+                    text=True,
+                    encoding='utf-8',
+                    errors='replace',
+                    timeout=30
+                )
+                if fetch_result.returncode != 0:
+                    print(f"[ANALYTICS] Fetch failed: {fetch_result.stderr}")
+                    return False
         
-        # Use git show to get the file content from origin/main
+        # Try analytics-data branch first, fall back to main
         show_result = subprocess.run(
-            ['git', 'show', f'origin/main:{analytics_file}'],
+            ['git', 'show', f'origin/{ANALYTICS_BRANCH}:{analytics_file}'],
             cwd=repo_path,
             capture_output=True,
             text=True,
@@ -11070,6 +11136,16 @@ def pull_analytics_only(account=None, skip_fetch=False):
             errors='replace',
             timeout=10
         )
+        if show_result.returncode != 0:
+            show_result = subprocess.run(
+                ['git', 'show', f'origin/main:{analytics_file}'],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                timeout=10
+            )
         
         if show_result.returncode == 0 and show_result.stdout:
             # File exists on remote - merge with local instead of overwriting
@@ -11404,7 +11480,7 @@ def refresh_analytics():
                     _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
                     files_to_push[fpath] = json.dumps(_raw, indent=2)
                 if files_to_push:
-                    _github_api_push(files_to_push, f"Analytics sync from Render (refresh)")
+                    _github_api_push(files_to_push, f"Analytics sync from Render (refresh)", branch=ANALYTICS_BRANCH)
             except Exception as e:
                 print(f"[RENDER ANALYTICS] Push on refresh failed: {e}")
         else:
@@ -11701,9 +11777,9 @@ def start_background_services():
             """Background loop that periodically pushes analytics JSON to GitHub
             so web-collected session data survives Render's ephemeral filesystem."""
             import time as _time
-            _PUSH_INTERVAL = 600  # every 10 minutes (was 60s — too frequent, caused git conflicts for kiosks)
+            _PUSH_INTERVAL = 120  # every 2 minutes - Render is ephemeral, push often to avoid data loss
             _time.sleep(15)  # let app start and collect some data first
-            print("[RENDER ANALYTICS] Background push loop started (every 10min)", flush=True)
+            print("[RENDER ANALYTICS] Background push loop started (every 2min)", flush=True)
             while True:
                 try:
                     _github_api_pull_analytics()
@@ -11722,7 +11798,8 @@ def start_background_services():
                         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         success, msg = _github_api_push(
                             files_to_push,
-                            f"Analytics sync from Render [{timestamp}]"
+                            f"Analytics sync from Render [{timestamp}]",
+                            branch=ANALYTICS_BRANCH
                         )
                         if success:
                             print(f"[RENDER ANALYTICS] Pushed {len(files_to_push)} file(s): {msg}", flush=True)
@@ -11734,13 +11811,19 @@ def start_background_services():
 
         _render_analytics_thread = threading.Thread(target=_render_analytics_push_loop, daemon=True)
         _render_analytics_thread.start()
-        print("[RENDER ANALYTICS] Web analytics will be pushed to GitHub every 10min + on meaningful events")
-        # Also register an atexit handler so analytics are pushed before process dies
+        print(f"[RENDER ANALYTICS] Pushing to '{ANALYTICS_BRANCH}' branch (no deploy trigger) every 2min")
+        # Register both atexit and SIGTERM handlers for Render shutdown
         import atexit
+        import signal as _signal
         def _push_analytics_on_exit():
             print("[RENDER ANALYTICS] Pushing analytics before shutdown...", flush=True)
             _do_render_analytics_push()
         atexit.register(_push_analytics_on_exit)
+        def _sigterm_handler(signum, frame):
+            print("[RENDER ANALYTICS] SIGTERM received - flushing analytics...", flush=True)
+            _do_render_analytics_push()
+            raise SystemExit(0)
+        _signal.signal(_signal.SIGTERM, _sigterm_handler)
     elif IS_CLOUD:
         print("[RENDER ANALYTICS] GITHUB_TOKEN not set - web analytics will NOT persist across deploys")
     
@@ -11758,12 +11841,55 @@ def load_perk_claims():
     if os.path.exists(PERK_CLAIMS_FILE):
         with open(PERK_CLAIMS_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
+    # On Render: try pulling from analytics-data branch if local file missing
+    _cloud = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if _cloud and GITHUB_TOKEN and http_requests:
+        try:
+            owner, repo = _get_github_repo_info()
+            if owner and repo:
+                headers = {'Authorization': f'token {GITHUB_TOKEN}', 'Accept': 'application/vnd.github.v3+json'}
+                resp = http_requests.get(
+                    f'https://api.github.com/repos/{owner}/{repo}/contents/{PERK_CLAIMS_FILE}?ref={ANALYTICS_BRANCH}',
+                    headers=headers, timeout=10
+                )
+                if resp.status_code == 200:
+                    import base64
+                    content = base64.b64decode(resp.json()['content']).decode('utf-8')
+                    claims = json.loads(content)
+                    os.makedirs(os.path.dirname(PERK_CLAIMS_FILE), exist_ok=True)
+                    with open(PERK_CLAIMS_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(claims, f, indent=2)
+                    print(f"[PERK] Restored {len(claims)} claim(s) from {ANALYTICS_BRANCH}", flush=True)
+                    return claims
+        except Exception as e:
+            print(f"[PERK] Pull from {ANALYTICS_BRANCH} failed: {e}", flush=True)
     return []
 
 def save_perk_claims(claims):
     os.makedirs(os.path.dirname(PERK_CLAIMS_FILE), exist_ok=True)
     with open(PERK_CLAIMS_FILE, 'w', encoding='utf-8') as f:
         json.dump(claims, f, indent=2, ensure_ascii=False)
+    # On Render: persist to analytics-data branch so claims survive restarts
+    _cloud = os.environ.get('RENDER') or os.environ.get('RENDER_SERVICE_ID')
+    if _cloud and GITHUB_TOKEN:
+        threading.Thread(target=_push_perk_claims_to_git, daemon=True).start()
+
+def _push_perk_claims_to_git():
+    """Push perk claims JSON to analytics-data branch."""
+    try:
+        with open(PERK_CLAIMS_FILE, 'r', encoding='utf-8') as f:
+            content = f.read()
+        success, msg = _github_api_push(
+            {PERK_CLAIMS_FILE: content},
+            "Perk claims update",
+            branch=ANALYTICS_BRANCH
+        )
+        if success:
+            print(f"[PERK] Claims persisted to {ANALYTICS_BRANCH}", flush=True)
+        else:
+            print(f"[PERK] Claims push failed: {msg}", flush=True)
+    except Exception as e:
+        print(f"[PERK] Claims push error: {e}", flush=True)
 
 def generate_voucher_code(perk_type):
     import random

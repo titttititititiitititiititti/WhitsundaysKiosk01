@@ -16999,71 +16999,79 @@
   <div class="qr-overlay" id="qr-payment-modal" style="display: none;">
     <div class="qr-backdrop" onclick="closeQRModal()"></div>
     
-    <div class="qr-card" style="max-width: 780px; width: 92vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 32px 36px; max-height: 92vh; overflow-y: auto;">
+    <div class="qr-card" style="max-width: 580px; width: 90vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 28px 32px; max-height: 92vh; overflow-y: auto; position: relative;">
       <button onclick="closeQRModal()" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.4em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">×</button>
       
-      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.4em; text-align: center; margin-bottom: 4px;">Book your tour & unlock a Filtour perk</h2>
-      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.7); text-align: center; font-size: 0.9em; margin-bottom: 20px;">
-        Scan the QR code to book through the operator's secure page. After booking, upload your confirmation to claim your reward.
+      {% if active_account == 'bailey' %}
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.3em; text-align: center; margin: 0 0 6px 0;">Book your tour & unlock a Filtour perk</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 0.85em; margin: 0 0 20px 0;">
+        Scan the QR code to book, then claim your reward.
       </p>
+      {% else %}
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.3em; text-align: center; margin: 0 0 6px 0;">Book your tour</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 0.85em; margin: 0 0 20px 0;">
+        Scan the QR code to complete your booking on the operator's secure page.
+      </p>
+      {% endif %}
       
-      <!-- Perk Selection -->
-      <div style="margin-bottom: 22px;">
-        <div style="font-size: 0.8em; font-weight: 600; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; text-align: center;">Choose your perk</div>
+      {% if active_account == 'bailey' %}
+      <!-- Perk Selection (bailey only) -->
+      <div id="perk-selection-section" style="margin-bottom: 20px;">
         <div style="display: flex; gap: 12px;" id="perk-selection">
-          <div class="perk-option" data-perk="free_coffee" onclick="selectPerk('free_coffee')" style="flex:1; padding: 16px 12px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
-            <div style="font-size: 2em; margin-bottom: 6px;">☕</div>
-            <div style="font-weight: 700; font-size: 1em; color: #fff;">Free Coffee</div>
-            <div style="font-size: 0.78em; color: rgba(255,255,255,0.6); margin-top: 4px;">Free regular coffee from a Filtour partner café</div>
-            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:#06b6d4; color:#fff; font-size:13px; line-height:22px; text-align:center;">✓</div>
+          <div class="perk-option" data-perk="free_coffee" onclick="selectPerk('free_coffee')" style="flex:1; padding: 14px 10px; border-radius: 12px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 1.6em; margin-bottom: 4px;">☕</div>
+            <div style="font-weight: 700; font-size: 0.9em; color: #fff;">Free Coffee</div>
+            <div style="font-size: 0.72em; color: rgba(255,255,255,0.55); margin-top: 3px;">From a Filtour partner café</div>
+            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%; background:#06b6d4; color:#fff; font-size:12px; line-height:20px; text-align:center;">✓</div>
           </div>
-          <div class="perk-option" data-perk="free_moped_hour" onclick="selectPerk('free_moped_hour')" style="flex:1; padding: 16px 12px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
-            <div style="font-size: 2em; margin-bottom: 6px;">🛵</div>
-            <div style="font-weight: 700; font-size: 1em; color: #fff;">Free Hour</div>
-            <div style="font-size: 0.78em; color: rgba(255,255,255,0.6); margin-top: 4px;">Free extra hour on a moped with Airlie Scooter Hire</div>
-            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:#06b6d4; color:#fff; font-size:13px; line-height:22px; text-align:center;">✓</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Two-column layout: QR left, steps+actions right -->
-      <div style="display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start; margin-top: 4px;">
-        <!-- Left: QR Code -->
-        <div style="text-align: center;">
-          <div style="font-size: 0.8em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Scan to book</div>
-          <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 14px; display: inline-block;">
-            <!-- QR code will be generated here -->
-          </div>
-          <div id="qr-debug-url" style="display:none;"></div>
-          <button onclick="openBookingLink()" style="margin-top: 10px; padding: 10px 20px; border: 1px solid rgba(56,189,248,0.4); border-radius: 10px; background: transparent; color: #38bdf8; font-size: 0.85em; font-weight: 600; cursor: pointer; width: 100%;">
-            Open link instead ↗
-          </button>
-        </div>
-        
-        <!-- Right: Steps + Claim QR -->
-        <div>
-          <div style="background: rgba(56,189,248,0.08); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.15);">
-            <div style="font-size: 0.85em; line-height: 2; color: rgba(255,255,255,0.85);">
-              <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
-              <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code and complete your booking</div>
-              <div><strong style="color:#38bdf8;">3.</strong> Scan the claim QR below to upload your confirmation</div>
-              <div><strong style="color:#38bdf8;">4.</strong> We'll verify it and send your voucher</div>
-            </div>
-          </div>
-          
-          <!-- Claim QR - links to upload proof page -->
-          <div style="text-align: center; background: rgba(6,182,212,0.08); border-radius: 14px; padding: 16px; border: 1px solid rgba(6,182,212,0.2);">
-            <div style="font-size: 0.8em; font-weight: 600; color: #34d399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">After booking — claim your perk</div>
-            <div id="claim-qr-container" style="background: #fff; border-radius: 12px; padding: 10px; display: inline-block;">
-              <!-- Claim QR generated dynamically -->
-            </div>
-            <div style="font-size: 0.75em; color: rgba(255,255,255,0.5); margin-top: 8px;">Scan this to upload your booking confirmation</div>
+          <div class="perk-option" data-perk="free_moped_hour" onclick="selectPerk('free_moped_hour')" style="flex:1; padding: 14px 10px; border-radius: 12px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 1.6em; margin-bottom: 4px;">🛵</div>
+            <div style="font-weight: 700; font-size: 0.9em; color: #fff;">Free Hour</div>
+            <div style="font-size: 0.72em; color: rgba(255,255,255,0.55); margin-top: 3px;">Moped hire with Airlie Scooter Hire</div>
+            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%; background:#06b6d4; color:#fff; font-size:12px; line-height:20px; text-align:center;">✓</div>
           </div>
         </div>
       </div>
+      {% endif %}
       
-      <p style="font-size: 0.72em; color: rgba(255,255,255,0.4); text-align: center; margin-top: 16px; line-height: 1.5;">
-        Perks are only issued after a valid booking confirmation is submitted. One perk per person on the booking.
+      <!-- QR Code (centered, single QR that swaps between booking and claim) -->
+      <div style="text-align: center; margin-bottom: 16px;">
+        <div id="qr-label" style="font-size: 0.75em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Scan to book</div>
+        <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 14px; display: inline-block;">
+          <!-- QR code will be generated here -->
+        </div>
+        <div id="qr-debug-url" style="display:none;"></div>
+      </div>
+      
+      <!-- Steps -->
+      {% if active_account == 'bailey' %}
+      <div style="background: rgba(56,189,248,0.06); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.12);">
+        <div style="font-size: 0.8em; line-height: 1.9; color: rgba(255,255,255,0.8);">
+          <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
+          <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code &amp; complete your booking</div>
+          <div><strong style="color:#38bdf8;">3.</strong> Tap "I've booked" below — the QR will switch to the claim page</div>
+          <div><strong style="color:#38bdf8;">4.</strong> Scan again to upload confirmation &amp; get your voucher</div>
+        </div>
+      </div>
+      {% endif %}
+      
+      <!-- Buttons -->
+      <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+        <button onclick="openBookingLink()" style="flex: 1; padding: 12px; border: 1px solid rgba(56,189,248,0.4); border-radius: 10px; background: transparent; color: #38bdf8; font-size: 0.85em; font-weight: 600; cursor: pointer;">
+          Open link instead ↗
+        </button>
+        {% if active_account == 'bailey' %}
+        <button id="show-claim-qr-btn" onclick="showClaimQR()" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 0.85em; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          I've booked — claim my perk
+        </button>
+        {% endif %}
+      </div>
+      
+      <p style="font-size: 0.68em; color: rgba(255,255,255,0.35); text-align: center; margin: 0; line-height: 1.5;">
+        {% if active_account == 'bailey' %}
+        Perks are issued after a valid booking confirmation is submitted. One perk per person on the booking.<br>
+        If choosing the moped option, please call Airlie Scooter Hire to check availability first.
+        {% endif %}
       </p>
     </div>
   </div>
@@ -28593,7 +28601,11 @@
         const check = el.querySelector('.perk-check');
         if (check) check.style.display = isPicked ? 'block' : 'none';
       });
-      generateClaimQR();
+      // If currently showing claim QR, regenerate with new perk
+      const label = document.getElementById('qr-label');
+      if (label && label.textContent.toLowerCase().includes('claim')) {
+        generateClaimQR();
+      }
     }
     
     function openBookingLink() {
@@ -28605,27 +28617,92 @@
     function initPerkSelection() {
       selectedPerk = 'free_coffee';
       selectPerk('free_coffee');
+      // Reset claim button to initial state
+      const btn = document.getElementById('show-claim-qr-btn');
+      const label = document.getElementById('qr-label');
+      if (btn) {
+        btn.textContent = "I've booked — claim my perk";
+        btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        btn.onclick = showClaimQR;
+      }
+      if (label) {
+        label.textContent = 'Scan to book';
+        label.style.color = '#f59e0b';
+      }
+    }
+
+    function showClaimQR() {
+      const btn = document.getElementById('show-claim-qr-btn');
+      const label = document.getElementById('qr-label');
+      if (btn) {
+        btn.textContent = '← Back to booking QR';
+        btn.style.background = 'linear-gradient(135deg, #0891b2, #06b6d4)';
+        btn.onclick = showBookingQR;
+      }
+      if (label) {
+        label.textContent = 'Scan to claim your perk';
+        label.style.color = '#34d399';
+      }
       generateClaimQR();
     }
 
+    function showBookingQR() {
+      const btn = document.getElementById('show-claim-qr-btn');
+      const label = document.getElementById('qr-label');
+      if (btn) {
+        btn.textContent = "I've booked — claim my perk";
+        btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        btn.onclick = showClaimQR;
+      }
+      if (label) {
+        label.textContent = 'Scan to book';
+        label.style.color = '#f59e0b';
+      }
+      regenerateBookingQR();
+    }
+
+    function regenerateBookingQR() {
+      const container = document.getElementById('qr-code-container');
+      if (!container || !window.currentCheckoutUrl) return;
+      container.innerHTML = '';
+      if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
+        const canvas = document.createElement('canvas');
+        canvas.style.maxWidth = '220px';
+        canvas.style.display = 'block';
+        canvas.style.margin = '0 auto';
+        QRCode.toCanvas(canvas, window.currentCheckoutUrl, {
+          width: 220, margin: 2,
+          color: { dark: '#0077b6', light: '#ffffff' },
+          errorCorrectionLevel: 'M'
+        }, function(error) {
+          if (!error) container.appendChild(canvas);
+        });
+      } else {
+        const img = document.createElement('img');
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(window.currentCheckoutUrl) + '&color=0-119-182&format=png';
+        img.style.maxWidth = '220px';
+        container.appendChild(img);
+      }
+    }
+
     function generateClaimQR() {
-      const container = document.getElementById('claim-qr-container');
+      const container = document.getElementById('qr-code-container');
       if (!container) return;
       const params = new URLSearchParams({
         tour: currentBookingTourName,
         key: currentBookingTourKey,
         perk: selectedPerk
       });
-      const claimUrl = window.location.origin + '/claim-perk?' + params.toString();
+      const claimUrl = 'https://filtour.com/claim-perk?' + params.toString();
       container.innerHTML = '';
       if (typeof QRCode !== 'undefined' && typeof QRCode.toCanvas === 'function') {
         const canvas = document.createElement('canvas');
-        canvas.style.maxWidth = '180px';
+        canvas.style.maxWidth = '220px';
         canvas.style.display = 'block';
         canvas.style.margin = '0 auto';
         QRCode.toCanvas(canvas, claimUrl, {
-          width: 180, margin: 2,
-          color: { dark: '#0f766e', light: '#ffffff' },
+          width: 220, margin: 2,
+          color: { dark: '#065f46', light: '#ffffff' },
           errorCorrectionLevel: 'M'
         }, function(error) {
           if (error) {
@@ -28637,8 +28714,8 @@
       } else {
         const encodedUrl = encodeURIComponent(claimUrl);
         const img = document.createElement('img');
-        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodedUrl}&color=15-118-110&format=png`;
-        img.style.maxWidth = '180px';
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUrl}&color=6-95-70&format=png`;
+        img.style.maxWidth = '220px';
         container.appendChild(img);
       }
     }
@@ -35877,7 +35954,7 @@
   <!-- ║  WEATHER WIDGET - DO NOT TOUCH - TESTED AND WORKING                      ║ -->
   <!-- ║  This code has been fixed multiple times. DO NOT MODIFY without testing! ║ -->
   <!-- ╚═══════════════════════════════════════════════════════════════════════════╝ -->
-  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding-bottom:4px;padding-left:10px;">⛅</button>
+  <button id="weather-widget-launcher" class="weather-widget-launcher" style="position:fixed !important;bottom:25px;right:25px !important;width:85px;height:85px;border-radius:50% !important;border:4px solid rgba(255,255,255,0.95) !important;background:linear-gradient(145deg,#fff9c4,#ffc107) !important;box-shadow:0 6px 24px rgba(255,152,0,0.5) !important;font-size:2.5em;cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;z-index:2147483647 !important;padding:0 !important;line-height:1 !important;-webkit-appearance:none !important;appearance:none !important;text-align:center !important;text-indent:0 !important;"><span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;">⛅</span></button>
   <div id="weather-widget" class="weather-widget" style="display:none;position:fixed !important;bottom:120px !important;right:24px !important;width:480px !important;max-width:calc(100vw - 48px) !important;background:#fff !important;border-radius:24px !important;box-shadow:0 20px 60px rgba(0,0,0,0.4) !important;z-index:2147483646 !important;overflow:hidden !important;">
     <div style="padding:16px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:white;display:flex;justify-content:space-between;align-items:center;">
       <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
