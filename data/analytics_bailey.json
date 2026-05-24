@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T14:50:47.886558",
+  "last_updated": "2026-05-24T04:50:48.209556",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -29345,6 +29345,11 @@
             "company": "Red Cat Adventures",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-24T04:46:46.206973",
+          "data": {}
         }
       ],
       "language": null,
@@ -29355,7 +29360,9 @@
       "tours_booked": [
         "Falls to Paradise \u2013 Waterfall Tour"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-24T04:46:46.206992",
+      "duration_seconds": 152.257768
     },
     {
       "session_id": "session_dbe06d5cbb1d_1779598062",
@@ -29396,6 +29403,15 @@
         {
           "type": "book_now_clicked",
           "timestamp": "2026-05-24T04:49:56.853065",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-24T04:50:48.209517",
           "data": {
             "tour_name": "Great Barrier Reef Snorkel Adventure",
             "company": "Red Cat Adventures",
