@@ -5640,14 +5640,20 @@ def voice_selector():
 def text_to_speech():
     """ElevenLabs Text-to-Speech API endpoint"""
     try:
-        from elevenlabs_tts import synthesize_speech, is_configured
+        from elevenlabs_tts import synthesize_speech, is_configured, ELEVENLABS_API_KEY as TTS_KEY
         
-        # Check if ElevenLabs is configured
         if not is_configured():
-            return jsonify({
-                'success': False,
-                'error': 'ElevenLabs not configured'
-            }), 500
+            # Try reloading the key from env in case it was set after import
+            import importlib, elevenlabs_tts
+            importlib.reload(elevenlabs_tts)
+            from elevenlabs_tts import synthesize_speech as synth2, is_configured as cfg2
+            if not cfg2():
+                print(f"[TTS] ElevenLabs not configured. Key present in env: {bool(os.getenv('ELEVENLABS_API_KEY'))}")
+                return jsonify({
+                    'success': False,
+                    'error': 'ElevenLabs not configured'
+                }), 500
+            synthesize_speech = synth2
         
         data = request.get_json()
         text = data.get('text', '')
@@ -5657,10 +5663,10 @@ def text_to_speech():
         if not text:
             return jsonify({'success': False, 'error': 'No text provided'}), 400
         
-        # Synthesize speech
         audio_data = synthesize_speech(text, language, gender)
         
         if audio_data:
+            print(f"[TTS] Success: {len(audio_data)} bytes for '{text[:40]}...'")
             # Return audio as MP3
             from flask import send_file
             from io import BytesIO
@@ -5675,6 +5681,7 @@ def text_to_speech():
                 download_name='speech.mp3'
             )
         else:
+            print(f"[TTS] Synthesis returned no data for '{text[:40]}...'")
             return jsonify({
                 'success': False,
                 'error': 'Speech synthesis failed'

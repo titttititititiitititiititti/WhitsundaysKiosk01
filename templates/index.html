@@ -3969,13 +3969,13 @@
       display: flex;
     }
     
-    /* Scrolling tour cards container - upper half */
+    /* Scrolling tour cards container - upper portion */
     .splash-tour-carousel {
       position: absolute;
-      top: 2%;
+      top: 0;
       left: 0;
       width: 100%;
-      height: 58%;
+      height: 45%;
       overflow: hidden;
       z-index: 5;
     }
@@ -4060,13 +4060,13 @@
       font-weight: 600;
     }
     
-    /* Main content area - lower half */
+    /* Main content area - lower portion */
     .splash-content {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 38%;
+      height: 55%;
       z-index: 10;
       text-align: center;
       color: white;
@@ -4074,8 +4074,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+      padding: 20px 30px;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
     }
     
     .splash-title {
@@ -16439,9 +16439,9 @@
     <!-- Main Content - Lower half -->
     <div class="splash-content">
       {% if active_account == 'bailey' %}
-      <div style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:white;font-size:2.8em;font-weight:900;padding:18px 56px;border-radius:50px;letter-spacing:5px;text-shadow:0 2px 8px rgba(0,0,0,0.3);box-shadow:0 6px 30px rgba(255,107,53,0.5);animation:promoPulse 2.5s ease-in-out infinite;margin-bottom:12px;">☕ FREE COFFEE</div>
-      <h1 style="margin:0;font-size:4.5rem;font-weight:800;color:white;text-shadow:0 4px 40px rgba(0,0,0,0.7),0 2px 15px rgba(0,0,0,0.5);text-align:center;line-height:1.15;display:block;">Book a Tour With Us,<br>Get YOUR Coffee Free!</h1>
-      <p style="color:rgba(255,255,255,0.92);font-size:1.6em;text-align:center;max-width:700px;margin:8px 0 0 0;text-shadow:0 2px 10px rgba(0,0,0,0.6);font-weight:500;">Browse Whitsunday tours, book on your phone, grab a coffee on us.</p>
+      <div style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:white;font-size:2.2em;font-weight:900;padding:14px 44px;border-radius:50px;letter-spacing:5px;text-shadow:0 2px 8px rgba(0,0,0,0.3);box-shadow:0 6px 30px rgba(255,107,53,0.5);animation:promoPulse 2.5s ease-in-out infinite;margin-bottom:10px;">☕ FREE COFFEE</div>
+      <h1 style="margin:0;font-size:3.5rem;font-weight:800;color:white;text-shadow:0 4px 40px rgba(0,0,0,0.7),0 2px 15px rgba(0,0,0,0.5);text-align:center;line-height:1.2;display:block;">Book a Tour With Us,<br>Get Your FREE Coffee!</h1>
+      <p style="color:rgba(255,255,255,0.92);font-size:1.4em;text-align:center;max-width:700px;margin:8px 0 0 0;text-shadow:0 2px 10px rgba(0,0,0,0.6);font-weight:500;">Browse Whitsunday tours, book on your phone, grab a coffee on us.</p>
       {% else %}
       <h1 class="splash-title" style="margin:0;font-size:inherit;font-weight:inherit;display:block;">Cheapest Airlie Beach Tours — Compare & Book Instantly</h1>
       {% endif %}
@@ -18797,10 +18797,9 @@
       return BOOKING_BUTTON_PATTERNS.some(pattern => pattern.test(checkText));
     }
     
-    // Activate <script> tags inside a container by rendering them in an
-    // iframe. Third-party embed scripts (FareHarbor, etc.) rely on
-    // document.currentScript / document.write which only work in a fresh
-    // document context, not when a script is dynamically createElement'd.
+    // Activate <script> tags inside a container.
+    // If the widget HTML already contains iframes (e.g. Rezdy calendar), preserve
+    // them and activate scripts alongside. Otherwise, use srcdoc approach.
     function activateScripts(container) {
       var scripts = container.querySelectorAll('script');
       if (scripts.length === 0) return;
@@ -18815,6 +18814,27 @@
       if (scriptSrcs.length === 0 && inlineScripts.length === 0) return;
 
       var widget = container.querySelector('.hero-booking-widget') || container;
+      var existingIframes = widget.querySelectorAll('iframe');
+
+      if (existingIframes.length > 0) {
+        // Widget has both scripts and iframes (e.g. Rezdy plugin + calendar iframe).
+        // Keep the existing iframes in place and just activate the scripts inline.
+        scripts.forEach(function(oldScript) {
+          var newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+            newScript.defer = true;
+          } else if (oldScript.textContent.trim()) {
+            newScript.textContent = oldScript.textContent;
+          }
+          oldScript.parentNode.removeChild(oldScript);
+          widget.appendChild(newScript);
+        });
+        console.log('🔧 Scripts activated inline alongside existing iframes');
+        return;
+      }
+
+      // No existing iframes - use srcdoc approach for script-only widgets
       widget.innerHTML = '';
       widget.style.minHeight = '700px';
 
@@ -18833,7 +18853,6 @@
       var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:8px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}</style></head><body>' + tags + '</body></html>';
       iframe.srcdoc = html;
 
-      // Auto-resize iframe to match content height
       iframe.onload = function() {
         function resize() {
           try {
@@ -18849,19 +18868,27 @@
     // Enhance widget HTML with proper iframe attributes for checkout flow
     function enhanceWidgetHtml(html) {
       if (!html) return html;
-      
-      // Add necessary attributes to iframe tags for Hero/booking widgets
-      // This ensures the checkout process can work properly
+
       let enhanced = html;
-      
-      // Match iframe tags and add attributes if missing
-      enhanced = enhanced.replace(/<iframe\s/gi, '<iframe allow="payment *; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="true" allowpaymentrequest="true" ');
-      
-      // Ensure Hero widgets have proper settings
+
+      // Add allow/allowfullscreen only to iframes that don't already have them
+      enhanced = enhanced.replace(/<iframe\s([^>]*?)>/gi, function(match, attrs) {
+        if (!/\ballow\s*=/i.test(attrs)) {
+          attrs += ' allow="payment *; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"';
+        }
+        if (!/\ballowfullscreen\s*=/i.test(attrs)) {
+          attrs += ' allowfullscreen="true"';
+        }
+        if (!/\ballowpaymentrequest\s*=/i.test(attrs)) {
+          attrs += ' allowpaymentrequest="true"';
+        }
+        return '<iframe ' + attrs + '>';
+      });
+
       if (html.includes('hero.travel') || html.includes('widget.hero')) {
         console.log('🎫 Enhancing Hero widget HTML with payment permissions');
       }
-      
+
       return enhanced;
     }
     
@@ -23476,70 +23503,65 @@
       const orbContainer = document.getElementById('ai-visualizer-container');
       if (!orbContainer) return;
       
-      // Skip if already initialized
       if (orbContainer.dataset.muteInitialized) return;
       orbContainer.dataset.muteInitialized = 'true';
       
-      // DON'T set pointer-events on container - let clicks pass through to cards
-      orbContainer.style.pointerEvents = 'none';  // Container doesn't catch clicks
+      orbContainer.style.pointerEvents = 'none';
       
-      // Handle click ONLY on the actual orb (canvas)
-      const handleMuteClick = function(e) {
-        // Only handle clicks within the actual orb circle
-        const canvas = orbContainer.querySelector('canvas');
-        if (!canvas) return;
+      const attachToCanvas = function(canvas) {
+        if (!canvas || canvas.dataset.muteAttached) return;
+        canvas.dataset.muteAttached = 'true';
+        canvas.style.cursor = 'pointer';
+        canvas.style.pointerEvents = 'auto';
         
-        const canvasRect = canvas.getBoundingClientRect();
-        const centerX = canvasRect.left + canvasRect.width / 2;
-        const centerY = canvasRect.top + canvasRect.height / 2;
+        // Use touchstart on iOS for immediate response
+        canvas.addEventListener('touchstart', function(e) {
+          const rect = canvas.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const touch = e.touches[0];
+          const dist = Math.sqrt(Math.pow(touch.clientX - centerX, 2) + Math.pow(touch.clientY - centerY, 2));
+          const hasCards = orbContainer.classList.contains('with-cards');
+          const orbRadius = hasCards ? 130 : 120;
+          
+          if (dist <= orbRadius) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🔊 Orb tapped - toggling mute');
+            toggleTTSMute();
+          }
+        }, { passive: false });
         
-        // ACTUAL orb radius (from particle-visualizer.js) - NOT the canvas size!
-        // Canvas is much bigger (400-600px) but actual orb is only ~100-110px
-        const hasCards = orbContainer.classList.contains('with-cards');
-        const actualOrbRadius = hasCards ? 110 : 100;  // Match particle-visualizer.js sphereRadius
-        
-        // Calculate distance from click to orb center
-        const clickX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : centerX);
-        const clickY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : centerY);
-        const distance = Math.sqrt(Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2));
-        
-        // Only toggle mute if click is within ACTUAL orb radius (with small padding)
-        if (distance <= actualOrbRadius + 15) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('🔊 Orb clicked - toggling mute (distance:', Math.round(distance), 'radius:', actualOrbRadius, ')');
-          toggleTTSMute();
-        } else {
-          // Click is OUTSIDE orb - let it pass through to cards/elements below
-          console.log('👆 Click outside orb (distance:', Math.round(distance), 'radius:', actualOrbRadius, ') - passing through');
-        }
+        canvas.addEventListener('click', function(e) {
+          const rect = canvas.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const dist = Math.sqrt(Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2));
+          const hasCards = orbContainer.classList.contains('with-cards');
+          const orbRadius = hasCards ? 130 : 120;
+          
+          if (dist <= orbRadius) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🔊 Orb clicked - toggling mute');
+            toggleTTSMute();
+          }
+        }, true);
       };
       
-      // Only attach to canvas - not the whole container
       const canvas = orbContainer.querySelector('canvas');
-      if (canvas) {
-        canvas.style.cursor = 'pointer';
-        canvas.style.pointerEvents = 'auto';  // Canvas catches clicks
-        canvas.addEventListener('click', handleMuteClick, true);
-        canvas.addEventListener('touchend', handleMuteClick, { passive: false });
-      }
+      if (canvas) attachToCanvas(canvas);
       
-      // Watch for canvas being added dynamically
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node) => {
-            if (node.nodeName === 'CANVAS') {
-              node.style.cursor = 'pointer';
-              node.style.pointerEvents = 'auto';
-              node.addEventListener('click', handleMuteClick, true);
-              node.addEventListener('touchend', handleMuteClick, { passive: false });
-            }
+            if (node.nodeName === 'CANVAS') attachToCanvas(node);
           });
         });
       });
       observer.observe(orbContainer, { childList: true });
       
-      console.log('✅ Orb mute toggle initialized (restricted to orb area)');
+      console.log('✅ Orb mute toggle initialized');
     }
     
     function toggleTTSMute() {
@@ -23858,7 +23880,10 @@
     }
     
     function browserSpeakFallback(text, language) {
-      if (!window.speechSynthesis) return;
+      if (!window.speechSynthesis) {
+        console.warn('🔊 speechSynthesis not available');
+        return;
+      }
       try {
         window.speechSynthesis.cancel();
         const langMap = { en: 'en-US', zh: 'zh-CN', ja: 'ja-JP', ko: 'ko-KR', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', hi: 'hi-IN' };
@@ -23868,14 +23893,30 @@
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         utterance.onstart = () => {
+          console.log('🔊 Browser TTS started');
           if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
         };
         utterance.onend = () => {
+          console.log('🔊 Browser TTS ended');
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
           const micBtn = document.getElementById('ai-mic-btn');
           if (micBtn) micBtn.classList.add('ready-to-speak');
         };
+        utterance.onerror = (e) => {
+          console.error('🔊 Browser TTS error:', e.error);
+          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+        };
         window.speechSynthesis.speak(utterance);
+        // Safari workaround: speechSynthesis pauses after ~15s, keep it alive
+        if (window._ttsKeepAlive) clearInterval(window._ttsKeepAlive);
+        window._ttsKeepAlive = setInterval(() => {
+          if (!window.speechSynthesis.speaking) {
+            clearInterval(window._ttsKeepAlive);
+            return;
+          }
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }, 10000);
         console.log('🔊 Browser TTS fallback speaking');
       } catch (e) {
         console.error('🔊 Browser TTS fallback failed:', e);
@@ -25109,8 +25150,22 @@
           }
         }
       } else {
-        console.error('❌ VoiceChat not initialized - voice features unavailable');
-        alert('Voice features are not available. Please refresh the page.');
+        console.warn('⚠️ VoiceChat not initialized yet - attempting re-init...');
+        // Try to re-initialize VoiceChat instead of showing an alert
+        if (typeof VoiceChat !== 'undefined') {
+          window.voiceChat = new VoiceChat();
+          window.voiceChat.setLanguage(currentLanguage || 'en');
+          console.log('✅ VoiceChat re-initialized on demand');
+          // Retry the mic toggle after init
+          setTimeout(() => window.toggleAIMicrophone(), 300);
+        } else {
+          const hint = document.getElementById('ai-mic-hint');
+          if (hint) {
+            hint.textContent = 'Voice loading... tap again in a moment';
+            hint.style.color = '#f59e0b';
+            setTimeout(() => { hint.textContent = 'Tap to speak'; hint.style.color = ''; }, 3000);
+          }
+        }
       }
     }
     
