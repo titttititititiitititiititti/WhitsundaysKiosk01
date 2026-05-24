@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T01:38:06.701518",
+  "last_updated": "2026-05-24T03:45:46.739047",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -29182,6 +29182,62 @@
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_9f74ec2b55ce_1779594325",
+      "account": "bailey",
+      "started_at": "2026-05-24T03:45:25.857394",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-24T03:45:25.857412",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-24T03:45:27.150788",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-24T03:45:29.042258",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-24T03:45:45.378781",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-24T03:45:46.738982",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Condor Whitsundays Sailing Tour"
+      ],
+      "tours_booked": [
+        "Condor Whitsundays Sailing Tour"
+      ],
       "chat_messages": []
     }
   ]
