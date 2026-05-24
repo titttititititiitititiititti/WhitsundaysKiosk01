@@ -2961,10 +2961,54 @@ def load_all_tours(language='en', preview_account=None):
 # Set your OpenAI API key here or via environment variable
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# SendGrid Configuration
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+# Email Configuration (SMTP via Gmail)
+SMTP_HOST = os.getenv('SMTP_HOST', os.getenv('SMTP_SERVER', 'smtp.gmail.com'))
+SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+SMTP_USER = os.getenv('SMTP_USER', '')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', os.getenv('SMTP_PASS', ''))
 FROM_EMAIL = os.getenv('FROM_EMAIL', 'bookings@whitsundayskiosk.com')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@example.com')  # Fallback admin email
+FROM_NAME = os.getenv('FROM_NAME', 'Bailey Amouyal | Filtour')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+
+def send_smtp_email(to_email, subject, html_content, plain_content=None):
+    """Send email via Gmail SMTP. Falls back to SendGrid if SMTP not configured."""
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    if SMTP_USER and SMTP_PASSWORD:
+        try:
+            msg = MIMEMultipart('alternative')
+            msg['From'] = f"{FROM_NAME} <{SMTP_USER}>"
+            msg['To'] = to_email
+            msg['Subject'] = subject
+            msg['Reply-To'] = FROM_EMAIL
+            if plain_content:
+                msg.attach(MIMEText(plain_content, 'plain'))
+            msg.attach(MIMEText(html_content, 'html'))
+            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USER, SMTP_PASSWORD)
+                server.send_message(msg)
+            print(f"[EMAIL] Sent to {to_email} via SMTP")
+            return True
+        except Exception as e:
+            print(f"[EMAIL] SMTP failed: {e}")
+            import traceback; traceback.print_exc()
+            return False
+    elif SENDGRID_API_KEY:
+        try:
+            message = Mail(from_email=FROM_EMAIL, to_emails=to_email, subject=subject, html_content=html_content)
+            sg = SendGridAPIClient(SENDGRID_API_KEY)
+            sg.send(message)
+            print(f"[EMAIL] Sent to {to_email} via SendGrid")
+            return True
+        except Exception as e:
+            print(f"[EMAIL] SendGrid failed: {e}")
+            return False
+    else:
+        print(f"[EMAIL] No email provider configured (SMTP_USER or SENDGRID_API_KEY required)")
+        return False
 
 # Company email mapping - Real operator contact emails based on their domains
 COMPANY_EMAILS = {
@@ -6220,11 +6264,7 @@ def log_lead_to_csv(booking_data):
         return False
 
 def send_booking_email(booking_data):
-    """Send booking inquiry email to tour operator"""
-    if not SENDGRID_API_KEY:
-        print("Warning: SENDGRID_API_KEY not set. Email not sent.")
-        return False
-    
+    """Send booking inquiry email to tour operator via SMTP (with SendGrid fallback)"""
     try:
         # Get tour operator email
         company = booking_data.get('tour_company', '').lower().replace(' ', '').replace('-', '')
@@ -6288,21 +6328,10 @@ def send_booking_email(booking_data):
         </html>
         """
         
-        message = Mail(
-            from_email=FROM_EMAIL,
-            to_emails=to_email,
-            subject=subject,
-            html_content=html_content
-        )
-        
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
-        response = sg.send(message)
-        
-        print(f"Email sent successfully to {to_email}. Status code: {response.status_code}")
-        return True
+        return send_smtp_email(to_email, subject, html_content)
         
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"Error sending booking email: {e}")
         return False
 
 @app.route('/submit-booking', methods=['POST'])
@@ -11990,17 +12019,24 @@ Review it at: https://filtour.com/admin/perk-claims
         msg['Subject'] = subject
         msg['From'] = 'noreply@filtour.com'
         msg['To'] = 'bailey.amouyal@gmail.com'
-        smtp_server = os.environ.get('SMTP_SERVER', '')
-        smtp_user = os.environ.get('SMTP_USER', '')
-        smtp_pass = os.environ.get('SMTP_PASS', '')
-        if smtp_server and smtp_user and smtp_pass:
-            with smtplib.SMTP(smtp_server, 587) as server:
-                server.starttls()
-                server.login(smtp_user, smtp_pass)
-                server.send_message(msg)
-            print(f"[PERK] Email notification sent for claim {claim['id']}")
-        else:
-            print(f"[PERK] Email not configured - claim {claim['id']} submitted (check admin panel)")
+        admin_html = f"""<html><body style="font-family:Arial;line-height:1.6;">
+        <div style="max-width:600px;margin:0 auto;padding:20px;">
+            <div style="background:#0077b6;color:white;padding:20px;text-align:center;border-radius:8px 8px 0 0;">
+                <h2 style="margin:0;">New Perk Claim</h2>
+            </div>
+            <div style="background:#f9f9f9;padding:25px;">
+                <p><strong>Tour:</strong> {tour_name}</p>
+                <p><strong>People:</strong> {people_summary}</p>
+                <p><strong>Email:</strong> {email}</p>
+                <p><strong>Phone:</strong> {phone or 'N/A'}</p>
+                <p><strong>Claim ID:</strong> {claim['id']}</p>
+                <hr>
+                <p style="text-align:center;">
+                    <a href="https://filtour.com/admin/perk-claims" style="display:inline-block;padding:14px 36px;background:#28a745;color:white;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;">Review Claims</a>
+                </p>
+            </div>
+        </div></body></html>"""
+        send_smtp_email('bailey.amouyal@gmail.com', subject, admin_html, body)
     except Exception as e:
         print(f"[PERK] Email notification failed: {e}")
 
@@ -12032,6 +12068,27 @@ def approve_perk_claim(claim_id):
             claim['approved_at'] = datetime.now().isoformat()
             claim['updated_at'] = datetime.now().isoformat()
             save_perk_claims(claims)
+            if claim.get('customer_email'):
+                perk_label = 'free coffee' if claim.get('selected_perk') == 'free_coffee' else 'free moped hour'
+                guest_html = f"""<html><body style="font-family:Arial;line-height:1.6;color:#333;">
+                <div style="max-width:600px;margin:0 auto;padding:20px;">
+                    <div style="background:#28a745;color:white;padding:30px;text-align:center;border-radius:8px 8px 0 0;">
+                        <h1 style="margin:0;">Your Perk Claim is Verified!</h1>
+                    </div>
+                    <div style="background:#f9f9f9;padding:30px;">
+                        <p>Hi {claim.get('customer_name', 'there')},</p>
+                        <p>Great news! Your booking confirmation for <strong>{claim.get('tour_name', 'your tour')}</strong> has been verified.</p>
+                        <div style="background:#e8f5e9;padding:20px;border-radius:8px;text-align:center;margin:20px 0;">
+                            <p style="font-size:1.4em;font-weight:bold;color:#28a745;margin:0;">Your voucher code:</p>
+                            <p style="font-size:2em;font-weight:bold;color:#0077b6;margin:10px 0;letter-spacing:3px;">{claim['voucher_code']}</p>
+                            <p style="margin:0;color:#666;">Show this email to claim your {perk_label}!</p>
+                        </div>
+                    </div>
+                    <div style="background:#333;color:#ccc;padding:15px;text-align:center;font-size:12px;border-radius:0 0 8px 8px;">
+                        <p style="margin:5px 0;">FilTour - Whitsundays Visitor Kiosk</p>
+                    </div>
+                </div></body></html>"""
+                send_smtp_email(claim['customer_email'], "Your Perk Claim is Verified!", guest_html)
             return jsonify({'success': True, 'voucher_code': claim['voucher_code']})
     return jsonify({'success': False, 'error': 'Claim not found'}), 404
 
@@ -12048,6 +12105,22 @@ def reject_perk_claim(claim_id):
             claim['status'] = 'rejected'
             claim['updated_at'] = datetime.now().isoformat()
             save_perk_claims(claims)
+            if claim.get('customer_email'):
+                guest_html = f"""<html><body style="font-family:Arial;line-height:1.6;color:#333;">
+                <div style="max-width:600px;margin:0 auto;padding:20px;">
+                    <div style="background:#dc3545;color:white;padding:30px;text-align:center;border-radius:8px 8px 0 0;">
+                        <h1 style="margin:0;">Perk Claim Update</h1>
+                    </div>
+                    <div style="background:#f9f9f9;padding:30px;">
+                        <p>Hi {claim.get('customer_name', 'there')},</p>
+                        <p>Unfortunately, we were unable to verify your booking confirmation for <strong>{claim.get('tour_name', 'your tour')}</strong>.</p>
+                        <p>This could be because the screenshot was unclear or the booking details didn't match. Please try submitting again or ask the staff for help.</p>
+                    </div>
+                    <div style="background:#333;color:#ccc;padding:15px;text-align:center;font-size:12px;border-radius:0 0 8px 8px;">
+                        <p style="margin:5px 0;">FilTour - Whitsundays Visitor Kiosk</p>
+                    </div>
+                </div></body></html>"""
+                send_smtp_email(claim['customer_email'], "Perk Claim Update", guest_html)
             return jsonify({'success': True})
     return jsonify({'success': False, 'error': 'Claim not found'}), 404
 

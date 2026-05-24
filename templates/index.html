@@ -3628,6 +3628,11 @@
       0%, 100% { opacity: 0.8; transform: scale(1); }
       50% { opacity: 1; transform: scale(1.05); }
     }
+
+    @keyframes promoPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 6px 30px rgba(255,107,53,0.5); }
+      50% { transform: scale(1.06); box-shadow: 0 8px 40px rgba(255,107,53,0.7); }
+    }
     
     @keyframes slideUpFadeIn {
       0% {
@@ -5962,11 +5967,11 @@
     }
     
     .gallery-nav-arrow.left {
-      left: 10px;
+      left: 10%;
     }
     
     .gallery-nav-arrow.right {
-      right: 10px;
+      right: 10%;
     }
     
     .swipe-gallery-spread {
@@ -6002,8 +6007,8 @@
     }
     
     .swipe-gallery-image {
-      width: 200px;
-      height: 260px;
+      width: 280px;
+      height: 360px;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
@@ -6031,8 +6036,8 @@
     
     .swipe-gallery-image.center {
       z-index: 2;
-      width: 280px;
-      height: 360px;
+      width: 400px;
+      height: 500px;
     }
     
     @keyframes slideInLeft {
@@ -8514,20 +8519,19 @@
       position: relative;
       z-index: 10000000 !important;
       background: white;
-      border-radius: 24px;
-      padding: 40px 50px;
+      border-radius: 28px;
+      padding: 50px 60px;
       min-width: 420px;
-      max-width: 500px;
+      max-width: 720px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-      max-width: 350px;
-      width: 85%;
-      max-height: 85vh;
+      width: 90%;
+      max-height: 90vh;
       overflow-y: auto;
       text-align: center;
       animation: slideUp 0.4s ease;
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 28px;
     }
     
     @keyframes slideUp {
@@ -8542,7 +8546,7 @@
     }
     
     .qr-card h2 {
-      font-size: 1.8em;
+      font-size: 2.6em;
       font-weight: 700;
       color: #0077b6;
       margin: 0 0 12px 0;
@@ -8550,7 +8554,7 @@
     }
     
     .qr-subtitle {
-      font-size: 1.1em;
+      font-size: 1.5em;
       color: #555;
       margin: 0 0 20px 0;
       text-align: center;
@@ -8561,11 +8565,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 30px;
+      padding: 35px;
       background: linear-gradient(135deg, #f8f9fa 0%, #f0f4f8 100%);
       border-radius: 20px;
       margin: 15px 0;
-      min-height: 280px;
+      min-height: 340px;
       border: 3px solid #0077b6;
       box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
     }
@@ -15397,7 +15401,9 @@
       
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen" style="display: none !important;">
-        <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
+        <div id="promo-badge" style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:white;font-size:1.5em;font-weight:900;padding:10px 36px;border-radius:50px;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.3);box-shadow:0 6px 30px rgba(255,107,53,0.5);animation:promoPulse 2.5s ease-in-out infinite;">FREE COFFEE</div>
+        <div class="video-start-text" id="video-start-title" style="font-size:2.6em;line-height:1.15;">Book a Tour Here &amp; Get a Free Coffee</div>
+        <p style="color:rgba(255,255,255,0.9);font-size:1.25em;text-align:center;max-width:650px;margin:0;text-shadow:0 2px 10px rgba(0,0,0,0.6);">Browse Whitsunday tours, book on your phone, and grab a coffee on us.</p>
         
         <!-- ALL THREE BUTTONS ALWAYS SHOWN -->
         <button class="ai-assistant-btn highlighted" id="ai-assistant-btn" onclick="event.stopPropagation(); startModeWithAnimation('ai-assistant')">
@@ -16999,12 +17005,12 @@
   <div class="qr-overlay" id="qr-payment-modal" style="display: none;">
     <div class="qr-backdrop" onclick="closeQRModal()"></div>
     
-    <div class="qr-card" style="max-width: 580px; width: 90vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 28px 32px; max-height: 92vh; overflow-y: auto; position: relative;">
-      <button onclick="closeQRModal()" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.4em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">×</button>
+    <div class="qr-card" style="max-width: 720px; width: 92vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 36px 40px; max-height: 92vh; overflow-y: auto; position: relative;">
+      <button onclick="closeQRModal()" style="position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.4em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">&#215;</button>
       
       {% if active_account == 'bailey' %}
-      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.3em; text-align: center; margin: 0 0 6px 0;">Book your tour & unlock a Filtour perk</h2>
-      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 0.85em; margin: 0 0 20px 0;">
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.7em; text-align: center; margin: 0 0 6px 0;">Book your tour &amp; unlock a Filtour perk</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 1.05em; margin: 0 0 20px 0;">
         Scan the QR code to book, then claim your reward.
       </p>
       {% else %}
@@ -17049,8 +17055,8 @@
         <div style="font-size: 0.8em; line-height: 1.9; color: rgba(255,255,255,0.8);">
           <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
           <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code &amp; complete your booking</div>
-          <div><strong style="color:#38bdf8;">3.</strong> Tap "I've booked" below — the QR will switch to the claim page</div>
-          <div><strong style="color:#38bdf8;">4.</strong> Scan again to upload confirmation &amp; get your voucher</div>
+          <div><strong style="color:#38bdf8;">3.</strong> Show the barista your confirmation to claim your perk right away!</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.9em;padding-left:16px;">Or tap "I've booked" below to upload your confirmation &amp; get a voucher code by email</div>
         </div>
       </div>
       {% endif %}
