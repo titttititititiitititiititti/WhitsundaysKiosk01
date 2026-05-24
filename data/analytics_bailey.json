@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T06:01:32.607835",
+  "last_updated": "2026-05-24T16:30:55.843687",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28954,6 +28954,11 @@
             "company": "ProSail",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-24T01:02:14.344363",
+          "data": {}
         }
       ],
       "language": null,
@@ -28964,7 +28969,9 @@
       "tours_booked": [
         "Broomstick Whitsundays \u2013 Sailing Tour"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-24T01:02:14.344386",
+      "duration_seconds": 1931.118217
     },
     {
       "session_id": "session_2fba53ec34ed_1779584955",
@@ -29482,34 +29489,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-24T05:06:20.855220",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-24T05:06:23.305511",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-24T05:16:23.312358",
-          "data": {}
         }
       ],
-      "language": "en",
-      "mode": "browse-all",
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T05:16:23.312387",
-      "duration_seconds": 634.184801
+      "chat_messages": []
     },
     {
       "session_id": "session_f701e98939d2_1779601049",
@@ -29595,20 +29581,6 @@
             "company": "Red Cat Adventures",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "send_to_phone_clicked",
-          "timestamp": "2026-05-24T05:47:27.508615",
-          "data": {
-            "tour_name": "Falls to Paradise \u2013 Waterfall Tour",
-            "company": "Red Cat Adventures",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-24T05:57:28.847674",
-          "data": {}
         }
       ],
       "language": null,
@@ -29619,9 +29591,7 @@
       "tours_booked": [
         "Falls to Paradise \u2013 Waterfall Tour"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T05:57:28.847686",
-      "duration_seconds": 608.420767
+      "chat_messages": []
     }
   ]
 }
