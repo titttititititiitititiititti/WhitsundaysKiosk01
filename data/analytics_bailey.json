@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T22:12:30.703762",
+  "last_updated": "2026-05-24T12:13:02.736383",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28954,11 +28954,6 @@
             "company": "ProSail",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-24T01:02:14.344363",
-          "data": {}
         }
       ],
       "language": null,
@@ -28969,9 +28964,7 @@
       "tours_booked": [
         "Broomstick Whitsundays \u2013 Sailing Tour"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T01:02:14.344386",
-      "duration_seconds": 1931.118217
+      "chat_messages": []
     },
     {
       "session_id": "session_2fba53ec34ed_1779584955",
@@ -29755,6 +29748,40 @@
       "chat_messages": [],
       "ended_at": "2026-05-24T12:10:26.139299",
       "duration_seconds": 19.890378
+    },
+    {
+      "session_id": "session_fc6ddc968012_1779624780",
+      "account": "bailey",
+      "started_at": "2026-05-24T12:13:00.249283",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-24T12:13:00.249299",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-24T12:13:01.849621",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-24T12:13:02.736341",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
