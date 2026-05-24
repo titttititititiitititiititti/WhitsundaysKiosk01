@@ -64,11 +64,16 @@ class VoiceChat {
     console.log('🎤 SpeechRecognition API:', SpeechRecognition.name || 'webkitSpeechRecognition');
     
     // Configure recognition — continuous=true on iOS/iPad to prevent instant-stop bug
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     this.recognition.continuous = isIOS ? true : false;
     this.recognition.interimResults = true;
     this.recognition.maxAlternatives = 1;
     this._isIOS = isIOS;
+    console.log('🎤 Device detection: isIOS/iPad =', isIOS, 
+      'maxTouchPoints =', navigator.maxTouchPoints, 
+      'userAgent match =', /iPad|iPhone/.test(navigator.userAgent));
     
     // Set up event handlers
     this.setupRecognitionHandlers();
@@ -811,8 +816,20 @@ class VoiceChat {
   }
   
   showError(message) {
-    // Override to show errors in UI
-    console.error('❌ Error:', message);
+    console.error('❌ Voice Error:', message);
+    const micBtn = document.getElementById('ai-mic-btn');
+    if (micBtn) {
+      micBtn.classList.remove('recording');
+      micBtn.classList.add('error');
+      setTimeout(() => micBtn.classList.remove('error'), 3000);
+    }
+    const hint = document.querySelector('.ai-mic-hint');
+    if (hint) {
+      const original = hint.textContent;
+      hint.textContent = message;
+      hint.style.color = '#ff6b6b';
+      setTimeout(() => { hint.textContent = original; hint.style.color = ''; }, 4000);
+    }
   }
   
   updateUI(state) {

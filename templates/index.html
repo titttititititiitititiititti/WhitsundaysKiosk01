@@ -15401,9 +15401,7 @@
       
       <!-- Click to Start Screen -->
       <div class="video-start-screen" id="video-start-screen" style="display: none !important;">
-        <div id="promo-badge" style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:white;font-size:1.5em;font-weight:900;padding:10px 36px;border-radius:50px;letter-spacing:3px;text-shadow:0 2px 8px rgba(0,0,0,0.3);box-shadow:0 6px 30px rgba(255,107,53,0.5);animation:promoPulse 2.5s ease-in-out infinite;">FREE COFFEE</div>
-        <div class="video-start-text" id="video-start-title" style="font-size:2.6em;line-height:1.15;">Book a Tour Here &amp; Get a Free Coffee</div>
-        <p style="color:rgba(255,255,255,0.9);font-size:1.25em;text-align:center;max-width:650px;margin:0;text-shadow:0 2px 10px rgba(0,0,0,0.6);">Browse Whitsunday tours, book on your phone, and grab a coffee on us.</p>
+        <div class="video-start-text" id="video-start-title">How Would You Like to Find Your Tour?</div>
         
         <!-- ALL THREE BUTTONS ALWAYS SHOWN -->
         <button class="ai-assistant-btn highlighted" id="ai-assistant-btn" onclick="event.stopPropagation(); startModeWithAnimation('ai-assistant')">
@@ -16440,7 +16438,13 @@
     
     <!-- Main Content - Lower half -->
     <div class="splash-content">
+      {% if active_account == 'bailey' %}
+      <div style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:white;font-size:2em;font-weight:900;padding:14px 48px;border-radius:50px;letter-spacing:4px;text-shadow:0 2px 8px rgba(0,0,0,0.3);box-shadow:0 6px 30px rgba(255,107,53,0.5);animation:promoPulse 2.5s ease-in-out infinite;margin-bottom:8px;">☕ FREE COFFEE</div>
+      <h1 class="splash-title" style="margin:0;font-size:inherit;font-weight:inherit;display:block;">Book a Tour &amp; Get a Free Coffee!</h1>
+      <p style="color:rgba(255,255,255,0.9);font-size:1.3em;text-align:center;max-width:650px;margin:0 0 4px 0;text-shadow:0 2px 10px rgba(0,0,0,0.6);">Browse tours, book on your phone, grab a coffee on us.</p>
+      {% else %}
       <h1 class="splash-title" style="margin:0;font-size:inherit;font-weight:inherit;display:block;">Cheapest Airlie Beach Tours — Compare & Book Instantly</h1>
+      {% endif %}
       <div class="splash-flags-hint">Select your language</div>
       <div class="splash-language-flags">
         <img class="splash-flag" src="https://flagcdn.com/w80/gb.png" alt="English" onclick="event.stopPropagation(); selectSplashLanguage('en')" title="English">
@@ -17005,17 +17009,17 @@
   <div class="qr-overlay" id="qr-payment-modal" style="display: none;">
     <div class="qr-backdrop" onclick="closeQRModal()"></div>
     
-    <div class="qr-card" style="max-width: 720px; width: 92vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 36px 40px; max-height: 92vh; overflow-y: auto; position: relative;">
-      <button onclick="closeQRModal()" style="position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.4em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">&#215;</button>
+    <div class="qr-card" style="max-width: 820px; width: 94vw; background: linear-gradient(180deg, #0a1628 0%, #122a4a 100%); border: 1px solid rgba(56,189,248,0.2); color: #fff; padding: 40px 48px; max-height: 94vh; overflow-y: auto; position: relative;">
+      <button onclick="closeQRModal()" style="position:absolute;top:16px;right:16px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:#fff;font-size:1.6em;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;backdrop-filter:blur(4px);">&#215;</button>
       
       {% if active_account == 'bailey' %}
-      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.7em; text-align: center; margin: 0 0 6px 0;">Book your tour &amp; unlock a Filtour perk</h2>
-      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 1.05em; margin: 0 0 20px 0;">
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 2.2em; text-align: center; margin: 0 0 8px 0;">Book your tour &amp; unlock a Filtour perk</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 1.25em; margin: 0 0 20px 0;">
         Scan the QR code to book, then claim your reward.
       </p>
       {% else %}
-      <h2 id="qr-modal-title" style="color: #fff; font-size: 1.3em; text-align: center; margin: 0 0 6px 0;">Book your tour</h2>
-      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 0.85em; margin: 0 0 20px 0;">
+      <h2 id="qr-modal-title" style="color: #fff; font-size: 2.2em; text-align: center; margin: 0 0 8px 0;">Book your tour</h2>
+      <p id="qr-modal-subtitle" style="color: rgba(255,255,255,0.6); text-align: center; font-size: 1.25em; margin: 0 0 20px 0;">
         Scan the QR code to complete your booking on the operator's secure page.
       </p>
       {% endif %}
@@ -17024,17 +17028,17 @@
       <!-- Perk Selection (bailey only) -->
       <div id="perk-selection-section" style="margin-bottom: 20px;">
         <div style="display: flex; gap: 12px;" id="perk-selection">
-          <div class="perk-option" data-perk="free_coffee" onclick="selectPerk('free_coffee')" style="flex:1; padding: 14px 10px; border-radius: 12px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
-            <div style="font-size: 1.6em; margin-bottom: 4px;">☕</div>
-            <div style="font-weight: 700; font-size: 0.9em; color: #fff;">Free Coffee</div>
-            <div style="font-size: 0.72em; color: rgba(255,255,255,0.55); margin-top: 3px;">From a Filtour partner café</div>
-            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%; background:#06b6d4; color:#fff; font-size:12px; line-height:20px; text-align:center;">✓</div>
+          <div class="perk-option" data-perk="free_coffee" onclick="selectPerk('free_coffee')" style="flex:1; padding: 18px 14px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 2.2em; margin-bottom: 6px;">☕</div>
+            <div style="font-weight: 700; font-size: 1.15em; color: #fff;">Free Coffee</div>
+            <div style="font-size: 0.9em; color: rgba(255,255,255,0.55); margin-top: 4px;">From a Filtour partner café</div>
+            <div class="perk-check" style="display:none; position:absolute; top:10px; right:10px; width:24px; height:24px; border-radius:50%; background:#06b6d4; color:#fff; font-size:14px; line-height:24px; text-align:center;">✓</div>
           </div>
-          <div class="perk-option" data-perk="free_moped_hour" onclick="selectPerk('free_moped_hour')" style="flex:1; padding: 14px 10px; border-radius: 12px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
-            <div style="font-size: 1.6em; margin-bottom: 4px;">🛵</div>
-            <div style="font-weight: 700; font-size: 0.9em; color: #fff;">Free Hour</div>
-            <div style="font-size: 0.72em; color: rgba(255,255,255,0.55); margin-top: 3px;">Moped hire with Airlie Scooter Hire</div>
-            <div class="perk-check" style="display:none; position:absolute; top:8px; right:8px; width:20px; height:20px; border-radius:50%; background:#06b6d4; color:#fff; font-size:12px; line-height:20px; text-align:center;">✓</div>
+          <div class="perk-option" data-perk="free_moped_hour" onclick="selectPerk('free_moped_hour')" style="flex:1; padding: 18px 14px; border-radius: 14px; border: 2px solid rgba(56,189,248,0.3); background: rgba(15,23,42,0.8); cursor: pointer; text-align: center; transition: all 0.2s; position: relative;">
+            <div style="font-size: 2.2em; margin-bottom: 6px;">🛵</div>
+            <div style="font-weight: 700; font-size: 1.15em; color: #fff;">Free Hour</div>
+            <div style="font-size: 0.9em; color: rgba(255,255,255,0.55); margin-top: 4px;">Moped hire with Airlie Scooter Hire</div>
+            <div class="perk-check" style="display:none; position:absolute; top:10px; right:10px; width:24px; height:24px; border-radius:50%; background:#06b6d4; color:#fff; font-size:14px; line-height:24px; text-align:center;">✓</div>
           </div>
         </div>
       </div>
@@ -17042,8 +17046,8 @@
       
       <!-- QR Code (centered, single QR that swaps between booking and claim) -->
       <div style="text-align: center; margin-bottom: 16px;">
-        <div id="qr-label" style="font-size: 0.75em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Scan to book</div>
-        <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 14px; display: inline-block;">
+        <div id="qr-label" style="font-size: 1em; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Scan to book</div>
+        <div class="qr-code-wrapper" id="qr-code-container" style="background: #fff; border-radius: 16px; padding: 20px; display: inline-block;">
           <!-- QR code will be generated here -->
         </div>
         <div id="qr-debug-url" style="display:none;"></div>
@@ -17051,23 +17055,23 @@
       
       <!-- Steps -->
       {% if active_account == 'bailey' %}
-      <div style="background: rgba(56,189,248,0.06); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.12);">
-        <div style="font-size: 0.8em; line-height: 1.9; color: rgba(255,255,255,0.8);">
+      <div style="background: rgba(56,189,248,0.06); border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; border: 1px solid rgba(56,189,248,0.12);">
+        <div style="font-size: 1.05em; line-height: 2; color: rgba(255,255,255,0.8);">
           <div><strong style="color:#38bdf8;">1.</strong> Choose your perk above</div>
           <div><strong style="color:#38bdf8;">2.</strong> Scan the QR code &amp; complete your booking</div>
           <div><strong style="color:#38bdf8;">3.</strong> Show the barista your confirmation to claim your perk right away!</div>
-          <div style="color:rgba(255,255,255,0.5);font-size:0.9em;padding-left:16px;">Or tap "I've booked" below to upload your confirmation &amp; get a voucher code by email</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.9em;padding-left:20px;">Or tap "I've booked" below to upload your confirmation &amp; get a voucher code by email</div>
         </div>
       </div>
       {% endif %}
       
       <!-- Buttons -->
-      <div style="display: flex; gap: 10px; margin-bottom: 14px;">
-        <button onclick="openBookingLink()" style="flex: 1; padding: 12px; border: 1px solid rgba(56,189,248,0.4); border-radius: 10px; background: transparent; color: #38bdf8; font-size: 0.85em; font-weight: 600; cursor: pointer;">
+      <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+        <button onclick="openBookingLink()" style="flex: 1; padding: 16px; border: 1px solid rgba(56,189,248,0.4); border-radius: 12px; background: transparent; color: #38bdf8; font-size: 1.1em; font-weight: 600; cursor: pointer;">
           Open link instead ↗
         </button>
         {% if active_account == 'bailey' %}
-        <button id="show-claim-qr-btn" onclick="showClaimQR()" style="flex: 1; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 0.85em; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <button id="show-claim-qr-btn" onclick="showClaimQR()" style="flex: 1; padding: 16px; border: none; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
           I've booked — claim my perk
         </button>
         {% endif %}
@@ -23853,23 +23857,55 @@
       lastHighlightedTour = currentAITourCards.find(t => t.name === highlightedCard.dataset.tourName);
     }
     
+    function browserSpeakFallback(text, language) {
+      if (!window.speechSynthesis) return;
+      try {
+        window.speechSynthesis.cancel();
+        const langMap = { en: 'en-US', zh: 'zh-CN', ja: 'ja-JP', ko: 'ko-KR', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', hi: 'hi-IN' };
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langMap[language] || 'en-US';
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        utterance.onstart = () => {
+          if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+        };
+        utterance.onend = () => {
+          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          const micBtn = document.getElementById('ai-mic-btn');
+          if (micBtn) micBtn.classList.add('ready-to-speak');
+        };
+        window.speechSynthesis.speak(utterance);
+        console.log('🔊 Browser TTS fallback speaking');
+      } catch (e) {
+        console.error('🔊 Browser TTS fallback failed:', e);
+      }
+    }
+
     async function fetchTTSChunk(text, language) {
       console.log(`📡 TTS request for: "${text.substring(0, 50)}..."`);
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language, gender: 'female' })
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`❌ TTS API error: ${response.status} - ${errorText}`);
-        throw new Error(`TTS error: ${response.status} - ${errorText}`);
+      try {
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, language, gender: 'female' })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`❌ TTS API error: ${response.status} - ${errorText}`);
+          throw new Error(`TTS error: ${response.status} - ${errorText}`);
+        }
+        
+        const blob = await response.blob();
+        if (blob.size < 100) throw new Error('TTS returned empty audio');
+        console.log(`✅ TTS response: ${blob.size} bytes`);
+        return blob;
+      } catch (e) {
+        console.error('❌ ElevenLabs TTS failed, using browser fallback:', e.message);
+        browserSpeakFallback(text, language);
+        return null;
       }
-      
-      const blob = await response.blob();
-      console.log(`✅ TTS response: ${blob.size} bytes`);
-      return blob;
     }
     
     async function playNextInQueue() {
@@ -24097,8 +24133,13 @@
         if (introText && introText.length > 5) {
           try {
             const introBlob = await fetchTTSChunk(introText, language);
-            console.log(`✅ Intro chunk ready (${introBlob.size} bytes) in ${Date.now() - fetchStart}ms`);
-            ttsAudioQueue.push(introBlob);
+            if (introBlob && introBlob.size > 0) {
+              console.log(`✅ Intro chunk ready (${introBlob.size} bytes) in ${Date.now() - fetchStart}ms`);
+              ttsAudioQueue.push(introBlob);
+            } else {
+              console.log('⚠️ Intro used browser fallback (no blob to queue)');
+              ttsAudioQueue.push(null);
+            }
               
             // Reveal content immediately when intro is ready
               if (!contentRevealed && ttsReadyCallback) {
@@ -24108,11 +24149,13 @@
                 console.log(`🎬 Content revealed after ${Date.now() - fetchStart}ms`);
               }
               
-            // Start playing intro after 0.4s delay
+            // Start playing intro after 0.4s delay (if we have a blob)
+            if (introBlob && introBlob.size > 0) {
               setTimeout(() => {
-              console.log('🔊 Starting intro playback (0.4s after content)...');
+                console.log('🔊 Starting intro playback (0.4s after content)...');
                 playNextInQueue();
               }, 400);
+            }
             
           } catch (e) {
             console.error('❌ Intro chunk failed:', e);
@@ -24150,11 +24193,15 @@
           try {
             console.log(`📡 Fetching chunk ${i + 1}/${chunks.length}...`);
             const blob = await fetchTTSChunk(chunkText, language);
+            if (blob && blob.size > 0) {
               console.log(`✅ Chunk ${i + 1}/${chunks.length} ready (${blob.size} bytes)`);
-            ttsAudioQueue.push(blob);
+              ttsAudioQueue.push(blob);
+            } else {
+              ttsAudioQueue.push(null);
+            }
             
             // If we skipped intro and this is the first real chunk, start playing
-            if (!firstRealChunkFetched) {
+            if (!firstRealChunkFetched && blob && blob.size > 0) {
               firstRealChunkFetched = true;
               setTimeout(() => {
                 console.log('🔊 Starting playback (first tour chunk)...');
@@ -24163,8 +24210,7 @@
             }
           } catch (e) {
               console.error(`❌ Chunk ${i + 1} failed:`, e);
-            ttsAudioQueue.push(null); // Placeholder
-            // Continue with remaining chunks
+            ttsAudioQueue.push(null);
           }
         }
         
@@ -28866,97 +28912,38 @@
     
     // Generate QR code for continuing on phone
     function generateQRCodeForTour(key, data) {
-      console.log('📱 generateQRCodeForTour called with key:', key);
+      console.log('📱 generateQRCodeForTour (Send to My Phone) called with key:', key);
       
-      const modal = document.getElementById('qr-payment-modal');
-      const qrContainer = document.getElementById('qr-code-container');
+      // Create a dedicated "Send to Phone" overlay instead of reusing the booking modal
+      let overlay = document.getElementById('send-to-phone-overlay');
+      if (overlay) overlay.remove();
       
-      console.log('   Modal found:', !!modal);
-      console.log('   QR Container found:', !!qrContainer);
+      const baseUrl = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') 
+        ? window.location.origin 
+        : 'https://www.filtour.com';
+      const tourUrl = `${baseUrl}/tour/${key}?lang=${currentLanguage}&ref=${ACTIVE_ACCOUNT}&mode=browse`;
+      const tourName = data ? (data.name || 'this tour') : 'this tour';
       
-      if (!modal) {
-        console.error('❌ QR modal not found!');
-        return;
-      }
-      
-      if (!qrContainer) {
-        console.error('❌ QR container not found!');
-        return;
-      }
-      
-      if (modal && qrContainer) {
-        // Update modal title
-        const modalTitle = modal.querySelector('h2');
-        if (modalTitle) {
-          modalTitle.textContent = 'Continue on Your Phone';
-          console.log('   ✓ Updated modal title');
-        }
-        
-        const modalSubtitle = modal.querySelector('.qr-subtitle');
-        if (modalSubtitle) {
-          modalSubtitle.textContent = 'Scan this code to open this tour on your mobile device';
-          console.log('   ✓ Updated modal subtitle');
-        }
-        
-        const modalHelpText = modal.querySelector('.qr-help-text');
-        if (modalHelpText) {
-          modalHelpText.textContent = 'View full details and book on your phone';
-          console.log('   ✓ Updated modal help text');
-        }
-        
-        // Generate QR code using the shareable tour URL
-        const qrCodeUrl = `/api/generate-tour-qr/${key}?lang=${currentLanguage}`;
-        console.log('   QR Code URL:', qrCodeUrl);
-        qrContainer.innerHTML = `<img src="${qrCodeUrl}" alt="Tour QR Code" style="width:100%;max-width:300px;height:auto;" />`;
-        
-        // Show modal with forced visibility
-        modal.classList.add('modal-active');
-        modal.style.display = 'flex';
-        modal.style.visibility = 'visible';
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-        modal.style.zIndex = '999999';
-        document.body.style.overflow = 'hidden';
-        console.log('   ✅ Modal shown!');
-        console.log('   Modal display:', modal.style.display);
-        console.log('   Modal z-index:', window.getComputedStyle(modal).zIndex);
-        
-        // Update the continue button to copy the link
-        const continueBtn = document.getElementById('qr-continue-btn');
-        if (continueBtn) {
-          continueBtn.textContent = 'Copy Link';
-          continueBtn.onclick = () => {
-            // Use filtour.com domain for shareable links, include account referral
-            const baseUrl = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') 
-              ? window.location.origin 
-              : 'https://www.filtour.com';
-            const tourUrl = `${baseUrl}/tour/${key}?lang=${currentLanguage}&ref=${ACTIVE_ACCOUNT}&mode=browse`;
-            console.log('   Copying tour URL:', tourUrl);
-            navigator.clipboard.writeText(tourUrl).then(() => {
-              continueBtn.textContent = '✓ Copied!';
-              setTimeout(() => {
-                continueBtn.textContent = 'Copy Link';
-              }, 2000);
-            }).catch(err => {
-              console.error('Failed to copy:', err);
-              alert('Link: ' + tourUrl);
-            });
-          };
-          console.log('   ✓ Copy button configured');
-        }
-        
-        // Setup cancel button
-        const cancelBtn = document.getElementById('qr-cancel-btn');
-        if (cancelBtn) {
-          cancelBtn.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🚫 Cancel button clicked');
-            closeQRModal();
-          };
-          console.log('   ✓ Cancel button configured');
-        }
-      }
+      overlay = document.createElement('div');
+      overlay.id = 'send-to-phone-overlay';
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s ease;';
+      overlay.innerHTML = `
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);" onclick="document.getElementById('send-to-phone-overlay').remove()"></div>
+        <div style="position:relative;z-index:10;background:white;border-radius:28px;padding:50px 60px;max-width:720px;width:92%;text-align:center;display:flex;flex-direction:column;gap:20px;animation:slideUp 0.4s ease;">
+          <button onclick="document.getElementById('send-to-phone-overlay').remove()" style="position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:none;background:#f0f0f0;color:#666;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#215;</button>
+          <h2 style="font-size:2.4em;font-weight:700;color:#0077b6;margin:0;">📱 Continue on Your Phone</h2>
+          <p style="font-size:1.4em;color:#555;margin:0;line-height:1.5;">${tourName}</p>
+          <p style="font-size:1.15em;color:#888;margin:0;">Scan this QR code to open this tour on your mobile device. You can browse, compare, and book at your own pace.</p>
+          <div style="display:flex;align-items:center;justify-content:center;padding:30px;background:#f8f9fa;border-radius:20px;border:3px solid #0077b6;">
+            <img src="/api/generate-tour-qr/${key}?lang=${currentLanguage}" alt="Tour QR Code" style="width:100%;max-width:340px;height:auto;border-radius:12px;" />
+          </div>
+          <div style="display:flex;gap:12px;">
+            <button onclick="navigator.clipboard.writeText('${tourUrl}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>{this.textContent='Copy Link'},2000)}).catch(()=>alert('${tourUrl}'))" style="flex:1;padding:18px;border-radius:14px;border:2px solid #0077b6;background:transparent;color:#0077b6;font-size:1.3em;font-weight:600;cursor:pointer;">Copy Link</button>
+            <button onclick="document.getElementById('send-to-phone-overlay').remove()" style="flex:1;padding:18px;border-radius:14px;border:none;background:#f0f4f8;color:#666;font-size:1.3em;font-weight:600;cursor:pointer;">Close</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
     }
     
     // Open booking modal with QR code (desktop) or direct link (mobile)
@@ -36805,7 +36792,8 @@
     // Check if device is mobile
     function isMobileDevice() {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-             (window.innerWidth <= 768);
+             (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ||
+             (window.innerWidth <= 1024 && 'ontouchend' in document);
     }
     
     window.playWelcomeMessage = async function() {
