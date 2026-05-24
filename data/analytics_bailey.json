@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-24T01:10:32.257125",
+  "last_updated": "2026-05-24T01:12:49.502644",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28999,12 +28999,34 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-24T01:12:48.462481",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-24T01:12:49.502587",
+          "data": {
+            "tour_name": "Condor Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": "en",
       "mode": "browse-all",
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Condor Whitsundays Sailing Tour"
+      ],
+      "tours_booked": [
+        "Condor Whitsundays Sailing Tour"
+      ],
       "chat_messages": []
     },
     {
@@ -29038,6 +29060,51 @@
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_0b0b1fe9809c_1779585137",
+      "account": "bailey",
+      "started_at": "2026-05-24T01:12:17.106731",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-24T01:12:17.106742",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_4_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-24T01:12:18.476958",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-24T01:12:19.562410",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-24T01:12:26.380122",
+          "data": {
+            "tour_name": "Broomstick Whitsundays \u2013 Sailing Tour",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Broomstick Whitsundays \u2013 Sailing Tour"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
