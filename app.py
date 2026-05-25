@@ -5563,12 +5563,12 @@ def tour_page(key):
 def generate_tour_qr(key):
     """Generate QR code for a specific tour with tracking and referral"""
     try:
-        # Use production domain if configured, otherwise derive from request
+        # ALWAYS use production domain for QR codes - phones must be able to reach this URL
         configured_domain = os.getenv('SITE_URL', '').rstrip('/')
         if configured_domain:
             base_url = configured_domain
-        elif 'localhost' in request.host or '127.0.0.1' in request.host:
-            base_url = request.url_root.rstrip('/')
+        elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
+            base_url = 'https://www.filtour.com'
         else:
             base_url = request.url_root.rstrip('/').replace('http://', 'https://')
         
@@ -5648,10 +5648,15 @@ def text_to_speech():
             importlib.reload(elevenlabs_tts)
             from elevenlabs_tts import synthesize_speech as synth2, is_configured as cfg2
             if not cfg2():
-                print(f"[TTS] ElevenLabs not configured. Key present in env: {bool(os.getenv('ELEVENLABS_API_KEY'))}")
+                env_key = os.getenv('ELEVENLABS_API_KEY')
+                print(f"[TTS] ❌ ElevenLabs NOT configured!")
+                print(f"[TTS]    Key in os.environ: {bool(env_key)}")
+                print(f"[TTS]    Key length: {len(env_key) if env_key else 0}")
+                print(f"[TTS]    .env file exists: {os.path.exists('.env')}")
+                print(f"[TTS]    CWD: {os.getcwd()}")
                 return jsonify({
                     'success': False,
-                    'error': 'ElevenLabs not configured'
+                    'error': 'ElevenLabs not configured - check ELEVENLABS_API_KEY in .env'
                 }), 500
             synthesize_speech = synth2
         
@@ -8503,8 +8508,14 @@ def create_recommendation_session():
             'language': data.get('language', 'en')
         }
         
-        # Generate URL for recommendations page
-        base_url = request.host_url.rstrip('/')
+        # Generate URL for recommendations page - use production domain for phone access
+        configured_domain = os.getenv('SITE_URL', '').rstrip('/')
+        if configured_domain:
+            base_url = configured_domain
+        elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
+            base_url = 'https://www.filtour.com'
+        else:
+            base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
         
         print(f"[OK] Created session {session_id} with {len(data.get('tours', []))} tours")
@@ -8530,8 +8541,14 @@ def generate_qr_code(session_id):
         if session_id not in recommendation_sessions:
             return jsonify({'error': 'Session not found'}), 404
         
-        # Generate URL
-        base_url = request.host_url.rstrip('/')
+        # Generate URL - use production domain for phone access
+        configured_domain = os.getenv('SITE_URL', '').rstrip('/')
+        if configured_domain:
+            base_url = configured_domain
+        elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
+            base_url = 'https://www.filtour.com'
+        else:
+            base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
         
         # Create QR code
@@ -8636,8 +8653,14 @@ def email_recommendations():
         if not session_data:
             return jsonify({'success': False, 'error': 'Session not found'}), 404
         
-        # Generate recommendations URL
-        base_url = request.host_url.rstrip('/')
+        # Generate recommendations URL - use production domain for phone/email access
+        configured_domain = os.getenv('SITE_URL', '').rstrip('/')
+        if configured_domain:
+            base_url = configured_domain
+        elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
+            base_url = 'https://www.filtour.com'
+        else:
+            base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
         
         tours = session_data.get('tours', [])

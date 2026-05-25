@@ -98,6 +98,7 @@ class VoiceChat {
       this.isListening = true;
       this.lastTranscript = '';
       this.hasFinalResult = false;
+      this._retryCount = 0;
       this.clearSilenceTimer();
       this.updateUI('listening');
     };
@@ -138,15 +139,25 @@ class VoiceChat {
     this.recognition.onend = () => {
       console.log('🎤 Speech recognition ENDED, wasListening:', this.isListening, 'hasFinal:', this.hasFinalResult);
       
-      // On iOS, recognition can end prematurely without any results.
-      // If we were listening and got no transcript at all, auto-restart once.
-      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && this._isIOS && !this._restarted) {
-        console.log('🎤 iOS: recognition ended without results — auto-restarting');
+      // Recognition can end prematurely without any results on any platform.
+      // If we were listening and got no transcript at all, auto-restart (up to 2 times).
+      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && !this._restarted) {
+        console.log('🎤 Recognition ended without results — auto-restarting');
         this._restarted = true;
+        this._retryCount = 0;
         try { this.recognition.start(); } catch(e) { console.error('🎤 Restart failed:', e); }
         return;
       }
+      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && this._restarted && !this._restarted2) {
+        console.log('🎤 Second auto-restart attempt');
+        this._restarted2 = true;
+        this._retryCount = 0;
+        try { this.recognition.start(); } catch(e) { console.error('🎤 Second restart failed:', e); }
+        return;
+      }
       this._restarted = false;
+      this._restarted2 = false;
+      this._retryCount = 0;
       
       // If we have a transcript but never got a "final" result,
       // send the last transcript anyway (fallback for when recognition ends abruptly)
@@ -195,27 +206,26 @@ class VoiceChat {
       }
     };
     
-    // No match found
+    // No match found - don't show error, just log it (user can retry naturally)
     this.recognition.onnomatch = () => {
-      console.log('🎤 No speech was recognized');
-      this.showError("Sorry, I couldn't understand that. Could you try again?");
+      console.log('🎤 No speech match - will retry silently');
     };
     
     // Error handling
     this.recognition.onerror = (event) => {
       console.error('🎤 Speech recognition ERROR:', event.error, event.message);
-      this.isListening = false;
-      this.updateUI('error');
       
       // User-friendly error messages
       let errorMsg = '';
       let showErrorToUser = true;
+      let shouldAutoRetry = false;
       
       switch(event.error) {
         case 'no-speech':
-          // Don't show error - common on mobile when mic is still warming up
-          console.log('🎤 No speech detected - user may not have spoken yet');
+          // Very common - just means user hasn't spoken yet, auto-retry
+          console.log('🎤 No speech detected - auto-retrying...');
           showErrorToUser = false;
+          shouldAutoRetry = true;
           break;
         case 'audio-capture':
           errorMsg = "Microphone not available. Please check that no other app is using it.";
@@ -224,7 +234,10 @@ class VoiceChat {
           errorMsg = "Please allow microphone access to use voice input.";
           break;
         case 'network':
-          errorMsg = "Network error. Please check your connection and try again.";
+          // Network errors are often transient, auto-retry
+          console.log('🎤 Network error - auto-retrying...');
+          showErrorToUser = false;
+          shouldAutoRetry = true;
           break;
         case 'aborted':
           console.log('🎤 Recognition was aborted');
@@ -236,7 +249,28 @@ class VoiceChat {
         default:
           console.log('🎤 Unknown error:', event.error);
           showErrorToUser = false;
+          shouldAutoRetry = true;
       }
+      
+      if (shouldAutoRetry && this.isListening && !this._retryCount) {
+        this._retryCount = (this._retryCount || 0) + 1;
+        if (this._retryCount <= 3) {
+          console.log(`🎤 Auto-retry attempt ${this._retryCount}/3`);
+          setTimeout(() => {
+            try { this.recognition.start(); } catch(e) { 
+              console.log('🎤 Retry start failed:', e.message);
+              this.isListening = false;
+              this.updateUI('idle');
+            }
+          }, 300);
+          return;
+        }
+        this._retryCount = 0;
+      }
+      
+      this.isListening = false;
+      this._retryCount = 0;
+      this.updateUI('error');
       
       if (showErrorToUser && errorMsg) {
         this.showError(errorMsg);

@@ -2049,8 +2049,6 @@
       /* Force GPU compositing */
       perspective: 1000px;
       -webkit-perspective: 1000px;
-      /* Prevent repaints */
-      contain: strict;
       isolation: isolate;
     }
     
@@ -5487,6 +5485,27 @@
     @keyframes sendBtnPulse {
       0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.3); }
       50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 60px rgba(139, 92, 246, 0.4); }
+    }
+    
+    /* GREEN flash for send button after suggestion selection - draws user attention */
+    .ai-send-btn.flash-green {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+      border-color: rgba(255, 255, 255, 0.8) !important;
+      color: white !important;
+      transform: scale(1.25) !important;
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.8), 0 0 50px rgba(34, 197, 94, 0.4) !important;
+      animation: sendBtnFlashGreen 0.8s ease-in-out infinite !important;
+    }
+    
+    @keyframes sendBtnFlashGreen {
+      0%, 100% { 
+        transform: scale(1.2);
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.8), 0 0 50px rgba(34, 197, 94, 0.4);
+      }
+      50% { 
+        transform: scale(1.35);
+        box-shadow: 0 0 35px rgba(34, 197, 94, 1), 0 0 70px rgba(34, 197, 94, 0.6);
+      }
     }
     
     .ai-send-btn {
@@ -14010,11 +14029,38 @@
         });
       }
 
-      // Prevent accidental pausing (iOS touch events)
+      // AGGRESSIVE anti-pause: force play on ANY pause event, no exceptions
       video.addEventListener('pause', function() {
-        if (!document.hidden) {
+        setTimeout(function() {
+          video.play().catch(function() {
+            // If play fails, retry after a short delay
+            setTimeout(function() { video.play().catch(function() {}); }, 100);
+          });
+        }, 50);
+      });
+
+      // WATCHDOG: Check every 2 seconds that video is playing, force-play if not
+      setInterval(function() {
+        if (video.paused || video.ended) {
+          console.log('📺 Watchdog: video was paused/ended, forcing play');
+          video.currentTime = video.ended ? 0 : video.currentTime;
           video.play().catch(function() {});
         }
+        // Also handle stalled video (buffering indefinitely)
+        if (video.readyState < 3 && video.networkState === 2 && !video.paused) {
+          console.log('📺 Watchdog: video stalled, attempting recovery');
+          var ct = video.currentTime;
+          video.load();
+          video.currentTime = ct;
+          video.play().catch(function() {});
+        }
+      }, 2000);
+
+      // Resume on ANY user interaction (covers all touch/click scenarios)
+      ['touchstart', 'click', 'pointerdown', 'focus'].forEach(function(evt) {
+        document.addEventListener(evt, function() {
+          if (video.paused) video.play().catch(function() {});
+        }, { passive: true, capture: true });
       });
 
       // Try the local <source> first
@@ -14054,6 +14100,20 @@
       video.addEventListener('ended', () => {
         video.currentTime = 0;
         video.play().catch(() => {});
+      });
+
+      // Handle 'waiting' and 'stalled' events that can precede a freeze
+      video.addEventListener('waiting', function() {
+        setTimeout(function() {
+          if (video.paused) video.play().catch(function() {});
+        }, 500);
+      });
+      video.addEventListener('stalled', function() {
+        console.log('📺 Video stalled, attempting reload');
+        var ct = video.currentTime;
+        video.load();
+        video.currentTime = ct;
+        video.play().catch(function() {});
       });
     })();
   </script>
@@ -16753,6 +16813,9 @@
       sessionStorage.setItem('splash_shown', 'true');
       console.log('🚀 Dismissing splash screen');
       
+      // Prime audio context on first user interaction (enables TTS later)
+      if (typeof primeAudioContext === 'function') primeAudioContext();
+      
       // NOW start analytics session (user has actually engaged)
       Analytics.init();
       const splash = document.getElementById('main-splash-screen');
@@ -16819,6 +16882,9 @@
       
       // Mark splash as shown
       sessionStorage.setItem('splash_shown', 'true');
+      
+      // Prime audio context on first user interaction (enables TTS later)
+      if (typeof primeAudioContext === 'function') primeAudioContext();
       
       // NOW start analytics session (user has actually engaged)
       Analytics.init();
@@ -23924,26 +23990,44 @@
     }
 
     async function fetchTTSChunk(text, language) {
-      console.log(`📡 TTS request for: "${text.substring(0, 50)}..."`);
+      console.log(`📡 TTS request for: "${text.substring(0, 50)}..." (${text.length} chars)`);
       try {
         const response = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, language, gender: 'female' })
         });
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`❌ TTS API error: ${response.status} - ${errorText}`);
+          // If it's a config error, log prominently
+          if (response.status === 500) {
+            console.error('⚠️ TTS SERVER ERROR - Check ElevenLabs API key in .env file');
+          }
           throw new Error(`TTS error: ${response.status} - ${errorText}`);
         }
+
+        const contentType = response.headers.get('content-type');
+        console.log(`📡 TTS response content-type: ${contentType}`);
         
+        // Verify we got audio, not JSON error
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          console.error('❌ TTS returned JSON instead of audio:', errorData);
+          throw new Error('TTS returned error JSON: ' + JSON.stringify(errorData));
+        }
+
         const blob = await response.blob();
-        if (blob.size < 100) throw new Error('TTS returned empty audio');
-        console.log(`✅ TTS response: ${blob.size} bytes`);
+        if (blob.size < 100) {
+          console.error(`❌ TTS returned tiny blob (${blob.size} bytes) - likely empty`);
+          throw new Error('TTS returned empty audio');
+        }
+        console.log(`✅ TTS response: ${blob.size} bytes, type: ${blob.type}`);
         return blob;
       } catch (e) {
-        console.error('❌ ElevenLabs TTS failed, using browser fallback:', e.message);
+        console.error('❌ ElevenLabs TTS failed:', e.message);
+        console.log('🔊 Falling back to browser speech synthesis...');
         browserSpeakFallback(text, language);
         return null;
       }
@@ -23968,7 +24052,6 @@
         if (micBtn && !micBtn.classList.contains('recording')) {
           micBtn.classList.add('ready-to-speak');
           console.log('🎤 Mic ready - showing green glow');
-          
         }
         return;
       }
@@ -23984,7 +24067,7 @@
       ttsAudioElement._currentUrl = audioUrl;
       
       // Highlight tour card based on chunk index (chunk 1=intro, chunk 2=card 0, etc.)
-      const cardIndex = ttsCurrentChunkIndex - 1; // Chunk 1 is intro, so card index = chunk - 1
+      const cardIndex = ttsCurrentChunkIndex - 1;
       if (cardIndex >= 0 && cardIndex < currentAITourCards.length) {
         const tourName = currentAITourCards[cardIndex].name;
         console.log(`🎙️ Chunk ${ttsCurrentChunkIndex + 1} → Highlighting card ${cardIndex + 1}: ${tourName}`);
@@ -23998,54 +24081,64 @@
       // Reset and set source
       ttsAudioElement.pause();
       ttsAudioElement.currentTime = 0;
-      ttsAudioElement.volume = 1.0; // Ensure max volume for every chunk
+      ttsAudioElement.volume = 1.0;
       ttsAudioElement.src = audioUrl;
       
-      // Quick load - don't wait for full buffer
-      ttsAudioElement.load();
-      
       try {
-        // ENSURE we start from the very beginning
-        ttsAudioElement.currentTime = 0;
-        console.log('🔊 Starting chunk from position:', ttsAudioElement.currentTime, 'duration:', ttsAudioElement.duration);
+        // Wait for audio to be ready BEFORE playing (fixes race condition)
+        await new Promise((resolve, reject) => {
+          const onReady = () => {
+            ttsAudioElement.removeEventListener('canplaythrough', onReady);
+            ttsAudioElement.removeEventListener('canplay', onReady);
+            clearTimeout(readyTimeout);
+            resolve();
+          };
+          ttsAudioElement.addEventListener('canplaythrough', onReady);
+          ttsAudioElement.addEventListener('canplay', onReady);
+          
+          // Fallback: if canplaythrough doesn't fire within 3s, try anyway
+          const readyTimeout = setTimeout(() => {
+            ttsAudioElement.removeEventListener('canplaythrough', onReady);
+            ttsAudioElement.removeEventListener('canplay', onReady);
+            console.log('🔊 Audio ready timeout - attempting play anyway');
+            resolve();
+          }, 3000);
+          
+          ttsAudioElement.load();
+        });
         
-        // ALWAYS try to play - new messages should always play out loud
-        // User can tap orb to pause/mute DURING playback if they want
+        ttsAudioElement.currentTime = 0;
+        console.log('🔊 Audio ready, playing chunk. Duration:', ttsAudioElement.duration);
+        
         try {
           await ttsAudioElement.play();
-          console.log('🔊 Chunk now playing');
-        } catch (autoplayError) {
-          console.warn('⚠️ Autoplay blocked, waiting for user interaction...');
+          console.log('🔊 Chunk now playing successfully');
+        } catch (playError) {
+          console.warn('⚠️ Play failed:', playError.message);
           
-          // Create a one-time click handler to resume audio
-          const resumeAudio = async () => {
-            try {
-              await ttsAudioElement.play();
-              console.log('🔊 Audio resumed after user interaction');
-            } catch (e) {
-              console.error('Still cannot play:', e);
-            }
-            document.removeEventListener('click', resumeAudio);
-            document.removeEventListener('touchstart', resumeAudio);
-          };
-          
-          // Add listeners for user interaction
-          document.addEventListener('click', resumeAudio, { once: true });
-          document.addEventListener('touchstart', resumeAudio, { once: true });
-          
-          // Also try playing directly (mobile Safari sometimes works)
-          setTimeout(async () => {
-            try {
-              if (ttsAudioElement.paused) {
+          // Retry after short delay
+          await new Promise(r => setTimeout(r, 200));
+          try {
+            await ttsAudioElement.play();
+            console.log('🔊 Retry play succeeded');
+          } catch (retryError) {
+            console.warn('⚠️ Retry also failed, setting up interaction listener');
+            
+            const resumeAudio = async () => {
+              try {
                 await ttsAudioElement.play();
-                console.log('🔊 Delayed play succeeded');
-              }
-            } catch (e) {}
-          }, 100);
+                console.log('🔊 Audio resumed after user interaction');
+              } catch (e) {}
+              document.removeEventListener('click', resumeAudio);
+              document.removeEventListener('touchstart', resumeAudio);
+            };
+            document.addEventListener('click', resumeAudio, { once: true });
+            document.addEventListener('touchstart', resumeAudio, { once: true });
+          }
         }
       } catch (e) {
-        console.error('Playback error:', e);
-        playNextInQueue();
+        console.error('🔊 Playback error:', e);
+        setTimeout(() => playNextInQueue(), 100);
       }
     }
     
@@ -24474,12 +24567,18 @@
     
     function sendSuggestionMessage(text) {
       const input = document.getElementById('ai-text-input');
-      const sendBtn = document.querySelector('.ai-send-btn');
+      const sendBtn = document.getElementById('ai-send-btn');
       if (input) {
         input.value = text;
         input.focus();
         // Trigger input event to activate send button glow
         input.dispatchEvent(new Event('input'));
+      }
+      // Flash send button GREEN to draw attention - user needs to tap it!
+      if (sendBtn) {
+        sendBtn.classList.add('flash-green');
+        // Remove after animation completes (or when user taps send)
+        setTimeout(() => sendBtn.classList.remove('flash-green'), 8000);
       }
     }
     
@@ -24559,6 +24658,10 @@
     
     window.sendAIMessage = async function() {
       console.log('📤 sendAIMessage() called');
+      
+      // Remove green flash from send button (user found it!)
+      const flashBtn = document.getElementById('ai-send-btn');
+      if (flashBtn) flashBtn.classList.remove('flash-green');
       
       // Hide suggestions while waiting for response
       hideAISuggestions();
