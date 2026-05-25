@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-25T17:36:25.847909",
+  "last_updated": "2026-05-25T07:36:58.289459",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28954,11 +28954,6 @@
             "company": "ProSail",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-24T01:02:14.344363",
-          "data": {}
         }
       ],
       "language": null,
@@ -28969,9 +28964,7 @@
       "tours_booked": [
         "Broomstick Whitsundays \u2013 Sailing Tour"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T01:02:14.344386",
-      "duration_seconds": 1931.118217
+      "chat_messages": []
     },
     {
       "session_id": "session_2fba53ec34ed_1779584955",
@@ -29866,6 +29859,56 @@
       "tours_viewed": [
         "Northern Exposure Eco Adventure"
       ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "c8b525fc-8fed-450f-8b3b-773c1f759c47",
+      "account": "bailey",
+      "started_at": "2026-05-25T07:36:55.078118",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-25T07:36:55.078143",
+          "data": {
+            "tour_key": "prosail__1bd0a1a8db3f1e2b",
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "tracking_id": "f6510efc",
+            "timestamp": "1779610983",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "ad724ab4-6129-4cb9-bcd3-250065557317",
+      "account": "bailey",
+      "started_at": "2026-05-25T07:36:58.289387",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-25T07:36:58.289401",
+          "data": {
+            "tour_key": "prosail__1bd0a1a8db3f1e2b",
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "tracking_id": "f6510efc",
+            "timestamp": "1779610983",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
