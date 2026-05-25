@@ -14029,35 +14029,36 @@
         });
       }
 
-      // AGGRESSIVE anti-pause: force play on ANY pause event, no exceptions
+      // Track whether video has successfully played at least once
+      var videoHasPlayed = false;
+      
+      video.addEventListener('playing', function() {
+        if (!videoHasPlayed) {
+          videoHasPlayed = true;
+          console.log('📺 Video first play confirmed - watchdog now active');
+        }
+      });
+
+      // Anti-pause: force play on pause event, but ONLY after first successful play
       video.addEventListener('pause', function() {
+        if (!videoHasPlayed) return;
         setTimeout(function() {
-          video.play().catch(function() {
-            // If play fails, retry after a short delay
-            setTimeout(function() { video.play().catch(function() {}); }, 100);
-          });
+          video.play().catch(function() {});
         }, 50);
       });
 
-      // WATCHDOG: Check every 2 seconds that video is playing, force-play if not
+      // WATCHDOG: Check every 2 seconds, but only enforce after first play
       setInterval(function() {
+        if (!videoHasPlayed) return;
         if (video.paused || video.ended) {
           console.log('📺 Watchdog: video was paused/ended, forcing play');
           video.currentTime = video.ended ? 0 : video.currentTime;
           video.play().catch(function() {});
         }
-        // Also handle stalled video (buffering indefinitely)
-        if (video.readyState < 3 && video.networkState === 2 && !video.paused) {
-          console.log('📺 Watchdog: video stalled, attempting recovery');
-          var ct = video.currentTime;
-          video.load();
-          video.currentTime = ct;
-          video.play().catch(function() {});
-        }
       }, 2000);
 
-      // Resume on ANY user interaction (covers all touch/click scenarios)
-      ['touchstart', 'click', 'pointerdown', 'focus'].forEach(function(evt) {
+      // Resume on ANY user interaction (this helps unlock autoplay on first tap)
+      ['touchstart', 'click', 'pointerdown'].forEach(function(evt) {
         document.addEventListener(evt, function() {
           if (video.paused) video.play().catch(function() {});
         }, { passive: true, capture: true });
@@ -14102,18 +14103,12 @@
         video.play().catch(() => {});
       });
 
-      // Handle 'waiting' and 'stalled' events that can precede a freeze
+      // Handle 'waiting' event - just try to resume if paused
       video.addEventListener('waiting', function() {
+        if (!videoHasPlayed) return;
         setTimeout(function() {
           if (video.paused) video.play().catch(function() {});
         }, 500);
-      });
-      video.addEventListener('stalled', function() {
-        console.log('📺 Video stalled, attempting reload');
-        var ct = video.currentTime;
-        video.load();
-        video.currentTime = ct;
-        video.play().catch(function() {});
       });
     })();
   </script>
@@ -17205,7 +17200,12 @@
     // GLOBAL VARIABLES - Inactivity Timer & Language
     // =====================================================================
     let inactivityTimer;
-    const INACTIVITY_TIMEOUT = {{ (kiosk_settings.get('session_timeout_minutes', 2) | int) * 60000 if kiosk_settings else 120000 }}; // {{ kiosk_settings.get('session_timeout_minutes', 2) if kiosk_settings else 2 }} minutes
+    const INACTIVITY_TIMEOUT = (function() {
+      var kioskTimeout = {{ (kiosk_settings.get('session_timeout_minutes', 2) | int) * 60000 if kiosk_settings else 120000 }};
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // Web visitors (not on localhost kiosk) get 5 minute timeout
+      return isLocal ? kioskTimeout : 300000;
+    })();
     const urlParams = new URLSearchParams(window.location.search);
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
     let currentCurrency = 'AUD';
