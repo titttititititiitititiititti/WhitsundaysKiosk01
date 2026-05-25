@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-25T11:40:08.712938",
+  "last_updated": "2026-05-25T11:42:28.438137",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -29969,13 +29969,40 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-25T11:42:17.865637",
+          "data": {
+            "role": "user",
+            "message": "Hi I want to book a tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-25T11:42:28.438077",
+          "data": {
+            "role": "assistant",
+            "message": "That's fantastic! \ud83c\udf89 What type of tour are you interested in? Are you looking for an adventure at the Great Barrier Reef, a relaxing day at Whitehaven Beach, a scenic sailing experience, or maybe something else? Let me know your preferences! \ud83c\udf0a\ud83c\udfdd\ufe0f"
+          }
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "Hi I want to book a tour",
+          "timestamp": "2026-05-25T11:42:17.865660"
+        },
+        {
+          "role": "assistant",
+          "message": "That's fantastic! \ud83c\udf89 What type of tour are you interested in? Are you looking for an adventure at the Great Barrier Reef, a relaxing day at Whitehaven Beach, a scenic sailing experience, or maybe something else? Let me know your preferences! \ud83c\udf0a\ud83c\udfdd\ufe0f",
+          "timestamp": "2026-05-25T11:42:28.438092"
+        }
+      ]
     }
   ]
 }
