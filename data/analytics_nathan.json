@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-25T14:14:39.973157",
+  "last_updated": "2026-05-25T14:14:49.104013",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81449,13 +81449,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T09:33:14.127352",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-25T09:33:14.127352",
+      "duration_seconds": 652.630678
     },
     {
       "session_id": "session_cc8ae4427c66_1779670022",
@@ -81483,13 +81490,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T10:53:10.561371",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-25T10:53:10.561371",
+      "duration_seconds": 367.776349
     },
     {
       "session_id": "session_f22e3c56c7a9_1779675006",
@@ -81510,11 +81524,112 @@
           "data": {
             "mode": "newcomer-info"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T12:17:16.141334",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "newcomer-info",
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-25T12:17:16.141334",
+      "duration_seconds": 429.362384
+    },
+    {
+      "session_id": "session_85bfcdd3c71e_1779681992",
+      "account": "nathan",
+      "started_at": "2026-05-25T14:06:33.025613",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-25T14:06:33.025613",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-25T14:06:35.223781",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-25T14:06:42.410304",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:07:19.992186",
+          "data": {
+            "tour_name": "Summertime Sailing Adventure",
+            "company": "summertime-whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:08:53.128936",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hill Inlet Chill & Grill",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:09:41.365540",
+          "data": {
+            "tour_name": "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
+            "company": "airlieadventuretours",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:10:40.722759",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:11:03.986589",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-25T14:11:37.846155",
+          "data": {
+            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Summertime Sailing Adventure",
+        "Whitehaven Beach & Hill Inlet Chill & Grill",
+        "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
+        "Purely Whitehaven Day Tour",
+        "Whitehaven Beach & Hamilton Island Tour"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
