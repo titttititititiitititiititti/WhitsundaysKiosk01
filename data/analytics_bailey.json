@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T06:02:22.153132",
+  "last_updated": "2026-05-26T06:04:09.625098",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -30817,11 +30817,47 @@
             "role": "assistant",
             "message": "That sounds fantastic! A full day sailing tour in the Whitsundays is an amazing way to explore the stunning islands and crystal-clear waters. \ud83c\udf0a What other experiences are you looking for? Are you interested in snorkeling, beach time, or perhaps a more relaxed cruise vibe?"
           }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T06:03:39.662594",
+          "data": {
+            "role": "user",
+            "message": "\ud83c\udfaf Surprise me!"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T06:03:51.414137",
+          "data": {
+            "role": "assistant",
+            "message": "You're in for a treat! Let's dive into an exciting full day sailing adventure! \u26f5\ufe0f\n\n1. **Tongarra Day Sailing Tour** - Get ready for a thrilling day of sailing and adventure aboard the Tongarra! This tour combines relaxation with excitement as you explore the breathtaking Whitsundays. You'll snorkel at the region's best fringing reef, enjoy a thrilling banana boat ride, and relax on the spacious deck with bean bags. As the day winds down, enjoy a sunset sail back to Airlie Beach while spotting hu"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T06:04:00.959365",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-26T06:04:09.625039",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
+      "tours_viewed": [
+        "Tongarra Day Sailing Tour"
+      ],
       "tours_booked": [],
       "chat_messages": [
         {
@@ -30833,6 +30869,16 @@
           "role": "assistant",
           "message": "That sounds fantastic! A full day sailing tour in the Whitsundays is an amazing way to explore the stunning islands and crystal-clear waters. \ud83c\udf0a What other experiences are you looking for? Are you interested in snorkeling, beach time, or perhaps a more relaxed cruise vibe?",
           "timestamp": "2026-05-26T06:02:22.153083"
+        },
+        {
+          "role": "user",
+          "message": "\ud83c\udfaf Surprise me!",
+          "timestamp": "2026-05-26T06:03:39.662611"
+        },
+        {
+          "role": "assistant",
+          "message": "You're in for a treat! Let's dive into an exciting full day sailing adventure! \u26f5\ufe0f\n\n1. **Tongarra Day Sailing Tour** - Get ready for a thrilling day of sailing and adventure aboard the Tongarra! This tour combines relaxation with excitement as you explore the breathtaking Whitsundays. You'll snorkel at the region's best fringing reef, enjoy a thrilling banana boat ride, and relax on the spacious deck with bean bags. As the day winds down, enjoy a sunset sail back to Airlie Beach while spotting hu",
+          "timestamp": "2026-05-26T06:03:51.414155"
         }
       ]
     }
