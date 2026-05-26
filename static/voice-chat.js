@@ -98,7 +98,6 @@ class VoiceChat {
       this.isListening = true;
       this.lastTranscript = '';
       this.hasFinalResult = false;
-      this._retryCount = 0;
       this.clearSilenceTimer();
       this.updateUI('listening');
     };

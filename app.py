@@ -12270,29 +12270,53 @@ def redeem_perk_claim(claim_id):
     return jsonify({'success': False, 'error': 'Claim not found'}), 404
 
 @app.route('/api/test-email')
-@agent_required
 def test_email():
-    """Send a test email to verify SMTP is configured correctly"""
+    """Send a test email to verify SMTP is configured correctly - shows actual errors"""
+    import smtplib
     admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal1@gmail.com'
-    config = {
+    
+    # Diagnostic info
+    diag = {
         'smtp_host': SMTP_HOST,
         'smtp_port': SMTP_PORT,
-        'smtp_user_set': bool(SMTP_USER),
-        'smtp_password_set': bool(SMTP_PASSWORD),
-        'sendgrid_set': bool(SENDGRID_API_KEY),
+        'smtp_user': SMTP_USER or '(not set)',
+        'smtp_password_length': len(SMTP_PASSWORD) if SMTP_PASSWORD else 0,
+        'smtp_password_first_char': SMTP_PASSWORD[0] if SMTP_PASSWORD else '(none)',
+        'smtp_password_last_char': SMTP_PASSWORD[-1] if SMTP_PASSWORD else '(none)',
+        'from_email': FROM_EMAIL,
         'admin_email': admin_to,
+        'sendgrid_set': bool(SENDGRID_API_KEY),
     }
-    test_html = """<html><body style="font-family:Arial;padding:20px;">
-    <div style="max-width:500px;margin:0 auto;text-align:center;">
-        <div style="background:#0077b6;color:white;padding:20px;border-radius:8px 8px 0 0;">
-            <h2 style="margin:0;">Email Test Successful</h2>
-        </div>
-        <div style="background:#f0f9f0;padding:30px;border-radius:0 0 8px 8px;">
-            <p style="font-size:1.3em;">If you see this email, your SMTP configuration is working correctly.</p>
-        </div>
-    </div></body></html>"""
-    result = send_smtp_email(admin_to, "[Filtour] Test Email", test_html, "Test email - SMTP is working!")
-    return jsonify({'success': result, 'config': config, 'sent_to': admin_to})
+    
+    # Try SMTP connection
+    smtp_result = None
+    smtp_error = None
+    if SMTP_USER and SMTP_PASSWORD:
+        try:
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            msg = MIMEMultipart()
+            msg['From'] = f"{FROM_NAME} <{SMTP_USER}>"
+            msg['To'] = admin_to
+            msg['Subject'] = "[Filtour] Test Email"
+            msg.attach(MIMEText("<h2>Email is working!</h2><p>Your SMTP config is correct.</p>", 'html'))
+            
+            with smtplib.SMTP(SMTP_HOST, int(SMTP_PORT), timeout=10) as server:
+                server.starttls()
+                server.login(SMTP_USER, SMTP_PASSWORD)
+                server.send_message(msg)
+            smtp_result = "SUCCESS - email sent!"
+        except smtplib.SMTPAuthenticationError as e:
+            smtp_error = f"AUTH FAILED: {e}. Password might be wrong or have extra quotes/spaces."
+        except Exception as e:
+            smtp_error = f"FAILED: {type(e).__name__}: {e}"
+    else:
+        smtp_error = "SMTP_USER or SMTP_PASSWORD not set"
+    
+    diag['smtp_result'] = smtp_result
+    diag['smtp_error'] = smtp_error
+    
+    return jsonify(diag)
 
 @app.route('/claim-perk')
 def claim_perk_page():
