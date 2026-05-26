@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-26T16:23:52.299527",
+  "last_updated": "2026-05-26T16:24:08.769588",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81449,13 +81449,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T09:33:14.127352",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-25T09:33:14.127352",
+      "duration_seconds": 652.630678
     },
     {
       "session_id": "session_cc8ae4427c66_1779670022",
@@ -81483,13 +81490,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T10:53:10.561371",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-25T10:53:10.561371",
+      "duration_seconds": 367.776349
     },
     {
       "session_id": "session_f22e3c56c7a9_1779675006",
@@ -81510,13 +81524,20 @@
           "data": {
             "mode": "newcomer-info"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-25T12:17:16.141334",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "newcomer-info",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-25T12:17:16.141334",
+      "duration_seconds": 429.362384
     },
     {
       "session_id": "session_85bfcdd3c71e_1779681992",
@@ -81609,6 +81630,26 @@
         "Purely Whitehaven Day Tour",
         "Whitehaven Beach & Hamilton Island Tour"
       ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_77ff064fb401_1779776362",
+      "account": "nathan",
+      "started_at": "2026-05-26T16:19:22.657513",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T16:19:22.657513",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
