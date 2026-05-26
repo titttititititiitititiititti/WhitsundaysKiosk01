@@ -64,10 +64,10 @@ class VoiceChat {
     console.log('🎤 SpeechRecognition API:', SpeechRecognition.name || 'webkitSpeechRecognition');
     
     // Configure recognition — continuous=true on iOS/iPad to prevent instant-stop bug
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    this.recognition.continuous = isIOS ? true : false;
+    this.recognition.continuous = true;
     this.recognition.interimResults = true;
     this.recognition.maxAlternatives = 1;
     this._isIOS = isIOS;
@@ -139,39 +139,15 @@ class VoiceChat {
     this.recognition.onend = () => {
       console.log('🎤 Speech recognition ENDED, wasListening:', this.isListening, 'hasFinal:', this.hasFinalResult);
       
-      // Recognition can end prematurely without any results on any platform.
-      // If we were listening and got no transcript at all, auto-restart (up to 2 times).
-      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && !this._restarted) {
-        console.log('🎤 Recognition ended without results — auto-restarting');
-        this._restarted = true;
-        this._retryCount = 0;
-        try { this.recognition.start(); } catch(e) { console.error('🎤 Restart failed:', e); }
-        return;
-      }
-      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && this._restarted && !this._restarted2) {
-        console.log('🎤 Second auto-restart attempt');
-        this._restarted2 = true;
-        this._retryCount = 0;
-        try { this.recognition.start(); } catch(e) { console.error('🎤 Second restart failed:', e); }
-        return;
-      }
-      this._restarted = false;
-      this._restarted2 = false;
-      this._retryCount = 0;
-      
       // If we have a transcript but never got a "final" result,
       // send the last transcript anyway (fallback for when recognition ends abruptly)
       if (this.lastTranscript && !this.hasFinalResult) {
-        console.log('🎤 No final result received - using last transcript as fallback');
-        console.log(`🗣️ FALLBACK FINAL: "${this.lastTranscript}"`);
+        console.log('🎤 Using last transcript as fallback:', this.lastTranscript);
         this.onSpeechResult(this.lastTranscript);
       }
       
       this.isListening = false;
       this.updateUI('idle');
-      
-      // AGGRESSIVELY stop ALL microphone streams
-      this.stopAllMicStreams();
     };
     
     // When we get speech results
@@ -211,71 +187,24 @@ class VoiceChat {
       console.log('🎤 No speech match - will retry silently');
     };
     
-    // Error handling
+    // Error handling - no auto-retry, just report and reset
     this.recognition.onerror = (event) => {
       console.error('🎤 Speech recognition ERROR:', event.error, event.message);
       
-      // User-friendly error messages
-      let errorMsg = '';
-      let showErrorToUser = true;
-      let shouldAutoRetry = false;
-      
-      switch(event.error) {
-        case 'no-speech':
-          // Very common - just means user hasn't spoken yet, auto-retry
-          console.log('🎤 No speech detected - auto-retrying...');
-          showErrorToUser = false;
-          shouldAutoRetry = true;
-          break;
-        case 'audio-capture':
-          errorMsg = "Microphone not available. Please check that no other app is using it.";
-          break;
-        case 'not-allowed':
-          errorMsg = "Please allow microphone access to use voice input.";
-          break;
-        case 'network':
-          // Network errors are often transient, auto-retry
-          console.log('🎤 Network error - auto-retrying...');
-          showErrorToUser = false;
-          shouldAutoRetry = true;
-          break;
-        case 'aborted':
-          console.log('🎤 Recognition was aborted - will auto-retry');
-          showErrorToUser = false;
-          shouldAutoRetry = true;
-          break;
-        case 'service-not-allowed':
-          errorMsg = "Voice service not available. Try typing instead.";
-          break;
-        default:
-          console.log('🎤 Unknown error:', event.error);
-          showErrorToUser = false;
-          shouldAutoRetry = true;
+      // Only show serious errors to user
+      if (event.error === 'not-allowed') {
+        this.showError("Please allow microphone access to use voice input.");
+      } else if (event.error === 'audio-capture') {
+        this.showError("Microphone not available. Check that no other app is using it.");
       }
       
-      if (shouldAutoRetry && this.isListening && !this._retryCount) {
-        this._retryCount = (this._retryCount || 0) + 1;
-        if (this._retryCount <= 3) {
-          console.log(`🎤 Auto-retry attempt ${this._retryCount}/3`);
-          setTimeout(() => {
-            try { this.recognition.start(); } catch(e) { 
-              console.log('🎤 Retry start failed:', e.message);
-              this.isListening = false;
-              this.updateUI('idle');
-            }
-          }, 300);
-          return;
-        }
-        this._retryCount = 0;
+      // For no-speech: don't kill the session, let onend handle it
+      if (event.error === 'no-speech' || event.error === 'aborted') {
+        return;
       }
       
       this.isListening = false;
-      this._retryCount = 0;
-      this.updateUI('error');
-      
-      if (showErrorToUser && errorMsg) {
-        this.showError(errorMsg);
-      }
+      this.updateUI('idle');
     };
   }
   

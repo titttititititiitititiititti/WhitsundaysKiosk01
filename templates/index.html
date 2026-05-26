@@ -14010,26 +14010,27 @@
       const video = document.getElementById('bg-video');
       if (!video) return;
 
-      // Force play immediately when video data is ready
+      // Keep trying to play until it works
+      var playRetryId = null;
       function forcePlay() {
-        video.play().catch(function() {});
+        if (!video.paused && !video.ended) return;
+        if (video.ended) video.currentTime = 0;
+        video.play().then(function() {
+          if (playRetryId) { clearInterval(playRetryId); playRetryId = null; }
+        }).catch(function() {});
       }
+
+      // Try every 500ms until video is playing
+      playRetryId = setInterval(forcePlay, 500);
+
+      // Also try on these events
       video.addEventListener('loadeddata', forcePlay);
       video.addEventListener('canplay', forcePlay);
-      if (video.readyState >= 2) forcePlay();
 
-      // Anti-pause: ALWAYS force play back on pause
+      // NEVER allow pause
       video.addEventListener('pause', function() {
-        setTimeout(forcePlay, 50);
+        setTimeout(forcePlay, 10);
       });
-
-      // WATCHDOG: Check every 2 seconds
-      setInterval(function() {
-        if (video.paused || video.ended) {
-          if (video.ended) video.currentTime = 0;
-          forcePlay();
-        }
-      }, 2000);
 
       // Resume on ANY user interaction
       ['touchstart', 'click', 'pointerdown'].forEach(function(evt) {
@@ -24109,16 +24110,10 @@
         return;
       }
       
-      // CRITICAL: Resume AudioContext before playing - if suspended, no sound comes out
-      // because audio is routed through the Web Audio API for visualization
+      // Try to resume AudioContext for visualization (audio plays regardless now)
       if (window.particleVisualizer && window.particleVisualizer.audioContext) {
         if (window.particleVisualizer.audioContext.state === 'suspended') {
-          try {
-            await window.particleVisualizer.audioContext.resume();
-            console.log('🔊 AudioContext resumed for TTS playback');
-          } catch (e) {
-            console.warn('⚠️ Could not resume AudioContext:', e);
-          }
+          window.particleVisualizer.audioContext.resume().catch(function() {});
         }
       }
       

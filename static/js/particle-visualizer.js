@@ -234,18 +234,55 @@ class ParticleVisualizer {
     
     this.audioElement = audioElement;
     
+    // Already connected - nothing to do
+    if (audioElement._particleSourceNode) {
+      this.audioSource = audioElement._particleSourceNode;
+      this.isAudioConnected = true;
+      return;
+    }
+    
     try {
       // Create audio context if needed
       if (!this.audioContext) {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
       
-      // Resume context if suspended
+      // Try to resume
       if (this.audioContext.state === 'suspended') {
         this.audioContext.resume();
       }
       
-      // Create analyser if needed
+      // CRITICAL: Do NOT connect via createMediaElementSource if context is suspended
+      // createMediaElementSource takes exclusive control of audio output routing.
+      // If the context is suspended, audio becomes inaudible with no way to fix it.
+      if (this.audioContext.state !== 'running') {
+        console.log('🔊 AudioContext not running yet - skipping visualization connection (audio will still play)');
+        this._pendingAudioElement = audioElement;
+        // Set up a listener to connect when context resumes
+        this.audioContext.onstatechange = () => {
+          if (this.audioContext.state === 'running' && this._pendingAudioElement) {
+            this._doConnect(this._pendingAudioElement);
+            this._pendingAudioElement = null;
+          }
+        };
+        return;
+      }
+      
+      this._doConnect(audioElement);
+      
+    } catch (error) {
+      console.error('Error connecting audio:', error);
+    }
+  }
+  
+  _doConnect(audioElement) {
+    if (audioElement._particleSourceNode) {
+      this.audioSource = audioElement._particleSourceNode;
+      this.isAudioConnected = true;
+      return;
+    }
+    
+    try {
       if (!this.analyser) {
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;
@@ -253,14 +290,6 @@ class ParticleVisualizer {
         this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
       }
       
-      // Check if already connected
-      if (audioElement._particleSourceNode) {
-        this.audioSource = audioElement._particleSourceNode;
-        this.isAudioConnected = true;
-        return;
-      }
-      
-      // Create and connect source
       this.audioSource = this.audioContext.createMediaElementSource(audioElement);
       audioElement._particleSourceNode = this.audioSource;
       
@@ -269,12 +298,8 @@ class ParticleVisualizer {
       
       this.isAudioConnected = true;
       console.log('🔊 Audio connected to particle visualizer');
-      
     } catch (error) {
-      console.error('Error connecting audio:', error);
-      if (error.message && error.message.includes('already connected')) {
-        this.isAudioConnected = true;
-      }
+      console.error('Error in _doConnect:', error);
     }
   }
   
