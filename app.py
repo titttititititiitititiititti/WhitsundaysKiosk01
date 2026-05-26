@@ -2992,6 +2992,12 @@ def send_smtp_email(to_email, subject, html_content, plain_content=None):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
+    
+    print(f"[EMAIL] Attempting to send to: {to_email}")
+    print(f"[EMAIL] Subject: {subject}")
+    print(f"[EMAIL] SMTP_USER configured: {'Yes' if SMTP_USER else 'No'}")
+    print(f"[EMAIL] SMTP_PASSWORD configured: {'Yes (' + str(len(SMTP_PASSWORD)) + ' chars)' if SMTP_PASSWORD else 'No'}")
+    
     if SMTP_USER and SMTP_PASSWORD:
         try:
             msg = MIMEMultipart('alternative')
@@ -3002,14 +3008,22 @@ def send_smtp_email(to_email, subject, html_content, plain_content=None):
             if plain_content:
                 msg.attach(MIMEText(plain_content, 'plain'))
             msg.attach(MIMEText(html_content, 'html'))
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            
+            print(f"[EMAIL] Connecting to {SMTP_HOST}:{SMTP_PORT}...")
+            with smtplib.SMTP(SMTP_HOST, int(SMTP_PORT), timeout=10) as server:
                 server.starttls()
+                print(f"[EMAIL] TLS established, logging in as {SMTP_USER}...")
                 server.login(SMTP_USER, SMTP_PASSWORD)
+                print(f"[EMAIL] Login successful, sending...")
                 server.send_message(msg)
-            print(f"[EMAIL] Sent to {to_email} via SMTP")
+            print(f"[EMAIL] ✅ Sent to {to_email} via SMTP")
             return True
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"[EMAIL] ❌ SMTP AUTH FAILED: {e}")
+            print(f"[EMAIL]    Check SMTP_USER and SMTP_PASSWORD. For Gmail, use an App Password.")
+            return False
         except Exception as e:
-            print(f"[EMAIL] SMTP failed: {e}")
+            print(f"[EMAIL] ❌ SMTP failed: {e}")
             import traceback; traceback.print_exc()
             return False
     elif SENDGRID_API_KEY:
@@ -3017,13 +3031,14 @@ def send_smtp_email(to_email, subject, html_content, plain_content=None):
             message = Mail(from_email=FROM_EMAIL, to_emails=to_email, subject=subject, html_content=html_content)
             sg = SendGridAPIClient(SENDGRID_API_KEY)
             sg.send(message)
-            print(f"[EMAIL] Sent to {to_email} via SendGrid")
+            print(f"[EMAIL] ✅ Sent to {to_email} via SendGrid")
             return True
         except Exception as e:
-            print(f"[EMAIL] SendGrid failed: {e}")
+            print(f"[EMAIL] ❌ SendGrid failed: {e}")
             return False
     else:
-        print(f"[EMAIL] No email provider configured (SMTP_USER or SENDGRID_API_KEY required)")
+        print(f"[EMAIL] ❌ No email provider configured!")
+        print(f"[EMAIL]    Set SMTP_USER + SMTP_PASSWORD or SENDGRID_API_KEY in environment")
         return False
 
 # Company email mapping - Real operator contact emails based on their domains

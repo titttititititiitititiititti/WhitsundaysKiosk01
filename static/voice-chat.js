@@ -149,16 +149,22 @@ class VoiceChat {
         return;
       }
       
-      // If recognition ended without getting any results and we haven't retried,
-      // try ONE more time (handles Chrome's occasional premature end)
-      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && !this._hasRetried) {
-        this._hasRetried = true;
-        console.log('🎤 Recognition ended prematurely - retrying once');
-        try { this.recognition.start(); } catch(e) {
-          this.isListening = false;
-          this.updateUI('idle');
+      // If recognition ended without results, retry up to 3 times
+      // (Safari and some Chrome versions end sessions prematurely)
+      if (this.isListening && !this.lastTranscript && !this.hasFinalResult) {
+        this._retryCount = (this._retryCount || 0) + 1;
+        if (this._retryCount <= 3) {
+          console.log(`🎤 Recognition ended prematurely - retry ${this._retryCount}/3`);
+          setTimeout(() => {
+            try { this.recognition.start(); } catch(e) {
+              console.log('🎤 Retry failed:', e.message);
+              this.isListening = false;
+              this.updateUI('idle');
+            }
+          }, 200);
+          return;
         }
-        return;
+        console.log('🎤 All retries exhausted');
       }
       
       this._hasRetried = false;
@@ -203,24 +209,29 @@ class VoiceChat {
       console.log('🎤 No speech match - will retry silently');
     };
     
-    // Error handling - no auto-retry, just report and reset
+    // Error handling - only kill session for truly fatal errors
     this.recognition.onerror = (event) => {
       console.error('🎤 Speech recognition ERROR:', event.error, event.message);
       
-      // Only show serious errors to user
+      // Fatal errors - stop completely, show user message
       if (event.error === 'not-allowed') {
         this.showError("Please allow microphone access to use voice input.");
-      } else if (event.error === 'audio-capture') {
-        this.showError("Microphone not available. Check that no other app is using it.");
+        this.isListening = false;
+        this._hasRetried = true; // Prevent retry in onend
+        this.updateUI('idle');
+        return;
       }
-      
-      // For no-speech: don't kill the session, let onend handle it
-      if (event.error === 'no-speech' || event.error === 'aborted') {
+      if (event.error === 'audio-capture') {
+        this.showError("Microphone not available. Check that no other app is using it.");
+        this.isListening = false;
+        this._hasRetried = true;
+        this.updateUI('idle');
         return;
       }
       
-      this.isListening = false;
-      this.updateUI('idle');
+      // All other errors (network, no-speech, aborted, service-not-allowed):
+      // Do nothing here - let onend handle retry/cleanup
+      console.log('🎤 Non-fatal error, will let onend handle retry');
     };
   }
   
@@ -251,15 +262,13 @@ class VoiceChat {
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
     this._restarted = false;
+    this._hasRetried = false;
+    this.isListening = true;
     console.log(`🎤 Starting speech recognition...`);
-    console.log(`   Language: ${this.recognition.lang}`);
-    console.log(`   Continuous: ${this.recognition.continuous}`);
-    console.log(`   Interim results: ${this.recognition.interimResults}`);
-    console.log(`   iOS mode: ${this._isIOS}`);
     
     try {
       this.recognition.start();
-      console.log('🎤 recognition.start() called - waiting for onstart event...');
+      console.log('🎤 recognition.start() called');
     } catch (error) {
       if (error.name === 'InvalidStateError') {
         console.log('🎤 Recognition already running - stopping and restarting...');
