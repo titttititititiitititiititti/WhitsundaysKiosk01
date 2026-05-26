@@ -59,9 +59,9 @@ STREAMABLE_VIDEO_ID = 'fsdp2x'
 _bg_video_cache = {'url': '', 'fetched_at': 0}
 
 def get_bg_video_url():
-    """Fetch a fresh signed MP4 URL from Streamable's API, cached for 24 hours."""
+    """Fetch a fresh signed MP4 URL from Streamable's API, cached for 2 hours."""
     now = time.time()
-    if _bg_video_cache['url'] and now - _bg_video_cache['fetched_at'] < 86400:
+    if _bg_video_cache['url'] and now - _bg_video_cache['fetched_at'] < 7200:
         return _bg_video_cache['url']
     try:
         import requests as _req

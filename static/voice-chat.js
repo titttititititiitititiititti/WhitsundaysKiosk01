@@ -240,8 +240,9 @@ class VoiceChat {
           shouldAutoRetry = true;
           break;
         case 'aborted':
-          console.log('🎤 Recognition was aborted');
+          console.log('🎤 Recognition was aborted - will auto-retry');
           showErrorToUser = false;
+          shouldAutoRetry = true;
           break;
         case 'service-not-allowed':
           errorMsg = "Voice service not available. Try typing instead.";
@@ -305,14 +306,13 @@ class VoiceChat {
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
     this._restarted = false;
+    this.isListening = true;
+    this.updateUI('listening');
     console.log(`🎤 Starting speech recognition...`);
     console.log(`   Language: ${this.recognition.lang}`);
     console.log(`   Continuous: ${this.recognition.continuous}`);
     console.log(`   Interim results: ${this.recognition.interimResults}`);
     console.log(`   iOS mode: ${this._isIOS}`);
-    
-    // NOTE: Audio monitoring disabled - it keeps mic open and causes audio quality issues
-    // this.startAudioMonitoring();
     
     try {
       this.recognition.start();

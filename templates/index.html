@@ -13998,72 +13998,24 @@
   {% endif %}
   
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->
+  {% if bg_video_url %}
+  <video id="bg-video" autoplay muted loop playsinline preload="auto" src="{{ bg_video_url }}"></video>
+  {% else %}
   <video id="bg-video" autoplay muted loop playsinline preload="auto">
-    <!-- Primary: local file for kiosk, Fallback: remote URL for Render/cloud hosting -->
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
-  <!-- Video interaction is blocked by pointer-events:none on #bg-video itself -->
+  {% endif %}
   <script>
-    // Background video setup — local file first, then Streamable fallback
     (function() {
       const video = document.getElementById('bg-video');
       if (!video) return;
-      
-      var STREAMABLE_URL = {{ bg_video_url | tojson | safe }};
-      let fallbackAttempted = false;
-
-      var fetchRetryCount = 0;
-      var maxFetchRetries = 5;
-      
-      function fetchVideoUrlFromAPI() {
-        fetchRetryCount++;
-        console.log('📺 Fetching video URL from API (attempt ' + fetchRetryCount + ')...');
-        fetch('/api/bg-video-url').then(function(r) { return r.json(); }).then(function(data) {
-          if (data.url) {
-            STREAMABLE_URL = data.url;
-            fallbackAttempted = true;
-            console.log('📺 Got video URL, loading video...');
-            video.src = STREAMABLE_URL;
-            video.style.display = '';
-            video.load();
-            video.play().catch(function() {});
-          } else if (fetchRetryCount < maxFetchRetries) {
-            var delay = fetchRetryCount * 3000;
-            console.log('📺 No URL yet, retrying in ' + (delay/1000) + 's...');
-            setTimeout(fetchVideoUrlFromAPI, delay);
-          }
-        }).catch(function() {
-          if (fetchRetryCount < maxFetchRetries) {
-            var delay = fetchRetryCount * 3000;
-            setTimeout(fetchVideoUrlFromAPI, delay);
-          }
-        });
-      }
-      
-      function loadStreamableFallback() {
-        if (fallbackAttempted && STREAMABLE_URL) return;
-        
-        if (!STREAMABLE_URL) {
-          fetchVideoUrlFromAPI();
-          return;
-        }
-        
-        fallbackAttempted = true;
-        console.log('📺 Loading Streamable background video');
-        video.src = STREAMABLE_URL;
-        video.load();
-        video.addEventListener('canplay', function onCanPlay() {
-          video.removeEventListener('canplay', onCanPlay);
-          video.play().catch(function() {});
-        });
-      }
 
       var videoHasPlayed = false;
-      
+
       video.addEventListener('playing', function() {
         if (!videoHasPlayed) {
           videoHasPlayed = true;
-          console.log('📺 Video first play confirmed - watchdog now active');
+          console.log('📺 Video playing');
         }
       });
 
@@ -14079,7 +14031,6 @@
       setInterval(function() {
         if (!videoHasPlayed) return;
         if (video.paused || video.ended) {
-          console.log('📺 Watchdog: video was paused/ended, forcing play');
           video.currentTime = video.ended ? 0 : video.currentTime;
           video.play().catch(function() {});
         }
@@ -14090,50 +14041,6 @@
         document.addEventListener(evt, function() {
           if (video.paused) video.play().catch(function() {});
         }, { passive: true, capture: true });
-      });
-
-      // Wait for video source to be ready BEFORE attempting play
-      // The autoplay attribute handles initial play; we only intervene if it stalls
-      function attemptPlay() {
-        video.play().then(function() {
-          console.log('📺 Local background video playing');
-        }).catch(function(e) {
-          console.log('📺 Play attempt failed:', e.message);
-          // Only switch to Streamable if source genuinely failed to load
-          if (video.readyState === 0 && video.networkState === 3) {
-            console.log('📺 Source failed to load, switching to Streamable');
-            loadStreamableFallback();
-          }
-        });
-      }
-
-      // If video already has data loaded (cached), play immediately
-      if (video.readyState >= 2) {
-        attemptPlay();
-      } else {
-        // Wait for source to load before first play attempt
-        video.addEventListener('loadeddata', function onLoaded() {
-          video.removeEventListener('loadeddata', onLoaded);
-          attemptPlay();
-        });
-        // Also try on canplay as backup
-        video.addEventListener('canplay', function onCanPlay() {
-          video.removeEventListener('canplay', onCanPlay);
-          if (!videoHasPlayed) attemptPlay();
-        });
-      }
-
-      // Safety net: if local source never loads after 5s, switch to Streamable
-      setTimeout(function() {
-        if (!fallbackAttempted && !videoHasPlayed && (video.readyState === 0 || isNaN(video.duration))) {
-          console.log('📺 Local video not loaded after 5s, switching to Streamable');
-          loadStreamableFallback();
-        }
-      }, 5000);
-
-      // Handle source errors
-      video.addEventListener('error', function() {
-        if (!fallbackAttempted) loadStreamableFallback();
       });
 
       // Resume when returning to tab or navigating back
@@ -22421,6 +22328,21 @@
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
       
+      // Unlock audio playback - user just tapped so we're in a gesture context
+      if (!window._ttsAudioUnlocked) {
+        window._ttsAudioUnlocked = true;
+        // Play a silent audio to unlock the page's autoplay policy
+        var silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+        silentAudio.volume = 0.01;
+        silentAudio.play().then(function() {
+          console.log('🔊 Audio policy unlocked');
+        }).catch(function() {});
+        // Resume AudioContext for particle visualizer
+        if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+          window.particleVisualizer.audioContext.resume();
+        }
+      }
+      
       // Reset body scroll — modals/tour detail may have set overflow:hidden
       document.body.style.overflow = '';
       document.body.classList.remove('tour-detail-open');
@@ -23811,6 +23733,27 @@
     document.addEventListener('DOMContentLoaded', () => {
       initOrbMuteToggle();
     });
+
+    // Unlock AudioContext on ANY user interaction so TTS plays immediately
+    (function() {
+      var unlocked = false;
+      function unlockAudio() {
+        if (unlocked) return;
+        if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+          if (window.particleVisualizer.audioContext.state === 'suspended') {
+            window.particleVisualizer.audioContext.resume().then(function() {
+              console.log('🔊 AudioContext unlocked by user gesture');
+              unlocked = true;
+            });
+          } else {
+            unlocked = true;
+          }
+        }
+      }
+      ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(function(evt) {
+        document.addEventListener(evt, unlockAudio, { passive: true, capture: true });
+      });
+    })();
     
     function cleanTextForTTS(text) {
       return text
@@ -25330,23 +25273,25 @@
           };
           
           window.voiceChat.updateUI = (state) => {
-            // Call original handler
             if (originalUpdateUI) originalUpdateUI(state);
             
-            // Also update AI mic button
             if (state === 'listening') {
               micBtn.classList.add('recording');
               micBtn.innerHTML = '⏹️';
               isRecording = true;
-            } else {
+            } else if (state === 'idle' && !window.voiceChat.isListening) {
+              // Only reset when truly done (not during transient restarts)
               micBtn.classList.remove('recording');
               micBtn.innerHTML = '🎤';
-              micBtn.style.transform = ''; // Reset scale when done
+              micBtn.style.transform = '';
               isRecording = false;
-              // Clear audio level callback
               window.voiceChat.clearAudioLevelCallback();
-              // Restore original callback when done
               window.voiceChat.updateUI = originalUpdateUI;
+              // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
+              if (window._wasMutedBeforeMic === false && ttsMuted) {
+                console.log('🔊 Auto-unmuting TTS after voice input done');
+                toggleTTSMute();
+              }
             }
           };
           
@@ -37121,34 +37066,13 @@
         return;
       }
       
-      // On mobile, show "Tap to Begin" overlay first
-      if (isMobileDevice()) {
-        console.log('📱 Mobile detected - showing tap overlay');
-        
-        const tapOverlay = document.createElement('div');
-        tapOverlay.className = 'ai-tap-to-begin';
-        tapOverlay.id = 'ai-tap-overlay';
-        tapOverlay.innerHTML = `
-          <div class="tap-icon">👋</div>
-          <div class="tap-text">Tap to Begin</div>
-          <div class="tap-subtext">This enables voice interaction</div>
-        `;
-        document.body.appendChild(tapOverlay);
-        
-        // Wait for user to tap
-        await new Promise(resolve => {
-          tapOverlay.addEventListener('click', () => {
-            console.log('📱 User tapped - starting audio');
-            tapOverlay.classList.add('fade-out');
-            setTimeout(() => {
-              tapOverlay.remove();
-              resolve();
-            }, 300);
-          }, { once: true });
-        });
+      // Resume AudioContext immediately (user already tapped to enter AI mode)
+      if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+        if (window.particleVisualizer.audioContext.state === 'suspended') {
+          window.particleVisualizer.audioContext.resume();
+          console.log('🔊 AudioContext resumed on AI mode entry');
+        }
       }
-      
-      // Now we're in a user gesture context - safe to play audio
       
       // Clear any existing messages
       messagesContainer.innerHTML = '';
