@@ -5459,7 +5459,7 @@ def _tour_page_inner(key):
                           shown_keys=shown_keys, 
                           current_language=language, 
                           tour_to_open=key,
-                          tour_open_mode=mode,  # Pass mode to frontend
+                          tour_open_mode=mode,
                           qr_tracking=qr_tracking,
                           custom_logo=custom_logo,
                           hero_booking=hero_booking,
@@ -5468,7 +5468,11 @@ def _tour_page_inner(key):
                           referral_account=referral_account,
                           active_account=active_account,
                           is_web_visitor=is_web_visitor,
-                          newcomer_images=get_newcomer_images(active_account)))
+                          is_demo_mode=False,
+                          preview_mode=referral_account is not None,
+                          preview_account=referral_account,
+                          newcomer_images=get_newcomer_images(active_account),
+                          bg_video_url=get_bg_video_url()))
     
     # Set referral cookie so subsequent page loads use the same account
     if ref and ref != 'qr':
@@ -5643,6 +5647,33 @@ def voice_test():
     """Voice chat test page"""
     return render_template('voice_test.html')
 
+@app.route('/api/tts-status')
+def tts_status():
+    """Check if ElevenLabs TTS is properly configured and working"""
+    try:
+        from elevenlabs_tts import ELEVENLABS_API_KEY as tts_key, is_configured, synthesize_speech
+        
+        result = {
+            'configured': is_configured(),
+            'key_present': bool(tts_key),
+            'key_length': len(tts_key) if tts_key else 0,
+            'key_prefix': tts_key[:8] + '...' if tts_key else None,
+            'env_var_set': bool(os.environ.get('ELEVENLABS_API_KEY')),
+            'dotenv_exists': os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')),
+        }
+        
+        # Quick test: try synthesizing one word
+        if is_configured():
+            test_audio = synthesize_speech("Hello", language='en')
+            result['test_synthesis'] = 'success' if test_audio else 'failed'
+            result['test_audio_bytes'] = len(test_audio) if test_audio else 0
+        else:
+            result['test_synthesis'] = 'skipped - not configured'
+        
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/voice-selector')
 def voice_selector():
     """Voice selector - choose from available voices"""
@@ -5691,11 +5722,11 @@ def text_to_speech():
         if not text:
             return jsonify({'success': False, 'error': 'No text provided'}), 400
         
+        print(f"[TTS] Calling synthesize_speech for: '{text[:50]}...' lang={language}")
         audio_data = synthesize_speech(text, language, gender)
         
         if audio_data:
             print(f"[TTS] Success: {len(audio_data)} bytes for '{text[:40]}...'")
-            # Return audio as MP3
             from flask import send_file
             from io import BytesIO
             
@@ -5709,10 +5740,12 @@ def text_to_speech():
                 download_name='speech.mp3'
             )
         else:
+            from elevenlabs_tts import ELEVENLABS_API_KEY as current_key
             print(f"[TTS] Synthesis returned no data for '{text[:40]}...'")
+            print(f"[TTS]   Key loaded: {bool(current_key)}, Key starts: {current_key[:8] if current_key else 'NONE'}")
             return jsonify({
                 'success': False,
-                'error': 'Speech synthesis failed'
+                'error': 'Speech synthesis failed - check server logs for ElevenLabs API response'
             }), 500
             
     except ImportError:
@@ -5720,8 +5753,16 @@ def text_to_speech():
             'success': False,
             'error': 'ElevenLabs module not found'
         }), 500
+    except ValueError as e:
+        error_msg = str(e)
+        print(f"[TTS] ValueError: {error_msg}")
+        status_code = 401 if '401' in error_msg else 500
+        return jsonify({
+            'success': False,
+            'error': error_msg
+        }), status_code
     except Exception as e:
-        print(f"TTS Error: {str(e)}")
+        print(f"[TTS] Unexpected error: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)

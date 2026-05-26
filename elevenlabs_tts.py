@@ -9,13 +9,15 @@ import json
 import requests
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
+_dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(_dotenv_path)
 
 def _load_api_key():
     """Load ElevenLabs API key from multiple sources (env, .env, instance config)"""
     key = os.getenv('ELEVENLABS_API_KEY')
     if key:
-        return key
+        print(f"[TTS] API key loaded from environment ({len(key)} chars, starts with: {key[:6]}...)")
+        return key.strip()
     
     # Try config/instance.json (persists on kiosk through git resets)
     instance_paths = [
@@ -29,10 +31,14 @@ def _load_api_key():
                     config = json.load(f)
                 key = config.get('elevenlabs_api_key') or config.get('ELEVENLABS_API_KEY')
                 if key:
-                    return key
+                    print(f"[TTS] API key loaded from {path} ({len(key)} chars)")
+                    return key.strip()
         except (json.JSONDecodeError, IOError):
             pass
     
+    print(f"[TTS] WARNING: No ElevenLabs API key found!")
+    print(f"[TTS]   .env path checked: {_dotenv_path} (exists: {os.path.exists(_dotenv_path)})")
+    print(f"[TTS]   ELEVENLABS_API_KEY in os.environ: {bool(os.environ.get('ELEVENLABS_API_KEY'))}")
     return None
 
 ELEVENLABS_API_KEY = _load_api_key()
@@ -602,8 +608,10 @@ def synthesize_speech(text, language='en', gender='default'):
         None: If synthesis fails
     """
     if not ELEVENLABS_API_KEY:
-        print("[ERR] ElevenLabs API key not found in .env file")
+        print("[ERR] ElevenLabs API key not configured - check .env or Render environment variables")
         return None
+    
+    print(f"[TTS] Using API key: {ELEVENLABS_API_KEY[:8]}... ({len(ELEVENLABS_API_KEY)} chars)")
     
     voice_id = get_voice_id(language, gender)
     url = f"{ELEVENLABS_API_URL}/{voice_id}"
@@ -651,12 +659,20 @@ def synthesize_speech(text, language='en', gender='default'):
             print(f"[OK] ElevenLabs: Success! Generated {len(response.content)} bytes")
             return response.content
         else:
-            print(f"[ERR] ElevenLabs error: {response.status_code}")
+            print(f"[ERR] ElevenLabs API returned status {response.status_code}")
             try:
-                print(f"   Response: {response.text}")
+                error_body = response.text[:500]
+                print(f"[ERR]   Response body: {error_body}")
             except UnicodeEncodeError:
-                print(f"   Response: (contains special characters)")
-            return None
+                print(f"[ERR]   Response: (contains special characters)")
+            if response.status_code == 401:
+                print(f"[ERR]   401 = Invalid API key. Your ELEVENLABS_API_KEY is being rejected.")
+                print(f"[ERR]   Get your correct API key from: https://elevenlabs.io/app/settings/api-keys")
+            elif response.status_code == 403:
+                print(f"[ERR]   403 = Forbidden. API key may lack permissions or be expired.")
+            elif response.status_code == 429:
+                print(f"[ERR]   429 = Rate limited or quota exceeded.")
+            raise ValueError(f"ElevenLabs returned {response.status_code}: {response.text[:200]}")
             
     except requests.exceptions.Timeout:
         print("[ERR] ElevenLabs: Request timeout")
