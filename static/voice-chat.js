@@ -306,8 +306,6 @@ class VoiceChat {
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
     this._restarted = false;
-    this.isListening = true;
-    this.updateUI('listening');
     console.log(`🎤 Starting speech recognition...`);
     console.log(`   Language: ${this.recognition.lang}`);
     console.log(`   Continuous: ${this.recognition.continuous}`);
@@ -473,15 +471,7 @@ class VoiceChat {
       this.audioMonitorContext = null;
     }
     
-    // Also try to stop any orphaned streams by getting all media and stopping them
-    try {
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        // Immediately stop this stream too
-        stream.getTracks().forEach(track => track.stop());
-      }).catch(() => {});
-    } catch (e) {}
-    
-    console.log('🎤 All microphone streams stopped');
+    console.log('🎤 Microphone streams stopped');
   }
   
   stopListening() {

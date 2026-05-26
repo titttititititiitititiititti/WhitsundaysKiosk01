@@ -14010,44 +14010,35 @@
       const video = document.getElementById('bg-video');
       if (!video) return;
 
-      var videoHasPlayed = false;
+      // Force play immediately when video data is ready
+      function forcePlay() {
+        video.play().catch(function() {});
+      }
+      video.addEventListener('loadeddata', forcePlay);
+      video.addEventListener('canplay', forcePlay);
+      if (video.readyState >= 2) forcePlay();
 
-      video.addEventListener('playing', function() {
-        if (!videoHasPlayed) {
-          videoHasPlayed = true;
-          console.log('📺 Video playing');
-        }
-      });
-
-      // Anti-pause: force play on pause event, but ONLY after first successful play
+      // Anti-pause: ALWAYS force play back on pause
       video.addEventListener('pause', function() {
-        if (!videoHasPlayed) return;
-        setTimeout(function() {
-          video.play().catch(function() {});
-        }, 50);
+        setTimeout(forcePlay, 50);
       });
 
-      // WATCHDOG: Check every 2 seconds, but only enforce after first play
+      // WATCHDOG: Check every 2 seconds
       setInterval(function() {
-        if (!videoHasPlayed) return;
         if (video.paused || video.ended) {
-          video.currentTime = video.ended ? 0 : video.currentTime;
-          video.play().catch(function() {});
+          if (video.ended) video.currentTime = 0;
+          forcePlay();
         }
       }, 2000);
 
-      // Resume on ANY user interaction (helps unlock autoplay on first tap)
+      // Resume on ANY user interaction
       ['touchstart', 'click', 'pointerdown'].forEach(function(evt) {
-        document.addEventListener(evt, function() {
-          if (video.paused) video.play().catch(function() {});
-        }, { passive: true, capture: true });
+        document.addEventListener(evt, forcePlay, { passive: true, capture: true });
       });
 
-      // Resume when returning to tab or navigating back
+      // Resume when returning to tab
       document.addEventListener('visibilitychange', function() {
-        if (!document.hidden && video.paused) {
-          video.play().catch(function() {});
-        }
+        if (!document.hidden) forcePlay();
       });
       window.addEventListener('pageshow', function(e) {
         if (e.persisted && video.paused) {
@@ -22098,6 +22089,28 @@
       // Mark that a real mode was selected (prevents weather-only tracking)
       window._anyModeSelected = true;
       
+      // Unlock audio NOW while we're in the user gesture context
+      if (!window._ttsAudioUnlocked) {
+        window._ttsAudioUnlocked = true;
+        try {
+          var ctx = new (window.AudioContext || window.webkitAudioContext)();
+          var buf = ctx.createBuffer(1, 1, 22050);
+          var src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          ctx.resume();
+        } catch(e) {}
+        try {
+          var sa = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+          sa.volume = 0.01;
+          sa.play().catch(function() {});
+        } catch(e) {}
+        if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+          window.particleVisualizer.audioContext.resume();
+        }
+      }
+      
       // Track mode selection
       Analytics.modeSelected(mode);
       
@@ -22328,17 +22341,9 @@
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
       
-      // Unlock audio playback - user just tapped so we're in a gesture context
-      if (!window._ttsAudioUnlocked) {
-        window._ttsAudioUnlocked = true;
-        // Play a silent audio to unlock the page's autoplay policy
-        var silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-        silentAudio.volume = 0.01;
-        silentAudio.play().then(function() {
-          console.log('🔊 Audio policy unlocked');
-        }).catch(function() {});
-        // Resume AudioContext for particle visualizer
-        if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+      // Resume AudioContext if it was suspended (backup for non-mode-button entry)
+      if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+        if (window.particleVisualizer.audioContext.state === 'suspended') {
           window.particleVisualizer.audioContext.resume();
         }
       }
@@ -23734,23 +23739,34 @@
       initOrbMuteToggle();
     });
 
-    // Unlock AudioContext on ANY user interaction so TTS plays immediately
+    // Unlock audio on ANY user interaction so TTS plays immediately
     (function() {
-      var unlocked = false;
       function unlockAudio() {
-        if (unlocked) return;
+        if (window._ttsAudioUnlocked) return;
+        window._ttsAudioUnlocked = true;
+        // Method 1: AudioContext silent buffer (most reliable)
+        try {
+          var ctx = new (window.AudioContext || window.webkitAudioContext)();
+          var buf = ctx.createBuffer(1, 1, 22050);
+          var src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          ctx.resume();
+        } catch(e) {}
+        // Method 2: Silent audio element (backup)
+        try {
+          var sa = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+          sa.volume = 0.01;
+          sa.play().catch(function() {});
+        } catch(e) {}
+        // Resume particle visualizer AudioContext
         if (window.particleVisualizer && window.particleVisualizer.audioContext) {
-          if (window.particleVisualizer.audioContext.state === 'suspended') {
-            window.particleVisualizer.audioContext.resume().then(function() {
-              console.log('🔊 AudioContext unlocked by user gesture');
-              unlocked = true;
-            });
-          } else {
-            unlocked = true;
-          }
+          window.particleVisualizer.audioContext.resume();
         }
+        console.log('🔊 Audio unlocked by user gesture');
       }
-      ['click', 'touchstart', 'touchend', 'pointerdown'].forEach(function(evt) {
+      ['click', 'touchstart', 'touchend'].forEach(function(evt) {
         document.addEventListener(evt, unlockAudio, { passive: true, capture: true });
       });
     })();
