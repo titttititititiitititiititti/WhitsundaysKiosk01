@@ -1,300 +1,153 @@
 /**
- * Voice Chat - Proven pattern from production voice assistants.
- * Creates a FRESH SpeechRecognition instance on each restart to avoid
- * Chrome's stale WebSocket freeze issue.
+ * Minimal push-to-talk voice input.
+ * Tap mic → speak → it sends your words. No loops, no restarts.
  */
 
 class VoiceChat {
   constructor() {
-    this.recognition = null;
-    this.synthesis = window.speechSynthesis;
     this.isListening = false;
     this.isSpeaking = false;
     this.currentLanguage = 'en';
     this.autoSpeak = true;
     this.currentAudio = null;
     this.speechTimeout = null;
-    this.lastTranscript = '';
-    this.hasFinalResult = false;
-    this.silenceTimer = null;
-    this.silenceTimeout = 3500;
+    this.synthesis = window.speechSynthesis;
     this.customCallback = null;
     this.audioLevelCallback = null;
-    this._shouldRun = false;
-    this._restartTimer = null;
     
     this.languageMap = {
       'en': 'en-US', 'zh': 'zh-CN', 'ja': 'ja-JP', 'ko': 'ko-KR',
       'de': 'de-DE', 'fr': 'fr-FR', 'es': 'es-ES', 'hi': 'hi-IN'
     };
-    
-    // Check support
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      console.error('Speech recognition not supported');
-      return;
-    }
-    console.log('VoiceChat ready');
   }
   
-  /**
-   * Create a fresh recognition instance and start it.
-   * This is the core pattern - never reuse a stale instance.
-   */
-  _spawn() {
-    // Clean up old instance
-    if (this.recognition) {
-      try { this.recognition.onend = null; this.recognition.onresult = null; this.recognition.onerror = null; }
-      catch(e) {}
-      this.recognition = null;
-    }
+  startListening() {
+    if (this.isListening) { this.stopListening(); return; }
+    if (this.isSpeaking) this.stopSpeaking();
     
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const rec = new SpeechRecognition();
-    rec.continuous = true;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { this.showError('Voice not supported in this browser.'); return; }
+    
+    // Fresh instance every time - never reuse
+    const rec = new SR();
+    rec.continuous = false;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     rec.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
-    rec.onstart = () => {
-      this.isListening = true;
-      this.updateUI('listening');
-      const hint = document.getElementById('ai-mic-hint');
-      if (hint) { hint.textContent = 'Listening...'; hint.style.color = '#4ade80'; }
-    };
+    this._rec = rec;
+    this.isListening = true;
+    this.updateUI('listening');
     
     rec.onresult = (event) => {
-      const hint = document.getElementById('ai-mic-hint');
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        const transcript = result[0].transcript;
-        const isFinal = result.isFinal;
-        
-        this.lastTranscript = transcript;
-        this.clearSilenceTimer();
-        
-        if (hint) { hint.textContent = 'Hearing you...'; hint.style.color = '#22d3ee'; }
-        
-        if (isFinal) {
-          this.hasFinalResult = true;
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          this.isListening = false;
+          this.updateUI('idle');
           this.onSpeechResult(transcript);
-          this.lastTranscript = '';
-          this.hasFinalResult = false;
-          if (hint) { hint.textContent = 'Sent! Keep talking...'; hint.style.color = '#4ade80'; }
+          return;
         } else {
           this.showInterimText(transcript);
-          this.startSilenceTimer();
         }
       }
     };
     
     rec.onerror = (event) => {
       if (event.error === 'not-allowed') {
-        this.showError("Please allow microphone access.");
-        this._shouldRun = false;
-        this.isListening = false;
-        this.updateUI('idle');
-        return;
+        this.showError('Please allow microphone access.');
+      } else if (event.error === 'no-speech') {
+        this.showError('No speech detected. Tap and try again.');
       }
-      if (event.error === 'audio-capture') {
-        this.showError("Microphone not available.");
-        this._shouldRun = false;
-        this.isListening = false;
-        this.updateUI('idle');
-        return;
-      }
-      // no-speech, aborted, network - let onend handle restart
+      this.isListening = false;
+      this.updateUI('idle');
     };
     
     rec.onend = () => {
-      if (!this._shouldRun) {
-        // User stopped - send any unsent transcript
-        if (this.lastTranscript && !this.hasFinalResult) {
-          this.onSpeechResult(this.lastTranscript);
-          this.lastTranscript = '';
-        }
-        this.isListening = false;
-        this.updateUI('idle');
-        return;
-      }
-      
-      // Send unsent transcript before restart
-      if (this.lastTranscript && !this.hasFinalResult) {
-        this.onSpeechResult(this.lastTranscript);
-        this.lastTranscript = '';
-        this.hasFinalResult = false;
-      }
-      
-      // Chrome killed the session - spawn a fresh instance after 250ms
-      // (250ms is the empirically proven minimum for slower devices)
-      this._restartTimer = setTimeout(() => {
-        if (this._shouldRun) this._spawn();
-      }, 250);
+      this.isListening = false;
+      this.updateUI('idle');
     };
     
     try {
       rec.start();
-      this.recognition = rec;
-    } catch (err) {
-      // start() can throw if called too soon - retry with more delay
-      this._restartTimer = setTimeout(() => {
-        if (this._shouldRun) this._spawn();
-      }, 500);
+    } catch(e) {
+      this.showError('Could not start mic. Try again.');
+      this.isListening = false;
+      this.updateUI('idle');
     }
-  }
-  
-  startListening() {
-    if (this._shouldRun) {
-      this.stopListening();
-      return;
-    }
-    
-    // Stop TTS to prevent feedback
-    if (this.isSpeaking) {
-      this.stopSpeaking();
-    }
-    
-    this._shouldRun = true;
-    this.lastTranscript = '';
-    this.hasFinalResult = false;
-    this._spawn();
   }
   
   stopListening() {
-    this._shouldRun = false;
-    if (this._restartTimer) { clearTimeout(this._restartTimer); this._restartTimer = null; }
-    if (this.recognition) {
-      try { this.recognition.stop(); } catch(e) {}
-    }
-    this.clearSilenceTimer();
     this.isListening = false;
+    if (this._rec) { try { this._rec.stop(); } catch(e) {} this._rec = null; }
     this.updateUI('idle');
-    const hint = document.getElementById('ai-mic-hint');
-    if (hint) { hint.textContent = 'Tap to speak'; hint.style.color = ''; }
   }
   
-  startSilenceTimer() {
-    this.clearSilenceTimer();
-    this.silenceTimer = setTimeout(() => {
-      if (this._shouldRun && this.lastTranscript && !this.hasFinalResult) {
-        this.hasFinalResult = true;
-        this.onSpeechResult(this.lastTranscript);
-        this.lastTranscript = '';
-        this.hasFinalResult = false;
-      }
-    }, this.silenceTimeout);
-  }
-  
-  clearSilenceTimer() {
-    if (this.silenceTimer) { clearTimeout(this.silenceTimer); this.silenceTimer = null; }
-  }
-  
+  // TTS methods
   async speak(text) {
-    const cleanText = text.replace(/\*\*/g, '').replace(/[🎯🤖✨💬🏖️🏝️⭐]/g, '')
+    const clean = text.replace(/\*\*/g, '').replace(/[🎯🤖✨💬🏖️🏝️⭐]/g, '')
       .replace(/\[TOUR:.*?\]/g, '').replace(/\[FILTER:.*?\]/g, '');
-    if (!(await this.speakWithElevenLabs(cleanText))) {
-      this.speakWithBrowser(cleanText);
-    }
+    if (!(await this.speakWithElevenLabs(clean))) this.speakWithBrowser(clean);
   }
   
   async speakWithElevenLabs(text) {
     try {
       if (this.speechTimeout) clearTimeout(this.speechTimeout);
-      this.isSpeaking = true;
-      this.updateUI('speaking');
-      
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language: this.currentLanguage, gender: 'default' })
+      this.isSpeaking = true; this.updateUI('speaking');
+      const resp = await fetch('/api/tts', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({text, language: this.currentLanguage, gender:'default'})
       });
-      if (!response.ok) { this.isSpeaking = false; return false; }
-      
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
+      if (!resp.ok) { this.isSpeaking = false; return false; }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
       const audio = new Audio();
-      audio.preload = 'auto';
       this.currentAudio = audio;
-      
-      await new Promise((resolve, reject) => {
-        audio.oncanplaythrough = resolve;
-        audio.onerror = reject;
-        audio.src = audioUrl;
-        audio.load();
-        setTimeout(() => { if (audio.readyState >= 3) resolve(); }, 500);
+      await new Promise((res,rej) => {
+        audio.oncanplaythrough = res; audio.onerror = rej;
+        audio.src = url; audio.load();
+        setTimeout(() => { if (audio.readyState >= 3) res(); }, 500);
       });
-      
-      audio.onplay = () => {
-        const v = document.getElementById('audio-visualizer');
-        if (v) v.classList.add('active');
-        this.speechTimeout = setTimeout(() => this.stopSpeaking(), 30000);
-      };
-      audio.onended = () => {
-        if (this.speechTimeout) clearTimeout(this.speechTimeout);
-        this.isSpeaking = false; this.updateUI('idle');
-        const v = document.getElementById('audio-visualizer');
-        if (v) v.classList.remove('active');
-        URL.revokeObjectURL(audioUrl); this.currentAudio = null;
-      };
-      audio.onerror = () => {
-        if (this.speechTimeout) clearTimeout(this.speechTimeout);
-        this.isSpeaking = false; this.updateUI('idle');
-        const v = document.getElementById('audio-visualizer');
-        if (v) v.classList.remove('active');
-        URL.revokeObjectURL(audioUrl); this.currentAudio = null;
-      };
-      
+      audio.onplay = () => { this.speechTimeout = setTimeout(() => this.stopSpeaking(), 30000); };
+      audio.onended = () => { this._cleanupAudio(url); };
+      audio.onerror = () => { this._cleanupAudio(url); };
       await audio.play();
       return true;
-    } catch (e) {
+    } catch(e) {
       if (this.speechTimeout) clearTimeout(this.speechTimeout);
-      this.isSpeaking = false; this.updateUI('idle');
-      return false;
+      this.isSpeaking = false; this.updateUI('idle'); return false;
     }
+  }
+  
+  _cleanupAudio(url) {
+    if (this.speechTimeout) clearTimeout(this.speechTimeout);
+    this.isSpeaking = false; this.updateUI('idle');
+    if (url) URL.revokeObjectURL(url);
+    this.currentAudio = null;
   }
   
   speakWithBrowser(text) {
     if (!this.synthesis) return;
-    if (this.speechTimeout) clearTimeout(this.speechTimeout);
     this.synthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = this.languageMap[this.currentLanguage] || 'en-US';
-    utterance.rate = 1.15; utterance.pitch = 1.0; utterance.volume = 1.0;
-    const voices = this.synthesis.getVoices();
-    const v = voices.find(v => v.lang.startsWith(this.currentLanguage));
-    if (v) utterance.voice = v;
-    utterance.onstart = () => {
-      this.isSpeaking = true; this.updateUI('speaking');
-      const vis = document.getElementById('audio-visualizer');
-      if (vis) vis.classList.add('active');
-      this.speechTimeout = setTimeout(() => this.stopSpeaking(), 30000);
-    };
-    utterance.onend = () => {
-      if (this.speechTimeout) clearTimeout(this.speechTimeout);
-      this.isSpeaking = false; this.updateUI('idle');
-      const vis = document.getElementById('audio-visualizer');
-      if (vis) vis.classList.remove('active');
-    };
-    utterance.onerror = () => {
-      if (this.speechTimeout) clearTimeout(this.speechTimeout);
-      this.isSpeaking = false; this.updateUI('idle');
-    };
-    this.synthesis.speak(utterance);
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = this.languageMap[this.currentLanguage] || 'en-US';
+    u.rate = 1.15;
+    u.onstart = () => { this.isSpeaking = true; this.updateUI('speaking'); };
+    u.onend = () => { this.isSpeaking = false; this.updateUI('idle'); };
+    u.onerror = () => { this.isSpeaking = false; this.updateUI('idle'); };
+    this.synthesis.speak(u);
   }
   
   stopSpeaking() {
     if (this.speechTimeout) { clearTimeout(this.speechTimeout); this.speechTimeout = null; }
-    if (this.currentAudio) {
-      try { this.currentAudio.pause(); this.currentAudio.currentTime = 0; } catch(e) {}
-      this.currentAudio = null;
-    }
-    if (this.synthesis) { this.synthesis.cancel(); }
-    const vis = document.getElementById('audio-visualizer');
-    if (vis) vis.classList.remove('active');
+    if (this.currentAudio) { try { this.currentAudio.pause(); } catch(e) {} this.currentAudio = null; }
+    if (this.synthesis) this.synthesis.cancel();
     this.isSpeaking = false; this.updateUI('idle');
   }
   
+  // Utility
   setLanguage(lang) { this.currentLanguage = lang; }
-  setAutoSpeak(enabled) { this.autoSpeak = enabled; }
+  setAutoSpeak(v) { this.autoSpeak = v; }
   setCustomCallback(cb) { this.customCallback = cb; }
   clearCustomCallback() { this.customCallback = null; }
   setAudioLevelCallback(cb) { this.audioLevelCallback = cb; }
@@ -302,26 +155,15 @@ class VoiceChat {
   stopAllMicStreams() { this.stopListening(); }
   
   onSpeechResult(transcript) {
-    if (this.customCallback) {
-      const cb = this.customCallback;
-      this.customCallback = null;
-      cb(transcript);
-      return;
-    }
+    if (this.customCallback) { const cb = this.customCallback; this.customCallback = null; cb(transcript); }
   }
-  
   showInterimText(text) {}
-  
-  showError(message) {
-    const micBtn = document.getElementById('ai-mic-btn');
-    if (micBtn) { micBtn.classList.remove('recording'); micBtn.classList.add('error');
-      setTimeout(() => micBtn.classList.remove('error'), 3000); }
+  showError(msg) {
     const hint = document.getElementById('ai-mic-hint');
-    if (hint) { const orig = hint.textContent; hint.textContent = message; hint.style.color = '#ff6b6b';
-      setTimeout(() => { hint.textContent = orig; hint.style.color = ''; }, 4000); }
+    if (hint) { const orig = hint.textContent; hint.textContent = msg; hint.style.color = '#ff6b6b';
+      setTimeout(() => { hint.textContent = orig; hint.style.color = ''; }, 3000); }
   }
-  
   updateUI(state) {}
 }
 
-if (typeof module !== 'undefined' && module.exports) { module.exports = VoiceChat; }
+if (typeof module !== 'undefined' && module.exports) module.exports = VoiceChat;

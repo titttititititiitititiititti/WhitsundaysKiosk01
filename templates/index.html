@@ -14007,41 +14007,47 @@
   {% endif %}
   <script>
     (function() {
-      const video = document.getElementById('bg-video');
+      var video = document.getElementById('bg-video');
       if (!video) return;
 
-      // Force play forever - never stop trying (handles mic stealing audio focus, etc)
+      // Force muted (some browsers ignore the HTML attribute)
+      video.muted = true;
+      video.volume = 0;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      
       function forcePlay() {
         if (!video.paused && !video.ended) return;
         if (video.ended) video.currentTime = 0;
+        video.muted = true;
         video.play().catch(function() {});
       }
 
-      // Run every 500ms forever - never clear this interval
-      setInterval(forcePlay, 500);
+      // Try immediately
+      forcePlay();
+      
+      // Keep trying every 300ms forever
+      setInterval(forcePlay, 300);
 
-      // Also try on these events
+      // Also force on load events
       video.addEventListener('loadeddata', forcePlay);
       video.addEventListener('canplay', forcePlay);
+      video.addEventListener('loadedmetadata', forcePlay);
 
-      // NEVER allow pause
-      video.addEventListener('pause', function() {
-        setTimeout(forcePlay, 10);
-      });
+      // Instantly counter any pause
+      video.addEventListener('pause', function() { forcePlay(); });
 
-      // Resume on ANY user interaction
-      ['touchstart', 'click', 'pointerdown'].forEach(function(evt) {
+      // Resume on ANY interaction
+      ['touchstart', 'click', 'pointerdown', 'keydown'].forEach(function(evt) {
         document.addEventListener(evt, forcePlay, { passive: true, capture: true });
       });
 
-      // Resume when returning to tab
+      // Resume when tab becomes visible
       document.addEventListener('visibilitychange', function() {
         if (!document.hidden) forcePlay();
       });
       window.addEventListener('pageshow', function(e) {
-        if (e.persisted && video.paused) {
-          video.play().catch(function() {});
-        }
+        forcePlay();
       });
       
       // Backup for loop failure
@@ -25208,145 +25214,70 @@
     window.toggleAIMicrophone = function() {
       if (window._micToggleLock) return;
       window._micToggleLock = true;
-      setTimeout(function() { window._micToggleLock = false; }, 600);
+      setTimeout(function() { window._micToggleLock = false; }, 800);
       
-      const micBtn = document.getElementById('ai-mic-btn');
+      var micBtn = document.getElementById('ai-mic-btn');
       if (!micBtn) return;
       
-      // Use the VoiceChat system if available
-      if (window.voiceChat) {
-        // Stop any ongoing TTS to prevent feedback
-        if (window.voiceChat.isSpeaking) {
-          console.log('🔇 Stopping TTS before starting mic');
-          window.voiceChat.stopSpeaking();
-        }
-        
-        if (!window.voiceChat.isListening) {
-          // AUTO-MUTE: Mute TTS and welcome audio when user starts speaking
-          if (!ttsMuted) {
-            console.log('🔇 Auto-muting TTS while user speaks');
-            window._wasMutedBeforeMic = false;  // Remember it was NOT muted
-            toggleTTSMute();  // Mute it (this also pauses welcome audio)
-          } else {
-            window._wasMutedBeforeMic = true;  // Was already muted
-          }
-          
-          // Also pause welcome audio specifically (in case it wasn't caught)
-          if (window.currentWelcomeAudio) {
-            window.currentWelcomeAudio.pause();
-            console.log('🔇 Paused welcome audio for mic');
-          }
-          const welcomeAudioEl = document.getElementById('welcome-audio');
-          if (welcomeAudioEl) {
-            welcomeAudioEl.pause();
-          }
-          
-          // Start listening
-          console.log('🎤 Starting voice recognition via AI mic button...');
-          isRecording = true;
-          micBtn.classList.remove('ready-to-speak'); // Remove green glow
-          micBtn.classList.add('recording');
-          micBtn.innerHTML = '⏹️';
-          
-          // Set up audio level callback for volume-responsive button
-          window.voiceChat.setAudioLevelCallback((level) => {
-            // Scale button based on audio level (0-255 range)
-            // Map to scale range: 1.0 (quiet) to 1.4 (loud)
-            const normalizedLevel = Math.min(level / 100, 1); // Normalize to 0-1
-            const scale = 1 + (normalizedLevel * 0.4); // 1.0 to 1.4
-            micBtn.style.transform = `scale(${scale})`;
-          });
-          
-          // Override callbacks - mic stays on after sending, user taps to stop
-          const originalOnResult = window.voiceChat.onSpeechResult;
-          const originalUpdateUI = window.voiceChat.updateUI;
-          const originalShowInterim = window.voiceChat.showInterimText;
-          
-          window.voiceChat.onSpeechResult = (transcript) => {
-            console.log('✅ AI Voice input:', transcript);
-            const aiInput = document.getElementById('ai-text-input');
-            if (aiInput && transcript.trim()) {
-              aiInput.value = transcript;
-              aiInput.style.color = ''; // Reset to normal color
-              sendAIMessage();
-            }
-          };
-          
-          // Show interim (live) text in the input box so user sees it working
-          window.voiceChat.showInterimText = (text) => {
-            const aiInput = document.getElementById('ai-text-input');
-            if (aiInput && text.trim()) {
-              aiInput.value = text;
-              aiInput.style.color = '#999'; // Gray for interim
-            }
-          };
-          
-          window.voiceChat.updateUI = (state) => {
-            if (state === 'listening') {
-              micBtn.classList.add('recording');
-              micBtn.innerHTML = '⏹️';
-              isRecording = true;
-            }
-            // Don't reset to idle while mic should stay on
-          };
-          
-          // Store references for cleanup when user stops
-          window._micOriginalOnResult = originalOnResult;
-          window._micOriginalUpdateUI = originalUpdateUI;
-          window._micOriginalShowInterim = originalShowInterim;
-          
-          window.voiceChat.startListening();
-        } else {
-          // Stop listening - user explicitly tapped stop
-          console.log('🎤 User stopped voice recognition');
-          isRecording = false;
-          micBtn.classList.remove('recording');
-          micBtn.innerHTML = '🎤';
-          micBtn.style.transform = '';
-          window.voiceChat.clearAudioLevelCallback();
-          window.voiceChat.stopListening();
-          
-          // Restore original callbacks
-          if (window._micOriginalOnResult) {
-            window.voiceChat.onSpeechResult = window._micOriginalOnResult;
-            window._micOriginalOnResult = null;
-          }
-          if (window._micOriginalUpdateUI) {
-            window.voiceChat.updateUI = window._micOriginalUpdateUI;
-            window._micOriginalUpdateUI = null;
-          }
-          if (window._micOriginalShowInterim) {
-            window.voiceChat.showInterimText = window._micOriginalShowInterim;
-            window._micOriginalShowInterim = null;
-          }
-          // Clear any interim text from input
-          const aiInput = document.getElementById('ai-text-input');
-          if (aiInput) { aiInput.value = ''; aiInput.style.color = ''; }
-          
-          // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
-          if (window._wasMutedBeforeMic === false && ttsMuted) {
-            console.log('🔊 Auto-unmuting TTS after user finished speaking');
-            toggleTTSMute();
-          }
-        }
-      } else {
-        console.warn('⚠️ VoiceChat not initialized yet - attempting re-init...');
-        // Try to re-initialize VoiceChat instead of showing an alert
+      // Initialize VoiceChat if needed
+      if (!window.voiceChat) {
         if (typeof VoiceChat !== 'undefined') {
           window.voiceChat = new VoiceChat();
           window.voiceChat.setLanguage(currentLanguage || 'en');
-          console.log('✅ VoiceChat re-initialized on demand');
-          // Retry the mic toggle after init
-          setTimeout(() => window.toggleAIMicrophone(), 300);
-        } else {
-          const hint = document.getElementById('ai-mic-hint');
-          if (hint) {
-            hint.textContent = 'Voice loading... tap again in a moment';
-            hint.style.color = '#f59e0b';
-            setTimeout(() => { hint.textContent = 'Tap to speak'; hint.style.color = ''; }, 3000);
-          }
-        }
+        } else { return; }
       }
+      
+      // If already recording, stop
+      if (isRecording) {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = '🎤';
+        window.voiceChat.stopListening();
+        return;
+      }
+      
+      // Stop any TTS
+      if (window.voiceChat.isSpeaking) window.voiceChat.stopSpeaking();
+      if (window.currentWelcomeAudio) window.currentWelcomeAudio.pause();
+      
+      // Set up simple callbacks
+      window.voiceChat.onSpeechResult = function(transcript) {
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = '🎤';
+        var aiInput = document.getElementById('ai-text-input');
+        if (aiInput && transcript.trim()) {
+          aiInput.value = transcript;
+          aiInput.style.color = '';
+          sendAIMessage();
+        }
+      };
+      
+      window.voiceChat.showInterimText = function(text) {
+        var aiInput = document.getElementById('ai-text-input');
+        if (aiInput && text.trim()) {
+          aiInput.value = text;
+          aiInput.style.color = '#999';
+        }
+      };
+      
+      window.voiceChat.updateUI = function(state) {
+        if (state === 'listening') {
+          micBtn.classList.add('recording');
+          micBtn.innerHTML = '⏹️';
+          isRecording = true;
+        } else if (state === 'idle') {
+          micBtn.classList.remove('recording');
+          micBtn.innerHTML = '🎤';
+          isRecording = false;
+        }
+      };
+      
+      // Start - this is the only thing that happens on tap
+      isRecording = true;
+      micBtn.classList.add('recording');
+      micBtn.innerHTML = '⏹️';
+      window.voiceChat.startListening();
     }
     
     function initializeApp() {
