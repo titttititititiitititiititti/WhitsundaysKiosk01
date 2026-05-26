@@ -5549,11 +5549,14 @@ def tour_page(key):
     if not tour_data:
         return "Tour not found", 404
     
-    # Get the base URL for QR code and sharing - use production domain
-    if 'localhost' in request.host or '127.0.0.1' in request.host:
-        base_url = request.url_root.rstrip('/')
+    # Get the base URL for QR code and sharing - ALWAYS use production domain
+    configured_domain = os.getenv('SITE_URL', '').rstrip('/')
+    if configured_domain:
+        base_url = configured_domain
+    elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
+        base_url = 'https://filtour.com'
     else:
-        base_url = 'https://www.filtour.com'
+        base_url = request.url_root.rstrip('/').replace('http://', 'https://')
     
     tour_url = f"{base_url}/tour/{key}?lang={language}"
     
@@ -5568,7 +5571,7 @@ def generate_tour_qr(key):
         if configured_domain:
             base_url = configured_domain
         elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
-            base_url = 'https://www.filtour.com'
+            base_url = 'https://filtour.com'
         else:
             base_url = request.url_root.rstrip('/').replace('http://', 'https://')
         
@@ -6076,10 +6079,11 @@ def tour_detail(key):
                                 # Images disabled - use random placeholders
                                 gallery = get_random_placeholder_gallery(5)
                             
-                            # Parse video URLs (fall back to English CSV if missing in translated CSV)
+                            # Parse video URLs and booking link (fall back to English CSV if missing in translated CSV)
                             video_urls_raw = row.get('video_urls', '')
-                            if not video_urls_raw and language != 'en':
-                                # Try loading video_urls from English CSV
+                            booking_link = row.get('link_booking', '')
+                            if language != 'en' and (not video_urls_raw or not booking_link):
+                                # Try loading missing fields from English CSV
                                 en_csv_pattern = f'data/{company}/en/*_with_media.csv'
                                 en_csv_files = glob.glob(en_csv_pattern)
                                 for en_csv in en_csv_files:
@@ -6088,11 +6092,14 @@ def tour_detail(key):
                                             en_reader = csv.DictReader(ef)
                                             for en_row in en_reader:
                                                 if en_row.get('id') == tid:
-                                                    video_urls_raw = en_row.get('video_urls', '')
+                                                    if not video_urls_raw:
+                                                        video_urls_raw = en_row.get('video_urls', '')
+                                                    if not booking_link:
+                                                        booking_link = en_row.get('link_booking', '')
                                                     break
                                     except Exception:
                                         pass
-                                    if video_urls_raw:
+                                    if video_urls_raw and booking_link:
                                         break
                             video_urls = [v.strip() for v in video_urls_raw.split(',') if v.strip()] if video_urls_raw else []
                             
@@ -6129,7 +6136,7 @@ def tour_detail(key):
                                 'price_tiers': row.get('price_tiers', ''),
                                 'keywords': row.get('keywords', ''),
                                 'duration_hours': row.get('duration_hours', ''),
-                                'link_booking': row.get('link_booking', ''),
+                                'link_booking': booking_link or row.get('link_booking', ''),
                                 'link_more_info': row.get('link_more_info', ''),
                                 'booking_connected': row.get('booking_connected', '0'),
                                 'gallery': gallery,
@@ -8513,7 +8520,7 @@ def create_recommendation_session():
         if configured_domain:
             base_url = configured_domain
         elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
-            base_url = 'https://www.filtour.com'
+            base_url = 'https://filtour.com'
         else:
             base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
@@ -8546,7 +8553,7 @@ def generate_qr_code(session_id):
         if configured_domain:
             base_url = configured_domain
         elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
-            base_url = 'https://www.filtour.com'
+            base_url = 'https://filtour.com'
         else:
             base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"
@@ -8658,7 +8665,7 @@ def email_recommendations():
         if configured_domain:
             base_url = configured_domain
         elif 'localhost' in request.host or '127.0.0.1' in request.host or '192.168' in request.host:
-            base_url = 'https://www.filtour.com'
+            base_url = 'https://filtour.com'
         else:
             base_url = request.host_url.rstrip('/')
         recommendations_url = f"{base_url}/recommendations/{session_id}"

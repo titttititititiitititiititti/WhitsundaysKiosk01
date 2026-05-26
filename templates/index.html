@@ -5125,7 +5125,7 @@
       right: 0;
       bottom: 0;
       background: rgba(0, 20, 40, 0.75);
-      -webkit-display: flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 9999;
@@ -14022,14 +14022,12 @@
         console.log('📺 Loading Streamable background video');
         video.src = STREAMABLE_URL;
         video.load();
-        // Wait for the video to actually be ready before playing
         video.addEventListener('canplay', function onCanPlay() {
           video.removeEventListener('canplay', onCanPlay);
           video.play().catch(function() {});
         });
       }
 
-      // Track whether video has successfully played at least once
       var videoHasPlayed = false;
       
       video.addEventListener('playing', function() {
@@ -14057,28 +14055,51 @@
         }
       }, 2000);
 
-      // Resume on ANY user interaction (this helps unlock autoplay on first tap)
+      // Resume on ANY user interaction (helps unlock autoplay on first tap)
       ['touchstart', 'click', 'pointerdown'].forEach(function(evt) {
         document.addEventListener(evt, function() {
           if (video.paused) video.play().catch(function() {});
         }, { passive: true, capture: true });
       });
 
-      // Try the local <source> first
-      video.play().then(function() {
-        console.log('📺 Local background video playing');
-      }).catch(function() {
-        console.log('📺 Local video failed, switching to Streamable');
-        loadStreamableFallback();
-      });
+      // Wait for video source to be ready BEFORE attempting play
+      // The autoplay attribute handles initial play; we only intervene if it stalls
+      function attemptPlay() {
+        video.play().then(function() {
+          console.log('📺 Local background video playing');
+        }).catch(function(e) {
+          console.log('📺 Play attempt failed:', e.message);
+          // Only switch to Streamable if source genuinely failed to load
+          if (video.readyState === 0 && video.networkState === 3) {
+            console.log('📺 Source failed to load, switching to Streamable');
+            loadStreamableFallback();
+          }
+        });
+      }
 
-      // Safety net: if local source never loads, switch to Streamable
+      // If video already has data loaded (cached), play immediately
+      if (video.readyState >= 2) {
+        attemptPlay();
+      } else {
+        // Wait for source to load before first play attempt
+        video.addEventListener('loadeddata', function onLoaded() {
+          video.removeEventListener('loadeddata', onLoaded);
+          attemptPlay();
+        });
+        // Also try on canplay as backup
+        video.addEventListener('canplay', function onCanPlay() {
+          video.removeEventListener('canplay', onCanPlay);
+          if (!videoHasPlayed) attemptPlay();
+        });
+      }
+
+      // Safety net: if local source never loads after 5s, switch to Streamable
       setTimeout(function() {
-        if (!fallbackAttempted && (video.readyState === 0 || isNaN(video.duration))) {
-          console.log('📺 Local video not loaded after 3s, switching to Streamable');
+        if (!fallbackAttempted && !videoHasPlayed && (video.readyState === 0 || isNaN(video.duration))) {
+          console.log('📺 Local video not loaded after 5s, switching to Streamable');
           loadStreamableFallback();
         }
-      }, 3000);
+      }, 5000);
 
       // Handle source errors
       video.addEventListener('error', function() {
@@ -24056,6 +24077,19 @@
         return;
       }
       
+      // CRITICAL: Resume AudioContext before playing - if suspended, no sound comes out
+      // because audio is routed through the Web Audio API for visualization
+      if (window.particleVisualizer && window.particleVisualizer.audioContext) {
+        if (window.particleVisualizer.audioContext.state === 'suspended') {
+          try {
+            await window.particleVisualizer.audioContext.resume();
+            console.log('🔊 AudioContext resumed for TTS playback');
+          } catch (e) {
+            console.warn('⚠️ Could not resume AudioContext:', e);
+          }
+        }
+      }
+      
       ttsIsPlaying = true;
       const audioBlob = ttsAudioQueue.shift();
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -24387,10 +24421,18 @@
         console.log('🔊 Audio context primed');
       }).catch(() => {});
       
-      // Also resume AudioContext if it exists
+      // Resume ALL AudioContexts that might be used for TTS
       if (window.particleVisualizer && window.particleVisualizer.audioContext) {
-        window.particleVisualizer.audioContext.resume();
+        window.particleVisualizer.audioContext.resume().then(() => {
+          console.log('🔊 Visualizer AudioContext resumed');
+        }).catch(() => {});
       }
+      
+      // Also create and resume a global audio context for TTS
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        ctx.resume().then(() => ctx.close()).catch(() => {});
+      } catch (e) {}
     }
     
     // =====================================================================
@@ -31684,12 +31726,12 @@
       }
     }
     
-    // Change language from mode selection page - RELOAD to apply properly
+    // Change language from mode selection page - apply inline without reload
     function changeModeLanguage(langCode) {
       console.log('🌍 Changing language from mode selection:', langCode);
       localStorage.setItem('preferred_language', langCode);
-      // Reload page with new language - simplest way to ensure all text updates
-      window.location.href = '/?lang=' + langCode + '#mode-selection';
+      // Apply language inline (same as selectHomeLanguage) - no page reload needed
+      switchLanguage(langCode);
     }
     
     // Language → Currency mapping
