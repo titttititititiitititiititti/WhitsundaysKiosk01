@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T06:51:35.227029",
+  "last_updated": "2026-05-26T06:58:52.641710",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -31231,6 +31231,37 @@
       "language": "en",
       "mode": "ai-assistant",
       "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_85f1c63f8db0_1779778732",
+      "account": "bailey",
+      "started_at": "2026-05-26T06:58:52.354179",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T06:58:52.354193",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_5_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/tour/redcatadventures__0ccf1c0576808ea5?lang=en&ref=None&mode=browse&tid=882fe37f&t=1779778206"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T06:58:52.641636",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
