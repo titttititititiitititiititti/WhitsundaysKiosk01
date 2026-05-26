@@ -25263,29 +25263,28 @@
           // Override callbacks - mic stays on after sending, user taps to stop
           const originalOnResult = window.voiceChat.onSpeechResult;
           const originalUpdateUI = window.voiceChat.updateUI;
+          const originalShowInterim = window.voiceChat.showInterimText;
           
           window.voiceChat.onSpeechResult = (transcript) => {
             console.log('✅ AI Voice input:', transcript);
-            
-            // Put transcript in AI chat input and send
             const aiInput = document.getElementById('ai-text-input');
             if (aiInput && transcript.trim()) {
               aiInput.value = transcript;
-              console.log('📝 Set input value to:', transcript);
+              aiInput.style.color = ''; // Reset to normal color
               sendAIMessage();
-              console.log('📤 sendAIMessage() called');
             }
-            // Mic stays on - don't change button state or stop recording
-            // Just reset internal state for next utterance
-            if (window.voiceChat) {
-              window.voiceChat.lastTranscript = '';
-              window.voiceChat.hasFinalResult = false;
+          };
+          
+          // Show interim (live) text in the input box so user sees it working
+          window.voiceChat.showInterimText = (text) => {
+            const aiInput = document.getElementById('ai-text-input');
+            if (aiInput && text.trim()) {
+              aiInput.value = text;
+              aiInput.style.color = '#999'; // Gray for interim
             }
           };
           
           window.voiceChat.updateUI = (state) => {
-            if (originalUpdateUI) originalUpdateUI(state);
-            
             if (state === 'listening') {
               micBtn.classList.add('recording');
               micBtn.innerHTML = '⏹️';
@@ -25297,6 +25296,7 @@
           // Store references for cleanup when user stops
           window._micOriginalOnResult = originalOnResult;
           window._micOriginalUpdateUI = originalUpdateUI;
+          window._micOriginalShowInterim = originalShowInterim;
           
           window.voiceChat.startListening();
         } else {
@@ -25318,6 +25318,13 @@
             window.voiceChat.updateUI = window._micOriginalUpdateUI;
             window._micOriginalUpdateUI = null;
           }
+          if (window._micOriginalShowInterim) {
+            window.voiceChat.showInterimText = window._micOriginalShowInterim;
+            window._micOriginalShowInterim = null;
+          }
+          // Clear any interim text from input
+          const aiInput = document.getElementById('ai-text-input');
+          if (aiInput) { aiInput.value = ''; aiInput.style.color = ''; }
           
           // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
           if (window._wasMutedBeforeMic === false && ttsMuted) {
