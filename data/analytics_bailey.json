@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T02:24:13.929597",
+  "last_updated": "2026-05-26T02:26:27.661588",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -30237,12 +30237,48 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T02:26:19.665132",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T02:26:26.480426",
+          "data": {
+            "tour_name": "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-26T02:26:27.611979",
+          "data": {
+            "tour_name": "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-05-26T02:26:27.661544",
+          "data": {
+            "tour_name": "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4"
+          }
         }
       ],
       "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4"
+      ],
+      "tours_booked": [
+        "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4"
+      ],
       "chat_messages": []
     }
   ]
