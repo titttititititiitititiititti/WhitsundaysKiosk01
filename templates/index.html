@@ -14010,12 +14010,12 @@
       var video = document.getElementById('bg-video');
       if (!video) return;
 
-      // Force muted (some browsers ignore the HTML attribute)
       video.muted = true;
       video.volume = 0;
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      
+      video.setAttribute('autoplay', '');
+
       function forcePlay() {
         if (!video.paused && !video.ended) return;
         if (video.ended) video.currentTime = 0;
@@ -14023,45 +14023,31 @@
         video.play().catch(function() {});
       }
 
-      // Try immediately
+      // Try immediately, then every 500ms forever (lightweight check)
       forcePlay();
-      
-      // Keep trying every 300ms forever
-      setInterval(forcePlay, 300);
+      setInterval(forcePlay, 500);
 
-      // Also force on load events
-      video.addEventListener('loadeddata', forcePlay);
-      video.addEventListener('canplay', forcePlay);
-      video.addEventListener('loadedmetadata', forcePlay);
-
-      // Instantly counter any pause
-      video.addEventListener('pause', function() { forcePlay(); });
-
-      // Resume on ANY interaction
-      ['touchstart', 'click', 'pointerdown', 'keydown'].forEach(function(evt) {
-        document.addEventListener(evt, forcePlay, { passive: true, capture: true });
+      // Instantly counter ANY pause event - this is the key fix
+      video.addEventListener('pause', function() {
+        setTimeout(forcePlay, 10);
       });
+
+      // Play when video data is ready
+      video.addEventListener('canplay', forcePlay);
+
+      // Loop when ended
+      video.addEventListener('ended', function() {
+        video.currentTime = 0;
+        forcePlay();
+      });
+
+      // Resume on user interaction (handles browser autoplay policy)
+      document.addEventListener('touchstart', forcePlay, { passive: true, once: true });
+      document.addEventListener('click', forcePlay, { once: true });
 
       // Resume when tab becomes visible
       document.addEventListener('visibilitychange', function() {
         if (!document.hidden) forcePlay();
-      });
-      window.addEventListener('pageshow', function(e) {
-        forcePlay();
-      });
-      
-      // Backup for loop failure
-      video.addEventListener('ended', () => {
-        video.currentTime = 0;
-        video.play().catch(() => {});
-      });
-
-      // Handle 'waiting' event - just try to resume if paused
-      video.addEventListener('waiting', function() {
-        if (!videoHasPlayed) return;
-        setTimeout(function() {
-          if (video.paused) video.play().catch(function() {});
-        }, 500);
       });
     })();
   </script>
@@ -16454,14 +16440,14 @@
       <h1 class="splash-title" style="margin:0;font-size:inherit;font-weight:inherit;display:block;">Cheapest Airlie Beach Tours — Compare & Book Instantly</h1>
       {% endif %}
       <div class="splash-flags-hint">Select your language</div>
-      <div class="splash-language-flags">
-        <img class="splash-flag" src="https://flagcdn.com/w80/gb.png" alt="English" onclick="event.stopPropagation(); selectSplashLanguage('en')" title="English">
-        <img class="splash-flag" src="https://flagcdn.com/w80/cn.png" alt="中文" onclick="event.stopPropagation(); selectSplashLanguage('zh')" title="中文">
-        <img class="splash-flag" src="https://flagcdn.com/w80/jp.png" alt="日本語" onclick="event.stopPropagation(); selectSplashLanguage('ja')" title="日本語">
-        <img class="splash-flag" src="https://flagcdn.com/w80/in.png" alt="हिन्दी" onclick="event.stopPropagation(); selectSplashLanguage('hi')" title="हिन्दी">
-        <img class="splash-flag" src="https://flagcdn.com/w80/de.png" alt="Deutsch" onclick="event.stopPropagation(); selectSplashLanguage('de')" title="Deutsch">
-        <img class="splash-flag" src="https://flagcdn.com/w80/fr.png" alt="Français" onclick="event.stopPropagation(); selectSplashLanguage('fr')" title="Français">
-        <img class="splash-flag" src="https://flagcdn.com/w80/kr.png" alt="한국어" onclick="event.stopPropagation(); selectSplashLanguage('ko')" title="한국어">
+      <div class="splash-language-flags" onclick="event.stopPropagation()" ontouchend="event.stopPropagation()">
+        <img class="splash-flag" src="https://flagcdn.com/w80/gb.png" alt="English" onclick="event.stopPropagation(); selectSplashLanguage('en')" ontouchend="event.stopPropagation()" title="English">
+        <img class="splash-flag" src="https://flagcdn.com/w80/cn.png" alt="中文" onclick="event.stopPropagation(); selectSplashLanguage('zh')" ontouchend="event.stopPropagation()" title="中文">
+        <img class="splash-flag" src="https://flagcdn.com/w80/jp.png" alt="日本語" onclick="event.stopPropagation(); selectSplashLanguage('ja')" ontouchend="event.stopPropagation()" title="日本語">
+        <img class="splash-flag" src="https://flagcdn.com/w80/in.png" alt="हिन्दी" onclick="event.stopPropagation(); selectSplashLanguage('hi')" ontouchend="event.stopPropagation()" title="हिन्दी">
+        <img class="splash-flag" src="https://flagcdn.com/w80/de.png" alt="Deutsch" onclick="event.stopPropagation(); selectSplashLanguage('de')" ontouchend="event.stopPropagation()" title="Deutsch">
+        <img class="splash-flag" src="https://flagcdn.com/w80/fr.png" alt="Français" onclick="event.stopPropagation(); selectSplashLanguage('fr')" ontouchend="event.stopPropagation()" title="Français">
+        <img class="splash-flag" src="https://flagcdn.com/w80/kr.png" alt="한국어" onclick="event.stopPropagation(); selectSplashLanguage('ko')" ontouchend="event.stopPropagation()" title="한국어">
       </div>
       <div class="splash-pulse"></div>
       <div class="splash-tap-text">Or tap anywhere to begin</div>
@@ -16744,7 +16730,10 @@
       return (x < CORNER_SIZE || x > w - CORNER_SIZE) && (y < CORNER_SIZE || y > h - CORNER_SIZE);
     }
     
+    window._splashFlagClicked = false;
     function handleSplashTap(e) {
+      // If a language flag was just clicked, do nothing - let selectSplashLanguage handle it
+      if (window._splashFlagClicked) return;
       // If it's a corner tap, flip instead of dismissing
       if (isCornerTap(e)) {
         e.stopPropagation();
@@ -16793,6 +16782,16 @@
           const videoStartScreen = document.getElementById('video-start-screen');
           const videoPage = document.querySelector('.video-question-page');
           
+          // Always ensure QD elements are hidden on fresh start
+          var qdContainer = document.getElementById('video-question-container');
+          var qdSwipe = document.getElementById('swipe-results-overlay');
+          if (qdContainer) qdContainer.style.display = 'none';
+          if (qdSwipe) { qdSwipe.style.display = 'none'; qdSwipe.classList.remove('active'); }
+          if (videoPage) {
+            videoPage.classList.remove('showing-questions');
+            videoPage.classList.remove('showing-results');
+          }
+          
           if (!urlLangParam) {
             // Show language selection screen
             console.log('🌐 Showing language selection screen after splash');
@@ -16826,6 +16825,10 @@
     
     // Select language from splash screen flag click
     function selectSplashLanguage(lang) {
+      // Block handleSplashTap from also firing on this same interaction
+      window._splashFlagClicked = true;
+      setTimeout(function() { window._splashFlagClicked = false; }, 1000);
+      
       console.log('🌍 Language selected from splash:', lang);
       
       // Mark splash as shown
@@ -16871,7 +16874,17 @@
           document.body.classList.remove('showing-language-selection');
           if (langScreen) langScreen.style.cssText = 'display: none !important;';
           if (videoStartScreen) videoStartScreen.style.cssText = 'display: flex !important;';
-          if (videoPage) videoPage.classList.add('active');
+          if (videoPage) {
+            videoPage.classList.add('active');
+            videoPage.classList.remove('showing-questions');
+            videoPage.classList.remove('showing-results');
+          }
+          
+          // Explicitly hide QD elements to prevent any stacking
+          var qdContainer = document.getElementById('video-question-container');
+          var qdSwipe = document.getElementById('swipe-results-overlay');
+          if (qdContainer) qdContainer.style.display = 'none';
+          if (qdSwipe) { qdSwipe.style.display = 'none'; qdSwipe.classList.remove('active'); }
           
           console.log('✅ Language set to', lang, '- showing video start screen');
         }, 500);
@@ -17209,6 +17222,17 @@
       // Smooth transition: hide language selection, show mode selection
       const langScreen = document.getElementById('language-selection-screen');
       const videoStartScreen = document.getElementById('video-start-screen');
+      const videoPage = document.querySelector('.video-question-page');
+      
+      // Ensure QD elements are hidden
+      if (videoPage) {
+        videoPage.classList.remove('showing-questions');
+        videoPage.classList.remove('showing-results');
+      }
+      var qdC = document.getElementById('video-question-container');
+      var qdS = document.getElementById('swipe-results-overlay');
+      if (qdC) qdC.style.display = 'none';
+      if (qdS) { qdS.style.display = 'none'; qdS.classList.remove('active'); }
       
       if (langScreen) {
         langScreen.style.opacity = '0';
@@ -19579,20 +19603,18 @@
     let hasStarted = false;
     
     function handleStartScreenClick(event) {
-      // Don't start if clicking on buttons or interactive elements
+      // Don't start if clicking on buttons, flags, or interactive elements
       const target = event.target;
       if (target.tagName === 'BUTTON' || 
+          target.tagName === 'IMG' ||
           target.closest('button') || 
           target.closest('.browse-all-tours-btn') ||
           target.closest('.language-selector') ||
           target.closest('.mobile-menu-btn') ||
-          target.closest('.voice-chat-container')) {
-        return; // Let the button handle its own click
-      }
-      
-      // Start the questions
-      if (window.startVideoQuestions) {
-        window.startVideoQuestions();
+          target.closest('.voice-chat-container') ||
+          target.closest('.mode-selection-flags') ||
+          target.classList.contains('mode-flag')) {
+        return;
       }
     }
     
@@ -21576,15 +21598,19 @@
       const videoPage = document.querySelector('.video-question-page');
       if (videoPage) {
         videoPage.classList.add('active');
+        videoPage.classList.remove('showing-questions');
+        videoPage.classList.remove('showing-results');
       }
       
-      // Show start screen, hide questions
+      // Show start screen, hide questions and QD overlay
       const startScreen = document.getElementById('video-start-screen');
       const questionContainer = document.getElementById('video-question-container');
       const langScreen = document.getElementById('language-selection-screen');
+      const swipeOverlay = document.getElementById('swipe-results-overlay');
       if (langScreen) langScreen.style.cssText = 'display: none !important;';
       if (startScreen) startScreen.style.cssText = 'display: flex !important;';
       if (questionContainer) questionContainer.style.display = 'none';
+      if (swipeOverlay) { swipeOverlay.style.display = 'none'; swipeOverlay.classList.remove('active'); }
       
       // Ensure the video-overlay class is disabled so other UI stays visible
       disableVideoBg();
@@ -25240,7 +25266,7 @@
       if (window.voiceChat.isSpeaking) window.voiceChat.stopSpeaking();
       if (window.currentWelcomeAudio) window.currentWelcomeAudio.pause();
       
-      // Set up simple callbacks
+      // Set up callbacks - auto-stop after 2s silence, flash send button green
       window.voiceChat.onSpeechResult = function(transcript) {
         isRecording = false;
         micBtn.classList.remove('recording');
@@ -25249,7 +25275,12 @@
         if (aiInput && transcript.trim()) {
           aiInput.value = transcript;
           aiInput.style.color = '';
-          sendAIMessage();
+          // Flash send button green to prompt user to confirm and send
+          var sendBtn = document.getElementById('ai-send-btn');
+          if (sendBtn) {
+            sendBtn.classList.add('flash-green');
+            setTimeout(function() { sendBtn.classList.remove('flash-green'); }, 4000);
+          }
         }
       };
       
@@ -35123,6 +35154,12 @@
       }
       
       // SIMPLE LOGIC: If there's a lang parameter in URL, show video start page. Otherwise, show language selection.
+      // Always ensure QD elements are hidden on page load
+      var qdContainerInit = document.getElementById('video-question-container');
+      var qdSwipeInit = document.getElementById('swipe-results-overlay');
+      if (qdContainerInit) qdContainerInit.style.display = 'none';
+      if (qdSwipeInit) { qdSwipeInit.style.display = 'none'; qdSwipeInit.classList.remove('active'); }
+      
       if (urlLangParam) {
         // Language is in URL - hide language screen, show video start
         console.log('✅ Language in URL (' + urlLangParam + ') - showing video start page');

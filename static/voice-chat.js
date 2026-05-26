@@ -1,6 +1,6 @@
 /**
- * Minimal push-to-talk voice input.
- * Tap mic → speak → it sends your words. No loops, no restarts.
+ * Voice input with auto-stop on silence.
+ * Uses continuous mode, auto-stops after 2 seconds of no speech detected.
  */
 
 class VoiceChat {
@@ -14,6 +14,9 @@ class VoiceChat {
     this.synthesis = window.speechSynthesis;
     this.customCallback = null;
     this.audioLevelCallback = null;
+    this._rec = null;
+    this._silenceTimer = null;
+    this._lastResultTime = 0;
     
     this.languageMap = {
       'en': 'en-US', 'zh': 'zh-CN', 'ja': 'ja-JP', 'ko': 'ko-KR',
@@ -28,28 +31,37 @@ class VoiceChat {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { this.showError('Voice not supported in this browser.'); return; }
     
-    // Fresh instance every time - never reuse
     const rec = new SR();
-    rec.continuous = false;
+    rec.continuous = true;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     rec.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
     this._rec = rec;
     this.isListening = true;
+    this._lastResultTime = Date.now();
     this.updateUI('listening');
     
+    let finalTranscript = '';
+    
     rec.onresult = (event) => {
+      this._lastResultTime = Date.now();
+      this._resetSilenceTimer();
+      
+      let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          this.isListening = false;
-          this.updateUI('idle');
-          this.onSpeechResult(transcript);
-          return;
+          finalTranscript += transcript;
         } else {
-          this.showInterimText(transcript);
+          interim += transcript;
         }
+      }
+      
+      if (finalTranscript) {
+        this.showInterimText(finalTranscript + interim);
+      } else if (interim) {
+        this.showInterimText(interim);
       }
     };
     
@@ -57,16 +69,25 @@ class VoiceChat {
       if (event.error === 'not-allowed') {
         this.showError('Please allow microphone access.');
       } else if (event.error === 'no-speech') {
-        this.showError('No speech detected. Tap and try again.');
+        // Silence detected by browser - stop and return what we have
+        this._finishListening(finalTranscript);
+        return;
       }
+      this._clearSilenceTimer();
       this.isListening = false;
       this.updateUI('idle');
     };
     
     rec.onend = () => {
-      this.isListening = false;
-      this.updateUI('idle');
+      this._clearSilenceTimer();
+      if (this.isListening) {
+        // If we're still supposed to be listening, finish with what we have
+        this._finishListening(finalTranscript);
+      }
     };
+    
+    // Start the silence timer - auto-stop after 2s of no new results
+    this._startSilenceTimer(finalTranscript);
     
     try {
       rec.start();
@@ -77,7 +98,38 @@ class VoiceChat {
     }
   }
   
+  _startSilenceTimer() {
+    this._clearSilenceTimer();
+    this._silenceTimer = setInterval(() => {
+      if (!this.isListening) { this._clearSilenceTimer(); return; }
+      const elapsed = Date.now() - this._lastResultTime;
+      if (elapsed >= 2000) {
+        this._clearSilenceTimer();
+        this.stopListening();
+      }
+    }, 300);
+  }
+  
+  _resetSilenceTimer() {
+    this._lastResultTime = Date.now();
+  }
+  
+  _clearSilenceTimer() {
+    if (this._silenceTimer) { clearInterval(this._silenceTimer); this._silenceTimer = null; }
+  }
+  
+  _finishListening(transcript) {
+    this._clearSilenceTimer();
+    this.isListening = false;
+    this.updateUI('idle');
+    if (this._rec) { try { this._rec.stop(); } catch(e) {} this._rec = null; }
+    if (transcript && transcript.trim()) {
+      this.onSpeechResult(transcript.trim());
+    }
+  }
+  
   stopListening() {
+    this._clearSilenceTimer();
     this.isListening = false;
     if (this._rec) { try { this._rec.stop(); } catch(e) {} this._rec = null; }
     this.updateUI('idle');
