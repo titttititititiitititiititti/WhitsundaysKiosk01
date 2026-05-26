@@ -25260,38 +25260,27 @@
             micBtn.style.transform = `scale(${scale})`;
           });
           
-          // Override callbacks for this session to use AI chat input
+          // Override callbacks - mic stays on after sending, user taps to stop
           const originalOnResult = window.voiceChat.onSpeechResult;
           const originalUpdateUI = window.voiceChat.updateUI;
           
           window.voiceChat.onSpeechResult = (transcript) => {
             console.log('✅ AI Voice input:', transcript);
-            isRecording = false;
-            // Clear audio level callback and reset button
-            window.voiceChat.clearAudioLevelCallback();
-            micBtn.style.transform = '';
-            micBtn.classList.remove('recording');
-            micBtn.innerHTML = '🎤';
             
-            // AUTO-UNMUTE: Restore TTS after voice input is done
-            if (window._wasMutedBeforeMic === false && ttsMuted) {
-              console.log('🔊 Auto-unmuting TTS after voice input');
-              toggleTTSMute();  // Unmute it
-            }
-            
-            // Put transcript in AI chat input (correct ID: ai-text-input)
+            // Put transcript in AI chat input and send
             const aiInput = document.getElementById('ai-text-input');
             if (aiInput && transcript.trim()) {
               aiInput.value = transcript;
               console.log('📝 Set input value to:', transcript);
-              // Auto-send the message
               sendAIMessage();
               console.log('📤 sendAIMessage() called');
-            } else {
-              console.error('❌ Could not find ai-text-input element or transcript empty');
             }
-            // Restore original callback
-            window.voiceChat.onSpeechResult = originalOnResult;
+            // Mic stays on - don't change button state or stop recording
+            // Just reset internal state for next utterance
+            if (window.voiceChat) {
+              window.voiceChat.lastTranscript = '';
+              window.voiceChat.hasFinalResult = false;
+            }
           };
           
           window.voiceChat.updateUI = (state) => {
@@ -25301,37 +25290,39 @@
               micBtn.classList.add('recording');
               micBtn.innerHTML = '⏹️';
               isRecording = true;
-            } else if (state === 'idle' && !window.voiceChat.isListening) {
-              // Only reset when truly done (not during transient restarts)
-              micBtn.classList.remove('recording');
-              micBtn.innerHTML = '🎤';
-              micBtn.style.transform = '';
-              isRecording = false;
-              window.voiceChat.clearAudioLevelCallback();
-              window.voiceChat.updateUI = originalUpdateUI;
-              // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
-              if (window._wasMutedBeforeMic === false && ttsMuted) {
-                console.log('🔊 Auto-unmuting TTS after voice input done');
-                toggleTTSMute();
-              }
             }
+            // Don't reset to idle while mic should stay on
           };
+          
+          // Store references for cleanup when user stops
+          window._micOriginalOnResult = originalOnResult;
+          window._micOriginalUpdateUI = originalUpdateUI;
           
           window.voiceChat.startListening();
         } else {
-          // Stop listening
-          console.log('🎤 Stopping voice recognition...');
+          // Stop listening - user explicitly tapped stop
+          console.log('🎤 User stopped voice recognition');
           isRecording = false;
           micBtn.classList.remove('recording');
           micBtn.innerHTML = '🎤';
-          micBtn.style.transform = ''; // Reset scale
+          micBtn.style.transform = '';
           window.voiceChat.clearAudioLevelCallback();
           window.voiceChat.stopListening();
+          
+          // Restore original callbacks
+          if (window._micOriginalOnResult) {
+            window.voiceChat.onSpeechResult = window._micOriginalOnResult;
+            window._micOriginalOnResult = null;
+          }
+          if (window._micOriginalUpdateUI) {
+            window.voiceChat.updateUI = window._micOriginalUpdateUI;
+            window._micOriginalUpdateUI = null;
+          }
           
           // AUTO-UNMUTE: Restore TTS if it was unmuted before mic started
           if (window._wasMutedBeforeMic === false && ttsMuted) {
             console.log('🔊 Auto-unmuting TTS after user finished speaking');
-            toggleTTSMute();  // Unmute it
+            toggleTTSMute();
           }
         }
       } else {

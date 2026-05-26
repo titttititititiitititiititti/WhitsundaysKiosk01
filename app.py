@@ -12135,7 +12135,7 @@ def submit_perk_claim():
     claims.append(claim)
     save_perk_claims(claims)
 
-    # Send email notification to admin
+    # Send email notifications
     try:
         people_summary = ', '.join([f"{p['name']} ({p.get('perk','coffee')})" for p in people]) if people else name
         subject = f"[Filtour] New perk claim: {tour_name or 'Unknown tour'} ({len(people) if people else 1} people)"
@@ -12157,10 +12157,19 @@ def submit_perk_claim():
                 </p>
             </div>
         </div></body></html>"""
+        
+        # Send to admin email (bailey.amouyal@gmail.com)
         admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal@gmail.com'
         print(f"[PERK] Sending admin notification to {admin_to}")
         result = send_smtp_email(admin_to, subject, admin_html, body)
         print(f"[PERK] Admin email result: {result}")
+        
+        # Also send copy to the kiosk business email
+        business_to = SMTP_USER or 'business@filtour.com'
+        if business_to != admin_to:
+            print(f"[PERK] Sending copy to business email: {business_to}")
+            result2 = send_smtp_email(business_to, subject, admin_html, body)
+            print(f"[PERK] Business email result: {result2}")
     except Exception as e:
         print(f"[PERK] Email notification failed: {e}")
 

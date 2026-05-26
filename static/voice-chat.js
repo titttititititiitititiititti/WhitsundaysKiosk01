@@ -63,17 +63,11 @@ class VoiceChat {
     
     console.log('🎤 SpeechRecognition API:', SpeechRecognition.name || 'webkitSpeechRecognition');
     
-    // Configure recognition — continuous=true on iOS/iPad to prevent instant-stop bug
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    this.recognition.continuous = isIOS ? true : false;
+    // Configure recognition — always continuous so mic stays alive
+    this.recognition.continuous = true;
     this.recognition.interimResults = true;
     this.recognition.maxAlternatives = 1;
-    this._isIOS = isIOS;
-    console.log('🎤 Device detection: isIOS/iPad =', isIOS, 
-      'maxTouchPoints =', navigator.maxTouchPoints, 
-      'userAgent match =', /iPad|iPhone/.test(navigator.userAgent));
+    console.log('🎤 Recognition configured: continuous=true for persistent listening');
     
     // Set up event handlers
     this.setupRecognitionHandlers();
@@ -138,10 +132,9 @@ class VoiceChat {
     this.recognition.onend = () => {
       console.log('🎤 Speech recognition ENDED, userStopped:', this._userStopped, 'hasFinal:', this.hasFinalResult);
       
-      // If user intentionally stopped, just clean up - no retry
+      // If user intentionally stopped, just clean up - no restart
       if (this._userStopped) {
         this._userStopped = false;
-        this._retryCount = 0;
         if (this.lastTranscript && !this.hasFinalResult) {
           this.onSpeechResult(this.lastTranscript);
         }
@@ -154,30 +147,34 @@ class VoiceChat {
       if (this.lastTranscript && !this.hasFinalResult) {
         console.log('🎤 Using last transcript as fallback:', this.lastTranscript);
         this.onSpeechResult(this.lastTranscript);
-        this.isListening = false;
-        this.updateUI('idle');
+      }
+      
+      // Always restart if we're supposed to be listening (continuous mode)
+      if (this.isListening) {
+        console.log('🎤 Recognition ended unexpectedly - restarting in 500ms...');
+        setTimeout(() => {
+          if (this._userStopped || !this.isListening) return;
+          try {
+            this.lastTranscript = '';
+            this.hasFinalResult = false;
+            this.recognition.start();
+            console.log('🎤 Recognition restarted successfully');
+          } catch(e) {
+            console.log('🎤 Restart failed:', e.message);
+            // Try again in 1 second
+            setTimeout(() => {
+              if (this._userStopped || !this.isListening) return;
+              try { this.recognition.start(); } catch(e2) {
+                console.log('🎤 Second restart failed, giving up');
+                this.isListening = false;
+                this.updateUI('idle');
+              }
+            }, 1000);
+          }
+        }, 500);
         return;
       }
       
-      // Recognition ended without results - retry up to 3 times
-      if (this.isListening && !this.lastTranscript && !this.hasFinalResult) {
-        this._retryCount = (this._retryCount || 0) + 1;
-        if (this._retryCount <= 3) {
-          console.log(`🎤 Recognition ended prematurely - retry ${this._retryCount}/3`);
-          setTimeout(() => {
-            if (this._userStopped) return;
-            try { this.recognition.start(); } catch(e) {
-              console.log('🎤 Retry failed:', e.message);
-              this.isListening = false;
-              this.updateUI('idle');
-            }
-          }, 300);
-          return;
-        }
-        console.log('🎤 All retries exhausted');
-      }
-      
-      this._retryCount = 0;
       this.isListening = false;
       this.updateUI('idle');
     };
@@ -203,11 +200,13 @@ class VoiceChat {
         
         if (isFinal) {
           this.hasFinalResult = true;
-          // User finished speaking - send to chat
           this.clearSilenceTimer();
           this.onSpeechResult(transcript);
+          // Reset for next utterance (mic stays on in continuous mode)
+          this.lastTranscript = '';
+          this.hasFinalResult = false;
         } else {
-          // Show interim results - start silence timer
+          // Show interim results - start silence timer as fallback
           this.showInterimText(transcript);
           this.startSilenceTimer();
         }
@@ -219,29 +218,28 @@ class VoiceChat {
       console.log('🎤 No speech match - will retry silently');
     };
     
-    // Error handling - only kill session for truly fatal errors
+    // Error handling
     this.recognition.onerror = (event) => {
       console.error('🎤 Speech recognition ERROR:', event.error, event.message);
       
-      // Fatal errors - stop completely, show user message
+      // Fatal errors - stop completely
       if (event.error === 'not-allowed') {
         this.showError("Please allow microphone access to use voice input.");
+        this._userStopped = true;
         this.isListening = false;
-        this._hasRetried = true; // Prevent retry in onend
         this.updateUI('idle');
         return;
       }
       if (event.error === 'audio-capture') {
         this.showError("Microphone not available. Check that no other app is using it.");
+        this._userStopped = true;
         this.isListening = false;
-        this._hasRetried = true;
         this.updateUI('idle');
         return;
       }
       
-      // All other errors (network, no-speech, aborted, service-not-allowed):
-      // Do nothing here - let onend handle retry/cleanup
-      console.log('🎤 Non-fatal error, will let onend handle retry');
+      // Non-fatal errors (no-speech, network, aborted): onend will restart
+      console.log('🎤 Non-fatal error, onend will handle restart');
     };
   }
   
@@ -271,12 +269,9 @@ class VoiceChat {
     // Set language for recognition
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     
-    this._restarted = false;
-    this._hasRetried = false;
     this._userStopped = false;
-    this._retryCount = 0;
     this.isListening = true;
-    console.log(`🎤 Starting speech recognition...`);
+    console.log(`🎤 Starting speech recognition (continuous mode)...`);
     
     try {
       this.recognition.start();
@@ -300,171 +295,43 @@ class VoiceChat {
     }
   }
   
-  async startAudioMonitoring() {
-    // Monitor actual audio levels to diagnose mic issues
-    try {
-      // List available microphones
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const mics = devices.filter(d => d.kind === 'audioinput');
-      console.log('🎤 Available microphones:');
-      mics.forEach((m, i) => console.log(`   ${i + 1}. ${m.label || 'Unknown mic'} (${m.deviceId.substring(0, 8)}...)`));
-      
-      // Try to get the default microphone with specific constraints
-      const constraints = {
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      };
-      
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      // Resume audio context if suspended (required after user interaction)
-      if (audioContext.state === 'suspended') {
-        console.log('🎤 AudioContext suspended, resuming...');
-        await audioContext.resume();
-      }
-      console.log('🎤 AudioContext state:', audioContext.state);
-      
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      
-      // Log which track we're using
-      const track = stream.getAudioTracks()[0];
-      console.log('🎤 Using microphone:', track.label);
-      console.log('🎤 Track settings:', JSON.stringify(track.getSettings()));
-      
-      microphone.connect(analyser);
-      analyser.fftSize = 256;
-      
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      let maxLevel = 0;
-      let hasSpoken = false;
-      let stopped = false;
-      
-      this.audioMonitorStream = stream;
-      this.audioMonitorContext = audioContext;
-      
-      const checkLevel = () => {
-        if (!this.isListening || stopped) {
-          if (!stopped) {
-            stopped = true;
-            // Stop monitoring when not listening
-            stream.getTracks().forEach(track => track.stop());
-            audioContext.close().catch(() => {}); // Ignore already closed error
-            console.log(`🎤 Audio monitoring stopped. Max level detected: ${maxLevel}`);
-            if (maxLevel < 10) {
-              console.warn('⚠️ Very low audio levels detected!');
-              console.warn('   This usually means Chrome is using the wrong microphone.');
-              console.warn('   Fix: Click the lock 🔒 icon in Chrome address bar → Site Settings → Microphone');
-              console.warn('   Or try: chrome://settings/content/microphone');
-            }
-          }
-          return;
-        }
-        
-        analyser.getByteFrequencyData(dataArray);
-        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-        
-        if (average > maxLevel) {
-          maxLevel = average;
-        }
-        
-        // Call audio level callback for UI updates (e.g., mic button scaling)
-        if (this.audioLevelCallback && typeof this.audioLevelCallback === 'function') {
-          this.audioLevelCallback(average);
-        }
-        
-        // Log when audio is detected
-        if (average > 20 && !hasSpoken) {
-          console.log(`🎤 Audio level: ${average.toFixed(0)} - Sound detected!`);
-          hasSpoken = true;
-        } else if (average > 50) {
-          console.log(`🎤 Audio level: ${average.toFixed(0)} - Loud sound!`);
-        }
-        
-        requestAnimationFrame(checkLevel);
-      };
-      
-      checkLevel();
-      console.log('🎤 Audio level monitoring started');
-      
-    } catch (e) {
-      console.warn('🎤 Could not start audio monitoring:', e.message);
-    }
-  }
-  
-  // Helper to list and select microphones
-  async listMicrophones() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const mics = devices.filter(d => d.kind === 'audioinput');
-    console.log('\n🎤 AVAILABLE MICROPHONES:');
-    console.log('========================');
-    mics.forEach((m, i) => {
-      console.log(`${i + 1}. ${m.label || 'Unnamed microphone'}`);
-      console.log(`   ID: ${m.deviceId}`);
-    });
-    console.log('\nTo change microphone in Chrome:');
-    console.log('1. Click the 🔒 lock icon in the address bar');
-    console.log('2. Click "Site settings"');
-    console.log('3. Find "Microphone" and select your preferred device');
-    console.log('4. Refresh the page\n');
-    return mics;
-  }
-  
-  // Aggressively stop ALL microphone streams
+  // Stop all mic-related streams
   stopAllMicStreams() {
-    console.log('🎤 Stopping ALL microphone streams...');
-    
-    // Stop our tracked stream
     if (this.audioMonitorStream) {
-      try {
-        this.audioMonitorStream.getTracks().forEach(track => {
-          console.log('🎤 Stopping track:', track.label, track.readyState);
-          track.stop();
-        });
-      } catch (e) {}
+      try { this.audioMonitorStream.getTracks().forEach(t => t.stop()); } catch(e) {}
       this.audioMonitorStream = null;
     }
-    
-    // Close audio context
     if (this.audioMonitorContext) {
-      try {
-        this.audioMonitorContext.close();
-      } catch (e) {}
+      try { this.audioMonitorContext.close(); } catch(e) {}
       this.audioMonitorContext = null;
     }
-    
-    console.log('🎤 Microphone streams stopped');
   }
   
   stopListening() {
+    console.log('🎤 stopListening() called - shutting down mic');
     this._userStopped = true;
-    this._retryCount = 0;
+    this.isListening = false;
     if (this.recognition) {
       try { this.recognition.stop(); } catch(e) {}
     }
     this.clearSilenceTimer();
-    this.isListening = false;
     this.updateUI('idle');
   }
   
   startSilenceTimer() {
-    // Clear any existing timer
     this.clearSilenceTimer();
     
-    // Start new timer - if 3 seconds pass with no new speech, auto-send
+    // If 4 seconds pass with interim text but no final result, send what we have
     this.silenceTimer = setTimeout(() => {
       if (this.isListening && this.lastTranscript && !this.hasFinalResult) {
-        console.log('⏱️ 3 seconds of silence - auto-sending message');
-        // Stop recognition and send the last transcript
-        this.hasFinalResult = true; // Prevent duplicate sends
-        this.recognition.stop();
+        console.log('⏱️ Silence timeout - sending interim transcript');
+        this.hasFinalResult = true;
         this.onSpeechResult(this.lastTranscript);
+        // Reset for next utterance (don't stop recognition)
+        this.lastTranscript = '';
+        this.hasFinalResult = false;
       }
-    }, this.silenceTimeout);
+    }, 4000);
   }
   
   clearSilenceTimer() {
