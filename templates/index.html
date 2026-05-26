@@ -25240,7 +25240,7 @@
     window.toggleAIMicrophone = function() {
       if (window._micToggleLock) return;
       window._micToggleLock = true;
-      setTimeout(function() { window._micToggleLock = false; }, 800);
+      setTimeout(function() { window._micToggleLock = false; }, 400);
       
       var micBtn = document.getElementById('ai-mic-btn');
       if (!micBtn) return;

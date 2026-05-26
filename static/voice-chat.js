@@ -1,6 +1,6 @@
 /**
- * Voice input with auto-stop on silence.
- * Uses continuous mode, auto-stops after 2 seconds of no speech detected.
+ * Simple voice recognition with auto-stop after 2s silence.
+ * Restarts recognition if browser kills it prematurely.
  */
 
 class VoiceChat {
@@ -16,7 +16,10 @@ class VoiceChat {
     this.audioLevelCallback = null;
     this._rec = null;
     this._silenceTimer = null;
-    this._lastResultTime = 0;
+    this._lastSpeechTime = 0;
+    this._transcript = '';
+    this._shouldBeListening = false;
+    this._restartCount = 0;
     
     this.languageMap = {
       'en': 'en-US', 'zh': 'zh-CN', 'ja': 'ja-JP', 'ko': 'ko-KR',
@@ -25,114 +28,154 @@ class VoiceChat {
   }
   
   startListening() {
-    if (this.isListening) { this.stopListening(); return; }
+    if (this._shouldBeListening) { this.stopListening(); return; }
     if (this.isSpeaking) this.stopSpeaking();
     
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) { this.showError('Voice not supported in this browser.'); return; }
+    
+    this._shouldBeListening = true;
+    this.isListening = true;
+    this._transcript = '';
+    this._restartCount = 0;
+    this._lastSpeechTime = Date.now();
+    this.updateUI('listening');
+    
+    this._startRecognition();
+    this._startSilenceTimer();
+  }
+  
+  _startRecognition() {
+    if (!this._shouldBeListening) return;
+    
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    
+    // Clean up old instance
+    if (this._rec) {
+      try { this._rec.abort(); } catch(e) {}
+      this._rec = null;
+    }
     
     const rec = new SR();
     rec.continuous = true;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     rec.lang = this.languageMap[this.currentLanguage] || 'en-US';
-    
     this._rec = rec;
-    this.isListening = true;
-    this._lastResultTime = Date.now();
-    this.updateUI('listening');
-    
-    let finalTranscript = '';
     
     rec.onresult = (event) => {
-      this._lastResultTime = Date.now();
-      this._resetSilenceTimer();
+      this._lastSpeechTime = Date.now();
+      this._restartCount = 0;
       
       let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+      let finalText = '';
+      for (let i = 0; i < event.results.length; i++) {
+        const t = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcript;
+          finalText += t;
         } else {
-          interim += transcript;
+          interim += t;
         }
       }
       
-      if (finalTranscript) {
-        this.showInterimText(finalTranscript + interim);
-      } else if (interim) {
-        this.showInterimText(interim);
-      }
+      if (finalText) this._transcript = finalText;
+      this.showInterimText(this._transcript + interim);
     };
     
     rec.onerror = (event) => {
+      console.log('[MIC] error:', event.error);
       if (event.error === 'not-allowed') {
         this.showError('Please allow microphone access.');
-      } else if (event.error === 'no-speech') {
-        // Silence detected by browser - stop and return what we have
-        this._finishListening(finalTranscript);
+        this._shouldBeListening = false;
+        this.isListening = false;
+        this._clearSilenceTimer();
+        this.updateUI('idle');
         return;
       }
-      this._clearSilenceTimer();
-      this.isListening = false;
-      this.updateUI('idle');
+      // For all other errors (no-speech, network, aborted), let onend handle restart
     };
     
     rec.onend = () => {
-      this._clearSilenceTimer();
-      if (this.isListening) {
-        // If we're still supposed to be listening, finish with what we have
-        this._finishListening(finalTranscript);
+      console.log('[MIC] onend fired, shouldBeListening:', this._shouldBeListening);
+      if (!this._shouldBeListening) return;
+      
+      // Browser killed recognition - restart it (up to 50 times)
+      this._restartCount++;
+      if (this._restartCount > 50) {
+        console.log('[MIC] Too many restarts, giving up');
+        this._finish();
+        return;
       }
+      
+      // Small delay before restart to avoid hammering
+      setTimeout(() => {
+        if (this._shouldBeListening) {
+          console.log('[MIC] Restarting recognition, attempt', this._restartCount);
+          this._startRecognition();
+        }
+      }, 100);
     };
-    
-    // Start the silence timer - auto-stop after 2s of no new results
-    this._startSilenceTimer(finalTranscript);
     
     try {
       rec.start();
+      console.log('[MIC] Recognition started');
     } catch(e) {
-      this.showError('Could not start mic. Try again.');
-      this.isListening = false;
-      this.updateUI('idle');
+      console.log('[MIC] start() threw:', e.message);
+      // If start fails, retry once after a delay
+      setTimeout(() => {
+        if (this._shouldBeListening && this._restartCount < 5) {
+          this._restartCount++;
+          this._startRecognition();
+        } else {
+          this._finish();
+        }
+      }, 300);
     }
   }
   
   _startSilenceTimer() {
     this._clearSilenceTimer();
     this._silenceTimer = setInterval(() => {
-      if (!this.isListening) { this._clearSilenceTimer(); return; }
-      const elapsed = Date.now() - this._lastResultTime;
-      if (elapsed >= 2000) {
-        this._clearSilenceTimer();
-        this.stopListening();
+      if (!this._shouldBeListening) { this._clearSilenceTimer(); return; }
+      
+      const elapsed = Date.now() - this._lastSpeechTime;
+      // Only auto-stop after 2s of silence IF we have some transcript
+      // If no transcript yet, wait longer (5s) before giving up
+      const timeout = this._transcript.trim() ? 2000 : 5000;
+      
+      if (elapsed >= timeout) {
+        console.log('[MIC] Silence timeout reached (' + timeout + 'ms)');
+        this._finish();
       }
     }, 300);
-  }
-  
-  _resetSilenceTimer() {
-    this._lastResultTime = Date.now();
   }
   
   _clearSilenceTimer() {
     if (this._silenceTimer) { clearInterval(this._silenceTimer); this._silenceTimer = null; }
   }
   
-  _finishListening(transcript) {
+  _finish() {
     this._clearSilenceTimer();
+    this._shouldBeListening = false;
     this.isListening = false;
+    if (this._rec) { try { this._rec.abort(); } catch(e) {} this._rec = null; }
     this.updateUI('idle');
-    if (this._rec) { try { this._rec.stop(); } catch(e) {} this._rec = null; }
-    if (transcript && transcript.trim()) {
-      this.onSpeechResult(transcript.trim());
+    
+    if (this._transcript.trim()) {
+      this.onSpeechResult(this._transcript.trim());
     }
+    this._transcript = '';
   }
   
   stopListening() {
+    console.log('[MIC] stopListening called');
     this._clearSilenceTimer();
+    this._shouldBeListening = false;
     this.isListening = false;
-    if (this._rec) { try { this._rec.stop(); } catch(e) {} this._rec = null; }
+    if (this._rec) { try { this._rec.abort(); } catch(e) {} this._rec = null; }
     this.updateUI('idle');
+    this._transcript = '';
   }
   
   // TTS methods
@@ -197,7 +240,6 @@ class VoiceChat {
     this.isSpeaking = false; this.updateUI('idle');
   }
   
-  // Utility
   setLanguage(lang) { this.currentLanguage = lang; }
   setAutoSpeak(v) { this.autoSpeak = v; }
   setCustomCallback(cb) { this.customCallback = cb; }
