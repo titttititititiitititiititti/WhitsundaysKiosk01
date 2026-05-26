@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T06:50:05.864687",
+  "last_updated": "2026-05-26T06:50:28.230365",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -30994,10 +30994,131 @@
             "company": "Red Cat Adventures",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-26T06:50:07.172820",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": "en",
       "mode": "browse-all",
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "bb1cd499-15a4-4355-a565-11160b001a96",
+      "account": "bailey",
+      "started_at": "2026-05-26T06:50:20.659704",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-26T06:50:20.659722",
+          "data": {
+            "tour_key": "redcatadventures__0ccf1c0576808ea5",
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "tracking_id": "882fe37f",
+            "timestamp": "1779778206",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "306f251d-8454-4098-8818-cdc1599a8985",
+      "account": "bailey",
+      "started_at": "2026-05-26T06:50:21.524051",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-26T06:50:21.524066",
+          "data": {
+            "tour_key": "redcatadventures__44fe2ed6394c6bf6",
+            "tour_name": "Tongarra Day Sailing Tour",
+            "tracking_id": "b2ab2e5d",
+            "timestamp": "1779775449",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_d1cff6ff8aa9_1779778226",
+      "account": "bailey",
+      "started_at": "2026-05-26T06:50:26.252094",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T06:50:26.252110",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_5_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/tour/redcatadventures__44fe2ed6394c6bf6?lang=en&ref=None&mode=browse&tid=b2ab2e5d&t=1779775449"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T06:50:27.842233",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Tongarra Day Sailing Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_0274f7d41643_1779778227",
+      "account": "bailey",
+      "started_at": "2026-05-26T06:50:27.786162",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T06:50:27.786174",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 26_5_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/148.0.7778.166 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/tour/redcatadventures__0ccf1c0576808ea5?lang=en&ref=None&mode=browse&tid=882fe37f&t=1779778206"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T06:50:28.230322",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
       "tours_viewed": [
         "Great Barrier Reef Snorkel Adventure"
       ],
