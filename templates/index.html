@@ -14009,15 +14009,36 @@
       const video = document.getElementById('bg-video');
       if (!video) return;
       
-      const STREAMABLE_URL = {{ bg_video_url | tojson | safe }};
+      var STREAMABLE_URL = {{ bg_video_url | tojson | safe }};
       let fallbackAttempted = false;
 
       function loadStreamableFallback() {
-        if (fallbackAttempted || !STREAMABLE_URL) {
-          video.style.display = 'none';
-          document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
+        if (fallbackAttempted && STREAMABLE_URL) return;
+        
+        if (!STREAMABLE_URL) {
+          // Server didn't have the URL ready - fetch it client-side
+          console.log('📺 No server-side video URL, fetching from API...');
+          fetch('/api/bg-video-url').then(function(r) { return r.json(); }).then(function(data) {
+            if (data.url) {
+              STREAMABLE_URL = data.url;
+              fallbackAttempted = true;
+              console.log('📺 Got video URL from API, loading...');
+              video.src = STREAMABLE_URL;
+              video.style.display = '';
+              video.load();
+              video.play().catch(function() {});
+            } else {
+              console.log('📺 No video URL available, showing gradient');
+              video.style.display = 'none';
+              document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
+            }
+          }).catch(function() {
+            video.style.display = 'none';
+            document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
+          });
           return;
         }
+        
         fallbackAttempted = true;
         console.log('📺 Loading Streamable background video');
         video.src = STREAMABLE_URL;

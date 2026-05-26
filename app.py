@@ -5647,6 +5647,12 @@ def voice_test():
     """Voice chat test page"""
     return render_template('voice_test.html')
 
+@app.route('/api/bg-video-url')
+def bg_video_url_api():
+    """Return the current background video URL (client-side fallback)"""
+    url = get_bg_video_url()
+    return jsonify({'url': url})
+
 @app.route('/api/tts-status')
 def tts_status():
     """Check if ElevenLabs TTS is properly configured and working"""

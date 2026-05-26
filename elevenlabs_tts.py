@@ -668,11 +668,14 @@ def synthesize_speech(text, language='en', gender='default'):
             if response.status_code == 401:
                 print(f"[ERR]   401 = Invalid API key. Your ELEVENLABS_API_KEY is being rejected.")
                 print(f"[ERR]   Get your correct API key from: https://elevenlabs.io/app/settings/api-keys")
+            elif response.status_code == 402:
+                print(f"[ERR]   402 = Payment required. Your ElevenLabs account needs a paid subscription for API access.")
+                print(f"[ERR]   Upgrade at: https://elevenlabs.io/subscription")
             elif response.status_code == 403:
                 print(f"[ERR]   403 = Forbidden. API key may lack permissions or be expired.")
             elif response.status_code == 429:
                 print(f"[ERR]   429 = Rate limited or quota exceeded.")
-            raise ValueError(f"ElevenLabs returned {response.status_code}: {response.text[:200]}")
+            return None
             
     except requests.exceptions.Timeout:
         print("[ERR] ElevenLabs: Request timeout")
