@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T03:43:08.941563",
+  "last_updated": "2026-05-26T03:43:36.445173",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -30531,6 +30531,67 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_133a005787af_1779766990",
+      "account": "bailey",
+      "started_at": "2026-05-26T03:43:10.853304",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T03:43:10.853315",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T03:43:12.106699",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T03:43:12.952681",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T03:43:23.675494",
+          "data": {
+            "role": "user",
+            "message": "I want a full day beach tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T03:43:36.445126",
+          "data": {
+            "role": "assistant",
+            "message": "Fantastic choice! A full day beach tour in the Whitsundays is an unforgettable experience. \ud83c\udf0a Let me show you some amazing options!\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This is an exhilarating ride through the Whitsunday Islands, perfect for adventure seekers! You'll explore the iconic Whitehaven Beach and enjoy a guided bush walk to Hill Inlet Lookout. Snorkel at two different locations on the fringing Great Barrier Reef and enjoy the incredible marine life at Mantaray Bay."
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day beach tour",
+          "timestamp": "2026-05-26T03:43:23.675508"
+        },
+        {
+          "role": "assistant",
+          "message": "Fantastic choice! A full day beach tour in the Whitsundays is an unforgettable experience. \ud83c\udf0a Let me show you some amazing options!\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This is an exhilarating ride through the Whitsunday Islands, perfect for adventure seekers! You'll explore the iconic Whitehaven Beach and enjoy a guided bush walk to Hill Inlet Lookout. Snorkel at two different locations on the fringing Great Barrier Reef and enjoy the incredible marine life at Mantaray Bay.",
+          "timestamp": "2026-05-26T03:43:36.445137"
+        }
+      ]
     }
   ]
 }
