@@ -14010,18 +14010,15 @@
       const video = document.getElementById('bg-video');
       if (!video) return;
 
-      // Keep trying to play until it works
-      var playRetryId = null;
+      // Force play forever - never stop trying (handles mic stealing audio focus, etc)
       function forcePlay() {
         if (!video.paused && !video.ended) return;
         if (video.ended) video.currentTime = 0;
-        video.play().then(function() {
-          if (playRetryId) { clearInterval(playRetryId); playRetryId = null; }
-        }).catch(function() {});
+        video.play().catch(function() {});
       }
 
-      // Try every 500ms until video is playing
-      playRetryId = setInterval(forcePlay, 500);
+      // Run every 500ms forever - never clear this interval
+      setInterval(forcePlay, 500);
 
       // Also try on these events
       video.addEventListener('loadeddata', forcePlay);
