@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T10:30:19.603624",
+  "last_updated": "2026-05-26T10:30:49.461499",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -31633,12 +31633,43 @@
             "role": "assistant",
             "message": "A full day snorkeling adventure on the Great Barrier Reef sounds absolutely incredible! \ud83c\udf0a Let me show you an amazing option:\n\n1. **Great Barrier Reef Snorkel Adventure** - Dive into an unforgettable day exploring the world-famous Great Barrier Reef with Red Cat Adventures. This top pick offers a smooth and comfortable journey to the outer reefs, where you'll snorkel in crystal-clear waters teeming with vibrant marine life. Enjoy panoramic views from a 360\u00b0 rooftop deck, relax in premium seating"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T10:30:40.645051",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-26T10:30:46.238319",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-26T10:30:49.461396",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
+      "tours_booked": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
       "chat_messages": [
         {
           "role": "user",
