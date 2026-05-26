@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T19:56:09.450658",
+  "last_updated": "2026-05-26T09:56:57.950624",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -28954,11 +28954,6 @@
             "company": "ProSail",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-24T01:02:14.344363",
-          "data": {}
         }
       ],
       "language": null,
@@ -28969,9 +28964,7 @@
       "tours_booked": [
         "Broomstick Whitsundays \u2013 Sailing Tour"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T01:02:14.344386",
-      "duration_seconds": 1931.118217
+      "chat_messages": []
     },
     {
       "session_id": "session_2fba53ec34ed_1779584955",
@@ -30310,6 +30303,11 @@
             "company": "Red Cat Adventures",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T02:32:38.626799",
+          "data": {}
         }
       ],
       "language": null,
@@ -30322,7 +30320,9 @@
         "\ud574\uba38 \ud718\ud2b8\uc120\ub370\uc774\uc988 \uc138\uc77c\ub9c1 \ud22c\uc5b4",
         "\uc36c\ub354\ucea3 \ud718\ud2b8\uc120\ub370\uc774\uc988 - \uc62c \uc778\ud074\ub8e8\uc2dc\ube0c \uc77c\uc77c \ud22c\uc5b4"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-26T02:32:38.626808",
+      "duration_seconds": 504.697271
     },
     {
       "session_id": "dd44176d-8121-40ab-b518-9547461478bb",
@@ -30706,6 +30706,11 @@
             "company": "oceanrafting",
             "source": "swipe"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T03:57:01.373454",
+          "data": {}
         }
       ],
       "language": "en",
@@ -30714,7 +30719,9 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-26T03:57:01.373468",
+      "duration_seconds": 418.024511
     },
     {
       "session_id": "7199e1f7-df36-4d95-97db-4c588d79781e",
@@ -30937,9 +30944,16 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T06:49:27.627509",
+          "data": {
+            "language": "ja"
+          }
         }
       ],
-      "language": null,
+      "language": "ja",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
@@ -31263,13 +31277,61 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T07:19:39.338787",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T07:19:40.182427",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T07:22:14.991118",
+          "data": {
+            "role": "user",
+            "message": "I want a full day beach tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-05-26T07:22:15.230697",
+          "data": {
+            "role": "assistant",
+            "message": "A full day at the beach sounds like a fantastic choice! \ud83c\udf1e Let me show you some amazing options:\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This exhilarating tour is a top pick among adventurers! You\u2019ll get to explore the breathtaking Whitehaven Beach and witness the iconic swirling sands of Hill Inlet Lookout. Plus, snorkel at two different locations on the fringing Great Barrier Reef and enjoy the vibrant marine life at Mantaray Bay and Stone Haven Bay. With lunch and snacks pro"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T07:42:42.279421",
+          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
+      "language": "en",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a full day beach tour",
+          "timestamp": "2026-05-26T07:22:14.991136"
+        },
+        {
+          "role": "assistant",
+          "message": "A full day at the beach sounds like a fantastic choice! \ud83c\udf1e Let me show you some amazing options:\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This exhilarating tour is a top pick among adventurers! You\u2019ll get to explore the breathtaking Whitehaven Beach and witness the iconic swirling sands of Hill Inlet Lookout. Plus, snorkel at two different locations on the fringing Great Barrier Reef and enjoy the vibrant marine life at Mantaray Bay and Stone Haven Bay. With lunch and snacks pro",
+          "timestamp": "2026-05-26T07:22:15.230715"
+        }
+      ],
+      "ended_at": "2026-05-26T07:42:42.279455",
+      "duration_seconds": 1384.500163
     },
     {
       "session_id": "session_daac4a76c8b9_1779781443",
@@ -31313,6 +31375,11 @@
             "role": "assistant",
             "message": "Exploring the stunning beaches of the Whitsundays is a fantastic choice! \ud83c\udf34 Let me introduce you to some incredible full-day beach tours:\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This exhilarating tour offers a thrilling ride around the Whitsunday Islands, perfect for adventure seekers and those who love breathtaking scenery! You'll visit the iconic Whitehaven Beach and enjoy a guided bush walk to Hill Inlet Lookout. Plus, you'll have the chance to snorkel at two different locat"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T07:51:42.076496",
+          "data": {}
         }
       ],
       "language": "en",
@@ -31330,7 +31397,77 @@
           "message": "Exploring the stunning beaches of the Whitsundays is a fantastic choice! \ud83c\udf34 Let me introduce you to some incredible full-day beach tours:\n\n1. **Thundercat Whitsundays - All Inclusive Day Tour** - This exhilarating tour offers a thrilling ride around the Whitsunday Islands, perfect for adventure seekers and those who love breathtaking scenery! You'll visit the iconic Whitehaven Beach and enjoy a guided bush walk to Hill Inlet Lookout. Plus, you'll have the chance to snorkel at two different locat",
           "timestamp": "2026-05-26T07:45:29.315900"
         }
-      ]
+      ],
+      "ended_at": "2026-05-26T07:51:42.076511",
+      "duration_seconds": 458.791146
+    },
+    {
+      "session_id": "session_051bab82a6d1_1779789351",
+      "account": "bailey",
+      "started_at": "2026-05-26T09:55:51.543291",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T09:55:51.543304",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T09:55:52.707577",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T09:55:53.516196",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T09:56:54.433954",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-26T09:56:54.433967",
+      "duration_seconds": 62.890676
+    },
+    {
+      "session_id": "session_66d93bc5f6df_1779789416",
+      "account": "bailey",
+      "started_at": "2026-05-26T09:56:56.726746",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T09:56:56.726759",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T09:56:57.950553",
+          "data": {
+            "language": "en"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
