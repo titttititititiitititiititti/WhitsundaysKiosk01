@@ -25240,7 +25240,7 @@
     window.toggleAIMicrophone = function() {
       if (window._micToggleLock) return;
       window._micToggleLock = true;
-      setTimeout(function() { window._micToggleLock = false; }, 400);
+      setTimeout(function() { window._micToggleLock = false; }, 300);
       
       var micBtn = document.getElementById('ai-mic-btn');
       if (!micBtn) return;
@@ -25253,29 +25253,26 @@
         } else { return; }
       }
       
-      // If already recording, stop
+      // If already recording, STOP and accept the text
       if (isRecording) {
         isRecording = false;
         micBtn.classList.remove('recording');
         micBtn.innerHTML = '🎤';
+        // stopListening will call onSpeechResult with whatever was captured
         window.voiceChat.stopListening();
         return;
       }
       
-      // Stop any TTS
+      // Stop any TTS before starting mic
       if (window.voiceChat.isSpeaking) window.voiceChat.stopSpeaking();
-      if (window.currentWelcomeAudio) window.currentWelcomeAudio.pause();
+      if (window.currentWelcomeAudio) { window.currentWelcomeAudio.pause(); window.currentWelcomeAudio = null; }
       
-      // Set up callbacks - auto-stop after 2s silence, flash send button green
+      // When user stops recording, put text in input and flash send button
       window.voiceChat.onSpeechResult = function(transcript) {
-        isRecording = false;
-        micBtn.classList.remove('recording');
-        micBtn.innerHTML = '🎤';
         var aiInput = document.getElementById('ai-text-input');
         if (aiInput && transcript.trim()) {
           aiInput.value = transcript;
           aiInput.style.color = '';
-          // Flash send button green to prompt user to confirm and send
           var sendBtn = document.getElementById('ai-send-btn');
           if (sendBtn) {
             sendBtn.classList.add('flash-green');
@@ -25284,6 +25281,7 @@
         }
       };
       
+      // Show live text as user speaks
       window.voiceChat.showInterimText = function(text) {
         var aiInput = document.getElementById('ai-text-input');
         if (aiInput && text.trim()) {
@@ -25292,19 +25290,16 @@
         }
       };
       
+      // UI state sync (only used if browser force-kills after 100 restarts)
       window.voiceChat.updateUI = function(state) {
-        if (state === 'listening') {
-          micBtn.classList.add('recording');
-          micBtn.innerHTML = '⏹️';
-          isRecording = true;
-        } else if (state === 'idle') {
+        if (state === 'idle' && isRecording) {
+          isRecording = false;
           micBtn.classList.remove('recording');
           micBtn.innerHTML = '🎤';
-          isRecording = false;
         }
       };
       
-      // Start - this is the only thing that happens on tap
+      // START listening - stays on until user taps again
       isRecording = true;
       micBtn.classList.add('recording');
       micBtn.innerHTML = '⏹️';
