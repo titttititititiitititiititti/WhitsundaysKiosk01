@@ -20,7 +20,6 @@ class VoiceChat {
     this.customCallback = null;
     this.audioLevelCallback = null;
     this._userStopped = false;
-    this._micStream = null; // Persistent mic stream to hold hardware open
     this._restarting = false;
     
     this.languageMap = {
@@ -60,6 +59,9 @@ class VoiceChat {
       this._restarting = false;
       this.isListening = true;
       this.updateUI('listening');
+      // Show hint that mic is active
+      const hint = document.getElementById('ai-mic-hint');
+      if (hint) { hint.textContent = 'Listening...'; hint.style.color = '#4ade80'; }
     };
     
     this.recognition.onend = () => {
@@ -71,7 +73,6 @@ class VoiceChat {
         }
         this.isListening = false;
         this.updateUI('idle');
-        this._releaseMicStream();
         return;
       }
       
@@ -102,7 +103,6 @@ class VoiceChat {
                 this.isListening = false;
                 this._restarting = false;
                 this.updateUI('idle');
-                this._releaseMicStream();
               }
             }, 200);
           }
@@ -111,6 +111,7 @@ class VoiceChat {
     };
     
     this.recognition.onresult = (event) => {
+      const hint = document.getElementById('ai-mic-hint');
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         const transcript = result[0].transcript;
@@ -119,12 +120,15 @@ class VoiceChat {
         this.lastTranscript = transcript;
         this.clearSilenceTimer();
         
+        if (hint) { hint.textContent = 'Hearing you...'; hint.style.color = '#22d3ee'; }
+        
         if (isFinal) {
           this.hasFinalResult = true;
           this.clearSilenceTimer();
           this.onSpeechResult(transcript);
           this.lastTranscript = '';
           this.hasFinalResult = false;
+          if (hint) { hint.textContent = 'Sent! Keep talking...'; hint.style.color = '#4ade80'; }
         } else {
           this.showInterimText(transcript);
           this.startSilenceTimer();
@@ -139,7 +143,6 @@ class VoiceChat {
         this._userStopped = true;
         this.isListening = false;
         this.updateUI('idle');
-        this._releaseMicStream();
         return;
       }
       if (event.error === 'audio-capture') {
@@ -147,7 +150,6 @@ class VoiceChat {
         this._userStopped = true;
         this.isListening = false;
         this.updateUI('idle');
-        this._releaseMicStream();
         return;
       }
       // no-speech, network, aborted - let onend handle restart silently
@@ -173,9 +175,6 @@ class VoiceChat {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     
-    // Hold mic hardware open with getUserMedia (prevents icon flickering)
-    await this._acquireMicStream();
-    
     this.recognition.lang = this.languageMap[this.currentLanguage] || 'en-US';
     this._userStopped = false;
     this._restarting = false;
@@ -194,33 +193,14 @@ class VoiceChat {
         } catch (e) {
           this.showError('Could not start microphone. Try again.');
           this.isListening = false;
-          this._releaseMicStream();
         }
       } else {
         this.showError('Could not start microphone. Try again.');
         this.isListening = false;
-        this._releaseMicStream();
       }
     }
   }
   
-  async _acquireMicStream() {
-    if (this._micStream) return; // Already held open
-    try {
-      this._micStream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { echoCancellation: true, noiseSuppression: true } 
-      });
-    } catch(e) {
-      // Not critical - recognition can still work without this
-    }
-  }
-  
-  _releaseMicStream() {
-    if (this._micStream) {
-      this._micStream.getTracks().forEach(t => t.stop());
-      this._micStream = null;
-    }
-  }
   
   stopListening() {
     this._userStopped = true;
@@ -231,7 +211,6 @@ class VoiceChat {
     }
     this.clearSilenceTimer();
     this.updateUI('idle');
-    this._releaseMicStream();
   }
   
   startSilenceTimer() {
@@ -402,7 +381,7 @@ class VoiceChat {
   setAudioLevelCallback(callback) { this.audioLevelCallback = callback; }
   clearAudioLevelCallback() { this.audioLevelCallback = null; }
   
-  stopAllMicStreams() { this._releaseMicStream(); }
+  stopAllMicStreams() { this.stopListening(); }
   
   onSpeechResult(transcript) {
     if (this.customCallback) {
