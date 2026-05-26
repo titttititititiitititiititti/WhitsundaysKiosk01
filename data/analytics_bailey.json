@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T03:35:56.279991",
+  "last_updated": "2026-05-26T03:42:43.045964",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -30381,6 +30381,89 @@
       "mode": "ai-assistant",
       "tours_viewed": [],
       "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_816b80b0c7d1_1779766911",
+      "account": "bailey",
+      "started_at": "2026-05-26T03:41:51.760571",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T03:41:51.760595",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T03:41:53.201585",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T03:41:54.319329",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_077129a60d85_1779766927",
+      "account": "bailey",
+      "started_at": "2026-05-26T03:42:07.955423",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T03:42:07.955434",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T03:42:36.636647",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T03:42:41.930735",
+          "data": {
+            "tour_name": "Excursion \u00e0 la voile dans les Whitsundays",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-26T03:42:43.045900",
+          "data": {
+            "tour_name": "Excursion \u00e0 la voile dans les Whitsundays",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Excursion \u00e0 la voile dans les Whitsundays"
+      ],
+      "tours_booked": [
+        "Excursion \u00e0 la voile dans les Whitsundays"
+      ],
       "chat_messages": []
     }
   ]
