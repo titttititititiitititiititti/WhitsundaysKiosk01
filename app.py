@@ -59,23 +59,33 @@ STREAMABLE_VIDEO_ID = 'fsdp2x'
 _bg_video_cache = {'url': '', 'fetched_at': 0}
 
 def get_bg_video_url():
-    """Fetch a fresh signed MP4 URL from Streamable's API, cached for 1 hour."""
+    """Fetch a fresh signed MP4 URL from Streamable's API, cached for 24 hours."""
     now = time.time()
-    if _bg_video_cache['url'] and now - _bg_video_cache['fetched_at'] < 3600:
+    if _bg_video_cache['url'] and now - _bg_video_cache['fetched_at'] < 86400:
         return _bg_video_cache['url']
     try:
         import requests as _req
-        resp = _req.get(f'https://api.streamable.com/videos/{STREAMABLE_VIDEO_ID}', timeout=5)
+        resp = _req.get(f'https://api.streamable.com/videos/{STREAMABLE_VIDEO_ID}', timeout=8)
         data = resp.json()
         url = data.get('files', {}).get('mp4', {}).get('url', '')
         if url:
             _bg_video_cache['url'] = url
             _bg_video_cache['fetched_at'] = now
-            print(f"[VIDEO] Fetched fresh Streamable URL (expires in ~3 days)")
+            print(f"[VIDEO] Fetched fresh Streamable URL (cached for 24h)")
             return url
     except Exception as e:
         print(f"[VIDEO] Failed to fetch Streamable URL: {e}")
     return _bg_video_cache['url']
+
+# Eagerly fetch video URL at startup so first request isn't slow
+try:
+    _startup_video_url = get_bg_video_url()
+    if _startup_video_url:
+        print(f"[VIDEO] Startup prefetch OK")
+    else:
+        print(f"[VIDEO] Startup prefetch failed - will retry on first request")
+except Exception as e:
+    print(f"[VIDEO] Startup prefetch error: {e}")
 
 # ============================================================================
 # REFERRAL TRACKING - Track which kiosk/shop referred users

@@ -14012,30 +14012,39 @@
       var STREAMABLE_URL = {{ bg_video_url | tojson | safe }};
       let fallbackAttempted = false;
 
+      var fetchRetryCount = 0;
+      var maxFetchRetries = 5;
+      
+      function fetchVideoUrlFromAPI() {
+        fetchRetryCount++;
+        console.log('📺 Fetching video URL from API (attempt ' + fetchRetryCount + ')...');
+        fetch('/api/bg-video-url').then(function(r) { return r.json(); }).then(function(data) {
+          if (data.url) {
+            STREAMABLE_URL = data.url;
+            fallbackAttempted = true;
+            console.log('📺 Got video URL, loading video...');
+            video.src = STREAMABLE_URL;
+            video.style.display = '';
+            video.load();
+            video.play().catch(function() {});
+          } else if (fetchRetryCount < maxFetchRetries) {
+            var delay = fetchRetryCount * 3000;
+            console.log('📺 No URL yet, retrying in ' + (delay/1000) + 's...');
+            setTimeout(fetchVideoUrlFromAPI, delay);
+          }
+        }).catch(function() {
+          if (fetchRetryCount < maxFetchRetries) {
+            var delay = fetchRetryCount * 3000;
+            setTimeout(fetchVideoUrlFromAPI, delay);
+          }
+        });
+      }
+      
       function loadStreamableFallback() {
         if (fallbackAttempted && STREAMABLE_URL) return;
         
         if (!STREAMABLE_URL) {
-          // Server didn't have the URL ready - fetch it client-side
-          console.log('📺 No server-side video URL, fetching from API...');
-          fetch('/api/bg-video-url').then(function(r) { return r.json(); }).then(function(data) {
-            if (data.url) {
-              STREAMABLE_URL = data.url;
-              fallbackAttempted = true;
-              console.log('📺 Got video URL from API, loading...');
-              video.src = STREAMABLE_URL;
-              video.style.display = '';
-              video.load();
-              video.play().catch(function() {});
-            } else {
-              console.log('📺 No video URL available, showing gradient');
-              video.style.display = 'none';
-              document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
-            }
-          }).catch(function() {
-            video.style.display = 'none';
-            document.body.style.background = 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%)';
-          });
+          fetchVideoUrlFromAPI();
           return;
         }
         
