@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T22:08:45.673605",
+  "last_updated": "2026-05-26T22:12:45.257172",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -31951,9 +31951,50 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T22:11:37.166752",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-26T22:12:41.771145",
+          "data": {}
         }
       ],
       "language": null,
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-26T22:12:41.771155",
+      "duration_seconds": 236.097643
+    },
+    {
+      "session_id": "session_79571db1a56c_1779833563",
+      "account": "bailey",
+      "started_at": "2026-05-26T22:12:43.971317",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T22:12:43.971328",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T22:12:45.257123",
+          "data": {
+            "language": "en"
+          }
+        }
+      ],
+      "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
