@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-26T10:30:49.461499",
+  "last_updated": "2026-05-26T10:31:36.448607",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -31682,6 +31682,62 @@
           "timestamp": "2026-05-26T10:30:19.603584"
         }
       ]
+    },
+    {
+      "session_id": "session_a4962b83e3e7_1779791483",
+      "account": "bailey",
+      "started_at": "2026-05-26T10:31:23.374554",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-26T10:31:23.374588",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-26T10:31:25.739916",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-26T10:31:26.767241",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-26T10:31:35.440012",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-26T10:31:36.448520",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Hammer Whitsundays Sailing Tour"
+      ],
+      "tours_booked": [
+        "Hammer Whitsundays Sailing Tour"
+      ],
+      "chat_messages": []
     }
   ]
 }
