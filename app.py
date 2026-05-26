@@ -12157,7 +12157,7 @@ def submit_perk_claim():
                 </p>
             </div>
         </div></body></html>"""
-        admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal1@gmail.com'
+        admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal@gmail.com'
         print(f"[PERK] Sending admin notification to {admin_to}")
         result = send_smtp_email(admin_to, subject, admin_html, body)
         print(f"[PERK] Admin email result: {result}")
@@ -12273,7 +12273,7 @@ def redeem_perk_claim(claim_id):
 def test_email():
     """Send a test email to verify SMTP is configured correctly - shows actual errors"""
     import smtplib
-    admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal1@gmail.com'
+    admin_to = ADMIN_EMAIL if ADMIN_EMAIL != 'admin@example.com' else 'bailey.amouyal@gmail.com'
     
     # Diagnostic info
     diag = {
