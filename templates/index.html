@@ -22093,20 +22093,27 @@
       // Unlock audio NOW while we're in the user gesture context
       if (!window._ttsAudioUnlocked) {
         window._ttsAudioUnlocked = true;
-        try {
-          var ctx = new (window.AudioContext || window.webkitAudioContext)();
-          var buf = ctx.createBuffer(1, 1, 22050);
-          var src = ctx.createBufferSource();
-          src.buffer = buf;
-          src.connect(ctx.destination);
-          src.start(0);
-          ctx.resume();
-        } catch(e) {}
-        try {
-          var sa = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-          sa.volume = 0.01;
-          sa.play().catch(function() {});
-        } catch(e) {}
+        // Pre-create and activate the TTS audio element with a silent play
+        if (typeof ttsAudioElement !== 'undefined' && !ttsAudioElement) {
+          ttsAudioElement = document.createElement('audio');
+          ttsAudioElement.id = 'chunked-tts-audio';
+          ttsAudioElement.volume = 1.0;
+          document.body.appendChild(ttsAudioElement);
+          ttsAudioElement.onended = function() {
+            setTimeout(function() { if (typeof playNextInQueue === 'function') playNextInQueue(); }, 50);
+          };
+          ttsAudioElement.onerror = function() {
+            var orb = document.querySelector('.ai-visualizer-container');
+            if (orb) orb.classList.remove('loading');
+            setTimeout(function() { if (typeof playNextInQueue === 'function') playNextInQueue(); }, 50);
+          };
+        }
+        if (ttsAudioElement) {
+          ttsAudioElement.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+          ttsAudioElement.play().then(function() {
+            console.log('🔊 TTS element activated in mode selection');
+          }).catch(function() {});
+        }
         if (window.particleVisualizer && window.particleVisualizer.audioContext) {
           window.particleVisualizer.audioContext.resume();
         }
@@ -23745,27 +23752,32 @@
       function unlockAudio() {
         if (window._ttsAudioUnlocked) return;
         window._ttsAudioUnlocked = true;
-        // Method 1: AudioContext silent buffer (most reliable)
-        try {
-          var ctx = new (window.AudioContext || window.webkitAudioContext)();
-          var buf = ctx.createBuffer(1, 1, 22050);
-          var src = ctx.createBufferSource();
-          src.buffer = buf;
-          src.connect(ctx.destination);
-          src.start(0);
-          ctx.resume();
-        } catch(e) {}
-        // Method 2: Silent audio element (backup)
-        try {
-          var sa = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-          sa.volume = 0.01;
-          sa.play().catch(function() {});
-        } catch(e) {}
-        // Resume particle visualizer AudioContext
+        
+        // Activate the ACTUAL ttsAudioElement with a silent play
+        if (!ttsAudioElement) {
+          ttsAudioElement = document.createElement('audio');
+          ttsAudioElement.id = 'chunked-tts-audio';
+          ttsAudioElement.volume = 1.0;
+          document.body.appendChild(ttsAudioElement);
+          ttsAudioElement.onended = function() {
+            setTimeout(function() { if (typeof playNextInQueue === 'function') playNextInQueue(); }, 50);
+          };
+          ttsAudioElement.onerror = function() {
+            var orb = document.querySelector('.ai-visualizer-container');
+            if (orb) orb.classList.remove('loading');
+            setTimeout(function() { if (typeof playNextInQueue === 'function') playNextInQueue(); }, 50);
+          };
+        }
+        // Play silence on the element - don't clear src afterward, just let it finish
+        ttsAudioElement.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        ttsAudioElement.play().then(function() {
+          console.log('🔊 TTS element activated');
+        }).catch(function(e) { console.log('🔊 Activation play rejected:', e.message); });
+        
+        // Resume AudioContext
         if (window.particleVisualizer && window.particleVisualizer.audioContext) {
           window.particleVisualizer.audioContext.resume();
         }
-        console.log('🔊 Audio unlocked by user gesture');
       }
       ['click', 'touchstart', 'touchend'].forEach(function(evt) {
         document.addEventListener(evt, unlockAudio, { passive: true, capture: true });
@@ -24249,39 +24261,38 @@
         return;
       }
       
-      // Initialize audio element
+      // Initialize audio element if not pre-created
       if (!ttsAudioElement) {
         ttsAudioElement = document.createElement('audio');
         ttsAudioElement.id = 'chunked-tts-audio';
-        ttsAudioElement.volume = 1.0; // Always max volume
+        ttsAudioElement.volume = 1.0;
         document.body.appendChild(ttsAudioElement);
-        
-        ttsAudioElement.onplay = () => {
-          console.log('🔊 TTS playing');
-          // Remove loading animation when actually playing
-          const orb = document.querySelector('.ai-visualizer-container');
-          if (orb) orb.classList.remove('loading');
-          if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
-        };
-        ttsAudioElement.onended = () => {
-          console.log('🔊 TTS chunk ended, queue length:', ttsAudioQueue.length);
-          // Faster transition - only 50ms delay
-          setTimeout(() => playNextInQueue(), 50);
-        };
-        ttsAudioElement.onerror = () => {
-          console.error('🔊 TTS playback error');
-          const orb = document.querySelector('.ai-visualizer-container');
-          if (orb) orb.classList.remove('loading');
-          setTimeout(() => playNextInQueue(), 50);
-        };
-        
-        // Connect to visualizer
-        if (window.particleVisualizer) {
-          try {
-            window.particleVisualizer.connectAudio(ttsAudioElement);
-            console.log('🔊 Audio connected to visualizer');
-          } catch (e) {}
-        }
+      }
+      
+      // Always ensure handlers are set (element may have been pre-created during gesture)
+      ttsAudioElement.onplay = () => {
+        console.log('🔊 TTS playing');
+        const orb = document.querySelector('.ai-visualizer-container');
+        if (orb) orb.classList.remove('loading');
+        if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+      };
+      ttsAudioElement.onended = () => {
+        console.log('🔊 TTS chunk ended, queue length:', ttsAudioQueue.length);
+        setTimeout(() => playNextInQueue(), 50);
+      };
+      ttsAudioElement.onerror = () => {
+        console.error('🔊 TTS playback error');
+        const orb = document.querySelector('.ai-visualizer-container');
+        if (orb) orb.classList.remove('loading');
+        setTimeout(() => playNextInQueue(), 50);
+      };
+      ttsAudioElement.volume = 1.0;
+      
+      // Connect to visualizer (will skip if context not running)
+      if (window.particleVisualizer) {
+        try {
+          window.particleVisualizer.connectAudio(ttsAudioElement);
+        } catch (e) {}
       }
       
       // Stop current playback and clear highlights
@@ -37177,7 +37188,7 @@
         }
         
         console.log('🔊 Playing welcome audio...');
-        audioElement.volume = 1.0;
+        audioElement.volume = 0.7;
         audioElement.currentTime = 0;
         
         // Connect to visualizer

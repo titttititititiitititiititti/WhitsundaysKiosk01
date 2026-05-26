@@ -67,7 +67,7 @@ class VoiceChat {
     var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    this.recognition.continuous = true;
+    this.recognition.continuous = isIOS ? true : false;
     this.recognition.interimResults = true;
     this.recognition.maxAlternatives = 1;
     this._isIOS = isIOS;
@@ -140,12 +140,28 @@ class VoiceChat {
       console.log('🎤 Speech recognition ENDED, wasListening:', this.isListening, 'hasFinal:', this.hasFinalResult);
       
       // If we have a transcript but never got a "final" result,
-      // send the last transcript anyway (fallback for when recognition ends abruptly)
+      // send it anyway (fallback for abrupt end)
       if (this.lastTranscript && !this.hasFinalResult) {
         console.log('🎤 Using last transcript as fallback:', this.lastTranscript);
         this.onSpeechResult(this.lastTranscript);
+        this.isListening = false;
+        this.updateUI('idle');
+        return;
       }
       
+      // If recognition ended without getting any results and we haven't retried,
+      // try ONE more time (handles Chrome's occasional premature end)
+      if (this.isListening && !this.lastTranscript && !this.hasFinalResult && !this._hasRetried) {
+        this._hasRetried = true;
+        console.log('🎤 Recognition ended prematurely - retrying once');
+        try { this.recognition.start(); } catch(e) {
+          this.isListening = false;
+          this.updateUI('idle');
+        }
+        return;
+      }
+      
+      this._hasRetried = false;
       this.isListening = false;
       this.updateUI('idle');
     };
