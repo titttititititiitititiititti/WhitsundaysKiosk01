@@ -9,7 +9,7 @@ import json
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
 def _load_api_key():
     """Load ElevenLabs API key from multiple sources (env, .env, instance config)"""

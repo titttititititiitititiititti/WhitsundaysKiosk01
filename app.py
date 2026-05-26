@@ -43,7 +43,7 @@ except ImportError:
 # [CHAT-001] Initial Flask app serving chatbot UI and connecting tours.csv to GPT-4o.
 # [CHAT-002] Load environment variables from .env using python-dotenv.
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tour-kiosk-secret-key-2024')

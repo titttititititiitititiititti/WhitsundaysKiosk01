@@ -21185,22 +21185,57 @@
       }
       console.log('[ACTION] Booking tour');
       console.log('   currentCardIndex:', currentCardIndex, 'swipeCards.length:', swipeCards.length);
-      
+
       if (swipeCards.length === 0) {
         console.warn('⚠️ No tours available yet - swipeCards is empty');
         return;
       }
-      
+
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
-        
+
         // Track Book Now click from swipe mode
         Analytics.bookNowClicked(tour.name, tour.company, 'swipe');
-        
-        // Always go directly to QR code modal - let user scan to continue on phone
-        // This gives them the booking page or tour detail page depending on what's available
-        console.log('   📱 Opening QR code to send tour to phone');
-        generateQRCodeForTour(tour.key, tour);
+
+        // Show the BOOKING QR modal (same as Browse All Tours "Book Now")
+        // Priority: HERO_BOOKING overrides → direct booking link → link_booking → counter message
+        const tourOverrides = (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides)
+          ? HERO_BOOKING.tour_overrides[tour.key]
+          : null;
+
+        if (tourOverrides && tourOverrides.booking_button_url) {
+          console.log('   🎫 Using agent-configured booking URL:', tourOverrides.booking_button_url);
+          showQRPaymentModal(tourOverrides.booking_button_url, tour.name);
+          return;
+        }
+
+        const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(tour.key) : null;
+        if (directBookingLink) {
+          console.log('   🔗 Using direct booking link:', directBookingLink);
+          showQRPaymentModal(directBookingLink, tour.name);
+          return;
+        }
+
+        const rezdyUrl = typeof getRezdyUrlForTour === 'function' ? getRezdyUrlForTour(tour.name, tour.company) : null;
+        if (rezdyUrl) {
+          console.log('   🚤 Using Rezdy booking URL:', rezdyUrl);
+          showQRPaymentModal(rezdyUrl, tour.name);
+          return;
+        }
+
+        if (tour.link_booking && (tour.link_booking.startsWith('http') || tour.link_booking.startsWith('//'))) {
+          console.log('   📋 Using tour link_booking:', tour.link_booking);
+          showQRPaymentModal(tour.link_booking, tour.name);
+          return;
+        }
+
+        // No online booking - show counter booking message
+        console.log('   🔔 No online booking available, showing counter modal');
+        if (typeof showCounterBookingModal === 'function') {
+          showCounterBookingModal(tour.name);
+        } else {
+          generateQRCodeForTour(tour.key, tour);
+        }
       } else {
         console.warn('⚠️ currentCardIndex out of bounds:', currentCardIndex, '>=', swipeCards.length);
       }
