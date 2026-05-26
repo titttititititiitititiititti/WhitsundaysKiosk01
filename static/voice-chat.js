@@ -137,10 +137,21 @@ class VoiceChat {
     
     // When speech recognition ends
     this.recognition.onend = () => {
-      console.log('🎤 Speech recognition ENDED, wasListening:', this.isListening, 'hasFinal:', this.hasFinalResult);
+      console.log('🎤 Speech recognition ENDED, userStopped:', this._userStopped, 'hasFinal:', this.hasFinalResult);
       
-      // If we have a transcript but never got a "final" result,
-      // send it anyway (fallback for abrupt end)
+      // If user intentionally stopped, just clean up - no retry
+      if (this._userStopped) {
+        this._userStopped = false;
+        this._retryCount = 0;
+        if (this.lastTranscript && !this.hasFinalResult) {
+          this.onSpeechResult(this.lastTranscript);
+        }
+        this.isListening = false;
+        this.updateUI('idle');
+        return;
+      }
+      
+      // If we have a transcript but never got a "final" result, send it
       if (this.lastTranscript && !this.hasFinalResult) {
         console.log('🎤 Using last transcript as fallback:', this.lastTranscript);
         this.onSpeechResult(this.lastTranscript);
@@ -149,25 +160,25 @@ class VoiceChat {
         return;
       }
       
-      // If recognition ended without results, retry up to 3 times
-      // (Safari and some Chrome versions end sessions prematurely)
+      // Recognition ended without results - retry up to 3 times
       if (this.isListening && !this.lastTranscript && !this.hasFinalResult) {
         this._retryCount = (this._retryCount || 0) + 1;
         if (this._retryCount <= 3) {
           console.log(`🎤 Recognition ended prematurely - retry ${this._retryCount}/3`);
           setTimeout(() => {
+            if (this._userStopped) return;
             try { this.recognition.start(); } catch(e) {
               console.log('🎤 Retry failed:', e.message);
               this.isListening = false;
               this.updateUI('idle');
             }
-          }, 200);
+          }, 300);
           return;
         }
         console.log('🎤 All retries exhausted');
       }
       
-      this._hasRetried = false;
+      this._retryCount = 0;
       this.isListening = false;
       this.updateUI('idle');
     };
@@ -263,6 +274,8 @@ class VoiceChat {
     
     this._restarted = false;
     this._hasRetried = false;
+    this._userStopped = false;
+    this._retryCount = 0;
     this.isListening = true;
     console.log(`🎤 Starting speech recognition...`);
     
@@ -429,15 +442,14 @@ class VoiceChat {
   }
   
   stopListening() {
-    if (this.recognition && this.isListening) {
-      this.recognition.stop();
+    this._userStopped = true;
+    this._retryCount = 0;
+    if (this.recognition) {
+      try { this.recognition.stop(); } catch(e) {}
     }
-    
-    // Clear silence timer
     this.clearSilenceTimer();
-    
-    // Stop all mic streams
-    this.stopAllMicStreams();
+    this.isListening = false;
+    this.updateUI('idle');
   }
   
   startSilenceTimer() {
