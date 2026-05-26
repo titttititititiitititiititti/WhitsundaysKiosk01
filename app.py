@@ -5375,6 +5375,15 @@ def api_tours():
 @app.route('/tour/<key>')
 def tour_page(key):
     """Load home page but with tour parameter - JavaScript will auto-open tour in modal"""
+    try:
+        return _tour_page_inner(key)
+    except Exception as e:
+        import traceback
+        print(f"[ERROR] /tour/{key} crashed: {e}")
+        traceback.print_exc()
+        return f"<h1>Error loading tour</h1><p>{e}</p><p><a href='/'>Go to homepage</a></p>", 500
+
+def _tour_page_inner(key):
     language = request.args.get('lang', 'en')
     mode = request.args.get('mode', 'browse')  # Default to browse all tours mode
     
@@ -5646,20 +5655,31 @@ def text_to_speech():
         from elevenlabs_tts import synthesize_speech, is_configured, ELEVENLABS_API_KEY as TTS_KEY
         
         if not is_configured():
-            # Try reloading the key from env in case it was set after import
+            # Try reloading the module (picks up .env or instance.json changes)
             import importlib, elevenlabs_tts
             importlib.reload(elevenlabs_tts)
             from elevenlabs_tts import synthesize_speech as synth2, is_configured as cfg2
             if not cfg2():
                 env_key = os.getenv('ELEVENLABS_API_KEY')
+                instance_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'instance.json')
+                instance_has_key = False
+                try:
+                    if os.path.exists(instance_path):
+                        with open(instance_path, 'r') as f:
+                            ic = json.load(f)
+                        instance_has_key = bool(ic.get('elevenlabs_api_key'))
+                except:
+                    pass
                 print(f"[TTS] ❌ ElevenLabs NOT configured!")
                 print(f"[TTS]    Key in os.environ: {bool(env_key)}")
                 print(f"[TTS]    Key length: {len(env_key) if env_key else 0}")
                 print(f"[TTS]    .env file exists: {os.path.exists('.env')}")
+                print(f"[TTS]    instance.json has key: {instance_has_key}")
                 print(f"[TTS]    CWD: {os.getcwd()}")
+                print(f"[TTS]    FIX: Add ELEVENLABS_API_KEY to .env file OR add 'elevenlabs_api_key' to config/instance.json")
                 return jsonify({
                     'success': False,
-                    'error': 'ElevenLabs not configured - check ELEVENLABS_API_KEY in .env'
+                    'error': 'ElevenLabs not configured. Add ELEVENLABS_API_KEY to .env or elevenlabs_api_key to config/instance.json'
                 }), 500
             synthesize_speech = synth2
         

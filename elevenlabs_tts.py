@@ -5,12 +5,37 @@ Provides premium AI voice synthesis for the tour kiosk
 
 import os
 import re
+import json
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
+def _load_api_key():
+    """Load ElevenLabs API key from multiple sources (env, .env, instance config)"""
+    key = os.getenv('ELEVENLABS_API_KEY')
+    if key:
+        return key
+    
+    # Try config/instance.json (persists on kiosk through git resets)
+    instance_paths = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config', 'instance.json'),
+        'config/instance.json',
+    ]
+    for path in instance_paths:
+        try:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                key = config.get('elevenlabs_api_key') or config.get('ELEVENLABS_API_KEY')
+                if key:
+                    return key
+        except (json.JSONDecodeError, IOError):
+            pass
+    
+    return None
+
+ELEVENLABS_API_KEY = _load_api_key()
 ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1/text-to-speech"
 
 # Voice IDs for different languages and styles
