@@ -167,15 +167,13 @@ class ParticleVisualizer {
     // Set sphere size based on whether tour cards are visible
     const hasCards = this.container.classList.contains('with-cards');
     if (hasCards) {
-      // With cards - bigger than before
-      this.settings.sphereRadius = 110;
-      this.settings.glowRadius = 160;
+      this.settings.sphereRadius = 200;
+      this.settings.glowRadius = 300;
     } else {
-      // No cards - bigger than before
-      this.settings.sphereRadius = 100;
-      this.settings.glowRadius = 170;
+      this.settings.sphereRadius = 250;
+      this.settings.glowRadius = 400;
     }
-    this.settings.sphereRadiusVariation = 25;
+    this.settings.sphereRadiusVariation = 50;
     
     console.log(`✨ Resize: container=${containerWidth}x${containerHeight}, hasCards=${hasCards}, sphereRadius=${this.settings.sphereRadius}`);
   }
