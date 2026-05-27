@@ -21128,7 +21128,7 @@
         console.log('[ACTION] Accept blocked - card is transitioning');
         return;
       }
-      console.log('[ACTION] Booking tour');
+      console.log('[ACTION] Booking tour - opening tour detail page');
       console.log('   currentCardIndex:', currentCardIndex, 'swipeCards.length:', swipeCards.length);
 
       if (swipeCards.length === 0) {
@@ -21142,48 +21142,13 @@
         // Track Book Now click from swipe mode
         Analytics.bookNowClicked(tour.name, tour.company, 'swipe');
 
-        // Show the BOOKING QR modal (same as Browse All Tours "Book Now")
-        // Priority: HERO_BOOKING overrides → direct booking link → link_booking → counter message
-        const tourOverrides = (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides)
-          ? HERO_BOOKING.tour_overrides[tour.key]
-          : null;
-
-        if (tourOverrides && tourOverrides.booking_button_url) {
-          console.log('   🎫 Using agent-configured booking URL:', tourOverrides.booking_button_url);
-          showQRPaymentModal(tourOverrides.booking_button_url, tour.name);
-          return;
-        }
-
-        const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(tour.key) : null;
-        if (directBookingLink) {
-          console.log('   🔗 Using direct booking link:', directBookingLink);
-          if (typeof openBookingModal === 'function') {
-            openBookingModal(tour.key, tour.name);
-          } else {
-            showQRPaymentModal(directBookingLink, tour.name);
-          }
-          return;
-        }
-
-        const rezdyUrl = typeof getRezdyUrlForTour === 'function' ? getRezdyUrlForTour(tour.name, tour.company) : null;
-        if (rezdyUrl) {
-          console.log('   🚤 Using Rezdy booking URL:', rezdyUrl);
-          showQRPaymentModal(rezdyUrl, tour.name);
-          return;
-        }
-
-        if (tour.link_booking && (tour.link_booking.startsWith('http') || tour.link_booking.startsWith('//'))) {
-          console.log('   📋 Using tour link_booking:', tour.link_booking);
-          showQRPaymentModal(tour.link_booking, tour.name);
-          return;
-        }
-
-        // No online booking - show counter booking message
-        console.log('   🔔 No online booking available, showing counter modal');
-        if (typeof showCounterBookingModal === 'function') {
-          showCounterBookingModal(tour.name);
+        // Open the tour detail page - uses the EXACT same Book Now button as Browse All Tours
+        if (typeof openTourDetail === 'function') {
+          console.log('   ✓ Opening tour detail for:', tour.key);
+          openTourDetail(tour.key);
         } else {
-          generateQRCodeForTour(tour.key, tour);
+          console.error('❌ openTourDetail not available');
+          window.location.hash = `tour/${tour.key}`;
         }
       } else {
         console.warn('⚠️ currentCardIndex out of bounds:', currentCardIndex, '>=', swipeCards.length);
@@ -22138,6 +22103,18 @@
             console.log('🔊 TTS element activated in mode selection');
           }).catch(function() {});
         }
+        
+        // ALSO prime the welcome message ttsAudio element (used by playWelcomeMessage)
+        if (typeof window.initTTSAudio === 'function') {
+          var welcomeAudioEl = window.initTTSAudio();
+          if (welcomeAudioEl) {
+            welcomeAudioEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+            welcomeAudioEl.play().then(function() {
+              console.log('🔊 Welcome TTS audio primed in mode selection');
+            }).catch(function() {});
+          }
+        }
+        
         if (window.particleVisualizer && window.particleVisualizer.audioContext) {
           window.particleVisualizer.audioContext.resume();
         }
@@ -22373,18 +22350,6 @@
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
       
-      // PRIME AUDIO PLAYBACK immediately on user gesture
-      // This unlocks audio for the entire session (needed for non-English TTS)
-      try {
-        var silentPrimer = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
-        silentPrimer.volume = 0.01;
-        silentPrimer.play().then(function() {
-          console.log('🔊 Audio playback primed for session');
-          silentPrimer.pause();
-          silentPrimer = null;
-        }).catch(function() {});
-      } catch(e) {}
-      
       // Resume AudioContext if it was suspended (backup for non-mode-button entry)
       if (window.particleVisualizer && window.particleVisualizer.audioContext) {
         if (window.particleVisualizer.audioContext.state === 'suspended') {
@@ -22443,27 +22408,22 @@
         } else {
           console.log('   ✓ Starting fresh conversation');
           
-          // Initialize visualizer and play welcome message
+          // Initialize TTS and visualizer immediately
+          if (typeof window.initTTSAudio === 'function') {
+            window.initTTSAudio();
+          }
+          if (typeof window.initParticleVisualizer === 'function') {
+            window.initParticleVisualizer();
+          }
+          
+          // Play welcome message with minimal delay (preserve user gesture context)
           setTimeout(() => {
-            // Initialize TTS
-            if (typeof window.initTTSAudio === 'function') {
-              window.initTTSAudio();
+            if (typeof window.playWelcomeMessage === 'function') {
+              window.playWelcomeMessage();
+            } else {
+              showWelcomeMessageFallback();
             }
-            
-            // Initialize particle visualizer
-            if (typeof window.initParticleVisualizer === 'function') {
-              window.initParticleVisualizer();
-            }
-            
-            // Play welcome message (respecting mute)
-            setTimeout(() => {
-              if (typeof window.playWelcomeMessage === 'function') {
-                window.playWelcomeMessage();
-              } else {
-                showWelcomeMessageFallback();
-              }
-            }, 200);
-          }, 300);
+          }, 100);
         }
       }
     }
@@ -37090,9 +37050,13 @@
           setTimeout(resolve, 3000);
         });
       } else {
-        // Fetch TTS for other languages
+        // Fetch TTS for other languages - use the pre-initialized ttsAudio element
+        // (it was created during initTTSAudio closer to user gesture, so browser allows playback)
         const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
         console.log('📡 Fetching TTS for', lang);
+        
+        // Ensure ttsAudio is initialized
+        var welcomeTtsAudio = (typeof window.initTTSAudio === 'function') ? window.initTTSAudio() : null;
         
         try {
           const response = await fetch('/api/tts', {
@@ -37105,8 +37069,16 @@
             const audioBlob = await response.blob();
             if (audioBlob.size > 100) {
               const welcomeAudioUrl = URL.createObjectURL(audioBlob);
-              audioElement = new Audio(welcomeAudioUrl);
-              audioElement._objectUrl = welcomeAudioUrl; // Store for cleanup
+              // Use pre-initialized ttsAudio element (browser trusts it more for autoplay)
+              if (welcomeTtsAudio) {
+                welcomeTtsAudio.src = welcomeAudioUrl;
+                welcomeTtsAudio._currentUrl = welcomeAudioUrl;
+                audioElement = welcomeTtsAudio;
+                audioElement._objectUrl = welcomeAudioUrl;
+              } else {
+                audioElement = new Audio(welcomeAudioUrl);
+                audioElement._objectUrl = welcomeAudioUrl;
+              }
             }
           }
         } catch (e) {
