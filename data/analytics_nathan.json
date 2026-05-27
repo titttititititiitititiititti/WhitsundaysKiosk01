@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-27T20:12:16.397207",
+  "last_updated": "2026-05-23T11:46:39.876127",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81104,109 +81104,6 @@
       "duration_seconds": 464.3357
     },
     {
-      "session_id": "session_bcbf1c2e8798_1779536358",
-      "account": "nathan",
-      "started_at": "2026-05-23T11:39:18.110575",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-23T11:39:18.110593",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
-            "referrer": "https://www.filtour.com/?ref=nathan&lang=en"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-23T11:39:18.457456",
-          "data": {
-            "tour_name": "Northern Exposure Eco Adventure",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-05-23T11:39:23.403521",
-          "data": {
-            "tour_name": "Northern Exposure Eco Adventure",
-            "company": "Ocean Rafting",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-23T11:40:01.670362",
-          "data": {
-            "tour_name": "Coastal Beaches Adventure",
-            "company": "driftwoodtours",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-05-23T11:40:02.670552",
-          "data": {
-            "tour_name": "Coastal Beaches Adventure",
-            "company": "driftwoodtours",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-23T11:46:39.875990",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Northern Exposure Eco Adventure",
-        "Coastal Beaches Adventure"
-      ],
-      "tours_booked": [
-        "Northern Exposure Eco Adventure",
-        "Coastal Beaches Adventure"
-      ],
-      "chat_messages": [],
-      "ended_at": "2026-05-23T11:46:39.876009",
-      "duration_seconds": 441.765434
-    },
-    {
-      "session_id": "session_703f87670ac4_1779536431",
-      "account": "nathan",
-      "started_at": "2026-05-23T11:40:31.220819",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-23T11:40:31.220842",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
-            "referrer": "https://www.filtour.com/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-23T11:40:37.427562",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-23T11:40:39.572034",
-          "data": {
-            "mode": "browse-all"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
       "session_id": "session_bb9cee32902c_1779504701",
       "account": "nathan",
       "started_at": "2026-05-23T12:51:41.368212",
@@ -81337,352 +81234,104 @@
       "duration_seconds": 496.736873
     },
     {
-      "session_id": "session_8518ccbcd8ed_1779600031",
+      "session_id": "session_bcbf1c2e8798_1779536358",
       "account": "nathan",
-      "started_at": "2026-05-24T15:20:31.181153",
+      "started_at": "2026-05-23T11:39:18.110575",
       "events": [
         {
           "type": "session_start",
-          "timestamp": "2026-05-24T15:20:31.181153",
+          "timestamp": "2026-05-23T11:39:18.110593",
           "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/?ref=nathan&lang=en"
           }
         },
         {
-          "type": "language_selected",
-          "timestamp": "2026-05-24T15:20:33.280024",
+          "type": "tour_clicked",
+          "timestamp": "2026-05-23T11:39:18.457456",
           "data": {
-            "language": "en"
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
           }
         },
         {
-          "type": "mode_selected",
-          "timestamp": "2026-05-24T15:20:38.646540",
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-23T11:39:23.403521",
           "data": {
-            "mode": "quick-decision"
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "tour-detail"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-05-24T15:20:45.234000",
+          "type": "tour_clicked",
+          "timestamp": "2026-05-23T11:40:01.670362",
           "data": {
-            "filter_type": "duration",
-            "filter_value": "half_day"
+            "tour_name": "Coastal Beaches Adventure",
+            "company": "driftwoodtours",
+            "source": "browse-all"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-05-24T15:20:47.164158",
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-23T11:40:02.670552",
           "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-05-24T15:20:49.220055",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "great_barrier_reef"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-05-24T15:20:54.264924",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "swimming"
+            "tour_name": "Coastal Beaches Adventure",
+            "company": "driftwoodtours",
+            "source": "tour-detail"
           }
         },
         {
           "type": "session_end",
-          "timestamp": "2026-05-24T15:29:50.549994",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "quick-decision",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-24T15:29:50.549994",
-      "duration_seconds": 559.368841
-    },
-    {
-      "session_id": "session_c2223ccc0b93_1779664941",
-      "account": "nathan",
-      "started_at": "2026-05-25T09:22:21.496674",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-25T09:22:21.496674",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T09:22:25.399035",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T09:22:28.428358",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T09:23:16.819399",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T09:23:19.292474",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-25T09:33:14.127352",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": "map-view",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-25T09:33:14.127352",
-      "duration_seconds": 652.630678
-    },
-    {
-      "session_id": "session_cc8ae4427c66_1779670022",
-      "account": "nathan",
-      "started_at": "2026-05-25T10:47:02.785022",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-25T10:47:02.785022",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-25T10:47:06.704078",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T10:47:10.082044",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-25T10:53:10.561371",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-25T10:53:10.561371",
-      "duration_seconds": 367.776349
-    },
-    {
-      "session_id": "session_f22e3c56c7a9_1779675006",
-      "account": "nathan",
-      "started_at": "2026-05-25T12:10:06.778950",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-25T12:10:06.778950",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T12:10:19.373977",
-          "data": {
-            "mode": "newcomer-info"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-25T12:17:16.141334",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": "newcomer-info",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-25T12:17:16.141334",
-      "duration_seconds": 429.362384
-    },
-    {
-      "session_id": "session_85bfcdd3c71e_1779681992",
-      "account": "nathan",
-      "started_at": "2026-05-25T14:06:33.025613",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-25T14:06:33.025613",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-25T14:06:35.223781",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-25T14:06:42.410304",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:07:19.992186",
-          "data": {
-            "tour_name": "Summertime Sailing Adventure",
-            "company": "summertime-whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:08:53.128936",
-          "data": {
-            "tour_name": "Whitehaven Beach & Hill Inlet Chill & Grill",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:09:41.365540",
-          "data": {
-            "tour_name": "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
-            "company": "airlieadventuretours",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:10:40.722759",
-          "data": {
-            "tour_name": "Purely Whitehaven Day Tour",
-            "company": "sealink",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:11:03.986589",
-          "data": {
-            "tour_name": "Purely Whitehaven Day Tour",
-            "company": "sealink",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-25T14:11:37.846155",
-          "data": {
-            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Summertime Sailing Adventure",
-        "Whitehaven Beach & Hill Inlet Chill & Grill",
-        "Airlie Adventure Tours \u2013 Beautiful Bowen Beaches Day Tour (from Airlie Beach / Whitsundays)",
-        "Purely Whitehaven Day Tour",
-        "Whitehaven Beach & Hamilton Island Tour"
-      ],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_77ff064fb401_1779776362",
-      "account": "nathan",
-      "started_at": "2026-05-26T16:19:22.657513",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-26T16:19:22.657513",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-26T16:28:35.571945",
+          "timestamp": "2026-05-23T11:46:39.875990",
           "data": {}
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure",
+        "Coastal Beaches Adventure"
+      ],
+      "tours_booked": [
+        "Northern Exposure Eco Adventure",
+        "Coastal Beaches Adventure"
+      ],
       "chat_messages": [],
-      "ended_at": "2026-05-26T16:28:35.571945",
-      "duration_seconds": 552.914432
+      "ended_at": "2026-05-23T11:46:39.876009",
+      "duration_seconds": 441.765434
     },
     {
-      "session_id": "session_79d90fdc5d4a_1779861453",
+      "session_id": "session_703f87670ac4_1779536431",
       "account": "nathan",
-      "started_at": "2026-05-27T15:57:33.365385",
+      "started_at": "2026-05-23T11:40:31.220819",
       "events": [
         {
           "type": "session_start",
-          "timestamp": "2026-05-27T15:57:33.365385",
+          "timestamp": "2026-05-23T11:40:31.220842",
           "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-23T11:40:37.427562",
+          "data": {
+            "language": "en"
           }
         },
         {
           "type": "mode_selected",
-          "timestamp": "2026-05-27T15:57:38.841932",
+          "timestamp": "2026-05-23T11:40:39.572034",
           "data": {
-            "mode": "quick-decision"
+            "mode": "browse-all"
           }
         }
       ],
-      "language": null,
-      "mode": "quick-decision",
+      "language": "en",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
