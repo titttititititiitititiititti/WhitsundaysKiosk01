@@ -107,7 +107,9 @@ class ParticleVisualizer {
           if (hasCards !== lastHasCards) {
             console.log('✨ Cards state changed:', hasCards ? 'showing cards' : 'no cards');
             lastHasCards = hasCards;
-            this.onResize();
+            // Delay resize to let CSS transitions settle
+            setTimeout(() => this.onResize(), 100);
+            setTimeout(() => this.onResize(), 500);
           }
         }
       }
@@ -146,9 +148,9 @@ class ParticleVisualizer {
     const rect = this.container.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio, 2); // Cap for performance
     
-    // Use rect dimensions or fallback to 350px
-    const containerWidth = rect.width > 0 ? rect.width : 350;
-    const containerHeight = rect.height > 0 ? rect.height : 350;
+    // Use rect dimensions with minimum 400px to prevent tiny orb
+    const containerWidth = Math.max(rect.width, 400);
+    const containerHeight = Math.max(rect.height, 400);
     
     this.canvas.width = containerWidth * dpr;
     this.canvas.height = containerHeight * dpr;

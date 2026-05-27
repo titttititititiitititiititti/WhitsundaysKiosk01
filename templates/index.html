@@ -17113,7 +17113,7 @@
       
       <!-- Buttons -->
       <div style="display: flex; gap: 12px; margin-bottom: 14px;">
-        <button onclick="openBookingLink()" style="flex: 1; padding: 18px; border: 1px solid rgba(56,189,248,0.4); border-radius: 12px; background: transparent; color: #38bdf8; font-size: 1.3em; font-weight: 600; cursor: pointer;">
+        <button id="qr-open-link-btn" onclick="openBookingLink()" style="flex: 1; padding: 18px; border: 1px solid rgba(56,189,248,0.4); border-radius: 12px; background: transparent; color: #38bdf8; font-size: 1.3em; font-weight: 600; cursor: pointer;">
           Open link instead ↗
         </button>
         {% if active_account == 'bailey' %}
@@ -17369,7 +17369,43 @@
         "ai_back": "← Back",
         "ai_other_options": "🔄 Other Options",
         "ai_different_activity": "🎯 Different Activity",
-        "ai_whos_going": "👥 Who's Going?"
+        "ai_whos_going": "👥 Who's Going?",
+        "ai_msg_scenic": "Show me scenic flights or helicopter tours",
+        "ai_msg_jet_ski": "Show me jet ski tours",
+        "ai_msg_popular": "Show me popular tours",
+        "ai_msg_family": "Show me family friendly tours with kids",
+        "ai_msg_budget": "Show me the cheapest budget tours",
+        "ai_msg_other": "Show me other options",
+        "ai_msg_snorkeling": "Show me snorkeling tours",
+        "ai_msg_sunset": "Show me sunset cruises",
+        "ai_msg_kids": "We're traveling with kids",
+        "ai_msg_couple": "It's just the two of us",
+        "ai_msg_friends": "We're a group of friends",
+        "ai_msg_solo": "I'm traveling solo",
+        "ai_msg_want_tour": "I want a {0} {1} tour",
+        "ai_msg_show_tours": "Show me {0} tours",
+        "ai_act_reef": "reef snorkeling",
+        "ai_act_beach": "beach",
+        "ai_act_sailing": "sailing",
+        "qr_title_perk": "Book Your Tour & Unlock a Filtour Perk",
+        "qr_title_simple": "Book Your Tour",
+        "qr_subtitle_perk": "Scan the QR code to book, then claim your reward.",
+        "qr_subtitle_simple": "Scan the QR code to complete your booking on the operator's secure page.",
+        "qr_perk_coffee": "Free Coffee",
+        "qr_perk_coffee_desc": "From a Filtour partner café",
+        "qr_perk_moped": "Free Hour",
+        "qr_perk_moped_desc": "Moped hire with Airlie Scooter Hire",
+        "qr_scan_to_book": "Scan to book",
+        "qr_step_1": "Choose your perk above",
+        "qr_step_2": "Scan the QR code & complete your booking",
+        "qr_step_3": "Show the barista your confirmation to claim your perk right away!",
+        "qr_step_alt": "Or tap \"I've booked\" below to upload your confirmation & get a voucher code by email",
+        "qr_open_link": "Open link instead ↗",
+        "qr_claim_perk": "I've booked — claim my perk",
+        "qr_disclaimer": "Perks are issued after a valid booking confirmation is submitted. One perk per person on the booking.",
+        "qr_moped_note": "If choosing the moped option, please call Airlie Scooter Hire to check availability first.",
+        "qr_scan_to_claim": "Scan to claim your perk",
+        "qr_back_to_booking": "← Back to booking QR"
       },
       "ja": {
         "code": "ja", "name": "日本語", "flag": "🇯🇵",
@@ -17463,7 +17499,43 @@
         "ai_back": "← 戻る",
         "ai_other_options": "🔄 他のオプション",
         "ai_different_activity": "🎯 別のアクティビティ",
-        "ai_whos_going": "👥 誰と行く？"
+        "ai_whos_going": "👥 誰と行く？",
+        "ai_msg_scenic": "ヘリコプターや遊覧飛行ツアーを見せて",
+        "ai_msg_jet_ski": "ジェットスキーツアーを見せて",
+        "ai_msg_popular": "人気のツアーを見せて",
+        "ai_msg_family": "子連れ家族向けのツアーを見せて",
+        "ai_msg_budget": "一番安いツアーを見せて",
+        "ai_msg_other": "他のオプションを見せて",
+        "ai_msg_snorkeling": "シュノーケリングツアーを見せて",
+        "ai_msg_sunset": "サンセットクルーズを見せて",
+        "ai_msg_kids": "子供連れで旅行しています",
+        "ai_msg_couple": "二人で旅行しています",
+        "ai_msg_friends": "友達グループで旅行しています",
+        "ai_msg_solo": "一人旅です",
+        "ai_msg_want_tour": "{0}の{1}ツアーを探しています",
+        "ai_msg_show_tours": "{0}ツアーを見せて",
+        "ai_act_reef": "リーフシュノーケリング",
+        "ai_act_beach": "ビーチ",
+        "ai_act_sailing": "セーリング",
+        "qr_title_perk": "ツアーを予約してFiltour特典をゲット",
+        "qr_title_simple": "ツアーを予約",
+        "qr_subtitle_perk": "QRコードをスキャンして予約し、特典を受け取りましょう。",
+        "qr_subtitle_simple": "QRコードをスキャンして予約を完了してください。",
+        "qr_perk_coffee": "無料コーヒー",
+        "qr_perk_coffee_desc": "Filtour提携カフェにて",
+        "qr_perk_moped": "無料1時間",
+        "qr_perk_moped_desc": "Airlie Scooter Hireでバイクレンタル",
+        "qr_scan_to_book": "スキャンして予約",
+        "qr_step_1": "上から特典を選択",
+        "qr_step_2": "QRコードをスキャンして予約を完了",
+        "qr_step_3": "バリスタに確認画面を見せて特典をすぐに受け取れます！",
+        "qr_step_alt": "または下の「予約済み」をタップして確認をアップロードし、メールでバウチャーコードを受け取れます",
+        "qr_open_link": "リンクを開く ↗",
+        "qr_claim_perk": "予約済み — 特典を受け取る",
+        "qr_disclaimer": "特典は有効な予約確認が提出された後に発行されます。予約1件につき1名分の特典です。",
+        "qr_moped_note": "バイクオプションを選択する場合は、事前にAirlie Scooter Hireに空き状況をご確認ください。",
+        "qr_scan_to_claim": "スキャンして特典を受け取る",
+        "qr_back_to_booking": "← 予約QRに戻る"
       },
       "zh": {
         "code": "zh", "name": "中文", "flag": "🇨🇳",
@@ -17557,7 +17629,43 @@
         "ai_back": "← 返回",
         "ai_other_options": "🔄 其他选项",
         "ai_different_activity": "🎯 其他活动",
-        "ai_whos_going": "👥 谁去？"
+        "ai_whos_going": "👥 谁去？",
+        "ai_msg_scenic": "给我看看直升机或观光飞行之旅",
+        "ai_msg_jet_ski": "给我看看水上摩托艇之旅",
+        "ai_msg_popular": "给我看看热门旅游",
+        "ai_msg_family": "给我看看适合带孩子的家庭旅游",
+        "ai_msg_budget": "给我看看最便宜的旅游",
+        "ai_msg_other": "给我看看其他选择",
+        "ai_msg_snorkeling": "给我看看浮潜之旅",
+        "ai_msg_sunset": "给我看看日落巡游",
+        "ai_msg_kids": "我们带着孩子旅行",
+        "ai_msg_couple": "我们两个人旅行",
+        "ai_msg_friends": "我们是一群朋友",
+        "ai_msg_solo": "我独自旅行",
+        "ai_msg_want_tour": "我想要一个{0}的{1}之旅",
+        "ai_msg_show_tours": "给我看看{0}之旅",
+        "ai_act_reef": "珊瑚礁浮潜",
+        "ai_act_beach": "海滩",
+        "ai_act_sailing": "帆船",
+        "qr_title_perk": "预订旅游并解锁Filtour福利",
+        "qr_title_simple": "预订旅游",
+        "qr_subtitle_perk": "扫描二维码预订，然后领取奖励。",
+        "qr_subtitle_simple": "扫描二维码在运营商的安全页面完成预订。",
+        "qr_perk_coffee": "免费咖啡",
+        "qr_perk_coffee_desc": "在Filtour合作咖啡馆",
+        "qr_perk_moped": "免费一小时",
+        "qr_perk_moped_desc": "Airlie Scooter Hire摩托车租赁",
+        "qr_scan_to_book": "扫码预订",
+        "qr_step_1": "在上方选择您的福利",
+        "qr_step_2": "扫描二维码并完成预订",
+        "qr_step_3": "向咖啡师出示确认信息即可立即领取福利！",
+        "qr_step_alt": "或点击下方\"已预订\"上传确认信息，通过电子邮件获取优惠券代码",
+        "qr_open_link": "打开链接 ↗",
+        "qr_claim_perk": "已预订 — 领取福利",
+        "qr_disclaimer": "福利在提交有效预订确认后发放。每次预订每人一份福利。",
+        "qr_moped_note": "如选择摩托车选项，请先致电Airlie Scooter Hire确认可用性。",
+        "qr_scan_to_claim": "扫码领取福利",
+        "qr_back_to_booking": "← 返回预订二维码"
       },
       "ko": {
         "code": "ko", "name": "한국어", "flag": "🇰🇷",
@@ -17651,7 +17759,43 @@
         "ai_back": "← 뒤로",
         "ai_other_options": "🔄 다른 옵션",
         "ai_different_activity": "🎯 다른 활동",
-        "ai_whos_going": "👥 누가 가나요?"
+        "ai_whos_going": "👥 누가 가나요?",
+        "ai_msg_scenic": "헬리콥터나 경치 비행 투어를 보여주세요",
+        "ai_msg_jet_ski": "제트스키 투어를 보여주세요",
+        "ai_msg_popular": "인기 투어를 보여주세요",
+        "ai_msg_family": "아이들과 함께하기 좋은 가족 투어를 보여주세요",
+        "ai_msg_budget": "가장 저렴한 투어를 보여주세요",
+        "ai_msg_other": "다른 옵션을 보여주세요",
+        "ai_msg_snorkeling": "스노클링 투어를 보여주세요",
+        "ai_msg_sunset": "선셋 크루즈를 보여주세요",
+        "ai_msg_kids": "아이들과 함께 여행합니다",
+        "ai_msg_couple": "둘이서 여행합니다",
+        "ai_msg_friends": "친구들과 함께 여행합니다",
+        "ai_msg_solo": "혼자 여행합니다",
+        "ai_msg_want_tour": "{0} {1} 투어를 찾고 있어요",
+        "ai_msg_show_tours": "{0} 투어를 보여주세요",
+        "ai_act_reef": "리프 스노클링",
+        "ai_act_beach": "비치",
+        "ai_act_sailing": "세일링",
+        "qr_title_perk": "투어 예약하고 Filtour 혜택 받기",
+        "qr_title_simple": "투어 예약",
+        "qr_subtitle_perk": "QR 코드를 스캔하여 예약하고 보상을 받으세요.",
+        "qr_subtitle_simple": "QR 코드를 스캔하여 운영사의 안전한 페이지에서 예약을 완료하세요.",
+        "qr_perk_coffee": "무료 커피",
+        "qr_perk_coffee_desc": "Filtour 제휴 카페에서",
+        "qr_perk_moped": "무료 1시간",
+        "qr_perk_moped_desc": "Airlie Scooter Hire 오토바이 대여",
+        "qr_scan_to_book": "스캔하여 예약",
+        "qr_step_1": "위에서 혜택을 선택하세요",
+        "qr_step_2": "QR 코드를 스캔하고 예약을 완료하세요",
+        "qr_step_3": "바리스타에게 확인 화면을 보여주면 바로 혜택을 받을 수 있습니다!",
+        "qr_step_alt": "또는 아래 \"예약 완료\"를 탭하여 확인을 업로드하고 이메일로 바우처 코드를 받으세요",
+        "qr_open_link": "링크 열기 ↗",
+        "qr_claim_perk": "예약 완료 — 혜택 받기",
+        "qr_disclaimer": "혜택은 유효한 예약 확인이 제출된 후 발행됩니다. 예약당 1인 1혜택입니다.",
+        "qr_moped_note": "오토바이 옵션을 선택하시려면 먼저 Airlie Scooter Hire에 전화하여 가용성을 확인하세요.",
+        "qr_scan_to_claim": "스캔하여 혜택 받기",
+        "qr_back_to_booking": "← 예약 QR로 돌아가기"
       },
       "de": {
         "code": "de", "name": "Deutsch", "flag": "🇩🇪",
@@ -17745,7 +17889,43 @@
         "ai_back": "← Zurück",
         "ai_other_options": "🔄 Andere Optionen",
         "ai_different_activity": "🎯 Andere Aktivität",
-        "ai_whos_going": "👥 Wer kommt mit?"
+        "ai_whos_going": "👥 Wer kommt mit?",
+        "ai_msg_scenic": "Zeig mir Rundflüge oder Hubschraubertouren",
+        "ai_msg_jet_ski": "Zeig mir Jetski-Touren",
+        "ai_msg_popular": "Zeig mir beliebte Touren",
+        "ai_msg_family": "Zeig mir familienfreundliche Touren mit Kindern",
+        "ai_msg_budget": "Zeig mir die günstigsten Touren",
+        "ai_msg_other": "Zeig mir andere Optionen",
+        "ai_msg_snorkeling": "Zeig mir Schnorcheltouren",
+        "ai_msg_sunset": "Zeig mir Sonnenuntergangs-Kreuzfahrten",
+        "ai_msg_kids": "Wir reisen mit Kindern",
+        "ai_msg_couple": "Wir sind zu zweit",
+        "ai_msg_friends": "Wir sind eine Freundesgruppe",
+        "ai_msg_solo": "Ich reise allein",
+        "ai_msg_want_tour": "Ich möchte eine {0} {1}-Tour",
+        "ai_msg_show_tours": "Zeig mir {0}-Touren",
+        "ai_act_reef": "Riff-Schnorchel",
+        "ai_act_beach": "Strand",
+        "ai_act_sailing": "Segel",
+        "qr_title_perk": "Tour buchen & Filtour-Vorteil freischalten",
+        "qr_title_simple": "Tour buchen",
+        "qr_subtitle_perk": "Scannen Sie den QR-Code zum Buchen und erhalten Sie Ihre Belohnung.",
+        "qr_subtitle_simple": "Scannen Sie den QR-Code, um Ihre Buchung auf der sicheren Seite des Anbieters abzuschließen.",
+        "qr_perk_coffee": "Gratis Kaffee",
+        "qr_perk_coffee_desc": "In einem Filtour-Partnercafé",
+        "qr_perk_moped": "Gratis Stunde",
+        "qr_perk_moped_desc": "Moped-Miete bei Airlie Scooter Hire",
+        "qr_scan_to_book": "Zum Buchen scannen",
+        "qr_step_1": "Wählen Sie oben Ihren Vorteil",
+        "qr_step_2": "Scannen Sie den QR-Code & schließen Sie Ihre Buchung ab",
+        "qr_step_3": "Zeigen Sie dem Barista Ihre Bestätigung, um Ihren Vorteil sofort zu erhalten!",
+        "qr_step_alt": "Oder tippen Sie unten auf \"Gebucht\", um Ihre Bestätigung hochzuladen und einen Gutscheincode per E-Mail zu erhalten",
+        "qr_open_link": "Link öffnen ↗",
+        "qr_claim_perk": "Gebucht — Vorteil einlösen",
+        "qr_disclaimer": "Vorteile werden nach Einreichung einer gültigen Buchungsbestätigung ausgestellt. Ein Vorteil pro Person pro Buchung.",
+        "qr_moped_note": "Bei Wahl der Moped-Option bitte vorher Airlie Scooter Hire anrufen, um die Verfügbarkeit zu prüfen.",
+        "qr_scan_to_claim": "Scannen zum Einlösen",
+        "qr_back_to_booking": "← Zurück zum Buchungs-QR"
       },
       "fr": {
         "code": "fr", "name": "Français", "flag": "🇫🇷",
@@ -17839,7 +18019,43 @@
         "ai_back": "← Retour",
         "ai_other_options": "🔄 Autres options",
         "ai_different_activity": "🎯 Autre activité",
-        "ai_whos_going": "👥 Qui vient?"
+        "ai_whos_going": "👥 Qui vient?",
+        "ai_msg_scenic": "Montre-moi les vols panoramiques ou en hélicoptère",
+        "ai_msg_jet_ski": "Montre-moi les tours en jet ski",
+        "ai_msg_popular": "Montre-moi les tours populaires",
+        "ai_msg_family": "Montre-moi les tours familiaux avec enfants",
+        "ai_msg_budget": "Montre-moi les tours les moins chers",
+        "ai_msg_other": "Montre-moi d'autres options",
+        "ai_msg_snorkeling": "Montre-moi les tours de plongée",
+        "ai_msg_sunset": "Montre-moi les croisières au coucher du soleil",
+        "ai_msg_kids": "Nous voyageons avec des enfants",
+        "ai_msg_couple": "Nous sommes deux",
+        "ai_msg_friends": "Nous sommes un groupe d'amis",
+        "ai_msg_solo": "Je voyage seul",
+        "ai_msg_want_tour": "Je veux un tour {1} de {0}",
+        "ai_msg_show_tours": "Montre-moi les tours de {0}",
+        "ai_act_reef": "plongée au récif",
+        "ai_act_beach": "plage",
+        "ai_act_sailing": "voile",
+        "qr_title_perk": "Réservez votre tour et débloquez un avantage Filtour",
+        "qr_title_simple": "Réservez votre tour",
+        "qr_subtitle_perk": "Scannez le QR code pour réserver, puis réclamez votre récompense.",
+        "qr_subtitle_simple": "Scannez le QR code pour compléter votre réservation sur la page sécurisée de l'opérateur.",
+        "qr_perk_coffee": "Café gratuit",
+        "qr_perk_coffee_desc": "Dans un café partenaire Filtour",
+        "qr_perk_moped": "Heure gratuite",
+        "qr_perk_moped_desc": "Location de scooter chez Airlie Scooter Hire",
+        "qr_scan_to_book": "Scanner pour réserver",
+        "qr_step_1": "Choisissez votre avantage ci-dessus",
+        "qr_step_2": "Scannez le QR code et complétez votre réservation",
+        "qr_step_3": "Montrez au barista votre confirmation pour réclamer votre avantage immédiatement !",
+        "qr_step_alt": "Ou appuyez sur \"J'ai réservé\" ci-dessous pour télécharger votre confirmation et recevoir un code par e-mail",
+        "qr_open_link": "Ouvrir le lien ↗",
+        "qr_claim_perk": "J'ai réservé — réclamer mon avantage",
+        "qr_disclaimer": "Les avantages sont émis après soumission d'une confirmation de réservation valide. Un avantage par personne par réservation.",
+        "qr_moped_note": "Si vous choisissez l'option scooter, veuillez d'abord appeler Airlie Scooter Hire pour vérifier la disponibilité.",
+        "qr_scan_to_claim": "Scanner pour réclamer",
+        "qr_back_to_booking": "← Retour au QR de réservation"
       },
       "hi": {
         "code": "hi", "name": "हिन्दी", "flag": "🇮🇳",
@@ -17933,7 +18149,43 @@
         "ai_back": "← वापस",
         "ai_other_options": "🔄 अन्य विकल्प",
         "ai_different_activity": "🎯 अलग गतिविधि",
-        "ai_whos_going": "👥 कौन जा रहा है?"
+        "ai_whos_going": "👥 कौन जा रहा है?",
+        "ai_msg_scenic": "मुझे हेलीकॉप्टर या सीनिक फ्लाइट टूर दिखाओ",
+        "ai_msg_jet_ski": "मुझे जेट स्की टूर दिखाओ",
+        "ai_msg_popular": "मुझे लोकप्रिय टूर दिखाओ",
+        "ai_msg_family": "मुझे बच्चों के साथ परिवार के लिए टूर दिखाओ",
+        "ai_msg_budget": "मुझे सबसे सस्ते टूर दिखाओ",
+        "ai_msg_other": "मुझे अन्य विकल्प दिखाओ",
+        "ai_msg_snorkeling": "मुझे स्नोर्कलिंग टूर दिखाओ",
+        "ai_msg_sunset": "मुझे सनसेट क्रूज दिखाओ",
+        "ai_msg_kids": "हम बच्चों के साथ यात्रा कर रहे हैं",
+        "ai_msg_couple": "हम दो लोग हैं",
+        "ai_msg_friends": "हम दोस्तों का ग्रुप हैं",
+        "ai_msg_solo": "मैं अकेला यात्रा कर रहा हूं",
+        "ai_msg_want_tour": "मुझे {0} {1} टूर चाहिए",
+        "ai_msg_show_tours": "मुझे {0} टूर दिखाओ",
+        "ai_act_reef": "रीफ स्नोर्कलिंग",
+        "ai_act_beach": "बीच",
+        "ai_act_sailing": "सेलिंग",
+        "qr_title_perk": "टूर बुक करें और Filtour लाभ पाएं",
+        "qr_title_simple": "टूर बुक करें",
+        "qr_subtitle_perk": "QR कोड स्कैन करके बुक करें, फिर अपना इनाम पाएं।",
+        "qr_subtitle_simple": "ऑपरेटर के सुरक्षित पेज पर बुकिंग पूरी करने के लिए QR कोड स्कैन करें।",
+        "qr_perk_coffee": "मुफ्त कॉफी",
+        "qr_perk_coffee_desc": "Filtour पार्टनर कैफे में",
+        "qr_perk_moped": "मुफ्त एक घंटा",
+        "qr_perk_moped_desc": "Airlie Scooter Hire से मोपेड किराया",
+        "qr_scan_to_book": "बुक करने के लिए स्कैन करें",
+        "qr_step_1": "ऊपर अपना लाभ चुनें",
+        "qr_step_2": "QR कोड स्कैन करें और बुकिंग पूरी करें",
+        "qr_step_3": "बरिस्ता को अपनी पुष्टि दिखाएं और तुरंत लाभ पाएं!",
+        "qr_step_alt": "या नीचे \"बुक किया\" पर टैप करके अपनी पुष्टि अपलोड करें और ईमेल से वाउचर कोड प्राप्त करें",
+        "qr_open_link": "लिंक खोलें ↗",
+        "qr_claim_perk": "बुक किया — लाभ पाएं",
+        "qr_disclaimer": "लाभ वैध बुकिंग पुष्टि जमा करने के बाद जारी किए जाते हैं। प्रति बुकिंग प्रति व्यक्ति एक लाभ।",
+        "qr_moped_note": "मोपेड विकल्प चुनने पर, कृपया पहले Airlie Scooter Hire को कॉल करके उपलब्धता जांचें।",
+        "qr_scan_to_claim": "लाभ पाने के लिए स्कैन करें",
+        "qr_back_to_booking": "← बुकिंग QR पर वापस"
       },
       "es": {
         "code": "es", "name": "Español", "flag": "🇪🇸",
@@ -18027,7 +18279,43 @@
         "ai_back": "← Volver",
         "ai_other_options": "🔄 Otras opciones",
         "ai_different_activity": "🎯 Otra actividad",
-        "ai_whos_going": "👥 ¿Quién va?"
+        "ai_whos_going": "👥 ¿Quién va?",
+        "ai_msg_scenic": "Muéstrame vuelos panorámicos o en helicóptero",
+        "ai_msg_jet_ski": "Muéstrame tours en moto acuática",
+        "ai_msg_popular": "Muéstrame tours populares",
+        "ai_msg_family": "Muéstrame tours familiares con niños",
+        "ai_msg_budget": "Muéstrame los tours más baratos",
+        "ai_msg_other": "Muéstrame otras opciones",
+        "ai_msg_snorkeling": "Muéstrame tours de snorkel",
+        "ai_msg_sunset": "Muéstrame cruceros al atardecer",
+        "ai_msg_kids": "Viajamos con niños",
+        "ai_msg_couple": "Somos dos",
+        "ai_msg_friends": "Somos un grupo de amigos",
+        "ai_msg_solo": "Viajo solo",
+        "ai_msg_want_tour": "Quiero un tour de {1} de {0}",
+        "ai_msg_show_tours": "Muéstrame tours de {0}",
+        "ai_act_reef": "snorkel en arrecife",
+        "ai_act_beach": "playa",
+        "ai_act_sailing": "navegación",
+        "qr_title_perk": "Reserva tu tour y desbloquea un beneficio Filtour",
+        "qr_title_simple": "Reserva tu tour",
+        "qr_subtitle_perk": "Escanea el código QR para reservar, luego reclama tu recompensa.",
+        "qr_subtitle_simple": "Escanea el código QR para completar tu reserva en la página segura del operador.",
+        "qr_perk_coffee": "Café gratis",
+        "qr_perk_coffee_desc": "En un café asociado a Filtour",
+        "qr_perk_moped": "Hora gratis",
+        "qr_perk_moped_desc": "Alquiler de moto en Airlie Scooter Hire",
+        "qr_scan_to_book": "Escanear para reservar",
+        "qr_step_1": "Elige tu beneficio arriba",
+        "qr_step_2": "Escanea el código QR y completa tu reserva",
+        "qr_step_3": "¡Muestra al barista tu confirmación para reclamar tu beneficio al instante!",
+        "qr_step_alt": "O toca \"He reservado\" abajo para subir tu confirmación y recibir un código de cupón por correo",
+        "qr_open_link": "Abrir enlace ↗",
+        "qr_claim_perk": "He reservado — reclamar beneficio",
+        "qr_disclaimer": "Los beneficios se emiten tras enviar una confirmación de reserva válida. Un beneficio por persona por reserva.",
+        "qr_moped_note": "Si eliges la opción de moto, llama primero a Airlie Scooter Hire para verificar disponibilidad.",
+        "qr_scan_to_claim": "Escanear para reclamar",
+        "qr_back_to_booking": "← Volver al QR de reserva"
       }
     };
     
@@ -24753,6 +25041,16 @@
     
     // Main category buttons (always visible after tour results)
     // Activity labels for combining with duration - these messages are optimized to trigger tour search
+    function getActivityLabel(key) {
+      const labels = {
+        reef: t('ai_act_reef') || "reef snorkeling",
+        beach: t('ai_act_beach') || "beach",
+        sailing: t('ai_act_sailing') || "sailing",
+        adventure: "adventure",
+        scenic: "scenic flight"
+      };
+      return labels[key] || key;
+    }
     const ACTIVITY_LABELS = {
       reef: "reef snorkeling",
       beach: "beach",
@@ -24768,14 +25066,14 @@
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: tDual('ai_scenic_flights'), category: "adventure", action: "send", value: "Show me scenic flights or helicopter tours" },
-          { text: tDual('ai_jet_ski'), category: "adventure", action: "send", value: "Show me jet ski tours" },
-          { text: tDual('ai_popular'), category: "general", action: "send", value: "Show me popular tours" },
-          { text: tDual('ai_family_friendly'), category: "general", action: "send", value: "Show me family friendly tours with kids" },
-          { text: tDual('ai_budget'), category: "general", action: "send", value: "Show me the cheapest budget tours" }
+          { text: tDual('ai_scenic_flights'), category: "adventure", action: "send", value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours" },
+          { text: tDual('ai_jet_ski'), category: "adventure", action: "send", value: t('ai_msg_jet_ski') || "Show me jet ski tours" },
+          { text: tDual('ai_popular'), category: "general", action: "send", value: t('ai_msg_popular') || "Show me popular tours" },
+          { text: tDual('ai_family_friendly'), category: "general", action: "send", value: t('ai_msg_family') || "Show me family friendly tours with kids" },
+          { text: tDual('ai_budget'), category: "general", action: "send", value: t('ai_msg_budget') || "Show me the cheapest budget tours" }
         ],
         followup: [
-          { text: tDual('ai_other_options'), category: "general", action: "send", value: "Show me other options" },
+          { text: tDual('ai_other_options'), category: "general", action: "send", value: t('ai_msg_other') || "Show me other options" },
           { text: tDual('ai_different_activity'), category: "activities", action: "expand" },
           { text: tDual('ai_whos_going'), category: "audience", action: "expand" }
         ]
@@ -24796,20 +25094,20 @@
     function getAISubOptions() {
       return {
         audience: [
-          { text: "👨‍👩‍👧 " + tDual('family_with_kids'), value: "We're traveling with kids" },
-          { text: "💑 " + tDual('adults_only'), value: "It's just the two of us" },
-          { text: "🎉 " + tDual('activity_scenic'), value: "We're a group of friends" },
-          { text: "🧳 Solo", value: "I'm traveling solo" },
+          { text: "👨‍👩‍👧 " + tDual('family_with_kids'), value: t('ai_msg_kids') || "We're traveling with kids" },
+          { text: "💑 " + tDual('adults_only'), value: t('ai_msg_couple') || "It's just the two of us" },
+          { text: "🎉 " + tDual('activity_scenic'), value: t('ai_msg_friends') || "We're a group of friends" },
+          { text: "🧳 Solo", value: t('ai_msg_solo') || "I'm traveling solo" },
           { text: tDual('ai_back'), action: "back" }
         ],
         activities: [
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: tDual('ai_scenic_flights'), value: "Show me scenic flights or helicopter tours" },
-          { text: tDual('ai_jet_ski'), value: "Show me jet ski tours" },
-          { text: tDual('ai_snorkeling'), value: "Show me snorkeling tours" },
-          { text: tDual('ai_sunset_cruise'), value: "Show me sunset cruises" },
+          { text: tDual('ai_scenic_flights'), value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours" },
+          { text: tDual('ai_jet_ski'), value: t('ai_msg_jet_ski') || "Show me jet ski tours" },
+          { text: tDual('ai_snorkeling'), value: t('ai_msg_snorkeling') || "Show me snorkeling tours" },
+          { text: tDual('ai_sunset_cruise'), value: t('ai_msg_sunset') || "Show me sunset cruises" },
           { text: tDual('ai_back'), action: "back" }
         ]
       };
@@ -24865,14 +25163,16 @@
     
     function selectAIDuration(btn) {
       const duration = btn.dataset.duration;
-      const activityLabel = ACTIVITY_LABELS[selectedActivity] || selectedActivity;
+      const activityLabel = getActivityLabel(selectedActivity);
       
-      // Build a natural message that clearly has activity + duration
+      // Build a natural message in the user's language
       let message;
       if (duration) {
-        message = `I want a ${duration} ${activityLabel} tour`;
+        var template = t('ai_msg_want_tour') || "I want a {0} {1} tour";
+        message = template.replace('{0}', duration).replace('{1}', activityLabel);
       } else {
-        message = `Show me ${activityLabel} tours`;
+        var template = t('ai_msg_show_tours') || "Show me {0} tours";
+        message = template.replace('{0}', activityLabel);
       }
       
       console.log(`🎯 Quick selection: ${message}`);
@@ -29017,7 +29317,64 @@
       // Initialize perk selection UI
       initPerkSelection();
       
+      // Translate modal content to current language
+      translateQRModal();
+      
       console.log('QR Payment Modal opened for:', checkoutUrl);
+    }
+    
+    function translateQRModal() {
+      const isBailey = document.getElementById('perk-selection-section') !== null;
+      const titleEl = document.getElementById('qr-modal-title');
+      const subtitleEl = document.getElementById('qr-modal-subtitle');
+      const qrLabel = document.getElementById('qr-label');
+      
+      if (titleEl) {
+        titleEl.textContent = t(isBailey ? 'qr_title_perk' : 'qr_title_simple') || titleEl.textContent;
+      }
+      if (subtitleEl) {
+        subtitleEl.textContent = t(isBailey ? 'qr_subtitle_perk' : 'qr_subtitle_simple') || subtitleEl.textContent;
+      }
+      if (qrLabel) {
+        qrLabel.textContent = t('qr_scan_to_book') || qrLabel.textContent;
+      }
+      
+      // Translate perk options (bailey only)
+      const perkOptions = document.querySelectorAll('.perk-option');
+      if (perkOptions.length >= 2) {
+        const coffeeOption = perkOptions[0];
+        const mopedOption = perkOptions[1];
+        const coffeeName = coffeeOption.querySelector('div:nth-child(2)');
+        const coffeeDesc = coffeeOption.querySelector('div:nth-child(3)');
+        const mopedName = mopedOption.querySelector('div:nth-child(2)');
+        const mopedDesc = mopedOption.querySelector('div:nth-child(3)');
+        if (coffeeName) coffeeName.textContent = t('qr_perk_coffee') || coffeeName.textContent;
+        if (coffeeDesc) coffeeDesc.textContent = t('qr_perk_coffee_desc') || coffeeDesc.textContent;
+        if (mopedName) mopedName.textContent = t('qr_perk_moped') || mopedName.textContent;
+        if (mopedDesc) mopedDesc.textContent = t('qr_perk_moped_desc') || mopedDesc.textContent;
+      }
+      
+      // Translate steps
+      const stepsContainer = document.querySelector('#qr-payment-modal .qr-card div[style*="rgba(56,189,248,0.06)"]');
+      if (stepsContainer) {
+        const steps = stepsContainer.querySelectorAll('div > div');
+        if (steps.length >= 4) {
+          steps[0].innerHTML = '<strong style="color:#38bdf8;">1.</strong> ' + (t('qr_step_1') || 'Choose your perk above');
+          steps[1].innerHTML = '<strong style="color:#38bdf8;">2.</strong> ' + (t('qr_step_2') || 'Scan the QR code & complete your booking');
+          steps[2].innerHTML = '<strong style="color:#38bdf8;">3.</strong> ' + (t('qr_step_3') || 'Show the barista your confirmation to claim your perk right away!');
+          steps[3].textContent = t('qr_step_alt') || steps[3].textContent;
+        }
+      }
+      
+      // Translate buttons by ID
+      const openLinkBtn = document.getElementById('qr-open-link-btn');
+      if (openLinkBtn) {
+        openLinkBtn.textContent = t('qr_open_link') || 'Open link instead ↗';
+      }
+      const claimBtn = document.getElementById('show-claim-qr-btn');
+      if (claimBtn) {
+        claimBtn.textContent = t('qr_claim_perk') || "I've booked — claim my perk";
+      }
     }
     
     // Fallback QR code generator using external API
@@ -29126,12 +29483,12 @@
       const btn = document.getElementById('show-claim-qr-btn');
       const label = document.getElementById('qr-label');
       if (btn) {
-        btn.textContent = '← Back to booking QR';
+        btn.textContent = t('qr_back_to_booking') || '← Back to booking QR';
         btn.style.background = 'linear-gradient(135deg, #0891b2, #06b6d4)';
         btn.onclick = showBookingQR;
       }
       if (label) {
-        label.textContent = 'Scan to claim your perk';
+        label.textContent = t('qr_scan_to_claim') || 'Scan to claim your perk';
         label.style.color = '#34d399';
       }
       generateClaimQR();
@@ -29141,12 +29498,12 @@
       const btn = document.getElementById('show-claim-qr-btn');
       const label = document.getElementById('qr-label');
       if (btn) {
-        btn.textContent = "I've booked — claim my perk";
+        btn.textContent = t('qr_claim_perk') || "I've booked — claim my perk";
         btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
         btn.onclick = showClaimQR;
       }
       if (label) {
-        label.textContent = 'Scan to book';
+        label.textContent = t('qr_scan_to_book') || 'Scan to book';
         label.style.color = '#f59e0b';
       }
       regenerateBookingQR();
