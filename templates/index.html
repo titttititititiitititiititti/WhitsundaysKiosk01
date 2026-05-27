@@ -4582,12 +4582,12 @@
     }
     
     body.ai-showing-cards .ai-visualizer-container canvas {
-      width: 1100px !important;
-      height: 1100px !important;
-      min-width: 1100px !important;
-      min-height: 1100px !important;
-      max-width: 1100px !important;
-      max-height: 1100px !important;
+      width: 280px !important;
+      height: 280px !important;
+      min-width: 280px !important;
+      min-height: 280px !important;
+      max-width: 280px !important;
+      max-height: 280px !important;
       /* Center the canvas within the container */
       position: absolute !important;
       top: 50% !important;
@@ -5132,16 +5132,26 @@
       animation: overlayFadeIn 0.3s ease;
     }
     
-    /* Make orb slightly bigger during searching - MAIN FOCUS but not too big */
+    /* ORB SIZE LOCK: Only 2 sizes ever - normal (talking) and large (searching) */
+    /* Normal/talking size - always this unless searching */
+    .ai-visualizer-container canvas {
+      width: 280px !important;
+      height: 280px !important;
+      transition: width 0.4s ease, height 0.4s ease, transform 0.4s ease !important;
+    }
+    
+    /* Searching/loading size - bigger orb during tour search */
     .ai-searching-overlay ~ .ai-visualizer-container,
     body:has(.ai-searching-overlay) .ai-visualizer-container {
       z-index: 10000 !important;
       top: 40% !important;
-      transform: translate(-50%, -50%) scale(1.2) !important;
+      transform: translate(-50%, -50%) !important;
       transition: all 0.5s ease !important;
     }
     
     body:has(.ai-searching-overlay) .ai-visualizer-container canvas {
+      width: 380px !important;
+      height: 380px !important;
       animation: orbSearchingSpin 2s linear infinite !important;
     }
     
@@ -5312,7 +5322,7 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
-      max-width: 600px;
+      max-width: 700px;
       padding: 0 15px;
       margin: 0 auto;
       pointer-events: auto;
@@ -14523,14 +14533,14 @@
         animation: fadeIn 0.3s ease;
       }
       
-      /* BOUNCE ANIMATION for mute toggle feedback */
+      /* BOUNCE ANIMATION for mute toggle feedback - subtle, no size change */
       .ai-visualizer-container.bounce {
         animation: orbBounce 0.3s ease !important;
       }
       
       @keyframes orbBounce {
         0% { transform: translate(-50%, -50%) scale(1); }
-        50% { transform: translate(-50%, -50%) scale(1.3); }
+        50% { transform: translate(-50%, -50%) scale(1.05); }
         100% { transform: translate(-50%, -50%) scale(1); }
       }
       
@@ -14541,7 +14551,7 @@
       
       @keyframes orbBounceWithCards {
         0% { transform: translateX(-50%) scale(1); }
-        50% { transform: translateX(-50%) scale(1.3); }
+        50% { transform: translateX(-50%) scale(1.05); }
         100% { transform: translateX(-50%) scale(1); }
       }
       
@@ -14579,10 +14589,10 @@
         pointer-events: none !important;
       }
       
-      /* Canvas MUCH BIGGER when cards showing (tray CLOSED) */
+      /* ORB SIZE LOCK (mobile): Only 2 sizes - normal talking and larger searching */
       .ai-visualizer-container.with-cards canvas {
-        width: 360px !important;  /* Big with cards, tray closed */
-        height: 360px !important;
+        width: 280px !important;
+        height: 280px !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
@@ -14591,15 +14601,15 @@
         transition: width 0.4s ease, height 0.4s ease !important;
       }
       
-      /* When TRAY IS OPEN - orb shrinks and moves up */
+      /* When TRAY IS OPEN - orb moves up but stays same size */
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
-        bottom: 200px !important;  /* Move up above the message box */
-        transition: bottom 0.4s ease, width 0.4s ease, height 0.4s ease !important;
+        bottom: 200px !important;
+        transition: bottom 0.4s ease !important;
       }
       
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
-        width: 200px !important;  /* Shrink when tray open */
-        height: 200px !important;
+        width: 280px !important;
+        height: 280px !important;
       }
       
       /* Smooth transition for orb container */
@@ -14704,24 +14714,25 @@
         overflow: visible !important;
       }
       
+      /* ORB SIZE LOCK (mobile landscape): talking size only, larger during search */
       .ai-visualizer-container.with-cards canvas {
-        width: 2100px !important;
-        height: 2100px !important;
-        max-width: 2100px !important;
-        max-height: 2100px !important;
-        transition: width 0.4s ease, height 0.4s ease, max-width 0.4s ease, max-height 0.4s ease !important;
+        width: 280px !important;
+        height: 280px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
+        transition: width 0.4s ease, height 0.4s ease !important;
       }
       
-      /* Mobile: When TRAY IS OPEN - orb shrinks and moves up */
+      /* Mobile: When TRAY IS OPEN - same orb size, just repositioned */
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards {
         bottom: 180px !important;
       }
       
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
-        max-width: 140px !important;
-        max-height: 140px !important;
-        width: 140px !important;
-        height: 140px !important;
+        width: 280px !important;
+        height: 280px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
       }
       
       /* Input area at bottom - mobile - HORIZONTAL BAR */
@@ -16987,29 +16998,8 @@
         <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()">➤</button>
       </div>
       
-      <!-- Microphone button - Only shown if microphone is enabled in kiosk settings -->
-      {% if kiosk_settings and kiosk_settings.get('ai_microphone_enabled', true) %}
-      <span class="ai-mic-hint">Tap before speaking</span>
-      <button class="ai-mic-btn" id="ai-mic-btn">🎤</button>
-      {% endif %}
     </div>
   </div>
-  <script>
-    // Mic button: use touchend on touch devices to prevent ghost double-clicks
-    (function() {
-      var btn = document.getElementById('ai-mic-btn');
-      if (!btn) return;
-      var handled = false;
-      btn.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        if (!handled) { handled = true; toggleAIMicrophone(); setTimeout(function(){ handled = false; }, 600); }
-      }, {passive: false});
-      btn.addEventListener('click', function(e) {
-        if (handled) { e.preventDefault(); return; }
-        toggleAIMicrophone();
-      });
-    })();
-  </script>
   
   <!-- On-Screen Keyboard Overlay -->
   <div id="onscreen-keyboard-overlay" class="keyboard-overlay" style="display: none;">
@@ -24060,8 +24050,6 @@
         utterance.onend = () => {
           console.log('🔊 Browser TTS ended');
           if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-          const micBtn = document.getElementById('ai-mic-btn');
-          if (micBtn) micBtn.classList.add('ready-to-speak');
         };
         utterance.onerror = (e) => {
           console.error('🔊 Browser TTS error:', e.error);
@@ -24141,13 +24129,6 @@
         ttsCurrentChunkIndex = 0;
         if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
         clearSpeakingHighlights();
-        
-        // Show green "ready to speak" mic after assistant finishes
-        const micBtn = document.getElementById('ai-mic-btn');
-        if (micBtn && !micBtn.classList.contains('recording')) {
-          micBtn.classList.add('ready-to-speak');
-          console.log('🎤 Mic ready - showing green glow');
-        }
         return;
       }
       
@@ -24523,7 +24504,11 @@
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: tDual('ai_popular'), category: "general", action: "send", value: "Show me popular tours" }
+          { text: "🚁 Scenic Flights", category: "adventure", action: "send", value: "Show me scenic flights or helicopter tours" },
+          { text: "🚤 Jet Ski Tours", category: "adventure", action: "send", value: "Show me jet ski tours" },
+          { text: tDual('ai_popular'), category: "general", action: "send", value: "Show me popular tours" },
+          { text: "👨‍👩‍👧 Family Friendly", category: "general", action: "send", value: "Show me family friendly tours with kids" },
+          { text: "💰 Budget Options", category: "general", action: "send", value: "Show me the cheapest budget tours" }
         ],
         followup: [
           { text: tDual('ai_other_options'), category: "general", action: "send", value: "Show me other options" },
@@ -24557,8 +24542,10 @@
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: "🚁 Scenic Flight", value: "Show me scenic flights" },
+          { text: "🚁 Scenic Flight", value: "Show me scenic flights or helicopter tours" },
           { text: "🚤 Jet Ski", value: "Show me jet ski tours" },
+          { text: "🐠 Snorkeling", value: "Show me snorkeling tours" },
+          { text: "🌅 Sunset Cruise", value: "Show me sunset cruises" },
           { text: tDual('ai_back'), action: "back" }
         ]
       };
@@ -24804,10 +24791,6 @@
       
       // Prime audio on first message send
       primeAudioContext();
-      
-      // Remove green "ready to speak" glow when user sends a message
-      const micBtn = document.getElementById('ai-mic-btn');
-      if (micBtn) micBtn.classList.remove('ready-to-speak');
       
       const input = document.getElementById('ai-text-input');
       const messagesContainer = document.getElementById('ai-messages');

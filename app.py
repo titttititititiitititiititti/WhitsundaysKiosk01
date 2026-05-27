@@ -7744,18 +7744,19 @@ Reply ONLY: SEARCH or ASK"""
             ]
             is_specific_tour_request = any(phrase in user_message.lower() for phrase in specific_tour_phrases)
             
-            # SEMANTIC SEARCH ENHANCEMENT: Use RAG to fill up results when we have < 3 tours
+            # SEMANTIC SEARCH ENHANCEMENT: Always try to show at least 3 tours
+            # If only 1-2 exact matches, fill with similar tours so results don't look empty
             # But NOT when user is asking for a specific tour by name
             if len(pre_fetched_tours) < 3 and CHROMA_AVAILABLE and not is_specific_tour_request:
                 needed = 3 - len(pre_fetched_tours)
-                print(f"[CHAT] Only {len(pre_fetched_tours)} tours from LLM - using RAG to find {needed} more...")
+                print(f"[CHAT] Only {len(pre_fetched_tours)} tours from LLM - using RAG to find {needed} more (relaxed duration)...")
                 
-                # Get semantic matches
+                # Get semantic matches with lower threshold to find more
                 semantic_results = get_tours_by_semantic_search(
                     user_message, 
                     all_tours, 
-                    max_results=8,
-                    min_similarity=0.15
+                    max_results=10,
+                    min_similarity=0.10
                 )
                 
                 if semantic_results:
@@ -8152,13 +8153,12 @@ Keep responses SHORT but ALWAYS include tour recommendations once you have 2 pre
 **QUICK REPLIES**: When asking multiple-choice questions, you can suggest options using [OPTIONS:option1,option2,option3] format.
 Example: "How long can you be away? [OPTIONS:Half Day,Full Day,Multi-day]"
 
-**CRITICAL MATCHING RULES**:
-- If user said "multi-day", ONLY recommend multi-day/overnight tours (2+ days)
-- If user said "full-day", ONLY recommend full-day tours  
-- If user said "half-day", ONLY recommend half-day tours
+**MATCHING RULES**:
+- Try to match duration preferences, but if only 1 tour matches exactly, ALSO show 2-3 similar tours with different durations
+- When showing tours that don't perfectly match duration, briefly acknowledge it: "This one is a full-day option, but it's worth considering!"
 - If user wants "cheapest", find the LOWEST PRICE tours that match ALL their other preferences
-- STRICTLY match ALL collected preferences - duration, vibe, interests
-- DO NOT recommend tours that don't match what they asked for!
+- Match activity/interest preferences strictly, but be FLEXIBLE on duration to ensure at least 3 tours are shown
+- NEVER show only 1 result - always aim for 3+ so the user has real choices
 - **NEVER MAKE UP TOUR NAMES!** You can ONLY describe tours that are explicitly listed in the "TOURS TO DESCRIBE" section below!
 - If no tours are listed below, DO NOT describe any tours - just have a conversation and suggest alternatives
 - INVENTED tours like "Whitehaven Beach Scenic Flight" or "Sailing Tours" (generic) are FORBIDDEN - these will confuse customers!
