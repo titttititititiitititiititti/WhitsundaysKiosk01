@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T11:07:05.962904",
+  "last_updated": "2026-05-27T11:07:18.980508",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33293,12 +33293,72 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-27T11:07:06.863033",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T11:07:12.541574",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T11:07:13.127045",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T11:07:13.736599",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-27T11:07:16.624986",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T11:07:18.671267",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T11:07:18.980440",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
         }
       ],
       "language": "en",
-      "mode": null,
+      "mode": "quick-decision",
       "tours_viewed": [],
-      "tours_booked": [],
+      "tours_booked": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
       "chat_messages": []
     }
   ]
