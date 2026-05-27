@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T10:20:43.485333",
+  "last_updated": "2026-05-27T10:20:50.775422",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33020,12 +33020,62 @@
             "filter_type": "duration",
             "filter_value": "no_preference"
           }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T10:20:46.152576",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T10:20:47.015538",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T10:20:50.420357",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-05-27T10:20:50.475942",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732"
+          }
+        },
+        {
+          "type": "counter_booking_requested",
+          "timestamp": "2026-05-27T10:20:50.729545",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T10:20:50.775364",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732",
+            "company": "oceanrafting",
+            "source": "swipe"
+          }
         }
       ],
       "language": "zh",
       "mode": "quick-decision",
       "tours_viewed": [],
-      "tours_booked": [],
+      "tours_booked": [
+        "\u98de\u884c\u7b4f - \u5317\u90e8\u66dd\u9732"
+      ],
       "chat_messages": []
     }
   ]
