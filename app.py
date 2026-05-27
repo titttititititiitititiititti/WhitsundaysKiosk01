@@ -5380,8 +5380,9 @@ def api_tours():
             'includes': tour.get('includes', ''),
             'highlights': tour.get('highlights', ''),
             'gallery': gallery,
-            'video_urls': video_urls,  # Video URLs for embedded playback
-            'promotion': tour.get('promotion'),  # Include promotion status
+            'video_urls': video_urls,
+            'link_booking': tour.get('link_booking', ''),
+            'promotion': tour.get('promotion'),
             'is_promoted': tour.get('is_promoted', False),
             'cruise_ship_friendly': tour.get('cruise_ship_friendly', False),
             'review_rating': tour.get('review_rating', 0),

@@ -4269,8 +4269,9 @@
       width: 700px;
       height: auto;
       padding: 15px;
-      z-index: 100;
+      z-index: 300;
       overflow: visible !important;
+      pointer-events: auto !important;
     }
     
     /* All cards - ABSOLUTE positioning for smooth sliding */
@@ -4279,6 +4280,9 @@
       background: white;
       border-radius: 8px;
       overflow: hidden;
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      z-index: 301 !important;
       /* Smooth transition for ALL properties including position */
       transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1),
                   left 0.7s cubic-bezier(0.4, 0, 0.2, 1),
@@ -4582,12 +4586,13 @@
     }
     
     body.ai-showing-cards .ai-visualizer-container canvas {
-      width: 100% !important;
-      height: 100% !important;
+      width: 300px !important;
+      height: 300px !important;
       min-width: auto !important;
       min-height: auto !important;
       max-width: none !important;
       max-height: none !important;
+      pointer-events: none !important;
       /* Center the canvas within the container */
       position: absolute !important;
       top: 50% !important;
@@ -21152,7 +21157,11 @@
         const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(tour.key) : null;
         if (directBookingLink) {
           console.log('   🔗 Using direct booking link:', directBookingLink);
-          showQRPaymentModal(directBookingLink, tour.name);
+          if (typeof openBookingModal === 'function') {
+            openBookingModal(tour.key, tour.name);
+          } else {
+            showQRPaymentModal(directBookingLink, tour.name);
+          }
           return;
         }
 
@@ -22363,6 +22372,18 @@
     // Open AI Assistant - go straight to chat
     window.openAIAssistant = function() {
       console.log('🤖 Opening AI Assistant');
+      
+      // PRIME AUDIO PLAYBACK immediately on user gesture
+      // This unlocks audio for the entire session (needed for non-English TTS)
+      try {
+        var silentPrimer = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+        silentPrimer.volume = 0.01;
+        silentPrimer.play().then(function() {
+          console.log('🔊 Audio playback primed for session');
+          silentPrimer.pause();
+          silentPrimer = null;
+        }).catch(function() {});
+      } catch(e) {}
       
       // Resume AudioContext if it was suspended (backup for non-mode-button entry)
       if (window.particleVisualizer && window.particleVisualizer.audioContext) {
@@ -37157,9 +37178,16 @@
           await audioElement.play();
           console.log('✅ Welcome audio started!');
         } catch (e) {
-          console.error('❌ Play failed:', e.message);
-          const micBtn = document.getElementById('ai-mic-btn');
-          if (micBtn) micBtn.classList.add('ready-to-speak');
+          console.error('❌ Play failed, retrying after delay:', e.message);
+          // Retry after a short delay - audio context may need a moment to unlock
+          setTimeout(async () => {
+            try {
+              await audioElement.play();
+              console.log('✅ Welcome audio started on retry!');
+            } catch (e2) {
+              console.error('❌ Play retry also failed:', e2.message);
+            }
+          }, 500);
         }
       } else {
         console.log('⚠️ No audio - text only');
