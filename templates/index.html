@@ -22247,6 +22247,43 @@
         }
       }
       
+      // FOR AI MODE: Start TTS fetch NOW during user gesture so audio is ready when animation ends
+      if (mode === 'ai-assistant') {
+        var aiLang = localStorage.getItem('preferred_language') || window.currentLanguage || 'en';
+        if (aiLang !== 'en') {
+          console.log('🎤 Pre-fetching TTS for', aiLang, 'during user gesture');
+          // Create and prime a dedicated audio element DURING this gesture
+          var earlyAudio = new Audio();
+          earlyAudio.volume = 0.7;
+          // Prime it with silence first (unlocks playback)
+          earlyAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+          earlyAudio.play().then(function() {
+            console.log('🔊 Early welcome audio element primed during gesture');
+          }).catch(function() {});
+          window._earlyWelcomeAudio = earlyAudio;
+          
+          // Start TTS fetch immediately (will be ready by the time animation finishes)
+          var ttsMessages = {
+            'zh': "你好！我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。您想体验什么？大堡礁、白天堂海滩、帆船和游轮，还是其他？",
+            'ja': "こんにちは！私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。何を体験したいですか？グレートバリアリーフ、ホワイトヘブンビーチ、セーリングとクルーズ、それとも他のもの？",
+            'ko': "안녕하세요! 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 무엇을 경험하고 싶으세요? 그레이트 배리어 리프, 화이트헤이븐 비치, 세일링과 크루즈, 아니면 다른 것?",
+            'de': "Hallo! Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Was möchten Sie erleben? Great Barrier Reef, Whitehaven Beach, Segeln und Kreuzfahrten oder etwas anderes?",
+            'fr': "Bonjour! Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Que souhaitez-vous vivre? Grande Barrière de Corail, Whitehaven Beach, voile et croisières, ou autre chose?",
+            'es': "Hola! Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. Qué te gustaría experimentar? Gran Barrera de Coral, Playa Whitehaven, navegación y cruceros, o algo más?",
+            'hi': "नमस्ते! मैं आपका AI टूर असिस्टेंट हूं। मैं आपको व्हिट्ससंडेज़ में सही टूर खोजने में मदद करूंगा। आप क्या अनुभव करना चाहते हैं? ग्रेट बैरियर रीफ, व्हाइटहेवन बीच, सेलिंग और क्रूज़, या कुछ और?"
+          };
+          var ttsText = ttsMessages[aiLang] || ttsMessages['en'];
+          window._earlyTTSPromise = fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: ttsText, language: aiLang, gender: 'female' })
+          }).then(function(resp) {
+            if (resp.ok) return resp.blob();
+            return null;
+          }).catch(function() { return null; });
+        }
+      }
+      
       // Track mode selection
       Analytics.modeSelected(mode);
       
@@ -22528,14 +22565,13 @@
         
         if (hasExistingMessages) {
           console.log('   ✓ Resuming existing conversation');
-          // Show follow-up suggestions for existing conversation
           if (typeof showAISuggestions === 'function') {
             showAISuggestions('followup');
           }
         } else {
           console.log('   ✓ Starting fresh conversation');
           
-          // Initialize TTS and visualizer immediately
+          // Initialize TTS and visualizer
           if (typeof window.initTTSAudio === 'function') {
             window.initTTSAudio();
           }
@@ -22543,14 +22579,132 @@
             window.initParticleVisualizer();
           }
           
-          // Play welcome message with minimal delay (preserve user gesture context)
-          setTimeout(() => {
-            if (typeof window.playWelcomeMessage === 'function') {
-              window.playWelcomeMessage();
-            } else {
-              showWelcomeMessageFallback();
+          // === SHOW WELCOME MESSAGE DIRECTLY (no dependency on external function) ===
+          var directLang = localStorage.getItem('preferred_language') || window.currentLanguage || 'en';
+          console.log('   ✓ Direct welcome message in language:', directLang);
+          
+          var directWelcomeTexts = {
+            'en': "Hi! 👋 I'm your AI tour assistant. I'll help you find the perfect Whitsundays adventure. What would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?",
+            'zh': "你好！👋 我是您的AI旅游助手，我将帮助您找到完美的圣灵群岛之旅。您想体验什么？🐠 大堡礁、🏖️ 白天堂海滩、⛵ 帆船和游轮，还是其他？",
+            'ja': "こんにちは！👋 私はAIツアーアシスタントです。ウィットサンデーズの完璧なツアーを見つけるお手伝いをします。何を体験したいですか？🐠 グレートバリアリーフ、🏖️ ホワイトヘブンビーチ、⛵ セーリングとクルーズ、それとも他のもの？",
+            'ko': "안녕하세요! 👋 저는 AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾아드리겠습니다. 무엇을 경험하고 싶으세요? 🐠 그레이트 배리어 리프, 🏖️ 화이트헤이븐 비치, ⛵ 세일링과 크루즈, 아니면 다른 것?",
+            'de': "Hallo! 👋 Ich bin Ihr KI-Tourassistent und helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Was möchten Sie erleben? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ Segeln und Kreuzfahrten oder etwas anderes?",
+            'fr': "Bonjour! 👋 Je suis votre assistant IA pour les excursions. Je vais vous aider à trouver la parfaite excursion aux Whitsundays. Que souhaitez-vous vivre? 🐠 Grande Barrière de Corail, 🏖️ Whitehaven Beach, ⛵ voile et croisières, ou autre chose?",
+            'es': "¡Hola! 👋 Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. ¿Qué te gustaría experimentar? 🐠 Gran Barrera de Coral, 🏖️ Playa Whitehaven, ⛵ navegación y cruceros, ¿o algo más?",
+            'hi': "नमस्ते! 👋 मैं आपका AI टूर असिस्टेंट हूं। मैं आपको व्हिट्ससंडेज़ में सही टूर खोजने में मदद करूंगा। आप क्या अनुभव करना चाहते हैं? 🐠 ग्रेट बैरियर रीफ, 🏖️ व्हाइटहेवन बीच, ⛵ सेलिंग और क्रूज़, या कुछ और?"
+          };
+          
+          var welcomeText = directWelcomeTexts[directLang] || directWelcomeTexts['en'];
+          var messagesEl = document.getElementById('ai-messages');
+          if (messagesEl) {
+            messagesEl.innerHTML = '';
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'ai-message assistant';
+            msgDiv.textContent = welcomeText;
+            messagesEl.appendChild(msgDiv);
+            console.log('   ✓ Welcome message rendered directly');
+          }
+          
+          // Set conversation history
+          if (typeof aiConversationHistory !== 'undefined') {
+            aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
+          }
+          
+          // Mark as played so playWelcomeMessage won't duplicate
+          window.welcomeMessagePlayed = true;
+          
+          // Show suggestions
+          if (typeof showAISuggestions === 'function') {
+            setTimeout(() => showAISuggestions('welcome'), 200);
+          }
+          
+          // === HANDLE AUDIO ===
+          if (directLang === 'en') {
+            // English: play pre-made MP3
+            var welcomeAudioEl = document.getElementById('welcome-audio');
+            if (welcomeAudioEl && !(typeof ttsMuted !== 'undefined' && ttsMuted)) {
+              welcomeAudioEl.currentTime = 0;
+              welcomeAudioEl.play().then(function() {
+                if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+              }).catch(function(e) { console.log('EN audio blocked:', e.message); });
+              welcomeAudioEl.onended = function() {
+                if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+              };
             }
-          }, 100);
+          } else {
+            // Non-English: use pre-fetched TTS from startModeWithAnimation
+            if (window._earlyTTSPromise) {
+              console.log('   ✓ Using pre-fetched TTS audio');
+              window._earlyTTSPromise.then(function(audioBlob) {
+                if (!audioBlob || audioBlob.size < 100) {
+                  console.log('   ⚠️ TTS fetch returned no data');
+                  return;
+                }
+                if (typeof ttsMuted !== 'undefined' && ttsMuted) return;
+                
+                var audioUrl = URL.createObjectURL(audioBlob);
+                
+                // Try Web Audio API first (AudioContext was unlocked during gesture)
+                var audioCtx = window._globalAudioCtx;
+                if (audioCtx && audioCtx.state === 'running') {
+                  audioBlob.arrayBuffer().then(function(arrBuf) {
+                    return audioCtx.decodeAudioData(arrBuf);
+                  }).then(function(audioBuffer) {
+                    var source = audioCtx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    var gain = audioCtx.createGain();
+                    gain.gain.value = 0.7;
+                    source.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    if (window.particleVisualizer && window.particleVisualizer.analyser) {
+                      try { gain.connect(window.particleVisualizer.analyser); } catch(e) {}
+                    }
+                    source.start(0);
+                    if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+                    source.onended = function() {
+                      if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+                      URL.revokeObjectURL(audioUrl);
+                    };
+                    console.log('   ✓ Playing TTS via Web Audio API');
+                  }).catch(function(e) {
+                    console.log('   WebAudio failed, trying Audio element:', e.message);
+                    playWithAudioElement(audioUrl);
+                  });
+                } else {
+                  playWithAudioElement(audioUrl);
+                }
+                
+                function playWithAudioElement(url) {
+                  // Try the pre-primed earlyAudio element
+                  var el = window._earlyWelcomeAudio || new Audio();
+                  el.src = url;
+                  el.volume = 0.7;
+                  el.onplay = function() {
+                    if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+                  };
+                  el.onended = function() {
+                    if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+                    URL.revokeObjectURL(url);
+                  };
+                  el.play().then(function() {
+                    console.log('   ✓ Playing TTS via Audio element');
+                  }).catch(function(e) {
+                    console.log('   ⚠️ Audio element play blocked:', e.message);
+                  });
+                }
+              }).catch(function(e) {
+                console.log('   ⚠️ TTS promise failed:', e);
+              });
+              window._earlyTTSPromise = null;
+            } else {
+              // No pre-fetched audio (shouldn't happen) - fetch now
+              console.log('   ⚠️ No pre-fetched TTS, fetching now...');
+              if (typeof window.playWelcomeMessage === 'function') {
+                window.welcomeMessagePlayed = false;
+                window.playWelcomeMessage();
+              }
+            }
+          }
         }
       }
     }
