@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T01:25:10.765414",
+  "last_updated": "2026-05-27T01:26:33.644577",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -32643,6 +32643,11 @@
           "data": {
             "tour_name": "Great Barrier Reef Snorkel Adventure"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-27T01:26:29.704065",
+          "data": {}
         }
       ],
       "language": "en",
@@ -32651,6 +32656,28 @@
       "tours_booked": [
         "Great Barrier Reef Snorkel Adventure"
       ],
+      "chat_messages": [],
+      "ended_at": "2026-05-27T01:26:29.704151",
+      "duration_seconds": 120.825786
+    },
+    {
+      "session_id": "session_eabf53a634dd_1779845193",
+      "account": "bailey",
+      "started_at": "2026-05-27T01:26:33.644491",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-27T01:26:33.644510",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
       "chat_messages": []
     }
   ]
