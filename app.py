@@ -7657,44 +7657,36 @@ def chat():
                     "content": f"""User: "{user_message}"
 Context: {context if context else 'None'}
 
-Does user have AT LEAST 2 PREFERENCES to search? Count across BOTH message AND context!
+Does user have AT LEAST 1 CLEAR PREFERENCE to search for tours?
 
-DETAIL CATEGORIES:
-1. Activity (sailing, reef, snorkeling, diving, helicopter, jetski, wildlife, kayak, island)
+DETAIL CATEGORIES (any ONE is enough):
+1. Activity (sailing, reef, snorkeling, diving, helicopter, jetski, wildlife, kayak, island, beach)
 2. Duration (full day, half day, multi-day, overnight, 2 days, quick/short)
 3. Audience (family, couples, backpackers, kids, solo, romantic)
 4. Budget (budget, cheap, affordable, luxury, premium)
 5. Destination (whitehaven, great barrier reef, gbr)
 
-EXCEPTION - SEARCH with just 1 detail (specific enough):
-- "scenic flight", "helicopter tour", "seaplane" = SEARCH
-- "jetski tour", "jet ski" = SEARCH
-- "skydive", "skydiving" = SEARCH
-- "fishing trip", "fishing charter" = SEARCH
-
-SEARCH = 2+ details combined OR specific exception activities
-ASK = Only 1 general detail (needs more info about duration/audience)
+SEARCH = User has mentioned ANY activity, destination, duration, audience, or budget preference
+ASK = User has given NO preferences at all (just a greeting or vague question)
 
 ⚠️ IMPORTANT: Count accumulated details across BOTH message AND context!
 
-ASK examples (ONLY 1 detail - MUST ASK about duration!):
-- "reef tour" = ASK (activity only - ask about duration)
-- "sailing" = ASK (activity only - ask about duration)
-- "snorkeling" = ASK (activity only)
-- "great barrier reef" = ASK (destination only - ask about duration)
-- "whitehaven beach" = ASK (destination only)
-- "diving" = ASK (activity only)
-- "hello" = ASK (greeting)
+ASK examples (NO preference at all):
+- "hello" = ASK (greeting only)
+- "hi there" = ASK (greeting only)
+- "what do you have" = ASK (too vague)
+- "help me" = ASK (no preference)
 
-SEARCH examples (2+ details OR specific exception):
+SEARCH examples (at least 1 preference):
+- "reef tour" = SEARCH (activity)
+- "sailing" = SEARCH (activity)
+- "beach tours" = SEARCH (activity)
 - "full day reef tour" = SEARCH (activity + duration)
-- "reef tour with family" = SEARCH (activity + audience)  
-- "scenic flight" = SEARCH (specific exception)
-- Context:"sailing" + Message:"full day" = SEARCH (combined = 2 details)
-- "overnight sailing" = SEARCH (duration + activity)
-
-⚠️ STRICT: Single activity/destination words ALONE = ASK!
-The minimum is: 1 activity/destination + 1 duration OR 1 audience!
+- "scenic flight" = SEARCH (activity)
+- "family friendly" = SEARCH (audience)
+- "whitehaven beach" = SEARCH (destination)
+- "budget tours" = SEARCH (budget)
+- "no preference" after selecting activity = SEARCH
 
 Reply ONLY: SEARCH or ASK"""
                 }],
@@ -8127,12 +8119,12 @@ When user says "other options", "something else", "different tours", "alternativ
 - Show fresh alternatives that still match their criteria
 - DON'T repeat any tours you mentioned before!
 
-Keep responses SHORT but ALWAYS include tour recommendations once you have 2 preferences!
+Keep responses SHORT but ALWAYS include tour recommendations once you have ANY preference!
 
-**WHEN TO RECOMMEND TOURS**: Once user has given 2 preferences!
-- 1 preference (e.g., "reef") â†’ Ask ONE follow-up question (duration or group type)
-- 2 preferences (e.g., "reef" + "full day") â†’ **USE [FILTER:...] IMMEDIATELY!**
-- User gives 2+ preferences in one message â†’ **USE [FILTER:...] IMMEDIATELY!**
+**WHEN TO RECOMMEND TOURS**: Once user has given even 1 preference!
+- 1 preference (e.g., "reef" or "beach") â†’ **USE [FILTER:...] IMMEDIATELY!** Show the best 3 tours for that category!
+- If user says "no preference" on duration â†’ Show a MIX of durations that match the activity!
+- User gives any preference at all â†’ **USE [FILTER:...] IMMEDIATELY!**
 - **CRITICAL: You MUST include [FILTER:{{...}}] to show any tours!** 
 - Without [FILTER:...], NO TOURS WILL BE DISPLAYED even if you describe them!
 

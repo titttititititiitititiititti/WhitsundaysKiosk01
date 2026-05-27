@@ -4582,12 +4582,12 @@
     }
     
     body.ai-showing-cards .ai-visualizer-container canvas {
-      width: 280px !important;
-      height: 280px !important;
-      min-width: 280px !important;
-      min-height: 280px !important;
-      max-width: 280px !important;
-      max-height: 280px !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-width: auto !important;
+      min-height: auto !important;
+      max-width: none !important;
+      max-height: none !important;
       /* Center the canvas within the container */
       position: absolute !important;
       top: 50% !important;
@@ -5132,26 +5132,24 @@
       animation: overlayFadeIn 0.3s ease;
     }
     
-    /* ORB SIZE LOCK: Only 2 sizes ever - normal (talking) and large (searching) */
-    /* Normal/talking size - always this unless searching */
+    /* ORB SIZE: 2 sizes only - normal (talking) and larger (searching) */
+    /* Normal/talking size - canvas fills container naturally */
     .ai-visualizer-container canvas {
-      width: 280px !important;
-      height: 280px !important;
-      transition: width 0.4s ease, height 0.4s ease, transform 0.4s ease !important;
+      width: 100% !important;
+      height: 100% !important;
+      transition: transform 0.4s ease !important;
     }
     
-    /* Searching/loading size - bigger orb during tour search */
+    /* Searching/loading size - scale up the container */
     .ai-searching-overlay ~ .ai-visualizer-container,
     body:has(.ai-searching-overlay) .ai-visualizer-container {
       z-index: 10000 !important;
       top: 40% !important;
-      transform: translate(-50%, -50%) !important;
+      transform: translate(-50%, -50%) scale(1.3) !important;
       transition: all 0.5s ease !important;
     }
     
     body:has(.ai-searching-overlay) .ai-visualizer-container canvas {
-      width: 380px !important;
-      height: 380px !important;
       animation: orbSearchingSpin 2s linear infinite !important;
     }
     
@@ -5263,7 +5261,7 @@
     
     .ai-input-area {
       position: fixed;
-      bottom: 20px;
+      bottom: 80px;
       left: 0;
       right: 0;
       background: transparent;
@@ -14589,16 +14587,15 @@
         pointer-events: none !important;
       }
       
-      /* ORB SIZE LOCK (mobile): Only 2 sizes - normal talking and larger searching */
+      /* ORB SIZE (mobile): Same size always - container controls it */
       .ai-visualizer-container.with-cards canvas {
-        width: 280px !important;
-        height: 280px !important;
+        width: 100% !important;
+        height: 100% !important;
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform: translate(-50%, -50%) !important;
         overflow: visible !important;
-        transition: width 0.4s ease, height 0.4s ease !important;
       }
       
       /* When TRAY IS OPEN - orb moves up but stays same size */
@@ -14608,8 +14605,8 @@
       }
       
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
-        width: 280px !important;
-        height: 280px !important;
+        width: 100% !important;
+        height: 100% !important;
       }
       
       /* Smooth transition for orb container */
@@ -14714,13 +14711,12 @@
         overflow: visible !important;
       }
       
-      /* ORB SIZE LOCK (mobile landscape): talking size only, larger during search */
+      /* ORB SIZE (mobile landscape): same size always */
       .ai-visualizer-container.with-cards canvas {
-        width: 280px !important;
-        height: 280px !important;
-        max-width: 280px !important;
-        max-height: 280px !important;
-        transition: width 0.4s ease, height 0.4s ease !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
       }
       
       /* Mobile: When TRAY IS OPEN - same orb size, just repositioned */
@@ -14729,16 +14725,16 @@
       }
       
       body.ai-showing-cards.ai-tray-open .ai-visualizer-container.with-cards canvas {
-        width: 280px !important;
-        height: 280px !important;
-        max-width: 280px !important;
-        max-height: 280px !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
       }
       
       /* Input area at bottom - mobile - HORIZONTAL BAR */
       .ai-input-area {
         position: fixed !important;
-        bottom: 15px !important;
+        bottom: 60px !important;
         left: 10px !important;
         right: 10px !important;
         transform: none !important;
@@ -14912,7 +14908,7 @@
       
       /* Extra small: keep horizontal layout but smaller */
       .ai-input-area {
-        bottom: 10px !important;
+        bottom: 50px !important;
         left: 8px !important;
         right: 8px !important;
         gap: 6px !important;
