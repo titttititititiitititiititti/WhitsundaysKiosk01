@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T22:54:14.031094",
+  "last_updated": "2026-05-27T22:54:44.279345",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33428,12 +33428,34 @@
             "role": "assistant",
             "message": "Ein ganzt\u00e4giges Schnorchelabenteuer am Great Barrier Reef klingt fantastisch! \ud83c\udf0a Hier sind einige gro\u00dfartige Optionen f\u00fcr Sie:\n\n1. **Schnorchelabenteuer am Great Barrier Reef** - Dies ist eine der beliebtesten Touren, die Ihnen ein unvergessliches Erlebnis am Great Barrier Reef bietet. Sie reisen mit einem komfortablen und klimatisierten Schiff zu den \u00e4u\u00dferen Riffen, wo Sie die atemberaubende Unterwasserwelt erkunden k\u00f6nnen. Genie\u00dfen Sie die 360\u00b0-Aussicht von der Dachterrasse und entspannen Sie "
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-27T22:54:43.062084",
+          "data": {
+            "tour_name": "Schnorchelabenteuer am Great Barrier Reef",
+            "company": "Red Cat Adventures",
+            "source": "ai-assistant"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T22:54:44.279281",
+          "data": {
+            "tour_name": "Schnorchelabenteuer am Great Barrier Reef",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": "ja",
       "mode": "ai-assistant",
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Schnorchelabenteuer am Great Barrier Reef"
+      ],
+      "tours_booked": [
+        "Schnorchelabenteuer am Great Barrier Reef"
+      ],
       "chat_messages": [
         {
           "role": "user",
