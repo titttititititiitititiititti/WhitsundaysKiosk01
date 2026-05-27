@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T11:06:28.440127",
+  "last_updated": "2026-05-27T11:06:35.058937",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33230,12 +33230,41 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-27T11:06:29.152360",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-27T11:06:34.224488",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T11:06:35.058886",
+          "data": {
+            "tour_name": "Great Barrier Reef Snorkel Adventure",
+            "company": "Red Cat Adventures",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
+      "tours_booked": [
+        "Great Barrier Reef Snorkel Adventure"
+      ],
       "chat_messages": []
     }
   ]
