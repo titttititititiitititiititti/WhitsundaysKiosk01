@@ -17193,6 +17193,7 @@
     })();
     const urlParams = new URLSearchParams(window.location.search);
     let currentLanguage = urlParams.get('lang') || localStorage.getItem('preferred_language') || 'en';
+    window.currentLanguage = currentLanguage;
     let currentCurrency = 'AUD';
     
     // Active account for QR code referral links
@@ -21251,14 +21252,21 @@
           return;
         }
 
-        // 4. Use tour's link_booking if available
+        // 4. Check tour's booking_button_url from API (account override applied server-side)
+        if (tour.booking_button_url && (tour.booking_button_url.startsWith('http') || tour.booking_button_url.startsWith('//'))) {
+          console.log('   🎫 Using booking_button_url from API:', tour.booking_button_url);
+          showQRPaymentModal(tour.booking_button_url, tour.name || 'Book This Tour');
+          return;
+        }
+
+        // 5. Use tour's link_booking if available
         if (tour.link_booking && (tour.link_booking.startsWith('http') || tour.link_booking.startsWith('//'))) {
           console.log('   📋 Using link_booking:', tour.link_booking);
           showQRPaymentModal(tour.link_booking, tour.name);
           return;
         }
 
-        // 5. No online booking available - show counter booking modal (SAME as Browse All Tours fallback)
+        // 6. No online booking available - show counter booking modal (SAME as Browse All Tours fallback)
         console.log('   🔔 No online booking available - showing counter booking modal');
         showCounterBookingModal(tour.name, key);
       } else {
@@ -22547,7 +22555,7 @@
       }
     }
     
-    // Fallback welcome message function
+    // Fallback welcome message function (only runs if playWelcomeMessage script block fails)
     function showWelcomeMessageFallback() {
       console.log('📝 Using fallback welcome message');
       const messagesContainer = document.getElementById('ai-messages');
@@ -22556,37 +22564,43 @@
       // Check if already shown
       if (messagesContainer.querySelector('.ai-message')) return;
       
-      const welcomeText = "Hi! 👋 I'm your AI tour assistant, I'll help you find the perfect Whitsundays tour. Let's start simple, what would you like to experience? 🐠 Great Barrier Reef, 🏖️ Whitehaven Beach, ⛵ sailing and cruises, or something else?";
+      // Detect language from localStorage (always reliable)
+      const fallbackLang = localStorage.getItem('preferred_language') || 'en';
+      console.log('📝 Fallback language:', fallbackLang);
       
-      // Show typing indicator
-      const typingMsg = document.createElement('div');
-      typingMsg.className = 'ai-message assistant typing';
-      typingMsg.innerHTML = '<span class="typing-dots">●●●</span>';
-      messagesContainer.appendChild(typingMsg);
+      // Use localized welcome text if available
+      const localizedWelcomeTexts = {
+        'en': "Hi! I'm your AI tour assistant. I'll help you find the perfect Whitsundays tour. What would you like to experience? Great Barrier Reef, Whitehaven Beach, sailing and cruises, or something else?",
+        'zh': "你好！我是你的AI旅游助手。我会帮你找到完美的圣灵群岛之旅。你想体验什么？大堡礁、白天堂海滩、帆船巡游，还是其他？",
+        'ja': "こんにちは！AIツアーアシスタントです。完璧なウィットサンデーズツアーを見つけるお手伝いをします。何を体験したいですか？グレートバリアリーフ、ホワイトヘブンビーチ、セーリングクルーズ、それとも他のこと？",
+        'ko': "안녕하세요! AI 투어 어시스턴트입니다. 완벽한 휘트선데이즈 투어를 찾는 것을 도와드리겠습니다. 무엇을 경험하고 싶으신가요? 그레이트 배리어 리프, 화이트헤이븐 비치, 세일링 크루즈, 아니면 다른 것?",
+        'de': "Hallo! Ich bin Ihr AI-Tour-Assistent. Ich helfe Ihnen, die perfekte Whitsundays-Tour zu finden. Was möchten Sie erleben? Great Barrier Reef, Whitehaven Beach, Segeln und Kreuzfahrten, oder etwas anderes?",
+        'fr': "Bonjour ! Je suis votre assistant touristique IA. Je vous aiderai à trouver la visite parfaite des Whitsundays. Que souhaitez-vous découvrir ? La Grande Barrière de Corail, Whitehaven Beach, la voile et les croisières, ou autre chose ?",
+        'hi': "नमस्ते! मैं आपका AI टूर सहायक हूं। मैं आपको सही व्हिट्संडे टूर खोजने में मदद करूंगा। आप क्या अनुभव करना चाहते हैं? ग्रेट बैरियर रीफ, व्हाइटहेवन बीच, नौकायन और क्रूज, या कुछ और?",
+        'es': "¡Hola! Soy tu asistente de tours con IA. Te ayudaré a encontrar el tour perfecto en las Whitsundays. ¿Qué te gustaría experimentar? La Gran Barrera de Coral, Whitehaven Beach, navegación y cruceros, ¿o algo más?"
+      };
       
-      // After delay, show actual message
-      setTimeout(() => {
-        typingMsg.remove();
-        const welcomeMsg = document.createElement('div');
-        welcomeMsg.className = 'ai-message assistant';
-        welcomeMsg.textContent = welcomeText;
-        messagesContainer.appendChild(welcomeMsg);
-        
-        // Initialize conversation history
-        aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
-        
-        // Try to play welcome audio (respect mute state)
+      const welcomeText = localizedWelcomeTexts[fallbackLang] || localizedWelcomeTexts['en'];
+      
+      // Show message immediately (no typing delay for fallback)
+      const welcomeMsg = document.createElement('div');
+      welcomeMsg.className = 'ai-message assistant';
+      welcomeMsg.textContent = welcomeText;
+      messagesContainer.appendChild(welcomeMsg);
+      
+      // Initialize conversation history
+      aiConversationHistory = [{ role: 'assistant', content: welcomeText }];
+      
+      // Only play pre-made audio for English
+      if (fallbackLang === 'en') {
         const welcomeAudio = document.getElementById('welcome-audio');
         if (welcomeAudio) {
           welcomeAudio.currentTime = 0;
-          
-          // Check if muted
           if (typeof ttsMuted !== 'undefined' && ttsMuted) {
             console.log('🔇 Welcome audio skipped - muted');
           } else {
             welcomeAudio.play().catch(e => console.log('Audio autoplay blocked:', e));
           }
-          
           welcomeAudio.onplay = () => {
             if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
           };
@@ -22594,7 +22608,7 @@
             if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
           };
         }
-      }, 1500);
+      }
     }
     
     // Hide AI Assistant but preserve state (for switching modes)
@@ -31807,6 +31821,7 @@
       console.log('🌍 Changing language from mode selection:', langCode);
       localStorage.setItem('preferred_language', langCode);
       currentLanguage = langCode;
+      window.currentLanguage = langCode;
       
       // Auto-switch currency to match
       const mappedCurrency = langCurrencyMap[langCode] || 'AUD';
@@ -31847,6 +31862,7 @@
       
       // Update current language WITHOUT page reload
       currentLanguage = langCode;
+      window.currentLanguage = langCode;
       
       // Auto-switch currency to match language
       const mappedCurrency = langCurrencyMap[langCode] || 'AUD';
@@ -37108,19 +37124,28 @@
       
       console.log('🎤 playWelcomeMessage() called');
       
-      // Get language - check multiple sources
-      let lang = 'en';
-      if (typeof currentLanguage !== 'undefined' && currentLanguage) {
-        lang = currentLanguage;
-      } else if (typeof window.currentLanguage !== 'undefined' && window.currentLanguage) {
+      // Get language - localStorage is the MOST RELIABLE source
+      // (set by changeModeLanguage during language flag click, before AI mode opens)
+      let lang = localStorage.getItem('preferred_language') || 'en';
+      // Cross-check with URL param (updated by changeModeLanguage via replaceState)
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      if (urlLang && urlLang !== 'en') {
+        lang = urlLang;
+      }
+      // Also check window.currentLanguage (explicitly set on window object)
+      if (window.currentLanguage && window.currentLanguage !== 'en') {
         lang = window.currentLanguage;
-      } else if (localStorage.getItem('selectedLanguage')) {
-        lang = localStorage.getItem('selectedLanguage');
-      } else if (localStorage.getItem('preferred_language')) {
-        lang = localStorage.getItem('preferred_language');
       }
       
-      console.log('🌐 Detected language:', lang);
+      console.log('🌐 Detected language:', lang, '(localStorage:', localStorage.getItem('preferred_language'), ', URL:', urlLang, ', window:', window.currentLanguage, ')');
+      
+      // IMPORTANT: Stop the pre-made English welcome-audio element to prevent interference
+      const preloadedWelcomeAudio = document.getElementById('welcome-audio');
+      if (preloadedWelcomeAudio) {
+        preloadedWelcomeAudio.pause();
+        preloadedWelcomeAudio.currentTime = 0;
+      }
+      
       const welcomeTextForDisplay = WELCOME_MESSAGES_DISPLAY[lang] || WELCOME_MESSAGES_DISPLAY['en'];
       
       const messagesContainer = document.getElementById('ai-messages');

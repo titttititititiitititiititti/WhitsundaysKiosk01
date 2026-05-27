@@ -2869,8 +2869,9 @@ def load_all_tours(language='en', preview_account=None):
                         # Check cruise ship friendly tag
                         cruise_friendly = is_tour_cruise_ship_friendly(key, preview_account=preview_account)
                         
-                        # Get video_urls (fall back to English CSV if missing)
+                        # Get video_urls and link_booking (fall back to English CSV if missing)
                         video_urls_raw = row.get('video_urls', '')
+                        link_booking_raw = row.get('link_booking', '')
                         
                         # Add parsed filter data
                         tour_data = {
@@ -2895,6 +2896,7 @@ def load_all_tours(language='en', preview_account=None):
                             'age_requirements': row.get('age_requirements', ''),
                             'departure_location': row.get('departure_location', ''),
                             'video_urls': video_urls_raw,
+                            'link_booking': link_booking_raw,
                             'gallery': gallery,  # Gallery images for slideshow
                             'uses_placeholder_images': not images_enabled,  # Flag for placeholder image indicator
                             # Parsed filter fields
@@ -2930,12 +2932,13 @@ def load_all_tours(language='en', preview_account=None):
             print(f"Error processing {csvfile}: {e}")
             continue
     
-    # For non-English: fill in missing video_urls from English CSVs
+    # For non-English: fill in missing video_urls and link_booking from English CSVs
     if language != 'en':
-        tours_missing_videos = [t for t in tours if not t.get('video_urls')]
-        if tours_missing_videos:
-            # Build a cache of English video_urls
+        tours_missing_data = [t for t in tours if not t.get('video_urls') or not t.get('link_booking')]
+        if tours_missing_data:
+            # Build a cache of English video_urls and link_booking
             en_video_cache = {}
+            en_booking_cache = {}
             for company_dir in glob.glob('data/*/'):
                 company_name = os.path.basename(company_dir.rstrip('/\\'))
                 en_csvs = glob.glob(f'{company_dir}en/*_with_media.csv')
@@ -2944,16 +2947,21 @@ def load_all_tours(language='en', preview_account=None):
                         with open(en_csv, newline='', encoding='utf-8') as ef:
                             reader = csv.DictReader(ef)
                             for row in reader:
+                                en_key = f"{row.get('company_name', company_name)}__{row.get('id', '')}"
                                 vid = row.get('video_urls', '')
                                 if vid:
-                                    en_key = f"{row.get('company_name', company_name)}__{row.get('id', '')}"
                                     en_video_cache[en_key] = vid
+                                booking = row.get('link_booking', '')
+                                if booking:
+                                    en_booking_cache[en_key] = booking
                     except Exception:
                         pass
-            # Fill in missing video_urls
-            for tour in tours_missing_videos:
-                if tour['key'] in en_video_cache:
+            # Fill in missing fields
+            for tour in tours_missing_data:
+                if not tour.get('video_urls') and tour['key'] in en_video_cache:
                     tour['video_urls'] = en_video_cache[tour['key']]
+                if not tour.get('link_booking') and tour['key'] in en_booking_cache:
+                    tour['link_booking'] = en_booking_cache[tour['key']]
     
     # Apply per-account tour_overrides (e.g. video_urls, booking_url, prices)
     if preview_account:
@@ -5382,6 +5390,7 @@ def api_tours():
             'gallery': gallery,
             'video_urls': video_urls,
             'link_booking': tour.get('link_booking', ''),
+            'booking_button_url': tour.get('booking_button_url', ''),
             'promotion': tour.get('promotion'),
             'is_promoted': tour.get('is_promoted', False),
             'cruise_ship_friendly': tour.get('cruise_ship_friendly', False),
