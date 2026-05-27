@@ -14028,6 +14028,7 @@
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('autoplay', '');
+      video.setAttribute('loop', '');
 
       function forcePlay() {
         if (!video.paused && !video.ended) return;
@@ -14036,17 +14037,33 @@
         video.play().catch(function() {});
       }
 
-      // Try immediately, then every 500ms forever (lightweight check)
-      forcePlay();
-      setInterval(forcePlay, 500);
+      // Explicitly trigger load (helps with remote CDN sources)
+      if (video.readyState < 2) {
+        video.load();
+      }
 
-      // Instantly counter ANY pause event - this is the key fix
+      // Try immediately
+      forcePlay();
+
+      // Rapid retries for the first 5 seconds (handles slow video loading from CDN)
+      var rapidInterval = setInterval(forcePlay, 200);
+      setTimeout(function() {
+        clearInterval(rapidInterval);
+      }, 5000);
+
+      // Then slower interval forever
+      setInterval(forcePlay, 1000);
+
+      // Instantly counter ANY pause event (nothing should ever pause this video)
       video.addEventListener('pause', function() {
-        setTimeout(forcePlay, 10);
+        setTimeout(forcePlay, 0);
       });
 
-      // Play when video data is ready
+      // Play when video data loads
+      video.addEventListener('loadeddata', forcePlay);
       video.addEventListener('canplay', forcePlay);
+      video.addEventListener('canplaythrough', forcePlay);
+      video.addEventListener('loadedmetadata', forcePlay);
 
       // Loop when ended
       video.addEventListener('ended', function() {
@@ -14062,6 +14079,10 @@
       document.addEventListener('visibilitychange', function() {
         if (!document.hidden) forcePlay();
       });
+
+      // Also try on DOMContentLoaded and window load
+      document.addEventListener('DOMContentLoaded', forcePlay);
+      window.addEventListener('load', forcePlay);
     })();
   </script>
   
@@ -16715,6 +16736,13 @@
     // ===== SCREEN ROTATION (splash uses same system as general rotation below) =====
     // Restore saved rotation on page load
     (function restoreRotation() {
+      // Only restore rotation for Nathan's account
+      var _acct = '{{ active_account | default("") }}';
+      if (_acct !== 'nathan') {
+        localStorage.removeItem('kiosk_rotation');
+        document.documentElement.classList.remove('screen-rotated');
+        return;
+      }
       const saved = localStorage.getItem('kiosk_rotation');
       if (saved === '90' || saved === '270') {
         localStorage.setItem('kiosk_rotation', '0');
@@ -21128,8 +21156,7 @@
         console.log('[ACTION] Accept blocked - card is transitioning');
         return;
       }
-      console.log('[ACTION] Booking tour - opening tour detail page');
-      console.log('   currentCardIndex:', currentCardIndex, 'swipeCards.length:', swipeCards.length);
+      console.log('[ACTION] Book Now clicked in Quick Decision mode');
 
       if (swipeCards.length === 0) {
         console.warn('⚠️ No tours available yet - swipeCards is empty');
@@ -21138,18 +21165,49 @@
 
       if (currentCardIndex < swipeCards.length) {
         const tour = swipeCards[currentCardIndex];
+        const key = tour.key;
 
         // Track Book Now click from swipe mode
         Analytics.bookNowClicked(tour.name, tour.company, 'swipe');
 
-        // Open the tour detail page - uses the EXACT same Book Now button as Browse All Tours
-        if (typeof openTourDetail === 'function') {
-          console.log('   ✓ Opening tour detail for:', tour.key);
-          openTourDetail(tour.key);
-        } else {
-          console.error('❌ openTourDetail not available');
-          window.location.hash = `tour/${tour.key}`;
+        // EXACT same logic as Browse All Tours Book Now button:
+        // 1. Check HERO_BOOKING tour overrides
+        const tourOverrides = (typeof HERO_BOOKING !== 'undefined' && HERO_BOOKING.tour_overrides)
+          ? HERO_BOOKING.tour_overrides[key]
+          : null;
+
+        if (tourOverrides && tourOverrides.booking_button_url) {
+          console.log('   🎫 Using HERO_BOOKING override:', tourOverrides.booking_button_url);
+          showQRPaymentModal(tourOverrides.booking_button_url, tour.name);
+          return;
         }
+
+        // 2. Check BOOKING_LINKS
+        const directBookingLink = typeof getBookingLink === 'function' ? getBookingLink(key) : null;
+        if (directBookingLink) {
+          console.log('   🎫 Using BOOKING_LINKS:', directBookingLink);
+          showQRPaymentModal(directBookingLink, tour.name);
+          return;
+        }
+
+        // 3. Check Rezdy mapping
+        const rezdyUrl = typeof getRezdyUrlForTour === 'function' ? getRezdyUrlForTour(tour.name, tour.company) : null;
+        if (rezdyUrl) {
+          console.log('   🚤 Using Rezdy:', rezdyUrl);
+          showQRPaymentModal(rezdyUrl, tour.name);
+          return;
+        }
+
+        // 4. Use tour's link_booking if available
+        if (tour.link_booking && (tour.link_booking.startsWith('http') || tour.link_booking.startsWith('//'))) {
+          console.log('   📋 Using link_booking:', tour.link_booking);
+          showQRPaymentModal(tour.link_booking, tour.name);
+          return;
+        }
+
+        // 5. Generate a QR code for the tour page (same as "Send to Phone")
+        console.log('   📱 No booking URL found - showing tour QR code');
+        generateQRCodeForTour(key, tour);
       } else {
         console.warn('⚠️ currentCardIndex out of bounds:', currentCardIndex, '>=', swipeCards.length);
       }
@@ -22117,6 +22175,14 @@
         
         if (window.particleVisualizer && window.particleVisualizer.audioContext) {
           window.particleVisualizer.audioContext.resume();
+        }
+        
+        // Create and unlock a global AudioContext for Web Audio TTS playback
+        if (!window._globalAudioCtx) {
+          window._globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (window._globalAudioCtx.state === 'suspended') {
+          window._globalAudioCtx.resume();
         }
       }
       
@@ -35705,7 +35771,12 @@
       }
       
       // Rotate the screen — uses html element (not body) so position:fixed video stays pinned
+      // Only allowed for Nathan's account
       window.rotateScreen = function() {
+        if (typeof ACTIVE_ACCOUNT !== 'undefined' && ACTIVE_ACCOUNT !== 'nathan') {
+          console.log('🔄 Rotation disabled for account:', ACTIVE_ACCOUNT);
+          return;
+        }
         currentRotation = currentRotation === 0 ? 180 : 0;
         
         if (currentRotation === 180) {
@@ -37050,13 +37121,11 @@
           setTimeout(resolve, 3000);
         });
       } else {
-        // Fetch TTS for other languages - use the pre-initialized ttsAudio element
-        // (it was created during initTTSAudio closer to user gesture, so browser allows playback)
+        // Fetch TTS for other languages
+        // Use Web Audio API (AudioContext) to bypass autoplay restrictions -
+        // the context was unlocked during user gesture in startModeWithAnimation
         const welcomeTextForTTS = WELCOME_MESSAGES[lang] || WELCOME_MESSAGES['en'];
         console.log('📡 Fetching TTS for', lang);
-        
-        // Ensure ttsAudio is initialized
-        var welcomeTtsAudio = (typeof window.initTTSAudio === 'function') ? window.initTTSAudio() : null;
         
         try {
           const response = await fetch('/api/tts', {
@@ -37068,16 +37137,61 @@
           if (response.ok) {
             const audioBlob = await response.blob();
             if (audioBlob.size > 100) {
-              const welcomeAudioUrl = URL.createObjectURL(audioBlob);
-              // Use pre-initialized ttsAudio element (browser trusts it more for autoplay)
-              if (welcomeTtsAudio) {
-                welcomeTtsAudio.src = welcomeAudioUrl;
-                welcomeTtsAudio._currentUrl = welcomeAudioUrl;
-                audioElement = welcomeTtsAudio;
-                audioElement._objectUrl = welcomeAudioUrl;
-              } else {
-                audioElement = new Audio(welcomeAudioUrl);
-                audioElement._objectUrl = welcomeAudioUrl;
+              // Use the global AudioContext (unlocked during user gesture in startModeWithAnimation)
+              let audioCtx = window._globalAudioCtx 
+                || (window.particleVisualizer && window.particleVisualizer.audioContext) 
+                || new (window.AudioContext || window.webkitAudioContext)();
+              
+              if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+              }
+              
+              // Decode and play through Web Audio API (bypasses autoplay policy)
+              const arrayBuffer = await audioBlob.arrayBuffer();
+              const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+              
+              const source = audioCtx.createBufferSource();
+              source.buffer = audioBuffer;
+              
+              const gainNode = audioCtx.createGain();
+              gainNode.gain.value = 0.7;
+              source.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+              
+              // Create a fake audioElement interface for the visualizer and mute toggle
+              audioElement = {
+                _isWebAudioSource: true,
+                _source: source,
+                _gainNode: gainNode,
+                _audioCtx: audioCtx,
+                _startTime: audioCtx.currentTime,
+                _duration: audioBuffer.duration,
+                duration: audioBuffer.duration,
+                volume: 0.7,
+                currentTime: 0,
+                paused: true,
+                play: function() {
+                  source.start(0);
+                  this.paused = false;
+                  if (this.onplay) this.onplay();
+                  // Schedule the onended callback
+                  setTimeout(() => {
+                    this.paused = true;
+                    if (this.onended) this.onended();
+                  }, audioBuffer.duration * 1000 + 100);
+                  return Promise.resolve();
+                },
+                pause: function() {
+                  try { source.stop(); } catch(e) {}
+                  this.paused = true;
+                }
+              };
+              
+              // Connect to visualizer analyser if available
+              if (window.particleVisualizer && window.particleVisualizer.analyser) {
+                try {
+                  gainNode.connect(window.particleVisualizer.analyser);
+                } catch(e) {}
               }
             }
           }
@@ -37106,7 +37220,7 @@
         setTimeout(() => showAISuggestions('welcome'), 300);
       }
       
-      // Play audio (we're now in user gesture context from the tap)
+      // Play audio
       if (audioElement) {
         // Store reference so toggleTTSMute can pause it
         window.currentWelcomeAudio = audioElement;
@@ -37118,53 +37232,68 @@
         }
         
         console.log('🔊 Playing welcome audio...');
-        audioElement.volume = 0.7;
-        audioElement.currentTime = 0;
         
-        // Connect to visualizer
-        if (window.particleVisualizer) {
+        if (audioElement._isWebAudioSource) {
+          // Web Audio API path (non-English) - already connected to visualizer
+          audioElement.onplay = () => {
+            console.log('🔊 Welcome audio PLAYING (WebAudio)');
+            if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+          };
+          audioElement.onended = () => {
+            console.log('🔊 Welcome audio ENDED (WebAudio)');
+            window.currentWelcomeAudio = null;
+            if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          };
           try {
-            window.particleVisualizer.connectAudio(audioElement);
-          } catch (e) {}
-        }
-        
-        audioElement.onplay = () => {
-          console.log('🔊 Welcome audio PLAYING');
-          if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
-        };
-        
-        audioElement.onended = () => {
-          console.log('🔊 Welcome audio ENDED');
-          // Clean up object URL to prevent memory leak
-          if (audioElement._objectUrl) {
-            URL.revokeObjectURL(audioElement._objectUrl);
-            audioElement._objectUrl = null;
+            await audioElement.play();
+            console.log('✅ Welcome audio started (WebAudio)!');
+          } catch (e) {
+            console.error('❌ WebAudio play failed:', e.message);
           }
-          window.currentWelcomeAudio = null;
-          if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
-          const micBtn = document.getElementById('ai-mic-btn');
-          if (micBtn) micBtn.classList.add('ready-to-speak');
-        };
-        
-        try {
-          await audioElement.play();
-          console.log('✅ Welcome audio started!');
-        } catch (e) {
-          console.error('❌ Play failed, retrying after delay:', e.message);
-          // Retry after a short delay - audio context may need a moment to unlock
-          setTimeout(async () => {
+        } else {
+          // HTML Audio element path (English)
+          audioElement.volume = 0.7;
+          audioElement.currentTime = 0;
+          
+          // Connect to visualizer
+          if (window.particleVisualizer) {
             try {
-              await audioElement.play();
-              console.log('✅ Welcome audio started on retry!');
-            } catch (e2) {
-              console.error('❌ Play retry also failed:', e2.message);
+              window.particleVisualizer.connectAudio(audioElement);
+            } catch (e) {}
+          }
+          
+          audioElement.onplay = () => {
+            console.log('🔊 Welcome audio PLAYING');
+            if (window.particleVisualizer) window.particleVisualizer.startSpeaking();
+          };
+          
+          audioElement.onended = () => {
+            console.log('🔊 Welcome audio ENDED');
+            if (audioElement._objectUrl) {
+              URL.revokeObjectURL(audioElement._objectUrl);
+              audioElement._objectUrl = null;
             }
-          }, 500);
+            window.currentWelcomeAudio = null;
+            if (window.particleVisualizer) window.particleVisualizer.stopSpeaking();
+          };
+          
+          try {
+            await audioElement.play();
+            console.log('✅ Welcome audio started!');
+          } catch (e) {
+            console.error('❌ Play failed, retrying after delay:', e.message);
+            setTimeout(async () => {
+              try {
+                await audioElement.play();
+                console.log('✅ Welcome audio started on retry!');
+              } catch (e2) {
+                console.error('❌ Play retry also failed:', e2.message);
+              }
+            }, 500);
+          }
         }
       } else {
         console.log('⚠️ No audio - text only');
-        const micBtn = document.getElementById('ai-mic-btn');
-        if (micBtn) micBtn.classList.add('ready-to-speak');
       }
     }
     
