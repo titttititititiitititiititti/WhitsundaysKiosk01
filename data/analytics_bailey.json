@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T09:31:53.384269",
+  "last_updated": "2026-05-27T09:32:15.698172",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -32902,12 +32902,56 @@
           "data": {
             "mode": "quick-decision"
           }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T09:32:11.324687",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T09:32:11.925168",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-27T09:32:12.620778",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T09:32:15.440368",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "prosail",
+            "source": "swipe"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-27T09:32:15.698101",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "prosail",
+            "source": "swipe"
+          }
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
-      "tours_booked": [],
+      "tours_booked": [
+        "Hammer Whitsundays Sailing Tour"
+      ],
       "chat_messages": []
     }
   ]
