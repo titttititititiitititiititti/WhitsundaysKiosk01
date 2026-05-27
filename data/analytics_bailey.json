@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-27T22:55:31.566829",
+  "last_updated": "2026-05-27T22:55:45.091620",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33475,6 +33475,47 @@
       ],
       "ended_at": "2026-05-27T22:55:31.566760",
       "duration_seconds": 294.742371
+    },
+    {
+      "session_id": "session_9d0b50bdde6a_1779922536",
+      "account": "bailey",
+      "started_at": "2026-05-27T22:55:36.574708",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-27T22:55:36.574727",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-27T22:55:38.324660",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-27T22:55:39.499711",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-27T22:55:45.091532",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-27T22:55:45.091549",
+      "duration_seconds": 8.516841
     }
   ]
 }
