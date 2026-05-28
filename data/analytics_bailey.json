@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T22:28:30.866414",
+  "last_updated": "2026-05-28T22:31:00.611692",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -34047,11 +34047,29 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T22:30:37.735178",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T22:31:00.611644",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Tongarra Day Sailing Tour"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
