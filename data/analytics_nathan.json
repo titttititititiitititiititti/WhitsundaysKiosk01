@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-28T07:15:09.492404",
+  "last_updated": "2026-05-28T07:15:20.825685",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81757,12 +81757,34 @@
             "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
             "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T07:15:11.583917",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-28T07:15:20.825626",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
       "chat_messages": []
     }
   ]
