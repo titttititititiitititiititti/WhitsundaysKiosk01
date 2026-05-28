@@ -14045,18 +14045,19 @@
       // Try immediately
       forcePlay();
 
-      // Rapid retries for the first 5 seconds (handles slow video loading from CDN)
-      var rapidInterval = setInterval(forcePlay, 200);
+      // Rapid retries for the first 10 seconds (handles slow video loading from CDN)
+      var rapidInterval = setInterval(forcePlay, 100);
       setTimeout(function() {
         clearInterval(rapidInterval);
-      }, 5000);
+      }, 10000);
 
-      // Then slower interval forever
-      setInterval(forcePlay, 1000);
+      // Then slower interval forever as safety net
+      setInterval(forcePlay, 2000);
 
       // Instantly counter ANY pause event (nothing should ever pause this video)
       video.addEventListener('pause', function() {
         setTimeout(forcePlay, 0);
+        setTimeout(forcePlay, 50);
       });
 
       // Play when video data loads
@@ -14071,9 +14072,10 @@
         forcePlay();
       });
 
-      // Resume on user interaction (handles browser autoplay policy)
-      document.addEventListener('touchstart', forcePlay, { passive: true, once: true });
-      document.addEventListener('click', forcePlay, { once: true });
+      // Resume on ANY user interaction (no once: true - keep retrying)
+      document.addEventListener('touchstart', forcePlay, { passive: true });
+      document.addEventListener('click', forcePlay);
+      document.addEventListener('pointerdown', forcePlay, { passive: true });
 
       // Resume when tab becomes visible
       document.addEventListener('visibilitychange', function() {
@@ -25066,14 +25068,14 @@
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: tDual('ai_scenic_flights'), category: "adventure", action: "send", value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours" },
-          { text: tDual('ai_jet_ski'), category: "adventure", action: "send", value: t('ai_msg_jet_ski') || "Show me jet ski tours" },
-          { text: tDual('ai_popular'), category: "general", action: "send", value: t('ai_msg_popular') || "Show me popular tours" },
-          { text: tDual('ai_family_friendly'), category: "general", action: "send", value: t('ai_msg_family') || "Show me family friendly tours with kids" },
-          { text: tDual('ai_budget'), category: "general", action: "send", value: t('ai_msg_budget') || "Show me the cheapest budget tours" }
+          { text: tDual('ai_scenic_flights'), category: "adventure", action: "send", value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours", enValue: "Show me scenic flights or helicopter tours" },
+          { text: tDual('ai_jet_ski'), category: "adventure", action: "send", value: t('ai_msg_jet_ski') || "Show me jet ski tours", enValue: "Show me jet ski tours" },
+          { text: tDual('ai_popular'), category: "general", action: "send", value: t('ai_msg_popular') || "Show me popular tours", enValue: "Show me popular tours" },
+          { text: tDual('ai_family_friendly'), category: "general", action: "send", value: t('ai_msg_family') || "Show me family friendly tours with kids", enValue: "Show me family friendly tours with kids" },
+          { text: tDual('ai_budget'), category: "general", action: "send", value: t('ai_msg_budget') || "Show me the cheapest budget tours", enValue: "Show me the cheapest budget tours" }
         ],
         followup: [
-          { text: tDual('ai_other_options'), category: "general", action: "send", value: t('ai_msg_other') || "Show me other options" },
+          { text: tDual('ai_other_options'), category: "general", action: "send", value: t('ai_msg_other') || "Show me other options", enValue: "Show me other options" },
           { text: tDual('ai_different_activity'), category: "activities", action: "expand" },
           { text: tDual('ai_whos_going'), category: "audience", action: "expand" }
         ]
@@ -25094,20 +25096,20 @@
     function getAISubOptions() {
       return {
         audience: [
-          { text: "👨‍👩‍👧 " + tDual('family_with_kids'), value: t('ai_msg_kids') || "We're traveling with kids" },
-          { text: "💑 " + tDual('adults_only'), value: t('ai_msg_couple') || "It's just the two of us" },
-          { text: "🎉 " + tDual('activity_scenic'), value: t('ai_msg_friends') || "We're a group of friends" },
-          { text: "🧳 Solo", value: t('ai_msg_solo') || "I'm traveling solo" },
+          { text: "👨‍👩‍👧 " + tDual('family_with_kids'), value: t('ai_msg_kids') || "We're traveling with kids", enValue: "We're traveling with kids" },
+          { text: "💑 " + tDual('adults_only'), value: t('ai_msg_couple') || "It's just the two of us", enValue: "It's just the two of us" },
+          { text: "🎉 " + tDual('activity_scenic'), value: t('ai_msg_friends') || "We're a group of friends", enValue: "We're a group of friends" },
+          { text: "🧳 Solo", value: t('ai_msg_solo') || "I'm traveling solo", enValue: "I'm traveling solo" },
           { text: tDual('ai_back'), action: "back" }
         ],
         activities: [
           { text: tDual('ai_reef_tours'), category: "reef", action: "expand-duration" },
           { text: tDual('ai_beach_tours'), category: "beach", action: "expand-duration" },
           { text: tDual('ai_sailing'), category: "sailing", action: "expand-duration" },
-          { text: tDual('ai_scenic_flights'), value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours" },
-          { text: tDual('ai_jet_ski'), value: t('ai_msg_jet_ski') || "Show me jet ski tours" },
-          { text: tDual('ai_snorkeling'), value: t('ai_msg_snorkeling') || "Show me snorkeling tours" },
-          { text: tDual('ai_sunset_cruise'), value: t('ai_msg_sunset') || "Show me sunset cruises" },
+          { text: tDual('ai_scenic_flights'), value: t('ai_msg_scenic') || "Show me scenic flights or helicopter tours", enValue: "Show me scenic flights or helicopter tours" },
+          { text: tDual('ai_jet_ski'), value: t('ai_msg_jet_ski') || "Show me jet ski tours", enValue: "Show me jet ski tours" },
+          { text: tDual('ai_snorkeling'), value: t('ai_msg_snorkeling') || "Show me snorkeling tours", enValue: "Show me snorkeling tours" },
+          { text: tDual('ai_sunset_cruise'), value: t('ai_msg_sunset') || "Show me sunset cruises", enValue: "Show me sunset cruises" },
           { text: tDual('ai_back'), action: "back" }
         ]
       };
@@ -25133,7 +25135,8 @@
       container.innerHTML = categories.map(s => {
         const dataAttrs = `data-category="${s.category}" data-action="${s.action || 'send'}"`;
         const value = s.value ? `data-value="${s.value}"` : '';
-        return `<button class="ai-suggestion-btn" ${dataAttrs} ${value} onclick="handleSuggestionClick(this)">${s.text}</button>`;
+        const enVal = s.enValue ? `data-en-value="${s.enValue}"` : '';
+        return `<button class="ai-suggestion-btn" ${dataAttrs} ${value} ${enVal} onclick="handleSuggestionClick(this)">${s.text}</button>`;
       }).join('');
       
       container.style.display = 'flex';
@@ -25164,19 +25167,22 @@
     function selectAIDuration(btn) {
       const duration = btn.dataset.duration;
       const activityLabel = getActivityLabel(selectedActivity);
+      const enActivityLabel = ACTIVITY_LABELS[selectedActivity] || selectedActivity;
       
-      // Build a natural message in the user's language
-      let message;
+      // Build translated message for display
+      let displayMessage, englishMessage;
       if (duration) {
         var template = t('ai_msg_want_tour') || "I want a {0} {1} tour";
-        message = template.replace('{0}', duration).replace('{1}', activityLabel);
+        displayMessage = template.replace('{0}', duration).replace('{1}', activityLabel);
+        englishMessage = `I want a ${duration} ${enActivityLabel} tour`;
       } else {
         var template = t('ai_msg_show_tours') || "Show me {0} tours";
-        message = template.replace('{0}', activityLabel);
+        displayMessage = template.replace('{0}', activityLabel);
+        englishMessage = `Show me ${enActivityLabel} tours`;
       }
       
-      console.log(`🎯 Quick selection: ${message}`);
-      sendSuggestionMessage(message);
+      console.log(`🎯 Quick selection: ${displayMessage} (en: ${englishMessage})`);
+      sendSuggestionMessage(displayMessage, englishMessage);
     }
     
     function showSubOptions(category) {
@@ -25196,7 +25202,8 @@
         if (s.action === 'expand-duration') {
           return `<button class="ai-suggestion-btn" data-category="${s.category}" data-action="expand-duration" onclick="handleSuggestionClick(this)">${s.text}</button>`;
         }
-        return `<button class="ai-suggestion-btn" data-value="${s.value}" onclick="selectAISuggestionValue(this)">${s.text}</button>`;
+        const enVal = s.enValue ? ` data-en-value="${s.enValue}"` : '';
+        return `<button class="ai-suggestion-btn" data-value="${s.value}"${enVal} onclick="selectAISuggestionValue(this)">${s.text}</button>`;
       }).join('');
     }
     
@@ -25204,40 +25211,39 @@
       const action = btn.dataset.action;
       const category = btn.dataset.category;
       const value = btn.dataset.value;
+      const enValue = btn.dataset.enValue;
       
       if (action === 'expand-duration') {
-        // Show duration options for this activity
         showDurationOptions(category, btn);
       } else if (action === 'expand') {
-        // Show sub-options for this category
         showSubOptions(category);
       } else {
-        // Send immediately
         const text = value || btn.textContent;
-        sendSuggestionMessage(text);
+        sendSuggestionMessage(text, enValue || text);
       }
     }
     
     function selectAISuggestionValue(btn) {
       const value = btn.dataset.value;
+      const enValue = btn.dataset.enValue;
       if (value) {
-        sendSuggestionMessage(value);
+        sendSuggestionMessage(value, enValue || value);
       }
     }
     
-    function sendSuggestionMessage(text) {
+    function sendSuggestionMessage(displayText, englishText) {
       const input = document.getElementById('ai-text-input');
       const sendBtn = document.getElementById('ai-send-btn');
       if (input) {
-        input.value = text;
+        input.value = displayText;
+        // Store English version for backend (tour matching only works with English)
+        input.dataset.englishMessage = englishText || displayText;
         input.focus();
-        // Trigger input event to activate send button glow
         input.dispatchEvent(new Event('input'));
       }
       // Flash send button GREEN to draw attention - user needs to tap it!
       if (sendBtn) {
         sendBtn.classList.add('flash-green');
-        // Remove after animation completes (or when user taps send)
         setTimeout(() => sendBtn.classList.remove('flash-green'), 8000);
       }
     }
@@ -25362,19 +25368,23 @@
       
       if (!input || !messagesContainer) return;
       
-      const message = input.value.trim();
-      if (!message) return;
+      const displayMessage = input.value.trim();
+      if (!displayMessage) return;
+      
+      // Use English version for backend (tour matching) if available from pre-fill buttons
+      const message = (input.dataset.englishMessage || displayMessage).trim();
+      input.dataset.englishMessage = '';
       
       // Track user message with analytics
-      Analytics.chatMessage('user', message);
+      Analytics.chatMessage('user', displayMessage);
       
-      // Add user message to UI
+      // Add user message to UI (show in user's language)
       const userMsg = document.createElement('div');
       userMsg.className = 'ai-message user';
-      userMsg.textContent = message;
+      userMsg.textContent = displayMessage;
       messagesContainer.appendChild(userMsg);
       
-      // Add to conversation history
+      // Add to conversation history (English for backend processing)
       aiConversationHistory.push({ role: 'user', content: message });
       
       // Clear input and remove send button glow
