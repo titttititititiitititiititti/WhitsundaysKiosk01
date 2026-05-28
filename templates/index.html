@@ -14012,9 +14012,9 @@
   
   <!-- GLOBAL Video Background - OUTSIDE all page containers for consistent display -->
   {% if bg_video_url %}
-  <video id="bg-video" autoplay muted loop playsinline preload="auto" src="{{ bg_video_url }}"></video>
+  <video id="bg-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disableRemotePlayback x-webkit-airplay="deny" src="{{ bg_video_url }}"></video>
   {% else %}
-  <video id="bg-video" autoplay muted loop playsinline preload="auto">
+  <video id="bg-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disableRemotePlayback x-webkit-airplay="deny">
     <source src="{{ url_for('static', filename='b_roll/0124.mp4') }}" type="video/mp4">
   </video>
   {% endif %}
@@ -14029,42 +14029,73 @@
       video.setAttribute('playsinline', '');
       video.setAttribute('autoplay', '');
       video.setAttribute('loop', '');
+      video.removeAttribute('controls');
+
+      var playAttempts = 0;
 
       function forcePlay() {
-        if (!video.paused && !video.ended) return;
-        if (video.ended) video.currentTime = 0;
+        if (!video.paused && !video.ended && video.readyState >= 2) return;
         video.muted = true;
-        video.play().catch(function() {});
+        video.volume = 0;
+        if (video.ended) video.currentTime = 0;
+        var p = video.play();
+        if (p && p.catch) p.catch(function() {});
+        playAttempts++;
       }
 
-      // Explicitly trigger load (helps with remote CDN sources)
-      if (video.readyState < 2) {
-        video.load();
+      // Use requestAnimationFrame for the first 30 seconds - most reliable on iPad
+      var rafStart = Date.now();
+      function rafLoop() {
+        if (video.paused || video.ended || video.readyState < 2) {
+          forcePlay();
+        }
+        // Keep RAF loop running for 30 seconds, then fall back to interval
+        if (Date.now() - rafStart < 30000) {
+          requestAnimationFrame(rafLoop);
+        }
       }
+      requestAnimationFrame(rafLoop);
 
-      // Try immediately
-      forcePlay();
+      // Permanent safety net interval
+      setInterval(function() {
+        if (video.paused || video.ended) {
+          forcePlay();
+        }
+      }, 1000);
 
-      // Rapid retries for the first 10 seconds (handles slow video loading from CDN)
-      var rapidInterval = setInterval(forcePlay, 100);
-      setTimeout(function() {
-        clearInterval(rapidInterval);
-      }, 10000);
-
-      // Then slower interval forever as safety net
-      setInterval(forcePlay, 2000);
-
-      // Instantly counter ANY pause event (nothing should ever pause this video)
-      video.addEventListener('pause', function() {
-        setTimeout(forcePlay, 0);
-        setTimeout(forcePlay, 50);
+      // Instantly counter ANY pause event
+      video.addEventListener('pause', function(e) {
+        e.preventDefault();
+        forcePlay();
+        setTimeout(forcePlay, 10);
+        setTimeout(forcePlay, 100);
+        setTimeout(forcePlay, 500);
       });
 
-      // Play when video data loads
+      // Play when video data becomes available
       video.addEventListener('loadeddata', forcePlay);
       video.addEventListener('canplay', forcePlay);
       video.addEventListener('canplaythrough', forcePlay);
       video.addEventListener('loadedmetadata', forcePlay);
+      video.addEventListener('progress', function() {
+        if (video.paused) forcePlay();
+      });
+
+      // If video stalls or suspends, force it to resume
+      video.addEventListener('stalled', function() {
+        video.load();
+        setTimeout(forcePlay, 200);
+        setTimeout(forcePlay, 1000);
+      });
+      video.addEventListener('suspend', function() {
+        if (video.paused) {
+          forcePlay();
+          setTimeout(forcePlay, 500);
+        }
+      });
+      video.addEventListener('waiting', function() {
+        setTimeout(forcePlay, 500);
+      });
 
       // Loop when ended
       video.addEventListener('ended', function() {
@@ -14072,19 +14103,45 @@
         forcePlay();
       });
 
-      // Resume on ANY user interaction (no once: true - keep retrying)
-      document.addEventListener('touchstart', forcePlay, { passive: true });
-      document.addEventListener('click', forcePlay);
-      document.addEventListener('pointerdown', forcePlay, { passive: true });
+      // Resume on ANY user interaction
+      ['touchstart', 'touchend', 'click', 'pointerdown', 'mousedown', 'keydown'].forEach(function(evt) {
+        document.addEventListener(evt, forcePlay, { passive: true });
+      });
 
       // Resume when tab becomes visible
       document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) forcePlay();
+        if (!document.hidden) {
+          forcePlay();
+          setTimeout(forcePlay, 200);
+          setTimeout(forcePlay, 1000);
+        }
       });
 
-      // Also try on DOMContentLoaded and window load
+      // Try on page lifecycle events
       document.addEventListener('DOMContentLoaded', forcePlay);
-      window.addEventListener('load', forcePlay);
+      window.addEventListener('load', function() {
+        forcePlay();
+        setTimeout(forcePlay, 500);
+        setTimeout(forcePlay, 1500);
+        setTimeout(forcePlay, 3000);
+      });
+
+      // Explicitly trigger load if not ready
+      if (video.readyState < 2) {
+        video.load();
+      }
+
+      // If video still hasn't played after 8 seconds, try reloading source
+      setTimeout(function() {
+        if (video.paused && video.readyState < 3) {
+          console.warn('[BG-VIDEO] Still not playing after 8s, reloading...');
+          video.load();
+          setTimeout(forcePlay, 500);
+        }
+      }, 8000);
+
+      // Expose globally so other code can trigger it
+      window._forcePlayBgVideo = forcePlay;
     })();
   </script>
   
@@ -16548,9 +16605,13 @@
     function loadVideoSmart(videoElement, startPlaying = true, forceReload = false) {
       if (!videoElement) return;
       
-      // Video source is already set in HTML - just ensure it's playing
-      if (startPlaying && videoElement.paused) {
-        videoElement.play().catch(() => {});
+      // Use global force play for bg-video
+      if (startPlaying) {
+        if (window._forcePlayBgVideo) {
+          window._forcePlayBgVideo();
+        } else if (videoElement.paused) {
+          videoElement.play().catch(() => {});
+        }
       }
     }
     
