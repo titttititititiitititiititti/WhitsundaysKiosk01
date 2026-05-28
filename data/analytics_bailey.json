@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T21:35:57.381234",
+  "last_updated": "2026-05-28T21:48:11.677392",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33897,6 +33897,88 @@
       "chat_messages": [],
       "ended_at": "2026-05-28T21:35:57.381188",
       "duration_seconds": 377.106898
+    },
+    {
+      "session_id": "session_26558e14363b_1780004864",
+      "account": "bailey",
+      "started_at": "2026-05-28T21:47:44.712402",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T21:47:44.712412",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-28T21:47:46.592595",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T21:47:52.549999",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:47:58.090683",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:48:04.136487",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "multi_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:48:06.183508",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:48:08.897075",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:48:10.674599",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "sailing"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T21:48:11.677336",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
