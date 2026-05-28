@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T11:30:16.821380",
+  "last_updated": "2026-05-28T11:30:45.932364",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33423,10 +33423,17 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T00:27:18.898887",
+          "data": {
+            "mode": "map-view"
+          }
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -33483,6 +33490,11 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-28T00:35:24.129502",
+          "data": {}
         }
       ],
       "language": "en",
@@ -33493,7 +33505,9 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-28T00:35:24.129515",
+      "duration_seconds": 459.898524
     },
     {
       "session_id": "session_fee5e1dfb4cd_1779929108",

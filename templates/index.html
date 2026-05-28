@@ -19933,9 +19933,16 @@
       }
     };
     
-    // Analytics is now initialized AFTER user taps to begin (not on page load)
-    // This prevents logging sessions from idle splash screens
-    // Analytics.init() is called in dismissSplashScreen() and selectSplashLanguage()
+    // Auto-init analytics if splash was already skipped (kiosk with ?lang= param)
+    // This handles the case where the splash IIFE ran before Analytics was defined
+    (function() {
+      const splashEl = document.getElementById('main-splash-screen');
+      const splashIsHidden = !splashEl || splashEl.style.display === 'none' || !splashEl.classList.contains('active');
+      if (splashIsHidden) {
+        console.log('📊 Analytics: Auto-init (splash was skipped)');
+        Analytics.init();
+      }
+    })();
     
     // Go back to language selection when clicking logo
     window.goToLanguageSelection = function() {
@@ -22545,6 +22552,9 @@
     // Wrapper function to start mode with animation
     function startModeWithAnimation(mode) {
       console.log('🚀 Starting mode with animation:', mode);
+      
+      // Ensure analytics is tracking
+      if (typeof Analytics !== 'undefined') Analytics.init();
       
       // Mark that a real mode was selected (prevents weather-only tracking)
       window._anyModeSelected = true;
