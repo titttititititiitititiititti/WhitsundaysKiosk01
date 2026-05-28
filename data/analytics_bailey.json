@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T00:28:03.705467",
+  "last_updated": "2026-05-28T00:30:26.774623",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -29041,12 +29041,34 @@
             "filter_type": "duration",
             "filter_value": "cruise_ship"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T00:30:12.060227",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-28T00:30:26.774543",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "tour-detail"
+          }
         }
       ],
       "language": "en",
       "mode": "quick-decision",
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
+      "tours_booked": [
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
       "chat_messages": []
     }
   ]
