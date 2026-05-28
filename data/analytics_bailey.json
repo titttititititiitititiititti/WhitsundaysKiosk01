@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T17:19:43.220863",
+  "last_updated": "2026-05-28T07:15:06.472353",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33423,10 +33423,17 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T00:27:18.898887",
+          "data": {
+            "mode": "map-view"
+          }
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -33483,6 +33490,11 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-28T00:35:24.129502",
+          "data": {}
         }
       ],
       "language": "en",
@@ -33493,7 +33505,9 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-05-28T00:35:24.129515",
+      "duration_seconds": 459.898524
     },
     {
       "session_id": "session_fee5e1dfb4cd_1779929108",
@@ -33750,191 +33764,6 @@
       "tours_viewed": [
         "Hammer Whitsundays Sailing Tour"
       ],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_8aad74335fe5_1779936673",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:51:13.493153",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-28T02:51:13.493169",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
-            "referrer": "https://www.filtour.com/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-28T02:51:15.254208",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-28T02:51:18.213292",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-28T02:51:48.327050",
-          "data": {
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "send_to_phone_clicked",
-          "timestamp": "2026-05-28T02:52:47.329942",
-          "data": {
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "tour-detail"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights"
-      ],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "375bb3e9-b273-4480-b7ba-41a1e88dd1c5",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:52:55.319889",
-      "events": [
-        {
-          "type": "qr_tour_visit",
-          "timestamp": "2026-05-28T02:52:55.319901",
-          "data": {
-            "tour_key": "oceanrafting__64fa24ebe474042c",
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "tracking_id": "bb6033b7",
-            "timestamp": "1779936767",
-            "language": "en",
-            "referrer": "None",
-            "referral_account": null
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_65100c3dbfd5_1779936779",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:52:59.490581",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-28T02:52:59.490590",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
-            "referrer": "https://www.filtour.com/tour/oceanrafting__64fa24ebe474042c?lang=en&ref=None&mode=browse&tid=bb6033b7&t=1779936767"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-28T02:53:00.906784",
-          "data": {
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights"
-      ],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "6b9f430a-6670-4f2e-bc04-9d39d4c6da23",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:55:08.698108",
-      "events": [
-        {
-          "type": "qr_tour_visit",
-          "timestamp": "2026-05-28T02:55:08.698119",
-          "data": {
-            "tour_key": "oceanrafting__64fa24ebe474042c",
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "tracking_id": "bb6033b7",
-            "timestamp": "1779936767",
-            "language": "en",
-            "referrer": "None",
-            "referral_account": null
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "8d032ca1-03ce-477d-9c9a-aa53c800fa7f",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:55:09.018852",
-      "events": [
-        {
-          "type": "qr_tour_visit",
-          "timestamp": "2026-05-28T02:55:09.018864",
-          "data": {
-            "tour_key": "oceanrafting__64fa24ebe474042c",
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "tracking_id": "bb6033b7",
-            "timestamp": "1779936767",
-            "language": "en",
-            "referrer": "None",
-            "referral_account": null
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": []
-    },
-    {
-      "session_id": "6bb80281-23c1-44c6-99d1-992be53dc26d",
-      "account": "bailey",
-      "started_at": "2026-05-28T02:55:09.332837",
-      "events": [
-        {
-          "type": "qr_tour_visit",
-          "timestamp": "2026-05-28T02:55:09.332847",
-          "data": {
-            "tour_key": "oceanrafting__64fa24ebe474042c",
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "tracking_id": "bb6033b7",
-            "timestamp": "1779936767",
-            "language": "en",
-            "referrer": "None",
-            "referral_account": null
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     },
