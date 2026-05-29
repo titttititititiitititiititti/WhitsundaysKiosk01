@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-28T07:15:20.825685",
+  "last_updated": "2026-05-30T03:08:35.071131",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81691,6 +81691,48 @@
       "duration_seconds": 502.73574
     },
     {
+      "session_id": "session_b00f44a69a5d_1779952509",
+      "account": "nathan",
+      "started_at": "2026-05-28T07:15:09.492345",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T07:15:09.492357",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T07:15:11.583917",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-28T07:15:20.825626",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "chat_messages": []
+    },
+    {
       "session_id": "session_d3107753b9c6_1779931555",
       "account": "nathan",
       "started_at": "2026-05-28T11:25:55.514230",
@@ -81746,21 +81788,28 @@
       "chat_messages": []
     },
     {
-      "session_id": "session_b00f44a69a5d_1779952509",
+      "session_id": "session_5420afbbebbe_1779952287",
       "account": "nathan",
-      "started_at": "2026-05-28T07:15:09.492345",
+      "started_at": "2026-05-28T17:11:28.098759",
       "events": [
         {
           "type": "session_start",
-          "timestamp": "2026-05-28T07:15:09.492357",
+          "timestamp": "2026-05-28T17:11:28.098759",
           "data": {
-            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
-            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T17:11:36.767870",
+          "data": {
+            "mode": "browse-all"
           }
         },
         {
           "type": "tour_clicked",
-          "timestamp": "2026-05-28T07:15:11.583917",
+          "timestamp": "2026-05-28T17:12:04.588995",
           "data": {
             "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
             "company": "Cruise Whitsundays",
@@ -81768,24 +81817,283 @@
           }
         },
         {
-          "type": "book_now_clicked",
-          "timestamp": "2026-05-28T07:15:20.825626",
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-28T17:14:52.649005",
           "data": {
             "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
             "company": "Cruise Whitsundays",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-28T17:23:58.940241",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-28T17:23:58.940241",
+      "duration_seconds": 750.841482
+    },
+    {
+      "session_id": "session_d7da8031e2f7_1779954247",
+      "account": "nathan",
+      "started_at": "2026-05-28T17:44:07.691895",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T17:44:07.691895",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T17:44:13.164361",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T17:44:18.301437",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T17:44:19.910222",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T17:44:23.022820",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T17:44:29.012191",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "snorkeling"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_fdd1e57469f0_1779954568",
+      "account": "nathan",
+      "started_at": "2026-05-28T17:49:28.901392",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T17:49:28.901392",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-28T17:49:35.371574",
+          "data": {
+            "language": "zh"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T17:50:06.220182",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T17:50:08.936884",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T17:53:31.559749",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T18:06:13.400862",
+          "data": {
+            "tour_name": "\u5723\u7075\u7fa4\u5c9b\u65cb\u98ce\u4e4b\u65c5 20\u5206\u949f\u76f4\u5347\u673a\u89c2\u5149",
+            "company": "airliebeachhelicopters",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-28T18:17:10.518539",
+          "data": {}
+        }
+      ],
+      "language": "zh",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\u5723\u7075\u7fa4\u5c9b\u65cb\u98ce\u4e4b\u65c5 20\u5206\u949f\u76f4\u5347\u673a\u89c2\u5149"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-28T18:17:10.518539",
+      "duration_seconds": 1661.617147
+    },
+    {
+      "session_id": "session_c49713a31697_1779955511",
+      "account": "nathan",
+      "started_at": "2026-05-28T18:05:11.456505",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T18:05:11.456505",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T18:05:15.115817",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:05:21.365930",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:05:22.792180",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:05:30.145932",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_4ae5c0a7114f_1779956901",
+      "account": "nathan",
+      "started_at": "2026-05-28T18:28:21.928341",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T18:28:21.928341",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T18:28:26.161484",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:28:30.396199",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:28:31.940658",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-05-28T18:28:35.971320",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_6961d573a418_1780032021",
+      "account": "nathan",
+      "started_at": "2026-05-29T15:20:21.297236",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-29T15:20:21.297236",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-05-29T15:25:25.877848",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "tours_booked": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "chat_messages": []
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-05-29T15:25:25.877848",
+      "duration_seconds": 304.580612
     }
   ]
 }
