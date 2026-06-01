@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-06-01T01:36:35.237844",
+  "last_updated": "2026-06-01T01:45:20.934167",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -34605,13 +34605,27 @@
           "data": {
             "mode": "quick-decision"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-01T01:44:34.135488",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-01T01:45:20.934108",
+          "data": {}
         }
       ],
       "language": "en",
-      "mode": "quick-decision",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-01T01:45:20.934118",
+      "duration_seconds": 533.695354
     }
   ]
 }
