@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-04T16:36:22.939075",
+  "last_updated": "2026-06-04T16:37:21.200605",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -82624,125 +82624,29 @@
     {
       "session_id": "session_a69dd4e7208c_1780446158",
       "account": "nathan",
-      "started_at": "2026-06-03T10:23:02.826395",
+      "started_at": "2026-06-03T10:22:38.321368",
       "events": [
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:23:02.826395",
+          "type": "session_start",
+          "timestamp": "2026-06-03T10:22:38.321368",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "whitehaven_beach"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:11.923101",
+          "type": "mode_selected",
+          "timestamp": "2026-06-03T10:22:45.069611",
           "data": {
-            "filter_type": "duration",
-            "filter_value": "no_preference"
+            "mode": "quick-decision"
           }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:13.514392",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:19.246256",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "sailing"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:39.361939",
-          "data": {
-            "filter_type": "duration",
-            "filter_value": "no_preference"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:41.601548",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:43.809644",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:44.139857",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:46.762776",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:47.509373",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "swimming"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:49.000299",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "sailing"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:49.263759",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:50.537529",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-03T10:30:04.329467",
-          "data": {}
         }
       ],
       "language": null,
-      "mode": null,
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-03T10:30:04.329467",
-      "duration_seconds": 421.503072
+      "chat_messages": []
     },
     {
       "session_id": "session_3aa2cdb4690d_1780465036",
@@ -82779,32 +82683,15 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-03T15:39:55.261074",
-          "data": {
-            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-03T15:50:01.666112",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights",
-        "Whitehaven Beach & Hamilton Island Tour"
+        "Fly Raft \u2013 Southern Lights"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-03T15:50:01.666112",
-      "duration_seconds": 764.671876
+      "chat_messages": []
     },
     {
       "session_id": "session_23cad87ffc96_1780536166",
@@ -82887,20 +82774,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-04T11:44:39.566633",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-04T11:44:39.566633",
-      "duration_seconds": 584.764683
+      "chat_messages": []
     },
     {
       "session_id": "session_3e90d1034497_1780537013",
@@ -82928,13 +82808,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-04T11:44:36.923502",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-04T11:44:36.923502",
+      "duration_seconds": 463.52153
     },
     {
       "session_id": "session_2010e29a65a1_1780543479",
@@ -82962,13 +82849,85 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-04T13:34:01.073165",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-04T13:34:01.073165",
+      "duration_seconds": 561.244517
+    },
+    {
+      "session_id": "session_c8f4a82ead17_1780547511",
+      "account": "nathan",
+      "started_at": "2026-06-04T14:31:52.004447",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-04T14:31:52.004447",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-06-04T14:31:57.197251",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-04T14:32:05.589462",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-04T14:32:12.435764",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-04T14:32:15.090407",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-04T14:32:19.487200",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-04T14:39:03.348453",
+          "data": {}
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-06-04T14:39:03.348453",
+      "duration_seconds": 431.344006
     }
   ]
 }
