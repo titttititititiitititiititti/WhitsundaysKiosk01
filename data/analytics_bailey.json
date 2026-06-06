@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-06-06T04:32:53.826998",
+  "last_updated": "2026-06-06T23:20:54.299147",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -35093,6 +35093,67 @@
       "chat_messages": [],
       "ended_at": "2026-06-06T04:32:53.826923",
       "duration_seconds": 353.325277
+    },
+    {
+      "session_id": "session_ffd784f49c2a_1780788011",
+      "account": "bailey",
+      "started_at": "2026-06-06T23:20:11.455539",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-06T23:20:11.455557",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-06-06T23:20:13.140686",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-06T23:20:19.437950",
+          "data": {
+            "mode": "ai-assistant"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-06-06T23:20:43.765909",
+          "data": {
+            "role": "user",
+            "message": "I want a half day reef snorkeling tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-06-06T23:20:54.299059",
+          "data": {
+            "role": "assistant",
+            "message": "It sounds like you're excited to explore the underwater wonders! \ud83c\udf0a While I don't have specific half-day reef snorkeling tours available, I can suggest some fantastic alternatives for you! \n\nLet me show you some options for snorkeling in the Whitsundays:  \n\n1. **Amazing Reef Adventure** - Experience the beauty of coral gardens and vibrant marine life on this half-day snorkeling tour! You'll have the chance to explore the stunning fringing reefs and see a variety of colorful fish and other sea cr"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "ai-assistant",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a half day reef snorkeling tour",
+          "timestamp": "2026-06-06T23:20:43.765930"
+        },
+        {
+          "role": "assistant",
+          "message": "It sounds like you're excited to explore the underwater wonders! \ud83c\udf0a While I don't have specific half-day reef snorkeling tours available, I can suggest some fantastic alternatives for you! \n\nLet me show you some options for snorkeling in the Whitsundays:  \n\n1. **Amazing Reef Adventure** - Experience the beauty of coral gardens and vibrant marine life on this half-day snorkeling tour! You'll have the chance to explore the stunning fringing reefs and see a variety of colorful fish and other sea cr",
+          "timestamp": "2026-06-06T23:20:54.299076"
+        }
+      ]
     }
   ]
 }
