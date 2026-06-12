@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-12T11:54:46.033303",
+  "last_updated": "2026-06-12T11:55:03.498430",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -82624,125 +82624,29 @@
     {
       "session_id": "session_a69dd4e7208c_1780446158",
       "account": "nathan",
-      "started_at": "2026-06-03T10:23:02.826395",
+      "started_at": "2026-06-03T10:22:38.321368",
       "events": [
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:23:02.826395",
+          "type": "session_start",
+          "timestamp": "2026-06-03T10:22:38.321368",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "whitehaven_beach"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:11.923101",
+          "type": "mode_selected",
+          "timestamp": "2026-06-03T10:22:45.069611",
           "data": {
-            "filter_type": "duration",
-            "filter_value": "no_preference"
+            "mode": "quick-decision"
           }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:13.514392",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:19.246256",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "sailing"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:39.361939",
-          "data": {
-            "filter_type": "duration",
-            "filter_value": "no_preference"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:41.601548",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:43.809644",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:44.139857",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:46.762776",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:47.509373",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "swimming"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:49.000299",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "sailing"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:49.263759",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-06-03T10:24:50.537529",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "island_tours"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-03T10:30:04.329467",
-          "data": {}
         }
       ],
       "language": null,
-      "mode": null,
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-03T10:30:04.329467",
-      "duration_seconds": 421.503072
+      "chat_messages": []
     },
     {
       "session_id": "session_3aa2cdb4690d_1780465036",
@@ -82779,32 +82683,15 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-03T15:39:55.261074",
-          "data": {
-            "tour_name": "Whitehaven Beach & Hamilton Island Tour",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-03T15:50:01.666112",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights",
-        "Whitehaven Beach & Hamilton Island Tour"
+        "Fly Raft \u2013 Southern Lights"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-03T15:50:01.666112",
-      "duration_seconds": 764.671876
+      "chat_messages": []
     },
     {
       "session_id": "session_23cad87ffc96_1780536166",
@@ -82887,20 +82774,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-04T11:44:39.566633",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-04T11:44:39.566633",
-      "duration_seconds": 584.764683
+      "chat_messages": []
     },
     {
       "session_id": "session_3e90d1034497_1780537013",
@@ -82928,13 +82808,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-04T11:44:36.923502",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-04T11:44:36.923502",
+      "duration_seconds": 463.52153
     },
     {
       "session_id": "session_2010e29a65a1_1780543479",
@@ -82962,13 +82849,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-04T13:34:01.073165",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-04T13:34:01.073165",
+      "duration_seconds": 561.244517
     },
     {
       "session_id": "session_c8f4a82ead17_1780547511",
@@ -83054,20 +82948,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-05T13:00:45.532758",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-05T13:00:45.532758",
-      "duration_seconds": 429.798514
+      "chat_messages": []
     },
     {
       "session_id": "session_e7424c712f89_1780632469",
@@ -83095,20 +82982,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-05T14:14:58.805132",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-05T14:14:58.805132",
-      "duration_seconds": 429.453233
+      "chat_messages": []
     },
     {
       "session_id": "session_515ce740a161_1780713895",
@@ -83143,13 +83023,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-06T12:51:05.613206",
+          "data": {}
         }
       ],
       "language": "fr",
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-06T12:51:05.613206",
+      "duration_seconds": 370.530007
     },
     {
       "session_id": "session_513d5dcdbdfb_1780721086",
@@ -83201,13 +83088,20 @@
             "filter_type": "activities",
             "filter_value": "scenic_views"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-06T14:51:57.146586",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-06T14:51:57.146586",
+      "duration_seconds": 431.033791
     },
     {
       "session_id": "session_e4feb54fa55a_1780875950",
@@ -83228,13 +83122,41 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-08T09:47:49.152880",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Tagestour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-08T09:49:16.065802",
+          "data": {
+            "tour_name": "Whitehaven Beach- und Hamilton Island-Tour",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-08T09:57:16.913387",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
-      "tours_viewed": [],
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Tagestour",
+        "Whitehaven Beach- und Hamilton Island-Tour"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-08T09:57:16.913387",
+      "duration_seconds": 686.797772
     },
     {
       "session_id": "session_c38b9e71f6a5_1780973221",
@@ -83262,13 +83184,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-09T12:56:26.455693",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-09T12:56:26.455693",
+      "duration_seconds": 564.381114
     },
     {
       "session_id": "session_b478950003e0_1780974498",
@@ -83289,20 +83218,13 @@
           "data": {
             "language": "de"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-09T13:17:35.537893",
-          "data": {}
         }
       ],
       "language": "de",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-09T13:17:35.537893",
-      "duration_seconds": 557.142195
+      "chat_messages": []
     },
     {
       "session_id": "session_65ff6e741aa4_1780987494",
@@ -83365,11 +83287,6 @@
             "company": "Red Cat Adventures",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-09T17:01:31.052157",
-          "data": {}
         }
       ],
       "language": null,
@@ -83379,9 +83296,7 @@
         "Thundercat Whitsundays - All Inclusive Tagestour"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-09T17:01:31.052157",
-      "duration_seconds": 996.689358
+      "chat_messages": []
     },
     {
       "session_id": "session_307288bb9b71_1780989052",
@@ -83402,13 +83317,20 @@
           "data": {
             "mode": "newcomer-info"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-09T17:28:39.183016",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "newcomer-info",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-09T17:28:39.183016",
+      "duration_seconds": 1066.5091
     },
     {
       "session_id": "session_c7cfcd9646f0_1781070575",
@@ -83525,11 +83447,6 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-10T15:53:01.688807",
-          "data": {}
         }
       ],
       "language": "fr",
@@ -83539,9 +83456,7 @@
         "Aventure \u00e0 la voile Camira"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-10T15:53:01.688807",
-      "duration_seconds": 377.389662
+      "chat_messages": []
     },
     {
       "session_id": "session_0e156d3f9356_1781070441",
@@ -83562,13 +83477,40 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-10T15:48:28.138557",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-06-10T15:49:18.376477",
+          "data": {
+            "tour_name": "Camira Sailing Adventure",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-10T15:59:56.222756",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
-      "tours_viewed": [],
+      "tours_viewed": [
+        "Camira Sailing Adventure"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-10T15:59:56.222756",
+      "duration_seconds": 754.609513
     },
     {
       "session_id": "session_c727cc8f3785_1781141148",
@@ -83628,20 +83570,13 @@
             "filter_type": "activities",
             "filter_value": "no_preference"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-11T11:33:59.041759",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-11T11:33:59.042764",
-      "duration_seconds": 490.989479
+      "chat_messages": []
     },
     {
       "session_id": "session_eeabdcede44a_1781156534",
@@ -83676,38 +83611,13 @@
           "data": {
             "mode": "map-view"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-06-11T15:44:51.566892",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-11T15:47:39.041549",
-          "data": {
-            "tour_name": "Airlie Beach Sunset Sail in Style Cruise",
-            "company": "wings",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-11T15:53:02.778414",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "browse-all",
-      "tours_viewed": [
-        "Airlie Beach Sunset Sail in Style Cruise"
-      ],
+      "mode": "map-view",
+      "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-11T15:53:02.778414",
-      "duration_seconds": 648.162422
+      "chat_messages": []
     },
     {
       "session_id": "session_16059c115c37_1781220616",
@@ -83784,12 +83694,57 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-12T09:42:45.898431",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [
         "Whitsunday 60 Minute Scenic Flight"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-06-12T09:42:45.898431",
+      "duration_seconds": 749.651838
+    },
+    {
+      "session_id": "session_56d05c504b0f_1781229053",
+      "account": "nathan",
+      "started_at": "2026-06-12T11:50:53.968022",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-12T11:50:53.968022",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-12T11:50:56.942559",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-12T11:51:39.400070",
+          "data": {
+            "tour_name": "Northern Exposure Eco Adventure",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Northern Exposure Eco Adventure"
       ],
       "tours_booked": [],
       "chat_messages": []
