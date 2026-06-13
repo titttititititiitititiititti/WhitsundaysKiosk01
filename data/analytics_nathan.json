@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-13T16:14:06.118282",
+  "last_updated": "2026-06-13T16:14:20.544641",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -83384,51 +83384,6 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:54:32.676477",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:54:33.104834",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:56:16.008097",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:56:16.469192",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "send_to_phone_clicked",
-          "timestamp": "2026-06-10T08:56:26.688464",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
         }
       ],
       "language": null,
@@ -83804,56 +83759,36 @@
     {
       "session_id": "session_d5342287872d_1781229312",
       "account": "nathan",
-      "started_at": "2026-06-12T11:55:39.200237",
+      "started_at": "2026-06-12T11:55:12.295529",
       "events": [
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:39.200237",
+          "type": "session_start",
+          "timestamp": "2026-06-12T11:55:12.295529",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "swimming"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:41.589554",
+          "type": "language_selected",
+          "timestamp": "2026-06-12T11:55:15.166349",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "scenic_views"
+            "language": "en"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:44.988485",
+          "type": "mode_selected",
+          "timestamp": "2026-06-12T11:55:20.369115",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "scenic_views"
+            "mode": "quick-decision"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-12T12:00:05.225591",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-12T12:08:10.446545",
-          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-12T12:08:10.446545",
-      "duration_seconds": 751.246308
+      "chat_messages": []
     },
     {
       "session_id": "session_330eacd9634e_1781306559",
@@ -84032,6 +83967,40 @@
       "chat_messages": [],
       "ended_at": "2026-06-13T14:24:04.721226",
       "duration_seconds": 431.453129
+    },
+    {
+      "session_id": "session_f7c97faa31f7_1781331107",
+      "account": "nathan",
+      "started_at": "2026-06-13T16:11:47.458525",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-13T16:11:47.458525",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-13T16:11:56.174617",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-13T16:11:59.202088",
+          "data": {
+            "mode": "map-view"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "map-view",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
