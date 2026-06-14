@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-14T12:43:50.832116",
+  "last_updated": "2026-06-14T12:43:56.592213",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -83384,51 +83384,6 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:54:32.676477",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:54:33.104834",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:56:16.008097",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-10T08:56:16.469192",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "send_to_phone_clicked",
-          "timestamp": "2026-06-10T08:56:26.688464",
-          "data": {
-            "tour_name": "Camira Sailing Adventure",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
         }
       ],
       "language": null,
@@ -83804,56 +83759,36 @@
     {
       "session_id": "session_d5342287872d_1781229312",
       "account": "nathan",
-      "started_at": "2026-06-12T11:55:39.200237",
+      "started_at": "2026-06-12T11:55:12.295529",
       "events": [
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:39.200237",
+          "type": "session_start",
+          "timestamp": "2026-06-12T11:55:12.295529",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "swimming"
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:41.589554",
+          "type": "language_selected",
+          "timestamp": "2026-06-12T11:55:15.166349",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "scenic_views"
+            "language": "en"
           }
         },
         {
-          "type": "filter_selected",
-          "timestamp": "2026-06-12T11:55:44.988485",
+          "type": "mode_selected",
+          "timestamp": "2026-06-12T11:55:20.369115",
           "data": {
-            "filter_type": "activities",
-            "filter_value": "scenic_views"
+            "mode": "quick-decision"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-12T12:00:05.225591",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-12T12:08:10.446545",
-          "data": {}
         }
       ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-12T12:08:10.446545",
-      "duration_seconds": 751.246308
+      "chat_messages": []
     },
     {
       "session_id": "session_330eacd9634e_1781306559",
@@ -84059,13 +83994,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-13T16:18:56.711014",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-13T16:18:56.711014",
+      "duration_seconds": 429.252489
     },
     {
       "session_id": "session_ab518f7b59cc_1781391128",
@@ -84079,13 +84021,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-14T08:59:12.056741",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-14T08:59:12.056741",
+      "duration_seconds": 423.84512
     },
     {
       "session_id": "session_993745ff527a_1781391135",
@@ -84099,20 +84048,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T08:58:21.766558",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T08:58:21.766558",
-      "duration_seconds": 365.660993
+      "chat_messages": []
     },
     {
       "session_id": "session_db201a708ae8_1781397021",
@@ -84126,13 +84068,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-14T10:37:46.303658",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-14T10:37:46.303658",
+      "duration_seconds": 444.412184
     },
     {
       "session_id": "session_bd5e77544637_1781397062",
@@ -84146,20 +84095,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T10:37:07.064832",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T10:37:07.064832",
-      "duration_seconds": 364.362038
+      "chat_messages": []
     },
     {
       "session_id": "session_f0fc38f9e612_1781403851",
@@ -84173,27 +84115,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-06-14T12:27:46.458740",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T12:32:49.481024",
-          "data": {}
         }
       ],
-      "language": "en",
+      "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T12:32:49.481024",
-      "duration_seconds": 517.753986
+      "chat_messages": []
     },
     {
       "session_id": "session_18f45ced8a9d_1781404048",
@@ -84214,13 +84142,20 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-14T12:34:37.976131",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-14T12:34:37.976131",
+      "duration_seconds": 429.235342
     }
   ]
 }
