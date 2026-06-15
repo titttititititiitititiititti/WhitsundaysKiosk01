@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-06-15T03:25:42.966680",
+  "last_updated": "2026-06-15T14:28:13.814185",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33423,17 +33423,10 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-28T00:27:18.898887",
-          "data": {
-            "mode": "map-view"
-          }
         }
       ],
       "language": "en",
-      "mode": "map-view",
+      "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
@@ -33490,11 +33483,6 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-28T00:35:24.129502",
-          "data": {}
         }
       ],
       "language": "en",
@@ -33505,9 +33493,7 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-05-28T00:35:24.129515",
-      "duration_seconds": 459.898524
+      "chat_messages": []
     },
     {
       "session_id": "session_fee5e1dfb4cd_1779929108",
@@ -33768,6 +33754,191 @@
       "chat_messages": []
     },
     {
+      "session_id": "session_8aad74335fe5_1779936673",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:51:13.493153",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T02:51:13.493169",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-05-28T02:51:15.254208",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-05-28T02:51:18.213292",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T02:51:48.327050",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "send_to_phone_clicked",
+          "timestamp": "2026-05-28T02:52:47.329942",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "375bb3e9-b273-4480-b7ba-41a1e88dd1c5",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:52:55.319889",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-28T02:52:55.319901",
+          "data": {
+            "tour_key": "oceanrafting__64fa24ebe474042c",
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "tracking_id": "bb6033b7",
+            "timestamp": "1779936767",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_65100c3dbfd5_1779936779",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:52:59.490581",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T02:52:59.490590",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+            "referrer": "https://www.filtour.com/tour/oceanrafting__64fa24ebe474042c?lang=en&ref=None&mode=browse&tid=bb6033b7&t=1779936767"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T02:53:00.906784",
+          "data": {
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Fly Raft \u2013 Southern Lights"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "6b9f430a-6670-4f2e-bc04-9d39d4c6da23",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:55:08.698108",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-28T02:55:08.698119",
+          "data": {
+            "tour_key": "oceanrafting__64fa24ebe474042c",
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "tracking_id": "bb6033b7",
+            "timestamp": "1779936767",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "8d032ca1-03ce-477d-9c9a-aa53c800fa7f",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:55:09.018852",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-28T02:55:09.018864",
+          "data": {
+            "tour_key": "oceanrafting__64fa24ebe474042c",
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "tracking_id": "bb6033b7",
+            "timestamp": "1779936767",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "6bb80281-23c1-44c6-99d1-992be53dc26d",
+      "account": "bailey",
+      "started_at": "2026-05-28T02:55:09.332837",
+      "events": [
+        {
+          "type": "qr_tour_visit",
+          "timestamp": "2026-05-28T02:55:09.332847",
+          "data": {
+            "tour_key": "oceanrafting__64fa24ebe474042c",
+            "tour_name": "Fly Raft \u2013 Southern Lights",
+            "tracking_id": "bb6033b7",
+            "timestamp": "1779936767",
+            "language": "en",
+            "referrer": "None",
+            "referral_account": null
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
       "session_id": "88f5dac7-a4a3-4b59-a2a4-9e0540885584",
       "account": "bailey",
       "started_at": "2026-05-28T07:15:06.472249",
@@ -33842,20 +34013,13 @@
             "filter_type": "activities",
             "filter_value": "scenic_views"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-28T20:19:45.347227",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-28T20:19:45.347240",
-      "duration_seconds": 418.575606
+      "chat_messages": []
     },
     {
       "session_id": "session_e82577f97704_1780003780",
@@ -33972,27 +34136,13 @@
             "filter_type": "activities",
             "filter_value": "snorkeling"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-28T21:50:16.542309",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-28T21:55:41.349371",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "map-view",
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-28T21:55:41.349379",
-      "duration_seconds": 476.636977
+      "chat_messages": []
     },
     {
       "session_id": "session_c6aadef77503_1780005446",
@@ -34063,11 +34213,6 @@
             "company": "Red Cat Adventures",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-28T22:36:20.815265",
-          "data": {}
         }
       ],
       "language": "en",
@@ -34076,9 +34221,7 @@
         "Tongarra Day Sailing Tour"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-28T22:36:20.815276",
-      "duration_seconds": 472.001973
+      "chat_messages": []
     },
     {
       "session_id": "session_2578d68d7a7b_1780018089",
@@ -34153,65 +34296,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-05-29T21:31:56.179827",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-29T21:31:59.019643",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-05-29T21:33:10.375427",
-          "data": {
-            "filter_type": "duration",
-            "filter_value": "half_day"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-05-29T21:33:12.938594",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "adults_only"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-05-29T21:33:17.588732",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "whitehaven_beach"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-05-29T21:33:43.456573",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-29T21:39:12.527363",
-          "data": {}
         }
       ],
-      "language": "en",
-      "mode": "map-view",
+      "language": null,
+      "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-29T21:39:12.527373",
-      "duration_seconds": 438.009663
+      "chat_messages": []
     },
     {
       "session_id": "session_eadc535e0db3_1780092402",
@@ -34248,11 +34339,6 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-29T22:49:09.778731",
-          "data": {}
         }
       ],
       "language": "en",
@@ -34261,9 +34347,7 @@
         "Whitsunday 60 Minute Scenic Flight"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-29T22:49:09.778741",
-      "duration_seconds": 2547.319691
+      "chat_messages": []
     },
     {
       "session_id": "session_fc2843e98013_1780101434",
@@ -34277,20 +34361,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-30T00:42:14.898373",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-30T00:42:14.898390",
-      "duration_seconds": 299.998142
+      "chat_messages": []
     },
     {
       "session_id": "session_c835c7945a01_1780182856",
@@ -34482,20 +34559,13 @@
           "data": {
             "mode": "ai-assistant"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-05-31T22:37:20.955979",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "ai-assistant",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-05-31T22:37:20.955988",
-      "duration_seconds": 543.151981
+      "chat_messages": []
     },
     {
       "session_id": "session_ff14caf1125a_1780271942",
@@ -34523,20 +34593,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-01T00:04:38.280682",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-01T00:04:38.280691",
-      "duration_seconds": 335.593706
+      "chat_messages": []
     },
     {
       "session_id": "session_442d865c1abe_1780277685",
@@ -34605,27 +34668,13 @@
           "data": {
             "mode": "quick-decision"
           }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-06-01T01:44:34.135488",
-          "data": {
-            "mode": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-01T01:45:20.934108",
-          "data": {}
         }
       ],
       "language": "en",
-      "mode": "browse-all",
+      "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-01T01:45:20.934118",
-      "duration_seconds": 533.695354
+      "chat_messages": []
     },
     {
       "session_id": "session_ddb62f213443_1780278326",
@@ -34714,20 +34763,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-01T21:24:02.279859",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-01T21:24:02.279877",
-      "duration_seconds": 300.369862
+      "chat_messages": []
     },
     {
       "session_id": "session_51ec95fbaba4_1780373512",
@@ -34834,20 +34876,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-02T23:17:11.652440",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-02T23:17:11.652452",
-      "duration_seconds": 299.994962
+      "chat_messages": []
     },
     {
       "session_id": "session_474a8f24b387_1780446530",
@@ -34943,11 +34978,6 @@
             "company": "ProSail",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-04T22:09:58.350907",
-          "data": {}
         }
       ],
       "language": "en",
@@ -34956,9 +34986,7 @@
         "Broomstick Whitsundays \u2013 Sailing Tour"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-04T22:09:58.350916",
-      "duration_seconds": 361.677195
+      "chat_messages": []
     },
     {
       "session_id": "session_d93050462b29_1780615110",
@@ -35079,20 +35107,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-06T04:32:53.826907",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-06T04:32:53.826923",
-      "duration_seconds": 353.325277
+      "chat_messages": []
     },
     {
       "session_id": "session_ffd784f49c2a_1780788011",
@@ -35174,20 +35195,13 @@
           "data": {
             "language": "en"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-07T00:43:17.499439",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-07T00:43:17.499459",
-      "duration_seconds": 302.371312
+      "chat_messages": []
     },
     {
       "session_id": "session_1e79bca3b1f3_1780795791",
@@ -35296,11 +35310,6 @@
             "company": "Red Cat Adventures",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-07T23:39:44.436851",
-          "data": {}
         }
       ],
       "language": "en",
@@ -35309,9 +35318,7 @@
         "Thundercat Whitsundays - All Inclusive Day Tour"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-07T23:39:44.436871",
-      "duration_seconds": 382.7247
+      "chat_messages": []
     },
     {
       "session_id": "session_a33e19c359ad_1780876315",
@@ -35373,20 +35380,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-08T00:32:30.466625",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-08T00:32:30.466639",
-      "duration_seconds": 317.995274
+      "chat_messages": []
     },
     {
       "session_id": "session_68d7767404b2_1780961754",
@@ -35414,20 +35414,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-08T23:41:29.708363",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-08T23:41:29.708372",
-      "duration_seconds": 335.211489
+      "chat_messages": []
     },
     {
       "session_id": "session_f6a276bd457e_1781059713",
@@ -35759,20 +35752,13 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/?lang=en"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-13T20:24:30.347698",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-13T20:24:30.347712",
-      "duration_seconds": 300.189902
+      "chat_messages": []
     },
     {
       "session_id": "session_f4a5b4989e4f_1781397061",
@@ -35793,20 +35779,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T00:36:39.630836",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T00:36:39.630850",
-      "duration_seconds": 338.299468
+      "chat_messages": []
     },
     {
       "session_id": "session_b265120fcb5a_1781404912",
@@ -35834,20 +35813,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T02:47:56.455250",
-          "data": {}
         }
       ],
       "language": "zh",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T02:47:56.455263",
-      "duration_seconds": 363.52794
+      "chat_messages": []
     },
     {
       "session_id": "29da7e28-b537-47b6-af9c-97293cfdc589",
@@ -35948,20 +35920,13 @@
             "filter_type": "activities",
             "filter_value": "scenic_views"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-15T03:25:42.966581",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-15T03:25:42.966614",
-      "duration_seconds": 545.951935
+      "chat_messages": []
     }
   ]
 }
