@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-16T13:57:22.732894",
+  "last_updated": "2026-06-16T13:57:34.785486",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -82029,11 +82029,6 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T13:21:41.463064",
-          "data": {}
         }
       ],
       "language": null,
@@ -82044,9 +82039,7 @@
       "tours_booked": [
         "\u5723\u7075\u5c9b 60 \u5206\u949f\u89c2\u5149\u98de\u884c"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T13:21:41.463064",
-      "duration_seconds": 671.881352
+      "chat_messages": []
     },
     {
       "session_id": "session_7cb592ef39bf_1781406714",
@@ -82061,6 +82054,11 @@
             "company": "oceanrafting",
             "source": "swipe"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-14T13:21:46.435941",
+          "data": {}
         }
       ],
       "language": null,
@@ -82069,7 +82067,9 @@
       "tours_booked": [
         "\u98de\u884c\u7b4f - \u5357\u65b9\u4e4b\u5149"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-14T13:21:46.435941",
+      "duration_seconds": 533.6643
     },
     {
       "session_id": "session_78e6abfd9c63_1781481159",
@@ -82097,20 +82097,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-15T10:00:51.351120",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-15T10:00:51.351120",
-      "duration_seconds": 491.96594
+      "chat_messages": []
     },
     {
       "session_id": "session_59c5b01eb38f_1781489733",
@@ -82140,12 +82133,87 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-15T12:19:04.190021",
+          "data": {
+            "tour_name": "Sameera \uc120\uc14b \uc2a4\ud0c0\uc77c",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-15T12:29:01.670871",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [
-        "\ud654\uc774\ud2b8\ud5e4\uc774\ube10 \ube44\uce58 & \ud574\ubc00\ud134 \uc544\uc77c\ub79c\ub4dc \ud22c\uc5b4"
+        "\ud654\uc774\ud2b8\ud5e4\uc774\ube10 \ube44\uce58 & \ud574\ubc00\ud134 \uc544\uc77c\ub79c\ub4dc \ud22c\uc5b4",
+        "Sameera \uc120\uc14b \uc2a4\ud0c0\uc77c"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-06-15T12:29:01.670871",
+      "duration_seconds": 808.036403
+    },
+    {
+      "session_id": "session_17e12fa899f2_1781582116",
+      "account": "nathan",
+      "started_at": "2026-06-16T13:55:16.917419",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-16T13:55:16.917419",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-16T13:55:21.297446",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-16T13:56:32.008159",
+          "data": {
+            "tour_name": "\u98de\u884c\u7b4f - \u5357\u65b9\u4e4b\u5149",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-16T13:57:00.766922",
+          "data": {
+            "tour_name": "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+            "company": "Explore Group",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-16T13:57:21.349228",
+          "data": {
+            "tour_name": "Sameera\u65e5\u843d\u98ce\u683c",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": null,
+      "mode": "browse-all",
+      "tours_viewed": [
+        "\u98de\u884c\u7b4f - \u5357\u65b9\u4e4b\u5149",
+        "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
+        "Sameera\u65e5\u843d\u98ce\u683c"
       ],
       "tours_booked": [],
       "chat_messages": []
