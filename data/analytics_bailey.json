@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-06-24T22:00:28.705278",
+  "last_updated": "2026-06-26T00:05:28.990569",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -36866,6 +36866,64 @@
       "chat_messages": [],
       "ended_at": "2026-06-24T22:00:28.705230",
       "duration_seconds": 345.192402
+    },
+    {
+      "session_id": "session_c672884a198e_1782432297",
+      "account": "bailey",
+      "started_at": "2026-06-26T00:04:57.945444",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-26T00:04:57.945457",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-06-26T00:04:59.838737",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-06-26T00:05:04.879678",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-26T00:05:19.501047",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-26T00:05:22.882290",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-06-26T00:05:28.990491",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "no_preference"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
