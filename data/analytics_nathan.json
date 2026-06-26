@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-26T12:57:07.799479",
+  "last_updated": "2026-06-26T12:57:17.727206",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -82029,6 +82029,11 @@
             "company": "Ocean Rafting",
             "source": "tour-detail"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-14T13:21:41.463064",
+          "data": {}
         }
       ],
       "language": null,
@@ -82039,7 +82044,9 @@
       "tours_booked": [
         "\u5723\u7075\u5c9b 60 \u5206\u949f\u89c2\u5149\u98de\u884c"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-14T13:21:41.463064",
+      "duration_seconds": 671.881352
     },
     {
       "session_id": "session_7cb592ef39bf_1781406714",
@@ -82054,11 +82061,6 @@
             "company": "oceanrafting",
             "source": "swipe"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-14T13:21:46.435941",
-          "data": {}
         }
       ],
       "language": null,
@@ -82067,9 +82069,7 @@
       "tours_booked": [
         "\u98de\u884c\u7b4f - \u5357\u65b9\u4e4b\u5149"
       ],
-      "chat_messages": [],
-      "ended_at": "2026-06-14T13:21:46.435941",
-      "duration_seconds": 533.6643
+      "chat_messages": []
     },
     {
       "session_id": "session_78e6abfd9c63_1781481159",
@@ -82097,13 +82097,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-15T10:00:51.351120",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-15T10:00:51.351120",
+      "duration_seconds": 491.96594
     },
     {
       "session_id": "session_59c5b01eb38f_1781489733",
@@ -82133,32 +82140,15 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-15T12:19:04.190021",
-          "data": {
-            "tour_name": "Sameera \uc120\uc14b \uc2a4\ud0c0\uc77c",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-15T12:29:01.670871",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [
-        "\ud654\uc774\ud2b8\ud5e4\uc774\ube10 \ube44\uce58 & \ud574\ubc00\ud134 \uc544\uc77c\ub79c\ub4dc \ud22c\uc5b4",
-        "Sameera \uc120\uc14b \uc2a4\ud0c0\uc77c"
+        "\ud654\uc774\ud2b8\ud5e4\uc774\ube10 \ube44\uce58 & \ud574\ubc00\ud134 \uc544\uc77c\ub79c\ub4dc \ud22c\uc5b4"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-15T12:29:01.670871",
-      "duration_seconds": 808.036403
+      "chat_messages": []
     },
     {
       "session_id": "session_17e12fa899f2_1781582116",
@@ -82206,65 +82196,6 @@
             "company": "Cruise Whitsundays",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-16T13:57:44.955851",
-          "data": {
-            "tour_name": "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-16T13:57:50.624498",
-          "data": {
-            "tour_name": "\u5723\u7075\u5c9b 60 \u5206\u949f\u89c2\u5149\u98de\u884c",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-16T13:57:56.280026",
-          "data": {
-            "tour_name": "Whitehaven \u6d77\u6ee9\u548c Hill Inlet Chill & Grill",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-16T13:58:42.795929",
-          "data": {
-            "tour_name": "\u5728\u827e\u5c14\u5229\u6d77\u6ee9\u548c\u5723\u7075\u7fa4\u5c9b\u4e0a\u7a7a\u4f53\u9a8c\u8df3\u4f1e\uff01",
-            "company": "skydive",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-06-16T13:59:14.052842",
-          "data": {
-            "tour_name": "\u73ca\u745a\u7901\u5957\u623f\u6c34\u4e0b\u4f4f\u5bbf",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-06-16T13:59:49.923516",
-          "data": {
-            "tour_name": "\u73ca\u745a\u7901\u5957\u623f\u6c34\u4e0b\u4f4f\u5bbf",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-16T14:06:47.228725",
-          "data": {}
         }
       ],
       "language": null,
@@ -82272,19 +82203,10 @@
       "tours_viewed": [
         "\u98de\u884c\u7b4f - \u5357\u65b9\u4e4b\u5149",
         "\u4ece\u8212\u7279\u6e2f\u5168\u65e5\u6f5c\u6c34\u5927\u5821\u7901",
-        "Sameera\u65e5\u843d\u98ce\u683c",
-        "\u5317\u90e8\u66dd\u9732\u751f\u6001\u63a2\u9669",
-        "\u5723\u7075\u5c9b 60 \u5206\u949f\u89c2\u5149\u98de\u884c",
-        "Whitehaven \u6d77\u6ee9\u548c Hill Inlet Chill & Grill",
-        "\u5728\u827e\u5c14\u5229\u6d77\u6ee9\u548c\u5723\u7075\u7fa4\u5c9b\u4e0a\u7a7a\u4f53\u9a8c\u8df3\u4f1e\uff01",
-        "\u73ca\u745a\u7901\u5957\u623f\u6c34\u4e0b\u4f4f\u5bbf"
+        "Sameera\u65e5\u843d\u98ce\u683c"
       ],
-      "tours_booked": [
-        "\u73ca\u745a\u7901\u5957\u623f\u6c34\u4e0b\u4f4f\u5bbf"
-      ],
-      "chat_messages": [],
-      "ended_at": "2026-06-16T14:06:47.228725",
-      "duration_seconds": 690.311306
+      "tours_booked": [],
+      "chat_messages": []
     },
     {
       "session_id": "session_0970de1a310b_1781597386",
@@ -82312,20 +82234,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-16T18:17:19.237152",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-16T18:17:19.237152",
-      "duration_seconds": 452.234973
+      "chat_messages": []
     },
     {
       "session_id": "session_5ab25b873e7c_1781656713",
@@ -82353,13 +82268,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-17T10:46:50.523795",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-17T10:46:50.523795",
+      "duration_seconds": 497.380386
     },
     {
       "session_id": "session_135e59a80f25_1781657469",
@@ -82403,13 +82325,20 @@
             "filter_type": "family_friendly",
             "filter_value": "adults_only"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-17T10:58:20.648332",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-17T10:58:20.648332",
+      "duration_seconds": 431.03477
     },
     {
       "session_id": "session_af58841be7d4_1781680238",
@@ -82464,13 +82393,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-18T18:01:49.392027",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-18T18:01:49.392027",
+      "duration_seconds": 429.178265
     },
     {
       "session_id": "session_6bf7293e655b_1781836684",
@@ -82509,11 +82445,6 @@
             "company": "whitsundayfishingcharters",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-19T12:49:10.460726",
-          "data": {}
         }
       ],
       "language": null,
@@ -82523,9 +82454,7 @@
         "Half-Day Fishing Trips in the Whitsundays"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-19T12:49:10.460726",
-      "duration_seconds": 665.508742
+      "chat_messages": []
     },
     {
       "session_id": "session_d7473e672fbd_1781840787",
@@ -82562,15 +82491,32 @@
             "company": "Ocean Rafting",
             "source": "browse-all"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-19T13:48:33.665803",
+          "data": {
+            "tour_name": "Balsa - Luces del Sur",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-19T14:02:38.899561",
+          "data": {}
         }
       ],
       "language": "es",
       "mode": "browse-all",
       "tours_viewed": [
-        "Luces del Sur"
+        "Luces del Sur",
+        "Balsa - Luces del Sur"
       ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-19T14:02:38.899561",
+      "duration_seconds": 971.337222
     },
     {
       "session_id": "session_d2543d3e245c_1781929408",
@@ -82598,20 +82544,13 @@
           "data": {
             "mode": "map-view"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-20T14:28:33.785130",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-20T14:28:33.785130",
-      "duration_seconds": 305.288177
+      "chat_messages": []
     },
     {
       "session_id": "session_53cc2a7aa074_1781929719",
@@ -82639,20 +82578,13 @@
           "data": {
             "mode": "map-view"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-20T14:34:18.189152",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-20T14:34:18.189152",
-      "duration_seconds": 338.351493
+      "chat_messages": []
     },
     {
       "session_id": "session_9b0374cac5bf_1781934490",
@@ -82704,13 +82636,20 @@
             "filter_type": "activities",
             "filter_value": "great_barrier_reef"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-20T15:55:23.878442",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-20T15:55:23.878442",
+      "duration_seconds": 433.056249
     },
     {
       "session_id": "session_f38ad0ed511d_1782087292",
@@ -82771,6 +82710,11 @@
             "company": "cruisewhitsundays",
             "source": "swipe"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-22T10:21:33.149315",
+          "data": {}
         }
       ],
       "language": "en",
@@ -82779,7 +82723,9 @@
       "tours_booked": [
         "Whitehaven Beach Morning or Afternoon Cruise"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-22T10:21:33.149315",
+      "duration_seconds": 400.908499
     },
     {
       "session_id": "session_7532b6482b6a_1782092026",
@@ -82858,16 +82804,34 @@
             "company": "redcatadventures",
             "source": "swipe"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-22T11:36:42.315542",
+          "data": {
+            "tour_name": "Whitsunday 60 Minute Scenic Flight",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-22T11:42:10.495239",
+          "data": {}
         }
       ],
       "language": "en",
       "mode": "quick-decision",
-      "tours_viewed": [],
+      "tours_viewed": [
+        "Whitsunday 60 Minute Scenic Flight"
+      ],
       "tours_booked": [
         "Camira Sailing Adventure",
         "Thundercat Whitsundays - All Inclusive Day Tour"
       ],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-22T11:42:10.495239",
+      "duration_seconds": 503.417083
     },
     {
       "session_id": "session_b671c5510adb_1782092439",
@@ -82913,11 +82877,6 @@
             "company": "jetskitour",
             "source": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-22T11:52:57.269530",
-          "data": {}
         }
       ],
       "language": "en",
@@ -82927,9 +82886,7 @@
         "Airlie Adventure Tour"
       ],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-22T11:52:57.269530",
-      "duration_seconds": 737.713364
+      "chat_messages": []
     },
     {
       "session_id": "session_7960cd21792a_1782110437",
@@ -82957,20 +82914,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-22T16:47:02.015520",
-          "data": {}
         }
       ],
       "language": "en",
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-22T16:47:02.015520",
-      "duration_seconds": 384.81964
+      "chat_messages": []
     },
     {
       "session_id": "session_94ad49ff99dd_1782185420",
@@ -82998,13 +82948,20 @@
           "data": {
             "mode": "map-view"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-23T13:35:42.389101",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "map-view",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-23T13:35:42.389101",
+      "duration_seconds": 321.999978
     },
     {
       "session_id": "session_08f887889093_1782265350",
@@ -83025,20 +82982,13 @@
           "data": {
             "mode": "browse-all"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-24T11:49:41.691299",
-          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-24T11:49:41.691299",
-      "duration_seconds": 431.406857
+      "chat_messages": []
     },
     {
       "session_id": "session_d60710bdd9cf_1782269401",
@@ -83052,13 +83002,20 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-24T12:55:01.707232",
+          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-24T12:55:01.707232",
+      "duration_seconds": 299.649242
     },
     {
       "session_id": "session_0102b3c65234_1782275113",
@@ -83079,13 +83036,20 @@
           "data": {
             "mode": "browse-all"
           }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-06-24T14:30:22.408205",
+          "data": {}
         }
       ],
       "language": null,
       "mode": "browse-all",
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [],
+      "ended_at": "2026-06-24T14:30:22.408205",
+      "duration_seconds": 308.8509
     },
     {
       "session_id": "session_e4274b257a7d_1782336545",
@@ -83099,20 +83063,13 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-25T07:35:11.658080",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-25T07:35:11.658080",
-      "duration_seconds": 365.708279
+      "chat_messages": []
     },
     {
       "session_id": "session_5ea34acdcf50_1782360386",
@@ -83126,20 +83083,33 @@
             "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "referrer": "http://localhost:5000/"
           }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-06-25T14:15:45.883624",
-          "data": {}
         }
       ],
       "language": null,
       "mode": null,
       "tours_viewed": [],
       "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-06-25T14:15:45.883624",
-      "duration_seconds": 558.954273
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_c2183f5c204d_1782442466",
+      "account": "nathan",
+      "started_at": "2026-06-26T12:54:27.042418",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-06-26T12:54:27.042418",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
