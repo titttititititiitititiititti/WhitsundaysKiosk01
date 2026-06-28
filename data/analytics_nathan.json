@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-06-28T02:26:35.538773",
+  "last_updated": "2026-06-28T02:27:04.805444",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81968,12 +81968,34 @@
             "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
             "referrer": "https://www.filtour.com/tour/sealink__5b25982353421ce9?lang=en&ref=nathan&mode=browse&tid=a0edb266&t=1782613580"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-06-28T02:26:44.753703",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-06-28T02:27:04.805384",
+          "data": {
+            "tour_name": "Purely Whitehaven Day Tour",
+            "company": "sealink",
+            "source": "embedded-booking"
+          }
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
+      "tours_viewed": [
+        "Purely Whitehaven Day Tour"
+      ],
+      "tours_booked": [
+        "Purely Whitehaven Day Tour"
+      ],
       "chat_messages": []
     }
   ]
