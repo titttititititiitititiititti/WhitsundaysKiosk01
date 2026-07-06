@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-07-06T11:14:34.206308",
+  "last_updated": "2026-07-06T11:15:13.790171",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -82160,6 +82160,48 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_229cfa827f10_1783300492",
+      "account": "nathan",
+      "started_at": "2026-07-06T11:14:52.475780",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-07-06T11:14:52.475780",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "referrer": "http://localhost:5000/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-07-06T11:14:55.010202",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-07-06T11:14:59.149120",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-07-06T11:15:05.429792",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "cruise_ship"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [],
       "chat_messages": []
     }
   ]
