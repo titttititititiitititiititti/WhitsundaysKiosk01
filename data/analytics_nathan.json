@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-07-06T13:51:00.312852",
+  "last_updated": "2026-07-05T21:43:15.526981",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81691,48 +81691,6 @@
       "duration_seconds": 502.73574
     },
     {
-      "session_id": "session_b00f44a69a5d_1779952509",
-      "account": "nathan",
-      "started_at": "2026-05-28T07:15:09.492345",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-28T07:15:09.492357",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
-            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-28T07:15:11.583917",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-05-28T07:15:20.825626",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "tours_booked": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "chat_messages": []
-    },
-    {
       "session_id": "session_d3107753b9c6_1779931555",
       "account": "nathan",
       "started_at": "2026-05-28T11:25:55.514230",
@@ -81785,6 +81743,48 @@
         "Let The Sea Set You Free"
       ],
       "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_b00f44a69a5d_1779952509",
+      "account": "nathan",
+      "started_at": "2026-05-28T07:15:09.492345",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T07:15:09.492357",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T07:15:11.583917",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-28T07:15:20.825626",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
       "chat_messages": []
     },
     {
@@ -82160,226 +82160,6 @@
       "tours_booked": [
         "Whitsunday 60 Minute Scenic Flight"
       ],
-      "chat_messages": []
-    },
-    {
-      "session_id": "session_229cfa827f10_1783300492",
-      "account": "nathan",
-      "started_at": "2026-07-06T11:14:52.475780",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-07-06T11:14:52.475780",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-07-06T11:14:55.010202",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:14:59.149120",
-          "data": {
-            "mode": "quick-decision"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-07-06T11:15:05.429792",
-          "data": {
-            "filter_type": "duration",
-            "filter_value": "cruise_ship"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-07-06T11:15:28.410065",
-          "data": {
-            "filter_type": "family_friendly",
-            "filter_value": "true"
-          }
-        },
-        {
-          "type": "filter_selected",
-          "timestamp": "2026-07-06T11:15:31.417600",
-          "data": {
-            "filter_type": "activities",
-            "filter_value": "scenic_views"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-07-06T11:16:39.686309",
-          "data": {
-            "tour_name": "Fly Raft \u2013 Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-07-06T11:22:12.326891",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "quick-decision",
-      "tours_viewed": [
-        "Fly Raft \u2013 Southern Lights"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-07-06T11:22:12.326891",
-      "duration_seconds": 439.851111
-    },
-    {
-      "session_id": "session_57e4e41d51f2_1783302063",
-      "account": "nathan",
-      "started_at": "2026-07-06T11:41:03.638358",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-07-06T11:41:03.638358",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:41:09.997535",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:41:11.338092",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:41:11.862857",
-          "data": {
-            "mode": "newcomer-info"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:41:12.638006",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-07-06T11:49:50.591967",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": "map-view",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-07-06T11:49:50.591967",
-      "duration_seconds": 526.953609
-    },
-    {
-      "session_id": "session_f637ca44c41a_1783302597",
-      "account": "nathan",
-      "started_at": "2026-07-06T11:49:57.263518",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-07-06T11:49:57.263518",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-07-06T11:50:00.691614",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:50:03.594246",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T11:50:06.334120",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-07-06T12:02:45.265100",
-          "data": {}
-        }
-      ],
-      "language": "en",
-      "mode": "map-view",
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-07-06T12:02:45.265100",
-      "duration_seconds": 768.001582
-    },
-    {
-      "session_id": "session_9db976fd0ca8_1783309717",
-      "account": "nathan",
-      "started_at": "2026-07-06T13:48:37.818317",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-07-06T13:48:37.818317",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "language_selected",
-          "timestamp": "2026-07-06T13:48:41.845214",
-          "data": {
-            "language": "en"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T13:50:47.466652",
-          "data": {
-            "mode": "map-view"
-          }
-        },
-        {
-          "type": "mode_selected",
-          "timestamp": "2026-07-06T13:50:49.886380",
-          "data": {
-            "mode": "map-view"
-          }
-        }
-      ],
-      "language": "en",
-      "mode": "map-view",
-      "tours_viewed": [],
-      "tours_booked": [],
       "chat_messages": []
     }
   ]
