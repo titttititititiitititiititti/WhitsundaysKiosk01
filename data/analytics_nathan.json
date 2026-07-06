@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-07-06T22:35:54.322889",
+  "last_updated": "2026-07-06T07:25:13.530051",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81691,48 +81691,6 @@
       "duration_seconds": 502.73574
     },
     {
-      "session_id": "session_b00f44a69a5d_1779952509",
-      "account": "nathan",
-      "started_at": "2026-05-28T07:15:09.492345",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-05-28T07:15:09.492357",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
-            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-05-28T07:15:11.583917",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "book_now_clicked",
-          "timestamp": "2026-05-28T07:15:20.825626",
-          "data": {
-            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
-            "company": "Cruise Whitsundays",
-            "source": "tour-detail"
-          }
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "tours_booked": [
-        "Whitehaven Beach Morning or Afternoon Cruise"
-      ],
-      "chat_messages": []
-    },
-    {
       "session_id": "session_d3107753b9c6_1779931555",
       "account": "nathan",
       "started_at": "2026-05-28T11:25:55.514230",
@@ -81785,6 +81743,48 @@
         "Let The Sea Set You Free"
       ],
       "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_b00f44a69a5d_1779952509",
+      "account": "nathan",
+      "started_at": "2026-05-28T07:15:09.492345",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-05-28T07:15:09.492357",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+            "referrer": "https://www.filtour.com/tour/cruisewhitsundays__whitehaven_beach_morning_or_afternoon_cruise?lang=en&ref=nathan&mode=browse&tid=d1f72a59&t=1779952492"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-05-28T07:15:11.583917",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-05-28T07:15:20.825626",
+          "data": {
+            "tour_name": "Whitehaven Beach Morning or Afternoon Cruise",
+            "company": "Cruise Whitsundays",
+            "source": "tour-detail"
+          }
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
+      "tours_booked": [
+        "Whitehaven Beach Morning or Afternoon Cruise"
+      ],
       "chat_messages": []
     },
     {
@@ -82181,73 +82181,6 @@
       "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
-    },
-    {
-      "session_id": "session_011708b65757_1783319966",
-      "account": "nathan",
-      "started_at": "2026-07-06T16:40:19.978438",
-      "events": [
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-07-06T16:40:19.978438",
-          "data": {
-            "tour_name": "Let The Sea Set You Free",
-            "company": "whitsundaybullet",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "tour_clicked",
-          "timestamp": "2026-07-06T16:43:08.240522",
-          "data": {
-            "tour_name": "Southern Lights",
-            "company": "Ocean Rafting",
-            "source": "browse-all"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-07-06T16:48:32.192239",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [
-        "Let The Sea Set You Free",
-        "Southern Lights"
-      ],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-07-06T16:48:32.192239",
-      "duration_seconds": 492.213801
-    },
-    {
-      "session_id": "session_85b51061baa8_1783320950",
-      "account": "nathan",
-      "started_at": "2026-07-06T16:55:50.453064",
-      "events": [
-        {
-          "type": "session_start",
-          "timestamp": "2026-07-06T16:55:50.453064",
-          "data": {
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-            "referrer": "http://localhost:5000/"
-          }
-        },
-        {
-          "type": "session_end",
-          "timestamp": "2026-07-06T17:00:59.395495",
-          "data": {}
-        }
-      ],
-      "language": null,
-      "mode": null,
-      "tours_viewed": [],
-      "tours_booked": [],
-      "chat_messages": [],
-      "ended_at": "2026-07-06T17:00:59.395495",
-      "duration_seconds": 308.942431
     }
   ]
 }
