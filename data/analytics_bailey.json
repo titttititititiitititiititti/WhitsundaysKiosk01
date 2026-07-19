@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-07-19T23:37:36.518902",
+  "last_updated": "2026-07-19T23:38:30.887514",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -34333,11 +34333,29 @@
           "data": {
             "language": "en"
           }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-07-19T23:38:00.609197",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-07-19T23:38:30.887465",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
         }
       ],
       "language": "en",
-      "mode": null,
-      "tours_viewed": [],
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Southern Lights"
+      ],
       "tours_booked": [],
       "chat_messages": []
     }
