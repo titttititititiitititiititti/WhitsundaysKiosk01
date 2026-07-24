@@ -55,7 +55,7 @@ APP_VERSION = "1.0.0"
 # BACKGROUND VIDEO URL - Fetch signed Streamable URL with caching
 # ============================================================================
 
-STREAMABLE_VIDEO_ID = 'fsdp2x'
+STREAMABLE_VIDEO_ID = '77rcfn'
 _bg_video_cache = {'url': '', 'fetched_at': 0}
 
 def get_bg_video_url():
