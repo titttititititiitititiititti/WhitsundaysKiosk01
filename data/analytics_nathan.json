@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "nathan",
-  "last_updated": "2026-05-28T11:30:48.595128",
+  "last_updated": "2026-07-24T12:05:39.665168",
   "sessions": [
     {
       "session_id": "session_c528649af723_1770849521",
@@ -81744,6 +81744,36 @@
       ],
       "tours_booked": [],
       "chat_messages": []
+    },
+    {
+      "session_id": "session_e75f6207519d_1784858477",
+      "account": "nathan",
+      "started_at": "2026-07-24T12:01:30.148935",
+      "events": [
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-07-24T12:01:30.148935",
+          "data": {
+            "tour_name": "Airlie Beach Sunset Cruise on Sundowner",
+            "company": "Sundowner Cruises",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "session_end",
+          "timestamp": "2026-07-24T12:02:31.602745",
+          "data": {}
+        }
+      ],
+      "language": null,
+      "mode": null,
+      "tours_viewed": [
+        "Airlie Beach Sunset Cruise on Sundowner"
+      ],
+      "tours_booked": [],
+      "chat_messages": [],
+      "ended_at": "2026-07-24T12:02:31.602745",
+      "duration_seconds": 61.45381
     }
   ]
 }
