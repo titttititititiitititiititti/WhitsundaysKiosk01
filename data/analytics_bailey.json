@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-07-28T20:07:18.365141",
+  "last_updated": "2026-07-29T00:59:54.195062",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -34107,6 +34107,97 @@
       "chat_messages": [],
       "ended_at": "2026-07-28T20:07:18.365080",
       "duration_seconds": 300.219312
+    },
+    {
+      "session_id": "session_854f16dc66a0_1785286755",
+      "account": "bailey",
+      "started_at": "2026-07-29T00:59:15.323851",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-07-29T00:59:15.323860",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-07-29T00:59:17.267730",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-07-29T00:59:21.158853",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-07-29T00:59:24.473839",
+          "data": {
+            "mode": "map-view"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-07-29T00:59:31.896869",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-07-29T00:59:37.712652",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "full_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-07-29T00:59:39.473866",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "adults_only"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-07-29T00:59:41.111965",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "whitehaven_beach"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-07-29T00:59:41.643729",
+          "data": {
+            "filter_type": "activities",
+            "filter_value": "great_barrier_reef"
+          }
+        },
+        {
+          "type": "book_now_clicked",
+          "timestamp": "2026-07-29T00:59:54.195003",
+          "data": {
+            "tour_name": "Tongarra Day Sailing Tour",
+            "company": "redcatadventures",
+            "source": "swipe"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
+      "tours_booked": [
+        "Tongarra Day Sailing Tour"
+      ],
+      "chat_messages": []
     }
   ]
 }
