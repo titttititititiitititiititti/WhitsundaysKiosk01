@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-08-09T04:03:07.970836",
+  "last_updated": "2026-08-10T20:04:17.944532",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -34958,6 +34958,58 @@
           "timestamp": "2026-08-09T04:03:07.970780"
         }
       ]
+    },
+    {
+      "session_id": "session_643daf10aff7_1786392231",
+      "account": "bailey",
+      "started_at": "2026-08-10T20:03:51.612769",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-08-10T20:03:51.612776",
+          "data": {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-08-10T20:03:53.691655",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-08-10T20:03:55.653867",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-08-10T20:03:55.759870",
+          "data": {
+            "mode": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-08-10T20:04:17.944479",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "browse-all",
+      "tours_viewed": [
+        "Thundercat Whitsundays - All Inclusive Day Tour"
+      ],
+      "tours_booked": [],
+      "chat_messages": []
     }
   ]
 }
