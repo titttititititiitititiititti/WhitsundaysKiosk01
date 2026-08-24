@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-08-24T11:27:42.440587",
+  "last_updated": "2026-08-24T11:29:53.867551",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -35632,13 +35632,71 @@
             "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
             "referrer": "https://www.filtour.com/?lang=en"
           }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-08-24T11:27:54.690251",
+          "data": {
+            "tour_name": "Southern Lights",
+            "company": "Ocean Rafting",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-08-24T11:28:10.397982",
+          "data": {
+            "tour_name": "Thundercat Whitsundays - All Inclusive Day Tour",
+            "company": "Red Cat Adventures",
+            "source": "browse-all"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-08-24T11:29:07.878933",
+          "data": {
+            "role": "user",
+            "message": "I want a overnight or multi-day sailing tour"
+          }
+        },
+        {
+          "type": "chat_message",
+          "timestamp": "2026-08-24T11:29:19.753665",
+          "data": {
+            "role": "assistant",
+            "message": "Meeting fellow travelers on a thrilling sailing adventure around the Whitsundays? I've got just the options for you! \u26f5\ufe0f\n\n1. **Hammer Whitsundays Sailing Tour** - Step aboard Hammer, a race-bred maxi yacht, for a high-energy sailing experience. With just 23 guests, it offers a personal and immersive journey. You'll explore the iconic Whitehaven Beach and Hill Inlet Lookout, plus snorkel at up to 3 beautiful fringing island reef locations. Enjoy the spacious decks for sunbathing and socializing, a"
+          }
+        },
+        {
+          "type": "tour_clicked",
+          "timestamp": "2026-08-24T11:29:53.867459",
+          "data": {
+            "tour_name": "Hammer Whitsundays Sailing Tour",
+            "company": "ProSail",
+            "source": "ai-assistant"
+          }
         }
       ],
       "language": null,
       "mode": null,
-      "tours_viewed": [],
+      "tours_viewed": [
+        "Southern Lights",
+        "Thundercat Whitsundays - All Inclusive Day Tour",
+        "Hammer Whitsundays Sailing Tour"
+      ],
       "tours_booked": [],
-      "chat_messages": []
+      "chat_messages": [
+        {
+          "role": "user",
+          "message": "I want a overnight or multi-day sailing tour",
+          "timestamp": "2026-08-24T11:29:07.878945"
+        },
+        {
+          "role": "assistant",
+          "message": "Meeting fellow travelers on a thrilling sailing adventure around the Whitsundays? I've got just the options for you! \u26f5\ufe0f\n\n1. **Hammer Whitsundays Sailing Tour** - Step aboard Hammer, a race-bred maxi yacht, for a high-energy sailing experience. With just 23 guests, it offers a personal and immersive journey. You'll explore the iconic Whitehaven Beach and Hill Inlet Lookout, plus snorkel at up to 3 beautiful fringing island reef locations. Enjoy the spacious decks for sunbathing and socializing, a",
+          "timestamp": "2026-08-24T11:29:19.753680"
+        }
+      ]
     }
   ]
 }
