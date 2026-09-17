@@ -1,7 +1,7 @@
 {
   "summary": {},
   "account": "bailey",
-  "last_updated": "2026-05-28T11:30:45.932364",
+  "last_updated": "2026-09-17T15:05:45.418834",
   "sessions": [
     {
       "session_id": "session_1700f27de43b_1770163404",
@@ -33764,6 +33764,56 @@
       "tours_viewed": [
         "Hammer Whitsundays Sailing Tour"
       ],
+      "tours_booked": [],
+      "chat_messages": []
+    },
+    {
+      "session_id": "session_9939be8bce93_1789657522",
+      "account": "bailey",
+      "started_at": "2026-09-17T15:05:22.712625",
+      "events": [
+        {
+          "type": "session_start",
+          "timestamp": "2026-09-17T15:05:22.712636",
+          "data": {
+            "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.1 Mobile/15E148 Safari/604.1",
+            "referrer": "https://www.filtour.com/"
+          }
+        },
+        {
+          "type": "language_selected",
+          "timestamp": "2026-09-17T15:05:26.350360",
+          "data": {
+            "language": "en"
+          }
+        },
+        {
+          "type": "mode_selected",
+          "timestamp": "2026-09-17T15:05:32.172226",
+          "data": {
+            "mode": "quick-decision"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-09-17T15:05:41.026192",
+          "data": {
+            "filter_type": "duration",
+            "filter_value": "half_day"
+          }
+        },
+        {
+          "type": "filter_selected",
+          "timestamp": "2026-09-17T15:05:45.418792",
+          "data": {
+            "filter_type": "family_friendly",
+            "filter_value": "true"
+          }
+        }
+      ],
+      "language": "en",
+      "mode": "quick-decision",
+      "tours_viewed": [],
       "tours_booked": [],
       "chat_messages": []
     }
