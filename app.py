@@ -354,13 +354,15 @@ def get_authenticated_remote_url():
     
     return None
 
-def _github_api_push(changed_files_dict, commit_message, branch='main'):
+def _github_api_push(changed_files_dict, commit_message, branch='main', expected_sha=None):
     """
     Push file changes to GitHub using the REST API.
     This is the most reliable method for Render/cloud where git CLI push may fail.
-    
+
     changed_files_dict: {filepath: content_bytes_or_str, ...}
     branch: target branch (default 'main')
+    expected_sha: if set, refuse to push unless the branch is still at this commit
+                  (someone else pushed since we read it, so our merge is stale)
     Returns: (success: bool, message: str)
     """
     if not http_requests:
@@ -398,7 +400,10 @@ def _github_api_push(changed_files_dict, commit_message, branch='main'):
             return False, f"Failed to get branch ref: {ref_resp.status_code} {ref_resp.text[:200]}"
         else:
             current_sha = ref_resp.json()['object']['sha']
-        
+
+        if expected_sha and current_sha != expected_sha:
+            return False, f"Remote advanced: '{branch}' moved since it was read"
+
         # 2. Get the current tree SHA
         commit_resp = http_requests.get(f'{api_base}/git/commits/{current_sha}', headers=headers, timeout=15)
         if commit_resp.status_code != 200:
@@ -438,7 +443,9 @@ def _github_api_push(changed_files_dict, commit_message, branch='main'):
         if tree_resp.status_code != 201:
             return False, f"Failed to create tree: {tree_resp.status_code}"
         new_tree_sha = tree_resp.json()['sha']
-        
+        if new_tree_sha == base_tree_sha:
+            return True, f"No changes to push to '{branch}'"
+
         # 5. Create new commit
         new_commit_resp = http_requests.post(f'{api_base}/git/commits', headers=headers, json={
             'message': commit_message,
@@ -464,40 +471,72 @@ def _github_api_push(changed_files_dict, commit_message, branch='main'):
 
 ANALYTICS_BRANCH = 'analytics-data'
 
-def _github_api_pull_analytics():
+def _github_api_branch_sha(branch):
+    """Return the commit SHA a GitHub branch points at, or None if it can't be read."""
+    if not http_requests or not GITHUB_TOKEN:
+        return None
+    owner, repo = _get_github_repo_info()
+    if not owner or not repo:
+        return None
+    try:
+        resp = http_requests.get(
+            f'https://api.github.com/repos/{owner}/{repo}/git/ref/heads/{branch}',
+            headers={'Authorization': f'token {GITHUB_TOKEN}', 'Accept': 'application/vnd.github.v3+json'},
+            timeout=15
+        )
+        if resp.status_code == 200:
+            return resp.json()['object']['sha']
+    except Exception as e:
+        print(f"[RENDER ANALYTICS] Could not read '{branch}' ref: {e}")
+    return None
+
+
+def _github_api_pull_analytics(ref=None, strict=False):
     """Pull analytics JSON files from GitHub via REST API and merge into local.
     Used on Render where there is no .git directory.
-    Reads from the 'analytics-data' branch first, falls back to 'main'.
+    Reads from `ref` if given, otherwise the 'analytics-data' branch, falling back to 'main'.
+    strict=True raises if any analytics file can't be read, so a caller about to
+    push can stop instead of overwriting sessions it never saw.
     Returns number of sessions merged."""
+    def _fail(msg):
+        if strict:
+            raise RuntimeError(msg)
+        print(f"[RENDER ANALYTICS] {msg}")
+
     if not http_requests or not GITHUB_TOKEN:
+        _fail("requests or GITHUB_TOKEN unavailable")
         return 0
 
     owner, repo = _get_github_repo_info()
     if not owner or not repo:
+        _fail("Could not determine GitHub repo")
         return 0
 
     headers = {
         'Authorization': f'token {GITHUB_TOKEN}',
         'Accept': 'application/vnd.github.v3+json'
     }
+    # The contents API only inlines files under 1 MB; the raw media type returns
+    # the file itself (up to 100 MB). Analytics files are well over 1 MB.
+    raw_headers = {**headers, 'Accept': 'application/vnd.github.raw'}
     api_base = f'https://api.github.com/repos/{owner}/{repo}'
     merged_count = 0
 
     # Try analytics-data branch first, fall back to main
-    source_branch = ANALYTICS_BRANCH
+    source_branch = ref or ANALYTICS_BRANCH
     try:
         tree_resp = http_requests.get(
-            f'{api_base}/contents/data?ref={ANALYTICS_BRANCH}', headers=headers, timeout=15
+            f'{api_base}/contents/data?ref={source_branch}', headers=headers, timeout=15
         )
-        if tree_resp.status_code != 200:
+        if tree_resp.status_code != 200 and not ref:
             # Branch may not exist yet — fall back to main
             source_branch = 'main'
             tree_resp = http_requests.get(
                 f'{api_base}/contents/data?ref=main', headers=headers, timeout=15
             )
-            if tree_resp.status_code != 200:
-                print(f"[RENDER ANALYTICS] Could not list data/ on GitHub: {tree_resp.status_code}")
-                return 0
+        if tree_resp.status_code != 200:
+            _fail(f"Could not list data/ on GitHub: {tree_resp.status_code}")
+            return 0
 
         for item in tree_resp.json():
             name = item.get('name', '')
@@ -510,16 +549,16 @@ def _github_api_pull_analytics():
 
             # Download the file content from whichever branch had data
             file_resp = http_requests.get(
-                f'{api_base}/contents/data/{name}?ref={source_branch}', headers=headers, timeout=15
+                f'{api_base}/contents/data/{name}?ref={source_branch}', headers=raw_headers, timeout=60
             )
             if file_resp.status_code != 200:
+                _fail(f"Could not download {name}: {file_resp.status_code}")
                 continue
 
-            import base64
-            content = base64.b64decode(file_resp.json()['content']).decode('utf-8')
             try:
-                remote_data = json.loads(content)
-            except json.JSONDecodeError:
+                remote_data = json.loads(file_resp.content.decode('utf-8-sig'))
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                _fail(f"Could not parse {name}: {e}")
                 continue
 
             remote_sessions = _filter_fake_sessions(remote_data.get('sessions', []))
@@ -538,6 +577,8 @@ def _github_api_pull_analytics():
                 print(f"[RENDER ANALYTICS] Merged {len(new_sessions)} remote session(s) for '{account}'")
 
     except Exception as e:
+        if strict:
+            raise
         print(f"[RENDER ANALYTICS] Pull error: {e}")
 
     return merged_count
@@ -2060,40 +2101,57 @@ def _schedule_render_analytics_push():
         _render_push_timer.daemon = True
         _render_push_timer.start()
 
-def _do_render_analytics_push():
-    """Actually push analytics files to GitHub via API.
-    MUST pull first to avoid overwriting kiosk-pushed sessions."""
-    global _render_push_timer
-    try:
-        # Pull remote sessions first so we don't overwrite kiosk data
-        try:
-            _github_api_pull_analytics()
-        except Exception as e:
-            print(f"[RENDER ANALYTICS] Pre-push pull failed (pushing anyway): {e}", flush=True)
+_render_push_run_lock = threading.Lock()
 
-        import glob as _glob
-        files_to_push = {}
-        for af in _glob.glob('data/analytics_*.json'):
-            if '_backup' in af or '_request' in af:
-                continue
-            fpath = af.replace('\\', '/')
-            with open(af, 'r', encoding='utf-8') as f:
-                _raw = json.load(f)
-            _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
-            files_to_push[fpath] = json.dumps(_raw, indent=2)
-        if files_to_push:
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            success, msg = _github_api_push(
-                files_to_push,
-                f"Analytics sync from Render [{timestamp}]",
-                branch=ANALYTICS_BRANCH
-            )
-            if success:
-                print(f"[RENDER ANALYTICS] Push OK ({ANALYTICS_BRANCH}): {msg}", flush=True)
-            else:
-                print(f"[RENDER ANALYTICS] Push failed: {msg}", flush=True)
-    except Exception as e:
-        print(f"[RENDER ANALYTICS] Push error: {e}", flush=True)
+def _do_render_analytics_push(label="Analytics sync from Render"):
+    """Actually push analytics files to GitHub via API.
+    Reads the branch, merges it into local, and pushes the union on top of exactly
+    the commit it read. If the read fails it does NOT push: pushing Render's copy
+    blind is what replaced kiosk sessions with Render's smaller file.
+    If a kiosk pushes in between, the push is refused and the merge is redone."""
+    global _render_push_timer
+    # The 2-min loop, session_end threads and shutdown can all land here at once
+    if _render_push_run_lock.acquire(timeout=90):
+        try:
+            for attempt in range(3):
+                base_sha = _github_api_branch_sha(ANALYTICS_BRANCH)
+                try:
+                    _github_api_pull_analytics(ref=base_sha, strict=True)
+                except Exception as e:
+                    print(f"[RENDER ANALYTICS] Pull failed, NOT pushing (would overwrite kiosk sessions): {e}", flush=True)
+                    break
+
+                import glob as _glob
+                files_to_push = {}
+                for af in _glob.glob('data/analytics_*.json'):
+                    if '_backup' in af or '_request' in af:
+                        continue
+                    fpath = af.replace('\\', '/')
+                    with open(af, 'r', encoding='utf-8') as f:
+                        _raw = json.load(f)
+                    _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
+                    files_to_push[fpath] = json.dumps(_raw, indent=2)
+                if not files_to_push:
+                    break
+
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                success, msg = _github_api_push(
+                    files_to_push,
+                    f"{label} [{timestamp}]",
+                    branch=ANALYTICS_BRANCH,
+                    expected_sha=base_sha
+                )
+                if success:
+                    print(f"[RENDER ANALYTICS] Push OK ({ANALYTICS_BRANCH}): {msg}", flush=True)
+                    break
+                print(f"[RENDER ANALYTICS] Push attempt {attempt+1} failed, re-merging: {msg}", flush=True)
+                time.sleep(2 + attempt * 3)
+        except Exception as e:
+            print(f"[RENDER ANALYTICS] Push error: {e}", flush=True)
+        finally:
+            _render_push_run_lock.release()
+    else:
+        print("[RENDER ANALYTICS] Another push still running, skipped", flush=True)
     with _render_push_lock:
         _render_push_timer = None
 
@@ -11069,12 +11127,17 @@ def sync_analytics_to_git():
     
     Conflict-free approach (no rebase needed):
     1. Read local analytics into memory
-    2. Fetch + reset to origin/main (so HEAD matches remote exactly)
-    3. Merge our local sessions into the reset files 
-    4. Commit on top of origin/main (guaranteed fast-forward)
+    2. Fetch the analytics branch
+    3. Merge our local sessions into the branch's files, in a temporary index
+    4. Commit on top of origin/analytics-data (guaranteed fast-forward)
     5. Push
-    
-    If push fails (someone pushed between our reset and push), retry the whole thing.
+
+    The kiosk's own checkout (HEAD, code, templates, local analytics files) is
+    never touched. It used to `reset --hard` onto the analytics branch, which
+    swapped the running kiosk back to that branch's older code, made the update
+    check think new code had arrived, and restarted the kiosk every 5 minutes.
+
+    If push fails (someone pushed between our fetch and push), retry the whole thing.
     """
     repo_path = os.path.dirname(os.path.abspath(__file__))
     
@@ -11120,117 +11183,112 @@ def sync_analytics_to_git():
             if not local_analytics:
                 return
             
-            # Step 2: Fetch the analytics-data branch (or create it from main).
+            # Step 2: Fetch the analytics-data branch (or start it from main).
             # Push analytics to a separate branch so it doesn't trigger Render redeploys.
-            subprocess.run(
-                ['git', 'fetch', 'origin', ANALYTICS_BRANCH],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+            _git = dict(cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace')
+            subprocess.run(['git', 'fetch', 'origin', ANALYTICS_BRANCH], timeout=30, **_git)
+            base_check = subprocess.run(
+                ['git', 'rev-parse', '--verify', f'origin/{ANALYTICS_BRANCH}'], timeout=10, **_git
             )
-            # Check if the analytics branch exists on remote
-            branch_check = subprocess.run(
-                ['git', 'rev-parse', '--verify', f'origin/{ANALYTICS_BRANCH}'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-            )
-            if branch_check.returncode != 0:
-                # Branch doesn't exist yet — create it from main
-                subprocess.run(
-                    ['git', 'fetch', 'origin', 'main'],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
-                )
-                subprocess.run(
-                    ['git', 'branch', ANALYTICS_BRANCH, 'origin/main'],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-                )
-                subprocess.run(
-                    ['git', 'push', 'origin', ANALYTICS_BRANCH],
-                    cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
-                )
-            # Reset to analytics branch HEAD for fast-forward push
-            subprocess.run(
-                ['git', 'reset', '--hard', f'origin/{ANALYTICS_BRANCH}'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-            )
-            
-            # Step 3: Merge local sessions into the reset files (which now match remote)
-            files_changed = False
-            for rel_path, local_info in local_analytics.items():
-                af = os.path.join(repo_path, rel_path.replace('/', os.sep))
+            if base_check.returncode != 0:
+                # Branch doesn't exist yet — the push below creates it on top of main
+                subprocess.run(['git', 'fetch', 'origin', 'main'], timeout=30, **_git)
+                base_check = subprocess.run(['git', 'rev-parse', '--verify', 'origin/main'], timeout=10, **_git)
+                if base_check.returncode != 0:
+                    print(f"[ANALYTICS SYNC] Could not resolve a base commit: {base_check.stderr[:200]}", flush=True)
+                    return
+            base_sha = base_check.stdout.strip()
+
+            # Build the commit in a throwaway index so the working tree and HEAD stay put
+            tmp_index = os.path.join(repo_path, '.git', 'analytics-sync-index')
+            _idx = dict(_git, env={**os.environ, 'GIT_INDEX_FILE': tmp_index})
+            try:
+                read_tree = subprocess.run(['git', 'read-tree', base_sha], timeout=30, **_idx)
+                if read_tree.returncode != 0:
+                    print(f"[ANALYTICS SYNC] read-tree failed: {read_tree.stderr[:200]}", flush=True)
+                    return
+
+                # Step 3: Merge local sessions into the branch's version of each file
+                files_changed = False
+                for rel_path, local_info in local_analytics.items():
+                    try:
+                        remote_sessions = {}
+                        shown = subprocess.run(
+                            ['git', 'show', f'{base_sha}:{rel_path}'],
+                            cwd=repo_path, capture_output=True, timeout=30
+                        )
+                        if shown.returncode == 0:
+                            remote_data = json.loads(shown.stdout.decode('utf-8-sig'))
+                            remote_sessions = {s.get('session_id'): s for s in remote_data.get('sessions', []) if s.get('session_id')}
+
+                        # Union merge: all sessions from both local and remote
+                        merged = {}
+                        merged.update(remote_sessions)
+                        merged.update(local_info['sessions'])  # Local wins on conflict (has latest events)
+
+                        all_sessions = sorted(merged.values(), key=lambda s: s.get('started_at', ''))
+
+                        local_count = len(local_info['sessions'])
+                        remote_count = len(remote_sessions)
+                        total = len(all_sessions)
+                        new_from_local = total - remote_count
+                        if new_from_local > 0:
+                            print(f"[ANALYTICS SYNC] Merged: {local_count} local + {remote_count} remote = {total} total ({new_from_local} new)", flush=True)
+                        elif all(remote_sessions.get(sid) == s for sid, s in local_info['sessions'].items()):
+                            continue  # Branch already has every session of ours, unchanged
+
+                        out_data = local_info['meta'].copy()
+                        out_data['sessions'] = all_sessions
+                        out_data['last_updated'] = datetime.now().isoformat()
+
+                        blob = subprocess.run(
+                            ['git', 'hash-object', '-w', '--stdin'],
+                            cwd=repo_path, capture_output=True, timeout=30,
+                            input=json.dumps(out_data, indent=2).encode('utf-8')
+                        )
+                        if blob.returncode != 0:
+                            print(f"[ANALYTICS SYNC] hash-object failed for {rel_path}", flush=True)
+                            continue
+                        blob_sha = blob.stdout.decode().strip()
+                        subprocess.run(
+                            ['git', 'update-index', '--add', '--cacheinfo', f'100644,{blob_sha},{rel_path}'],
+                            timeout=10, **_idx
+                        )
+                        files_changed = True
+
+                    except Exception as e:
+                        print(f"[ANALYTICS SYNC] Merge error for {rel_path}: {e}", flush=True)
+
+                if not files_changed:
+                    print(f"[ANALYTICS SYNC] No new sessions to push", flush=True)
+                    return
+
+                # Step 4: Commit on top of the branch we read
+                tree = subprocess.run(['git', 'write-tree'], timeout=30, **_idx)
+                if tree.returncode != 0:
+                    print(f"[ANALYTICS SYNC] write-tree failed: {tree.stderr[:200]}", flush=True)
+                    return
+            finally:
                 try:
-                    # Read the remote version (now on disk after reset)
-                    remote_sessions = {}
-                    if os.path.exists(af):
-                        with open(af, 'r', encoding='utf-8-sig') as f:
-                            remote_data = json.load(f)
-                        remote_sessions = {s.get('session_id'): s for s in remote_data.get('sessions', []) if s.get('session_id')}
-                    
-                    # Union merge: all sessions from both local and remote
-                    merged = {}
-                    merged.update(remote_sessions)
-                    merged.update(local_info['sessions'])  # Local wins on conflict (has latest events)
-                    
-                    # Also add any remote-only sessions
-                    for sid, sess in remote_sessions.items():
-                        if sid not in merged:
-                            merged[sid] = sess
-                    
-                    # Sort and write
-                    all_sessions = sorted(merged.values(), key=lambda s: s.get('started_at', ''))
-                    
-                    out_data = local_info['meta'].copy()
-                    out_data['sessions'] = all_sessions
-                    out_data['last_updated'] = datetime.now().isoformat()
-                    
-                    with open(af, 'w', encoding='utf-8') as f:
-                        json.dump(out_data, f, indent=2)
-                    
-                    local_count = len(local_info['sessions'])
-                    remote_count = len(remote_sessions)
-                    total = len(all_sessions)
-                    new_from_local = total - remote_count
-                    if new_from_local > 0:
-                        files_changed = True
-                        print(f"[ANALYTICS SYNC] Merged: {local_count} local + {remote_count} remote = {total} total ({new_from_local} new)", flush=True)
-                    elif local_count != remote_count:
-                        files_changed = True
-                        
-                except Exception as e:
-                    print(f"[ANALYTICS SYNC] Merge error for {rel_path}: {e}", flush=True)
-            
-            if not files_changed:
-                print(f"[ANALYTICS SYNC] No new sessions to push", flush=True)
-                return
-            
-            # Step 4: Stage, commit, push
-            files_to_add = list(local_analytics.keys())
-            subprocess.run(
-                ['git', 'add'] + files_to_add,
-                cwd=repo_path, capture_output=True, encoding='utf-8', errors='replace', timeout=10
-            )
-            
-            # Check if anything is actually staged
-            diff_result = subprocess.run(
-                ['git', 'diff', '--cached', '--name-only'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=10
-            )
-            if not diff_result.stdout.strip():
-                return  # Nothing to push
-            
+                    os.remove(tmp_index)
+                except OSError:
+                    pass
+
             hostname = os.environ.get('COMPUTERNAME', os.environ.get('HOSTNAME', 'kiosk'))
             commit_result = subprocess.run(
-                ['git', 'commit', '-m', f'Analytics sync from {hostname} {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                ['git', 'commit-tree', tree.stdout.strip(), '-p', base_sha,
+                 '-m', f'Analytics sync from {hostname} {datetime.now().strftime("%Y-%m-%d %H:%M")}'],
+                timeout=30, **_git
             )
-            
+
             if commit_result.returncode != 0:
-                if 'nothing to commit' in (commit_result.stdout or ''):
-                    return
                 print(f"[ANALYTICS SYNC] Commit failed: {commit_result.stderr[:200]}", flush=True)
                 return
-            
+
             # Step 5: Push to analytics-data branch (doesn't trigger Render redeploy)
             push_result = subprocess.run(
-                ['git', 'push', 'origin', f'HEAD:{ANALYTICS_BRANCH}'],
-                cwd=repo_path, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=30
+                ['git', 'push', 'origin', f'{commit_result.stdout.strip()}:refs/heads/{ANALYTICS_BRANCH}'],
+                timeout=30, **_git
             )
             
             if push_result.returncode == 0:
@@ -11637,18 +11695,7 @@ def refresh_analytics():
 
             # Now push merged data (local + remote) back to GitHub
             try:
-                import glob as _glob
-                files_to_push = {}
-                for af in _glob.glob('data/analytics_*.json'):
-                    if '_backup' in af or '_request' in af:
-                        continue
-                    fpath = af.replace('\\', '/')
-                    with open(af, 'r', encoding='utf-8') as f:
-                        _raw = json.load(f)
-                    _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
-                    files_to_push[fpath] = json.dumps(_raw, indent=2)
-                if files_to_push:
-                    _github_api_push(files_to_push, f"Analytics sync from Render (refresh)", branch=ANALYTICS_BRANCH)
+                _do_render_analytics_push("Analytics sync from Render (refresh)")
             except Exception as e:
                 print(f"[RENDER ANALYTICS] Push on refresh failed: {e}")
         else:
@@ -11950,29 +11997,7 @@ def start_background_services():
             print("[RENDER ANALYTICS] Background push loop started (every 2min)", flush=True)
             while True:
                 try:
-                    _github_api_pull_analytics()
-
-                    import glob as _glob
-                    files_to_push = {}
-                    for af in _glob.glob('data/analytics_*.json'):
-                        if '_backup' in af or '_request' in af:
-                            continue
-                        fpath = af.replace('\\', '/')
-                        with open(af, 'r', encoding='utf-8') as f:
-                            _raw = json.load(f)
-                        _raw['sessions'] = _filter_fake_sessions(_raw.get('sessions', []))
-                        files_to_push[fpath] = json.dumps(_raw, indent=2)
-                    if files_to_push:
-                        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        success, msg = _github_api_push(
-                            files_to_push,
-                            f"Analytics sync from Render [{timestamp}]",
-                            branch=ANALYTICS_BRANCH
-                        )
-                        if success:
-                            print(f"[RENDER ANALYTICS] Pushed {len(files_to_push)} file(s): {msg}", flush=True)
-                        else:
-                            print(f"[RENDER ANALYTICS] Push failed: {msg}", flush=True)
+                    _do_render_analytics_push()
                 except Exception as e:
                     print(f"[RENDER ANALYTICS] Error: {e}", flush=True)
                 _time.sleep(_PUSH_INTERVAL)
